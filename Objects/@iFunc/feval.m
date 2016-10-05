@@ -6,9 +6,10 @@ function [signal, model, ax, name] = feval(model, p, varargin)
 %     a fast notation is to pass arguments directly to the model:
 %       model(p, x,y,z,...)
 %
-%   parameters = feval(model, 'guess', x,y, ..., signal...)
+%   signal = feval(model, 'guess', x,y, ..., signal...)
 %     makes a quick parameter guess. This usually requires to specify the signal
-%     to guess from to be passed after the axes.
+%     to guess from to be passed after the axes. The parameters are then in model.ParameterValues
+%     or returned instead of the signal when the model can not be updated.
 %   signal = feval(model, NaN, x,y, ..., signal...)
 %     same as above, but force to get the evaluated function value with
 %     guessed parameters.
@@ -91,6 +92,7 @@ if iscell(p) && ~isempty(p) % as parameter cell (iterative function evaluation)
 end
 
 % some usual commands 
+if strcmp(p, 'current'), p=model.ParameterValues; end
 if ~isempty(p) && ischar(p)
   ax=[]; name=model.Name;
   if strcmp(p, 'plot')
@@ -101,7 +103,7 @@ if ~isempty(p) && ischar(p)
     return
   elseif ~strcmp(p, 'guess')
     p'
-    disp([ mfilename ': Unknown parameter value. Using "guess" instead.'])
+    disp([ mfilename ': Unknown parameter value in Model ' model.Name '. Using "guess" instead.'])
     p=[];
   end
 elseif isa(p, 'iFunc')
@@ -142,9 +144,9 @@ if ~isempty(varargin)
   this = varargin{1};
   if iscell(this)
     Axes = this;
-    if length(Axes) > model.Dimension
-      Signal = Axes{model.Dimension+1};
-      Axes   = Axes(1:model.Dimension);
+    if length(Axes) > abs(model.Dimension)
+      Signal = Axes{abs(model.Dimension)+1};
+      Axes   = Axes(1:abs(model.Dimension));
     end
     if ~isempty(Signal), 
       Axes{end+1} = Signal; 
@@ -176,185 +178,12 @@ if ~isempty(varargin)
   clear this Axes Signal
 end
 
-ax=[]; name=model.Name;
+name=model.Name;
 guessed = '';
 % guess parameters ========================================================
+[p,guessed,signal_in_varargin,ax] = iFunc_feval_guess_p(model, p, signal_in_varargin, varargin{:});
 
-% some ParameterValues have been defined already. Use them.
-if isempty(p) && length(model.ParameterValues) == numel(model.Parameters)
-  p = model.ParameterValues;
-end
-% when length(p) < Parameters, we fill NaN's ; when p=[] we guess them all
-if isempty(p) % should guess parameters, but also evaluate model
-  guessed = 'full and eval';
-  p = NaN*ones(1, numel(model.Parameters));
-elseif strcmp(p, 'guess') % explicitely return guessed parameters
-  p = NaN*ones(1, numel(model.Parameters));
-  guessed = 'full';
-elseif isnumeric(p) && length(p) < length(model.Parameters) % fill NaN's from p+1 to model.Parameters
-  if length(model.ParameterValues) == numel(model.Parameters)
-    p((length(p)+1):length(model.Parameters)) = model.ParameterValues((length(p)+1):length(model.Parameters));
-  else
-    p((length(p)+1):length(model.Parameters)) = NaN;
-  end
-end
-
-% when there are NaN values in parameter values, we replace them by guessed values
-if model.Dimension && ...
-  ((any(isnan(p)) && length(p) == length(model.Parameters)) || ~isempty(guessed))
-  % call private method to guess parameters from axes, signal and parameter names
-  if isempty(guessed), guessed = 'partial'; end
-  
-  % args={x,y,z, ... signal}
-  args=cell(1,model.Dimension+1); args(1:end) = { [] };
-  args(1:min(length(varargin),model.Dimension+1)) = varargin(1:min(length(varargin),model.Dimension+1));
-  args_opt = varargin((model.Dimension+2):end);
-  
-  p0 = p; % save initial 'p' values
-  
-  % all args are empty, we generate model fake 1D/2D axes/signal
-  if all(cellfun('isempty',args))
-    if model.Dimension == 1 % we use a Gaussian
-      args{1} = linspace(-5,5,50); 
-      x=args{1}; p2 = [1 mean(x) std(x)/2 .1]; 
-      args{2} = p2(1)*exp(-0.5*((x-p2(2))/p2(3)).^2)+((p2(2)-x)*p2(1)/p2(3)/100) + p2(4);
-      clear p2
-      signal = args{2};
-      signal_in_varargin = 2;
-    elseif model.Dimension == 2 % we use a 2D Gaussian
-      [args{1},args{2}] = ndgrid(linspace(-5,5,30), linspace(-3,7,40));
-      x=args{1}; y=args{2}; p2 = [ 1 mean(x(:)) mean(y(:)) std(x(:)) std(y(:)) 30 0 ];
-      x0=p2(2); y0=p2(3); sx=p2(4); sy=p2(5);
-      theta = p2(6)*pi/180;  % deg -> rad
-      aa = cos(theta)^2/2/sx/sx + sin(theta)^2/2/sy/sy;
-      bb =-sin(2*theta)/4/sx/sx + sin(2*theta)/4/sy/sy;
-      cc = sin(theta)^2/2/sx/sx + cos(theta)^2/2/sy/sy;
-      args{3} = p2(1)*exp(-(aa*(x-x0).^2+2*bb*(x-x0).*(y-y0)+cc*(y-y0).^2)) + p2(7);
-      clear aa bb cc theta x0 y0 sx sy p2
-      signal = args{3};
-      signal_in_varargin = 3;
-    else % use an event style representation
-      for index=1:(model.Dimension+1)
-        x1 = -2*rand-1;
-        x2 = 2*rand+1;
-        args{index} = linspace(x1, x2, 20+index);
-      end
-      signal_in_varargin = model.Dimension+1;
-      signal = args{end};
-    end
-  end
-  
-  varargin = [ args args_opt ];
-  clear args
-  
-  % convert axes to nD arrays for operations to take place
-  % check the axes and possibly use ndgrid to allow nD operations in the
-  % Expression/Constraint
-  % Not for event style axes+signal (all 1D)
-  
-  % event:  all vectors, including signal (if any), same length
-  % regrid: all vectors, not same length, signal is not a vector
-  
-  % check for vectors: 0 or 1 for each axis
-  check_vector = cellfun(@isvector, varargin(1:model.Dimension));
-  % check number of elements: would be equal for 3D grids (xyz) or 4D (xyzt)
-  check_numel  = cellfun(@numel, varargin(1:model.Dimension));
-  % check orientation (axis rank) for vectors. 0 for non vectors
-  check_orient = zeros(1,model.Dimension);
-  index        = find(check_vector);
-  check_orient(index) = cellfun(@(c)find(size(c)==numel(c)), varargin(index));
-  
-  % all vectors, not same orientation and not same length: ndgrid
-  if all(check_vector) && any(check_orient ~= check_orient(1)) ...
-    && ~all(check_numel  == check_numel(1) | check_numel == 1)
-    [varargin{1:model.Dimension}] = ndgrid(varargin{1:model.Dimension});
-  end
-  % automatic guessed parameter values -> signal
-  if model.Dimension
-    p1 = iFunc_private_guess(varargin(1:(model.Dimension+1)), model.Parameters); % call private here -> auto guess
-  else
-    p1 = [];
-  end
-  % check for NaN guessed values and null amplitude
-  n=find(isnan(p1) | p1 == 0); n=transpose(n(:));
-  for j=n
-    if any([strfind(lower(model.Parameters{j}), 'width') ...
-       strfind(lower(model.Parameters{j}), 'amplitude') ...
-       strfind(lower(model.Parameters{j}), 'intensity')])
-      p1(j) = abs(randn)/10;
-    else
-      p1(j) = 0;
-    end
-  end
-  % specific guessed values (if any) -> p2 override p1
-  if ~isempty(model.Guess) && ~all(cellfun('isempty',varargin))
-    if ischar(model.Guess)
-      % request char eval guess in sandbox
-      p2 = iFunc_feval_guess(model, varargin{:});
-      if isa(p2, 'function_handle')
-        model.Guess = p2;
-      end
-    end
-    if isa(model.Guess, 'function_handle')
-      try
-        n = nargin(model.Guess);                % number of required arguments
-        % moments of distributions
-        m1 = @(x,s) sum(s(:).*x(:))/sum(s(:));
-        m2 = @(x,s) sqrt(abs( sum(x(:).*x(:).*s(:))/sum(s(:)) - m1(x,s).^2 ));
-        if n > 0 && length(varargin) >= n
-          p2 = feval(model.Guess, varargin{1:n}); % returns model vector
-        else
-          p2 = feval(model.Guess, varargin{:}); % returns model vector
-        end
-      catch ME
-        disp([ mfilename ': Guess: ' ME.message ])
-        p2 = [];
-      end
-      clear n
-    elseif isnumeric(model.Guess)
-      p2 = model.Guess;
-    else
-      p  = p0;             % restore initial value
-    end
-    if isempty(p2)
-      disp([ mfilename ': Warning: Could not evaluate Guess in model ' model.Name ' ' model.Tag ]);
-      disp(model.Guess);
-      disp('Axes and signal:');
-      disp(varargin);
-      warning('Using auto-guess values.');
-    else
-      % merge auto and possibly manually set values
-      index     = ~isnan(p2);
-      p1(index) = p2(index);
-      clear p2
-    end
-  end
-  if all(p1 == 0) && ~isempty(model.ParameterValues) ...
-   && ~all(model.ParameterValues(:) == 0)
-    p1 = model.ParameterValues;
-  end
-  signal = p1;  % auto-guess overridden by 'Guess' definition
-  % transfer the guessed values from 'signal' to the NaN ones in 'p'
-  if any(isnan(p)) && ~isempty(signal)
-    index = find(isnan(p)); p(index) = signal(index);
-  end
-  model.ParameterValues = p; % the guessed values
-  
-  if ~strcmp(guessed,'full')
-    % return the signal and axes
-    if ~isempty(signal_in_varargin) && length(varargin) >= signal_in_varargin
-      varargin(signal_in_varargin) = []; % remove Signal from arguments for evaluation (used in Guess)
-      signal_in_varargin = [];
-    end
-    % [signal, ax, name] = feval(model, p, varargin{:});
-    guessed = ''; % proceed with eval
-  else
-    ax=0; name=model.Name;
-  end
-  % Parameters are stored in the updated model (see assignin below)
-end % 'guess'
-
-% format parameters as columns
+% format parameters and constraints as columns 
 p = p(:);
 if isfield(model.Constraint,'min')
   model.Constraint.min  =model.Constraint.min(:);
@@ -390,123 +219,23 @@ model.ParameterValues = p;
 
 if ~isempty(inputname1)
   assignin('caller',inputname1,model); % update in original object
+  if numel(ax) == model.Dimension+1
+    signal = ax{end};
+    ax(end) = [];
+  end
+elseif ~isempty(guessed)
+  signal = model.ParameterValues;
 end
 
 % return here with syntax:
 % feval(model) when model.ParameterValues is empty
 % feval(model, 'guess')
 if ~isempty(guessed)
-  ax = varargin(1:model.Dimension);
   return
 end
 
-% guess axes ==============================================================
-% complement axes if too few are given
-if length(varargin) < model.Dimension
-  % not enough axes, but some may be given: we set them to 'empty' so that default axes are used further
-  for index=(length(varargin)+1):model.Dimension
-    varargin{index} = [];
-  end
-end
-
-% default return value...
-signal          = [];
-parameter_names = lower(model.Parameters);
-
-% check axes and define missing ones
-for index=1:model.Dimension
-  % check for default axes to represent the model when parameters are given
-  % test parameter names
-  
-  width    = NaN;
-  position = NaN;
-  for index_p=1:length(parameter_names)
-    if  ~isempty(strfind(parameter_names{index_p}, 'width')) ...
-      | ~isempty(strfind(parameter_names{index_p}, 'tau')) ...
-      | ~isempty(strfind(parameter_names{index_p}, 'damping')) ...
-      | ~isempty(strfind(parameter_names{index_p}, 'gamma'))
-      if isnan(width)
-        width = abs(p(index_p)); 
-        % this parameter name is removed from the search for the further axes
-        parameter_names{index_p} = ''; 
-      end
-    elseif ~isempty(strfind(parameter_names{index_p}, 'centre')) ...
-      |    ~isempty(strfind(parameter_names{index_p}, 'center')) ...
-      |    ~isempty(strfind(parameter_names{index_p}, 'position'))
-      if isnan(position), 
-        position = p(index_p);
-        % this parameter name is removed from the search for the further axes
-        parameter_names{index_p} = '';
-      end
-    end
-    if ~isnan(width) && ~isnan(position)
-      if isempty(varargin{index}) || all(all(isnan(varargin{index})))
-		    % axis is not set: use default axis from parameter names and values given
-		    if model.Dimension > 2, sz_max = 20; else sz_max = 50; end
-		    varargin{index} = linspace(position-3*width,position+3*width, sz_max+index);
-		    % orient the axis along the right dimension to indicate this is not an event type
-        d = ones(1,max(2,model.Dimension)); d(index) = numel(varargin{index});
-        varargin{index} = reshape(varargin{index}, d);
-        width = NaN; position = NaN;
-        break  % go to next axis (exit index_p loop)
-      end
-    end
-  end % for index in parameter names
-  if isempty(varargin{index}) % when can not get axis, we use -5:5
-    varargin{index} = linspace(-5,5,50+index);
-    % orient the axis along the right dimension to indicate this is not an event type
-    d = ones(1,max(2,model.Dimension)); d(index) = numel(varargin{index});
-    varargin{index} = reshape(varargin{index}, d);
-  end
-  
-end % for index in model dim
-
-% convert axes to nD arrays for operations to take place
-% check the axes and possibly use ndgrid to allow nD operations in the
-% Expression/Constraint. Only for non event style axes.
-
-% check for vectors: 0 or 1 for each axis
-check_vector = cellfun(@isvector, varargin(1:model.Dimension));
-% check number of elements: would be equal for 3D grids (xyz) or 4D (xyzt)
-check_numel  = cellfun(@numel, varargin(1:model.Dimension));
-% check orientation (axis rank) for vectors. 0 for non vectors
-check_orient = zeros(1,model.Dimension);
-index        = find(check_vector);
-check_orient(index) = cellfun(@(c)find(size(c)==numel(c)), varargin(index));
-
-if model.Dimension > 1 && all(check_vector) ...
-  && all(check_numel  == check_numel(1) | check_numel == 1) ...
-  && all(check_orient == check_orient(1))
-  % event nD: all axes as vectors, same length, same orientation
-  is_event = true;
-else
-  % map nD:   any other choice
-  is_event = false;
-end
-
-if model.Dimension > 1
-  if ~is_event && all(check_vector) && any(check_orient ~= check_orient(1))
-    % when axes are all vectors, but not same orientation, we create a grid
-    [varargin{1:model.Dimension}] = ndgrid(varargin{1:model.Dimension});
-  elseif is_event
-    % make sure all axes will be 'event' style, ie vectors same orientation
-    sz = [];
-    % first get the size of the event/cloud (first non scalar axis)
-    for index=1:model.Dimension
-      if ~isscalar(varargin{index}), sz = size(varargin{index}); break; end
-    end
-    if ~isempty(sz)
-      % then convert all scalar stuff into same length vectors (constant)
-      for index=1:model.Dimension
-        if isscalar(varargin{index})
-          varargin{index} = varargin{index}*ones(sz);
-        else
-          varargin{index} = reshape(varargin{index}, sz);
-        end
-      end
-    end
-  end
-end
+% guess axes ===================================================================
+varargin = iFunc_feval_guess_axes(model, p, varargin{:});
 
 % evaluate expression ==========================================================
 
@@ -544,6 +273,19 @@ if ~isempty(inputname1)
 end
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 % ==============================================================================
 function [signal,iFunc_ax,p,this] = iFunc_feval_expr(this, varargin)
 % private function to evaluate an expression in a reduced environment so that 
@@ -553,13 +295,15 @@ signal = [];
 % assign parameters and axes for the evaluation of the expression, in case this is model char
 % p already exists, we assign axes, re-assign varargin if needed
 iFunc_ax = 'x y z t u v w ';
+iFunc_dim = abs(this.Dimension);
 
-if this.Dimension
-  eval([ '[' iFunc_ax(1:(2*this.Dimension)) ']=deal(varargin{' mat2str(1:this.Dimension) '});' ]);
+if iFunc_dim && numel(varargin) >= iFunc_dim
+  eval([ '[' iFunc_ax(1:(2*iFunc_dim)) ']=deal(varargin{' mat2str(1:iFunc_dim) '});' ]);
+  % remove axes from varargin -> leaves additional optional arguments to the function
+  varargin(1:iFunc_dim) = []; 
 end
 
-% remove axes from varargin -> leaves additional optional arguments to the function
-varargin(1:this.Dimension) = []; 
+
 
 % EVALUATE now ...
 % in the evaluation:
@@ -587,41 +331,11 @@ catch
 end
 
 % copy the actual axes, in case they have been changed during evaluation
-if nargout > 1
-  iFunc_ax = eval([ '{' iFunc_ax(1:(2*this.Dimension)) '}' ]);
+if nargout > 1 && iFunc_dim
+  iFunc_ax = eval([ '{' iFunc_ax(1:(2*iFunc_dim)) '}' ]);
 else
   iFunc_ax = [];
 end
-
-% ==============================================================================
-function p = iFunc_feval_guess(this, varargin)
-% private function to evaluate a guess in a reduced environment so that 
-% internal function variables do not affect the result. 
-% Guess=char as fhandle are handled directly in the core function
-  ax = 'x y z t u v w';
-  p  = [];
-  if this.Dimension
-    eval([ '[' ax(1:(2*this.Dimension)) ']=deal(varargin{' mat2str(1:this.Dimension) '});' ]);
-  end
-  if length(varargin) > this.Dimension && ~isempty(varargin{this.Dimension+1}) && isnumeric(varargin{this.Dimension+1})
-    signal = varargin{this.Dimension+1};
-  else
-    signal = 1;
-  end
-  clear ax
-  % moments of distributions (used in some Guesses, e.g. gauss, lorz, ...)
-  m1 = @(x,s) sum(s(:).*x(:))/sum(s(:));
-  m2 = @(x,s) sqrt(abs( sum(x(:).*x(:).*s(:))/sum(s(:)) - m1(x,s).^2 ));
-  try
-    p = eval(this.Guess);     % returns model vector with output arg
-  end
-  if isempty(p)
-    try
-      eval(this.Guess);       % no output arg: returns model vector and redefines 'p'
-    catch
-      p = [];
-    end
-  end
 
 % ==============================================================================
 function p = iFunc_feval_set(this, p, varargin)
@@ -633,6 +347,8 @@ function p = iFunc_feval_set(this, p, varargin)
   if ~isempty(i)
 
     ax = 'x y z t u v w';
+    this.Dimension = abs(this.Dimension);
+    
     if this.Dimension
       eval([ '[' ax(1:(2*this.Dimension)) ']=deal(varargin{' mat2str(1:this.Dimension) '});' ]);
     end
