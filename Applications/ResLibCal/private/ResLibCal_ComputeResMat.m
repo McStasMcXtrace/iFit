@@ -53,7 +53,7 @@ function resolution = ResLibCal_ComputeResMat(EXP)
   QH  = EXP.QH; QK = EXP.QK; QL = EXP.QL; W =EXP.W;
   
   % handle case where all HKLE are vectors of same length
-  myisvector=@(c)max(size(c)) == numel(c);
+  myisvector=@(c)length(c) == numel(c);
   sz = [ numel(QH) numel(QK) numel(QL) numel(W) ];
   
   if sz(1) > 1 && myisvector(QH) && myisvector(QK) && myisvector(QL) && myisvector(W) && all(sz == sz(1))
