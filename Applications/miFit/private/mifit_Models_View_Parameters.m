@@ -153,15 +153,15 @@ function mifit_Models_View_Parameters(varargin)
       dat.vals = mat2cell(dat.vals(:), ones(n,1),1);
     else dat.vals = cell(n, 1); end
     
-    if ~isempty(modelValue) && isfield(modelValue.FitOutput)
+    if ~isempty(modelValue) && isfield(modelValue,'FitOutput')
       dat.sig = modelValue.FitOutput.parsHistoryUncertainty;
       if ~isempty(modelValue.FitOutput.parsHessianUncertainty)
-        dat.sig = max(sigma, modelValue.FitOutput.parsHessianUncertainty);
+        dat.sig = max(dat.sig, modelValue.FitOutput.parsHessianUncertainty);
       end
+      dat.sig = mat2cell(dat.sig(:), ones(n,1),1);
     else
-      dat.sig = mat2cell(zeros(n,1), ones(n,1),1);
+      dat.sig = cell(n, 1);
     end
-    
     dat.min = mat2cell(model.constraint.min,   ones(n,1),1);
     dat.max = mat2cell(model.constraint.max,   ones(n,1),1);
     dat.fix = mat2cell(logical(model.constraint.fixed), ones(n,1),1);

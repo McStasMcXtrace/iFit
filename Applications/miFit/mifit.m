@@ -60,6 +60,7 @@ function varargout = mifit(varargin)
     fig = mifit_fig();
     if isempty(fig) || ~ishandle(fig)
       fig = feval([ mfilename '_OpeningFcn' ]);
+    else set(fig, 'NextPlot','new','HandleVisibility','callback');
     end
     out = fig;
 
@@ -374,10 +375,31 @@ function mifit_Data_Plot(varargin)
   subplot(d,'light transparent grid');
   
 function mifit_Data_Fit(varargin)
-  d = mifit_List_Data_pull;
+  [d, index_selected] = mifit_List_Data_pull;
+  if isempty(index_selected), return; end
+  
+  % get the Optimizer configuration
+  if isappdata(mifit_fig,'CurrentOptimizerConfig')
+    options = getappdata(mifit_fig,'CurrentOptimizerConfig');
+  end
+  % overload Preferences choices: OutputFcn, Display.
+  
   % TODO: it is desirable to handle constraints (min/max/fix)
   % TODO: must get the CurrentOptimizer and its configuration
-  p=fits(d, '', '', 'OutputFcn=fminplot;Display=iter');  % with assigned models or gaussians
+  % [pars,criteria,message,output] = fits(a, model, pars, options, constraints, ...)
+  p=fits(d, '', '', options);  % with assigned models or gaussians
+  % update Data list with fit results (and History)
+  D = getappdata(mifit_fig, 'Data');
+  D(index_selected) = d;
+  setappdata(mifit_fig, 'Data',D);
+  
+  mifit_History_push;
+  
+  % update Parameter Window content
+  if ~isempty(mifit_fig('mifit_View_Parameters'))
+    % trigger an update of the Parameter window when already opened
+    mifit_Models_View_Parameters();
+  end
   
 function mifit_Data_Saveas(varargin)
   d = mifit_List_Data_pull;
@@ -513,8 +535,8 @@ function mifit_Optimizers_Configure(varargin)
   % change optimizer configuration parameters
   CurrentOptimizer = getappdata(mifit_fig,'CurrentOptimizer');
   mifit_disp([ '[Optimizers_Configure] Configure "' CurrentOptimizer '"' ]);
-  options  = getappdata(mifit_fig,'CurrentOptimizerConfig');
-  config = getappdata(mifit_fig, 'Preferences');
+  options    = getappdata(mifit_fig,'CurrentOptimizerConfig');
+  config     = getappdata(mifit_fig, 'Preferences');
   o.FontSize = config.FontSize;
   o.Name     = [ mfilename ': Optimizer "' CurrentOptimizer '" configuration' ];
   NL = sprintf('\n');
