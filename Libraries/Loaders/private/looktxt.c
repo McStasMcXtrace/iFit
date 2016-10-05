@@ -2399,7 +2399,7 @@ struct table_struct *file_scan(struct file_struct file, struct option_struct opt
       /* skip file if binary fraction > 10% */
       if (fieldindex > endcharpos/10) {
         if (options.verbose >= 1)
-          print_stderr("Warning: file %s is probably binary. Skipping. Use --force to override.\n", file.Source);
+          print_stderr("Warning: file %s is probably binary (%i invalid chars). Skipping. Use --force to override.\n", file.Source, fieldindex);
         return(table);
       }
       startcharpos = endcharpos = pos = fieldindex = 0;
