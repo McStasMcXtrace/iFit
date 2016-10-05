@@ -72,7 +72,7 @@ cache_fvals=zeros(cache_size,1);
 % count the incoming arguments
 %
 if nargin > 2 bud=budget; end
-if nargin > 3 scal=scales; end
+if nargin > 3 && ~isempty(scales) scal=scales; end
 if nargin > 4 tolf=tol; end
 if nargin > 5 targ=target; end
 if nargin > 6 targ=target; end

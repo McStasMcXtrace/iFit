@@ -228,6 +228,8 @@ if isstruct(a) || isa(a, 'iData')
     end
     Name = strtrim([ inname ' ' char(a) ]);
     
+    if isfield(a, 'ModelValue') modelValue = get(a, 'modelValue'); else modelValue = []; end
+    
     if isempty(pars) && isfield(a,'ModelParameters') pars = get(a, 'ModelParameters'); end
     if isempty(pars) && ~isempty(modelValue) && isfield(modelValue,'ModelParameters') 
       pars = get(modelValue,'ModelParameters');
