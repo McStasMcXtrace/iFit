@@ -2,6 +2,7 @@ function v=ndims(s)
 % d = ndims(s) : get the dimensionality of iFunc object
 %
 %   @iFunc/ndims function to get the number of dimensions of the iFunc model.
+%     a negative dimension is used to indicate a variable dimensionality.
 %
 % input:  s: object or array (iFunc)
 % output: dimensionality of model in the object (double array)

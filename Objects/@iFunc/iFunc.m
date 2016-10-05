@@ -52,11 +52,12 @@ function a = iFunc(varargin)
 %       iFunc(sw_model('squareAF',2,0))
 %
 %   From a file in MAT, M, YAML, JSON, XML format holding a model (iFunc/save)
-%       iFunc('filename_model')
+%       iFunc('filename_model'). See iFunc/save
 %
 % Using the object:
-%   Once the object has been created,you can evaluate it with: object(p, x, y, ...)
+%   Once the object has been created, you can evaluate it with: object(p, x, y, ...)
 %   The usual mathematical operators can be used to manipulate iFunc objects.
+%   You can use guessed Model parameters with syntax: object('guess', x,y, ...)
 %
 %   The syntax iFunc(iData object) evaluates the iFunc model using the iData
 %     object axes, and returns the model value as a numerical array. To get the
@@ -105,7 +106,8 @@ if nargin == 0  % create the empty iFunc object structure
                       %         a char/cellstr
                       %         a vector (length p)
                       %         a structure with fields: min, max, fixed
-  a.Dimension   = 0;  % function dimensionality (1,2,3,4...) 0=scalar=empty
+  a.Dimension   = 0;  % function dimensionality (1,2,3,4...) 0=scalar=empty.
+                      % a negative dimension is used to indicate a variable dimensionality.
   a.ParameterValues = [];
   a.Eval        = ''; % code to evaluate for the model value
   a.UserData    = '';
@@ -453,7 +455,7 @@ function a = iFunc_private_check(a)
     a.Expression = cellstr(e);
   end % else keep function handle value
 
-  if (~a.Dimension) && dim > 0, a.Dimension  = dim; end
+  if a.Dimension <= 0 && dim > 0, a.Dimension  = dim; end
 
   % default parameter names
   % try to be clever by an analysis of the expression...
