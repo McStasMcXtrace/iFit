@@ -40,10 +40,11 @@ end
 a  = iData_private_unary(a, 'reshape', dims(:)');
 
 % then update axes
+myisvector = @(c)length(c) == numel(c);
 for index=1:length(dims)
   if length(sz) >= index && sz(index) ~= dims(index)
     x  = getaxis(a, index);
-    if isvector(x), 
+    if myisvector(x), 
         x=x(:); sa = [length(x) 1]; 
         new_sa = [ dims(index) 1 ]; 
     else

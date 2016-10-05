@@ -23,20 +23,22 @@ function pars=iFunc_private_guess(x, signal, parameter_names)
     x(end) = [];
   elseif nargin < 3, return; end
   if isempty(parameter_names), return; end
+  
+  myisvector = @(c)length(c) == numel(c);
 
   pars            = zeros(size(parameter_names));
   parameter_names = lower(parameter_names);
   if iscell(x) && length(x) == 1, x=x{1}; end
   % handle signal dimension > 1
-  if (~isvector(signal) && ~isempty(signal)) || (iscell(x) && length(x) > 1)
+  if (~myisvector(signal) && ~isempty(signal)) || (iscell(x) && length(x) > 1)
     % x must be a cell array with axes vector/matrices
     if ~iscell(x)
       whos x signal
       error([ mfilename ': x argument must be a cell array with the axes for the signal.']); end
-    if ~isvector(signal) && ~isempty(signal) && length(x) ~= ndims(signal)
+    if ~myisvector(signal) && ~isempty(signal) && length(x) ~= ndims(signal)
       whos x signal
       error([ mfilename ': x cell must contain all the axes for the signal.']); end
-    if ~isempty(signal) && ~isvector(signal) && length(x) > 1 && ~isvector(x{1})
+    if ~isempty(signal) && ~myisvector(signal) && length(x) > 1 && ~myisvector(x{1})
       for dim=1:sum(size(signal)>1)
         signal1d=signal;
         x1d     =x{dim};
@@ -59,7 +61,7 @@ function pars=iFunc_private_guess(x, signal, parameter_names)
         sz      =size(x1d);
         for index=ndims(x1d):-1:1
           if index~=dim, 
-            if ~isvector(x{dim}), x1d=sum(x1d, index)/sz(index); end 
+            if ~myisvector(x{dim}), x1d=sum(x1d, index)/sz(index); end 
           end
         end
         pars(isnan(pars)) = 0;

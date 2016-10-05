@@ -116,7 +116,8 @@ if ndims(a) > 1
       x = i_axes{index}; x=unique(x); % also makes it a vector
       f_axes{index} = min(x):f_axes{index}:max(x);
     end
-    if isvector(f_axes{index}) % vectors should be oriented the right way
+    myisvector = @(c)max(size(c)) == numel(c);
+    if myisvector(f_axes{index}) % vectors should be oriented the right way
       d=ones(1, ndims(a));
       d(index) = length(f_axes{index});
       f_axes{index} = reshape(f_axes{index}, d);
@@ -177,10 +178,11 @@ end
 % ------------------------------------------------------------------------------
 function gp=gradient_axis(ax)
   gp = [];
+  myisvector = @(c)length(c) == numel(c);
   for index=1:length(ax)
     s = ax{index};
     grad_length = ndims(s);
-    if isvector(s), grad_length=1; end
+    if myisvector(s), grad_length=1; end
     g = cell(1,grad_length);
     [g{:}]=gradient(s); % compute the gradient there
     gs = [];
@@ -193,7 +195,7 @@ function gp=gradient_axis(ax)
       end
     end % for dim
     % orient vector axes along the right dimension
-    if isvector(gs)        
+    if myisvector(gs)        
       v        = ones(1,length(size(s)));
       v(index) = length(gs);
       gs       = reshape(gs, v);

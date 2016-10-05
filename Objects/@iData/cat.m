@@ -33,6 +33,8 @@ if all(isempty(a))
   iData_private_error(mfilename,['syntax is cat(dim, iData, ...)']);
 end
 
+myisvector = @(c)length(c) == numel(c);
+
 if isempty(dim) || dim <= 0 || dim > ndims(a(1))
   dim = ndims(a(1))+1;
 end
@@ -72,7 +74,7 @@ if iscell(lab) && ischar(lab{1}), lab=[ lab{1} '...' ]; end
 s=cell(1,numel(a));
 parfor index=1:numel(a)
   s{index}=get(a(index),'Signal');
-  if isvector(s{index}), ss=s{index}; ss=ss(:); s{index}=ss; end
+  if myisvector(s{index}), ss=s{index}; s{index}=ss(:); end
 end
 ss = cat(dim, s{:});
 
@@ -106,7 +108,7 @@ else
       se = get(a(index),'Error');
     end
     s{index} = ones(size(get(a(index),'Signal'))).*se;
-    if isvector(s{index}), se=s{index}; se=se(:); s{index}=se; end
+    if myisvector(s{index}), se=s{index}; s{index}=se(:); end
   end
   se = cat(dim, s{:});
 end
@@ -124,7 +126,7 @@ else
       sm = get(a(index),'Monitor');
     end
     s{index} = ones(size(get(a(index),'Signal'))).*sm;
-    if isvector(s{index}), sm=s{index}; sm=sm(:); s{index}=sm; end
+    if myisvector(s{index}), sm=s{index}; s{index}=sm(:); end
   end
   sm = cat(dim, s{:});
 end
@@ -139,14 +141,14 @@ for d=1:ndims(a(1))
   parfor index=1:numel(a)  % get all axes for a given dimension, in object array
     sx=getaxis(a(index),d);
     if isempty(sx), sx=index;
-    elseif isvector(sx), sx=sx(:); end
+    elseif myisvector(sx), sx=sx(:); end
     s{index}=sx;
   end
   dx=getaxis(a(1),num2str(d));
   if isempty(dx)
     dx=[ 'Axis_' num2str(d) ];
   end
-  if isvector(s{1}) % catenate the axes (for dim 'd')
+  if myisvector(s{1}) % catenate the axes (for dim 'd')
     sx = cat(1, s{:});
   else
     sx = cat(dim, s{:});

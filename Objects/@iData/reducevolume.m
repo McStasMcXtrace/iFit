@@ -66,9 +66,10 @@ S.type='()';
 S.subs=cell(1,length(R));
 
 % scan dimensions and rebin them
+myisvector = @(c)length(c) == numel(c);
 for index=1:length(R)
   lx = getaxis(s, index);
-  if isvector(lx), lx=length(lx);
+  if myisvector(lx), lx=length(lx);
   else             lx=size(lx,index); end
   if R(index) > 1
     S.subs{index} = ceil(1:R(index):lx);

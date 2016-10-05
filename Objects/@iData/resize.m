@@ -40,13 +40,12 @@ else
 end
 
 % then update axes
+myisvector=@(c)length(c) == numel(c);
 for index=1:length(dims)
   x  = getaxis(a, index);
   sz = size(x);
   if length(sz) >= index && ndims(a) > 1
-    myisvector=@(c)max(size(c)) == numel(c);
     if myisvector(x), x=x(:); sa = [length(x) 1]; else sa = size(x); end
-
     if ~myisvector(x), new_sa = dims; 
     else             new_sa = [ dims(index) 1]; end
 

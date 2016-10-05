@@ -45,6 +45,7 @@ properties={ [ 'Data ' a.Tag ': ' num2str(ndims(a)) 'D object ' mat2str(size(a))
 
 properties{end+1} = '[Rank]         [Value] [Description]';
 uimenu(uicm, 'Separator','on', 'Label', '[Rank]         [Value] [Description]');
+myisvector = @(c)length(c) == numel(c);
 for index=0:min([ ndims(a) length(getaxis(a)) ])
   [v, l] = getaxis(a, num2str(index));
   if length(l) > 20, l = [l(1:18) '...' ]; end 
@@ -52,7 +53,7 @@ for index=0:min([ ndims(a) length(getaxis(a)) ])
   m      = get(a, 'Monitor');
   if length(x) == 1
     minmaxstd = sprintf('[%g]', full(x));
-  elseif isvector(x)
+  elseif myisvector(x)
     minmaxstd = sprintf('[%g:%g] length [%i]', full(min(x)), full(max(x)),length(x));
   else
     x=x(:);

@@ -52,11 +52,12 @@ if isscalar(n_dims)
 end
 
 % check axes dimensions
+myisvector = @(c)length(c) == numel(c);
 for index=1:ndims(a)
   v = getaxis(a, index);
-
+  
   % compute the initial axis length
-  if isvector(v), a_len = numel(v);
+  if myisvector(v), a_len = numel(v);
   else            a_len = size( v, index);
   end
   if isvector(a) >= 2 && a_len > prod(size(a))^(1/ndims(a))*2 % event data set
