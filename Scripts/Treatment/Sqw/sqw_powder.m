@@ -118,7 +118,7 @@ elseif isa(a, 'iData')
   qx=a{1}; qy=a{2}; qz=a{3};  w=a{4}; % in rlu
   
   % make sure we always have a grid for q
-  if any(~cellfun(@(c)max(size(c)) == numel(c),{qx qy qz w}))
+  if any(~cellfun(@(c)length(c) == numel(c),{qx qy qz w}))
     qx=unique(qx(:)); qy=unique(qy(:)); qz=unique(qz(:)); w=unique(w(:));
   end
   [qx,qy,qz,w]=ndgrid(qx,qy,qz,w);

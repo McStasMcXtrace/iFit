@@ -178,7 +178,8 @@ end
 if ~isempty(value)
   setalias(this, alias, value);
   % check if the axis is reverted
-  if isvector(this) <= 1 && numel(value) > 1 && rank > 0 && isnumeric(value) && isvector(value) && value(1) > value(end)
+  myisvector = @(c)max(size(c)) == numel(c);
+  if myisvector(this) <= 1 && numel(value) > 1 && rank > 0 && isnumeric(value) && myisvector(value) && value(1) > value(end)
     this = sort(this, rank);
   end
 end
@@ -213,7 +214,8 @@ function this = iData_checkaxes(this)
           num2str(size_this) '] in object ' inputname(1) ' ' this.Tag '.' ]);
       end
       % check if the axis is reverted
-      if numel(value) > 1 && rank > 0 && isnumeric(value) && isvector(value) && value(1) > value(end)
+      myisvector = @(c)length(c) == numel(c);
+      if numel(value) > 1 && rank > 0 && isnumeric(value) && myisvector(value) && value(1) > value(end)
         this = sort(this, index);
       end
     catch

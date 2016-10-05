@@ -26,9 +26,10 @@ end
 changed = 0;
 
 % if no Signal is defined, we will determine its size from the axes dimensions
+myisvector = @(c)length(c) == numel(c);
 if isempty(Signal)
   for index=1:length(in)
-    if isvector(in{index});
+    if myisvector(in{index});
       Signal(index) == length(in{index});
     else
       % we assume initial axes are already grid-like, and match the Signal
@@ -37,7 +38,7 @@ if isempty(Signal)
   end
 else
   % is Signal already a size ?
-  if ~isvector(Signal) || length(find(Signal>1)) ~= length(in)
+  if ~myisvector(Signal) || length(find(Signal>1)) ~= length(in)
     Signal = size(Signal);
   end
 end

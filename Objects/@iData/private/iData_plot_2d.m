@@ -33,7 +33,7 @@ function [h, xlab, ylab, zlab] = iData_plot_2d(a, method, this_method, varargin)
     end
   else                % surf and similar stuff
     C = [];
-    if isvector(x) & isvector(y),
+    if isvector(x) && isvector(y),
       z = z;
     end
     if (strfind(method,'contour3'))

@@ -139,13 +139,14 @@ end
 
 % check final axes
 s_dims = size(b); % Signal/object dimensions
+myisvector = @(c)length(c) == numel(c);
 
 parfor index=1:ndims(b)
   v = f_axes{index}; 
   if isempty(v), v= i_axes{index}; end % no axis specified, use the initial one
 
   % compute the initial axis length
-  if isvector(v), a_len = numel(v);
+  if myisvector(v), a_len = numel(v);
   else            a_len = size( v, index);
   end
   if isvector(b) >= 2 && a_len > prod(size(b))^(1/ndims(b))*2 % event data set
@@ -171,9 +172,10 @@ end
 
 % test if interpolation axes have changed w.r.t input object (for possible quick exit)
 has_changed = 0;
+
 for index=1:ndims(b)  
-  this_i = i_axes{index}; if isvector(this_i), this_i=this_i(:); end
-  this_f = f_axes{index}; if isvector(this_f), this_f=this_f(:); end
+  this_i = i_axes{index}; if myisvector(this_i), this_i=this_i(:); end
+  this_f = f_axes{index}; if myisvector(this_f), this_f=this_f(:); end
   if ~isequal(this_i, this_f)
     % length changed ?
     if length(this_i) ~= length(this_f)
@@ -232,7 +234,7 @@ end
 parfor index=1:ndims(b)
   i_axes{index} = double(i_axes{index});
   f_axes{index} = double(f_axes{index});
-  if isvector(f_axes{index})
+  if myisvector(f_axes{index})
     % orient the vector along the dimension
     n = ones(1,ndims(b));
     n(index) = numel(f_axes{index});

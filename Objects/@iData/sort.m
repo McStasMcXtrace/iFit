@@ -47,6 +47,7 @@ else
   tosort=1:ndims(a)
 end
 was_sorted=0;
+myisvector = @(c)length(c) == numel(c);
 
 for index=tosort
   x = getaxis(a, index);
@@ -55,7 +56,7 @@ for index=tosort
     S.type = '()';
     S.subs = {};
     nx = ndims(x);
-    if isvector(x), nx=1; end
+    if myisvector(x), nx=1; end
     if ndims(a) == nx
       S.subs={ sorti };
     else

@@ -157,6 +157,7 @@ if ~isempty(in.Data) && (isempty(in.Alias.Values{1}) || isempty(in.Alias.Axis))
    
     % look for vectors that may have the proper length as axes
     sz = size(in);
+    myisvector = @(c)length(c) == numel(c);
     for index=1:ndims(in)
       if length(in.Alias.Axis) < index || isempty(in.Alias.Axis{index})
 
@@ -168,7 +169,7 @@ if ~isempty(in.Data) && (isempty(in.Alias.Values{1}) || isempty(in.Alias.Axis))
           val = get(in, fields_all{ax});
           if ischar(val)  % this is already a link/alias
             in = setaxis(in, index, val);
-          elseif isvector(val) && issorted(val(:))
+          elseif myisvector(val) && issorted(val(:))
             if length(val) == size(in, index) && min(val(:)) < max(val(:))
               % n bins
               val = fields_all{ax};

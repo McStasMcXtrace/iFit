@@ -45,7 +45,7 @@ parfor index=1:numel(c)
   z = get( c(index), 'ZData');
   if ndims(a) == 1
     % extend object so that it is a 2D one
-    if isvector(x) & isvector(y)
+    if isvector(x) && isvector(y)
       if size(a,1) == 1
         b = a.*ones(length(y), 1);
       else

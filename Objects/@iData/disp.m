@@ -63,6 +63,7 @@ else
   disp(s)
   
   % display the Aliases ---------------------------------------------------
+  myisvector = @(c)length(c) == numel(c);
   disp('Object aliases:');
   disp('         [Name]                           [Value]   [Description]');
   for index=1:length(s_in.Alias.Names)
@@ -97,7 +98,7 @@ else
       % add some more information from the content of the char field
       if ~isempty(vv)
         if numel(vv) > 2
-          if isvector(vv), sz=sprintf(' length [%i]', numel(vv)); 
+          if myisvector(vv), sz=sprintf(' length [%i]', numel(vv)); 
           else sz=sprintf(' size %s', mat2str(size(vv))); end
         else sz = []; end
         if isnumeric(vv), 
@@ -164,7 +165,7 @@ else
     if issparse(x), x=full(x); end
     if length(x) == 1
       minmaxstd = sprintf('[%g]', x);
-    elseif isvector(X)
+    elseif myisvector(X)
       minmaxstd = sprintf('[%g:%g] length [%i]', min(x), max(x),length(x));
     else
       minmaxstd = sprintf('[%g:%g] size %s', min(x), max(x),mat2str(size(X)));

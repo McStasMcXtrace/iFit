@@ -64,6 +64,8 @@ if any(dim == 0) && ~strcmp(op, 'sum')
   dim=1:ndims(a);
 end
 
+myisvector = @(c)length(c) == numel(c);
+
 % in the following, we have e.g. e=e/m; s=s/m;
 if all(dim > 0)
   % compute new object: op(Signal/Monitor) op(Error/Monitor)
@@ -75,7 +77,7 @@ if all(dim > 0)
     % error bar:   sigma=sqrt(sum(Error2/Monitor2)) =sqrt(sum(e2))
     e=e.^2; 
     for index=1:numel(dim)
-      if dim(index) == 1 && isvector(s)
+      if dim(index) == 1 && myisvector(s)
         s = s(:); e=e(:); m=m(:);
       end
       if numel(e) > 1, e = feval(op, e, dim(index)); end % sum(e2/m2)
@@ -90,7 +92,7 @@ if all(dim > 0)
   case {'prod','cumprod'} % PROD ===============================================
     % product on all requested dimensions 
     for index=1:numel(dim)
-      if dim(index) == 1 && isvector(s)
+      if dim(index) == 1 && myisvector(s)
         s = s(:); e=e(:); m=m(:);
       end
       if numel(e) > 1, e = feval(op, s+e/2, dim(index))-feval(op, s-e/2, dim(index)); end
@@ -118,7 +120,7 @@ if all(dim > 0)
         s = permute(s, perm);
         e = permute(e, perm); 
         m = permute(m, perm);
-      elseif isvector(s)
+      elseif myisvector(s)
         s = s(:); x=x(:); e=e(:); m=m(:);
       end
       % make the integration
@@ -154,9 +156,9 @@ if all(dim > 0)
     % accumulates on all axes except the rank specified
     [x, xlab]     = getaxis(a,dim);
     s             = subsref(a,struct('type','.','subs','Signal')); 
-    if isvector(s),   lx=length(s); else 
+    if myisvector(s),   lx=length(s); else 
       lx=size(s, dim); 
-      if isvector(x)
+      if myisvector(x)
         % replicate X along other axes
         sz = size(s); sz(dim) = 1;
         x = repmat(x, sz);
@@ -195,7 +197,7 @@ if all(dim > 0)
             else           S.subs{j}=':'; end
           end
         end
-        if ~isvector(x),  x = subsref(x,S); end
+        if ~myisvector(x),  x = subsref(x,S); end
         setaxis(b, ax_index, x);
         label(  b, ax_index, xlab);
         ax_index = ax_index+1;
