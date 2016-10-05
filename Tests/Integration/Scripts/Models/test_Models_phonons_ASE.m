@@ -11,7 +11,7 @@ function result = test_Models_phonons_ASE
   fig=figure; plot3(log(f(:,:,1,:)));
   [w1,c1]=std(f(:,:,1,:),3);
   
-  if abs(c1-12.9) < 0.1 && abs(w1-9.8) < 0.1 
+  if abs(c1-13) < 3 && abs(w1-9.8) < 0.4
     result = [ 'OK     ' mfilename ];
   else
     result = [ 'FAILED ' mfilename ];
