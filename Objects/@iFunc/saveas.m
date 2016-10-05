@@ -133,6 +133,7 @@ elseif isempty(format) & ~isempty(ext)
 elseif isempty(format) & isempty(ext) 
   format='m'; filename = [ filename '.m' ];
 end
+formatShort = strtok(format, ' ;*.');
 
 if isempty(filename) || isempty(name), 
   filename = [ 'iFit_' a.Tag '.' formatShort ]; 
