@@ -18,6 +18,7 @@ function h = plot(a, p, varargin)
 % See also iFunc, iFunc/fit, iFunc/feval
 
 % test if further arguments are iFuncs
+h = [];
 noassign = 0;
 if nargin > 1
   if isa(p, 'iFunc'), 
@@ -34,7 +35,6 @@ end
 
 % handle array of objects
 if numel(a) > 1
-  h = [];
   is = ishold;
   colors = 'bgrcmk';
   for index=1:numel(a)
@@ -60,7 +60,8 @@ if nargin < 2,
   p=a.ParameterValues;
 end
 
-if strcmp(p, 'guess'), p=[]; end
+if strcmp(p, 'guess'),   p = []; end
+if strcmp(p, 'current'), p = a.ParameterValues; end
 if isempty(p), p=NaN; end % force evaluation of function
 
 % evaluate the model value, and axes
@@ -72,7 +73,6 @@ if length(inputname(1))
 end
 
 if iscell(signal)
-  h = [];
   ih = ishold;
   for index=1:numel(signal)
     if index > 1
@@ -91,10 +91,16 @@ if iscell(signal)
 end
 
 % call the single plot method
-h = iFunc_plot(name, signal, ax);
-if ~isempty(h)
-  h = iFunc_plot_menu(h, a, name);
+try
+  h = iFunc_plot(name, signal, ax);
+  if ~isempty(h)
+    h = iFunc_plot_menu(h, a, name);
+  end
+catch ME
+  disp(getReport(ME))
+  disp([ mfilename ': WARNING: could not plot Model ' name '. Skipping.' ])
 end
+  
 
 % ------------------------------------------------------------------------------
 % simple plot of the model "name" signal(ax)

@@ -1,4 +1,4 @@
-function [pars_out,criteria,message,output] = fits(a, model, varargin)
+function [pars_out,criteria,message,output] = fits(a, model, pars, options, constraints, varargin)
 % [pars,criteria,message,output] = fits(a, model, pars, options, constraints, ...) : fit data set on a model
 %
 %   @iData/fits find best parameters estimates in order to minimize the 
@@ -61,9 +61,11 @@ function [pars_out,criteria,message,output] = fits(a, model, varargin)
 %           when set to empty, the 'gauss' 1D function is used (and possibly extended to multidimensional).
 %         pars: initial model parameters (double array). 
 %           when set to empty the starting parameters are guessed.
-%           Named parameters can be given as a structure or string 'p1=...; p2=...'
+%           when set to 'current', the current model parameter values are used.
+%           Named parameters can be given as a structure or string 'Amplitude=...; Width=...'
 %         options: structure as defined by optimset/optimget (char/struct)
-%           if given as a char, it defines the algorithm to use and its default %             options (single optimizer name or string describing a structure).
+%           if given as a char, it defines the algorithm to use and its default 
+%             options (single optimizer name or string describing a structure).
 %           when set to empty, it sets the default algorithm options (fmin).
 %           options.TolX
 %             The termination tolerance for x. Its default value is 1.e-4.
@@ -135,9 +137,32 @@ if nargin == 1 && all(isempty(a))
 end
 
 % handle model given as a char
-if nargin < 2
-  model = '';
+if nargin < 2, model       = ''; end
+if nargin < 3, pars        = []; end
+if nargin < 4, options     = []; end
+if nargin < 5, constraints = []; end
+
+% handle input iData arrays
+if numel(a) > 1
+  pars_out=cell(1,numel(a)) ; criteria=zeros(1,numel(a)); 
+  message =pars_out; output=pars_out;
+  for index=1:numel(a)
+    this = a(index);  % allows 'assignin' to update the array elements.
+      
+    [pars_out{index}, criteria(index), message{index}, output{index}] = ...
+      fits(this, model, pars, options, constraints, varargin{:});
+
+    a(index) = this;
+  end
+  if ~isempty(inputname(1))  
+    assignin('caller',inputname(1),a); % update in original object
+  end
+  if nargin > 1 && ~isempty(inputname(2))  
+    assignin('caller',inputname(2),model); % update in original object
+  end
+  return
 end
+
 % search for a Model in the object
 if isempty(model)
   if isfield(a, 'Model')
@@ -163,25 +188,32 @@ end
 
 if isempty(model)
   iData_private_error(mfilename,[ 'The model argument is empty. Should be a function name, expression, iFunc object or function handle.' ...
-    sprintf('\n') 'Type "fits(iData)" to get a list of available predefined models.' ...
-    sprintf('\n') 'or use "ifitmakefunc" to create one.' ]);
+    sprintf('\n') 'Type "fits(iFunc)" to get a list of available predefined models.' ...
+    sprintf('\n') 'or use "edit(iFunc)" to create one.' ]);
 end
 
-% handle input iData arrays
-if numel(a) > 1
-  pars_out=cell(1,numel(a)) ; criteria=zeros(1,numel(a)); 
-  message =pars_out; output=pars_out;
-  parfor index=1:numel(a)
-    this = a(index);  % allows 'assignin' to update the array elements.
-    [pars_out{index}, criteria(index), message{index}, output{index}] = ...
-      fits(model, this, varargin{:});
-    a(index) = this;
-  end
-  return
+if isfield(a, 'ModelValue') modelValue = get(a, 'modelValue'); else modelValue = []; end
+
+% search for parameters in Data set
+if isempty(pars) && isfield(a,'ModelParameters') pars = get(a, 'ModelParameters'); end
+if isempty(pars) && ~isempty(modelValue) && isfield(modelValue,'ModelParameters') 
+  pars = get(modelValue,'ModelParameters');
+end
+
+% search for optimizer options in Data set
+if isempty(options) && isfield(a,'FitOptions') options = get(a, 'FitOptions'); end
+if isempty(options) && ~isempty(modelValue) && isfield(modelValue,'FitOptions') 
+  options = get(modelValue, 'FitOptions'); 
+end
+
+% search for constraints in Data set
+if isempty(constraints) && isfield(a,'Constraints') constraints = get(a, 'Constraints'); end
+if isempty(constraints) && ~isempty(modelValue) && isfield(modelValue,'Constraints') 
+  constraints = get(modelValue, 'Constraints'); 
 end
 
 % calls iFunc/fits =============================================================
-[pars_out, criteria, message, output] = fits(model, a, varargin{:});
+[pars_out, criteria, message, output] = fits(model, a, pars, options, constraints, varargin{:});
 
 % format output arguments (to iData) ===========================================
 if nargin > 1 && ~isempty(inputname(2))  

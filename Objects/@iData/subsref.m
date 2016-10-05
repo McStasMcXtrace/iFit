@@ -65,7 +65,8 @@ for i = 1:length(S)     % can handle multiple index levels
         else
           pars = '';
         end
-        if isempty(pars), pars='guess'; end
+        if isempty(pars), pars='current'; end
+        if strcmp(pars, 'current'), pars = model.ParameterValues; end
         [modelValue, model, ax, name] = feval(model, pars, b, s.subs{2:end});
         if strcmp(pars,'guess')
           [modelValue, model, ax, name] = feval(model, modelValue, b, s.subs{2:end});

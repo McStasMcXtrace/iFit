@@ -13,7 +13,7 @@ function [pars_out,criteria,message,output] = fits(model, a, pars, options, cons
 %  [pars,...] = fits(model, data, pars, options, fixed)
 %     indicates which parameters are fixed (non zero elements of array).
 %  [pars,...] = fits(model, data, pars, 'optimizer', ...)
-%     uses a specific optimizer and its default options options=feval(optimizer,'defaults')
+%     uses a specific optimizer and its default options=feval(optimizer,'defaults')
 %  [pars,...] = fits(model, data, pars, options, constraints, args...)
 %     send additional arguments to the fit model(pars, axes, args...).
 %  [optimizers,functions] = fits(iFunc)
@@ -22,7 +22,7 @@ function [pars_out,criteria,message,output] = fits(model, a, pars, options, cons
 %     searches for a Model in the data set, and then performs the fit.
 %  fits(iFunc)
 %     displays the list of all available optimizers and fit functions.
-%  You may create new fit models with the 'ifitmakefunc' tool, or by arithmetic
+%  You may create new fit models with the 'edit(iFunc)' tool, or by arithmetic
 %     operators combining iFunc and string objects.
 %
 %  When the data is entered as a structure or iData object with a Monitor value, 
@@ -64,7 +64,8 @@ function [pars_out,criteria,message,output] = fits(model, a, pars, options, cons
 %           The 1st axis 'x' is row wise, the 2nd 'y' is column wise.
 %         pars: initial model parameters (double array, string or structure). 
 %           when set to empty or 'guess', the starting parameters are guessed.
-%           Named parameters can be given as a structure or string 'p1=...; p2=...'
+%           when set to 'current', the current model parameter values are used.
+%           Named parameters can be given as a structure or string 'Amplitude=...; Width=...'
 %         options: structure as defined by optimset/optimget (char/struct)
 %           if given as a char, it defines the algorithm to use and its default %             options (single optimizer name or string describing a structure).
 %           when set to empty, it sets the default algorithm options (fmin).
@@ -134,83 +135,15 @@ function [pars_out,criteria,message,output] = fits(model, a, pars, options, cons
 % singlme empty argument: show funcs/optim list ================================
 % handle default parameters, if missing
 if nargin == 1 && isempty(model)
-    % return the list of all available optimizers
-    output     = {};
-    pars_out   = {};
-    warn       = warning('off','MATLAB:dispatcher:InexactCaseMatch');
-    d = fileparts(which('fminpso'));
-    if nargout == 0
-      fprintf(1, '\n%s\n', version(iData));
-      
-      fprintf(1, '      OPTIMIZER DESCRIPTION [%s]\n', [ 'iFit/Optimizers in ' d ]);
-      fprintf(1, '-----------------------------------------------------------------\n'); 
-    end
-    d = dir(d);
-    for index=1:length(d)
-      this = d(index);
-      try
-        [dummy, method] = fileparts(this.name);
-        options = feval(method,'defaults');
-        if isstruct(options) && isfield(options, 'TolFun')
-          output{end+1} = options;
-          pars_out{end+1}   = method;
-          if nargout == 0
-            fprintf(1, '%15s %s\n', options.optimizer, options.algorithm);
-          end
-        end
-      end
-    end % for
-    message  = {}; 
-    models   = []; 
-    if nargout ~= 1
-        % return the list of all available fit functions/models
-        d = fileparts(which('gauss'));
-        if nargout == 0
-          fprintf(1, '\n');
-          fprintf(1, '       MODEL DESCRIPTION [%s]\n', [ 'iFit/Models in ' d ]);
-          fprintf(1, '-----------------------------------------------------------------\n'); 
-        end
-
-        % also search in Specialized and Factory directories
-        D = { d, fullfile(d,'Specialized'), fullfile(d,'Factory'), pwd };
-
-        for f_dir = D
-
-          d = dir(f_dir{1});
-          for index=1:length(d)
-            this = d(index);
-            try
-              [dummy, method, ext] = fileparts(this.name);
-              if strcmp(ext, '.m')
-                [mess, options] = evalc([ method '(''identify'')' ]);
-              else
-                options = [];
-              end
-              if isa(options, 'iFunc')
-                message    = [ message method ];
-                models     = [ models options ]; 
-                if nargout == 0
-                  fprintf(1, '%15s %s\n', method, options.Name);
-                end
-              end
-            end
-          end % for index(d)
-        end % f_dir (model location)
-        % sort models with their Name
-        [name,index]=sort(get(models,'Name'));
-        message  = message(index);
-        models   = models(index);
-    else
-      message  = 'Optimizers and fit functions list'; 
-    end
-    if nargout == 0 && length(models)
-      fprintf(1, '\n');
-      % plot all functions
-      subplot(models);
-    end
-    criteria = models;  % return the instantiated models
-    warning(warn);
-    return
+  % return the list of all available optimizers
+  if nargout == 0
+    iFunc_feval_list;
+  elseif nargout == 1
+    pars_out = iFunc_feval_list;
+  else
+    [pars_out,criteria,message,output] = iFunc_feval_list;
+  end
+  return
 end
 
 
@@ -294,6 +227,23 @@ if isstruct(a) || isa(a, 'iData')
       Axes{index} = getaxis(a, index);
     end
     Name = strtrim([ inname ' ' char(a) ]);
+    
+    if isempty(pars) && isfield(a,'ModelParameters') pars = get(a, 'ModelParameters'); end
+    if isempty(pars) && ~isempty(modelValue) && isfield(modelValue,'ModelParameters') 
+      pars = get(modelValue,'ModelParameters');
+    end
+
+    % search for optimizer options in Data set
+    if isempty(options) && isfield(a,'FitOptions') options = get(a, 'FitOptions'); end
+    if isempty(options) && ~isempty(modelValue) && isfield(modelValue,'FitOptions') 
+      options = get(modelValue, 'FitOptions'); 
+    end
+
+    % search for constraints in Data set
+    if isempty(constraints) && isfield(a,'Constraints') constraints = get(a, 'Constraints'); end
+    if isempty(constraints) && ~isempty(modelValue) && isfield(modelValue,'Constraints') 
+      constraints = get(modelValue, 'Constraints'); 
+    end
   elseif isfield(a,'Axes')    Axes    = a.Axes; 
   end
 elseif isnumeric(a)
@@ -309,7 +259,8 @@ if isempty(Name)
   Name   = strtrim([ class(a) ' ' mat2str(size(Signal)) ' ' inname ]);
 end
 
-if ~iscell(Axes) && isvector(Axes), Axes = { Axes }; end
+myisvector = @(c)length(c) == numel(c);
+if ~iscell(Axes) && myisvector(Axes), Axes = { Axes }; end
 
 % create the new Data structure to pass to the criteria
 a = [];
@@ -335,25 +286,25 @@ if isempty(a.Signal)
   error([ 'iFunc:' mfilename ],[ 'Undefined/empty Signal ' inname ' to fit. Syntax is fits(model, Signal, parameters, ...).' ]);
 end
 
-if isvector(a.Signal) 
+if myisvector(a.Signal) 
   ndimS = 1;
   % check if we have an event-type nD data set
-  if all(cellfun(@isvector, a.Axes)) && all(cellfun(@numel, a.Axes) == numel(a.Signal))
+  if all(cellfun(myisvector, a.Axes)) && all(cellfun(@numel, a.Axes) == numel(a.Signal))
     ndimS = length(a.Axes);
   end
 else                  ndimS = ndims(a.Signal);
 end
 
 % handle case when model dimensionality is larger than actual Signal
-if model.Dimension > ndimS
+if abs(model.Dimension) > ndimS
   error([ 'iFunc:' mfilename ], 'Signal %s with dimensionality %d has lower dimension than model %s dimensionality %d.\n', a.Name, ndimS, model.Name, model.Dimension);
 % handle case when model dimensionality is smaller than actual Signal
-elseif model.Dimension < ndimS && rem(ndimS, model.Dimension) == 0
+elseif abs(model.Dimension) < ndimS && rem(ndimS, model.Dimension) == 0
   % extend model to match Signal dimensions
   disp(sprintf('iFunc:%s: Extending model %s dimensionality %d to data %s dimensionality %d.\n', ...
     mfilename, model.Name, model.Dimension, a.Name, ndimS));
   new_model=model;
-  for index=2:(ndimS/model.Dimension)
+  for index=2:(ndimS/abs(model.Dimension))
     new_model = new_model * model;
   end
   model = new_model;
@@ -365,10 +316,14 @@ end
 % handle parameters: from char, structure or vector
 
 pars_isstruct=[];
+if ischar(pars) && strcmp(pars,'current')
+  pars = model.ParameterValues;
+end
 if ischar(pars) && ~strcmp(pars,'guess')
   pars = str2struct(pars);
 end
 if isempty(pars), pars=[]; end
+
 if isstruct(pars)
   % search 'pars' names in the model parameters, and reorder the parameter vector
   p = []; f=fieldnames(pars);
@@ -403,7 +358,7 @@ if isstruct(pars)
 elseif strcmp(pars,'guess') || (isnumeric(pars) && length(pars) < length(model.Parameters))
   if isempty(pars), pars='guess'; end
   [pars, model] = feval(model, 'guess', a.Axes{:}, a.Signal); % guess missing starting parameters
-  model.ParameterValues = pars;
+  pars = model.ParameterValues;
 end
 pars = reshape(pars, [ 1 numel(pars)]); % a single row
 
@@ -436,7 +391,7 @@ if ~isfield(options,'algorithm') options.algorithm=options.optimizer; end
 % handle constraints
 
 % handle constraints given as vectors
-if (length(constraints)==length(pars) | isempty(pars)) & (isnumeric(constraints) | islogical(constraints))
+if (length(constraints)==length(pars) || isempty(pars)) && (isnumeric(constraints) || islogical(constraints))
   if nargin<6
     fixed            = constraints;
     constraints      =[];
@@ -456,6 +411,7 @@ end
 if ~isstruct(constraints) && ~isempty(constraints)
   error([ 'iFunc:' mfilename],[ 'The constraints argument is of class ' class(constraints) '. Should be a single array or a struct' ]);
 end
+
 % update Constraints with those from the model (if any not set yet)
 for index=1:length(model.Parameters)
   if length(model.Constraint.min) >=index && isfinite(model.Constraint.min(index))
@@ -497,7 +453,7 @@ constraints.funcCount      = 0;
 model.ParameterValues = pars;
 % feval(model, pars, a.Axes{:}, a.Signal); 
 
-if strcmp(options.Display, 'iter') | strcmp(options.Display, 'final')
+if strcmp(options.Display, 'iter') || strcmp(options.Display, 'final')
   fprintf(1, '** Starting fit of %s\n   using model    %s\n   with optimizer %s\n', ...
     a.Name,  model.Name, options.algorithm);
   disp(  '** Minimization performed on parameters:');
