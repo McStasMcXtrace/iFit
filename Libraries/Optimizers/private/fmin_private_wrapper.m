@@ -592,15 +592,15 @@ if ~isfield(output,'message')
 end
 
 % raise fminplot if it exists
-if ~isempty(options.OutputFcn) & strcmp(options.OutputFcn, 'fminplot')
-  h = findall(0, 'Tag', 'fminplot'); d = findall(0, 'Tag', 'fminplot:stop');
-  if ~isempty(h), 
-    figure(h(1));
-    t = [ '#' num2str(constraints.funcCount) ' f=' num2str(fval,4) ' [End]' sprintf('\n') options.optimizer  ];
-    set(h, 'Visible', 'on', 'Name', t);
-    title(t); 
-    set(d, 'String','END','BackgroundColor','green' );
-  end
+h = findall(0, 'Tag', 'fminplot'); 
+if ~isempty(h)
+  d = findall(h, 'Tag', 'fminplot:stop');
+  figure(h(1));
+  t = [ '#' num2str(constraints.funcCount) ' f=' num2str(fval,4) ' [End]' sprintf('\n') options.optimizer  ];
+  set(h, 'Visible', 'on', 'Name', t);
+  title(t); 
+  set(d, 'String','END','BackgroundColor','green' );
+
 end
 
 output.funcCount       = constraints.funcCount ;
@@ -862,26 +862,31 @@ function [istop, message] = inline_private_check(pars, fval, funccount, options,
   istop=0; message='';
   
   % check of option members
-  if nargin<=2
+  if nargin==2 % check(pars, defaults)
     options=pars;
     if ~isfield(options,'MinFunEvals'), options.MinFunEvals=0; end
-    if nargin ==2, 
-      default=fval; 
-      checks=fieldnames(default);
-    else 
-      fval=[]; 
-      checks={'TolFun','TolX','Display','MaxIter','MaxFunEvals','FunValCheck','OutputFcn','algorithm','MinFunEvals'};
-    end
-    
-    for index=1:length(checks)
-      if ~isfield(options, checks{index}), 
-        if isfield(default, checks{index}), 
-          options=setfield(options,checks{index},getfield(default, checks{index}));
-        else
-          options=setfield(options,checks{index},[]); 
-        end
+    default=fval; % initial values from optimget, as a structure
+    checks =fieldnames(default);
+    default_static.TolFun     =1e-3;  % these are necessary in any case
+    default_static.TolX       =1e-8;
+    default_static.MaxIter    =1000;
+    default_static.MaxFunEvals=10000;
+    default_static.Display    ='';
+    default_static.FunValCheck='off';
+    default_static.OutputFcn  =[];
+    default_static.MinFunEvals=0;
+    default_static.PlotFcns   =[];
+    % replace required options which are empty
+    for f=fieldnames(default_static)'
+      if (isfield(options, f{1}) && isempty(options.(f{1}))) || ~isfield(options, f{1})
+        options.(f{1}) = default_static.(f{1});
       end
     end
+    % put missing options obtained from the optimizer itself
+    for f=fieldnames(default)'
+      if ~isfield(options, f{1}) options.(f{1}) = default.(f{1}); end
+    end
+    
     istop=options;
     return
   end
@@ -917,23 +922,23 @@ function [istop, message] = inline_private_check(pars, fval, funccount, options,
 
   % normal terminations: function tolerance reached
   if isempty(options.MinFunEvals) || funccount >= options.MinFunEvals
-  if ~isempty(options.TolFun) && options.TolFun ~= 0 && funccount >= 5*length(pars)
-    if (all(0 < fval) && all(fval <= options.TolFun)) % stop on lower threshold
-      istop=-1;
-      message = [ 'Converged: Termination function tolerance criteria reached (fval <= options.TolFun=' ...
-                num2str(options.TolFun) ')' ];
-    end
-    if ~istop
-      % stop on criteria change
-      if  all(abs(fval-fval_prev) < options.TolFun) ...
-       && all(abs(fval-fval_prev) > 0) ...
-       && all(fval < fval_mean - options.TolFun) 
-        istop=-12;
-        message = [ 'Converged: Termination function change tolerance criteria reached (delta(fval) < options.TolFun=' ...
-                num2str(options.TolFun) ')' ];
+    if ~isempty(options.TolFun) && options.TolFun ~= 0 && funccount >= 5*length(pars)
+      if (all(0 < fval) && all(fval <= options.TolFun)) % stop on lower threshold
+        istop=-1;
+        message = [ 'Converged: Termination function tolerance criteria reached (fval <= options.TolFun=' ...
+                  num2str(options.TolFun) ')' ];
+      end
+      if ~istop
+        % stop on criteria change
+        if  all(abs(fval-fval_prev) < options.TolFun) ...
+         && all(abs(fval-fval_prev) > 0) ...
+         && all(fval < fval_mean - options.TolFun) 
+          istop=-12;
+          message = [ 'Converged: Termination function change tolerance criteria reached (delta(fval) < options.TolFun=' ...
+                  num2str(options.TolFun) ')' ];
+        end
       end
     end
-  end
   end
   
   % normal terminations: parameter variation tolerance reached, when function termination is also true
@@ -950,61 +955,79 @@ function [istop, message] = inline_private_check(pars, fval, funccount, options,
   end
 
   % abnormal terminations
-  if ~istop
+  if options.MaxFunEvals > 0 & funccount >= options.MaxFunEvals
+    istop=-3;
+    message = [ 'Maximum number of function evaluations reached (options.MaxFunEvals=' ...
+              num2str(options.MaxFunEvals) ')' ];
+  end
 
-    if options.MaxFunEvals > 0 & funccount >= options.MaxFunEvals
-      istop=-3;
-      message = [ 'Maximum number of function evaluations reached (options.MaxFunEvals=' ...
-                num2str(options.MaxFunEvals) ')' ];
+  % the function value is nan or parameters just went to nan
+  if strcmp(options.FunValCheck,'on') && (any(isnan(fval) | isinf(fval)))
+    istop=-4;
+    message = 'Function value is Inf or Nan (options.FunValCheck)';
+  end
+  
+  % make sure parameters remain non NaN's for e.g. plotting
+  if any(isnan(pars))
+    index = find(isnan(pars(:)) & ~isnan(pars_prev(:)));
+    if ~isempty(index)
+      pars(index) = pars_prev(index);
     end
-
-    % the function value is nan or parameters just went to nan
-    if strcmp(options.FunValCheck,'on') && (any(isnan(fval) | isinf(fval)))
-      istop=-4;
-      message = 'Function value is Inf or Nan (options.FunValCheck)';
+    index = find(isnan(pars(:)) & ~isnan(constraints.parsBest(:)));
+    if ~isempty(index)
+      pars(index) = constraints.parsBest(index);
     end
+    index = find(isnan(pars(:)) & ~isnan(constraints.parsStart(:)));
+    if ~isempty(index)
+      pars(index) = constraints.parsStart(index);
+    end
+  end
     
-    if any(isnan(pars))
-      index = find(isnan(pars(:)) & ~isnan(pars_prev(:)));
-      if ~isempty(index)
-        pars(index) = pars_prev(index);
-      end
-      index = find(isnan(pars(:)) & ~isnan(constraints.parsBest(:)));
-      if ~isempty(index)
-        pars(index) = constraints.parsBest(index);
-      end
-      index = find(isnan(pars(:)) & ~isnan(constraints.parsStart(:)));
-      if ~isempty(index)
-        pars(index) = constraints.parsStart(index);
-      end
-    end
+  % create an optimValues structure compliant with OutputFcn and PlotFcns
+  optimValues = options;
+  if ~isfield(optimValues,'state')
+    if istop,               optimValues.state='done';
+    else                    optimValues.state='iter'; end
+  end
+  optimValues.funcount   = funccount;
+  optimValues.funcCount  = funccount;
+  optimValues.funccount  = funccount;
+  optimValues.iteration  = funccount;
+  optimValues.fval       = sum(fval(:));
+  if isfield(options,'procedure'),        optimValues.procedure=options.procedure;
+  elseif isfield(options, 'algorithm'),   optimValues.procedure=options.algorithm;
+  elseif isfield(options, 'optimizer'),   optimValues.procedure=options.optimizer;
+  else optimValues.procedure  = 'iteration'; end
+    
+  % we assemble the list of external functions to call: PlotFcns OutputFcn
+  % syntax: stop = OutputFcn(pars, optimValues, state)
+  if ~isempty(options.PlotFcns) && ~iscell(options.PlotFcns)
+    ExternalFcns = { options.PlotFcns }; 
+  else ExternalFcns = options.PlotFcns; end
+  if ~isempty(options.OutputFcn), ExternalFcns{end+1} = options.OutputFcn; end
 
-    if ~isempty(options.OutputFcn)
-      optimValues = options;
-      if ~isfield(optimValues,'state')
-        if istop,               optimValues.state='done';
-        elseif funccount  <= 2, optimValues.state='init';
-        else                    optimValues.state='iter'; end
+  for index=1:numel(ExternalFcns)
+    PlotFcns = ExternalFcns{index};
+    if ischar(PlotFcns) || isa(PlotFcns, 'function_handle')
+      try
+        istop2 = feval(PlotFcns, pars, optimValues, optimValues.state);
+      catch ME
+        disp(getReport(ME))
+        istop2 = 0; % failed ExternalFcns ignored
       end
-      optimValues.funcount   = funccount;
-      optimValues.funcCount  = funccount;
-      optimValues.funccount  = funccount;
-      optimValues.fval       = sum(fval(:));
-      if isfield(options,'procedure'),        optimValues.procedure=options.procedure;
-      elseif isfield(options, 'algorithm'),   optimValues.procedure=options.algorithm;
-      elseif isfield(options, 'optimizer'),   optimValues.procedure=options.optimizer;
-      else optimValues.procedure  = 'iteration'; end
-      istop2 = feval(options.OutputFcn, pars, optimValues, optimValues.state);
       if istop2 && ~istop
         istop=-6;
-        message = 'Algorithm was terminated by the output function (options.OutputFcn)';
+        message = [ 'Algorithm was terminated by the output function ' ...
+                    inline_localChar(PlotFcns) ];
+        break
       end
     end
-    if istop
-      funccount = -funccount; % trigger iteration display
-    end
-    inline_disp(options,  funccount, options.optimizer, pars, fval);
+  end % ExternalFcns
+    
+  if istop
+    funccount = -funccount; % trigger iteration display
   end
+  inline_disp(options,  funccount, options.optimizer, pars, fval);
 
 end % inline_private_check
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
