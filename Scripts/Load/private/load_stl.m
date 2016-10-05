@@ -5,7 +5,7 @@ function b=load_stl(a)
 % or an OFF, PLY, CFL, EZD file
 
 vertices = []; faces = [];
-if isfield(a.Data.MetaData, 'OFF')
+if isfield(a.Data, 'MetaData') && isfield(a.Data.MetaData, 'OFF')
   % this is an OFF format file read by looktxt
   nvf=a.Data.MetaData.OFF;      % 'NVertices  NFaces  NEdges'
   nv=nvf(1,1); nf=nvf(1,2);     % indices start at 0 in OFF
@@ -66,7 +66,7 @@ elseif strncmpi(a.Format, 'CFL',3)
   nv = size(vertices, 1); nf = 0;
 end
 
-if isfield(a.Data.MetaData, 'OFF') || strncmpi(a.Format, 'ply',3)
+if (isfield(a.Data, 'MetaData') && isfield(a.Data.MetaData, 'OFF')) || strncmpi(a.Format, 'ply',3)
   if size(nvf,1) <= nv+nf  % only contains vertices: an other block gives the faces...
     vertices=nvf(1:nv,:);
     nvf = [];
