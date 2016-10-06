@@ -38,10 +38,10 @@ function filename = iData_private_saveas_html(a, filename, format)
       m = get(a, findfield(a, 'Model', 'cache first'));
     end
     
-    if isfield(a, 'modelValue')
-      mv = get(a, 'modelValue');
-    elseif ~isempty(findfield(a, 'modelValue'))
-      mv = get(a, findfield(a, 'modelValue', 'cache first'));
+    if isfield(a, 'ModelValue')
+      mv = get(a, 'ModelValue');
+    elseif ~isempty(findfield(a, 'ModelValue'))
+      mv = get(a, findfield(a, 'ModelValue', 'cache first'));
     end
     
     if isfield(a, 'ModelParameters')
@@ -85,7 +85,7 @@ function filename = iData_private_saveas_html(a, filename, format)
     fprintf(fid, m.Description);
     fprintf(fid, '</p>\n');
     if ~isempty(mp)
-      fprintf(fid, 'Model parameters<br>\n');
+      fprintf(fid, 'Model parameters:<br>\n');
       fprintf(fid, [ '<pre> ' desc ' </pre>\n' ]);
     end
   end
@@ -93,24 +93,16 @@ function filename = iData_private_saveas_html(a, filename, format)
   % Data set (and Model) plot **************************************************
   % plot of the object: special case for 1D which can overlay data and model
   f = figure('Visible','off', 'Name', [ 'iFit_DataSet_' a.Tag ]);
-  if ndims(a) == 1 && ~isempty(mv) && isa(mv, 'iData')
-    % 1D plot with model
-    h=plot(a,'bo',mv,'r-','tight');
-  elseif ndims(a) == 1
-    % simple plot. Model value not available.
+  if ndims(a) == 1
+    % simple plot and model
     h=plot(a,'bo','tight');
   elseif ndims(a) > 1
-    if ~isempty(mv) && isa(mv, 'iData')
-      if ndims(a) == 2
-        % overlay data and model
-        h1 = plot(a, 'tight view3');
-        hold on
-        h2 = contour3(mv); set(h2, 'EdgeColor','black','LineWidth',5);
-      else
-        h=subplot([a mv], [1 2], 'tight');
-      end
+    if ndims(a) == 2 || isempty(mv)
+      % overlay data and model
+      h = plot(a, 'tight view3');
     else
-      h=plot(a, 'tight');
+      % side by side
+      h = subplot([a mv], [1 2], 'tight');
     end
   end
   % add text with parameters onto plot
