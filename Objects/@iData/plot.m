@@ -148,7 +148,7 @@ if isempty(method), method='plot'; end
 
 % clean method string from the plot type and supported options not to be passed to matlab plot commands
 if ischar(method)
-  toremove='plot3 stem3 scatter3 scatter stem plot mesh surf waterfall tight auto hide view2 view3 transparent axis hide_err hide_errorbars hide_error contour contour3 surfc surfl contourf pcolor median mean half slice flat interp faceted light clabel colorbar shifted hide_axes painters zbuffer whole full';
+  toremove='plot3 stem3 scatter3 scatter stem plot mesh surf waterfall tight auto hide view2 view3 transparent axis hide_err hide_errorbars hide_error contour contour3 surfc surfl contourf pcolor median mean half slice flat interp faceted light clabel colorbar shifted hide_axes painters zbuffer whole full legend';
   toremove=strread(toremove,'%s','delimiter',' ');
   this_method = method;
   for index=1:length(toremove)
@@ -198,6 +198,47 @@ end
 
 % ==============================================================================
 ret = 0;
+
+m = []; mp = []; mv = []; names = []; name = [];
+% get Model,etc... when found in the Dataset
+
+if isfield(a, 'Model')
+  m = get(a, 'Model');
+elseif ~isempty(findfield(a, 'Model'))
+  m = get(a, findfield(a, 'Model', 'cache first'));
+end
+
+if isa(m, 'iFunc') && ~isempty(m)
+  % get the parameter values as a struct
+  mp    = m.ParameterValues;
+  names = m.Parameters(:);
+  name  = m.Name;
+end
+
+
+if isfield(a, 'ModelValue')
+  mv = get(a, 'ModelValue');
+elseif ~isempty(findfield(a, 'ModelValue'))
+  mv = get(a, findfield(a, 'ModelValue', 'cache first'));
+end
+
+if isempty(mp)
+  if isfield(a, 'ModelParameters')
+    mp = get(a, 'ModelParameters');
+  elseif isfield(mv, 'ModelParameters')
+    mp = get(mv, 'ModelParameters');
+  end
+end
+% make it a structure
+if numel(names) == numel(mp)
+  mp = cell2struct(num2cell(mp(:)),strtok(names(:)));
+end
+
+if ~isempty(mv)
+  set(a, 'ModelValue', []);  % avoid recursive loop
+  set(mv,'ModelValue', []);
+end
+
 
 switch ndims(a) % handle different plotting methods depending on the iData dimensionality
 case 0
@@ -306,7 +347,7 @@ catch
 end
 
 % install the contextual menu
-iData_plot_contextmenu(a, h, xlab, ylab, zlab, T, S, d, cmd);
+iData_plot_contextmenu(a, h, xlab, ylab, zlab, T, S, d, cmd, mp, name);
 
 try
   set(h,   'Tag',  [ mfilename '_' a.Tag ]);
@@ -324,6 +365,24 @@ else
   if ~isempty(ylab), ylabel(ylab); end
 
   title(textwrap(cellstr(char(T0)),80),'interpreter','none');
+end
+
+if (strfind(method,'legend'))
+  legend(h);
+end
+
+% this plot should display model Parameters
+if ~isempty(mv) && ndims(mv) <= 2
+  hold on
+  axis(axis); % fix plot limits
+  h2 = [];
+  switch ndims(mv)
+  case 1
+    h2 = plot(mv,'r--');
+  case 2
+    h2 = contour3(mv);
+  end
+  h = [ h h2 ];
 end
 
 % ============================================================================

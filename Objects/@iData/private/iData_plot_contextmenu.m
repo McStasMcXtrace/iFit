@@ -1,4 +1,4 @@
-function iData_plot_contextmenu(a, h, xlab, ylab, zlab,  T, S, d, cmd)
+function iData_plot_contextmenu(a, h, xlab, ylab, zlab,  T, S, d, cmd, mp, mname)
 % iData_plot_contextmenu: add a contextmenu to the iData plot
 % used in iData/plot
 
@@ -43,6 +43,7 @@ properties={ [ 'Data ' a.Tag ': ' num2str(ndims(a)) 'D object ' mat2str(size(a))
              [ 'Source: ' a.Source ], ...
              [ 'Last command: ' cmd ]};
 
+% axes and Signal stuff
 properties{end+1} = '[Rank]         [Value] [Description]';
 uimenu(uicm, 'Separator','on', 'Label', '[Rank]         [Value] [Description]');
 myisvector = @(c)length(c) == numel(c);
@@ -76,6 +77,33 @@ for index=0:min([ ndims(a) length(getaxis(a)) ])
   uimenu(uicm, 'Label', t);
   clear x m
 end
+% model parameters
+if ~isempty(mp)
+  mproperties = { ['Fit parameters: ' mname ] };
+  if isstruct(mp)
+    for f=fieldnames(mp)'
+      mproperties{end+1} = sprintf('* %s = %g', f{1}, mp.(f{1}));
+    end
+  elseif isnumeric(mp)
+    mproperties{end+1} = mat2str(mp);
+  end
+else mproperties = {};
+end
+properties = { properties{:} ...
+   ' ' ...
+   mproperties{:} };
+for index=1:min(numel(mproperties),10)
+  if index==1
+  uimenu(uicm, 'Separator','on', 'Label', mproperties{index});
+  else
+  uimenu(uicm, 'Label', mproperties{index});
+  end
+end
+if ~isempty(mproperties) && index < numel(mproperties)
+  uimenu(uicm, 'Label', '...');
+end
+  
+
 % menu About iFit
 uimenu(uicm, 'Separator','on','Label', 'About iFit/iData', 'Callback', ...
   [ 'msgbox(''' version(iData,2) sprintf('. Visit <http://ifit.mccode.org>') ''',''About iFit'',''help'')' ]);
