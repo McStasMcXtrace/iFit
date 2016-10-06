@@ -379,27 +379,38 @@ function mifit_Data_Fit(varargin)
   if isempty(index_selected), return; end
   
   % get the Optimizer configuration
+  CurrentOptimizer = getappdata(mifit_fig,'CurrentOptimizer');
   if isappdata(mifit_fig,'CurrentOptimizerConfig')
     options = getappdata(mifit_fig,'CurrentOptimizerConfig');
+  else
+    options = [];
   end
   % overload Preferences choices: OutputFcn, Display.
+  options.Display='final';
   
   % TODO: it is desirable to handle constraints (min/max/fix)
   % TODO: must get the CurrentOptimizer and its configuration
   % [pars,criteria,message,output] = fits(a, model, pars, options, constraints, ...)
-  p=fits(d, '', '', options);  % with assigned models or gaussians
+  mifit_disp([ 'Starting fit of data sets with "' CurrentOptimizer '"' ]);
+  mifit_disp(char(d))
+  
+  [p,c,m,o]=fits(d, '', '', options);  % with assigned models or gaussians
+  
   % update Data list with fit results (and History)
   D = getappdata(mifit_fig, 'Data');
   D(index_selected) = d;
   setappdata(mifit_fig, 'Data',D);
   
+  
+  if isappdata(mifit_fig, 'CurrentDataSetIndex')
+    index_selected = getappdata(mifit_fig, 'CurrentDataSetIndex');
+    setappdata(mifit_fig, 'CurrentDataSet', D(index_selected));
+  end
+  
   mifit_History_push;
   
   % update Parameter Window content
-  if ~isempty(mifit_fig('mifit_View_Parameters'))
-    % trigger an update of the Parameter window when already opened
-    mifit_Models_View_Parameters();
-  end
+  mifit_Models_View_Parameters('update');
   
 function mifit_Data_Saveas(varargin)
   d = mifit_List_Data_pull;
