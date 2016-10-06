@@ -81,18 +81,18 @@ function varargout = mifit(varargin)
           end
         elseif ishandle(varargin{1})    % a CallBack function
           h = varargin{1}; d = [];
-          if strcmpi(get(h,'Type'),'uitable')
-              % get data from a UITable
-              try
-                  d = edit(iData, h);
-              catch
-                  d = iData(get(h, 'Data'));
-                  d.Title = get(h, 'Tag');
-              end
-              % now push 'd' into the Stack, except for 'empty' Table
-              if numel(d) == 1 && numel(find(d == 0)) == 25 % zeros(5)
-                d = [];
-              end
+          UserData = get(h,'UserData');
+          if isfield(UserData,'modified') && ~UserData.modified
+            d = [];
+          elseif strcmpi(get(h,'Type'),'uitable')
+            % get data from a UITable
+            try
+                d = edit(iData, h);
+            catch
+                d = iData(get(h, 'Data'));
+                d.Title = get(h, 'Tag');
+            end
+            % now push 'd' into the Stack, except for 'empty'/non modified Table
           else
             d = iData(h);
           end
@@ -222,7 +222,8 @@ function mifit_File_Exit(varargin)
     file = fullfile(prefdir, [ mfilename '.mat' ]);
     if ~isempty(dir(file)), delete(file); end
   end
-  mifit_disp([ '[Exit] Exiting miFit. Bye bye.' ])
+  mifit_disp([ '[Exit] Exiting miFit. Bye bye.' ]);
+  delete(mifit_fig('mifit_View_Parameters'));
   delete(mifit_fig);
   
 function mifit_File_Reset(varargin)
@@ -394,7 +395,7 @@ function mifit_Data_Fit(varargin)
   mifit_disp([ 'Starting fit of data sets with "' CurrentOptimizer '"' ]);
   mifit_disp(char(d))
   
-  [p,c,m,o]=fits(d, '', '', options);  % with assigned models or gaussians
+  [p,c,m,o]=fits(d, '', 'current', options);  % with assigned models or gaussians
   
   % update Data list with fit results (and History)
   D = getappdata(mifit_fig, 'Data');
@@ -619,6 +620,9 @@ function mifit_Tools_Help_Optimizers(varargin)
 
 function mifit_List_Data_Files(varargin)
   % called when clicking on the listbox
+  if nargin && ishandle(varargin{1}), 
+    obj=varargin{1}; 
+  else obj=[]; end
 
   [d, index_selected] = mifit_List_Data_pull(); % get selected objects
   
@@ -628,7 +632,11 @@ function mifit_List_Data_Files(varargin)
     % TODO: should we close the Models_View_Parameters window ? or clear it ? or display 'no model' ?
   end
 
-  %  mifit_Data_Plot(d);  % plot every time we change the data set selection
+  if ~isempty(obj)
+    if strcmp(get(gcbf,'SelectionType'), 'open')  % double-click
+      mifit_Data_Plot(d);  % plot every time we change the data set selection
+    end
+  end
   
   % when a CurrentModel exists (previously selected from Models menu)
   % we assign that one to Data sets which have no Model defined
@@ -665,7 +673,7 @@ function mifit_List_Data_Files(varargin)
   
   if ~isempty(mifit_fig('mifit_View_Parameters'))
     % trigger an update of the Parameter window when already opened
-    mifit_Models_View_Parameters();
+    mifit_Models_View_Parameters('update');
   end
   
 function mifit_List_Data_UpdateStrings
