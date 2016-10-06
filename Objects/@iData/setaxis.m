@@ -215,12 +215,11 @@ function this = iData_checkaxes(this)
       end
       % check if the axis is reverted
       myisvector = @(c)length(c) == numel(c);
-      if numel(value) > 1 && rank > 0 && isnumeric(value) && myisvector(value) && value(1) > value(end)
+      if numel(val) > 1 && isnumeric(val) && myisvector(val) && val(1) > val(end)
         this = sort(this, index);
       end
-    catch
+    catch ME
       % the axis value is invalid.
-      
       iData_private_warning(mfilename,[ 'the Axis ' link ' ' num2str(index) ...
         '-th rank is not valid in object ' inputname(1) ' '  this.Tag ' "' this.Title '".' ]);
     end
