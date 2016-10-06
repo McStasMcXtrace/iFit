@@ -638,8 +638,7 @@ function out = ResLibCal_ViewResolution(out, dim)
   if isempty(h)
     if dim~=1, name=sprintf('(%iD)', dim); else name='Matrix'; end
     h = figure('Name',[ 'ResLibCal: View Resolution ' name ], ...
-               'Tag', [ 'ResLibCal_View' num2str(dim)], 'ToolBar','figure', ...
-               'NextPlot','new');
+               'Tag', [ 'ResLibCal_View' num2str(dim)], 'ToolBar','figure');
     p = get(h, 'Position'); p(3:4) = [ 640 480 ]; set(h, 'Position',p);
   else
     figure(h);
