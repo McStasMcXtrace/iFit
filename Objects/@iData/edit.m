@@ -75,6 +75,7 @@ function h = edit(a, option)
     UserData.figure    = f;
     UserData.Name      = char(a);
     UserData.Axes      = getaxis(a, []);
+    UserData.modified  = false;
     
     set(h, 'Position', [0,0,p(3),p(4)]); 
 
@@ -154,6 +155,7 @@ function h = edit(a, option)
     uimenu(uicm, 'Label','Resize data set', 'Callback', @iData_edit_resize);
     end
     uimenu(uicm, 'Label','Export to main workspace...', 'Callback', @iData_edit_export);
+    uimenu(uicm, 'Label','Export to CSV file...', 'Callback', @iData_edit_export_csv);
     uimenu(uicm, 'Label','Plot selection...', 'Callback', @iData_edit_display);
     uimenu(uicm, 'Separator','on','Label', 'About iData', 'Callback',[ 'msgbox(''' version(iData) ''')' ]);
     % attach contexual menu to the table
@@ -295,12 +297,15 @@ function iData_edit_paste(hObject, eventdata, varargin)
   end
   Data( rows, columns ) = Selection;
   set(UserData.handle, 'Data', Data);
+  UserData.modified = true;
+  set(fig, 'UserData', UserData);
   
 function iData_edit_export(varargin)
   % exports the data set to the 'ans' variable in main workspace
   fig = gcbf;
   UserData  = get(fig, 'UserData');
   d=iData_edit_iData(UserData.handle);
+  if isempty(d), return; end
   disp([ mfilename ': export Data ' mat2str(size(d)) ' into iData object ''ans''.' ]);
   disp(UserData.Name);
 
@@ -308,15 +313,31 @@ function iData_edit_export(varargin)
   % make 'ans' be displayed
   ans = d
 
+function iData_edit_export_csv(varargin)
+  % exports the data set to a CSV file
+  fig = gcbf;
+  UserData  = get(fig, 'UserData');
+  d=get(UserData.handle, 'Data');
+  if isempty(d), return; end
+  filename = uiputfile(...
+    {'*.csv','Comma Separated Value file (Excel, *.csv)';'*.*','All files'}, ...
+    [ mfilename ': Save as CSV' ]);
+  if isempty(filename), return; end
+  csvwrite(filename, double(d));
+
 function d=iData_edit_iData(h)
   % create an iData object from Table
+  d = [];
   if ~ishandle(h) || ~strcmpi(get(h, 'Type'),'uitable')
-    d = [];
+    return
   end
   
   % get the Data
   fig       = get(h,'Parent');
   UserData  = get(fig, 'UserData');
+  if isfield(UserData,'modified') && ~UserData.modified
+    return
+  end
   Signal    = get(h, 'Data');
   
   % get the Axes
@@ -356,4 +377,6 @@ function iData_edit_resize(varargin)
   columns = min([ sz_nData(2) sz_Data(2) ]);
   newData(rows, columns) = Data(rows, columns);
   set(h, 'Data', newData);
+  UserData.modified = true;
+  set(fig, 'UserData', UserData);
 
