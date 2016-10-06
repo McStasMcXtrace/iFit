@@ -34,9 +34,9 @@ if nargin > 1
 end
 
 % handle array of objects
+colors = 'bgrcmk'; color0 = floor(rand*numel(colors));
 if numel(a) > 1
   is = ishold;
-  colors = 'bgrcmk';
   for index=1:numel(a)
     if iscell(p) && length(p) == numel(a)
       h(index) = feval(mfilename, a(index), p{index}, varargin{:});
@@ -44,7 +44,7 @@ if numel(a) > 1
       h(index) = feval(mfilename, a(index), p, varargin{:});
     end
     if ndims(a) == 1 % set the color, line style
-      set(h(index), 'color', colors(1+mod(index, length(colors))));
+      set(h(index), 'color', colors(1+mod(index+color0, length(colors))));
     end
     hold on
   end
@@ -81,8 +81,7 @@ if iscell(signal)
     h = [ h iFunc_plot(name{index}, signal{index}, ax{index}) ];
     if ndims(a(index)) == 1 && strcmp(get(h(index),'Type'),'line')
       % change color of line
-      colors = 'bgrcmk';
-      set(h(index), 'color', colors(1+mod(index, length(colors))));
+      set(h(index), 'color', colors(1+mod(index+color0, length(colors))));
     end
     h(index) = iFunc_plot_menu(h(index), a(index), name{index});
   end
@@ -142,16 +141,18 @@ else
   disp([ 'iFunc.plot: ' name ': Reducing ' num2str(ndims(iD)) '-th dimensional data to 3D ' mat2str(sz) ]);
   iD = resize(iD, sz);
   h=plot(iD);
-  % error([ 'iFunc:' mfilename ], 'Failed to plot model %s\n', name);
 end
 
 set(h, 'DisplayName', name);
-title(name);
 
 %-------------------------------------------------------------------------------
 function h=iFunc_plot_menu(h, a, name)
 % contextual menu for the single object being displayed
 % internal functions must be avoided as it uses LOTS of memory
+
+  % return when a Contextual Menu already exists
+  if ~isempty(get(h,   'UIContextMenu')), return; end
+  
   uicm = uicontextmenu; 
   % menu About
   uimenu(uicm, 'Label', [ 'About ' a.Name ': ' num2str(a.Dimension) 'D model ...' ], ...
@@ -186,6 +187,11 @@ function h=iFunc_plot_menu(h, a, name)
     if ~isempty(val), u = [ u sprintf('=%g', val) ]; end
     if ~isempty(R),   u = [ u sprintf('  %% entered as: %s', R) ]; end
     properties{end+1} = u;
+    if p<10
+      uimenu(uicm, 'Label', u);
+    if p==10 && length(a.Parameters) > 10
+      uimenu(uicm, 'Label', '...');
+    end
   end
 
   ud.properties=properties;     
@@ -241,4 +247,5 @@ function h=iFunc_plot_menu(h, a, name)
   else
     zlabel(a.Name)
   end
+  title(name);
 
