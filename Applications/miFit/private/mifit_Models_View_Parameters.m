@@ -10,6 +10,7 @@ function mifit_Models_View_Parameters(varargin)
     cache.modelTag='';
     cache.dataTag ='';
     cache.fig     =[];
+    cache.table   =[];
   end
   
   if nargin == 1 && ischar(varargin{1})
@@ -99,9 +100,18 @@ function mifit_Models_View_Parameters(varargin)
     % and trigger other updates (create all)
     resize                = 1;
     data_or_model_changed = 1;
+    % add contextual menu
+    uicm = uicontextmenu; 
+    uimenu(uicm, 'Label', [ 'Model:' model.Name ]);
+    uimenu(uicm, 'Label', [ 'Data set:' char(d) ]);
+    uimenu(uicm, 'Separator','on','Label','Copy to clipboard', 'Callback', @mifit_Models_View_Parameters_copy);
+    uimenu(uicm, 'Label','Export to CSV file...', 'Callback', @mifit_Models_View_Parameters_export);
+    set(t,   'UIContextMenu', uicm); 
     % we must store that window ID into the Appdata
+    cache.table = t;
+    setappdata(f, 'TableHandle',t);
   else
-    t = get(f, 'Children');
+    t = getappdata(f, 'TableHandle');
     
     % different update levels:
     %   resize table when numel(Parameters) change
@@ -198,4 +208,32 @@ function mifit_Models_View_Parameters(varargin)
   cache.modelTag = model.Tag;
   cache.numPars  = n;
   cache.fig      = f;
-
+  
+% ------------------------------------------------------------------------------
+function mifit_Models_View_Parameters_copy(varargin)
+  t = getappdata(gcbf, 'TableHandle');
+  d = get(t, 'Data');
+  if isempty(d), return; end
+  disp([ mfilename ': copy Parameters to the clipboard.' ]);
+  c = [ get(gcbf, 'Name') sprintf('\n') ];
+  for index=1:size(d,1)
+    c = [ c sprintf('%20s %g %g\n', d{index,1:3}) ];
+  end
+  clipboard('copy', c);
+  
+function mifit_Models_View_Parameters_export(varargin)
+  % exports the data set to a CSV file
+  t = getappdata(gcbf, 'TableHandle');
+  d = get(t, 'Data');
+  if isempty(d), return; end
+  filename = uiputfile(...
+    {'*.csv','Comma Separated Value file (Excel, *.csv)';'*.*','All files'}, ...
+    [ 'miFit:Parameters' ': Save as CSV (append to existing)' ]);
+  if isempty(filename), return; end
+  fid = fopen(filename,'a+');
+  fprintf(fid, 'Model_Data,%s\n', get(gcbf,'Name'));
+  fprintf(fid, 'Parameter,Value,Sigma_Half\n');
+  for index=1:size(d,1)
+    fprintf(fid, '%20s, %g, %g\n', d{index,1:3});
+  end
+  fclose(fid);
