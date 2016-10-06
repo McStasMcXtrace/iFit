@@ -12,6 +12,14 @@ function mifit_Models_View_Parameters(varargin)
     cache.fig     =[];
   end
   
+  if nargin == 1 && ischar(varargin{1})
+    action = varargin{1};
+    switch lower(action)
+    case 'update'
+      cache.modelTag = '';
+    end
+  end
+  
   % get the Currently selected Data set
   if isappdata(mifit_fig, 'CurrentDataSet')
     d              = getappdata(mifit_fig, 'CurrentDataSet');
@@ -107,7 +115,7 @@ function mifit_Models_View_Parameters(varargin)
   if resize
     % determine the new window size to show
     numCol    = 6;
-    TextWidth = config.FontSize*.8;
+    TextWidth = config.FontSize;
     TextHeight= config.FontSize*1.7;
     % height is given by the number of fields. Add 1 for the header line.
     height    = (n+1)*TextHeight;
