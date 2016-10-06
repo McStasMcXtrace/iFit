@@ -227,25 +227,16 @@ if isstruct(a) || isa(a, 'iData')
       Axes{index} = getaxis(a, index);
     end
     Name = strtrim([ inname ' ' char(a) ]);
-    
-    if isfield(a, 'ModelValue') modelValue = get(a, 'modelValue'); else modelValue = []; end
-    
-    if isempty(pars) && isfield(a,'ModelParameters') pars = get(a, 'ModelParameters'); end
-    if isempty(pars) && ~isempty(modelValue) && isfield(modelValue,'ModelParameters') 
-      pars = get(modelValue,'ModelParameters');
-    end
+
+    if isfield(a, 'ModelValue') modelValue = get(a, 'ModelValue'); 
+    else modelValue = []; end
 
     % search for optimizer options in Data set
     if isempty(options) && isfield(a,'FitOptions') options = get(a, 'FitOptions'); end
-    if isempty(options) && ~isempty(modelValue) && isfield(modelValue,'FitOptions') 
+    if isempty(options) && ~isempty(DataModel) && isfield(modelValue,'FitOptions') 
       options = get(modelValue, 'FitOptions'); 
     end
 
-    % search for constraints in Data set
-    if isempty(constraints) && isfield(a,'Constraints') constraints = get(a, 'Constraints'); end
-    if isempty(constraints) && ~isempty(modelValue) && isfield(modelValue,'Constraints') 
-      constraints = get(modelValue, 'Constraints'); 
-    end
   elseif isfield(a,'Axes')    Axes    = a.Axes; 
   end
 elseif isnumeric(a)
