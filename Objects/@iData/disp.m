@@ -73,12 +73,11 @@ else
       elseif strcmp(s_in.Alias.Names{index}, 'Monitor'), v='1'; end
     end 
     label = s_in.Alias.Labels{index};
-    if length(label) > 30, label = [label(1:28) '...' ]; end 
+    if length(label) > 30, label = label(1:30); end 
     if (isnumeric(v) | islogical(v)) && ~isa(v, 'iData') && ~isa(v, 'iFunc'), 
       if length(size(v)) > 2, v=v(:); end
       if numel(v) > 20, v=v(1:18); end
       v = mat2str(v,5); 
-      if length(v) > 32, v = [v(1:29) '...' ]; end 
     elseif ischar(v)
       this = s_in;
       vv = [];
@@ -108,13 +107,17 @@ else
         end
         if ischar(vv)
           vv = vv(:)';
-          if length(vv) > 20, vv = [vv(1:18) '...' ]; end
+          if length(vv) > 20, vv = vv(1:20); end
           label = [ label ' ''' vv '''' sz ];
         end
         
       end
       
       if length(v) > 32, v = [ '...' v((end-28):end) ]; end
+    elseif isa(v,'iData')
+      v=char(v);
+    elseif isa(v,'iFunc')
+      v=[ 'iFunc ' v.Name ];
     else 
       label = [ label ' (' class(v) ')' ];
       try   % use matlab 'tostring' by capturing the display
@@ -124,8 +127,9 @@ else
       catch % use our own 'tostring'
         v=class2str('s',v,'no comments'); 
       end
-      if length(v) > 32, v = [v(1:29) '...' ]; end 
+      
     end
+    if length(v) > 32, v = v(1:29); end 
     if strcmp(s_in.Alias.Names{index}, 'Format') && ~isdeployed && nargin < 3
       if (isempty(v) && isempty(label)) || strcmp(label, v), label='help about formats'; end
       label=[ '<a href="matlab:doc(iData,''Load'')">' label '</a>' ];
