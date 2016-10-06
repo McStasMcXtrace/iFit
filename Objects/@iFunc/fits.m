@@ -309,13 +309,13 @@ end
 % handle parameters: from char, structure or vector
 
 pars_isstruct=[];
+if isempty(pars), pars='current'; end
 if ischar(pars) && strcmp(pars,'current')
   pars = model.ParameterValues;
 end
 if ischar(pars) && ~strcmp(pars,'guess')
   pars = str2struct(pars);
 end
-if isempty(pars), pars=[]; end
 
 if isstruct(pars)
   % search 'pars' names in the model parameters, and reorder the parameter vector
@@ -449,7 +449,7 @@ model.ParameterValues = pars;
 if strcmp(options.Display, 'iter') || strcmp(options.Display, 'final')
   fprintf(1, '** Starting fit of %s\n   using model    %s\n   with optimizer %s\n', ...
     a.Name,  model.Name, options.algorithm);
-  disp(  '** Minimization performed on parameters:');
+  disp(  '** Fit performed with initial parameters:');
   for index=1:length(model.Parameters); 
     fprintf(1,'  p(%3d)=%20s=%g', index,strtok(model.Parameters{index}), pars(index)); 
     if isfield(constraints, 'fixed') && length(constraints.fixed) >= index && constraints.fixed(index)
@@ -510,6 +510,21 @@ try
     end
   end
 end % try
+
+if strcmp(options.Display, 'iter') || strcmp(options.Display, 'final')
+  sigma = output.parsHistoryUncertainty;
+  if ~isempty(output.parsHessianUncertainty)
+    sigma = max(sigma, output.parsHessianUncertainty);
+  end
+  
+  disp(  '** Final parameters:');
+  for index=1:length(model.Parameters); 
+    fprintf(1,'  p(%3d)=%20s=%g +/- %g', index,strtok(model.Parameters{index}), pars_out(index), sigma(index)); 
+    if isfield(constraints, 'fixed') && length(constraints.fixed) >= index && constraints.fixed(index)
+      fprintf(1, ' (fixed)'); end
+    fprintf('\n');
+  end
+end
     
 if ~isempty(is_idata)
   % make it an iData
