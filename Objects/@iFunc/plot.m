@@ -189,6 +189,7 @@ function h=iFunc_plot_menu(h, a, name)
     properties{end+1} = u;
     if p<10
       uimenu(uicm, 'Label', u);
+    end
     if p==10 && length(a.Parameters) > 10
       uimenu(uicm, 'Label', '...');
     end

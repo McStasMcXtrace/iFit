@@ -233,7 +233,7 @@ if isstruct(a) || isa(a, 'iData')
 
     % search for optimizer options in Data set
     if isempty(options) && isfield(a,'FitOptions') options = get(a, 'FitOptions'); end
-    if isempty(options) && ~isempty(DataModel) && isfield(modelValue,'FitOptions') 
+    if isempty(options) && ~isempty(modelValue) && isfield(modelValue,'FitOptions') 
       options = get(modelValue, 'FitOptions'); 
     end
 
@@ -517,7 +517,7 @@ if strcmp(options.Display, 'iter') || strcmp(options.Display, 'final')
     sigma = max(sigma, output.parsHessianUncertainty);
   end
   
-  disp(  '** Final parameters:');
+  disp([ '** Final parameters (duration ' num2str(output.duration) ' [s]):' ]);
   for index=1:length(model.Parameters); 
     fprintf(1,'  p(%3d)=%20s=%g +/- %g', index,strtok(model.Parameters{index}), pars_out(index), sigma(index)); 
     if isfield(constraints, 'fixed') && length(constraints.fixed) >= index && constraints.fixed(index)
