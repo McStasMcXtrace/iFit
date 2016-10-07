@@ -10,7 +10,7 @@ function result=test_Optimizers
   end
   
   if all(mean(abs(p)) > 0.5)
-    result = [ 'OK     ' mfilename ];
+    result = [ 'OK     ' mfilename ' (' num2str(numel(o)) ' optimizers)' ];
   else
     result = [ 'FAILED ' mfilename ];
   end

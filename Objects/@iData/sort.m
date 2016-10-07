@@ -10,7 +10,7 @@ function a = sort(a,dim,mode)
 %         dim: dimension to sort (int)
 %         mode: sorting order 'ascend' or 'descend'
 % output: s: sorted data (iData)
-% ex:     c=sort(a);
+% ex:     c=sort(iData(peaks));
 %
 % Version: $Date$
 % See also iData, iData/plus, iData/sort, iData/unique

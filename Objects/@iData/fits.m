@@ -115,9 +115,9 @@ function [pars_out,criteria,message,output] = fits(a, model, pars, options, cons
 %           parsHistoryUncertainty: Uncertainty on the parameters obtained from 
 %                              the optimization trajectory (double)
 %
-% ex:     p=fits(a,gauss,[1 2 3 4]);
+% ex:     a=iData('sv1850.scn'); p=fits(a,'','','fminpowell');
 %         o=fminpowell('defaults'); o.OutputFcn='fminplot'; 
-%         [p,c,m,o]=fits(a,'gauss',[1 2 3 4],o); b=o.modelValue; plot(a,b)
+%         [p,c,m,o]=fits(a,'gauss',p,o); b=o.modelValue; figure; plot(a,b)
 %
 % Version: $Date$
 % See also iData, fminsearch, optimset, optimget, ifitmakefunc, Models, iFunc/fits

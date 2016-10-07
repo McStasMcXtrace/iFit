@@ -4,8 +4,9 @@ function result=test_iData_setalias
   setalias(a,'NewStuff',20);
   setalias(a,'Signal', 'Data.Signal');
   setalias(a,'Signal', 'this.Data.Signal*2');
+  b=rmalias(a, 'NewStuff');
   
-  if isfield(a, 'NewStuff') 
+  if isfield(a, 'NewStuff') && ~isfield(b, 'NewStuff');
     result = [ 'OK     ' mfilename ];
   else
     result = [ 'FAILED ' mfilename ];

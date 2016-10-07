@@ -27,7 +27,7 @@ if nargin >= 3 || ~isempty(varargin)
       if ndims(b) > 2,   b=b(:); end
       if numel(b) > 50, toadd = [ toadd c ' [' sprintf('%g ',double(b(1:20))) '...' sprintf('%g ',double(b((end-20):end))) ']' ]; 
       else 
-        toadd = [ toadd c ' ' sprintf('%g ',double(b)) ];
+        toadd = [ toadd c ' ' sprintf('%g ',double(full(b))) ];
       end
     else
       toadd = [ toadd c ' <' class(b) '>'  ];

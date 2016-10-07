@@ -27,7 +27,7 @@ function c = deconv(a,b, shape)
 %          normalize    Normalizes the 'b' filter so that the convolution does not
 %                       change the 'a' signal integral.
 %          background   Remove the background from the filter 'b' (subtracts the minimal value)
-%     Default shape is 'iterative'
+%     Default shape is 'deconv same'
 %
 % output: c: object or array (iData)
 % ex:     c=deconv(a,b); c=deconv(a,b, 'fft same pad background center normalize');
@@ -37,7 +37,7 @@ function c = deconv(a,b, shape)
 if nargin ==1
 	b = a;
 end
-if nargin < 3, shape = 'iterative'; end
+if nargin < 3, shape = 'same'; end
 if isscalar(b)
   b = [ 1 mean(getaxis(a,1)) double(b) 0]; % use input as a width
   b = gauss(b, getaxis(a,1));

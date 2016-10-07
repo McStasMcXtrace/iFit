@@ -3,7 +3,11 @@ function result=test_iData_conv
   a=iData(gauss);
   b=convn(a,a);
   c=convn(a,std(a));
-  if abs(std(b)-std(c)) < 0.1
+  d=xcorr(a,a);
+  e=deconv(b,a);
+  f=figure;
+  subplot([a b c d e])
+  if all(0.3 < std([b c d])-std(a)) && all(std([b c d])-std(a) < 0.5)
     result = [ 'OK     ' mfilename ];
   else
     result = [ 'FAILED ' mfilename ];

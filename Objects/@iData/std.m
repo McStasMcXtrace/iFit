@@ -16,7 +16,7 @@ function [s, f] = std(a, dim)
 %         dim: dimension to use. Negative dim subtract background (int/array)
 % output: half_width: standard deviation (scalar/array)
 %         center:     center of distribution (scalar/array)
-% ex:     c=std(a);
+% ex:     a=iData(peaks); c=std(a);
 %
 % Version: $Date$
 % See also iData, iData/median, iData/mean

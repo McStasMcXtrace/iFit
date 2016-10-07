@@ -64,7 +64,7 @@ for index=0:min([ ndims(a) length(getaxis(a)) ])
     if not(all(m==1 | m==0))
       minmaxstd=[ minmaxstd sprintf(' (per monitor=%g)', mean(m(:))) ];
     end
-    minmaxstd=[ minmaxstd sprintf(' sum=%g', sum(iData_private_cleannaninf(x))) ];
+    minmaxstd=[ minmaxstd sprintf(' sum=%g', full(sum(iData_private_cleannaninf(x)))) ];
   end
   if prod(size(a)) < 1e4
     try

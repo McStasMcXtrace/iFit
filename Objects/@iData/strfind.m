@@ -14,7 +14,7 @@ function [match, field] = strfind(s, varargin)
 %         option: 'exact' 'case' or '' (char)
 % output: match: content of iData fields that contain 'str' (cellstr)
 %         field: name of iData fields that contain 'str' (cellstr)
-% ex:     strfind(iData,'ILL') or strfind(s,'TITLE','exact case')
+% ex:     a=iData('sv1850.scn'); strfind(a,'ILL') or strfind(a,'TITLE','case')
 %
 % Version: $Date$
 % See also iData, iData/set, iData/get, iData/findobj, iData/findfield

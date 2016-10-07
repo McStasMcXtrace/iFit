@@ -218,6 +218,7 @@ end
 
 if isfield(a, 'ModelValue')
   mv = get(a, 'ModelValue');
+  set(a, 'ModelValue', []);  % avoid recursive loop
 elseif ~isempty(findfield(a, 'ModelValue'))
   mv = get(a, findfield(a, 'ModelValue', 'cache first'));
 end
@@ -234,8 +235,7 @@ if numel(names) == numel(mp)
   mp = cell2struct(num2cell(mp(:)),strtok(names(:)));
 end
 
-if ~isempty(mv)
-  set(a, 'ModelValue', []);  % avoid recursive loop
+if ~isempty(mv) && isa(mv, 'iData') && isfield(mv, 'ModelValue')
   set(mv,'ModelValue', []);
 end
 
@@ -382,7 +382,7 @@ if ~isempty(mv) && ndims(mv) <= 2
   case 2
     h2 = contour3(mv);
   end
-  h = [ h h2 ];
+  h = [ h(:) ;  h2(:) ];
 end
 
 % ============================================================================

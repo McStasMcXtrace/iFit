@@ -40,7 +40,7 @@ if numel(m) > 1 && all(m(:) == m(1)), m=m(1); end
 % make sure sparse is done with 'double' type
 if strcmp(op, 'sparse')
   if ndims(a) > 2
-    iData_private_error('unary',['Operation ' op ' can only be used on 2d data sets. Object ' a.Tag ' is ' num2str(ndims(a)) 'd.' ]);
+    iData_private_error('unary',['Operation ' op ' can only be used on 1d/2d data sets. Object ' a.Tag ' is ' num2str(ndims(a)) 'd.' ]);
   end
   if ~strcmp(class(s), 'double') && ~strcmp(class(s), 'logical')
     s = double(s);
@@ -58,7 +58,7 @@ end
 
 % operate with Signal/Monitor and Error/Monitor
 if ~isempty(find(strcmp(op, {'norm','asin', 'acos','atan','cos','sin','exp','log',...
- 'log10','sqrt','tan','asinh','atanh','acosh','sinh','cosh','tanh'}))) ...
+ 'log10','sqrt','tan','asinh','atanh','acosh','sinh','cosh','tanh','isnan','isfinite','isinf'}))) ...
    && not(all(m(:) == 0 | m(:) == 1))
   s = genop(@rdivide, s, m);
   e = genop(@rdivide, e, m);

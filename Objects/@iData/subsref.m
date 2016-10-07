@@ -372,7 +372,7 @@ function val = iData_getAliasValue(this,fieldname)
       val = val(end);
     end
     if val == 0, val=1; end
-    if ~isempty(val) && length(val) ~= 1 && ~all(size(val) == size(this))
+    if ~isempty(val) && length(val) ~= 1 && (ndims(val) ~= length(size(this)) || ~all(size(val) == size(this)))
       iData_private_warning(mfilename,[ 'The Monitor [' num2str(size(val)) ...
         '] has not the same size as the Signal [' num2str(size(this)) ...
         '] in iData object ' this.Tag ' "' this.Title '".\n\tTo use the default Monitor=1 use s.Monitor=[].' ]);
