@@ -118,6 +118,7 @@ if ~isempty(strfind(shape,'iter'))
   % initiate process
   y          = x;
   iterations = 0;
+  delta_y_previous = [];
   
   while iterations < max_iterations
   
@@ -126,6 +127,11 @@ if ~isempty(strfind(shape,'iter'))
     
     % evaluate the difference with our expected result 'a'
     delta_y = y_broad - x; % effect of broadening
+    if ~isempty(delta_y_previous) && sum(abs(delta_y_previous(:))) < 10*sum(abs(delta_y))
+      % error increases tremendously
+      error([ mfilename ': ERROR: iterative deconvolution failed. The procedure does not converge. Try fconv(a,b,''deconv'').' ])
+    end
+      
     
     % we remove that effect from the deconvolved 'c'
     y = y - delta_y;
@@ -135,6 +141,7 @@ if ~isempty(strfind(shape,'iter'))
       break; 
     end
     iterations = iterations+1;
+    delta_y_previous = delta_y;
   end
 else
 
@@ -147,6 +154,13 @@ else
     Y=X.*H;      	           % FFT Product = convolution
   end
   y=ifftn(Y, Ly2);           % Inverse fast Fourier transform
+  
+  % Take just the first N elements
+  S.type='()';
+  for i=1:length(Ly)
+    S.subs{i} = 1:Ly(i);
+  end
+  y=subsref(y,S);
 end
 
 % Final cleanups:  if both x and b are real respectively integer, y
@@ -157,13 +171,6 @@ end
 if isinteger(x) && isinteger(h)
   y = round (y);
 end
-
-% Take just the first N elements
-S.type='()';
-for i=1:length(Ly)
-  S.subs{i} = 1:Ly(i);
-end
-y=subsref(y,S);
 
 if ~isempty(strfind(shape,'pad')) || ~isempty(strfind(shape,'extend'))
   y = padreplicate(y, -l);  % suppress padding from result
