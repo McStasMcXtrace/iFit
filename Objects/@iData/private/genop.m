@@ -75,7 +75,7 @@ if exist('bsxfun','builtin')
     z = bsxfun(op, x, y); % faster implementation avaialble from Matlab >= R2007a
     return;
   catch ME
-    disp([ mfilename ':' char(op) ': failed bsxfun. Using slower genop function' ]);
+    warning([ mfilename ':' char(op) ': failed bsxfun. Using slower genop function' ]);
     whos x y
   end
 end

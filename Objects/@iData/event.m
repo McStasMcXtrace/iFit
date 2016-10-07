@@ -23,7 +23,7 @@ function b = event(a, dim, signal, err, monitor)
 % input:  a:   object or array (iData)
 %         m,n,p...: dimensions (integers)
 % output: c: object or array (iData)
-% ex:     a=iData(peaks(60)); b=reshape(a, 75, 48);
+% ex:     a=iData(rand(50,4)); b=event(a);
 %
 % Version: $Date$
 % See also iData, iData/squeeze, iData/size, iData/permute, iData/resize, iData/meshgrid, iData/hist

@@ -9,7 +9,7 @@ function a = squeeze(a)
 %
 % input:  a: object or array (iData)
 % output: c: object or array (iData)
-% ex:     c=squeeze(zeros(iData,[2 1 3]));
+% ex:     c=squeeze(iData(rand(5,1,3)));
 %
 % Version: $Date$
 % See also iData, iData/size, iData/resize, iData/permute, iData/reshape, iData/fill

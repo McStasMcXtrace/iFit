@@ -27,7 +27,7 @@ if numel(a) > 1
   return
 end
 
-a = setaxis(getaxis(a, dim)+value);
+a = setaxis(a, dim, getaxis(a, dim)+shift);
   
 if nargout == 0 & length(inputname(1))
   assignin('caller',inputname(1),a);
