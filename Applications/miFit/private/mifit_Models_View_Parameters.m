@@ -20,17 +20,18 @@ function mifit_Models_View_Parameters(varargin)
       cache.modelTag = '';
     end
   end
-  
+
   % get the Currently selected Data set
-  if isappdata(mifit_fig, 'CurrentDataSet')
+  if isappdata(mifit_fig, 'CurrentDataSet') && ~isempty(getappdata(mifit_fig, 'CurrentDataSet'))
     d              = getappdata(mifit_fig, 'CurrentDataSet');
     index_selected = getappdata(mifit_fig, 'CurrentDataSetIndex');
   else
     [d, index_selected] = mifit_List_Data_pull(); % get selected objects
-    if ~isempty(d) && ~isempty(index_selected)
+    if numel(d)>1 && ~isempty(index_selected)
       d=d(1); index_selected=index_selected(1);
     end
   end
+  
   % get the Model to use.
   % if a Data set selection exists, get the first data set Model, or left empty
   model = []; modelValue = [];
@@ -77,18 +78,16 @@ function mifit_Models_View_Parameters(varargin)
   config       = getappdata(mifit_fig, 'Preferences');  % config for FontSize
   
   % the window does not exist, we create it...
+  
   if isempty(f)
     options.ColumnName    = {'Parameter','Value',  'Uncertainty','Fixed',  'Min',    'Max'    };
     options.ColumnFormat  = {'char',     'numeric','numeric',    'logical','numeric','numeric'};
     options.ColumnEditable= [ false       true      false         true      true      true    ];
-    
+
     f = figure('Name',options.Name, 'MenuBar','none', ...
       'Tag','mifit_View_Parameters', ...
       'HandleVisibility','callback','NextPlot','new');
 
-    % TODO: should install a callback when Parameters are changed: update the Data 
-    % set Model Parameters, Constraints and replot.
-    
     t = uitable('Parent',f, ...
       'ColumnName',    options.ColumnName, ...
       'ColumnEditable',options.ColumnEditable, ...
@@ -97,16 +96,18 @@ function mifit_Models_View_Parameters(varargin)
       'RowStriping','on',...
       'CellEditCallback', @mifit_Models_View_Parameters_Edit, ...
       'Units','normalized', 'Position', [0 0 1 1]);
+
     % and trigger other updates (create all)
     resize                = 1;
     data_or_model_changed = 1;
     % add contextual menu
-    uicm = uicontextmenu; 
+    uicm = uicontextmenu('Parent',f); 
     uimenu(uicm, 'Label', [ 'Model:' model.Name ]);
     uimenu(uicm, 'Label', [ 'Data set:' char(d) ]);
     uimenu(uicm, 'Separator','on','Label','Copy to clipboard', 'Callback', @mifit_Models_View_Parameters_copy);
     uimenu(uicm, 'Label','Export to CSV file...', 'Callback', @mifit_Models_View_Parameters_export);
-    set(t,   'UIContextMenu', uicm); 
+    set(t,   'UIContextMenu', uicm);
+    
     % we must store that window ID into the Appdata
     cache.table = t;
     setappdata(f, 'TableHandle',t);
