@@ -1,5 +1,5 @@
 function structure = structdlg(structure,options)
-  % allow to modify a structure in a table
+  % structdlg: a dialogue which allows to modify a structure in a table
   %
   % input:
   %   structure: the initial struct to edit
@@ -10,6 +10,21 @@ function structure = structdlg(structure,options)
   %     options.ListString: the labels to be used for each structure field. 
   %       default: use the structure member names
   %     options.TooltipString: a string to display (as help)
+  %     options.CreateMode: can be 'modal' (default) or 'non-modal'.
+  %     options.Tag: a tag for the dialogue.
+  %     options.CloseRequestFcn: a function handle or expresion to execute when 
+  %       closing the dialogue in 'non-modal' mode. 
+  %
+  % output:
+  %   structure: the modified structure in 'modal' mode (default),
+  %     or the dialogue information structure in 'non-modal' mode.
+  %
+  % Example: 
+  %   a.Test=1; a.Second='blah'; structdlg(a)
+  %
+  % Version: $Date$
+  % (c) E.Farhi, ILL. License: EUPL.
+  
   
   Data0   = struct2cell(structure);   % initial Data
   fields  = fieldnames(structure);    % members of the structure
@@ -42,14 +57,39 @@ function structure = structdlg(structure,options)
   options.TooltipString = [ options.TooltipString ...
     'The configuration will be updated when you close this window.' ];
   [~,tmp_storage] = fileparts(tempname);
-  setappdata(0,tmp_storage,[]);   % we shall collect the Table content here
+  if ~isfield(options,'Tag')
+    options.Tag = [ mfilename '_' tmp_storage ];
+  end
+  if ~isfield(options,'CreateMode')
+    options.CreateMode = 'modal';
+  end
   
   % create a uitable from the structure fields and values
   f = figure('Name',options.Name, 'MenuBar','none', ...
       'NextPlot','new', ...
+      'Tag', options.Tag, ...
       'CloseRequestFcn', ...
         [ 'setappdata(0,''' tmp_storage ''', get(get(gcbf,''Children''),''Data'')); delete(gcbf)' ]);
-        
+  
+  % override default mechanism for Table update when closing
+  if isfield(options, 'CloseRequestFcn') && ~strcmp(options.CreateMode, 'modal')
+    set(f, 'CloseRequestFcn', options.CloseRequestFcn);
+  end
+  
+  % check if the structure values are numeric, logical, or char
+  fields_type = cell(size(Data0));
+  for index=1:size(Data0,1)
+    item = Data0{index,1};
+    if ~isnumeric(item) && ~islogical(item) && ~ischar(item)
+      fields_type{index} = class(item);
+      Data0{index} = class2str('', Data0{index}, 'eval');
+    end
+    % fill ListString with missing fieldnames
+    if numel(options.ListString) < index
+      options.ListString{end+1} = fields{index};
+    end
+  end
+  
   % determine the window size to show
   TextWidth = 12;
   TextHeight= 30;
@@ -63,19 +103,44 @@ function structure = structdlg(structure,options)
   if p(4) > height, p(4) = height; end
   set(f, 'Position',p);
 
+  % create the table
   t = uitable('Parent',f, ...
     'RowName',options.ListString, 'Data', Data0, ...
     'ColumnEditable',true, ...
     'FontSize',options.FontSize, ...
     'Units','normalized', 'Position', [0.05 0.2 .9 .7 ], ...
     'ColumnWidth','auto','TooltipString',options.TooltipString);
+    
+  % assemble the dialogue information structure
+  ad.figure       = f;
+  ad.table        = t;
+  ad.options      = options;
+  ad.tmp_storage  = tmp_storage;
+  ad.structure0   = structure;
+  ad.fields       = fields;
+  set(f, 'UserData', ad);
+  
   
   % when the figure is deleted, we should get the uitable Data back
   % wait for figure close
-  uiwait(f);
-  Data = getappdata(0,tmp_storage);
-  if numel(Data) ~= numel(Data0), return; end
-  % assemble new options...
-  
-  structure = cell2struct(Data, fields, 1);
-  rmappdata(0, tmp_storage);
+  if strcmp(options.CreateMode, 'modal')
+    setappdata(0,tmp_storage,[]);   % we shall collect the Table content here
+    uiwait(f);
+    Data = getappdata(0,tmp_storage);
+    if numel(Data) ~= numel(Data0), return; end
+    % restore initial structure field type when set
+    for index=1:size(Data0,1)
+      if ~isempty(fields_type{index})
+        try
+          Data{index} = eval(Data{index});
+        catch
+          disp([ mfilename ': failed evaluation of ' fields{index} ' new value "' Data{index} '". Skipping.' ]);
+        end
+      end
+    end
+    % assemble new options...
+    structure = cell2struct(Data, fields, 1);
+    rmappdata(0, tmp_storage);
+  else
+    structure = ad;
+  end
