@@ -372,7 +372,7 @@ if (strfind(method,'legend'))
 end
 
 % this plot should display model Parameters
-if ~isempty(mv) && ndims(mv) <= 2
+if isa(mv, 'iData') && ~isempty(mv) && ndims(mv) <= 2
   hold on
   axis(axis); % fix plot limits
   h2 = [];
