@@ -14,7 +14,7 @@ if isempty(fig) || ~ishandle(fig)
     
     % load Preferences
     mifit_Load_Preferences;
-    mifit_Apply_Preferences;
+    config=mifit_Apply_Preferences;
     % create the AppData default values
     setappdata(fig, 'Data',    []);
     setappdata(fig, 'History', {});
@@ -27,7 +27,7 @@ if isempty(fig) || ~ishandle(fig)
     setappdata(fig, 'CurrentDataSetHandle',[]);
     
     % Display welcome dialog during menu build
-    h = mifit_Tools_About(fig);
+    h = mifit_Help_About(fig);
     contrib = textwrap({ version(iData,2) },80);
     for index=1:numel(contrib)
       mifit_disp([ '  ' contrib{index} ])

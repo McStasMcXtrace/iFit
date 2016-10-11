@@ -1,4 +1,4 @@
-function h=mifit_Tools_About(fig)
+function h=mifit_Help_About(fig)
 % display the About dialogue. The handle ID is in adddata(gcf, 'handle_About')
   if nargin ==0, fig=''; end
   icon = fullfile(ifitpath,'Docs','images','ILL-web-jpeg.jpg');
