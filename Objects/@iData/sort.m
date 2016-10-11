@@ -52,7 +52,7 @@ myisvector = @(c)length(c) == numel(c);
 for index=tosort
   x = getaxis(a, index);
   [x, sorti] = sort(x, index, mode);
-  if ~isequal(sorti, 1:size(a, index))
+  if ~isequal(sorti, 1:size(a, index)) && ~all(sorti == sorti(1))
     S.type = '()';
     S.subs = {};
     nx = ndims(x);
