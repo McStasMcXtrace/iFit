@@ -45,7 +45,7 @@ function varargout = mifit(varargin)
 %  function mifit_Data_View(varargin)
 %  function mifit_Data_Properties(varargin)
 %  function mifit_Data_History(varargin)
-%  function mifit_Tools_About(fig)
+%  function mifit_Help_About(fig)
 %  function mifit_List_Data_Files(varargin)
 %  function mifit_List_Data_push(d)
 %  function mifit_List_Data_pull(varargin)
@@ -203,6 +203,9 @@ function mifit_File_Preferences(varargin)
     'Store Models when creation time is longer than [sec, 0:always, Inf:never, default=3]', ...
     'Undo levels to keep [2-50, reduce if you handle large/many data sets]'};
   options.FontSize   = config.FontSize;
+  options.TooltipString = sprintf([ 'Modify the %s Preferences.\n' ...
+      'You can specify additional menu items by entering a cell (pairs)\n' ...
+      '* Menu_<Label> = {''Item_Label'',''Command'', ...}' ], mfilename);
   config1 = structdlg(config, options);
   if isempty(config1), return; end
   config = config1;
@@ -454,10 +457,20 @@ function mifit_Data_History(varargin)
   
 function mifit_Data_Math_Unary(varargin)
   % TODO
+  op = {'abs','acosh','acos','asinh','asin','atanh','atan','ceil','conj','cosh','cos', ...
+    'ctranspose','del2','exp','fliplr','flipud','floor','full','imag','isfinite', ...
+    'isfloat','isinf','isinteger','islogical','isnan','isnumeric','isreal','isscalar', ...
+    'issparse','log10','log','norm','not','permute','real','round','sign','sinh','sin', ...
+    'sparse','sqrt','tanh','tan','transpose','uminus','uplus', ...
+    'cumtrapz','sum','prod','trapz','cumsum','cumprod',...
+    'gradient','min','mean','median','sort','squeeze',...
+    'double','logical','single','sqr'};
   disp([ mfilename ': Data_Math_Unary: TODO' ])
   
 function mifit_Data_Math_Binary(varargin)
   % TODO
+  op = {'combine','conv','convn','eq','ge','gt','le','lt','minus', ...
+  'mrdivide','ne','plus','power','rdivide','times','xcorr'};
   disp([ mfilename ': Data_Math_Binary: TODO' ])
   
 function mifit_Data_Math(varargin)
@@ -603,17 +616,17 @@ function selected = mifit_Optimizers_Set(varargin)
   
 % Tools menu *******************************************************************
 
-function mifit_Tools_Help(varargin)
+function mifit_Help_Main(varargin)
   % TODO
-  disp([ mfilename ': Tools_Help: TODO' ])
+  disp([ mfilename ': Help_Main: TODO' ])
   
-function mifit_Tools_Help_Loaders(varargin)
+function mifit_Help_Loaders(varargin)
   doc(iData,'Loaders');
   
-function mifit_Tools_Help_Models(varargin)
+function mifit_Help_Models(varargin)
   doc(iData,'Models');
   
-function mifit_Tools_Help_Optimizers(varargin)
+function mifit_Help_Optimizers(varargin)
   doc(iData,'Optimizers');
   
 % List Data and Stack management ***********************************************
