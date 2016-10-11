@@ -1,16 +1,30 @@
-function config=mifit_Apply_Preferences
+function config=mifit_Apply_Preferences(config)
+  
   fig = mifit_fig;
-  config = getappdata(fig, 'Preferences');
+  if nargin == 0, config = []; end
+  if ~isstruct(config) 
+    config0 = getappdata(fig, 'Preferences'); 
+    % config=struct: merge config and config0
+    if isstruct(config)
+      for f=fieldnames(config0)'
+        if ~isfield(config, f{1}) config.(f{1}) = config0.(f{1}); end
+      end
+    else
+      config = config0;
+    end
+  end
   
   % change all FontSize
   h=[ findobj(fig, 'Type','uicontrol') ; ...
       findobj(fig, 'Type','axes')    ; findobj(fig, 'Type','text') ; ...
       findobj(fig, 'Type','uipanel') ; findobj(fig, 'Type','uitable') ];
-  set(h, 'FontSize', config.FontSize);
+  if isfield(config, 'FontSize')
+    set(h, 'FontSize', config.FontSize);
+  end
   
   % change fontsize in Parameter table
   f = mifit_fig('mifit_View_Parameters');
-  if ~isempty(f)
+  if ~isempty(f) && isfield(config, 'FontSize')
     t = get(f, 'Children');
     set(t, 'FontSize', config.FontSize);
   end
@@ -41,9 +55,7 @@ function config=mifit_Apply_Preferences
     if isempty(menu_handle)
       mifit_disp([ '[Init] Adding menu "' menu_label '" from Preferences...' ]);
       menu_handle = uimenu(fig, 'Label', menu_label, 'Tag', [ 'Menu_' genvarname(menu_label) ]);
-      separator = 'off';
       flag_added_new_menu = true;
-    else separator = 'on';  % to separate from already existing items
     end
     
     % add menu items as pairs {'Label','Command'}
@@ -53,12 +65,11 @@ function config=mifit_Apply_Preferences
       cmd  = items{it+1};
       % check the menu item Label
       if ~ischar(item) || isempty(item)
-        disp([ mfilename ': invalid Menu ' field ':item ' num2str(it) ' should be a char not ' class(item) '. Skipping.' ]);
       elseif ~ischar(cmd) && ~isa(cmd, 'function_handle')
         disp([ mfilename ': invalid Menu ' field ':' item ' callback. Should be a char of function_handle. Skipping.' ]);
       elseif ~isempty(item) && ~isempty(cmd)
         % check from separator as Label first char '|'
-        if item(1) == '|', separator='on'; item(1)=[]; end
+        if item(1) == '|', separator='on'; item(1)=[]; else separator = 'off'; end
         % look if the menu item already exists
         item_handle = findobj(fig, 'Tag', [ menu_label '_' genvarname(item) ]);
         if isempty(item_handle)
@@ -76,10 +87,12 @@ function config=mifit_Apply_Preferences
       end
     end
   end
-  % move the help menu to the right side
-  menu_help  = findobj(fig, 'Tag','Menu_Help');
-  right_help = copyobj(menu_help, fig);
-  delete(menu_help);
+  if flag_added_new_menu
+    % move the help menu to the right side
+    menu_help  = findobj(fig, 'Tag','Menu_Help');
+    right_help = copyobj(menu_help, fig);
+    delete(menu_help);
+  end
   
   % for uimenu, could we use tip given by Y Altman 
   % <https://fr.mathworks.com/matlabcentral/newsreader/view_thread/148095>
