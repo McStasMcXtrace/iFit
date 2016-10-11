@@ -10,12 +10,13 @@ function str=class2str(this, data, options)
 %           root level from the input variable name, and ' ' to ignore root level 
 %           in structures.
 %   data: any data set (struct, array, cell, iData, char)
-%   options: optinal argument which may contain 'flat' and 'no comments'
+%   options: optinal argument which may contain 'flat', 'no comments','eval'
 %
 % output variables:
 %   str: string which contains a function code to generate the data.
 %
 % example: str=class2str('this', struct('a',1,'b','a string comment','c',{'cell'}))
+%  str=class2str(struct('a',1,'b','a string comment','c',{'cell'}),'eval')
 %          
 % See also: mat2str, num2str, eval, sprintf
 %
@@ -26,7 +27,7 @@ function str=class2str(this, data, options)
 if nargin == 1
   data = this;
   this = '';
-elseif nargin==2 && ~ischar(this)
+elseif nargin==2 && ~ischar(this) % (this,data)
   options=data; data=this; this=inputname(1);
 end
 if isempty(this)
@@ -38,6 +39,8 @@ if nargin < 3, options=''; end
 
 if strfind(options, 'flat')
   str = class2str_flat(this, data, options);
+elseif strfind(options, 'eval')
+  str = class2str_eval(data);
 else
   str = class2str_m(this, data, options);
 end
@@ -183,6 +186,42 @@ else
   catch
     warning([ mfilename ': can not save ' this ' ' class(data) '. Skipping.' ]);
   end
+end
+
+% ------------------------------------------------------------------------------
+function str = class2str_eval(data)
+
+str = '';
+NL  = sprintf('\n');
+
+if ischar(data)
+  str = [ '''' class2str_validstr(data) '''' ];
+elseif isnumeric(data)
+  if ndims(data) <= 2, str = mat2str(data); end
+elseif iscell(data)
+  for index=1:numel(data)
+    if index == 1, str = [     '{ ' class2str_eval(data{index}) ];
+    else           str = [ str ', ' class2str_eval(data{index}) ]; end
+  end
+  str = [ str ' }' ];
+  if size(data,1) > 1 && size(data,2) == 1, str = [ str '''' ]; end  % transpose
+elseif isa(data, 'function_handle') && numel(data) == 1
+  str = func2str(data);
+elseif isstruct(data) && numel(data) == 1
+  index=1;
+  for f=fieldnames(data)'
+    if index==1, str = [ 'struct(''' f{1} ''',' class2str_eval(data.(f{1})) ];
+    else         str = [ str  ', ''' f{1} ''', ' class2str_eval(data.(f{1})) ]; end
+    index=index+1;
+  end
+  str = [ str ')' ];
+elseif numel(data) > 1
+  for index=1:numel(data)
+    if index == 1, str = [     '[ ' class2str_eval(data(index)) ];
+    else           str = [ str ', ' class2str_eval(data(index)) ]; end
+  end
+  str = [ str ' ]' ];
+  if size(data,1) > 1 && size(data,2) == 1, str = [ str '''' ]; end  % transpose
 end
 
 % ------------------------------------------------------------------------------
