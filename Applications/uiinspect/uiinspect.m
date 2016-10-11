@@ -117,7 +117,7 @@ function hFig = uiinspect(obj, fig)
       catch
           mc = [];
       end
-      if ~ischar(obj) && (isempty(obj) || (~ishandle(obj) && isempty(mc)))
+      if (~ischar(obj) && (isempty(obj) || (~ishandle(obj) && isempty(mc)))) && ~isobject(obj)
           myError('YMA:uiinspect:notAHandle','Input to uiinspect must be a valid object as defined by ISHANDLE');
       elseif ~ischar(obj) && (numel(obj) ~= 1)
           myError('YMA:uiinspect:notASingleton','Input to uiinspect must be a single object handle');
