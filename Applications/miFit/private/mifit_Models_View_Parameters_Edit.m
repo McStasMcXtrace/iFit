@@ -3,7 +3,7 @@ function mifit_Models_View_Parameters_Edit(source, event)
 if nargin < 2, return; end
 if isempty(source)   || isempty(event),   return; end
 if ~ishandle(source) || ~isstruct(event), return; end
-if ~strcmpi(get(h,'Type'),'uitable'), return; end
+if ~strcmpi(get(source,'Type'),'uitable'), return; end
 
 % test if data changed, else return
 if event.NewData == event.PreviousData, return; end

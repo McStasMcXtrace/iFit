@@ -45,6 +45,7 @@ function varargout = mifit(varargin)
 %  function mifit_Data_View(varargin)
 %  function mifit_Data_Properties(varargin)
 %  function mifit_Data_History(varargin)
+%  function mifit_Data_Fit(varargin)
 %  function mifit_Help_About(fig)
 %  function mifit_List_Data_Files(varargin)
 %  function mifit_List_Data_push(d)
@@ -197,11 +198,13 @@ function mifit_File_Preferences(varargin)
   if ~isfield(config, 'Save_Data_On_Exit'), config.Save_Data_On_Exit='yes'; end
   if ~isfield(config, 'Store_Models'),      config.Store_Models=3; end
   if ~isfield(config, 'History_Level'),     config.History_Level=10; end
+  if ~isfield(config, 'Fit_Verbose'),       config.Fit_Verbose='yes'; end
   options.Name       = [ mfilename ': Preferences' ];
   options.ListString = {'Font size [10-36]', ...
     'Save Data sets on Exit [yes/no]', ...
     'Store Models when creation time is longer than [sec, 0:always, Inf:never, default=3]', ...
-    'Undo levels to keep [2-50, reduce if you handle large/many data sets]'};
+    'Undo levels to keep [2-50, reduce if you handle large/many data sets]', ...
+    'Verbosity when Fitting [yes shows criteria, parameters and final distributions]' };
   options.FontSize   = config.FontSize;
   options.TooltipString = sprintf([ 'Modify the %s Preferences.\n' ...
       'You can specify additional menu items by entering a cell (pairs)\n' ...
@@ -390,31 +393,50 @@ function mifit_Data_Fit(varargin)
     options = [];
   end
   % overload Preferences choices: OutputFcn, Display.
+  config = getappdata(mifit_fig, 'Preferences');
   options.Display='iter';
+  if isfield(config,'Fit_Verbose') && strcmp(config.Fit_Verbose,'yes')
+    if ~isfield(options, 'PlotFcns') || isempty(options.PlotFcns), options.PlotFcns = {}; end
+    options.PlotFcns{end+1} = 'fminplot';
+    options.PlotFcns{end+1} = @(x,optimValues,state)mifit_Models_View_Parameters(x);
+  end
   
-  % TODO: it is desirable to handle constraints (min/max/fix)
-  % TODO: must get the CurrentOptimizer and its configuration
   % [pars,criteria,message,output] = fits(a, model, pars, options, constraints, ...)
-  mifit_disp([ 'Starting fit of data sets with "' CurrentOptimizer '"' ]);
+  mifit_disp([ 'Starting fit of data set(s) with "' CurrentOptimizer '"' ]);
   mifit_disp(char(d))
   
+  % THE FIT ********************************************************************
+  % the initial Dataset array 'd' is updated after the fit.
   [p,c,m,o]=fits(d, '', 'current', options);  % with assigned models or gaussians
-  
+
   % update Data list with fit results (and History)
   D = getappdata(mifit_fig, 'Data');
-  D(index_selected) = d;
+  if numel(D) == 1
+    D = d;
+  else
+    D(index_selected) = d;
+  end
   setappdata(mifit_fig, 'Data',D);
   
+  % show results for the 1st fit/dataset
+  index_selected = index_selected(1); 
+  d=d(1);
   
-  if isappdata(mifit_fig, 'CurrentDataSetIndex')
-    index_selected = getappdata(mifit_fig, 'CurrentDataSetIndex');
-    setappdata(mifit_fig, 'CurrentDataSet', D(index_selected));
-  end
+  setappdata(mifit_fig, 'CurrentDataSetIndex', index_selected);
+  setappdata(mifit_fig, 'CurrentDataSet', d);
   
   mifit_History_push;
   
   % update Parameter Window content
-  mifit_Models_View_Parameters('update');
+  handle = mifit_Models_View_Parameters('update');
+  if ~isempty(handle) && ishandle(handle)
+    setappdata(handle, 'LastFitOutput', o);
+  end
+  
+  % display the Parameter distribution histograms
+  if isfield(config,'Fit_Verbose') && strcmp(config.Fit_Verbose,'yes')
+    mifit_Models_View_Parameters('histograms');
+  end
   
 function mifit_Data_Saveas(varargin)
   d = mifit_List_Data_pull;
