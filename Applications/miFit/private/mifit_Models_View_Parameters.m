@@ -1,4 +1,4 @@
-function mifit_Models_View_Parameters(varargin)
+function stop=mifit_Models_View_Parameters(varargin)
   % get 1st selected Model from Data set or Models menu current choice
   % Display a uitable with columns:
   % [ Parameters | ParameterValues | ParameterUncertainty | constraints.fixed | constraints.min | constraints.max ]
@@ -13,12 +13,31 @@ function mifit_Models_View_Parameters(varargin)
     cache.table   =[];
   end
   
+  stop=false;
+  
   if nargin == 1 && ischar(varargin{1})
     action = varargin{1};
+    stop = mifit_fig('mifit_View_Parameters');
     switch lower(action)
     case 'update'
       cache.modelTag = '';
+    case 'histograms'
+      mifit_Models_View_Parameters_Histograms;
+      return
     end
+  elseif nargin == 1 && isnumeric(varargin{1})
+    % quick update of the 'Value' column with the given parameter vector
+    Parameters = varargin{1};
+    f = mifit_fig('mifit_View_Parameters');
+    if isempty(f) || ~ishandle(f), return; end
+    t = getappdata(f, 'TableHandle');
+    if ~ishandle(t), return; end
+    Data = get(t, 'Data'); n = size(Data,1);
+    if n == numel(Parameters)
+      Data(:,2) = mat2cell(Parameters(:), ones(n,1),1);
+      set(t, 'Data',          Data);
+    end
+    return
   end
 
   % get the Currently selected Data set
@@ -104,8 +123,12 @@ function mifit_Models_View_Parameters(varargin)
     uicm = uicontextmenu('Parent',f); 
     uimenu(uicm, 'Label', [ 'Model:' model.Name ]);
     uimenu(uicm, 'Label', [ 'Data set:' char(d) ]);
-    uimenu(uicm, 'Separator','on','Label','Copy to clipboard', 'Callback', @mifit_Models_View_Parameters_copy);
-    uimenu(uicm, 'Label','Export to CSV file...', 'Callback', @mifit_Models_View_Parameters_export);
+    uimenu(uicm, 'Separator','on','Label','Copy to clipboard', ...
+      'Callback', @mifit_Models_View_Parameters_copy);
+    uimenu(uicm, 'Label','Export to CSV file...', ...
+      'Callback', @mifit_Models_View_Parameters_export);
+    uimenu(uicm, 'Label','Plot parameter distributions...', ...
+      'Callback', @mifit_Models_View_Parameters_Histograms);
     set(t,   'UIContextMenu', uicm);
     
     % we must store that window ID into the Appdata
@@ -210,6 +233,8 @@ function mifit_Models_View_Parameters(varargin)
   cache.numPars  = n;
   cache.fig      = f;
   
+  stop = f;
+  
 % ------------------------------------------------------------------------------
 function mifit_Models_View_Parameters_copy(varargin)
   t = getappdata(gcbf, 'TableHandle');
@@ -238,3 +263,19 @@ function mifit_Models_View_Parameters_export(varargin)
     fprintf(fid, '%20s, %g, %g\n', d{index,1:3});
   end
   fclose(fid);
+  
+function mifit_Models_View_Parameters_Histograms(varargin)
+  % display the Parameter distribution histograms
+  f = mifit_fig('mifit_View_Parameters');
+  if isempty(f) || ~ishandle(f), return; end
+  o = getappdata(f, 'LastFitOutput');
+  if isempty(o), return; end
+  if iscell(o), o=o{1}; end
+  figure('Name',[ 'Parameter distributions: ' datestr(now) ' ' o.optimizer ' ' o.model.Name ]);
+  M=numel(o.parsBest); m=floor(sqrt(M)); n=ceil(M./m);
+  index      = find(o.criteriaHistory < min(o.criteriaHistory)*10); % select a portion close to the optimum
+  for P=1:M
+    subplot(m,n,P); hist(o.parsHistory(index,P));
+    title(sprintf('p(%i):%s = %g +/- %g', P, o.parsNames{P}, o.parsBest(P), o.parsHistoryUncertainty(P)));
+    xlabel(o.parsNames{P});
+  end
