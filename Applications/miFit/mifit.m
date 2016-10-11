@@ -104,8 +104,35 @@ function varargout = mifit(varargin)
           mifit_List_Data_push(varargin{1});
         elseif isa(varargin{1}, 'iFunc') || isa(varargin{1}, 'sw') || isa(varargin{1}, 'spinw')
           mifit_Models_Add_Entry(iFunc(varargin{1}));
-        else
-          d = iData(varargin{:});
+        else  % import files/other stuff
+          d = [];
+          if ischar(varargin{1}) && ~isempty(dir(varargin{1}))
+            % test if we import a saved MAT file
+            if ~isdir(varargin{1})
+              file = varargin{1};
+              try
+                d = load(file);
+                if isfield(d, 'Data'), d=d.Data; else d=[]; end
+              catch
+                d = [];
+              end
+              % test if we import a config.ini file
+              if isempty(d)
+                try
+                  config = mifit_Load_Preferences(file);
+                catch
+                  config = [];
+                end
+                if ~isempty(config)
+                  mifit_Apply_Preferences(config);
+                  return
+                end
+              end
+            end
+          end
+          if isempty(d)
+            d = iData(varargin{:});
+          end
           % now push 'd' into the Stack
           if ~isempty(d)
             mifit_List_Data_push(d);

@@ -100,6 +100,12 @@ if isempty(fig) || ~ishandle(fig)
         mifit_List_Data_push(d.Data);
       end
     end
+    
+    % resize main panel
+    handle = findobj(fig, 'Tag','Panel_DataSets');
+    set(handle, 'Units','normalized', 'Position',[0.002 0 0.99 0.99]);
+    
+    % start Logging
     file = fullfile(prefdir, [ 'mifit' '.log' ]);
     mifit_disp([ '[Init] Log file is ' file ]);
 
