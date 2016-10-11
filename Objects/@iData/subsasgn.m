@@ -70,7 +70,7 @@ if numel(b) > 1 && any(strcmp(S(1).type,{'()','{}'}))
     end
   end
 
-  if ~isempty(c) && prod(sc) ~= 0 && prod(sc) == prod(size(c)) && numel(c) > 1
+  if prod(sc) ~= 0 && prod(sc) == prod(size(c)) && numel(c) > 1
     c = reshape(c, size(c));
   end
   if ~isempty(c)
