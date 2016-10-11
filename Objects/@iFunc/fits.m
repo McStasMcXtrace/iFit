@@ -451,7 +451,7 @@ if strcmp(options.Display, 'iter') || strcmp(options.Display, 'final')
     a.Name,  model.Name, options.algorithm);
   disp(  '** Fit performed with initial parameters:');
   for index=1:length(model.Parameters); 
-    fprintf(1,'  p(%3d)=%20s=%g', index,strtok(model.Parameters{index}), pars(index)); 
+    fprintf(1,'  p(%3d):%20s=%g', index,strtok(model.Parameters{index}), pars(index)); 
     if isfield(constraints, 'fixed') && length(constraints.fixed) >= index && constraints.fixed(index)
       fprintf(1, ' (fixed)'); end
     fprintf('\n');
@@ -519,7 +519,7 @@ if strcmp(options.Display, 'iter') || strcmp(options.Display, 'final')
   
   disp([ '** Final parameters (duration ' num2str(output.duration) ' [s]):' ]);
   for index=1:length(model.Parameters); 
-    fprintf(1,'  p(%3d)=%20s=%g +/- %g', index,strtok(model.Parameters{index}), pars_out(index), sigma(index)); 
+    fprintf(1,'  p(%3d):%20s=%g +/- %g', index,strtok(model.Parameters{index}), pars_out(index), sigma(index)); 
     if isfield(constraints, 'fixed') && length(constraints.fixed) >= index && constraints.fixed(index)
       fprintf(1, ' (fixed)'); end
     fprintf('\n');
@@ -529,6 +529,9 @@ end
 if ~isempty(is_idata)
   % make it an iData
   b = is_idata; % the initial iData object
+  if isfield(output.modelValue,'ModelValue')
+    output.modelValue.ModelValue = [];  % avoids recursive storage
+  end
   % fit(signal/monitor) but object has already Monitor -> we compensate Monitor^2
   if not(all(a.Monitor == 1 | a.Monitor == 0)) 
     output.modelValue    = bsxfun(@times,output.modelValue, a.Monitor); 
