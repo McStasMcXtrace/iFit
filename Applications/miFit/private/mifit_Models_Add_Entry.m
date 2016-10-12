@@ -1,5 +1,5 @@
 function handle = mifit_Models_Add_Entry(model)
-  % add a new Model (iFunc or cellstr) into the Models sub-menus.
+  % [internal] mifit_Models_Add_Entry: add a new Model (iFunc or cellstr) into the Models sub-menus.
   % the input argument should be a structure with members:
   %   model.callback
   %   model.label

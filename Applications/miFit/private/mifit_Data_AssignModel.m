@@ -1,5 +1,6 @@
 function mifit_Data_AssignModel(varargin)
-  % this function is called when the user selects a Model from the Models menu.
+% [internal] mifit_Models_GetList: this function is called when the user selects a Model from the Models menu
+%   as a Callback
   
   model = get(varargin{1},'UserData'); % an iFunc or char/cellstr stored into UserData of the menu item.
   handle= [];

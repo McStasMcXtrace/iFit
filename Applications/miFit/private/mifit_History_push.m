@@ -1,5 +1,5 @@
 function mifit_History_push
-% append current Data into the History
+% [internal] mifit_History_push: append current Data into the History
   fig = mifit_fig;
   History = getappdata(fig, 'History');
   Data    = getappdata(fig, 'Data');

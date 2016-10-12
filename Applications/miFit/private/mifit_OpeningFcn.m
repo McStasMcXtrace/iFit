@@ -1,5 +1,5 @@
 function fig = mifit_OpeningFcn
-% This function creates the main window and returns its ID
+% [internal] mifit_OpeningFcn: This function creates the main mifit window and returns its ID
 
 fig = mifit_fig();
 if isempty(fig) || ~ishandle(fig)

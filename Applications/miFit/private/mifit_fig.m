@@ -1,5 +1,5 @@
 function f=mifit_fig(tag)
-% search for a given Tag in Application or main Figure if ommitted.
+% [internal] mifit_fig: search for a given Tag in Application or main Figure if ommitted.
   persistent fig handles
   
   if ~ishandle(fig), fig=[]; end

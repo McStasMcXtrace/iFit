@@ -1,4 +1,5 @@
 function mifit_Save_Preferences(config)
+% File/Preferences: save the Preferences 'config' structure
   filename = fullfile(prefdir, [ 'mifit' '.ini' ]);
   NL = sprintf('\n');
   description = 'miFit interface to iFit';

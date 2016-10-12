@@ -1,5 +1,5 @@
 function mifit_List_Data_push(d)
-% put a new data set at the end of the stack
+% [internal] mifit_List_Data_push: put a new data set at the end of the stack
   if isempty(d),       return; end
   if ~isa(d, 'iData'), return; end
   fig = mifit_fig;

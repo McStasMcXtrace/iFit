@@ -1,5 +1,5 @@
 function mifit_History_pull
-% get the last History element and deletes it
+% [internal] mifit_History_pull for Edit/Undo: restore the last History state and deletes it
   fig = mifit_fig;
   History = getappdata(fig, 'History');
   if isempty(History), return; end

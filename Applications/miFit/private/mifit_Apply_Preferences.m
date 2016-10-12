@@ -1,5 +1,9 @@
 function config=mifit_Apply_Preferences(config)
-  
+% [internal] mifit_Apply_Preferences: apply Preferences after load, from default 
+%   or specified config structure
+%   This function also handles User menus from the Preferences
+
+  % get the Preferences
   fig = mifit_fig;
   if nargin == 0, config = []; end
   if ~isstruct(config) 

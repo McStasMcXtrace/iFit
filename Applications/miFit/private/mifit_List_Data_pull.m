@@ -1,5 +1,5 @@
 function [d, index_selected]=mifit_List_Data_pull(varargin)
-% get the selected Data List
+% [internal] mifit_List_Data_pull: get the selected Data List
 % return the selected objects
   hObject = mifit_fig('List_Data_Files');
   d = [];

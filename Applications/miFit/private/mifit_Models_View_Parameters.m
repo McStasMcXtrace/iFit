@@ -1,6 +1,7 @@
 function stop=mifit_Models_View_Parameters(varargin)
-  % get 1st selected Model from Data set or Models menu current choice
-  % Display a uitable with columns:
+  % [internal] mifit_Models_View_Parameters: the window showing Model parameters
+  %   get 1st selected Model from Data set or Models menu current choice
+  %   Display a uitable with columns:
   % [ Parameters | ParameterValues | ParameterUncertainty | constraints.fixed | constraints.min | constraints.max ]
   
   persistent cache
