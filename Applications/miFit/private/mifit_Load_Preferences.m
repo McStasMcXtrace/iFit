@@ -1,4 +1,5 @@
 function config = mifit_Load_Preferences(file)
+% File/Load Preferences
   if nargin == 0, file = []; end
   if isempty(file)
     file = fullfile(prefdir, [ 'mifit' '.ini' ]);
@@ -25,6 +26,6 @@ function config = mifit_Load_Preferences(file)
     end
   end
   
-  % resize main panel
+  % TODO: resize main panel. Is this really needed ?
   handle = findobj(mifit_fig, 'Tag','Panel_DataSets');
   set(handle, 'Units','normalized', 'Position',[0.002 0 0.99 0.99]);

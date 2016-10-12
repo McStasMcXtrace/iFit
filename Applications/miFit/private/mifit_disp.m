@@ -1,5 +1,5 @@
 function mifit_disp(message)
-  % display message, and log it
+% [internal] mifit_disp: display message, and log it
   if iscellstr(message)
     for index=1:numel(message)
       mifit_disp(message{index})

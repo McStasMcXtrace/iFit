@@ -1,4 +1,6 @@
 function mifit_Models_View_Parameters_Edit(source, event)
+% [internal] mifit_Models_View_Parameters_Edit:
+%   callback when editing items in the Model Paremeter window
 
 if nargin < 2, return; end
 if isempty(source)   || isempty(event),   return; end
