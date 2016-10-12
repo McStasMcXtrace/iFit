@@ -159,7 +159,7 @@ function varargout = mifit(varargin)
 
 % File menu ********************************************************************
 function mifit_File_New(handle)
-% File/New menu item
+% File/New menu item: open a table to edit a new data set
   d = iData(zeros(5)); % create an empty Data set;
   mifit_disp([ '[File_New] Editing an empty Data set. ' ...
     'Close the window to retrieve its content as a new Data set into miFit. ' ...
@@ -172,17 +172,19 @@ function mifit_File_New(handle)
   set(handle, 'FontSize', config.FontSize);
   
 function mifit_File_Open(handle)
+% File/Open menu item: shown fileselector and open file
   d = iData('');  % open file selector, and import files
   % push that data onto the List
   mifit_List_Data_push(d);
   
 function mifit_File_Save(varargin)
-% save Data sets and Model parameters into a mifit.mat file
+% File/Save: save Data sets and Model parameters into a mifit.mat file
   
   file = fullfile(prefdir, [ mfilename '.mat' ]);
   mifit_File_Saveas(file);
   
 function mifit_File_Saveas(varargin)
+% File/saveas: save as a MAT with user filename
 % save the application configuration into specified file
 % Data sets and Model parameters into a mifit.mat file
   fig        = mifit_fig;
@@ -205,8 +207,8 @@ function mifit_File_Saveas(varargin)
   builtin('save', file, 'Data','Models','Optimizers','CurrentOptimizer');
   
 function mifit_File_Print(varargin)
-% print the interface. Not very nice. can we think of something better ?
-% perhaps we can generate an HTML report in Saveas HTML ?
+% File/Print: print the interface. 
+% generate an HTML report and display in browser for printing.
   d=mifit_List_Data_pull(); % get selected objects
   filename = [ tempname '.html' ];
   mifit_disp([ '[File_Print] Exporting Data sets to HTML ' filename ' for printing...' ]);
@@ -214,7 +216,7 @@ function mifit_File_Print(varargin)
   fallback_web(filename);
   
 function mifit_File_Preferences(varargin)
-% open Preferences dialogue
+% File/Preferences: open Preferences dialogue
 % set directories to search for Models
 % set FontSize (and update all Fonts in figure)
 % set Save on exit
@@ -247,7 +249,7 @@ function mifit_File_Preferences(varargin)
   mifit_Save_Preferences(config);
 
 function mifit_File_Exit(varargin)
-% Quit and Save Data
+% File/Exit: Quit and Save Data
   config = getappdata(mifit_fig, 'Preferences');
   if isfield(config, 'Save_Data_On_Exit') && strcmp(config.Save_Data_On_Exit, 'yes')
     mifit_File_Save;
@@ -260,6 +262,7 @@ function mifit_File_Exit(varargin)
   delete(mifit_fig);
   
 function mifit_File_Reset(varargin)
+% File/Reset: clear data sets, user models and Preferences
   options.Default     = 'Cancel';
   options.Interpreter = 'tex';
   ButtonName = questdlg({ ...
@@ -289,6 +292,7 @@ function mifit_File_Reset(varargin)
   end
   
 function mifit_File_Log(varargin)
+% File/Log: show mifit log file
   file = fullfile(prefdir, [ mfilename '.log' ]);
   if ~isempty(dir(file))
     edit(file);
@@ -297,18 +301,18 @@ function mifit_File_Log(varargin)
 % Edit menu ********************************************************************
 
 function mifit_Edit_Undo(varargin)
-% set the Data stack to the previous state from History
+% Edit/Undo: set the Data stack to the previous state from History
   mifit_History_pull();
   mifit_List_Data_UpdateStrings();
 
 function mifit_Edit_Cut(varargin)
-% get the selected indices in the List, copy these elements to the clipboard
+% Edit/Cut: get the selected indices in the List, copy these elements to the clipboard
 % and delete the elements. Update the History (in Delete).
   mifit_Edit_Copy(varargin{:});
   mifit_Edit_Delete(varargin{:});
 
 function mifit_Edit_Copy(varargin)
-% get the selected indices in the List, copy these elements to the clipboard
+% Edit/Copy: get the selected indices in the List, copy these elements to the clipboard
 % we use 'copy' from Y. Lengwiler as it is pure-Matlab, and extends the limited 
 % clipboard function.
   d=mifit_List_Data_pull(); % get selected objects
@@ -329,7 +333,7 @@ function mifit_Edit_Copy(varargin)
   copy(x);
 
 function mifit_Edit_Paste(varargin)
-% append/copy the data sets from the clipboard to the end of the list
+% Edit/Paste: append/copy the data sets from the clipboard to the end of the list
 % clipboard can be a file name, an iData Tag/ID or ID in the Stack
 % for iData ID, make a copy of the objects
 % Update the History
@@ -364,12 +368,12 @@ function mifit_Edit_Paste(varargin)
   mifit_List_Data_push(d);
 
 function mifit_Edit_Duplicate(varargin)
-% copy and paste selected. Update the history (in Paste).
+% Edit/Duplicate: copy and paste selected. Update the history (in Paste).
   d=mifit_List_Data_pull();
   mifit_List_Data_push(copyobj(d));
   
 function mifit_Edit_Select_All(hObject, select)
-% set the List selected values to all ones
+% Edit/Select All/None: set the List selected values to all ones
 % the select argument can be 0 or 1 to deselect/select all
   hObject = mifit_fig('List_Data_Files');
   items   = get(hObject,'String');
@@ -381,7 +385,7 @@ function mifit_Edit_Select_All(hObject, select)
   set(hObject,'Value', index_selected);
 
 function mifit_Edit_Delete(varargin)
-% delete selected
+% Edit/Delete: delete selected
 % Update the History
   fig = mifit_fig;
   hObject        = mifit_fig('List_Data_Files');
@@ -403,75 +407,21 @@ function mifit_Edit_Delete(varargin)
 % Data menu ********************************************************************
 
 function mifit_Data_Plot(varargin)
+% Data/Plot
   if nargin && isa(varargin{1}, 'iData'), d=varargin{1}; 
   else d = mifit_List_Data_pull; end
   f=figure;
   subplot(d,'light transparent grid');
   
-function mifit_Data_Fit(varargin)
-  [d, index_selected] = mifit_List_Data_pull;
-  if isempty(index_selected), return; end
-  
-  % get the Optimizer configuration
-  CurrentOptimizer = getappdata(mifit_fig,'CurrentOptimizer');
-  if isappdata(mifit_fig,'CurrentOptimizerConfig')
-    options = getappdata(mifit_fig,'CurrentOptimizerConfig');
-  else
-    options = [];
-  end
-  % overload Preferences choices: OutputFcn, Display.
-  config = getappdata(mifit_fig, 'Preferences');
-  options.Display='iter';
-  if isfield(config,'Fit_Verbose') && strcmp(config.Fit_Verbose,'yes')
-    if ~isfield(options, 'PlotFcns') || isempty(options.PlotFcns), options.PlotFcns = {}; end
-    options.PlotFcns{end+1} = 'fminplot';
-    options.PlotFcns{end+1} = @(x,optimValues,state)mifit_Models_View_Parameters(x);
-  end
-  
-  % [pars,criteria,message,output] = fits(a, model, pars, options, constraints, ...)
-  mifit_disp([ 'Starting fit of data set(s) with "' CurrentOptimizer '"' ]);
-  mifit_disp(char(d))
-  
-  % THE FIT ********************************************************************
-  % the initial Dataset array 'd' is updated after the fit.
-  [p,c,m,o]=fits(d, '', 'current', options);  % with assigned models or gaussians
-
-  % update Data list with fit results (and History)
-  D = getappdata(mifit_fig, 'Data');
-  if numel(D) == 1
-    D = d;
-  else
-    D(index_selected) = d;
-  end
-  setappdata(mifit_fig, 'Data',D);
-  
-  % show results for the 1st fit/dataset
-  index_selected = index_selected(1); 
-  d=d(1);
-  
-  setappdata(mifit_fig, 'CurrentDataSetIndex', index_selected);
-  setappdata(mifit_fig, 'CurrentDataSet', d);
-  
-  mifit_History_push;
-  
-  % update Parameter Window content
-  handle = mifit_Models_View_Parameters('update');
-  if ~isempty(handle) && ishandle(handle)
-    setappdata(handle, 'LastFitOutput', o);
-  end
-  
-  % display the Parameter distribution histograms
-  if isfield(config,'Fit_Verbose') && strcmp(config.Fit_Verbose,'yes')
-    mifit_Models_View_Parameters('histograms');
-  end
-  
 function mifit_Data_Saveas(varargin)
+% Data/Saveas: export selected data sets
   d = mifit_List_Data_pull;
-  if ~isempty(d)
+  if numel(d)
     save(d, 'gui');
   end
   
 function mifit_Data_Table(varargin)
+% Data/view Table: view data sets as tables
   d = mifit_List_Data_pull;
   config = getappdata(mifit_fig, 'Preferences');
   
@@ -482,6 +432,7 @@ function mifit_Data_Table(varargin)
   end
 
 function mifit_Data_View(varargin)
+% Data/view Source: edit source file when exists
   d = mifit_List_Data_pull;
   for index=1:numel(d)  
     if ~isempty(d(index).Source) && ~isdir(d(index).Source)
@@ -499,13 +450,19 @@ function mifit_Data_Properties(varargin)
 % display statistics
   
 function mifit_Data_History(varargin)
+% Data/History: show Data sets command history
   d = mifit_List_Data_pull();
   for index=1:numel(d)
     [c,fig]=commandhistory(d(index));
   end
   
 function mifit_Data_Math_Unary(varargin)
-  % TODO
+% Data/Transform unary: apply a unary operator on Datasets
+  
+  % we display a dialogue to select which operator to apply on the selected Datasets
+  [d, index_selected] = mifit_List_Data_pull;
+  if isempty(index_selected), return; end
+  
   op = {'abs','acosh','acos','asinh','asin','atanh','atan','ceil','conj','cosh','cos', ...
     'ctranspose','del2','exp','fliplr','flipud','floor','full','imag','isfinite', ...
     'isfloat','isinf','isinteger','islogical','isnan','isnumeric','isreal','isscalar', ...
@@ -514,7 +471,29 @@ function mifit_Data_Math_Unary(varargin)
     'cumtrapz','sum','prod','trapz','cumsum','cumprod',...
     'gradient','min','mean','median','sort','squeeze',...
     'double','logical','single','sqr'};
-  disp([ mfilename ': Data_Math_Unary: TODO' ])
+  op = sort(op); % alpha order sort
+    
+  % show operator selection dialogue
+  [selection, ok] = listdlg('ListString', op, 'ListSize',[400 160], ...
+    'Name',[ 'miFit: Select unary operator to apply on ' ...
+      num2str(numel(index_selected)) ' data set(s)' ], ...
+      'PromptString', char(d));
+  if isempty(selection), return; end
+  op = op{selection};
+ 
+  % apply operator on Datasets
+  mifit_disp([ 'Applying operator "' op '" on data set(s):' ]);
+  mifit_disp(char(d))
+  try
+    d = feval(op, d);
+  catch ME
+    mifit_disp([ '[Data unary] Failed applying operator "' op '"' ]);
+    mifit_disp(getReport(ME));
+    return
+  end
+    
+  % upload new Data sets
+  mifit_List_Data_push(d);
   
 function mifit_Data_Math_Binary(varargin)
   % TODO
@@ -530,8 +509,8 @@ function mifit_Data_Math(varargin)
 % Models menu ******************************************************************
 
 function [ifuncs, labels,indices,handles] = mifit_Models_GetList(varargin)
-  % get the list of iFunc models (not expressions) in the Models menu
-  % indices is the index of 'static' Models in the whole list.
+% [internal] mifit_Models_GetList: get the list of iFunc models (not expressions) in the Models menu
+% indices is the index of 'static' Models in the whole list.
   models = getappdata(mifit_fig,'Models');
   ifuncs = []; labels = {}; indices = []; handles = [];
   for index=1:numel(models)
@@ -545,7 +524,8 @@ function [ifuncs, labels,indices,handles] = mifit_Models_GetList(varargin)
   end
 
 function mifit_Models_Load(varargin)
-  % we pop-up a file selector, read as iFunc, and store it in miFit.
+% Models/Import: load new Models
+% we pop-up a file selector, read as iFunc, and store it in miFit.
   models = load(iFunc, '');
   if isempty(models), return; end
   mifit_disp([ '[Models] Loading ' num2str(numel(models)) ' new models:' ]);
@@ -553,17 +533,19 @@ function mifit_Models_Load(varargin)
   mifit(models);
   
 function mifit_Models_Export(varargin)
+% Models/Export: save user Models
   % get the list of 'static' iFunc models (which have been created and stored in the Models menu)
   [ifuncs, labels,indices] = mifit_Models_GetList();
   if isempty(indices), return; end
   % pop-up a dialogue box to select those to export, with select all button
   [selection, ok] = listdlg('ListString', labels, 'SelectionMode', 'multiple', ...
-    'Name','miFit: Select Models to Export', 'ListSize',[300 160]);
+    'Name','miFit: Select Models to Export', 'ListSize',[400 160]);
   if isempty(selection), return; end
   % pop-up the iFunc.save export dialogue
   save(ifuncs(selection),'gui');
   
 function mifit_Models_Remove(varargin)
+% Models/Remove: clear user models
   % select 'static' iFunc models to remove from the menu
    
   % get the list of 'static' iFunc models (which have been created and stored in the Models menu)
@@ -606,6 +588,7 @@ function mifit_Models_Add_Expression(varargin)
 % Optimizers menu **************************************************************
 
 function mifit_Optimizers_Configure(varargin)
+% Optimizers/Configure: open dialogue to change current optimizer parameters
   % change optimizer configuration parameters
   CurrentOptimizer = getappdata(mifit_fig,'CurrentOptimizer');
   mifit_disp([ '[Optimizers_Configure] Configure "' CurrentOptimizer '"' ]);
@@ -636,7 +619,7 @@ function mifit_Optimizers_Configure(varargin)
   
   
 function selected = mifit_Optimizers_Set(varargin)
-
+% [internal] mifit_Optimizers_Set: set current optimizer, and check its label in the menu
   % set the optimizer to use
   selected0 = getappdata(mifit_fig, 'CurrentOptimizer');
   selected  = selected0;
@@ -666,22 +649,28 @@ function selected = mifit_Optimizers_Set(varargin)
 % Tools menu *******************************************************************
 
 function mifit_Help_Main(varargin)
+% Help/Main: open web page for miFit
   % TODO
   disp([ mfilename ': Help_Main: TODO' ])
   
 function mifit_Help_Loaders(varargin)
+% Help/Loaders: open web page Loaders
   doc(iData,'Loaders');
   
 function mifit_Help_Models(varargin)
+% Help/Models: open web page Models
   doc(iData,'Models');
   
 function mifit_Help_Optimizers(varargin)
+% Help/Optimizers: open web page Optimizers
   doc(iData,'Optimizers');
   
 % List Data and Stack management ***********************************************
 
 function mifit_List_Data_Files(varargin)
-  % called when clicking on the listbox
+% [internal] mifit_List_Data_Files: called when clicking on the listbox
+% TODO: support KeyPressFcn to e.g. 'p'=plot(log10(d)), 'f'=fit, 's'=save, 'o'=open, ...
+% TODO: install a UIContextMenu in the Data sets list uicontrol ?
   if nargin && ishandle(varargin{1}), 
     obj=varargin{1}; 
   else obj=[]; end
@@ -691,7 +680,6 @@ function mifit_List_Data_Files(varargin)
   if isempty(index_selected)
     setappdata(mifit_fig, 'CurrentDataSet', []);
     setappdata(mifit_fig, 'CurrentDataSetIndex', []);
-    % TODO: should we close the Models_View_Parameters window ? or clear it ? or display 'no model' ?
   end
 
   if ~isempty(obj)
@@ -741,7 +729,7 @@ function mifit_List_Data_Files(varargin)
   end
   
 function mifit_List_Data_UpdateStrings
-  % update the List labels
+% [internal] mifit_List_Data_UpdateStrings: update the List labels
   fig = mifit_fig;
   
   Data = getappdata(fig, 'Data');
