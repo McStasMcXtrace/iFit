@@ -210,6 +210,7 @@ function mifit_File_Print(varargin)
 % File/Print: print the interface. 
 % generate an HTML report and display in browser for printing.
   d=mifit_List_Data_pull(); % get selected objects
+  if all(isempty(d)), return; end
   filename = [ tempname '.html' ];
   mifit_disp([ '[File_Print] Exporting Data sets to HTML ' filename ' for printing...' ]);
   save(d, filename, 'html data');
@@ -390,7 +391,9 @@ function mifit_Edit_Delete(varargin)
   fig = mifit_fig;
   hObject        = mifit_fig('List_Data_Files');
   index_selected = get(hObject,'Value');
+  if isempty(index_selected), return; end
   Data = getappdata(fig, 'Data');
+  if numel(Data) == 0, return; end
   if numel(Data) > 1 && numel(index_selected) < numel(Data)
     Data(index_selected) = [];
   else
@@ -410,6 +413,7 @@ function mifit_Data_Plot(varargin)
 % Data/Plot
   if nargin && isa(varargin{1}, 'iData'), d=varargin{1}; 
   else d = mifit_List_Data_pull; end
+  if all(isempty(d)), return; end
   f=figure;
   subplot(d,'light transparent grid');
   

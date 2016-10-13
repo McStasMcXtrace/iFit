@@ -2,6 +2,7 @@ function mifit_Data_Fit(varargin)
 % Data/Fit: fit selected data sets with their attached Model
   [d, index_selected] = mifit_List_Data_pull;
   if isempty(index_selected), return; end
+  if all(isempty(d)), return; end
   
   % get the Optimizer configuration
   CurrentOptimizer = getappdata(mifit_fig,'CurrentOptimizer');

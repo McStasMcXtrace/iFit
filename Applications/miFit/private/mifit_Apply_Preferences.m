@@ -29,7 +29,7 @@ function config=mifit_Apply_Preferences(config)
   % change fontsize in Parameter table
   f = mifit_fig('mifit_View_Parameters');
   if ~isempty(f) && isfield(config, 'FontSize')
-    t = get(f, 'Children');
+    t = findobj(f, 'Type','uitable');
     set(t, 'FontSize', config.FontSize);
   end
   

@@ -15,7 +15,7 @@ function stop=mifit_Models_View_Parameters(varargin)
   end
   
   stop=false;
-  
+  % 'fast' mode for a specific action, or update of the Parameters column.
   if nargin == 1 && ischar(varargin{1})
     action = varargin{1};
     stop = mifit_fig('mifit_View_Parameters');
@@ -26,7 +26,7 @@ function stop=mifit_Models_View_Parameters(varargin)
       mifit_Models_View_Parameters_Histograms;
       return
     end
-  elseif nargin == 1 && isnumeric(varargin{1})
+  elseif nargin == 1 && isnumeric(varargin{1}) && ~all(ishandle(varargin{1}))
     % quick update of the 'Value' column with the given parameter vector
     Parameters = varargin{1};
     f = mifit_fig('mifit_View_Parameters');

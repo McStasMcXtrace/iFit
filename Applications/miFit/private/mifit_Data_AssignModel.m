@@ -44,6 +44,7 @@ function mifit_Data_AssignModel(varargin)
   D = getappdata(mifit_fig, 'Data');  % all data sets
   if numel(D) == 0 || isempty(index_selected), 
     mifit_disp([ 'Selected Model "' model.Name '".' ]);
+    mifit_Models_View_Parameters('update');
     figure; plot(model);
     return; 
   end
