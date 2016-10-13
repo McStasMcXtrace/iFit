@@ -463,18 +463,40 @@ function mifit_Data_History(varargin)
 function mifit_Data_Math_Unary(varargin)
 % Data/Transform unary: apply a unary operator on Datasets
   
+  op = {'abs','acosh','acos','asinh','asin','atanh','atan','ceil','conj','cosh','cos', ...
+    'ctranspose','exp','fliplr','flipud','floor','full','imag','isfinite', ...
+    'isfloat','isinf','isinteger','islogical','isnan','isnumeric','isreal','isscalar', ...
+    'issparse','log10','log','norm','not','permute','real','round','sign','sinh','sin', ...
+    'sparse','sqrt','tanh','tan','transpose','uminus','uplus', ...
+    'min','mean','median','sort','squeeze',...
+    'double','logical','single','sqr'};
+    
+  mifit_Data_Operator(op);
+  
+function mifit_Data_Math_Binary(varargin)
+% Data/Transform binary: apply a binary operator on Datasets
+  
+  op = {'combine','conv','convn','eq','ge','gt','le','lt','minus', ...
+  'mrdivide','ne','plus','power','rdivide','times','xcorr','interp'};
+  
+  mifit_Data_Operator(op);
+  
+function mifit_Data_Math(varargin)
+% Data/Transform binary: apply a binary operator on Datasets
+
+  % should contain e.g. conv4d and sqw_powder...
+  op = {'cwt','fft','ifft','del2','gradient','diff',...
+    'cumtrapz','sum','prod','trapz','cumsum','cumprod',...
+    'smooth','kmeans','pca','interp','std','fill','hist'};
+  mifit_Data_Operator(op);
+
+function mifit_Data_Operator(op)
+% Data/Transform: apply a binary operator on Datasets
+
   % we display a dialogue to select which operator to apply on the selected Datasets
   [d, index_selected] = mifit_List_Data_pull;
   if isempty(index_selected), return; end
   
-  op = {'abs','acosh','acos','asinh','asin','atanh','atan','ceil','conj','cosh','cos', ...
-    'ctranspose','del2','exp','fliplr','flipud','floor','full','imag','isfinite', ...
-    'isfloat','isinf','isinteger','islogical','isnan','isnumeric','isreal','isscalar', ...
-    'issparse','log10','log','norm','not','permute','real','round','sign','sinh','sin', ...
-    'sparse','sqrt','tanh','tan','transpose','uminus','uplus', ...
-    'cumtrapz','sum','prod','trapz','cumsum','cumprod',...
-    'gradient','min','mean','median','sort','squeeze',...
-    'double','logical','single','sqr'};
   op = sort(op); % alpha order sort
     
   % show operator selection dialogue
@@ -482,7 +504,7 @@ function mifit_Data_Math_Unary(varargin)
     'Name',[ 'miFit: Select unary operator to apply on ' ...
       num2str(numel(index_selected)) ' data set(s)' ], ...
       'PromptString', char(d));
-  if isempty(selection), return; end
+  if isempty(selection) || ok ~= 1, return; end
   op = op{selection};
  
   % apply operator on Datasets
@@ -491,7 +513,7 @@ function mifit_Data_Math_Unary(varargin)
   try
     d = feval(op, d);
   catch ME
-    mifit_disp([ '[Data unary] Failed applying operator "' op '"' ]);
+    mifit_disp([ '[Data operation] Failed applying operator "' op '"' ]);
     mifit_disp(getReport(ME));
     return
   end
@@ -499,17 +521,6 @@ function mifit_Data_Math_Unary(varargin)
   % upload new Data sets
   mifit_List_Data_push(d);
   
-function mifit_Data_Math_Binary(varargin)
-  % TODO
-  op = {'combine','conv','convn','eq','ge','gt','le','lt','minus', ...
-  'mrdivide','ne','plus','power','rdivide','times','xcorr'};
-  disp([ mfilename ': Data_Math_Binary: TODO' ])
-  
-function mifit_Data_Math(varargin)
-  % TODO
-  % should contain e.g. conv4d and sqw_powder...
-  disp([ mfilename ': Data_Math (others): TODO' ])
-
 % Models menu ******************************************************************
 
 function [ifuncs, labels,indices,handles] = mifit_Models_GetList(varargin)
@@ -544,7 +555,7 @@ function mifit_Models_Export(varargin)
   % pop-up a dialogue box to select those to export, with select all button
   [selection, ok] = listdlg('ListString', labels, 'SelectionMode', 'multiple', ...
     'Name','miFit: Select Models to Export', 'ListSize',[400 160]);
-  if isempty(selection), return; end
+  if isempty(selection) || ok ~= 1, return; end
   % pop-up the iFunc.save export dialogue
   save(ifuncs(selection),'gui');
   
@@ -558,7 +569,7 @@ function mifit_Models_Remove(varargin)
   % pop-up a dialogue box to select those to remove, with select all button
   [selection, ok] = listdlg('ListString', labels, 'SelectionMode', 'multiple', ...
     'Name','miFit: Select Models to Remove', 'ListSize',[400 160]);
-  if isempty(selection), return; end
+  if isempty(selection) || ok ~= 1, return; end
   delete(handles(selection))
   models = getappdata(mifit_fig,'Models');
   models(indices(selection)) = [];
@@ -700,6 +711,7 @@ function mifit_List_Data_Files(varargin)
     model_assignments = 0;
     for index=index_selected(:)'
       if numel(D) > 1, this_d = D(index); else this_d = D; end
+      if isempty(this_d) || ~isa(this_d,'iData'), continue; end
       previous_model = [];
       % get the Model stored in the Dataset (after fit)
       if isfield(this_d, 'Model')

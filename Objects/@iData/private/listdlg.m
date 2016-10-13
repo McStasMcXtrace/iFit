@@ -288,7 +288,7 @@ if isappdata(0, ad.tag)
   ad = getappdata(0,ad.tag);
 end
 ad.value = 0;
-ad.selection = get(listbox,'value');
+ad.selection = [];
 string = get(listbox,'string');
 ad.selectionString = string(ad.selection);
 ad.button = 'Cancel';
