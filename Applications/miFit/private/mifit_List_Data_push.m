@@ -1,7 +1,18 @@
 function mifit_List_Data_push(d)
 % [internal] mifit_List_Data_push: put a new data set at the end of the stack
   if isempty(d),       return; end
-  if ~isa(d, 'iData'), return; end
+  if iscell(d)
+    for index=1:numel(d)
+      mifit_List_Data_push(d{index});
+    end
+    return
+  end
+  if ~isa(d, 'iData')
+    try
+      mifit_disp(evalc('disp(d)'));
+    end
+    return; 
+  end
   fig = mifit_fig;
 
   % update AppData Stack
