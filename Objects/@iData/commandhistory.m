@@ -11,6 +11,7 @@ function [s,fig] = commandhistory(a, fig)
 % Version: $Date$
 % See also iData, iData/disp, iData/display
 
+% syntax for CloseRequest callback from the listdlg
 if nargin == 2 && ishandle(fig)
   s=commandhistory_export(fig);
   return
@@ -29,23 +30,22 @@ s = a.Command;
 if nargout == 0 || nargout == 2
   T   = a.Title; if iscell(T), T=T{1}; end
   T   = regexprep(T,'\s+',' '); % remove duplicated spaces
-  [fig] = listdlg('ListString', s, 'ListSize',[400 300], ...
+  [fig,ad] = listdlg('ListString', s, 'ListSize',[400 300], ...
     'Name', T , ...
-    'PromptString', char(a), 'OKString','Save all to file...','CancelString','OK', ...
+    'PromptString', char(a), 'OKString','Save all to file...','CancelString','Dismiss', ...
     'CreateMode','normal'); 
 
-  ad = getappdata(fig,'ListDialogAppData__');
   ad.object = a;
-  setappdata(fig,'ListDialogAppData__', ad);
-    
+  set(fig,'UserData', ad);
+  setappdata(0,ad.tag,ad);
   set(fig, 'closerequestfcn','commandhistory(iData, gcbf); delete(gcbf)');
   selection=[]; ok=0;
 end
   
 function s=commandhistory_export(fig)
 
-  ad = getappdata(fig,'ListDialogAppData__');
-  if ~strcmpi(ad.button, 'ok'), s=[]; return; end
+  ad = get(fig, 'UserData');
+  if ~isfield(ad,'button') || ~strcmpi(ad.button, 'ok'), s=[]; return; end
   s = get(ad.listbox,'string');
   if isempty(s), return; end
   a        = ad.object;

@@ -277,8 +277,9 @@ ad.selection = get(listbox,'value');
 string = get(listbox,'string');
 ad.selectionString = string(ad.selection);
 ad.button = 'OK';
+set(fig,'UserData',ad);
 setappdata(0,ad.tag,ad);
-delete(gcbf);
+close(gcbf);
 
 %% Cancel callback
 function doCancel(cancel_btn, evd, listbox) %#ok
@@ -292,8 +293,9 @@ ad.selection = [];
 string = get(listbox,'string');
 ad.selectionString = string(ad.selection);
 ad.button = 'Cancel';
+set(fig,'UserData',ad);
 setappdata(0,ad.tag,ad)
-delete(gcbf);
+close(gcbf);
 
 %% SelectAll callback
 function doSelectAll(selectall_btn, evd, listbox) %#ok
