@@ -340,10 +340,20 @@ function mifit_Edit_Paste(varargin)
 % Update the History
   d=paste();
   if iscell(d)
+    % first look for file names and URL's
+    D = [];
+    for index=1:numel(d)
+      if ~isempty(dir(d{index})) || any(strncmp(dir(d{index}), {'http:','ftp:/','file:','https'}))
+        D = [ D ; iData(d{index}) ];
+        d{index} = [];
+      end
+    end
+    if ~isempty(D), mifit_List_Data_push(D); end
     % we look for numerical cell elements, and split after each non numerical for 
     % new objects
     D = []; this_datax = {}; this_meta = [];
     for index=1:numel(d)
+      if isempty(d{index}), continue; end
       num = str2num(d{index});
       if ~isempty(num), this_datax{end+1} = num;
       else
@@ -415,7 +425,7 @@ function mifit_Data_Plot(varargin)
   else d = mifit_List_Data_pull; end
   if all(isempty(d)), return; end
   f=figure;
-  subplot(d,'light transparent grid');
+  subplot(d,'light transparent grid tight');
   
 function mifit_Data_Saveas(varargin)
 % Data/Saveas: export selected data sets
