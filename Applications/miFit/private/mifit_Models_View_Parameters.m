@@ -118,7 +118,7 @@ function stop=mifit_Models_View_Parameters(varargin)
       'Units','normalized', 'Position', [0 0 1 1]);
 
     % and trigger other updates (create all)
-    resize                = 1;
+    resize                = 2;
     data_or_model_changed = 1;
     % add contextual menu
     uicm = uicontextmenu('Parent',f); 
@@ -147,7 +147,7 @@ function stop=mifit_Models_View_Parameters(varargin)
   end
   
   % the window must be resized as number of Parameters has changed
-  if resize
+  if resize 
     % determine the new window size to show
     numCol    = 6;
     TextWidth = config.FontSize;
@@ -156,16 +156,17 @@ function stop=mifit_Models_View_Parameters(varargin)
     height    = (n+1)*TextHeight;
     % width is given by the length of the longest RowName
     width     = ones(1,numCol+1)*5;
-    width(1)  = max(cellfun(@numel,model.Parameters));
+    width(1)  = max(cellfun(@numel,strtok(model.Parameters)));
     width     = width*TextWidth;
     options.ColumnWidth = mat2cell(width, 1, ones(1,numCol+1,1));
   
     % compare requested size to current window size
     p    = get(f, 'Position');
-    p(3) = sum(width);
+    if resize > 1, p(3) = sum(width); end
     p(4) = height;
     set(f, 'Position',p);
-    set(t, 'ColumnWidth', options.ColumnWidth);
+    % resize the window only t creation
+    if resize> 1, set(t, 'ColumnWidth', options.ColumnWidth); end
   end
   
   % things to update -------------------------------------------------------------
