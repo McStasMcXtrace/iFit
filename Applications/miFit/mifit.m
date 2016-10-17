@@ -772,7 +772,7 @@ function mifit_List_Data_Files(varargin)
   
   % store the first selected Model so that its Model Parameters can be updated
   % in mifit_Models_View_Parameters
-  if ~isempty(index_selected)
+  if ~isempty(index_selected) && numel(d)
     d=d(1); index_selected=index_selected(1);
   end
   setappdata(mifit_fig, 'CurrentDataSet', d);
