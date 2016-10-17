@@ -11,13 +11,16 @@ function mifit_Data_Fit(varargin)
   else
     options = [];
   end
-  % overload Preferences choices: OutputFcn, Display.
+  % overload Preferences choices: OutputFcn, Display, Criteria.
   config = getappdata(mifit_fig, 'Preferences');
   options.Display='iter';
   if isfield(config,'Fit_Verbose') && strcmp(config.Fit_Verbose,'yes')
     if ~isfield(options, 'PlotFcns') || isempty(options.PlotFcns), options.PlotFcns = {}; end
     options.PlotFcns{end+1} = 'fminplot';
     options.PlotFcns{end+1} = @(x,optimValues,state)mifit_Models_View_Parameters(x);
+  end
+  if isappdata(mifit_fig,'CurrentOptimizerCriteria')
+    options.criteria=getappdata(mifit_fig,'CurrentOptimizerCriteria');
   end
   
   % [pars,criteria,message,output] = fits(a, model, pars, options, constraints, ...)
