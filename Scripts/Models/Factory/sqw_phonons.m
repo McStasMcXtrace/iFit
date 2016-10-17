@@ -376,6 +376,7 @@ end
 
 if ~isempty(options.gui) && ~any(isnan(options.gui))
   options = sqw_phonons_gui(configuration, options, status);
+  if isempty(options), return; end
 end % GUI
 
 % make sure we find the 'configuration' also from ifitpath

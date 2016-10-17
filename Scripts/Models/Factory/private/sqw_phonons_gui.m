@@ -30,6 +30,7 @@ function options = sqw_phonons_gui(configuration, options, status)
   op.Interpreter = 'tex';
   answer = inputdlg(prompt, dlg_title, num_lines, defAns, op);
   if isempty(answer), 
+    options = [];
     return; 
   end
   % extract results

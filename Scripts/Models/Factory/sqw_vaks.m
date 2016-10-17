@@ -165,6 +165,7 @@ if numel(varargin) && ischar(varargin{1})
     op.Interpreter = 'tex';
     answer = inputdlg(prompt, dlg_title, num_lines, defAns, op);
     if isempty(answer), 
+      signal = [];
       return; 
     end
     % now interpret the result
