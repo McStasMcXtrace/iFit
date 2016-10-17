@@ -41,6 +41,39 @@ function mifit_Data_Fit(varargin)
   setappdata(mifit_fig, 'Data',D);
   mifit_History_push;
   
+  % log fit results to the miFit log file
+  for index=1:numel(d)
+    
+    if numel(d) == 1, 
+      this_d=d; output = o; this_p     = p;
+    else 
+      this_d = d(index); output = o{index}; this_p     = p{index};
+    end
+    mifit_disp('** Final fit results for ' char(this_d) ], true);
+    sigma = output.parsHistoryUncertainty;
+    if ~isempty(output.parsHessianUncertainty)
+      sigma = max(sigma, output.parsHessianUncertainty);
+    end
+    
+    constraints= o.constraints;
+    for indexp=1:numel(p)
+      t0=sprintf('  p(%3d):%20s=%g +/- %g', indexp,strtok(o.parsNames{indexp}), this_p(indexp), sigma(indexp)); 
+      if isfield(constraints, 'fixed') && length(constraints.fixed) >= indexp && constraints.fixed(indexp)
+        t1=' (fixed)'; else t1=''; end
+      mifit_disp([ t0 t1 ], true);  % only in the Log file.
+    end
+    mifit_disp(sprintf(' Correlation coefficient=%g (closer to 1 is better)',  output.corrcoef), true);
+    mifit_disp(sprintf(' Weighted     R-factor  =%g (Rwp, smaller that 0.2 is better)', output.Rfactor), true);
+    
+    if isfield(output, 'parsHessianCorrelation') && ~isempty(output.parsHessianCorrelation)
+      corr = output.parsHessianCorrelation;
+      nb_true_independent_parameters = sum(1./sum(corr.^2));
+      mifit_disp([ ' Estimated number of independent parameters: ' num2str(nb_true_independent_parameters) ], true)
+      mifit_disp(' Correlation matrix (non diagonal terms indicate non-independent parameters):', true)
+      mifit_disp(corr, true);
+    end
+  end
+  
   % show results for the 1st fit/dataset
   index_selected = index_selected(1); 
   d=d(1);
