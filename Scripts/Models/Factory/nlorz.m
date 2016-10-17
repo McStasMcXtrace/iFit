@@ -18,7 +18,7 @@ function y=nlorz(varargin)
 % Version: $Date$
 % See also iFunc, iFunc/fits, iFunc/plot, ngauss
 % (c) E.Farhi, ILL. License: EUPL.
-
+y=[];
 if nargin > 0
   p = varargin{1};
 else
