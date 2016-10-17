@@ -67,6 +67,7 @@
 
 
 
+
         Model)</span> is minimal }<br>
       <div style="text-align: left;"><br>
         where <span style="font-style: italic;">distance</span> is the
@@ -75,6 +76,7 @@
         detailed <a href="#mozTocId778987">below</a>. You can refer to
         the <a
           href="http://en.wikipedia.org/wiki/Mathematical_optimization">mathematical
+
 
 
 
@@ -128,6 +130,7 @@
 
 
 
+
     the axes:<br>
     <pre style="margin-left: 40px;">&gt;&gt; p=<span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(204, 51, 204);">'p(1)*x+p(2)'</span>);<br>&gt;&gt; p=<span style="color: rgb(51, 102, 255);">fits</span>(a, @(p,x)<span style="color: rgb(204, 51, 204);">p(1)*x+p(2)</span>); <i>% same with a function handle</i></pre>
     which will transparently create the model function, and then use it
@@ -152,6 +155,7 @@
     <br>
     <font color="#ff0000">Warning:</font>&nbsp;if you do not specify the
     optimization method to use (see <a href="#mozTocId842297">below</a>),
+
 
 
 
@@ -214,6 +218,7 @@ fit
 
 
 
+
         parameter set for the model</li>
       <li><span style="font-style: italic;">output.criteriaBest</span>:
         best criteria value for the model</li>
@@ -228,9 +233,11 @@ fit
 
 
 
+
         used (char)</li>
       <li><span style="font-style: italic;">output.message: </span>Message
 which
+
 
 
 
@@ -254,9 +261,11 @@ which
 
 
 
+
         </span>uncertainty on fit parameters (half-width) obtained from
         the optimization history (vector)</li>
       <li><span style="font-style: italic;">output.parsHessianUncertainty:
+
 
 
 
@@ -271,6 +280,7 @@ which
 
 
 
+
           coefficient</a> (closer to 1 indicates a good fit), as
         obtained from Matlab <a href="matlab:help%20corrcoeff">corrcoef</a>.<br>
       </li>
@@ -279,6 +289,7 @@ which
       </li>
       <li><span style="font-style: italic;">output.modelInfo: </span>model
 information
+
 
 
 
@@ -413,6 +424,7 @@ information
 
 
 
+
           </td>
           <td style="vertical-align: top;">Powell with Coggins line
             search<br>
@@ -430,6 +442,7 @@ information
       </tbody>
     </table>
     <div style="text-align: center;"><span style="font-style: italic;">Table
+
 
 
 
@@ -490,6 +503,7 @@ of
 
 
 
+
         display [ off | iter | notify | final ]. Default is <span
           style="color: rgb(204, 51, 204);">'off'</span></li>
       <li><span style="font-style: italic;">options.</span><span
@@ -517,6 +531,7 @@ of
 
 
 
+
         is provided in <a href="Optimizers.html"><span
             style="font-style: italic;">Optimizers</span></a>. This
         function should have the syntax <span style="font-style:
@@ -537,6 +552,7 @@ of
       <li><span style="font-style: italic;">options.criteria</span>: the
         criteria to use with syntax <span style="font-style: italic;">criteria(Signal,
 Error,
+
 
 
 
@@ -578,6 +594,7 @@ Error,
 
 
 
+
       <span style="font-style: italic;">options.OutputFcn='fminplot' </span>window
 on
 the
@@ -593,6 +610,7 @@ iteration
 and
 up
 to
+
 
 
 
@@ -643,6 +661,7 @@ maximum
 
 
 
+
         change between iterations for each parameter.<span
           style="font-style: italic;"> +Inf</span> is supported.</li>
       <li><i>constraints.eval: </i>any other expression to evaluate,
@@ -655,6 +674,7 @@ maximum
       style="font-style: italic;">parameters</span> and <span
       style="font-style: italic;">options</span> :<br>
     <blockquote> constraints=<span style="color: rgb(204, 51, 204);">'min=[0
+
 
 
 
@@ -738,6 +758,7 @@ maximum
 
 
 
+
         change between iterations for each parameter. +Inf is supported.</li>
     </ul>
     <h4><a class="mozTocH4" name="mozTocId364529"></a> Other
@@ -810,6 +831,7 @@ ans =			<font color="#ff0000">&lt;-- and we add it the the result as specified i
 
 
 
+
       munlock </span>and <span style="font-weight: bold;">xlim</span>
     methods:<br>
     <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">mlock</span>(f, {<span style="color: rgb(204, 51, 204);">'Amplitude','Background'</span>})	<span style="font-style: italic;">% fix these 2 parameters</span>, same as setting parameters to 'fix' <br>&gt;&gt; <span style="color: rgb(51, 102, 255);">munlock</span>(f, <span style="color: rgb(204, 51, 204);">'Background'</span>)		<span style="font-style: italic;">% unlock that parameter</span>, same as f.Background='clear'<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">xlim</span>(f, <span style="color: rgb(204, 51, 204);">   'Background'</span>, [0 1e-3])	<span style="font-style: italic;">% force parameter within range</span>, same as f.Background=[min max]<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">xlim</span>(f,  <span style="color: rgb(204, 51, 204);">  'Background'</span>, [])		<span style="font-style: italic;">% remove limits constraint</span><br></pre>
@@ -861,6 +883,7 @@ ans =			<font color="#ff0000">&lt;-- and we add it the the result as specified i
       style="color: rgb(204, 51, 204);">'off'</span>.<br>
     <br>
     We also explain in the <a href="Optimizers.html#mozTocId228403">Optimizers
+
 
       help</a> how the parameter distributions (their variation around
     the best optimum value) can be plotted. This is well known from
@@ -942,6 +965,7 @@ ans =			<font color="#ff0000">&lt;-- and we add it the the result as specified i
 
 
 
+
       Error, Model)</span> where all arguments should have the same
     dimension, and the default criteria is:<br>
     <br>
@@ -957,6 +981,7 @@ ans =			<font color="#ff0000">&lt;-- and we add it the the result as specified i
         <br>
         <div style="text-align: center;">&#967;<sup>2</sup> &#8592; &#967;<sup>2</sup>
           /(<span style="font-style: italic;">number_of_data_points_in_the_Signal
+
 
 
 
@@ -1012,6 +1037,14 @@ ans =			<font color="#ff0000">&lt;-- and we add it the the result as specified i
               </td>
             </tr>
             <tr>
+              <td valign="top">least_mean<br>
+              </td>
+              <td align="right" valign="top">mean(|Signal-Model|/Error)</td>
+              <td valign="top"><a
+                  href="https://en.wikipedia.org/wiki/Mean_absolute_difference">Ref</a>.<br>
+              </td>
+            </tr>
+            <tr>
               <td style="vertical-align: top;">least_max<br>
               </td>
               <td style="vertical-align: top; text-align: right;"
@@ -1025,7 +1058,7 @@ ans =			<font color="#ff0000">&lt;-- and we add it the the result as specified i
             <tr>
               <td valign="top">least_rfactor<br>
               </td>
-              <td valign="top" align="right">(|Signal-Model|/Error)<sup>2</sup>/(Signal/Error)<sup>2</sup>
+              <td align="right" valign="top">(|Signal-Model|/Error)<sup>2</sup>/(Signal/Error)<sup>2</sup>
               </td>
               <td valign="top">non-robust. <a
                   href="http://en.wikipedia.org/wiki/R-factor_%28crystallography%29">Ref</a>.<br>
@@ -1039,13 +1072,14 @@ ans =			<font color="#ff0000">&lt;-- and we add it the the result as specified i
                 log(2&#960;&#963;)</td>
               <td style="vertical-align: top;"><a
                   href="http://en.wikipedia.org/wiki/Maximum_likelihood">Ref</a>.
-                Minimize <span style="font-style: italic;">-log(L)</span><br>
-              </td>
+                Minimize <span style="font-style: italic;">-log(L)</span>.
+                <br>
+                The &#963; 'error' is refined during the fit. </td>
             </tr>
             <tr>
               <td valign="top">max_corrcoef<br>
               </td>
-              <td valign="top" align="right">1-corrcoef(Signal, Model)<br>
+              <td align="right" valign="top">1-corrcoef(Signal, Model)<br>
               </td>
               <td valign="top"><a
 href="http://en.wikipedia.org/wiki/Pearson_product-moment_correlation_coefficient">Ref</a>.<br>
@@ -1092,6 +1126,7 @@ href="http://en.wikipedia.org/wiki/Pearson_product-moment_correlation_coefficien
     <hr style="width: 100%; height: 2px;">
     <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
+
 
 
 
