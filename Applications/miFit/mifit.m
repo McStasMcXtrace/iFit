@@ -76,7 +76,7 @@ function varargout = mifit(varargin)
             try
               feval([ 'mifit_' action ], varargin{2:end});
             catch ME
-              mifit_disp([ '[mifit] Unknown action "' action '"' ])
+              mifit_disp([ '[mifit] Error for action "' action '"' ])
               rethrow(ME)
             end
           end

@@ -24,7 +24,7 @@ if numel(a) > 1
 end
 
 if isscalar(a)
-  sigma= double(a.Error);
+  sigma= double(get(a,'Error'));
   s    = double(a);
   return
 end
