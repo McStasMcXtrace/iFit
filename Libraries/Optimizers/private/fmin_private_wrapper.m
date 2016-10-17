@@ -677,6 +677,15 @@ if strcmp(options.Display,'final') || strcmp(options.Display,'iter') ...
     disp(' Gaussian uncertainty on parameters (half width, from the Hessian matrix)')
     inline_disp(struct('Display','iter'), -1, fun, output.parsHessianUncertainty, NaN);
   end
+  if isfield(output, 'parsHessianCorrelation') && ~isempty(output.parsHessianCorrelation)
+    % the trace of the correlation matrix is M. The non diagonal terms indicate 
+    % correlated parameters
+    corr = output.parsHessianCorrelation;
+    nb_true_independent_parameters = sum(1./sum(corr.^2));
+    disp([ ' Estimated number of independent parameters: ' num2str(nb_true_independent_parameters) ])
+    disp(' Correlation matrix (non diagonal terms indicate non-independent parameters):')
+    disp(corr)
+  end
 end
 
 % restore initial parameters as a structure (when given as such)
