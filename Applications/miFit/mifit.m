@@ -9,15 +9,6 @@ function varargout = mifit(varargin)
 % Version: $Date$
 % (c) E.Farhi, ILL. License: EUPL.
 
-% notes:
-% saveas: display dialogue to select what to export:
-% * data sets
-% * parameters
-% * fit model
-
-% plot: plot model/dataset/parameters ? -> preferences
-% will add toolbar instead of uicontrols for fast processing
-
 %  function config = mifit_Load_Preferences
 %  function mifit_Save_Preferences(config)
 %  function mifit_File_New(handle)
@@ -191,20 +182,24 @@ function mifit_File_Saveas(varargin)
   Data       = getappdata(fig, 'Data');
   Models     = getappdata(fig, 'Models');
   Optimizers = getappdata(fig, 'Optimizers');
-  CurrentOptimizer = getappdata(fig, 'CurrentOptimizer');
+  CurrentOptimizer         = getappdata(fig, 'CurrentOptimizer');
+  CurrentOptimizerConfig   = getappdata(fig, 'CurrentOptimizerConfig');
+  CurrentOptimizerCriteria = getappdata(fig, 'CurrentOptimizerCriteria');
+  CurrentModel             = getappdata(fig, 'CurrentModel');
  
   if nargin == 1 && ischar(varargin{1})
     file = varargin{1};
   else
     filterspec = { '*.mat','MAT-files (*.mat)'};
-    [filename, pathname] = uiputfile(filterspec, 'Save All miFit Data sets and models as', [ mfilename '.mat' ]);
+    [filename, pathname] = uiputfile(filterspec, 'Save All miFit Data sets and Models as', [ mfilename '.mat' ]);
     if isequal(filename,0) || isequal(pathname,0)
       return
     end
     file = fullfile(pathname, filename);
   end
   mifit_disp([ '[File_Saveas] Saving Data sets/Models into ' file ]);
-  builtin('save', file, 'Data','Models','Optimizers','CurrentOptimizer');
+  builtin('save', file, 'Data','Models','Optimizers','CurrentOptimizer', ...
+    'CurrentOptimizerConfig', 'CurrentOptimizerCriteria');
   
 function mifit_File_Print(varargin)
 % File/Print: print the interface. 
@@ -230,11 +225,11 @@ function mifit_File_Preferences(varargin)
   if ~isfield(config, 'History_Level'),     config.History_Level=10; end
   if ~isfield(config, 'Fit_Verbose'),       config.Fit_Verbose='yes'; end
   options.Name       = [ mfilename ': Preferences' ];
-  options.ListString = {'Font size [10-36]', ...
-    'Save Data sets on Exit [yes/no]', ...
-    'Store Models when creation time is longer than [sec, 0:always, Inf:never, default=3]', ...
-    'Undo levels to keep [2-50, reduce if you handle large/many data sets]', ...
-    'Verbosity when Fitting [yes shows criteria, parameters and final distributions]' };
+  options.ListString = {'FontSize Font size [10-36]', ...
+    'Save_Data_On_Exit Save Data sets on Exit [yes/no]', ...
+    'Store_Models Store Models when creation time is longer than [sec, 0:always, Inf:never, default=3]', ...
+    'History_Level Undo levels to keep [2-50, reduce if you handle large/many data sets]', ...
+    'Fit_Verbose Verbosity when Fitting [yes shows criteria, parameters and final distributions]' };
   options.FontSize   = config.FontSize;
   options.TooltipString = sprintf([ 'Modify the %s Preferences.\n' ...
       'You can specify additional menu items by entering a cell (pairs)\n' ...
@@ -383,18 +378,6 @@ function mifit_Edit_Duplicate(varargin)
 % Edit/Duplicate: copy and paste selected. Update the history (in Paste).
   d=mifit_List_Data_pull();
   mifit_List_Data_push(copyobj(d));
-  
-function mifit_Edit_Select_All(hObject, select)
-% Edit/Select All/None: set the List selected values to all ones
-% the select argument can be 0 or 1 to deselect/select all
-  hObject = mifit_fig('List_Data_Files');
-  items   = get(hObject,'String');
-  index_selected = get(hObject,'Value');
-  if nargin < 2, select=[]; end
-  if (numel(index_selected) == numel(items) && isempty(select)) ...
-    || (~isempty(select) && ~select), index_selected = [];
-  elseif isempty(select) || (~isempty(select) && select), index_selected=1:numel(items); end
-  set(hObject,'Value', index_selected);
 
 function mifit_Edit_Delete(varargin)
 % Edit/Delete: delete selected
@@ -506,15 +489,19 @@ function mifit_Data_Operator(op)
 
   % we display a dialogue to select which operator to apply on the selected Datasets
   [d, index_selected] = mifit_List_Data_pull;
-  if isempty(index_selected), return; end
+  if isempty(index_selected) || numel(d) == 0, return; end
   
   op = sort(op); % alpha order sort
     
   % show operator selection dialogue
-  [selection, ok] = listdlg('ListString', op, 'ListSize',[400 160], ...
-    'Name',[ 'miFit: Select unary operator to apply on ' ...
+  PromptString = cellstr(char(d));
+  if numel(PromptString) > 3
+    PromptString=[ PromptString(1:3) ; ' ...' ];
+  end
+  [selection, ok] = listdlg('ListString', op, 'ListSize',[500 160], ...
+    'Name',[ 'miFit: Select operator to apply on ' ...
       num2str(numel(index_selected)) ' data set(s)' ], ...
-      'PromptString', char(d));
+      'PromptString', PromptString, 'SelectionMode','single');
   if isempty(selection) || ok ~= 1, return; end
   op = op{selection};
  
@@ -664,7 +651,7 @@ function mifit_Optimizers_Criteria(varargin)
   [selection, ok] = listdlg('ListString', crit, 'ListSize',[400 160], ...
     'Name',[ 'miFit: Select the Fit Criteria ti use' ], ...
       'PromptString', 'The Fit criteria is the quantity which is to be minimized. It is a function of the Data set Signal, and the Model value. It is then divided by the number of degrees of freedom.', ...
-      'InitialValue',selection);
+      'InitialValue',selection, 'SelectionMode','single');
   if isempty(selection) || ok ~= 1, return; end
   crit = strtok(crit{selection});
   setappdata(mifit_fig,'CurrentOptimizerCriteria', crit);
@@ -732,7 +719,7 @@ function mifit_List_Data_Files(varargin)
 
   [d, index_selected] = mifit_List_Data_pull(); % get selected objects
   
-  if isempty(index_selected)
+  if isempty(index_selected) || numel(d) == 0
     setappdata(mifit_fig, 'CurrentDataSet', []);
     setappdata(mifit_fig, 'CurrentDataSetIndex', []);
   end
@@ -783,23 +770,6 @@ function mifit_List_Data_Files(varargin)
     % trigger an update of the Parameter window when already opened
     mifit_Models_View_Parameters('update');
   end
-  
-function mifit_List_Data_UpdateStrings
-% [internal] mifit_List_Data_UpdateStrings: update the List labels
-  fig = mifit_fig;
-  
-  Data = getappdata(fig, 'Data');
-  
-  hObject        = mifit_fig('List_Data_Files');
-  list           = {};
-  if numel(Data) > 1
-    for index=1:numel(Data)
-        list{end+1} = char(Data(index));
-    end
-  else
-    list{end+1} = char(Data);
-  end
-  set(hObject,'String', list, 'Value', []);
 
 % ******************************************************************************
 
