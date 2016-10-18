@@ -197,9 +197,10 @@ function mifit_File_Saveas(varargin)
     end
     file = fullfile(pathname, filename);
   end
-  mifit_disp([ '[File_Saveas] Saving Data sets/Models into ' file ]);
   builtin('save', file, 'Data','Models','Optimizers','CurrentOptimizer', ...
     'CurrentOptimizerConfig', 'CurrentOptimizerCriteria');
+  d = dir(file);
+  mifit_disp([ '[File_Saveas] Saved Data sets/Models into ' file ' [size: ' num2str(round(d.bytes/1024)) ' kb]' ]);
   
 function mifit_File_Print(varargin)
 % File/Print: print the interface. 
@@ -280,7 +281,7 @@ function mifit_File_Reset(varargin)
       file = fullfile(prefdir, [ mfilename '.mat' ]);
       if ~isempty(dir(file)), delete(file); end
     end
-    mifit_Edit_Select_All([], 1);
+    mifit_Edit_Select_All([], true);
     mifit_Edit_Delete();
     setappdata(fig, 'History', []);
 
@@ -446,6 +447,34 @@ function mifit_Data_Properties(varargin)
 % Data_Properties ?
 % re-assign data set signal, axes, ... to aliases/new ones
 % display statistics
+
+function mifit_Data_Search(varargin)
+% Data/Search: search all Data sets for a token
+  prompt = {'Enter the item to search for (string, case sensitive):'};
+  name   = 'miFit: Search in all data sets';
+  numlines=1;
+  answer =inputdlg(prompt,name,numlines);
+  if isempty(answer),    return; end  % cancel
+  if isempty(answer{1}), return; end  % empty pattern
+  
+  D=getappdata(mifit_fig, 'Data');
+  
+  mifit_disp([ '[Data search] Data sets mentioning "' answer{1} '" ...' ]);
+  % search for token in strings
+  match = strfind(D, answer{1}, 'case');
+  index_selected = ~cellfun(@isempty, match);
+  % search for token in field names
+  match = findfield(D, answer{1}, 'case');
+  index_selected = index_selected | ~cellfun(@isempty, match);
+  index_selected = find(index_selected);
+  
+  if isempty(index_selected)
+    mifit_disp('None');
+  else
+    mifit_disp(char(D(index_selected)));
+    mifit_Edit_Select_All([], index_selected);
+  end
+  
   
 function mifit_Data_History(varargin)
 % Data/History: show Data sets command history
