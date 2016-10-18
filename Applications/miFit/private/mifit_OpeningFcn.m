@@ -42,7 +42,8 @@ if isempty(fig) || ~ishandle(fig)
       try
         d = load(file);
         if isfield(d, 'Models')
-          mifit_disp([ '[Init] Loading Model library from ' file ]);
+          fd = dir(file);
+          mifit_disp([ '[Init] Loading Model library from ' file ' [size: ' num2str(round(fd.bytes/1024)) ' kb]' ]);
           models = d.Models;  % contains the callback and the label members
         end
       end
