@@ -20,6 +20,8 @@ if isempty(fig) || ~ishandle(fig)
     setappdata(fig, 'History', {});
     setappdata(fig, 'Models',  {});
     setappdata(fig, 'CurrentOptimizer',   []);
+    setappdata(fig, 'CurrentOptimizerCriteria',[]);
+    setappdata(fig, 'CurrentOptimizerConfig',[]);
     setappdata(fig, 'CurrentModel',       []);
     setappdata(fig, 'CurrentModelHandle', []);
     setappdata(fig, 'CurrentDataSet',     []);
@@ -86,13 +88,15 @@ if isempty(fig) || ~ishandle(fig)
             end
         end
     end
-    % assign the saved CurrentOptimizer
+    % assign the saved CurrentOptimizer and other saved stuff
     if ~isfield(d, 'CurrentOptimizer'), d.CurrentOptimizer = []; end
     mifit('Optimizers_Set',d.CurrentOptimizer);
+    setappdata(fig, 'Optimizers',optimizers);
+    if isfield(d,'CurrentOptimizerConfig'),   setappdata(fig, 'CurrentOptimizerConfig',   d.CurrentOptimizerConfig); end
+    if isfield(d,'CurrentOptimizerCriteria'), setappdata(fig, 'CurrentOptimizerCriteria', d.CurrentOptimizerCriteria); end
+    if isfield(d,'CurrentModel'),             setappdata(fig, 'CurrentModel',             d.CurrentModel); end
     
     % create the AppData Data Stack
-    setappdata(fig, 'Optimizers',optimizers);
-    
     % Load the previous Data sets containing Model Parameters (when a fit was performed)
     if ~isempty(d)
       if isfield(d, 'Data')
