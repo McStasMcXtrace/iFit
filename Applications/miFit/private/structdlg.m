@@ -109,9 +109,11 @@ function structure = structdlg(structure,options)
   % sort ListString so that it matches the fields
   ListString = cell(size(fields));
   for index=1:numel(fields)
-    index_f = find(strcmp(fields{index}, strtok(options.ListString)),1);
-    if ~isempty(index_f)
-      ListString{index} = options.ListString{index_f};
+    [tokens, rems] = strtok(options.ListString);
+    rems = strtrim(rems);
+    index_f = find(strcmp(fields{index}, tokens),1);
+    if ~isempty(index_f) && ~isempty(rems{index_f})
+      ListString{index} = rems{index_f};
     else
       ListString{index} = fields{index};
     end
