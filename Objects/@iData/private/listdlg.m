@@ -30,7 +30,6 @@ function [selection,value] = listdlg_nonmodal(varargin)
 %   'Resize'        string: can be 'on' (default) or 'off'.
 %   'WindowStyle'   string: can be 'normal' or 'modal' (default).
 %   'FontSize'      scalar: the Font size for texts.
-%   'Interpreter'   string: can be either 'none' (default) or 'tex'.
 %
 %   A 'Select all' button is provided in the multiple selection case.
 %
@@ -44,7 +43,7 @@ function [selection,value] = listdlg_nonmodal(varargin)
 %  See also DIALOG, ERRORDLG, HELPDLG, INPUTDLG,
 %    MSGBOX, QUESTDLG, WARNDLG.
 %
-% THIS VERSION IS MODIFIED TO USE DefaultUicontrolFontSize
+% THIS VERSION IS MODIFIED TO USE DefaultUicontrolFontSize and be resizable
 
 %   Copyright 1984-2009 The MathWorks, Inc.
 %   $Revision: 1.20.4.10 $  $Date: 2009/10/24 19:19:47 $
@@ -78,7 +77,6 @@ uh = 22;
 resize = 'on';
 windowstyle = 'modal';
 fontsize = get(0,'DefaultUicontrolFontSize');
-interpreter = 'none';
 [~,tag] = fileparts(tempname); tag = [ 'ListDialogAppData_' tag ];
 
 if mod(length(varargin),2) ~= 0
@@ -118,8 +116,6 @@ for i=1:2:length(varargin)
       resize = varargin{i+1};
      case {'windowstyle','createmode'}
       windowstyle = varargin{i+1};
-     case 'interpreter'
-      interpreter = varargin{i+1};
      case 'tag'
       tag = varargin{i+1};
      otherwise

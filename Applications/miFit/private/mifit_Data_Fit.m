@@ -1,7 +1,7 @@
 function mifit_Data_Fit(varargin)
 % Data/Fit: fit selected data sets with their attached Model
   [d, index_selected] = mifit_List_Data_pull;
-  if isempty(index_selected), return; end
+  if isempty(index_selected) || numel(d) == 0, return; end
   if all(isempty(d)), return; end
   
   % get the Optimizer configuration
@@ -49,7 +49,7 @@ function mifit_Data_Fit(varargin)
     else 
       this_d = d(index); output = o{index}; this_p     = p{index};
     end
-    mifit_disp('** Final fit results for ' char(this_d) ], true);
+    mifit_disp([ '** Final fit results for ' char(this_d) ], true);
     sigma = output.parsHistoryUncertainty;
     if ~isempty(output.parsHessianUncertainty)
       sigma = max(sigma, output.parsHessianUncertainty);
