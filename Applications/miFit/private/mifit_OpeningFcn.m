@@ -113,6 +113,11 @@ if isempty(fig) || ~ishandle(fig)
     % start Logging
     file = fullfile(prefdir, [ 'mifit' '.log' ]);
     mifit_disp([ '[Init] Log file is ' file ]);
+    
+    % activate Drag-n-Drop
+    hObject = mifit_fig('List_Data_Files');
+    dndcontrol.initJava;
+    dndcontrol(hObject,@mifit,@mifit);
 
     % close welcome image
     delete(h);
