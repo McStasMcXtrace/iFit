@@ -57,6 +57,10 @@ classdef (CaseInsensitiveProperties) dndcontrol < handle
         function initJava()
         %INITJAVA Initializes the required Java class.
         
+            if ~usejava('jvm')
+                error([ mfilename ': the Drag-n-Drop functionality requires Java to be installed and activated.' ])
+            end
+        
             %Add java folder to javaclasspath if necessary
             if ~dndcontrol.isInitialized();
                 classpath = fileparts(mfilename('fullpath'));                
@@ -82,12 +86,19 @@ classdef (CaseInsensitiveProperties) dndcontrol < handle
         %   callback functions for dropping of files and text.
             
             % Check for Java class
+            if ~dndcontrol.isInitialized()
+              dndcontrol.initJava();
+            end
             assert(dndcontrol.isInitialized(),'Javaclass MLDropTarget not found. Call dndcontrol.initJava() for initialization.')
              
             % Construct DropTarget            
             obj.dropTarget = handle(javaObjectEDT('MLDropTarget'),'CallbackProperties');
             set(obj.dropTarget,'DropCallback',{@dndcontrol.DndCallback,obj});
             set(obj.dropTarget,'DragEnterCallback',{@dndcontrol.DndCallback,obj});
+            
+            if ~isjava(Parent) && ishandle(Parent)
+              Parent = findjobj(Parent);
+            end
             
             % Set DropTarget to Parent
             if nargin >=1, Parent.setDropTarget(obj.dropTarget); end
