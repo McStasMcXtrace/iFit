@@ -57,7 +57,20 @@ function varargout = mifit(varargin)
     out = fig;
 
     if ~isempty(varargin)
-        if ischar(varargin{1}) && isempty(dir(varargin{1})) % a function/action to call ?
+        if nargin == 2 && isa(varargin{1}, 'dndcontrol') && isstruct(varargin{2})
+          % called as a callback/event from Drag-n-Drop
+          evt = varargin{2};
+          switch evt.DropType
+          case 'file'
+              for n = 1:numel(evt.Data)
+                  mifit(deblank(evt.Data{n}));
+              end
+          case 'string'
+              lines = textscan(evt.Data, '%s','Delimiter','\n');
+              mifit(deblank(lines{1}));
+          end
+        elseif ischar(varargin{1}) && isempty(dir(varargin{1})) ...
+          && ~any(strncmp(varargin{1}, {'http:','ftp:/','file:','https'}, 5)) % a function/action to call ?
           % callback with varargin{1} == 'action'
           action = varargin{1};
           if strcmpi(action,'identify'), varargout{1} = []; return; end
@@ -340,7 +353,7 @@ function mifit_Edit_Paste(varargin)
     % first look for file names and URL's
     D = [];
     for index=1:numel(d)
-      if ~isempty(dir(d{index})) || any(strncmp(dir(d{index}), {'http:','ftp:/','file:','https'}))
+      if ~isempty(dir(d{index})) || any(strncmp(d{index}, {'http:','ftp:/','file:','https'},5))
         D = [ D ; iData(d{index}) ];
         d{index} = [];
       end

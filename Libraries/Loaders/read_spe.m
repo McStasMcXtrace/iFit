@@ -99,7 +99,7 @@ end
 
 % some sanity checks
 if (fdat(4099:4100) ~= [ 85; 85 ])
-    fprintf(1, '%s:%s: WARNING: no header end signature found\n', mfilename,filename);
+    fprintf(1, '%s:%s: WARNING: no header end signature found.\n', mfilename,filename);
     % return;
 end
 
