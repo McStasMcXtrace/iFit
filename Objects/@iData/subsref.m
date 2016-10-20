@@ -227,7 +227,7 @@ for i = 1:length(S)     % can handle multiple index levels
       if isnumeric(b) && any(strcmpi(fieldname, {'Date','ModificationDate'}))
         b = datestr(b);
       end
-    elseif any(strcmpi(fieldname, b.Alias.Names))
+    elseif isstruct(b.Alias) && numel(b.Alias) == 1 && iscell(b.Alias.Names) && any(strcmpi(fieldname, b.Alias.Names))
       b = iData_getAliasValue(b,fieldname);
     elseif any(strcmp(fieldname,method)) % b.method = ismethod(b, fieldname)
       if i == length(S)
