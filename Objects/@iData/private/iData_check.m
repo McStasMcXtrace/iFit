@@ -45,6 +45,12 @@ if ~ischar(in.User)
   iData_private_warning(mfilename,['User must be a char in iData object ' in.Tag ' "' in.Title '. Re-setting to Matlab User.']);
   in.User = 'Matlab User';
 end
+% check aliases
+if ~isstruct(in.Alias) || numel(in.Alias) ~= 1 || ~iscell(in.Alias.Names)
+  % get the default Alias structure
+  z = iData;
+  in.Alias = z.Alias;
+end
 % check if object.Data is numeric: make it a structure so that it is better organized
 if isnumeric(in.Data) && ~isempty(in.Data)
   data = in.Data;
