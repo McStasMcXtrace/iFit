@@ -223,7 +223,7 @@ function mifit_File_Print(varargin)
   filename = [ tempname '.html' ];
   mifit_disp([ '[File_Print] Exporting Data sets to HTML ' filename ' for printing...' ]);
   save(d, filename, 'html data');
-  fallback_web(filename);
+  webbrowser(filename,'system');  % tries to open with the system browser
   
 function mifit_File_Preferences(varargin)
 % File/Preferences: open Preferences dialogue
