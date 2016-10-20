@@ -1,41 +1,52 @@
 function str=class2str(this, data, options)
-% str=class2str(this,data) Create a string [ 'this = data;' ]
 %   This function creates a string containing Matlab code describing a variable.
-%   class2str(this, data, 'flat') creates a flat text with commented 
-%     data blocks, which is not an m-file, but rather a Linux-style config file.
-%   class2str(this, data, 'no comments') removes comments from the output file
+%
+%   class2str(this,data) 
+%     Create a string [ 'this = data;' ]
+%   class2str(this, data, 'no comments') 
+%     same as above, but removes comments from the output file
+%   class2str(this, data, 'eval') 
+%     creates a compact evaluable string of the initial data
+%   class2str(this, data, 'flat') 
+%     creates a flat text with commented data blocks, which is not an m-file, 
+%     but rather a Linux-style config file.
 %
 % input arguments:
-%   this: string containg the name of the object to describe. Use '' to name the 
+%   this: string containing the name of the object to describe. Use '' to name the 
 %           root level from the input variable name, and ' ' to ignore root level 
 %           in structures.
-%   data: any data set (struct, array, cell, iData, char)
+%   data: any data set (struct, array, cell, char, objects)
 %   options: optinal argument which may contain 'flat', 'no comments','eval'
 %
 % output variables:
 %   str: string which contains a function code to generate the data.
 %
-% example: str=class2str('this', struct('a',1,'b','a string comment','c',{'cell'}))
-%  str=class2str(struct('a',1,'b','a string comment','c',{'cell'}),'eval')
+% example: 
+%  data=struct('a',1,'b','a string comment','c',{'cell'});
+%  str=class2str(data)          % produces a string/script that regenerates data
+%  str=class2str('this', data)  % idem, but creates 'this' instead of 'data'.
+%  str=class2str(data, 'flat')  % a kind of config file
+%  str=class2str(data, 'eval')  % a compact evaluable string
 %          
 % See also: mat2str, num2str, eval, sprintf
 %
-% Part of: Loaders utilities (ILL library)
+% Part of: Loaders utilities (ifit.mccode.org)
 % Author:  E. Farhi <farhi@ill.fr>. $Date$
 % (c) E.Farhi, ILL. License: EUPL.
 
-if nargin == 1
-  data = this;
-  this = '';
-elseif nargin==2 && ~ischar(this) % (this,data)
-  options=data; data=this; this=inputname(1);
+if     nargin == 0
+  str=[]; return
+elseif nargin == 1
+  data    = this;
+  this    = '';  % default root level name
+  options = '';
+elseif nargin == 2
+  if ~ischar(this) && ischar(data) % (data, options)
+    options=data; data=this; this=inputname(1);
+  else options = ''; end
 end
-if isempty(this)
-  if isempty(inputname(1)), this = [ class(data) '_str' ];
-  else this = inputname(1); end
-end
-
-if nargin < 3, options=''; end
+if isempty(this), this = inputname(1); end
+if isempty(this), this = [ class(data) '_str' ]; end
 
 if strfind(options, 'flat')
   str = class2str_flat(this, data, options);
@@ -57,7 +68,7 @@ NL = sprintf('\n');
 
 if ischar(data)
   str = [ this ' = ''' class2str_validstr(data) ''';' NL ];
-elseif (isa(data, 'iData') | isa(data, 'iFunc') | isa(data, 'sw') | isa(data, 'spinw') | isstruct(data)) & length(data) > 1
+elseif (all(isobject(data)) || all(isstruct(data))) && numel(data) > 1
   if ~nocomment, str = [ '% ' this ' (' class(data) ') array size ' mat2str(size(data)) NL ]; end
   for index=1:numel(data)
     str = [ str class2str([ this '(' num2str(index) ')' ], data(index), options) ];
@@ -75,12 +86,12 @@ elseif isa(data, 'iData')
          '  setaxis('  this ', mat2str(1:length(' this '_s.Alias.Axis)), ' this '_s.Alias.Axis);' NL ...
          'end' NL ];
   if ~nocomment, str = [ str '% end of iData ' this NL ]; end
-elseif isa(data, 'iFunc')
+elseif isobject(data)
   if ~nocomment, str = [ '% ' this ' (' class(data) ') size ' num2str(size(data)) NL ]; end
   str = [ str class2str(this, struct(data), options) ];
-  if ~nocomment, str = [ str NL '% handling of iFunc objects -------------------------------------' NL ]; end
+  if ~nocomment, str = [ str NL '% handling of objects -------------------------------------' NL ]; end
   str = [ str 'try; ' this ' = ' class(data) '(' this '); end' ];
-  if ~nocomment, str = [ str '% end of iFunc ' this NL ]; end
+  if ~nocomment, str = [ str '% end of object ' this NL ]; end
 elseif isnumeric(data) | islogical(data)
   if ~nocomment, str = [ '% ' this ' numeric (' class(data) ') size ' num2str(size(data)) NL ]; end
   str = [ str this ' = ' mat2str(data(:)) ';' NL ];
@@ -146,7 +157,7 @@ NL  = sprintf('\n');
 if isempty(data), return; end
 if ischar(data)
   str = [ '# ' this ': ' class2str_validstr(data) NL ];
-elseif (isa(data, 'iData') | isstruct(data)) & length(data) > 1
+elseif (isobject(data) || isstruct(data)) && length(data) > 1
   for index=1:numel(data)
     str = [ str class2str([ this '(' num2str(index) ')' ], data(index), options) NL ];
   end
@@ -171,7 +182,7 @@ elseif iscell(data)
   end
 elseif isa(data, 'function_handle')
   str = [ '# ' this ' function: ' func2str(data(:)) NL ];
-elseif (isnumeric(data) & ~isa(data,'iData')) | islogical(data)
+elseif ~isobject(data) && (isnumeric(data) || islogical(data))
   str = num2str(data);
   str(:,end+1) = sprintf('\n');
   str = str';
@@ -196,9 +207,12 @@ NL  = sprintf('\n');
 
 if ischar(data)
   str = [ '''' class2str_validstr(data) '''' ];
+elseif isobject(data)
+    str = [ str class(data) '(' class2str_eval(struct(data)) ')' ];
 elseif isnumeric(data)
   if ndims(data) <= 2, str = mat2str(data); end
 elseif iscell(data)
+  if isempty(data), str = [     '{ ' ]; end
   for index=1:numel(data)
     if index == 1, str = [     '{ ' class2str_eval(data{index}) ];
     else           str = [ str ', ' class2str_eval(data{index}) ]; end
