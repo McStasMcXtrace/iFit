@@ -1,28 +1,35 @@
-function fallback_web(url)
-% fallback_web: basic web browser
+function ret=fallback_web(url, method)
+% fallback_web: basic web browser running from Matlab
 %
 %   Opens a simplistic web browser, built from Matlab/Java.
 %     Can be used as replacement for the 'web' command in deployed applications.
 %     Requires a running JVM.
+%   This browser has very limited rendering capabilities. It does not support 
+%     JavaScript, and other 'modern' HTML extensions (flash, HTML5,...).
 %   The browser has a display pane, a Home button, a Back button, an editable URL 
-%   field, and keep track of the navigation history. Does not support proxy settings.
+%   field, and keeps track of the navigation history. Does not support proxy settings.
 %
-%   fallback_web      Opens an empty browser.
-%   fallback_web(url) Opens a browser displaying the specified URL.
+%   fallback_web        Opens an empty browser.
+%   fallback_web(file)  Display the specified file (full path or in the Matlab search path)
+%   fallback_web(url)   Opens a browser displaying the specified URL.
+%   fallback_web(url,'system') tries first to open the web page with the system browser.
 %
 %   Copyright: Licensed under the EUPL V.1.1
-%              E. Farhi, ILL, France <farhi@ill.fr> Aug 2012
+%              E. Farhi, ILL, France <farhi@ill.fr> Aug 2012, http://ifit.mccode.org
 
   list = {};
 
   if nargin == 0
     url = '';
   end
+  if nargin < 2, method='matlab'; end
+  
   if exist('ifitpath')
     Home = fullfile(ifitpath,'Docs','index.html');
   else
     Home = 'http://ifit.mccode.org';
   end
+  
   if isempty(url), url = Home; end
   
   if isempty(dir(url)) 
@@ -33,14 +40,18 @@ function fallback_web(url)
     elseif ~isempty(which([ url '.html' ]))
       url = which([ url '.html' ]); % use HTML if no TXT
     else
-      url = which(url);
+      url1 = which(url);
+      if ~isempty(url1), url=url1; end
     end
   end
   
   handles=[];
   
   % return code from Browser: 0=OK, 1=error.
-  ret = open_system_browser(url);
+  ret=1;  % error code
+  if strcmp(method, 'system')
+    ret = open_system_browser(url);
+  end
   
   % when fails, we open our own browser
   if ret && usejava('jvm') && feature('ShowFigureWindows')
@@ -68,7 +79,7 @@ function fallback_web(url)
         'String', 'History', 'Position',[0.70 0.91 0.14 0.05], 'Callback',@setFromHistory);
       % HOME button
       handles(5) = uicontrol('style','pushbutton','Units','Normalized', ...
-        'ToolTip', sprintf('Go back to iFit main page\n%s',Home ), ...
+        'ToolTip', sprintf('Go back to Home main page\n%s',Home ), ...
         'String','HOME','Position',[0.85 0.91 0.14 0.05], 'Callback',@setHome);
       % File Menu
       handles(6) = uimenu(handles(1), 'Label', 'File');
@@ -188,6 +199,7 @@ function fallback_web(url)
         je.setText( link );
       end
     else % this is a supported URL
+      url = get(handles(3), 'String');  % the current URL
       if ~isempty(dir([ root filesep link ]))
         link = [ root filesep link ];
       elseif link(1) == '#'
@@ -202,13 +214,59 @@ function fallback_web(url)
       end
       try
         je.setPage([ link anchor ]);
-      catch % usually java.net.MalformedURLException from JEditorPane
-        disp([ mfilename ': Can not open URL ' link ])
+      catch ME % usually java.net.MalformedURLException from JEditorPane
         ret=1;
+      end
+      % in case of error, try with http:// in front if missing
+      if ret
+        try
+          je.setPage([ 'http://' link anchor ]);
+          link = [ 'http://' link anchor ];
+          ret=0;
+        catch ME
+          ret=1;
+        end
+      end
+        
+      % in case of error, try with the initial root.
+      if ret
+        try
+          je.setPage([ root '/' link anchor ]);
+          link = [ root '/' link anchor ];
+          ret=0;
+        catch ME
+          ret=1;
+        end
+      end
+      % in case of error, try with the initial url as relative root.
+      if ret
+        try
+          je.setPage([ url '/' link anchor ]);
+          link = [ url '/' link anchor ];
+          ret=0;
+        catch ME
+          ret=1;
+        end
+      end
+      if ret
+        disp([ mfilename ': Can not open URL ' link ])
+        disp(getReport(ME))
         return
       end
       url        = strtok(link,'#');
       root       = fileparts(url);
+      % root should only contain the dns
+      split = textscan(url, '%s','Delimiter','/'); 
+      if ~isempty(split)
+        split=split{1};
+        split=split(cellfun(@isempty, split));
+        if ~isempty(split) && any(strcmp(split{1}, {'http:','https','file:','ftp:'}))
+          split=split(2:end);
+        end
+        if ~isempty(split)
+          root = split{1};
+        end
+      end
       if strncmp(root, 'file://',7)
         root = root(8:end);
       end
