@@ -1,4 +1,4 @@
-function TextEdit(filename)
+function hF = TextEdit(filename)
 % Simpl Text editor
 % 
 %
@@ -49,6 +49,7 @@ uimenu(hMA,'Label','About...','Callback',@textedit_about);
 hTxt=uicontrol('style','edit','String','',...
     'Units','Normalized','Position',[0 0 1 1],...
     'BackgroundColor','w','Horizontal','left',...
+    'Tag','TextEdit_Text', ...
     'Max',1000,'FontSize',10,'FontName','Arial');
 
 % protect figure from over-plotting
