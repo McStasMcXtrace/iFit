@@ -11,8 +11,9 @@ function structure = structdlg(structure,options)
   %     ad = structdlg(a, struct('CreateMode','non-modal'));
   %     % continue execution, and actually edit and close the window
   %     % ...
-  %     % get the modified structure
-  %     new_a      = cell2struct(reshape(getappdata(0,ad.tmp_storage), ad.size), ad.fields, 1);
+  %     % get the modified structure (when closing window)
+  %     Data = getappdata(0,ad.tmp_storage); fields=Data(:,1); Data=Data(:,2:end);
+  %     new_a      = cell2struct(reshape(Data, ad.size), fields, 1);
   %     rmappdata(0, ad.tmp_storage);
   %
   % input:
@@ -93,15 +94,16 @@ function structure = structdlg(structure,options)
   
   % create the Table content to display, handle array of structures
   % check if the structure values are numeric, logical, or char
-  Data0       = cell(numel(fields), numel(structure));
+  Data0       = cell(numel(fields), numel(structure)+1);  % first column=fieldnames
   fields_type = cell(size(Data0));
+  Data0(:,1)  = fields(:);
   for index_s = 1:numel(structure)
-    Data0(:,index_s) = struct2cell(structure(index_s));
+    Data0(:,index_s+1) = struct2cell(structure(index_s));
     for index=1:numel(fields)
-      item = Data0{index,index_s};
+      item = Data0{index,index_s+1};
       if ~isnumeric(item) && ~islogical(item) && ~ischar(item)
-        fields_type{index,index_s} = class(item);
-        Data0{index,indep_s} = class2str('', Data0{index,index_s}, 'eval');
+        fields_type{index,index_s+1} = class(item);
+        Data0{index,indep_s+1} = class2str('', Data0{index,index_s+1}, 'eval');
       end
     end
   end
@@ -132,6 +134,10 @@ function structure = structdlg(structure,options)
   p(3) = width;
   if p(4) > height, p(4) = height; end
   set(f, 'Position',p);
+  
+  % set ColumnName
+  ColumnName = 'Field';
+  ColumnName = [ ColumnName num2cell(1:numel(structure)) ];
 
   % create the table
   t = uitable('Parent',f, ...
@@ -139,7 +145,8 @@ function structure = structdlg(structure,options)
     'ColumnEditable',true, ...
     'FontSize',options.FontSize, ...
     'Units','normalized', 'Position', [0.05 0.2 .9 .7 ], ...
-    'ColumnWidth','auto','TooltipString',options.TooltipString);
+    'ColumnWidth','auto','TooltipString',options.TooltipString, ...
+    'ColumnName',ColumnName);
     
   % assemble the dialogue information structure
   ad.figure       = f;
@@ -159,6 +166,9 @@ function structure = structdlg(structure,options)
     Data = getappdata(0,tmp_storage);
     
     if numel(Data) ~= numel(Data0), return; end
+    % get new field names
+    fields = genvarname(strtok(Data(:,1)));
+    Data   = Data(:,2:end);
     % restore initial structure field type when set
     Data = reshape(Data, ad.size);
     for index=1:numel(Data)
