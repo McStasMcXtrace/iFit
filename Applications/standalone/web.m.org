@@ -29,7 +29,7 @@ end
 
 
 % launches our internal Web browser which follows 'matlab:' URL's
-fallback_web(url); % in private
+webbrowser(url, 'system');
 
 % ------------------------------------------------------------------------------
 
@@ -126,7 +126,7 @@ else
   end
   
   % display the help URL
-  fallback_web(h);
+  webbrowser(h, 'system');
 end
 
 % ------------------------------------------------------------------------------
