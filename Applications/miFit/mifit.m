@@ -58,7 +58,7 @@ function varargout = mifit(varargin)
 
     if ~isempty(varargin)
         if nargin == 2 && isa(varargin{1}, 'dndcontrol') && isstruct(varargin{2})
-          % called as a callback/event from Drag-n-Drop
+          % called as a callback/event from Drag-n-Drop (import external file/text)
           evt = varargin{2};
           switch evt.DropType
           case 'file'
@@ -76,6 +76,8 @@ function varargout = mifit(varargin)
           if strcmpi(action,'identify'), varargout{1} = []; return; end
           if any(strcmpi(action,{'pull','data'}))
             out = getappdata(fig, 'Data');
+          elseif any(strcmpi(action,{'config'}))
+            out = getappdata(mifit_fig, 'Preferences');
           else
             try
               feval([ 'mifit_' action ], varargin{2:end});
@@ -248,12 +250,17 @@ function mifit_File_Preferences(varargin)
   options.TooltipString = sprintf([ 'Modify the %s Preferences.\n' ...
       'You can specify additional menu items by entering a cell (pairs)\n' ...
       '* Menu_<Label> = {''Item_Label'',''Command'', ...}' ], mfilename);
+
   config1 = structdlg(config, options);
   if isempty(config1), return; end
   config = config1;
   % set new Preferences
   config.FontSize=min(max(config.FontSize, 10),36);
   config.History_Level=min(max(config.History_Level, 2),50);
+  % save the window size and location
+  set(fig,'Units','pixels');
+  config.Position = get(fig,'Position');
+  
   setappdata(mifit_fig, 'Preferences', config);
   mifit_Apply_Preferences;
   mifit_Save_Preferences(config);
@@ -261,6 +268,12 @@ function mifit_File_Preferences(varargin)
 function mifit_File_Exit(varargin)
 % File/Exit: Quit and Save Data
   config = getappdata(mifit_fig, 'Preferences');
+  
+  % save the window size and location
+  set(mifit_fig,'Units','pixels');
+  config.Position = get(mifit_fig,'Position');
+  mifit_Save_Preferences(config);
+  
   if isfield(config, 'Save_Data_On_Exit') && strcmp(config.Save_Data_On_Exit, 'yes')
     mifit_File_Save;
   else
