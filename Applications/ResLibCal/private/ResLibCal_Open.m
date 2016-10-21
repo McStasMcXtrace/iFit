@@ -61,12 +61,29 @@ function EXP = ResLibCal_Open(filename, EXP)
 
   % evaluate it to get 'EXP'
   if isstruct(EXP)
-    if exist('config','var') && isstruct(config) && isfield(config, 'Title')
-      titl = config.Title;
+    Position = [];
+    if exist('config','var') && isstruct(config) 
+      if isfield(config, 'Title')
+        titl = config.Title;
+      end
+      if isfield(config, 'Position')
+        Position = config.Position;
+      end
     end
     % send it to the figure
     try
       [fig, EXP] = ResLibCal_EXP2fig(EXP); % open figure if not yet done
+      % set position and size from last save (if available)
+      if ~isempty(Position) && isnumeric(Position)
+        if numel(Position) == 4
+          set(fig, 'Units','pixels','Position',Position);
+        elseif numel(Position) == 2 % size only
+          set(fig, 'Units','pixels');
+          p0 = get(fig,'Position');
+          Position(1:2) = p0(1:2);
+          set(fig, 'Position',Position);
+        end
+      end
       % force full update of all fields
       ResLibCal('update_d_tau_popup');
       disp([ datestr(now) ': Loaded ' titl ' from ' filename ]);

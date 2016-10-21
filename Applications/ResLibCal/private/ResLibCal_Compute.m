@@ -17,6 +17,8 @@ function out = ResLibCal_Compute(EXP)
   
   if isempty(EXP) || ~isstruct(EXP)
     [EXP, fig] = ResLibCal_GetConfig;
+    set(fig,'Units','pixels');
+    EXP.Position   = get(fig, 'Position');
   end
   % check EXP structure. Perhaps it is a full ResLibCal structure
   if ~isstruct(EXP), return; end
