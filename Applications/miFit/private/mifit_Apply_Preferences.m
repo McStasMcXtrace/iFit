@@ -33,6 +33,22 @@ function config=mifit_Apply_Preferences(config)
     set(t, 'FontSize', config.FontSize);
   end
   
+  % change window size/location
+  Position = [];
+  if isfield(config, 'Position')
+    Position = config.Position;
+  end
+  if numel(Position) == 4
+    set(fig, 'Units','pixels','Position',Position);
+  elseif numel(Position) == 2 % size only
+    set(fig, 'Units','pixels');
+    p0 = get(fig,'Position');
+    Position(1:2) = p0(1:2);
+    set(fig, 'Position',Position);
+  elseif ~isempty(fig)
+    centerfig(fig);
+  end
+  
   % handle User menus
   % dynamically build any other 'Menu_' items in the configuration
   % example: config.Menu_Tools={'Label','command'}; will add the label in the Menu

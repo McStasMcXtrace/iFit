@@ -15,6 +15,7 @@ if isempty(fig) || ~ishandle(fig)
     % load Preferences
     mifit_Load_Preferences;
     config=mifit_Apply_Preferences;
+    
     % create the AppData default values
     setappdata(fig, 'Data',    []);
     setappdata(fig, 'History', {});
@@ -114,10 +115,14 @@ if isempty(fig) || ~ishandle(fig)
     file = fullfile(prefdir, [ 'mifit' '.log' ]);
     mifit_disp([ '[Init] Log file is ' file ]);
     
-    % activate Drag-n-Drop
+    % activate Drag-n-Drop from external source (files, text)
     hObject = mifit_fig('List_Data_Files');
     dndcontrol.initJava;
     dndcontrol(hObject,@mifit,@mifit);
+    
+    % activate Drag-n-Drop from the List to other Matlab windows
+    % set(fig,'windowbuttonupfcn',  'disp(''up in:''); get(0,''pointerwindow'')')
+    % set(fig,'windowbuttondownfcn','disp(''down in:''); get(0,''pointerwindow'')')
 
     % close welcome image
     delete(h);
