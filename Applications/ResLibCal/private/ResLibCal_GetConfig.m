@@ -15,6 +15,8 @@ function [out, fig] = ResLibCal_GetConfig(out)
       out.Title  = 'ResLibCal';
       out.EXP    = EXP;
       out.handle = fig;
+      set(fig,'Units','pixels');
+      out.Position   = get(fig, 'Position');
     end
   end
   
