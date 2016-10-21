@@ -361,7 +361,7 @@ function iData_edit_resize(varargin)
   Data    = get(h, 'Data');
   sz_Data = size(Data);
   % display Dialog
-  prompt = {'Number of rows:','Number of columns:'};
+  prompt = {'New number of rows:','New number of columns:'};
   name   = [ mfilename ': Expand/reduce the Table' ];
   options.Resize='on';
   options.WindowStyle='normal';

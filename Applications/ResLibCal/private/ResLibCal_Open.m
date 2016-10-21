@@ -74,7 +74,7 @@ function EXP = ResLibCal_Open(filename, EXP)
     try
       [fig, EXP] = ResLibCal_EXP2fig(EXP); % open figure if not yet done
       % set position and size from last save (if available)
-      if ~isempty(Position) && isnumeric(Position)
+      if ~isempty(Position) && isnumeric(Position) && ~isempty(fig)
         if numel(Position) == 4
           set(fig, 'Units','pixels','Position',Position);
         elseif numel(Position) == 2 % size only
@@ -83,7 +83,7 @@ function EXP = ResLibCal_Open(filename, EXP)
           Position(1:2) = p0(1:2);
           set(fig, 'Position',Position);
         end
-      end
+      elseif ~isempty(fig), centerfig(fig); end
       % force full update of all fields
       ResLibCal('update_d_tau_popup');
       disp([ datestr(now) ': Loaded ' titl ' from ' filename ]);
