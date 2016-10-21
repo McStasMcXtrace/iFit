@@ -85,7 +85,7 @@ function structure = structdlg(structure,options)
       'NextPlot','new', ...
       'Tag', options.Tag, ...
       'CloseRequestFcn', ...
-        [ 'setappdata(0,''' tmp_storage ''', get(get(gcbf,''Children''),''Data'')); delete(gcbf)' ]);
+        [ 'setappdata(0,''' tmp_storage ''', get(findobj(gcbf,''Tag'',''' options.Tag '_Table' '''),''Data'')); delete(gcbf)' ]);
   
   % override default mechanism for Table update when closing
   if isfield(options, 'CloseRequestFcn') && ~strcmp(options.CreateMode, 'modal')
@@ -101,9 +101,11 @@ function structure = structdlg(structure,options)
     Data0(:,index_s+1) = struct2cell(structure(index_s));
     for index=1:numel(fields)
       item = Data0{index,index_s+1};
-      if ~isnumeric(item) && ~islogical(item) && ~ischar(item)
+      % uitable only support char or scalar numeric/logical
+      flag = ischar(item) || (numel(item) ==1 && (isnumeric(item) || islogical(item)));
+      if ~flag
         fields_type{index,index_s+1} = class(item);
-        Data0{index,indep_s+1} = class2str('', Data0{index,index_s+1}, 'eval');
+        Data0{index,index_s+1} = class2str('', Data0{index,index_s+1}, 'eval');
       end
     end
   end
@@ -138,16 +140,28 @@ function structure = structdlg(structure,options)
   % set ColumnName
   ColumnName = 'Field';
   ColumnName = [ ColumnName num2cell(1:numel(structure)) ];
+  ColumnFormat='char';
+  ColumnFormat=[ ColumnFormat cell(1,numel(structure)) ];
 
   % create the table
   t = uitable('Parent',f, ...
     'RowName',options.ListString, 'Data', Data0, ...
     'ColumnEditable',true, ...
+    'Tag', [ options.Tag '_Table' ], ...
     'FontSize',options.FontSize, ...
     'Units','normalized', 'Position', [0.05 0.2 .9 .7 ], ...
     'ColumnWidth','auto','TooltipString',options.TooltipString, ...
     'ColumnName',ColumnName);
     
+  % add context menu to add a field
+  uicm = uicontextmenu; 
+  uimenu(uicm, 'Label','Revert (undo all changes)', 'Callback', @structdlg_revert);
+  uimenu(uicm, 'Label','Append property/field',     'Callback', @structdlg_append);
+  % attach contexual menu to the table
+  try
+    set(t,   'UIContextMenu', uicm); 
+  end
+  
   % assemble the dialogue information structure
   ad.figure       = f;
   ad.table        = t;
@@ -165,12 +179,15 @@ function structure = structdlg(structure,options)
     uiwait(f);
     Data = getappdata(0,tmp_storage);
     
-    if numel(Data) ~= numel(Data0), return; end
+    if isempty(Data), return; end
     % get new field names
     fields = genvarname(strtok(Data(:,1)));
     Data   = Data(:,2:end);
+    fields_type = fields_type(:,2:end);
     % restore initial structure field type when set
-    Data = reshape(Data, ad.size);
+    if prod(ad.size) == numel(Data)
+      Data = reshape(Data, ad.size);
+    end
     for index=1:numel(Data)
       if ~isempty(fields_type{index})
         try
@@ -187,3 +204,24 @@ function structure = structdlg(structure,options)
   else
     structure = ad;
   end
+  
+  % ==============================================================================
+  function structdlg_revert(source, evnt)
+  % restore initial data
+    ad = get(gcbf, 'UserData');
+    Data = getappdata(0,ad.tmp_storage);
+    set(ad.table, 'Data',Data);
+  end
+    
+  function structdlg_append(source, evnt)
+  % add a new line to the table
+    ad   = get(gcbf, 'UserData');
+    Data = get(ad.table,'Data');
+    % append a line
+    Data(end+1,:) = cell(1,size(Data,2));
+    fields_type(end+1,:) = cell(1,size(Data,2));
+    Data{end,1}   = 'New'; 
+    set(ad.table, 'Data',Data);
+  end
+  
+end
