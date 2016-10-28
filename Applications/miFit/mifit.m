@@ -136,12 +136,13 @@ function varargout = mifit(varargin)
               % test if we import a config.ini file
               if isempty(d)
                 try
-                  config = mifit_Load_Preferences(file);
+                  config1 = mifit_Load_Preferences(file);
                 catch
-                  config = [];
+                  config1 = [];
                 end
-                if ~isempty(config)
-                  mifit_Apply_Preferences(config);
+                if ~isempty(config1)
+                  mifit_Apply_Preferences(config1);
+                  % and merge with existing config
                   return
                 end
               end
