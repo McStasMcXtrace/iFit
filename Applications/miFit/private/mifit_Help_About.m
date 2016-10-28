@@ -12,7 +12,7 @@ function h=mifit_Help_About(fig)
   end
   g=findobj(h, 'type','uicontrol');
   config = getappdata(mifit_fig, 'Preferences');
-  set(g,'fontsize',config.FontSize);
+  if isfield(config,'FontSize'), set(g,'fontsize',config.FontSize); end
   if ~isempty(fig)
     setappdata(fig, 'handle_About', h);
   end
