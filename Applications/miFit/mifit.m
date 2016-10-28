@@ -1,10 +1,13 @@
 function varargout = mifit(varargin)
 % miFit: a user interface to iFit
 %
-% data = mifit('data')  retrieves data sets from the interface
+% data = mifit('data')  retrieves all data sets from the interface
+% data = mifit('pull') retrieves the selected data sets
+% mifit('push', datasets)   replace existing data sets and append new ones
 % mifit('filename')     imports the file into a new Data set/Model
 % mifit(iData_object)   add the iData object into the interface Data stack
 % mifit(iFunc_object)   add the iFunc Model into the interface Models menu
+% config = mifit('config')  retrieves the miFit configuration
 %
 % Version: $Date$
 % (c) E.Farhi, ILL. License: EUPL.
@@ -74,10 +77,18 @@ function varargout = mifit(varargin)
           % callback with varargin{1} == 'action'
           action = varargin{1};
           if strcmpi(action,'identify'), varargout{1} = []; return; end
-          if any(strcmpi(action,{'pull','data'}))
+          if any(strcmpi(action,{'data'}))
+            % get the full data list
             out = getappdata(fig, 'Data');
+          elseif any(strcmpi(action,{'pull','selection'}))
+            % get the selected data sets
+            out = mifit_List_Data_pull();
           elseif any(strcmpi(action,{'config'}))
+            % get the configuration
             out = getappdata(mifit_fig, 'Preferences');
+          elseif any(strcmpi(action,{'push','replace','merge'})) && nargin >= 2
+            mifit_List_Data_push(varargin(2:end), 'replace');
+            return
           else
             try
               feval([ 'mifit_' action ], varargin{2:end});
@@ -307,9 +318,13 @@ function mifit_File_Reset(varargin)
       file = fullfile(prefdir, [ mfilename '.mat' ]);
       if ~isempty(dir(file)), delete(file); end
     end
-    mifit_Edit_Select_All([], true);
-    mifit_Edit_Delete();
-    setappdata(fig, 'History', []);
+    hObject        = mifit_fig('List_Data_Files');
+    set(hObject, 'String',[],'Value',[]);
+    setappdata(mifit_fig, 'Data',[]);
+    setappdata(mifit_fig, 'CurrentDataSet', []);
+    setappdata(mifit_fig, 'CurrentDataSetIndex', []);
+    setappdata(mifit_fig, 'History', []);
+    mifit_History_push();
 
     file = fullfile(prefdir, [ mfilename '.log' ]);
     if ~isempty(dir(file)), delete(file); end
