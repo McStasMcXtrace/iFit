@@ -14,7 +14,7 @@ function EXP = ResLibCal_Open(filename, EXP)
 
   if nargin < 1, filename = ''; end
   if nargin < 2, EXP = []; end
-  if isempty(filename) || isdir(filename)
+  if isempty(filename) || (ischar(filename) && isdir(filename))
     [filename, pathname] = uigetfile( ...
        {'*.m;*.ini',  'ResLibCal configuration M-file (*.m;*.ini)'; ...
         '*.cfg;*.par;*.res','ResCal/ResCal5 configuration (*.par;*.cfg;*.res)' ; ...
@@ -24,7 +24,7 @@ function EXP = ResLibCal_Open(filename, EXP)
     filename = fullfile(pathname, filename);
   end
 
-  if exist(filename,'file') % a file exists: read it
+  if ischar(filename) && exist(filename,'file') % a file exists: read it
     % handle case of ResCal5 .par .cfg file (numerical vector)
     try
       content = load(filename); % usually produces a vector of Rescal parameters (42 or 27)
@@ -83,12 +83,18 @@ function EXP = ResLibCal_Open(filename, EXP)
           Position(1:2) = p0(1:2);
           set(fig, 'Position',Position);
         end
-      elseif ~isempty(fig), centerfig(fig); end
+      end
       % force full update of all fields
       ResLibCal('update_d_tau_popup');
-      disp([ datestr(now) ': Loaded ' titl ' from ' filename ]);
+      if isstruct(filename)
+        disp([ datestr(now) ': Loaded ' titl ' from ' ]);
+        disp(filename)
+      else
+        disp([ datestr(now) ': Loaded ' titl ' from ' filename ]);
+      end
     catch
-      warning([ datestr(now) ': Could not load ResLibCal configuration ' filename ]);
+      warning([ datestr(now) ': Could not load ResLibCal configuration '  ]);
+      disp(filename)
       rethrow(lasterror)
     end
   end
