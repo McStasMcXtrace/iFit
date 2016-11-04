@@ -45,8 +45,6 @@ function config=mifit_Apply_Preferences(config)
     p0 = get(fig,'Position');
     Position(1:2) = p0(1:2);
     set(fig, 'Position',Position);
-  elseif ~isempty(fig)
-    centerfig(fig);
   end
   
   % handle User menus
