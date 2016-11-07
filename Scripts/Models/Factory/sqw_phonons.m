@@ -154,16 +154,6 @@ function signal=sqw_phonons(configuration, varargin)
 %
 % The syntax sqw_phonons(model,'html') allows to re-create the HTML report about
 % the 4D phonon model.
-%     
-% Example (model creation and evaluation):
-%   s=sqw_phonons('bulk("Cu", "fcc", a=3.6, cubic=True)','EMT','metal','dos');
-%   qh=linspace(0.01,.5,50);qk=qh; ql=qh; w=linspace(0.01,50,51);
-%   f=iData(s,[],qh,qk,ql',w); scatter3(log(f(1,:, :,:)),'filled');
-%   figure; plot(s.UserData.DOS); % plot the DOS, as indicated during model creation
-%
-%   s=sqw_phonons('bulk("Si", "diamond", a=5.4, cubic=True)','semiconductor');
-%
-%   s=sqw_phonons([ ifitpath 'Data/POSCAR_Al'],'dos','metal','EMT');
 %
 % You may look at the following resources to get material structure files:
 %   <http://phonondb.mtl.kyoto-u.ac.jp/>
@@ -234,7 +224,6 @@ function signal=sqw_phonons(configuration, varargin)
 %             p(2)=Gamma   dispersion DHO half-width in energy [meV]
 %             p(3)=Background (constant)
 %             p(4)=Temperature of the material [K]. When 0, the intensity is not computed.
-%             p(5)=Debye-Waller mean squared displacement <u^2> used in exp(-1/6 u2Q2) [Angs^2]
 %          or p='guess'
 %         qh: axis along QH in rlu (row,double)
 %         qk: axis along QK in rlu (column,double)
@@ -242,6 +231,16 @@ function signal=sqw_phonons(configuration, varargin)
 %         w:  axis along energy in meV (double)
 %    signal: when values are given, a guess of the parameters is performed (double)
 % output: signal: model value
+%
+% Example (model creation and evaluation):
+%   s=sqw_phonons('bulk("Cu", "fcc", a=3.6, cubic=True)','EMT','metal','dos');
+%   qh=linspace(0.01,.5,50);qk=qh; ql=qh; w=linspace(0.01,50,51);
+%   f=iData(s,[],qh,qk,ql',w); scatter3(log(f(1,:, :,:)),'filled');
+%   figure; plot(s.UserData.DOS); % plot the DOS, as indicated during model creation
+%
+%   s=sqw_phonons('bulk("Si", "diamond", a=5.4, cubic=True)','semiconductor');
+%
+%   s=sqw_phonons([ ifitpath 'Data/POSCAR_Al'],'dos','metal','EMT');
 %
 % Version: $Date$
 % See also iData, iFunc/fits, iFunc/plot, gauss, sqw_cubic_monoatomic, sqw_sine3d, sqw_vaks
@@ -481,12 +480,11 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO') || strcmpi(options.calculator
     'Gamma Damped Harmonic Oscillator width in energy [meV]' ...
     'Background' ...
     'Temperature used to compute the Bose factor n(w) [K]' ...
-    'Debye_Waller mean square displacement <u^2> used to compute exp(-1/6 u^2.Q^2) [Angs^2]' ...
      };
     
   signal.Dimension      = 4;         % dimensionality of input space (axes) and result
 
-  signal.Guess = [ 1 .1 0 10 0 ];
+  signal.Guess = [ 1 .1 0 10 ];
   
   if ~isempty(fullfile(target, 'FORCES.mat'))
     signal.UserData.FORCES = load(fullfile(target, 'FORCES.mat'));
@@ -593,7 +591,7 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO') || strcmpi(options.calculator
     'catch ME; disp([ ''Model '' this.Name '' '' this.Tag '' could not get vDOS Python/ASE from '' target ]); disp(getReport(ME));', ...
     'end', ...
     '  % multiply all frequencies(columns, meV) by a DHO/meV', ...
-    '  Amplitude = p(1); Gamma=p(2); Bkg = p(3); T=p(4); u2=p(5);', ...
+    '  Amplitude = p(1); Gamma=p(2); Bkg = p(3); T=p(4); ', ...
     script_dho{:} };
 
   signal = iFunc(signal);

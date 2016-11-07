@@ -8,7 +8,7 @@ function [HKL, t, is_event, resize_me] = sqw_phonons_template_hkl(x,y,z,t)
 
 ax = {x y z t};
 % check for vectors: 0 or 1 for each axis
-check_vector = cellfun(@(c)length(c) == numel(c), ax);
+check_vector = cellfun(@(c)(~isempty(c) && length(c) == numel(c)), ax);
 % check number of elements: would be equal for 3D grids (xyz) or 4D (xyzt)
 check_numel  = cellfun(@numel, ax);
 % check orientation (axis rank) for vectors. 0 for non vectors
@@ -52,4 +52,4 @@ if numel(resize_me) == 3
 end
 
 % now we compute FREQ (and POLAR when possible) at HKL
-u2 = []; POLAR=[]; T=0; Amplitude=1; Gamma=0.01;  % defaults
+POLAR=[]; T=0; Amplitude=1; Gamma=0.01;  % defaults
