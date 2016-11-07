@@ -138,7 +138,7 @@ if nargin == 0
   out = ResLibCal_ViewResolution(out,2);  % open/raise View Res2
   out = ResLibCal_UpdateViews(out); % when they exist
 elseif nargin == 1 && isa(varargin{1}, 'iFunc')
-  out = tas_conv4d(varargin{1});
+  out = ResLibCal_tas_conv4d(varargin{1});
   return
 end
 % menu actions:

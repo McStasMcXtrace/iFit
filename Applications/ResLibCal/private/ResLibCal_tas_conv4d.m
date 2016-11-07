@@ -1,5 +1,5 @@
-function signal = tas_conv4d(dispersion, config, frame)
-% model=tas_conv4d(dispersion_model, tas_config) 4D convolution function for 
+function signal = ResLibCal_tas_conv4d(dispersion, config, frame)
+% model=ResLibCal_tas_conv4d(dispersion_model, tas_config) 4D convolution function for 
 %   neutron Triple-Axis Spectrometers.
 %
 % This function builds a fit model from:
