@@ -13,7 +13,8 @@ function [match, types, dims] = findfield(s, field, option)
 %     The 'char'    option will return only character fields.
 %     The 'cache'   option allows to re-use a previous field search cache for  
 %                     faster consecutive searches on the same object.
-%     The 'first'   option returns the first match.
+%     The 'first'   option returns the first match (with shortest name/link).
+%     The 'biggest' option returns the biggest match (has max nb of elements).
 %
 %   The cache mechanism allows to do iterative searches on the same object, e.g.
 %     findfield(s,'Title') and then findfield(s,'Signal','cache numeric')
@@ -21,7 +22,7 @@ function [match, types, dims] = findfield(s, field, option)
 % input:  s: object or array (iData)
 %         field: field name to search, or '' (char).
 %         option: empty or 'exact' 'case' 'char' or 'numeric' (char)
-% output: match: names of iData fields (cellstr)
+% output: match:  names of iData fields (cellstr)
 %         types:  types of iData fields (cellstr), e.g. 'double', 'char', 'struct'...
 %         nelements: total number of elements in iData fields (double)
 % ex:     findfield(iData) or findfield(iData,'Title') or findfield(s,'Title','exact case')
@@ -51,6 +52,11 @@ if numel(s) > 1
     dims{index}=n;
   end
   return
+end
+
+% test if the cache can be used: requires Tag to be the same
+if ~isempty(cache) && ~strcmp(cache.Tag , s.Tag)
+  cache = [];
 end
 
 if isempty(cache) || isempty(strfind(option, 'cache'))
@@ -175,6 +181,12 @@ if ~isempty(field)
   if strfind(option, 'first')
     % we select the 'shortest' match
     [m, index] = min(cellfun(@length, match));
+    match = match{index};
+    types = types{index};
+    dims  = dims(index);
+  elseif strfind(option, 'biggest')
+    % we select the 'biggest' match
+    [m, index] = max(dims);
     match = match{index};
     types = types{index};
     dims  = dims(index);
