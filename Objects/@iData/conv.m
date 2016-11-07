@@ -86,15 +86,21 @@ elseif strcmp(b, 'tas')
     % where config = this.UserData.config which contains ResCal
     
     % to force the use of Rescal parameters, and not ResLib ones, we remove the 
-    % 'EXP' member.
+    % 'EXP' member from ResLibCal config.
     model.UserData.config = rmfield(model.UserData.config, 'EXP');
   end
 
   % search for missing axes (e.g. 1D -> 4D)
-  for f = {'QH','QK','QL','EN'}
-     [match, types, nelements]=findfield(a, f{1},'exact numeric cache');
-     % must get the longest field (prefer column from data file rather than simple
-     % static scalar)
+  % we must create a new 4D object'a' which has proper axes
+  axes_symbols = {'QH','QK','QL','EN'};
+  for index = 1:numel(axes_symbols} % also searches for 'lower' names
+    [match, types, nelements]=findfield(a, axes_symbols{index}, 'exact biggest numeric cache');
+    % must get the longest field (prefer column from data file rather than simple
+    % static scalar)
+    if ~isempty(match)
+      this_axis = get(a, match);
+      a = setaxis(a, index, this_axis, axes_symbols{index});
+    end
   end
   
   
