@@ -142,23 +142,27 @@ end
 signal_in_varargin = []; % holds the index of a Signal after Axes in varargin
 if ~isempty(varargin) 
   this = varargin{1};
-  if iscell(this)
+  if iscell(this) % feval(model, p, {x y z ... Signal}, ...)
     Axes = this;
     if length(Axes) > abs(model.Dimension)
       Signal = Axes{abs(model.Dimension)+1};
       Axes   = Axes(1:abs(model.Dimension));
     end
-    if ~isempty(Signal), 
+    if ~isempty(Signal) && (ndims(Signal) == abs(model.Dimension) ...
+      || (numel(Signal) == length(Signal) && numel(Signal) == numel(Axes{1})))
       Axes{end+1} = Signal; 
       signal_in_varargin = length(Axes);
     end
     varargin=[ Axes{:} varargin(2:end) ];
   elseif (isstruct(this) && isfield(this, 'Axes')) || isa(this, 'iData')
+    % feval(model, p, struct('Axes','Signal'), ...)
     Signal = {};
     if isfield(this,'Signal')  
       Signal  = this.Signal;
-      if isfield(this,'Monitor') 
-        Signal  = bsxfun(@rdivide,Signal, this.Monitor); 
+      if isfield(this,'Monitor') && ~isa(this, 'iData')
+        try
+          Signal  = bsxfun(@rdivide,Signal, this.Monitor);
+        end
       end
     end
 
@@ -169,7 +173,8 @@ if ~isempty(varargin)
       end
     elseif isfield(this,'Axes')    Axes    = this.Axes; 
     end
-    if ~isempty(Signal), 
+    if ~isempty(Signal) && (ndims(Signal) == abs(model.Dimension) ...
+      || (numel(Signal) == length(Signal) && numel(Signal) == numel(Axes{1})))
       Axes{end+1} = Signal; 
       signal_in_varargin = length(Axes);
     end

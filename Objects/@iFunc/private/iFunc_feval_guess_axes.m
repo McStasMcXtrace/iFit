@@ -66,7 +66,7 @@ end % for index in model dim
 % Expression/Constraint. Only for non event style axes.
 
 % check for vectors: 0 or 1 for each axis
-check_vector = cellfun(@(c)length(c) == numel(c), ax(1:model.Dimension));
+check_vector = cellfun(@(c)(~isempty(c) && length(c) == numel(c)), ax(1:model.Dimension));
 % check number of elements: would be equal for 3D grids (xyz) or 4D (xyzt)
 check_numel  = cellfun(@numel, ax(1:model.Dimension));
 % check orientation (axis rank) for vectors. 0 for non vectors
