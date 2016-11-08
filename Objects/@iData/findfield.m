@@ -178,6 +178,7 @@ if ~isempty(field)
     types = types(index);
     dims  = dims(index);
   end
+  if isempty(match), return; end
   if strfind(option, 'first')
     % we select the 'shortest' match
     [m, index] = min(cellfun(@length, match));
