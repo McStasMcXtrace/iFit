@@ -8,6 +8,10 @@ function c = conv(a,b, shape)
 %     When used with a vector of same length as the object dimension, a nD
 %       gaussian function with width as vector elements along each diemsions
 %
+%     The syntax: conv(a, 'tas') upgrades the data object with a neutron TAS
+%       configuration using ResLibCal. Any RESCAL-type parameters are sent to 
+%       ResLibCal and if a Model exists, it is upgraded with a 4D convolution.
+%
 % input:  a: object or array (iData or numeric)
 %         b: object or array (iData or numeric or scalar)
 %     shape: optional shape of the return value
@@ -54,55 +58,8 @@ if isa(b, 'iFunc')
 elseif strcmp(b, 'tas')
   % convolute the iData.Model with ResLibCal, overlay parameters from the Data set
   % and provide missing axes from the data set into the Model
-  
-  % get the model from the data set
-  model = [];
-  if isfield(a, 'Model')
-    model = get(a, 'Model');
-  elseif ~isempty(findfield(a, 'Model'))
-    model = get(a, findfield(a, 'Model', 'cache first'));
-  end
-  
-  if isempty(model), c=[]; return; end
-  % 4D convolution/ResLibCal
-  model = conv(model,'tas');  % calls iFunc.conv == ResLibCal(model)
-  % the ResLibCal config is stored in model.UserData.config
-  
-  % get the list of ResCal parameters from ResLibCal
-  r = ResLibCal('compute'); % uses last saved configuration, or the opened interface
-  
-  
-  % search for ResCal parameters in the data set
-  if isstruct(r, 'ResCal')
-    for f = fieldnames(r.ResCal)'
-      [match, types, nelements]=findfield(a, f{1},'exact first numeric cache');
-      if ~isempty(match)
-        % update the Model.UserData stuff with this so that ResLibCal can use it later
-        model.UserData.config.ResCal.(f{1}) = get(a, match);
-      end
-    end
-    % these parameters are automatically used in the model Expression 
-    % which calls "ResLibCal('silent', config, x,y,z,t)" in model.Expression
-    % where config = this.UserData.config which contains ResCal
-    
-    % to force the use of Rescal parameters, and not ResLib ones, we remove the 
-    % 'EXP' member from ResLibCal config.
-    model.UserData.config = rmfield(model.UserData.config, 'EXP');
-  end
-
-  % search for missing axes (e.g. 1D -> 4D)
-  % we must create a new 4D object'a' which has proper axes
-  axes_symbols = {'QH','QK','QL','EN'};
-  for index = 1:numel(axes_symbols} % also searches for 'lower' names
-    [match, types, nelements]=findfield(a, axes_symbols{index}, 'exact biggest numeric cache');
-    % must get the longest field (prefer column from data file rather than simple
-    % static scalar)
-    if ~isempty(match)
-      this_axis = get(a, match);
-      a = setaxis(a, index, this_axis, axes_symbols{index});
-    end
-  end
-  
+  c = ResLibCal(a);
+  return
   
 elseif isscalar(b)
   b = [ 1 mean(getaxis(a,1)) double(b) 0]; % use input as a width
@@ -124,6 +81,6 @@ elseif isa(b,'double') && numel(b) == ndims(a)
   b = g;
   shape = [ shape ' normalize' ];
 end
-disp 'iData.conv'
+
 c = iData_private_binary(a, b, 'conv', shape);
 
