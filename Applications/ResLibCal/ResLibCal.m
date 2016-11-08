@@ -137,8 +137,8 @@ if nargin == 0
   out = feval(mfilename, 'create'); % load last configuration, and Compute
   out = ResLibCal_ViewResolution(out,2);  % open/raise View Res2
   out = ResLibCal_UpdateViews(out); % when they exist
-elseif nargin == 1 && isa(varargin{1}, 'iFunc')
-  out = ResLibCal_tas_conv4d(varargin{1});
+elseif nargin >= 1 && (isa(varargin{1}, 'iFunc') || isa(varargin{1}, 'iData'))
+  out = ResLibCal_tas_conv4d(varargin{:});
   return
 end
 % menu actions:
