@@ -1,12 +1,13 @@
-function signal = ResLibCal_tas_conv4d(dispersion, config, frame)
-% model=ResLibCal_tas_conv4d(dispersion_model, tas_config) 4D convolution function for 
-%   neutron Triple-Axis Spectrometers.
+function signal = ResLibCal_tas_conv4d(data, config, frame)
+% model=ResLibCal_tas_conv4d(data or model, tas_config, frame) 4D convolution 
+%   function for  neutron Triple-Axis Spectrometers.
 %
 % This function builds a fit model from:
-%   * a dispersion model (iFunc or expression)
+%   * a dispersion model (iFunc)
 %     the dispersion should follow the syntax: dispersion(p, H,K,L,E) where
 %     p holds the dispersion model parameters, and H,K,L,E are the 4D coordinates
 %     where to evaluate the dispersion (one single mode).
+% OR* a data set (iData) which contains some of ResCal parameters, Model, ...
 %
 %   * a TAS configuration, given as a ResLib/EXP structure, or a configuration
 %       file (ResLibCal, ResCal, ResTrax, ResCal5, aFIT/SPEC). If config is left 
@@ -26,7 +27,7 @@ function signal = ResLibCal_tas_conv4d(dispersion, config, frame)
 %
 % Example:
 % s=sqw_vaks('KTaO3');    % create a 4D S(q,w) perovskite model
-% t=tas_conv4d(s);        % convolute it with a TAS resolution, and open ResLibCal.
+% t=ResLibCal(s);        % convolute it with a TAS resolution, and open ResLibCal.
 % w=linspace(0.01,20,50); qh=0.6*ones(size(w)); qk=0*qh; ql=qk; 
 % signal =iData(t, [], qh,qk,ql,w);
 % signal2=iData(s, [], qh,qk,ql,w);
@@ -36,9 +37,10 @@ function signal = ResLibCal_tas_conv4d(dispersion, config, frame)
 % f=iData(s,[],qh,qk,ql,w);
 % figure; surf(log(f(:,:,1,:)),'half'); hold on; scatter3(log(signal(:,:,1,:)),'filled');
 
+signal = [];
 
 if nargin < 1
-  dispersion = '';
+  data = '';
 end
 if nargin < 2
   config = '';
@@ -48,9 +50,54 @@ if nargin < 3
 end
 
 frame = lower(frame);
-if isempty(dispersion)
-  error([ mfilename ': no dispersion given for convolution' ]);
+if isempty(data)
+  error([ mfilename ': no dispersion/data set given for convolution.' ]);
 end
+
+% CHECKS and information before convolution ====================================
+
+% open ResLibCal;
+ResLibCal('silent');
+
+% configuration is empty, or ResLibcal: will use current config
+if isdir(config), config=''; end
+
+if isempty(config) || (ischar(config) && any(strcmp(lower(config),{'tas','rescal','reslib','reslibcal'})))
+  % get the current configuration
+  config = ResLibCal('silent','compute');
+elseif isstruct(config) && (isfield(config,'EXP') || isfield(config, 'method') || isfield(config, 'ResCal'))
+  % load ResLibCal (structure) configuration
+  try
+    config = ResLibCal('silent',config);
+  end
+elseif ~isempty(dir(config)) && ~isdir(config)
+  % the configuration is a file: we get the configuration and load it into ResLibCal GUI.
+  config=ResLibCal('silent',config);
+end
+
+if isempty(frame), 
+  if ndims(data) == 4, frame='rlu'; 
+  else frame='spec'; end
+end
+
+% display message about [abc] or [xyz] cloud usage, and axes used
+disp([ mfilename ': Using reference frame: ' frame ])
+if isstruct(config) && isfield(config, 'resolution')
+  if ~iscell(config.resolution), resolution={ config.resolution }; 
+  else resolution = config.resolution; end
+  disp(resolution{1}.(frame).README);
+end
+
+% assemble the convoluted model/data set
+if isa(data,'iFunc')
+  signal = ResLibCal_tas_conv4d_model(data, config, frame);
+elseif isa(data,'iData')
+  signal = ResLibCal_tas_conv4d_data(data, config, frame);
+end
+
+% ==============================================================================
+
+function signal = ResLibCal_tas_conv4d_model(dispersion, config, frame)
 
 % config usage:
 % if ResLibCal is opened, we send the 'config' to it and prepare for further evaluations.
@@ -68,41 +115,12 @@ end
 % or
 %    model(p, iData_with_scan_axis)
 
-% CHECKS and information before building the model =============================
-
-% open ResLibCal;
-ResLibCal;
-
-% configuration is empty, or ResLibcal: will use current config
-if isdir(config), config=''; end
-
-if ischar(config) && any(strcmp(lower(config),{'tas','rescal','reslib','reslibcal'}))
-  % get the current configuration
-  config = ResLibCal;
-elseif isstruct(config) && (isfield(config,'EXP') || isfield(config, 'method'))
-  % load ResLibCal (structure) configuration
-  try
-    config = ResLibCal(config);
-  end
-elseif ~isempty(dir(config)) && ~isdir(config)
-  % the configuration is a file: we get the configuration and load it into ResLibCal GUI.
-  config=ResLibCal(config);
-end
-
-if isempty(frame), 
-  if dispersion.Dimension == 4, frame='rlu'; 
-  else frame='spec'; end
-end
-
-% display message about [abc] or [xyz] cloud usage, and axes used
-disp([ mfilename ': Using reference frame: ' frame ])
-if isstruct(config) && isfield(config, 'resolution')
-  if ~iscell(config.resolution), resolution={ config.resolution }; 
-  else resolution = config.resolution; end
-  disp(resolution{1}.(frame).README);
-end
-
 % assemble the convoluted model ================================================
+
+if ndims(dispersion) ~= 2 && ndims(dispersion) ~= 4
+  disp([ mfilename ': the Model should be 2D or 4D, not ' num2str(ndims(dispersion)) '. Skipping.' ])
+  signal = dispersion;
+end
 
 % the built model parameters will be that of the model
 signal.Parameters = dispersion.Parameters;
@@ -126,6 +144,8 @@ signal.UserData.config     = config;
 
 % TODO: integration can be achieved using a Gauss-Hermite estimate, which is much
 % faster
+
+% TODO: must use reciprocal space frame, as in sqw_powder
 
 % if dispersion.Dimension == 2 (liquid,powder,gas,glass,polymer...), then use |q|,w as axes. Should use spec frame
 if dispersion.Dimension == 2
@@ -162,3 +182,88 @@ signal.Expression = { ...
   'ResLibCal(hkle{:});'};
   
 signal = iFunc(signal);
+
+% ==============================================================================
+
+function c = ResLibCal_tas_conv4d_data(a, config, frame)
+
+% convolute the iData.Model with ResLibCal, overlay parameters from the Data set
+% and provide missing axes from the data set into the Model
+
+% search for missing axes (e.g. 1D -> 4D)
+% we must create a new 4D object'a' which has proper axes
+axes_symbols = {'QH','QK','QL','EN'};
+for index = 1:numel(axes_symbols) % also searches for 'lower' names
+  [match, types, nelements]=findfield(a, axes_symbols{index}, 'exact biggest numeric cache');
+  % must get the longest field (prefer column from data file rather than simple
+  % static scalar)
+  if ~isempty(match)
+    this_axis = get(a, match);
+    a = setaxis(a, index, this_axis, axes_symbols{index});
+  end
+end
+
+if isfield(config,'ResCal')
+  rescal = config.ResCal;
+else
+  rescal = [];
+end
+
+% search for ResCal parameters in the data set
+if ~isempty(rescal) && isstruct(rescal)
+  for f = fieldnames(rescal)'
+    [match, types, nelements]=findfield(a, f{1},'exact first numeric cache');
+    if ~isempty(match)
+      rescal.(f{1}) = get(a, match);
+    end
+  end
+  % make sure the HKLE coordinates are single values
+  for index = 1:numel(axes_symbols)
+    if isfield(rescal, axes_symbols{index})
+      rescal.(axes_symbols{index}) = mean(rescal.(axes_symbols{index}));
+    end
+  end
+  config.ResCal = rescal;
+end
+% send the updated ResCal configuration (from data set) to ResLibCal interface (when opened)
+% make sure we remove the EXP field which has not been updated
+if isfield(config, 'EXP')
+  config = rmfield(config, 'EXP');
+end
+ResLibCal('silent','open',rescal);
+
+% get the model from the data set
+model = [];
+if isfield(a, 'Model')
+  model = get(a, 'Model');
+elseif ~isempty(findfield(a, 'Model'))
+  model = get(a, findfield(a, 'Model', 'cache first'));
+end
+
+% update the embedded model with 4D convolution
+if isa(model, 'iFunc') && ~isempty(model)
+
+  % 4D convolution/ResLibCal
+  model = ResLibCal(model);  % calls iFunc.conv == ResLibCal(model)
+  % the ResLibCal config is stored in model.UserData.config
+  
+  % store the ResCal parameters so that they can be used in subsequent convolutions
+  % the parameters are automatically used in the model Expression 
+  % which calls "ResLibCal('silent', config, x,y,z,t)" in model.Expression
+  % where config = this.UserData.config which contains ResCal
+  for f=fieldnames(config)'
+    model.UserData.config.ResCal.(f{1}) = rescal.(f{1});
+  end
+  
+  % to force the use of Rescal parameters, and not ResLib ones, we remove the 
+  % 'EXP' member from ResLibCal config.
+  % update the Model.UserData stuff with this so that ResLibCal can use it later
+  if isfield(model.UserData.config, 'EXP')
+    model.UserData.config = rmfield(model.UserData.config, 'EXP');
+  end
+  
+  % update new model
+  a=setalias(a, 'Model',model);
+end
+
+c = copyobj(a); % finally make a new object
