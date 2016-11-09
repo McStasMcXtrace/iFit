@@ -144,7 +144,13 @@ if isempty(a)
   return; 
 end
 
-if isempty(method), method='plot'; end
+if isempty(method)
+  if isvector(a) > 3
+    method='scatter';
+  else
+    method='plot';
+  end
+end
 
 % clean method string from the plot type and supported options not to be passed to matlab plot commands
 if ischar(method)
@@ -251,9 +257,16 @@ case 2  % surface type data (2 axes+signal) -> surf or plot3
 otherwise % 3d data sets: volumes
   if ndims(a) > 3
     % reduce dimensions
-    sz = size(a); sz([4:end ]) = 1;
-    iData_private_warning(mfilename, [ 'Reducing ' num2str(ndims(a)) '-th dimensional data ' a.Tag ' "' a.Title '" to 3D with a=resize(a, ' mat2str(sz) ')' ]);
-    a = squeeze(resize(a, sz));
+    % we keep axes [1:2 ndims(a)] (this allows e.g. to plot S(q,w))
+    if isvector(a) > 1  % event data set
+      for index=3:(ndims(a)-1) 
+        a = rmaxis(a, index);
+      end
+    else
+      sz = size(a); sz([3:(ndims(a)-1) (ndims(a)+1):end ]) = 1;
+      iData_private_warning(mfilename, [ 'Reducing ' num2str(ndims(a)) '-th dimensional data ' a.Tag ' "' a.Title '" to 3D with a=resize(a, ' mat2str(sz) ')' ]);
+      a = squeeze(resize(a, sz));
+    end
   end
   [h, xlab, ylab, zlab, ret] = iData_plot_3d(a, method, this_method, varargin{:}); % in private
 end % switch
