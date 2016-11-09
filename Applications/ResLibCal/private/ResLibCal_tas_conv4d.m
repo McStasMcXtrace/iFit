@@ -199,7 +199,8 @@ for index = 1:numel(axes_symbols) % also searches for 'lower' names
   % static scalar)
   if ~isempty(match)
     this_axis = get(a, match);
-    a = setaxis(a, index, this_axis, axes_symbols{index});
+    setaxis(a, index, this_axis);
+    label(a, index, axes_symbols{index});
   end
 end
 
