@@ -27,7 +27,11 @@ function [varargout] = get(this,varargin)
 persistent fields
 persistent method
 
-if isempty(fields), fields=fieldnames(iData); end
+if isempty(fields), 
+  fields=fieldnames(iData);
+  % remove: Warning: Could not find an exact (case-sensitive) match for 'TITLE'.
+  warning('off','MATLAB:dispatcher:InexactCaseMatch');   
+end
 if isempty(method), method=methods('iData'); end
 
 % handle array of objects
