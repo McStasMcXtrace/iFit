@@ -115,11 +115,15 @@ function signal = ResLibCal_tas_conv4d_model(dispersion, config, frame)
 % or
 %    model(p, iData_with_scan_axis)
 
+% get the model stored in the data set (if any)
+
+if isempty(dispersion), signal = []; return; end
+
 % assemble the convoluted model ================================================
 
 if ndims(dispersion) ~= 2 && ndims(dispersion) ~= 4
   disp([ mfilename ': the Model should be 2D or 4D, not ' num2str(ndims(dispersion)) '. Skipping.' ])
-  signal = dispersion;
+  signal = data;
 end
 
 % the built model parameters will be that of the model
@@ -127,7 +131,11 @@ signal.Parameters = dispersion.Parameters;
 signal.ParameterValues = dispersion.ParameterValues;
 
 if ~isempty(config)
-  signal.Name       = [ 'conv(' dispersion.Name ', ResLibCal(''' config ''')) [' mfilename ']' ];
+  if ~ischar(config)
+    configs = class2str(config,'eval');
+    if length(configs) > 20, configs=[ configs(1:20) '...' ]; end
+  else configs = config; end
+  signal.Name       = [ 'conv(' dispersion.Name ', ResLibCal(''' configs ''')) [' mfilename ']' ];
   signal.Description= [ '(' dispersion.Description ') convoluted by (TAS 4D resolution function)' ];
 else
   signal.Name       = [ 'conv(' dispersion.Name ', ResLibCal)' ];
@@ -182,6 +190,7 @@ signal.Expression = { ...
   'ResLibCal(hkle{:});'};
   
 signal = iFunc(signal);
+disp(signal.Name);
 
 % ==============================================================================
 
@@ -199,8 +208,8 @@ for index = 1:numel(axes_symbols) % also searches for 'lower' names
   % static scalar)
   if ~isempty(match)
     this_axis = get(a, match);
-    setaxis(a, index, this_axis);
-    label(a, index, axes_symbols{index});
+    a=setaxis(a, index, this_axis);
+    a=label(a, index, axes_symbols{index});
   end
 end
 
@@ -252,7 +261,7 @@ if isa(model, 'iFunc') && ~isempty(model)
   % the parameters are automatically used in the model Expression 
   % which calls "ResLibCal('silent', config, x,y,z,t)" in model.Expression
   % where config = this.UserData.config which contains ResCal
-  for f=fieldnames(config)'
+  for f=fieldnames(rescal)'
     model.UserData.config.ResCal.(f{1}) = rescal.(f{1});
   end
   

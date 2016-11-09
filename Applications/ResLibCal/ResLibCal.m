@@ -485,10 +485,15 @@ while ~isempty(varargin)
     case {'config','EXP'}
       out = ResLibCal_GetConfig;
     case 'hkle'
-      out = { str2num(get(ResLibCal_fig('EXP_QH'),'String'))
-        str2num(get(ResLibCal_fig('EXP_QK'),'String'))
-        str2num(get(ResLibCal_fig('EXP_QL'),'String'))
-        str2num(get(ResLibCal_fig('EXP_W'),'String')) };
+      if ~isempty(ResLibCal_fig)
+        out = { str2num(get(ResLibCal_fig('EXP_QH'),'String'))
+          str2num(get(ResLibCal_fig('EXP_QK'),'String'))
+          str2num(get(ResLibCal_fig('EXP_QL'),'String'))
+          str2num(get(ResLibCal_fig('EXP_W'),'String')) };
+      else
+        out = ResLibCal_GetConfig;
+        out = { out.QH; out.QK; out.QL; out.W };
+      end
       return;
     otherwise
       % open file name or list of parameters given as 'VAR=VAL; ...'  
