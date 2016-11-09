@@ -3,7 +3,8 @@ function v = isvector(s)
 %
 %   @iData/isvector function to return true if data set is a vector
 %   i.e. that its size is 1xN or Nx1.
-%   Additionally, if the vector data set has X axes defined, it returns X.
+%   Additionally, if the vector data set has X axes defined, it returns X, for 
+%   instance with event data sets.
 %
 % input:  s: object or array (iData)
 % output: b: object or array (iData)
