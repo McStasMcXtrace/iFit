@@ -491,8 +491,7 @@ while ~isempty(varargin)
           str2num(get(ResLibCal_fig('EXP_QL'),'String'))
           str2num(get(ResLibCal_fig('EXP_W'),'String')) };
       else
-        out = ResLibCal_GetConfig;
-        out = { out.QH; out.QK; out.QL; out.W };
+        out = {};
       end
       return;
     otherwise
@@ -578,8 +577,7 @@ while ~isempty(varargin)
       end
     end
   elseif numel(varargin) >= 1 && isempty(varargin{1})
-    disp('ResLibCal([]) Config')
-    out = ResLibCal_GetConfig;
+    if nargout, out = ResLibCal_GetConfig; end
     varargin(1)=[];
   else
     disp([ mfilename ': unknown parameter of class ' class(varargin{1}) ' . Skipping.' ]);
