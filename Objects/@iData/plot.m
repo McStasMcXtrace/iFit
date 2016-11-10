@@ -256,14 +256,23 @@ case 2  % surface type data (2 axes+signal) -> surf or plot3
   [h, xlab, ylab, zlab] = iData_plot_2d(a, method, this_method, varargin{:}); % in private
 otherwise % 3d data sets: volumes
   if ndims(a) > 3
-    % reduce dimensions
+    % reduce dimensions: look for the axes which have the largest extension
+    extent = 1:ndims(a);
+    for index=1:ndims(a)
+      this_axis = getaxis(a, index);
+      extent(index) = max(this_axis(:)) - min(this_axis(:));
+    end
+    % now get the largest extents
+    [~,extent_index] = sort(extent);
+    extent_index = extent_index(end:-1:1);  % descending order
+    % we use extend_index(1:3)
     % we keep axes [1:2 ndims(a)] (this allows e.g. to plot S(q,w))
     if isvector(a) > 1  % event data set
-      for index=3:(ndims(a)-1) 
-        a = rmaxis(a, index);
+      for index=4:ndims(a)
+        a = rmaxis(a, extent_index(index));
       end
     else
-      sz = size(a); sz([3:(ndims(a)-1) (ndims(a)+1):end ]) = 1;
+      sz = size(a); sz(extent_index(4:end)) = 1;
       iData_private_warning(mfilename, [ 'Reducing ' num2str(ndims(a)) '-th dimensional data ' a.Tag ' "' a.Title '" to 3D with a=resize(a, ' mat2str(sz) ')' ]);
       a = squeeze(resize(a, sz));
     end
