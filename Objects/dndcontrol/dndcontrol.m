@@ -64,7 +64,7 @@ classdef (CaseInsensitiveProperties) dndcontrol < handle
             %Add java folder to javaclasspath if necessary
             if ~dndcontrol.isInitialized();
                 classpath = fileparts(mfilename('fullpath'));                
-                javaclasspath(classpath);                
+                javaaddpath(classpath);                
             end 
         end
         
