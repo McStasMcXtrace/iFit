@@ -202,14 +202,31 @@ function c = ResLibCal_tas_conv4d_data(a, config, frame)
 % search for missing axes (e.g. 1D -> 4D)
 % we must create a new 4D object'a' which has proper axes
 axes_symbols = {'QH','QK','QL','EN'};
+sz = size(a.Signal);
 for index = 1:numel(axes_symbols) % also searches for 'lower' names
-  [match, types, nelements]=findfield(a, axes_symbols{index}, 'exact biggest numeric cache');
+  % the axis must be either scalar, vector with size(Signal, rank), or same size as the Signal
+  options = 'exact numeric';
+  if index > 1, options = [ options ' cache' ]; end
+  [match, types, nelements]=findfield(a, axes_symbols{index}, options);
   % must get the longest field (prefer column from data file rather than simple
   % static scalar)
+  if ischar(match) match= { match }; end
   if ~isempty(match)
-    this_axis = get(a, match);
-    a=setaxis(a, index, this_axis);
-    a=label(a, index, axes_symbols{index});
+    % first sort matches with the number of elements
+    [nelements, index_sort] = sort(nelements);
+    index_sort = index_sort(end:-1:1);  % sort by decreasing size
+    match = match(index_sort);
+    % look for axes symbols by 
+    for index_match = 1:numel(match)
+      this_axis = get(a, match{index_match});
+      if isscalar(this_axis) ...
+        || (numel(sz) >= index && numel(this_axis) == sz(index)) ...
+        || (numel(this_axis) == prod(sz))
+        a=setaxis(a, index, match{index_match});
+        a=label(a, index, axes_symbols{index});
+        break
+      end
+    end
   end
 end
 
