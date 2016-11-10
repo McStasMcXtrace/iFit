@@ -66,7 +66,7 @@ for index=1:length(alias_names)
 end
 
 % extract field type and size
-[match, types, nelements]=findfield(b);
+[match, types, nelements]=findfield(b,'','numeric');
 
 converted = '';
 

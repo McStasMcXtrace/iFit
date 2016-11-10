@@ -148,12 +148,9 @@ if ~isempty(field)
     field = cellstr(field);
     index = [];
     for findex=1:length(field)
-      this_index = find(strcmp(field{findex}, matchs));
-      if isempty(this_index)
-        % extract last words of 'matchs'
-        m     = find_last_word(matchs);
-        this_index = find(strcmp(field{findex}, m));
-      end
+      % get direct name or from last word of 'matchs'
+      m     = find_last_word(matchs);
+      this_index = [ find(strcmp(field{findex}, matchs)) ; find(strcmp(field{findex}, m)) ];
       index = [ index this_index ];
     end
     index = unique(index);
@@ -178,6 +175,7 @@ if ~isempty(field)
     types = types(index);
     dims  = dims(index);
   end
+
   if isempty(match), return; end
   if strfind(option, 'first')
     % we select the 'shortest' match
