@@ -73,7 +73,7 @@ for i = 1:length(S)     % can handle multiple index levels
         end
         dm=iData_getAliasValue(b,'Monitor');
         if not(all(dm == 1 | dm == 0)) % fit(signal/monitor) 
-          modelValue    = bsxfun(@times,modelValue, dm); 
+          modelValue    = reshape(bsxfun(@times,modelValue(:), dm(:)), size(modelValue)); 
         end
         setalias(b,'Signal', modelValue, model.Name);
         setalias(b,'Parameters', pars, [ model.Name ' model parameters for ' b.Title ]);

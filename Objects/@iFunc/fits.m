@@ -267,9 +267,9 @@ clear Signal Error Monitor Axes
 % handle Monitor normalisation
 a.Monitor =real(a.Monitor);
 if not(all(a.Monitor == 1 | a.Monitor == 0 | isnan(a.Monitor))), % fit(signal/monitor) 
-  a.Signal = bsxfun(@rdivide,a.Signal,a.Monitor); 
+  a.Signal = reshape(bsxfun(@rdivide,a.Signal(:),a.Monitor(:)), size(a.Signal)); 
   if not(all(a.Error == 1 | a.Error == 0 | isnan(a.Error)))
-    a.Error  = bsxfun(@rdivide,a.Error, a.Monitor); % per monitor
+    a.Error  = reshape(bsxfun(@rdivide,a.Error(:), a.Monitor(:)), size(a.Error)); % per monitor
   end
 end
 
@@ -534,7 +534,7 @@ if ~isempty(is_idata)
   end
   % fit(signal/monitor) but object has already Monitor -> we compensate Monitor^2
   if not(all(a.Monitor == 1 | a.Monitor == 0)) 
-    output.modelValue    = bsxfun(@times,output.modelValue, a.Monitor); 
+    output.modelValue    = reshape(bsxfun(@times,output.modelValue(:), a.Monitor(:)), size(output.modelValue)); 
   end
   setalias(b,'Signal', output.modelValue, model.Name);
   b.Title = [ model.Name '(' char(b) ')' ];
