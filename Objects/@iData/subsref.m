@@ -73,16 +73,21 @@ for i = 1:length(S)     % can handle multiple index levels
         end
         dm=iData_getAliasValue(b,'Monitor');
         if not(all(dm == 1 | dm == 0)) % fit(signal/monitor) 
-          modelValue    = reshape(bsxfun(@times,modelValue(:), dm(:)), size(modelValue)); 
+          modelValue    = bsxfun(@times,modelValue(:), dm(:));
+          if ~isscalar(dm) && numel(dm) == numel(modelValue) && length(dm) == numel(dm)
+            modelValue = reshape(modelValue, size(dm));
+          end
         end
-        setalias(b,'Signal', modelValue, model.Name);
+        
         setalias(b,'Parameters', pars, [ model.Name ' model parameters for ' b.Title ]);
         b.Title = [ model.Name '(' char(b) ')' ];
         b.Label = b.Title;
         b.DisplayName = b.Title;
-        setalias(b,'Error', 0);
+        setalias(b, 'Model', model, model.Name);
+        setalias(b, 'ModelValue', modelValue, model.Name);
         
-        setalias(b,'Model', model, model.Name);
+        setalias(b,'Error', 0);
+        setalias(b,'Signal', 'ModelValue');
         return
       elseif any(cellfun('isempty',s.subs)), b=iData; return;        % b([])
       end
@@ -361,7 +366,7 @@ function val = iData_getAliasValue(this,fieldname)
         val = sqrt(abs(double(s))); % main time spent on large arrays
       end
     end
-    if ~isempty(val) && ~isscalar(val) && ~isequal(size(val),size(this))
+    if ~isempty(val) && ~isscalar(val) && numel(val) ~= prod(size(this))
       iData_private_warning(mfilename,[ 'The Error [' num2str(size(val)) ...
       '] has not the same size as the Signal [' num2str(size(this)) ...
       '] in iData object ' this.Tag ' "' this.Title '".\n\tTo use the default Error=sqrt(Signal) assign s.Error=[].' ]);
@@ -372,7 +377,7 @@ function val = iData_getAliasValue(this,fieldname)
       val = val(end);
     end
     if val == 0, val=1; end
-    if ~isempty(val) && length(val) ~= 1 && (ndims(val) ~= length(size(this)) || ~all(size(val) == size(this)))
+    if ~isempty(val) && length(val) ~= 1 && (ndims(val) ~= length(size(this)) || numel(val) ~= prod(size(this)))
       iData_private_warning(mfilename,[ 'The Monitor [' num2str(size(val)) ...
         '] has not the same size as the Signal [' num2str(size(this)) ...
         '] in iData object ' this.Tag ' "' this.Title '".\n\tTo use the default Monitor=1 use s.Monitor=[].' ]);
