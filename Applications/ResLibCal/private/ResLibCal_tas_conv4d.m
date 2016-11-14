@@ -98,16 +98,8 @@ end
 % ==============================================================================
 
 function signal = ResLibCal_tas_conv4d_model(dispersion, config, frame)
-
-% config usage:
-% if ResLibCal is opened, we send the 'config' to it and prepare for further evaluations.
-
-
-% if ResLibCal is not opened, we store the configuration in the Expression, and will then
-% make calls to out=ResLibCal(config, 'compute');
-
-% ResLibCal must be available (shipped with iFit)
-
+% build the conv(model) using ResLibCal resolution 'cloud'
+%
 % the model will be used as:
 %    model(p, H,K,L,W)
 % or
@@ -115,7 +107,10 @@ function signal = ResLibCal_tas_conv4d_model(dispersion, config, frame)
 % or
 %    model(p, iData_with_scan_axis)
 
-% get the model stored in the data set (if any)
+% select computation mode: normal or fast
+% the 'hkle' mode uses the ResLibCal cloud as is, i.e. HKLE with NMC points (e.g. 2000)
+% the 'hkl'  mode only uses the HKL cloud projection, and builds a E regular axis
+computation_mode = 'hkle';
 
 if isempty(dispersion), signal = []; return; end
 
@@ -123,7 +118,7 @@ if isempty(dispersion), signal = []; return; end
 
 if ndims(dispersion) ~= 2 && ndims(dispersion) ~= 4
   disp([ mfilename ': the Model should be 2D or 4D, not ' num2str(ndims(dispersion)) '. Skipping.' ])
-  signal = data;
+  signal = dispersion;
 end
 
 % the built model parameters will be that of the model
@@ -151,15 +146,23 @@ signal.UserData.config     = config;
 % create the Expression...
 
 % TODO: integration can be achieved using a Gauss-Hermite estimate, which is much
-% faster
-
-% TODO: must use reciprocal space frame, as in sqw_powder
+% faster, as in B. Hennion AFIT.
 
 % if dispersion.Dimension == 2 (liquid,powder,gas,glass,polymer...), then use |q|,w as axes. Should use spec frame
 if dispersion.Dimension == 2
-  liq = 'cloud{1} = sqrt(cloud{1}.^2+cloud{2}.^2+cloud{3}.^2); cloud(2:3)=[];';
-else liq='';
+  % TODO: must use reciprocal space frame, as in sqw_powder
+  plugin = 'cloud{1} = sqrt(cloud{1}.^2+cloud{2}.^2+cloud{3}.^2); cloud(2:3)=[]; ';
+else plugin='';
 end
+
+% handle normal and fast computation mode.
+if ~strfind(computation_mode, 'hkle')
+  % transform energy random sampling into a regular one
+  plugin = [ plugin 'cloud = { cloud{1:3} linspace(min(cloud{4}),max(cloud{4}),ceil(numel(cloud{1})^.33)) };' ];
+end
+
+% we use the Sqw evaluation as:
+% kpath 2D: [ x y z ]     as vectors, same length, same orientation, [ t ] not same length or orientation
 signal.Expression = { ...
   '% check if config is given as additional argument during evaluation of model', ...
   'if numel(varargin) >= 1 && ~isempty(varargin{1}) && (isstruct(varargin{1}) || ~isempty(dir(varargin{1})))', ...
@@ -177,14 +180,15 @@ signal.Expression = { ...
   'if ~iscell(out.resolution), resolution={ out.resolution };', ...
   'else resolution = out.resolution; end', ...
   'signal=zeros(size(resolution));', ...
+  'dispersion=this.UserData.dispersion;', ...
   'for index=1:numel(resolution)', ...
   '  if ~resolution{index}.R0, continue; end', ...
 [ '  cloud=resolution{index}.' frame '.cloud;' ], ...
-     liq, ...
-  '  dispersion=this.UserData.dispersion;', ...
-  '  this_signal=feval(dispersion, p, cloud{:});', ...
+     plugin, ...
+  '  [this_signal,dispersion]=feval(dispersion, p, cloud{:});', ...
   '  signal(index) = sum(this_signal(:))*resolution{index}.R0/numel(cloud{1})', ...
   'end % for', ...
+  'this.UserData.dispersion = dispersion;', ...
   'end % try', ...
   '% restore previous HKLE location', ...
   'if ~isempty(hkle) ResLibCal(hkle{:}); end'};
