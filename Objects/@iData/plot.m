@@ -46,6 +46,7 @@ function h=plot(a, varargin)
 %                 opengl (faster for large data sets)
 %                 whole or full (do not reduce large object size for plotting)
 %                 figure (open a new figure window)
+%                 replace (replace existing plots for same objects)
 %         args: additional arguments passed to the plotting method
 %                 
 % output: h: graphics object handles (cell/array)
@@ -69,7 +70,10 @@ function h=plot(a, varargin)
 %   fscatter3: Felix Morsdorf, Jan 2003, Remote Sensing Laboratory Zuerich
 %   vol3d:     Joe Conti, 2004
 
-ih     = ishold;
+if ~isempty(get(0,'CurrentFigure'))
+  ih     = ishold;
+else ih=0; end
+
 h      = [];
 funcs  = []; % additional iFunc objects to plot afterwards...
 method = '';
@@ -154,7 +158,7 @@ end
 
 % clean method string from the plot type and supported options not to be passed to matlab plot commands
 if ischar(method)
-  toremove='plot3 stem3 scatter3 scatter stem plot mesh surf waterfall tight auto hide view2 view3 transparent axis hide_err hide_errorbars hide_error contour contour3 surfc surfl contourf pcolor median mean half slice flat interp faceted light clabel colorbar shifted hide_axes painters zbuffer whole full legend';
+  toremove='plot3 stem3 scatter3 scatter stem plot mesh surf waterfall tight auto hide view2 view3 transparent axis hide_err hide_errorbars hide_error contour contour3 surfc surfl contourf pcolor median mean half slice flat interp faceted light clabel colorbar shifted hide_axes painters zbuffer whole full legend replace update';
   toremove=strread(toremove,'%s','delimiter',' ');
   this_method = method;
   for index=1:length(toremove)
@@ -182,21 +186,35 @@ if prod(size(a)) > 1e6
     iData_private_warning(mfilename, [ 'Object ' a.Tag ' "' a.Title '" is large (numel=' num2str(prod(size(a))) ...
       ').\n\tNow rebinning for display purposes with e.g. a=reducevolume(a);' ...
       '\n\tUse e.g plot(a, ''whole'') to plot the whole data set and be able to zoom tiny regions.' ]);
+    tag = a.Tag;
     a=reducevolume(a);
+    a.Tag = tag;
   else
     method = [ method ' opengl' ];
   end
 end
 zlab = '';
 
+% replace/update existing plot
+if ~isempty(strfind(method,'update')) || ~isempty(strfind(method,'replace'))
+  h = findall(0, 'Tag', [ mfilename '_' a.Tag ]);
+  if ~isempty(h)
+    ax = get(h(1),'Parent');
+    figure(get(ax,'Parent'));
+    delete(h);
+  end
+elseif ~isempty(strfind(method,'figure'))
+  figure;
+end
+
 % possibly select Rendered prior to start plotting
 if ~feature('ShowFigureWindows')
   set(gcf,'Renderer','painters')
-elseif (strfind(method,'opengl'))   % faster for large data sets
+elseif ~isempty(strfind(method,'opengl'))   % faster for large data sets
 	set(gcf,'Renderer','OpenGL')
-elseif (strfind(method,'painters'))
+elseif ~isempty(strfind(method,'painters'))
 	set(gcf,'Renderer','painters')
-elseif (strfind(method,'zbuffer'))
+elseif ~isempty(strfind(method,'zbuffer'))
 	set(gcf,'Renderer','zbuffer');
 elseif ismac
   set(gcf,'Renderer','painters'); % default for MacOS which do not support OpenGL
@@ -226,7 +244,6 @@ if isfield(a, 'ModelValue')
   mv = get(a, 'ModelValue');
   if ~strcmp(getalias(a,'Signal'), 'ModelValue')
     set(a, 'ModelValue', []);  % avoid recursive loop
-    mv = [];
   end
 elseif ~isempty(findfield(a, 'ModelValue'))
   mv = get(a, findfield(a, 'ModelValue', 'cache first'));
@@ -288,32 +305,32 @@ if ret
 end
 
 % tune the rendering of the plot ===============================================
-if (strfind(method,'flat'))
+if ~isempty(strfind(method,'flat'))
   shading flat
-elseif (strfind(method,'interp'))
+elseif ~isempty(strfind(method,'interp'))
   shading interp
-elseif (strfind(method,'faceted'))
+elseif ~isempty(strfind(method,'faceted'))
   shading faceted
 end
-if (strfind(method,'transparent') | strfind(method,'alpha'))
+if ~isempty(strfind(method,'transparent')) || ~isempty(strfind(method,'alpha'))
   alpha(0.7);
 end
-if (strfind(method,'light'))
+if ~isempty(strfind(method,'light'))
   light;
 end
-if (strfind(method,'view2'))
+if ~isempty(strfind(method,'view2'))
   view(2);
 end
-if (strfind(method,'view3'))
+if ~isempty(strfind(method,'view3'))
   view(3);
 end
-if (strfind(method,'tight'))
+if ~isempty(strfind(method,'tight'))
   axis tight
 end
-if (strfind(method,'auto'))
+if ~isempty(strfind(method,'auto'))
   axis auto
 end
-if (strfind(method,'colorbar'))
+if ~isempty(strfind(method,'colorbar'))
   cb = colorbar;
   title(cb, label(a, 'Signal'));
 end
