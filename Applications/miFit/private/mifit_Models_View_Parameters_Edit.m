@@ -29,7 +29,7 @@ Data{event.Indices(1),event.Indices(2)} = event.NewData;
 
 d = []; model = [];
 if ~isempty(getappdata(mifit_fig, 'CurrentDataSetIndex')) % Data set selection in List
-  % get the Model stored in the Dataset (after fit)
+  % get the single Model stored in the Dataset (after fit)
   d     = getappdata(mifit_fig, 'CurrentDataSet');
   if isfield(d, 'Model')
     model = get(d, 'Model');
@@ -74,8 +74,18 @@ end
 
 if ~isempty(d)
   d = setalias(d, 'Model', model);
-  setappdata(mifit_fig, 'CurrentDataSet',d);
-  % TODO: should we update the modelValue ?
+  % update the modelValue when the evaluation time is small (< .5 sec)
+  if model.Duration < 0.5
+    % evaluate model with its parameters (Edit) and Data set axes
+    modelValue = d(model);
+    d = set(d, 'ModelValue', modelValue);
+    % update plot, if found
+    h = mifit_fig([ 'plot_' d.Tag ]);
+    if ~isempty(h)
+      plot(d,'light transparent grid tight replace');
+    end
+  end
+  
   D     = getappdata(mifit_fig, 'Data');  % all data sets
   if numel(D) > 1
     D(getappdata(mifit_fig, 'CurrentDataSetIndex')) = d;
@@ -83,6 +93,7 @@ if ~isempty(d)
     D = d;
   end
   setappdata(mifit_fig, 'Data', D);
+  setappdata(mifit_fig, 'CurrentDataSet',d);
 elseif ~isempty(handle), 
   set(handle, 'UserData',model);
 end
