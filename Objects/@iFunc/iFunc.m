@@ -111,6 +111,7 @@ if nargin == 0  % create the empty iFunc object structure
   a.ParameterValues = [];
   a.Eval        = ''; % code to evaluate for the model value
   a.UserData    = '';
+  a.Duration    = 0;
 
   if isempty(id),   id=0; end
   if id > 1e6, id=0; end
