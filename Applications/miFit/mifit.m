@@ -452,7 +452,7 @@ function mifit_Data_Plot(varargin)
   else d = mifit_List_Data_pull; end
   if all(isempty(d)), return; end
   f=figure;
-  subplot(d,'light transparent grid tight');
+  subplot(d,'light transparent grid tight replace');
   
 function mifit_Data_Saveas(varargin)
 % Data/Saveas: export selected data sets
@@ -760,7 +760,7 @@ function selected = mifit_Optimizers_Set(varargin)
 function mifit_Help_Main(varargin)
 % Help/Main: open web page for miFit
   % TODO
-  disp([ mfilename ': Help_Main: TODO' ])
+  doc(iData,'miFit');
   
 function mifit_Help_Loaders(varargin)
 % Help/Loaders: open web page Loaders
