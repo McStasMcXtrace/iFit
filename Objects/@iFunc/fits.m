@@ -236,6 +236,14 @@ if isstruct(a) || isa(a, 'iData')
     if isempty(options) && ~isempty(modelValue) && isfield(modelValue,'FitOptions') 
       options = get(modelValue, 'FitOptions'); 
     end
+    
+    % override stored parameters when not given
+    if isempty(pars) && isfield(a,'ModelParameters')
+      pars = get(a, 'ModelParameters');
+    end
+    if isempty(constraints) 
+      if isfield(a,'Constraints'), constraints = get(a,'Constraints'); end
+    end
 
   elseif isfield(a,'Axes')    Axes    = a.Axes; 
   end
