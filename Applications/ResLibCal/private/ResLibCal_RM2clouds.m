@@ -7,7 +7,7 @@ function resolution = ResLibCal_RM2clouds(EXP, resolution)
 %   resolution: the resolution computation structure, for both [abc] and [xyz] frames
 %
 % Returns:
-%   resolution.rlu.cloud: cloud of points 4D axes as { H,K,L,W } in [ABC] frame
+%   resolution.rlu.cloud:  cloud of points 4D axes as { H,K,L,W } in [ABC] frame
 %   resolution.spec.cloud: cloud of points 4D axes as { H,K,L,W } in [xyz] frame
 
 % insprired from ResCal5/mc_conv
