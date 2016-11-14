@@ -266,7 +266,9 @@ if ~isempty(signal_in_varargin) && length(varargin) >= signal_in_varargin
   varargin(signal_in_varargin) = []; % remove Signal from arguments for evaluation (used in Guess)
   signal_in_varargin = [];
 end
-[signal,ax,p,model] = iFunc_feval_expr(model, varargin{:});
+% EVALUATION HERE **************************************************************
+[signal,ax,p,model,duration] = iFunc_feval_expr(model, varargin{:});
+if duration>0, model.Duration = duration; end
 
 %model.ParameterValues = p; % store current set of parameters (updated)
 
@@ -292,7 +294,7 @@ end
 
 
 % ==============================================================================
-function [signal,iFunc_ax,p,this] = iFunc_feval_expr(this, varargin)
+function [signal,iFunc_ax,p,this, duration] = iFunc_feval_expr(this, varargin)
 % private function to evaluate an expression in a reduced environment so that 
 % internal function variables do not affect the result.
 
@@ -300,7 +302,8 @@ signal = [];
 % assign parameters and axes for the evaluation of the expression, in case this is model char
 % p already exists, we assign axes, re-assign varargin if needed
 iFunc_ax = 'x y z t u v w ';
-iFunc_dim = abs(this.Dimension);
+iFunc_dim= abs(this.Dimension);
+iFunc_t0 = clock;
 
 if iFunc_dim && numel(varargin) >= iFunc_dim
   eval([ '[' iFunc_ax(1:(2*iFunc_dim)) ']=deal(varargin{' mat2str(1:iFunc_dim) '});' ]);
@@ -341,6 +344,7 @@ if nargout > 1 && iFunc_dim
 else
   iFunc_ax = [];
 end
+duration = etime(clock, iFunc_t0);
 
 % ==============================================================================
 function p = iFunc_feval_set(this, p, varargin)
