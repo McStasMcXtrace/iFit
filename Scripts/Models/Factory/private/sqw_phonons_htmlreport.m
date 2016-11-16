@@ -321,7 +321,9 @@ function Phonon_Model = sqw_phonons_htmlreport_model(fid, options)
   % generate the Model into additional formats
   save(Phonon_Model, fullfile(options.target,name), 'xml');
   save(Phonon_Model, fullfile(options.target,name), 'json');
+  try
   save(Phonon_Model, fullfile(options.target,name), 'yaml');
+  end
   save(Phonon_Model, fullfile(options.target,name), 'm');
   sqw_phonons_htmlreport_table(fid, options, 'Phonon_Model');
   
@@ -434,8 +436,8 @@ function sqw_phonons_htmlreport_eval_3D(fid, options, object)
     
   fprintf(fid, '<ul><li>qh=%g (QH in rlu)</li>\n', x(1)); % axis1
   fprintf(fid, '<li>qk=[%g:%g] with %i values (QK in rlu)</li>\n', xlim(Phonon_0KLE), size(Phonon_0KLE,2));     % axis2
-  fprintf(fid, '<li>ql=[%g:%g] with %i values (QL in rlu)</li>\n', zlim(Phonon_0KLE), size(Phonon_0KLE,3));
-  fprintf(fid, '<li>w=[%g:%g] with %i values (energy in meV, vertical)</li></ul></p>\n', clim(Phonon_0KLE), size(Phonon_0KLE,4));
+  fprintf(fid, '<li>ql=[%g:%g] with %i values (QL in rlu)</li>\n', ylim(Phonon_0KLE), size(Phonon_0KLE,3));
+  fprintf(fid, '<li>w=[%g:%g] with %i values (energy in meV, vertical)</li></ul></p>\n', zlim(Phonon_0KLE), size(Phonon_0KLE,4));
     
     fprintf(fid, '<p>The QH=%g data set is available in the folowing formats (log10 of the data set except for DAT and MAT files):<br>\n', x(1));
     
