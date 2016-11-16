@@ -46,7 +46,9 @@ classdef YAML
         
         function [ X ] = load( S )
             %LOAD load matlab object from yaml string
-            javaaddpath(YAML.JARFILE);
+            if ~(exist('org.yaml.snakeyaml.Yaml','class') == 8)
+              javaaddpath(YAML.JARFILE);
+            end
             
             % Load yaml into java obj
             yaml = org.yaml.snakeyaml.Yaml;
@@ -58,7 +60,9 @@ classdef YAML
         
         function [ S ] = dump( X )
             %DUMP serialize matlab object into yaml string
-            javaaddpath(YAML.JARFILE);
+            if ~(exist('org.yaml.snakeyaml.Yaml','class') == 8)
+              javaaddpath(YAML.JARFILE);
+            end
             
             % Convert matlab obj to java obj
             yaml = org.yaml.snakeyaml.Yaml();
@@ -168,11 +172,11 @@ classdef YAML
                 end
             elseif builtin('isnumeric', r)
                 result = java.lang.Double(r);
-            elseif isstruct(r)
+            elseif isstruct(r) && numel(r) == 1
                 result = java.util.LinkedHashMap();
                 keys = fields(r);
                 for i = 1:length(keys)
-                    result.put(keys{i},YAML.dump_data(r.(keys{i})));
+                    result.put(keys{i}, YAML.dump_data(r.(keys{i})));
                 end
             elseif iscell(r)
                 result = java.util.ArrayList();
@@ -183,6 +187,13 @@ classdef YAML
                 result = java.util.Date(datestr(r));
             elseif isa(r,'function_handle')
                 result = YAML.dump_data(func2str(r));
+            elseif numel(r) > 1
+                result = java.util.ArrayList();
+                for index=1:numel(r)
+                  result.add(YAML.dump_data(r(index)));
+                end
+            elseif isobject(r)
+                result = YAML.dump_data(struct(r));
             else
                 try
                   result=YAML.dump_data(struct(r));
