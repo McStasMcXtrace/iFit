@@ -115,7 +115,8 @@ if isempty(fig) || ~ishandle(fig)
     file = fullfile(prefdir, [ 'mifit' '.log' ]);
     mifit_disp([ '[Init] Log file is ' file ]);
     
-    % activate Drag-n-Drop from external source (files, text)
+    % initialize Java hooks and activate Drag-n-Drop from external source (files, text)
+    javaaddpath(YAML.JARFILE);
     hObject = mifit_fig('List_Data_Files');
     dndcontrol.initJava;
     dndcontrol(hObject,@mifit,@mifit);
