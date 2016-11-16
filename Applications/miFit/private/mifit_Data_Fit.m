@@ -22,6 +22,9 @@ function mifit_Data_Fit(varargin)
   if isappdata(mifit_fig,'CurrentOptimizerCriteria')
     options.criteria=getappdata(mifit_fig,'CurrentOptimizerCriteria');
   end
+  if isfield(options, 'criteria') && isempty(options.criteria)
+    options = rmfield(options, 'criteria');
+  end
   
   % [pars,criteria,message,output] = fits(a, model, pars, options, constraints, ...)
   mifit_disp([ 'Starting fit of data set(s) with "' CurrentOptimizer '"' ]);
