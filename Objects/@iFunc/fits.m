@@ -374,10 +374,10 @@ if (ischar(options) && length(strtok(options,' =:;'))==length(options)) | isa(op
   options.optimizer = algo;
 elseif ischar(options), options=str2struct(options);
 end
-if ~isfield(options, 'optimizer')
+if ~isfield(options, 'optimizer') || isempty(options.optimizer)
   options.optimizer = 'fmin';
 end
-if ~isfield(options, 'criteria')
+if ~isfield(options, 'criteria') || isempty(options.criteria)
   options.criteria  = @least_square;
 end
 if ~isfield(options,'Display')   options.Display  =''; end
