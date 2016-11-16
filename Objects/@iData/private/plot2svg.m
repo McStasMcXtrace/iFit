@@ -1199,7 +1199,9 @@ if strcmp(get(ax,'Visible'),'on')
                     end
                 else
                     for i = 1:length(axxindex)
+                        try
                         label2svg(fid,grouplabel,axpos,ax,xg_label_end(i),yg_label_end(i),convertString(axlabelx(axxindex(i),:)),align,angle,'top',1,paperpos,scolorname,exponent);
+                        end
                     end
                 end
             end
