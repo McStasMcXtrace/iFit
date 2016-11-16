@@ -207,6 +207,13 @@ if ~isempty(fullfile(target, 'properties.mat')) && ...
     options.kpoints = [ kpoints kpoints kpoints ];
     disp([ '  auto: kpoints=  ' num2str(kpoints) ])
   end
+  % compute the K-points density
+  kpts_density = nb_at.*prod(options.supercell).*prod(options.kpoints);
+  disp([ '  kpoints_density=  ' num2str(kpts_density) ])
+  if kpts_density < 500
+    disp('WARNING: The Monkhorst-Pack grid k-points density is small. Expect low computational accuracy.');
+    disp('         Be cautious with results (may show unstable modes/negative/imaginary frequencies.');
+  end
 end
 
 % ==============================================================================
