@@ -1,5 +1,5 @@
 function signal=sqw_cubic_monoatomic(varargin)
-% model = sqw_cubic_monoatomic(p, h,k,l,w, {signal}) : dispersion(HKL) in perovskites ABX3 with DHO(energy)
+% model = sqw_cubic_monoatomic(p, h,k,l,w, {signal}) : cubic monoatomic dispersion(HKL) with DHO(energy)
 %
 %   iFunc/sqw_cubic_monoatomic: a 4D S(q,w) with a HKL dispersion, and a DHO line
 %      shape, for a simple monoatomic system on a cubic lattice. Only the 3 

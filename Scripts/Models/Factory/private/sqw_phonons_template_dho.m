@@ -129,7 +129,7 @@ for index=1:size(FREQ,2)  % loop on modes
     W02    = W02   *ones(1,nt);
     Gamma2 = Gamma2*ones(1,nt);
   end
-  % sum-up all contributions to signal
+  % sum-up all contributions to signal: Fak Dorner 1997 Eq (2)
   signal = signal+ (n+1).*ZQ*4.*w.*sqrt(Gamma2)/pi ./ ((w.^2-W02).^2 + 4*w.^2.*Gamma2);
 end % for mode index
 
