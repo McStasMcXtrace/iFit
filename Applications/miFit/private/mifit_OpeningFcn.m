@@ -4,7 +4,7 @@ function fig = mifit_OpeningFcn
 fig = mifit_fig();
 if isempty(fig) || ~ishandle(fig)
     % create the main figure
-    mifit_disp('[Init] Welcome to miFit ! ********************************************')
+    mifit_disp('[Init] Welcome to miFit ! ******************************************************')
     fig = openfig('mifit');
     set(fig, 'HandleVisibility','callback','NumberTitle','off','NextPlot','new');
     
@@ -90,6 +90,7 @@ if isempty(fig) || ~ishandle(fig)
             end
         end
     end
+    
     % assign the saved CurrentOptimizer and other saved stuff
     if ~isfield(d, 'CurrentOptimizer'), d.CurrentOptimizer = []; end
     mifit('Optimizers_Set',d.CurrentOptimizer);
@@ -97,6 +98,18 @@ if isempty(fig) || ~ishandle(fig)
     if isfield(d,'CurrentOptimizerConfig'),   setappdata(fig, 'CurrentOptimizerConfig',   d.CurrentOptimizerConfig); end
     if isfield(d,'CurrentOptimizerCriteria'), setappdata(fig, 'CurrentOptimizerCriteria', d.CurrentOptimizerCriteria); end
     if isfield(d,'CurrentModel'),             setappdata(fig, 'CurrentModel',             d.CurrentModel); end
+    
+    % add predefined configurations to the File menu
+    % search for item Configurations
+    handle = findobj(fig, 'Tag','File_Configurations');
+    path_config = fullfile(fileparts(which(mfilename)),'..','configurations');
+    % insert Configurations items
+    for conf = dir(path_config)'
+      if ~conf.isdir && conf.name(end) ~= '~' % not dir nor temp file
+        uimenu(handle, 'Label', conf.name, ...
+                'Callback', [ 'mifit(''' fullfile(path_config, conf.name) ''');' ]);
+      end
+    end
     
     % create the AppData Data Stack
     % Load the previous Data sets containing Model Parameters (when a fit was performed)
@@ -116,9 +129,13 @@ if isempty(fig) || ~ishandle(fig)
     mifit_disp([ '[Init] Log file is ' file ]);
     
     % initialize Java hooks and activate Drag-n-Drop from external source (files, text)
-    javaaddpath(YAML.JARFILE);
+    if ~(exist('org.yaml.snakeyaml.Yaml','class') == 8)
+      javaaddpath(YAML.JARFILE);
+    end
     hObject = mifit_fig('List_Data_Files');
-    dndcontrol.initJava;
+    if ~(exist('MLDropTarget','class') == 8)
+      dndcontrol.initJava;
+    end
     dndcontrol(hObject,@mifit,@mifit);
     
     % activate Drag-n-Drop from the List to other Matlab windows

@@ -13,13 +13,16 @@ function config = mifit_Load_Preferences(file)
     end
   end
   if isempty(config) && nargin == 0
-    % default configuration
-    config.FontSize         = max(12, get(0,'defaultUicontrolFontSize'));
-    config.Save_Data_On_Exit= 'yes';
-    config.Store_Models     = 3;  % time required for creation. Store when > 0:always, Inf=never
-    config.History_Level    = 10;
+    % request default configuration
+    config = struct();
   end
   if isstruct(config)
+    % make sure we have defined all defaults
+    if ~isfield(config, 'FontSize'),          config.FontSize         = max(12, get(0,'defaultUicontrolFontSize')); end
+    if ~isfield(config, 'Save_Data_On_Exit'), config.Save_Data_On_Exit= 'yes'; end
+    if ~isfield(config, 'Store_Models'),      config.Store_Models     = 3; end
+    if ~isfield(config, 'History_Level'),     config.History_Level    = 10; end
+    if ~isfield(config, 'Fit_Verbose'),       config.Fit_Verbose      = 'yes'; end
     setappdata(mifit_fig, 'Preferences', config);
     if isfield(config, 'FontSize')
       set(0,'defaultUicontrolFontSize', config.FontSize);

@@ -22,8 +22,9 @@ function mifit_Data_AssignModel(varargin)
         end
         model = modelF;
       end
-    catch
+    catch ME
       mifit_disp([ '[Data_AssignModel] Invalid Model expression ' model '. Skipping.' ]);
+      disp(getReport(ME))
       return
     end
   elseif isa(model, 'iFunc')
