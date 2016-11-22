@@ -48,7 +48,9 @@ function mifit_List_Data_push(d, flag_replace)
   if max(index_selected) > numel(list), index_selected = []; end
   for index=1:numel(d)
       index_selected(end+1) = list0+index;
-      list{end+1} = char(d(index));
+      [~,label] = strtok(char(d(index)));
+      % we remove the initial 'iData' word
+      list{end+1} = strtrim(label);
   end
   set(hObject,'String', list, 'Value', index_selected);
   

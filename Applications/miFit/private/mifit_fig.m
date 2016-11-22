@@ -15,7 +15,8 @@ function f=mifit_fig(tag)
   if nargin == 0
     f=fig;
   elseif ~isempty(handles)
-    if ~isfield(handles, tag) || (~isempty(handles.(tag)) && any(~ishandle(handles.(tag)) ))
+    if strcmp(tag,'handles'), f=handles; return;
+    elseif ~isfield(handles, tag) || (~isempty(handles.(tag)) && any(~ishandle(handles.(tag)) ))
       handles.(tag) = []; end
     if isempty(handles.(tag))
       handles.(tag) = findall(fig, 'Tag', tag);

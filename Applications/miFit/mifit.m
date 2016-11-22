@@ -86,6 +86,9 @@ function varargout = mifit(varargin)
           elseif any(strcmpi(action,{'config'}))
             % get the configuration
             out = getappdata(mifit_fig, 'Preferences');
+          elseif any(strcmpi(action,{'handles'}))
+            % get the configuration
+            out = mifit_fig('handles');
           elseif any(strcmpi(action,{'push','replace','merge'})) && nargin >= 2
             mifit_List_Data_push(varargin(2:end), 'replace');
             return
@@ -247,11 +250,7 @@ function mifit_File_Preferences(varargin)
 % save Preferences on dialogue close
   fig = mifit_fig;
   config = getappdata(mifit_fig, 'Preferences');
-  if ~isfield(config, 'FontSize'),          config.FontSize=12; end
-  if ~isfield(config, 'Save_Data_On_Exit'), config.Save_Data_On_Exit='yes'; end
-  if ~isfield(config, 'Store_Models'),      config.Store_Models=3; end
-  if ~isfield(config, 'History_Level'),     config.History_Level=10; end
-  if ~isfield(config, 'Fit_Verbose'),       config.Fit_Verbose='yes'; end
+  % defaults are set when calling Load_Preferences at OpeningFcn (main/startup)
   options.Name       = [ mfilename ': Preferences' ];
   options.ListString = {'FontSize Font size [10-36]', ...
     'Save_Data_On_Exit Save Data sets on Exit [yes/no]', ...
@@ -451,9 +450,41 @@ function mifit_Data_Plot(varargin)
   if nargin && isa(varargin{1}, 'iData'), d=varargin{1}; 
   else d = mifit_List_Data_pull; end
   if all(isempty(d)), return; end
-  f=figure;
+  set(mifit_fig,'Pointer','watch');
+  f=figure('Visible','off');
   subplot(d,'light transparent grid tight replace');
+  if f~=gcf, close(f); else set(f,'Visible','on'); end
+  set(mifit_fig,'Pointer','arrow');
   
+function mifit_Data_Eval_Model(varargin)
+% Data/Evaluate Model
+  if nargin && isa(varargin{1}, 'iData'), d=varargin{1}; 
+  else d = mifit_List_Data_pull; end
+  if all(isempty(d)), return; end
+  set(mifit_fig,'Pointer','watch');
+  model = {};
+  if numel(d) == 1
+    if isfield(d, 'Model')
+      model = { get(d, 'Model') };
+    elseif ~isempty(findfield(d, 'Model'))
+      model = { get(d, findfield(d, 'Model', 'cache first')) };
+    end
+  else
+    model = get(d, 'Model');
+  end
+  mifit_disp([ '[Data Eval Model] evaluating Model value for data sets ...' ]);
+  for index=1:numel(d)
+    this = d(index);
+    if iscell(model) && index <= numel(model) && ~isempty(model{index})
+      modelValue = this(model{index});  % eval iFunc
+      this = set(this, 'ModelValue', modelValue);
+      if numel(d) == 1, d=this; 
+      else d(index) = this; end
+    end
+  end
+  mifit_List_Data_push(d, 'replace');  % replace existing data sets
+  set(mifit_fig,'Pointer','arrow');
+
 function mifit_Data_Saveas(varargin)
 % Data/Saveas: export selected data sets
   d = mifit_List_Data_pull;
@@ -502,21 +533,26 @@ function mifit_Data_Search(varargin)
   D=getappdata(mifit_fig, 'Data');
   
   mifit_disp([ '[Data search] Data sets mentioning "' answer{1} '" ...' ]);
+  set(mifit_fig,'Pointer','watch');
   % search for token in strings
-  match = strfind(D, answer{1}, 'case');
+  match = strfind(D, answer{1}, 'case'); match=match(:);
   index_selected = ~cellfun(@isempty, match);
   % search for token in field names
-  match = findfield(D, answer{1}, 'case');
-  index_selected = index_selected | ~cellfun(@isempty, match);
+  match = findfield(D, answer{1}, 'case'); match=match(:);
+  match = ~cellfun(@isempty, match);
+  index_selected = index_selected | match;
+  % search for tokens in the char(iData) string (as displayed)
+  match          = strfind(cellstr(char(D)),answer{1}); match=match(:);
+  match = ~cellfun(@isempty, match);
+  index_selected = index_selected | match;
   index_selected = find(index_selected);
-  
   if isempty(index_selected)
     mifit_disp('None');
   else
     mifit_disp(char(D(index_selected)));
     mifit_Edit_Select_All([], index_selected);
   end
-  
+  set(mifit_fig,'Pointer','arrow');
   
 function mifit_Data_History(varargin)
 % Data/History: show Data sets command history
@@ -579,6 +615,7 @@ function mifit_Data_Operator(op)
   % apply operator on Datasets
   mifit_disp([ 'Applying operator "' op '" on data set(s):' ]);
   mifit_disp(char(d))
+  set(mifit_fig,'Pointer','watch');
   try
     d = feval(op, d);
   catch ME
@@ -589,6 +626,7 @@ function mifit_Data_Operator(op)
     
   % upload new Data sets
   mifit_List_Data_push(d);
+  set(mifit_fig,'Pointer','arrow');
   
 % Models menu ******************************************************************
 

@@ -26,13 +26,21 @@ function mifit_Data_Fit(varargin)
     options = rmfield(options, 'criteria');
   end
   
+  set(mifit_fig,'Pointer','watch');
+  
   % [pars,criteria,message,output] = fits(a, model, pars, options, constraints, ...)
   mifit_disp([ 'Starting fit of data set(s) with "' CurrentOptimizer '"' ]);
   mifit_disp(char(d))
   
   % ********* THE FIT *********
   % the initial Dataset array 'd' is updated after the fit.
-  [p,c,m,o]=fits(d, '', 'current', options);  % with assigned models or gaussians
+  try
+    [p,c,m,o]=fits(d, '', 'current', options);  % with assigned models or gaussians
+  catch ME
+    disp(getReport(ME))
+    set(mifit_fig,'Pointer','arrow');
+    return
+  end
 
   % update Data list with fit results (and History)
   D = getappdata(mifit_fig, 'Data');
@@ -94,3 +102,4 @@ function mifit_Data_Fit(varargin)
   if isfield(config,'Fit_Verbose') && strcmp(config.Fit_Verbose,'yes')
     mifit_Models_View_Parameters('histograms');
   end
+  set(mifit_fig,'Pointer','arrow');
