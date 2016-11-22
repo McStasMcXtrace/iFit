@@ -22,7 +22,12 @@ for index=1:numel(s)
   T   = regexprep(T,'\s+',' '); % remove duplicated spaces
   cmd = t.Command{end};
   if length(cmd) > 23, cmd = [ cmd(1:20) '...' ]; end
-  c = strvcat(c, [ 'iData ' cmd ' [' num2str(size(t)) '] "' strtrim(T) '" <' t.Source '>' ]); 
+  % form the signal(axes) string
+  labels1 = deblank(t.Alias.Labels{1});
+  if strcmpi(labels1, 'Data Signal') labels1 = ''; end
+  labels2 = deblank(sprintf('%s ', t.Alias.Axis{:}));
+  labels=sprintf('%s(%s)', labels1, labels2);
+  c = strvcat(c, [ 'iData ' cmd ' [' num2str(size(t)) '] ' labels ' "' strtrim(T) '" <' t.Source '>' ]); 
   c(~isstrprop(c,'print'))='';
 end
 

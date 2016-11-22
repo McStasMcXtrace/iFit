@@ -79,7 +79,7 @@ C(index)=nan;
 col = cmap;
 
 % determine index into colormap
-ii = round(interp1([floor(mins) ceil(maxs)],[1 numclass],C));
+ii = round(interp1([mins maxs],[1 numclass],C));
 ish = ishold;
 hold on
 colormap(cmap);

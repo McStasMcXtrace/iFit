@@ -20,7 +20,7 @@ ret = 0;
     m         = get(a,'Monitor');
     if not(all(m(:) == 1 | m(:) == 0)), clab = [clab ' per monitor' ]; end
     if isvector(a) >= 3 || ~isempty(strfind(method, 'scatter')) % plot3-like
-      if ~isempty(strfind(method, 'scatter'))
+      if isempty(strfind(method, 'plot3'))
         h = hggroup;
         h3=fscatter3(x(:),y(:),z(:),c(:), this_method);     % scatter3: may require meshgrid
         set(h3,'Parent',h);
