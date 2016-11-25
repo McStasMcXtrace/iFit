@@ -48,10 +48,12 @@ if ~resolution.R0 || isempty(resolution.spec) || isempty(resolution.rlu) ...
   return
 end
 if ~isempty(strfind(mode,'rlu'))
-  frame = resolution.rlu;
-else
-  frame = resolution.spec;
-end
+    frame = resolution.rlu;
+  elseif ~isempty(strfind(upper(mode),'ABC'))
+    frame = resolution.ABC;
+  else
+    frame = resolution.spec;
+  end
 
 NP = frame.RM;
 unit =frame.frameUnit; QA='Qx'; QB='Qy'; QC='Qz';

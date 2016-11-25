@@ -21,6 +21,9 @@ function signal = ResLibCal_tas_conv4d(data, config, frame)
 %     the Q longitudinal, 'L' is vertical, and 'K' is transverse.
 %   When the frame is set as the lattice frame 'rlu', the 'H' direction is along
 %     the axis 'a*', the 'K' axis is along b*, and 'H' is along c*.
+%   When the frame is set to 'ABC', the 'H' direction is along the user defined 
+%     vector 'A' in the scattering plane, the 'K' axis is perpendicular to 'A'
+%     in the 'AB' scattering plane, and 'L' is vectical.
 %
 % The model can then be used for refinement as a usual fit model:
 %   fits(model, data_set, parameters, options, constraints)
@@ -49,7 +52,6 @@ if nargin < 3
   frame = '';
 end
 
-frame = lower(frame);
 if isempty(data)
   error([ mfilename ': no dispersion/data set given for convolution.' ]);
 end
@@ -60,7 +62,7 @@ end
 ResLibCal('silent');
 
 % configuration is empty, or ResLibcal: will use current config
-if isdir(config), config=''; end
+if ischar(config) && isdir(config), config=''; end
 
 if isempty(config) || (ischar(config) && any(strcmp(lower(config),{'tas','rescal','reslib','reslibcal'})))
   % get the current configuration
@@ -73,6 +75,15 @@ elseif isstruct(config) && (isfield(config,'EXP') || isfield(config, 'method') |
 elseif ~isempty(dir(config)) && ~isdir(config)
   % the configuration is a file: we get the configuration and load it into ResLibCal GUI.
   config=ResLibCal('silent',config);
+end
+
+% handle array of models/data sets
+if numel(data) > 1
+  signal = [];
+  for index=1:numel(data)
+    signal = [ signal ResLibCal_tas_conv4d(data(index), config, frame) ];
+  end
+  return
 end
 
 if isempty(frame), 

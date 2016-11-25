@@ -31,7 +31,7 @@ if isempty(NMC), NMC  = 2000; end
 RMC = randn(4,NMC); % Monte Carlo points
 
 % [rlu] [R] frame: Resolution ellipsoid in terms of H,K,L,EN ([Rlu] & [meV])
-for frames={'rlu','spec'}  % others: 'cart','rlu_ABC','ABC'
+for frames={'rlu','spec','ABC'}  % others: 'cart','rlu_ABC','ABC'
   frame = resolution.(frames{1});
   M=frame.RM;
   [V,E]=eig(M);

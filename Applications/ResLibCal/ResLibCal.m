@@ -310,9 +310,19 @@ while ~isempty(varargin)
       if ~strcmp(status, 'on'), status = 'off'; end % make sure we get on or off
       set(ResLibCal_fig('View_AutoUpdate'), 'Checked', status);
     case {'view_resolutionrlu','rlu'}
-      status = get(ResLibCal_fig('View_ResolutionRLU'), 'Checked');
-      if strcmp(status,'on'), status = 'off'; else status = 'on'; end
-      set(ResLibCal_fig('View_ResolutionRLU'), 'Checked', status);
+      set(ResLibCal_fig('View_ResolutionRLU'), 'Checked', 'on');
+      set(ResLibCal_fig('View_ResolutionSPEC'),'Checked', 'off');
+      set(ResLibCal_fig('View_ResolutionABC'), 'Checked', 'off');
+      ResLibCal_UpdateViews([],'force');
+    case {'view_resolutionabc','abc'}
+      set(ResLibCal_fig('View_ResolutionRLU'), 'Checked', 'off');
+      set(ResLibCal_fig('View_ResolutionSPEC'),'Checked', 'off');
+      set(ResLibCal_fig('View_ResolutionABC'), 'Checked', 'on');
+      ResLibCal_UpdateViews([],'force');
+    case {'view_resolutionspec','spec'}
+      set(ResLibCal_fig('View_ResolutionRLU'), 'Checked', 'off');
+      set(ResLibCal_fig('View_ResolutionSPEC'),'Checked', 'on');
+      set(ResLibCal_fig('View_ResolutionABC'), 'Checked', 'off');
       ResLibCal_UpdateViews([],'force');
     case {'view_resolutionxyz','zw'}
       status = get(ResLibCal_fig('View_ResolutionXYZ'), 'Checked');
@@ -383,7 +393,7 @@ while ~isempty(varargin)
         fprintf(1,'QH=%5.3g QK=%5.3g QL=%5.3g [rlu] E=%5.3g [meV]\n', H,K,L,W);
         disp('----------------------------------------------------------');
         % display the resolution matrix in all available frames
-        for frames={'rlu','spec'}  % others: 'cart','rlu_ABC','ABC'
+        for frames={'rlu','spec','ABC'}  % others: 'cart','rlu_ABC','ABC'
           frame = resolution{index}.(frames{1});
           disp(' ');
           disp([ 'Resolution Matrix [' frames{1} '] ' frame.README ]);
@@ -625,7 +635,11 @@ function out = ResLibCal_UpdateViews(out, mode)
   || isempty([ findobj(0, 'Tag','ResLibCal_View2') findobj(0, 'Tag','ResLibCal_View3') ])
 		% display result in the console
 		rlu = get(ResLibCal_fig('View_ResolutionRLU'), 'Checked');
-		if ~strcmp(rlu, 'on'), mode=''; else mode='rlu'; end
+		spec= get(ResLibCal_fig('View_ResolutionSPEC'),'Checked');
+		abc = get(ResLibCal_fig('View_ResolutionABC'), 'Checked');
+		if     strcmp(rlu, 'on') mode='rlu'; 
+		elseif strcmp(spec,'on') mode='spec'; 
+		elseif strcmp(abc, 'on') mode='abc'; end
 		[res, inst] = ResLibCal_FormatString(out, mode);
 		disp(char(res));
 		disp(char(inst));
@@ -673,12 +687,16 @@ function out = ResLibCal_UpdateResolution2(out)
 
   % update/show the resolution projections
   rlu = get(ResLibCal_fig('View_ResolutionRLU'), 'Checked');
+	spec= get(ResLibCal_fig('View_ResolutionSPEC'),'Checked');
+	abc = get(ResLibCal_fig('View_ResolutionABC'), 'Checked');
+	if     strcmp(rlu, 'on') mode='rlu'; 
+	elseif strcmp(spec,'on') mode='spec'; 
+	elseif strcmp(abc, 'on') mode='abc'; end
   qz  = get(ResLibCal_fig('View_ResolutionXYZ'), 'Checked');
   MC  = get(ResLibCal_fig('View_Resolution_Cloud'), 'Checked');
-  if strcmp(rlu, 'on'), rlu='rlu'; end
   if strcmp(qz, 'on'),  qz='qz'; end
   if strcmp(MC, 'on'),  MC='cloud'; end
-  out = ResLibCal_Plot2D(out, [ rlu ' ' qz ' ' MC ]);
+  out = ResLibCal_Plot2D(out, [ mode ' ' qz ' ' MC ]);
 
 % ==============================================================================
 function out = ResLibCal_UpdateResolution3(out)
@@ -692,12 +710,16 @@ function out = ResLibCal_UpdateResolution3(out)
 
   % update/show the resolution projections
   rlu = get(ResLibCal_fig('View_ResolutionRLU'), 'Checked');
+	spec= get(ResLibCal_fig('View_ResolutionSPEC'),'Checked');
+	abc = get(ResLibCal_fig('View_ResolutionABC'), 'Checked');
+	if     strcmp(rlu, 'on') mode='rlu'; 
+	elseif strcmp(spec,'on') mode='spec'; 
+	elseif strcmp(abc, 'on') mode='abc'; end
   qz  = get(ResLibCal_fig('View_ResolutionXYZ'), 'Checked');
   MC  = get(ResLibCal_fig('View_Resolution_Cloud'), 'Checked');
-  if strcmp(rlu, 'on'), rlu='rlu'; end
   if strcmp(qz, 'on'),  qz='qz'; end
   if strcmp(MC, 'on'),  MC='cloud'; end
-  out = ResLibCal_Plot3D(out, [ rlu ' ' qz ' ' MC ]);
+  out = ResLibCal_Plot3D(out, [ mode ' ' qz ' ' MC ]);
 
 % ==============================================================================
 function ResLibCal_UpdateTauPopup
