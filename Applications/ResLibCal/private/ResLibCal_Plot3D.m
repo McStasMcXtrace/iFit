@@ -55,6 +55,8 @@ for index=1:numel(resolutions)
 
   if ~isempty(strfind(mode,'rlu'))
     frame = resolution.rlu;
+  elseif ~isempty(strfind(upper(mode),'ABC'))
+    frame = resolution.ABC;
   else
     frame = resolution.spec;
   end
