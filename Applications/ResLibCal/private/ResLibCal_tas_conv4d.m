@@ -132,6 +132,11 @@ if ndims(dispersion) ~= 2 && ndims(dispersion) ~= 4
   signal = dispersion;
 end
 
+% check if the model is not already convovulted with TAS
+if any(~cellfun(@isempty,strfind(dispersion.Expression,'ResLibCal')))
+  signal = dispersion;
+end
+
 % the built model parameters will be that of the model
 signal.Parameters = dispersion.Parameters;
 signal.ParameterValues = dispersion.ParameterValues;
