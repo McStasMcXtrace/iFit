@@ -54,6 +54,7 @@ function mifit_Data_AssignModel(varargin)
   for index=index_selected(:)'
     if numel(D) > 1, this_d = D(index); else this_d = D; end
     this_d = setalias(this_d, 'Model', model);
+    this_d = setalias(this_d, 'ModelValue', []);
     mifit_disp(char(this_d));
     if numel(D) > 1, D(index) = this_d; else D = this_d; end
     if index==index_selected(1), 
