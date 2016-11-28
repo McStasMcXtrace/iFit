@@ -8,14 +8,20 @@ echo Performing @IFIT_TARNAME@-@IFIT_VERSION@ install to ${BUILDDIR}/usr/local
 PW=`pwd`
 cd    ${BUILDDIR}/usr/local/bin
 rm -f ${BUILDDIR}/usr/local/bin/ifit
+rm -f ${BUILDDIR}/usr/local/bin/mifit
+rm -f ${BUILDDIR}/usr/local/bin/ResLibCal
 #rm -f ${BUILDDIR}/usr/local/bin/pyfit
 ln -s ../ifit/ifit .
 ln -s ../ifit/ResLibCal .
+ln -s ../ifit/mifit .
 #ln -s ../ifit/pyfit .
 cd $PW
 chmod a+x ${BUILDDIR}/usr/local/bin/ifit
 chmod a+x ${BUILDDIR}/usr/local/bin/ResLibCal
+chmod a+x ${BUILDDIR}/usr/local/bin/mifit
 chmod a+x ${BUILDDIR}/usr/local/ifit/ifit
+chmod a+x ${BUILDDIR}/usr/local/ifit/mifit
+chmod a+x ${BUILDDIR}/usr/local/ifit/ResLibCal
 #chmod a+x ${BUILDDIR}/usr/local/bin/pyfit
 #chmod a+x ${BUILDDIR}/usr/local/ifit/pyfit
 

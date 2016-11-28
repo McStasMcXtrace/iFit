@@ -56,6 +56,7 @@ if ~ispc
 end
 copyfile([ m filesep 'ResLibCal' ],       target)
 copyfile([ m filesep 'sqw_phonons' ],       target)
+copyfile([ m filesep 'mifit' ],       target)
 
 % documentation
 copyfile(fullfile(p, 'README.md'), target)
