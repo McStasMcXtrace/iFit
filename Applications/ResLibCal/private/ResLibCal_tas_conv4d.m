@@ -121,7 +121,7 @@ function signal = ResLibCal_tas_conv4d_model(dispersion, config, frame)
 % select computation mode: normal or fast
 % the 'hkle' mode uses the ResLibCal cloud as is, i.e. HKLE with NMC points (e.g. 2000)
 % the 'hkl'  mode only uses the HKL cloud projection, and builds a E regular axis
-computation_mode = 'hkle';
+computation_mode = 'hkl';
 
 if isempty(dispersion), signal = []; return; end
 
@@ -130,11 +130,13 @@ if isempty(dispersion), signal = []; return; end
 if ndims(dispersion) ~= 2 && ndims(dispersion) ~= 4
   disp([ mfilename ': the Model should be 2D or 4D, not ' num2str(ndims(dispersion)) '. Skipping.' ])
   signal = dispersion;
+  return
 end
 
 % check if the model is not already convovulted with TAS
 if any(~cellfun(@isempty,strfind(dispersion.Expression,'ResLibCal')))
   signal = dispersion;
+  return
 end
 
 % the built model parameters will be that of the model
