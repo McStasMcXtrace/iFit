@@ -1,9 +1,9 @@
-function [res, inst] = ResLibCal_FormatString(out, mode)
+function [res, inst] = ResLibCal_FormatString(out, modev)
 % ResLibCal_FormatString: build a text with results
 %
 % Input:
 %  out:  EXP ResLib structure 
-%  mode: can be set to 'rlu' so that the plot is in lattice RLU frame
+%  modev: can be set to 'rlu','spec','ABC' so that the plot is in lattice RLU... frame
 %
 % Return:
 %  res:  resolution text
@@ -12,7 +12,7 @@ function [res, inst] = ResLibCal_FormatString(out, mode)
 % Calls: none
 
 % input parameters
-if nargin == 1, mode=''; end
+if nargin == 1, modev=''; end
 if isfield(out, 'EXP')
   EXP = out.EXP;
 else
@@ -25,19 +25,19 @@ if isfield(out, 'resolution')
   if iscell(out.resolution)
     res={}; inst={};
     for index=1:numel(out.resolution)
-        [this_res, this_inst] = ResLibCal_FormatString_Resolution(out.resolution{index}, EXP, mode);
+        [this_res, this_inst] = ResLibCal_FormatString_Resolution(out.resolution{index}, EXP, modev);
         res = [ res(:) ;  this_res(:) ];
         inst= [ inst(:) ; this_inst(:)];
     end
   else
-    [res, inst] = ResLibCal_FormatString_Resolution(out.resolution, EXP, mode);
+    [res, inst] = ResLibCal_FormatString_Resolution(out.resolution, EXP, modev);
     res=res(:);
     inst=inst(:);
   end
 end
 
 % -------------------------------------------------------------------------
-function [res, inst] = ResLibCal_FormatString_Resolution(resolution, EXP, mode)
+function [res, inst] = ResLibCal_FormatString_Resolution(resolution, EXP, modev)
 
 H   = resolution.HKLE(1); K=resolution.HKLE(2); L=resolution.HKLE(3); W=resolution.HKLE(4);
 
@@ -47,18 +47,18 @@ if ~resolution.R0 || isempty(resolution.spec) || isempty(resolution.rlu) ...
   res=[]; inst=[];
   return
 end
-if ~isempty(strfind(mode,'rlu'))
-    frame = resolution.rlu;
-  elseif ~isempty(strfind(upper(mode),'ABC'))
-    frame = resolution.ABC;
-  else
-    frame = resolution.spec;
-  end
+if ~isempty(strfind(modev,'rlu'))
+  frame = resolution.rlu;
+elseif ~isempty(strfind(upper(modev),'ABC'))
+  frame = resolution.ABC;
+else
+  frame = resolution.spec;
+end
 
-NP = frame.RM;
-unit =frame.frameUnit; QA='Qx'; QB='Qy'; QC='Qz';
+NP    = frame.RM;
+unit  = frame.frameUnit; QA='Qx'; QB='Qy'; QC='Qz';
 Bragg = frame.Bragg;
-o123 = frame.frameStr;
+o123  = frame.frameStr;
 frame_descr = [ 'Qx=' o123{1} '; Qy=' o123{2} '; Qz=' o123{3} ];
 
 ResVol=(2*pi)^2/sqrt(det(NP));
@@ -73,7 +73,7 @@ res = { ...
   sprintf(' Intensity prefactor: R0=%7.3g [a.u.]',R0), ...
   ['Bragg width in ' frame.README ' (FWHM):'], ...
     sprintf([' d' QA '=%7.3g d' QB '=%7.3g d' QC '=%7.3g [' frame.unit ']' ], Bragg(1:3)), ...
-    sprintf( ' dE=%7.3g  V=%7.3g (Vanadium width) [meV]', Bragg(4:5)) };
+    sprintf( ' dE=%7.3g  V=%7.3g (Vanadium width) [meV]', Bragg(4:5)),' ' };
     
 inst = { ...
           'Instrument parameters:', ...

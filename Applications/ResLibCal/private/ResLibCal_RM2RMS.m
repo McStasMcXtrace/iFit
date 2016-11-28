@@ -209,7 +209,7 @@ res.ABC.README        = '[U] cartesian rotated lattice frame, ortho-normal, x=A/
 res.ABC.unit          = Angs;
 res.ABC.frame         = U;      % in Angs-1 along axes
 res.ABC.frameUnit     = Angs;
-res.ABC.frameStr      = {'A/|A|',[],[]};
+res.ABC.frameStr      = {'A/|A|','B''','C=AxB'''};
 res.ABC.Bragg         = rc_bragg(res.ABC.RM);
 
 res.QM                = QM;

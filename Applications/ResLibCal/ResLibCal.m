@@ -126,7 +126,7 @@ function out = ResLibCal(varargin)
 
 out = [];
 silent_mode = 0;
-ResLibCal_version = [ mfilename ' 1.2.1 ($Date$)' ];
+ResLibCal_version = [ mfilename ' 1.3 ($Date$)' ];
 
 persistent fig
 
@@ -142,6 +142,7 @@ elseif nargin >= 1 && (isa(varargin{1}, 'iFunc') || isa(varargin{1}, 'iData'))
   return
 end
 % menu actions:
+config = [];
 while ~isempty(varargin)
   if isscalar(varargin{1}) && ishandle(varargin{1}) ...
     && (numel(varargin) == 2 && ~isnumeric(varargin{2}))
@@ -158,7 +159,10 @@ while ~isempty(varargin)
       if length(varargin) <= 1, varargin{2} = ''; end
       if length(varargin) <= 2, varargin{3} = EXP; end
       EXP = ResLibCal_Open(varargin{2:3});  % (filename, EXP)
-      out=ResLibCal_GetConfig;
+      if isempty(config)
+        config=ResLibCal_GetConfig;
+      end
+      out = config;
       if ~isfield(EXP,'EXP')
         % add current EXP to out.EXP;
         out.EXP=mergestruct(out.EXP, EXP);
@@ -328,10 +332,10 @@ while ~isempty(varargin)
       status = get(ResLibCal_fig('View_ResolutionXYZ'), 'Checked');
       if strcmp(status,'on'), 
         status = 'off'; 
-        set(ResLibCal_fig('View_ResolutionXYZ'), 'Label','Resolution in [Qx,Qy,E]');
+        set(ResLibCal_fig('View_ResolutionXYZ'), 'Label','Resolution: vertical in [E]');
       else 
         status = 'on'; 
-        set(ResLibCal_fig('View_ResolutionXYZ'), 'Label','Resolution in [Qx,Qy,Qz]');
+        set(ResLibCal_fig('View_ResolutionXYZ'), 'Label','Resolution: vertical in [Qz]');
       end
       set(ResLibCal_fig('View_ResolutionXYZ'), 'Checked', status);
       ResLibCal_UpdateViews([],'force');
@@ -493,7 +497,10 @@ while ~isempty(varargin)
       % update computation and plots
       feval(mfilename, 'update');
     case {'config','EXP'}
-      out = ResLibCal_GetConfig;
+      if isempty(config)
+        config=ResLibCal_GetConfig;
+      end
+      out = config;
     case 'hkle'
       if ~isempty(ResLibCal_fig)
         out = { str2num(get(ResLibCal_fig('EXP_QH'),'String'))
@@ -507,14 +514,20 @@ while ~isempty(varargin)
     otherwise
       % open file name or list of parameters given as 'VAR=VAL; ...'  
       if numel(varargin) > 1 && isstruct(varargin{2})
-        out = varargin{2};
+        config = varargin{2};
+        out = config;
         varargin(2)=[];
       end
-      if isempty(out), out = ResLibCal_GetConfig; end
+      if isempty(out), 
+        if isempty(config)
+          config=ResLibCal_GetConfig;
+        end
+        out = config;
+      end
       if ~isempty(action)
         out = ResLibCal_Open(action, out); % update 'out/EXP' from file
         ResLibCal_EXP2fig(out);                        % put it into the main GUI
-      else
+      elseif isempty(out)
         out = ResLibCal_GetConfig;
       end
       if numel(varargin) == 0
@@ -530,7 +543,8 @@ while ~isempty(varargin)
     % end if varargin is char
   elseif isstruct(varargin{1})
     % read an out or EXP structure
-    out = varargin{1};
+    config = varargin{1};
+    out = config;
     if ~isfield(out,'EXP')
       EXP=out; out=[];
       out.EXP = EXP; 
@@ -607,21 +621,21 @@ function filename = ResLibCal_Save
   filename = ResLibCal_Saveas(fullfile(prefdir, 'ResLibCal.ini'));
 
 % ==============================================================================
-function out = ResLibCal_UpdateViews(out, mode)
+function out = ResLibCal_UpdateViews(out, modev)
 % ResLibCal_UpdateViews: update all views (only when already visible)
-% mode can be: 'force' (update all views) or 'stdout'
+% modev can be: 'force' (update all views) or 'stdout'
 %
   if nargin == 0, out = ''; end
-  if nargin < 2, mode=''; end
+  if nargin < 2, modev=''; end
   if ~isstruct(out), out = ResLibCal_Compute; end
   fig = ResLibCal_fig;
-  if ~isempty(fig) || strcmp(mode, 'force')
-    if strcmp(get(ResLibCal_fig('View_AutoUpdate'), 'Checked'), 'on') || strcmp(mode, 'force')
+  if ~isempty(fig) || strcmp(modev, 'force')
+    if strcmp(get(ResLibCal_fig('View_AutoUpdate'), 'Checked'), 'on') || strcmp(modev, 'force')
       t=clock;
       out = ResLibCal_UpdateResolution1(out); % TAS geometry
       out = ResLibCal_UpdateResolution2(out); % 2D, also shows matrix
       out = ResLibCal_UpdateResolution3(out); % 3D
-      if ~strcmp(mode, 'force') && etime(clock, t) > 5
+      if ~strcmp(modev, 'force') && etime(clock, t) > 5
         disp([ mfilename ': the time required to update all plots gets long.' ])
         disp('INFO          Setting View/AutoUpdate to off.')
         set(ResLibCal_fig('View_AutoUpdate'), 'Checked', 'off');
@@ -631,16 +645,17 @@ function out = ResLibCal_UpdateViews(out, mode)
   end
   % if no view exists, send result to the console 
   % here unactivated in case we use it as a model for e.g. fitting
-  if isempty(fig) || strcmp(mode, 'stdout') ...
+  if isempty(fig) || strcmp(modev, 'stdout') ...
   || isempty([ findobj(0, 'Tag','ResLibCal_View2') findobj(0, 'Tag','ResLibCal_View3') ])
 		% display result in the console
 		rlu = get(ResLibCal_fig('View_ResolutionRLU'), 'Checked');
 		spec= get(ResLibCal_fig('View_ResolutionSPEC'),'Checked');
 		abc = get(ResLibCal_fig('View_ResolutionABC'), 'Checked');
-		if     strcmp(rlu, 'on') mode='rlu'; 
-		elseif strcmp(spec,'on') mode='spec'; 
-		elseif strcmp(abc, 'on') mode='abc'; end
-		[res, inst] = ResLibCal_FormatString(out, mode);
+		modev='abc'; % default
+		if     strcmp(rlu, 'on') modev='rlu'; 
+		elseif strcmp(spec,'on') modev='spec'; 
+		elseif strcmp(abc, 'on') modev='abc'; end
+		[res, inst] = ResLibCal_FormatString(out, modev);
 		disp(char(res));
 		disp(char(inst));
   end
@@ -689,14 +704,15 @@ function out = ResLibCal_UpdateResolution2(out)
   rlu = get(ResLibCal_fig('View_ResolutionRLU'), 'Checked');
 	spec= get(ResLibCal_fig('View_ResolutionSPEC'),'Checked');
 	abc = get(ResLibCal_fig('View_ResolutionABC'), 'Checked');
-	if     strcmp(rlu, 'on') mode='rlu'; 
-	elseif strcmp(spec,'on') mode='spec'; 
-	elseif strcmp(abc, 'on') mode='abc'; end
+	modev='abc'; % default
+	if     strcmp(rlu, 'on') modev='rlu'; 
+	elseif strcmp(spec,'on') modev='spec'; 
+	elseif strcmp(abc, 'on') modev='abc'; end
   qz  = get(ResLibCal_fig('View_ResolutionXYZ'), 'Checked');
   MC  = get(ResLibCal_fig('View_Resolution_Cloud'), 'Checked');
   if strcmp(qz, 'on'),  qz='qz'; end
   if strcmp(MC, 'on'),  MC='cloud'; end
-  out = ResLibCal_Plot2D(out, [ mode ' ' qz ' ' MC ]);
+  out = ResLibCal_Plot2D(out, [ modev ' ' qz ' ' MC ]);
 
 % ==============================================================================
 function out = ResLibCal_UpdateResolution3(out)
@@ -712,14 +728,14 @@ function out = ResLibCal_UpdateResolution3(out)
   rlu = get(ResLibCal_fig('View_ResolutionRLU'), 'Checked');
 	spec= get(ResLibCal_fig('View_ResolutionSPEC'),'Checked');
 	abc = get(ResLibCal_fig('View_ResolutionABC'), 'Checked');
-	if     strcmp(rlu, 'on') mode='rlu'; 
-	elseif strcmp(spec,'on') mode='spec'; 
-	elseif strcmp(abc, 'on') mode='abc'; end
+	if     strcmp(rlu, 'on') modev='rlu'; 
+	elseif strcmp(spec,'on') modev='spec'; 
+	elseif strcmp(abc, 'on') modev='abc'; end
   qz  = get(ResLibCal_fig('View_ResolutionXYZ'), 'Checked');
   MC  = get(ResLibCal_fig('View_Resolution_Cloud'), 'Checked');
   if strcmp(qz, 'on'),  qz='qz'; end
   if strcmp(MC, 'on'),  MC='cloud'; end
-  out = ResLibCal_Plot3D(out, [ mode ' ' qz ' ' MC ]);
+  out = ResLibCal_Plot3D(out, [ modev ' ' qz ' ' MC ]);
 
 % ==============================================================================
 function ResLibCal_UpdateTauPopup

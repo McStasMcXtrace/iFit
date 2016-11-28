@@ -1,16 +1,16 @@
-function out=ResLibCal_Plot2D(out, mode)
+function out=ResLibCal_Plot2D(out, modev)
 %
 % MATLAB function to plot the projections of the resolution ellipse
 % of a triple axis
 %
 % Input:
 %  out:  EXP ResLib structure 
-%  mode: can be set to 'rlu' so that the plot is in lattice RLU frame [abc] instead of [xyz]
+%  modev: can be set to 'rlu' so that the plot is in lattice RLU frame [abc] instead of [xyz]
 %        can also specify 'qz' to indicate x,y,z in place of x,y,E mode.
 
 % input parameters
 if nargin < 1, out = []; end
-if nargin < 2, mode=''; end
+if nargin < 2, modev=''; end
 if isempty(out), return; end
 
 if ~isfield(out, 'resolution') 
@@ -41,9 +41,9 @@ for index=1:numel(resolutions)
   H=resolution.HKLE(1); K=resolution.HKLE(2); 
   L=resolution.HKLE(3); W=resolution.HKLE(4);
 
-  if ~isempty(strfind(mode,'rlu'))
+  if ~isempty(strfind(modev,'rlu'))
     frame = resolution.rlu;
-  elseif ~isempty(strfind(upper(mode),'ABC'))
+  elseif ~isempty(strfind(upper(modev),'ABC'))
     frame = resolution.ABC;
   else
     frame = resolution.spec;
@@ -59,7 +59,7 @@ for index=1:numel(resolutions)
 
   if isempty(NP) || ~all(isreal(NP)), return; end
   
-  if isempty(strfind(mode,'cloud')), cloud=[]; end
+  if isempty(strfind(modev,'cloud')), cloud=[]; end
   
   % plot the 3 subplots for projections
   % each plot is shown as a gauss2d, contour.
@@ -73,7 +73,7 @@ for index=1:numel(resolutions)
   if index < numel(resolutions), hold on; else hold off; end
   % if numel(resolutions) > 1 && index==1, colorbar('North'); end
   
-  if ~isempty(strfind(mode,'qz'))
+  if ~isempty(strfind(modev,'qz'))
     [dummy, NP2] = rc_int(4,1, NP);
     [dummy, NP2] = rc_int(2,1, NP2);
     ResLibCal_Proj_plot2D(2, 1,3, NP2, Labels, FrameStr, Units, 'xz', cloud, centre, max_points);  % xe
@@ -102,7 +102,7 @@ hold off;
 
 % now add the text box
 % display a text edit uicontrol so that users can select/copy/paste
-[res, inst] = ResLibCal_FormatString(out, mode);
+[res, inst] = ResLibCal_FormatString(out, modev);
 message = [ res; inst ];
 
 % fill 4th sub-panel with uicontrol

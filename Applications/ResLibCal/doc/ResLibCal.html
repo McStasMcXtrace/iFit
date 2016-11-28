@@ -9,7 +9,7 @@
         name="mozTocId841636"></a>ResLibCal: a tool to compute
       triple-axis neutron spectrometer resolution</h1>
     <div align="center"><img alt="ResLibCal" title="ResLibCal"
-        src="ResLibCal-logo.png" height="165" width="164"><br>
+        src="ResLibCal-logo.png" width="164" height="165"><br>
     </div>
     <br>
     <div style="text-align: center;">E. Farhi, <span style="font-style:
@@ -70,6 +70,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
     spectrometer (TAS). ResLibCal is based on <a
       href="http://www.mathworks.com/">Matlab</a>. The Cooper-Nathans
     and Popovici methods are proposed [<a href="#mozTocId811100">1-7</a>],
+
 
 
 
@@ -221,6 +222,7 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
 
 
 
+
       </i><i>m &#955;<sub>i</sub></i> [deg]. The alpha/beta collimations are
       also limited by the effective divergence set from the geometry,
       e.g. <i>atan(width or height/distance) </i>[rad]. <br>
@@ -284,7 +286,8 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
     </div>
     <br>
     where <i><b>Ki,Kf</b> </i>and <i>Ei,Ef </i>are the wavevectors
-    and energies in initial (incoming) and final (after sample) states.<br>
+    [e.g. in rlu or Angs<sup>-1</sup>] and energies [e.g. in meV] in
+    initial (incoming) and final (after sample) states.<br>
     <p>The main parameter categories are:<br>
     </p>
     <ul>
@@ -309,15 +312,18 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
       menu in 2D and 3D, as well as the instrument geometry.<br>
     </p>
     <p>The resolution matrix is then shown in <span style="font-style:
-        italic;">reciprocal lattice units</span> (rlu) [a*,b*,E].
-      Un-checking the <i>Resolution in reciprocal lattice units</i>
-      option in the <span style="font-style: italic;">View</span> menu
-      will switch to e.g.&nbsp; the [Qx,Qy,E] space along longitudinal
-      momentum exchange Q. It is also possible to plot the resolution
-      function projections in the vertical Qz axis instead of the energy
-      E axis by toggling the <i>View</i> menu, e.g. <i>Resolution in
-        [Qx,Qy,</i><i>E]</i> item. <br>
+        italic;">reciprocal lattice units</span> (rlu) [a*,b*,E] or
+      inverse Angstroem (Angs<sup>-1</sup>) [Qx,Qy,E or A,B,E] . You can
+      select the coordinate frame used for displaying the resolution in
+      the Un-checking the <i>Resolution in ... </i>sub-menu in the <span
+        style="font-style: italic;">View</span> menu. See <a
+        href="#mozTocId3394">below</a> for a description of the
+      available coordinate frames. It is also possible to plot the
+      resolution function projections in the vertical [Qz, c* or
+      C]&nbsp; axis instead of the energy E axis by toggling the <i>View</i>
+      menu, e.g. <i>Resolution in [Qx,Qy,</i><i>E]</i> item. <br>
       The resolution matrix is always computed in [Angs<sup>-3</sup>.meV],
+
 
 
 
@@ -358,17 +364,25 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
         frames:<br>
         <ul>
           <li><i>[rlu</i><i>]</i> is relative to the sample lattice
-            frame. The coordinate frame is defined by the a*, b* and c*
-            lattice vectors, as spceified by the AS,BS,CS lattice
-            parameters, and angles AA,BB,CC (aka &#945;, &#946;, &#947;). The
+            frame ([B] matrix). The coordinate frame is defined by the
+            a*, b* and c* lattice vectors, as specified by the AS,BS,CS
+            lattice parameters, and angles AA,BB,CC (aka &#945;, &#946;, &#947;). The
             corresponding resolution matrix is 'rlu.RM', given in [rlu<sup>3</sup>.meV].<br>
           </li>
           <li><i>[spec</i><i>] </i>is relative to Q, and vertical axis
-            (spectrometer frame). The<i> [spec]</i> coordinate frame is
-            direct ortho-normal (cartesian), with <i>x // Q</i> and <i>z</i>
-            vertical. The corresponding resolution matrix is 'spec.RM'
-            given in [Angs<sup>-3</sup>.meV]. It is especially suitable
-            for powders and liquids.<br>
+            (spectrometer frame) ([Q] matrix). The<i> [spec]</i>
+            coordinate frame is direct ortho-normal (cartesian), with <i>x
+              // Q</i> and <i>z</i> vertical. The corresponding
+            resolution matrix is 'spec.RM' given in [Angs<sup>-3</sup>.meV].
+            It is especially suitable for powders and liquids.</li>
+          <li>[ABC] is relative to the user-defined A and B vectors
+            which define the scattering plane ([U] matrix). These
+            vectors are specified in <i>rlu</i> from the main interface.
+            The vector A is normalised [to get Angs<sup>-1</sup>], the
+            vector B is used to compute a 'vertical' axis <i>C = A x B</i>,
+            and then a vector <i>B</i>' is computed so that the ABC
+            frame is ortho-normal, with <i>x // A</i> and <i>'C'</i>
+            vertical. The angle A3=&lt;Ki,A&gt;.<br>
           </li>
         </ul>
         The usual definition of the sample reciprocal lattice
@@ -379,8 +393,8 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
         This is why, in order to properly define the [A,B] basis, an
         initial measurement is done in practice on a Bragg signal with
         Q=[QH,QK,QL]=[AX,AY,AZ]. For such a measurement, the [rlu] and
-        [spec] frames are equivalent. Then the A3 angle offset is set to
-        the signal maximum.<br>
+        [spec] frames are equivalent in a cubic lattice. Then the A3
+        angle offset is set to the signal maximum.<br>
         <ul>
         </ul>
         <ul>
@@ -393,6 +407,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
       resolution function</h4>
     <div style="text-align: left;"> To compute and plot the resolution
       function, select the <span style="font-style: italic;">View/Resolution
+
 
 
 
@@ -421,6 +436,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
       is vertical, w.r.t the scattering plane, in the laboratory
       coordinate frame.<br>
       In the sample coordinate frame, <i><b>a*, b* </b>and<b> c* </b>and
+
 
 
 
@@ -476,6 +492,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
           geometry</span> menu item. It is automatically updated upon
         change of instrument parameters, as the other views.<br>
         The signification of the angles shown is as follows:<br>
@@ -486,7 +503,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
         <br>
       </div>
       <img alt="The TAS geometry view" title="The TAS geometry view"
-        src="ResLibCal_Geometry.png" height="564" width="642"><br>
+        src="ResLibCal_Geometry.png" width="642" height="564"><br>
       <span style="font-style: italic;">The 3D plot of the TAS geometry.</span>
       <span style="font-style: italic;">The axis has a contextual menu
         allowing to change the plot rendering.</span>
@@ -563,6 +580,7 @@ href="http://www.ill.eu/fr/instruments-support/instruments-groups/instruments/in
 
 
 
+
         <a href="http://www.mlz-garching.de/trisp">MLZ_TRISP</a>. You
         may add files in this location with your preferred
         configurations by just copying and renaming e.g. any <span
@@ -577,6 +595,7 @@ href="http://www.ill.eu/fr/instruments-support/instruments-groups/instruments/in
     The results can be saved using the <span style="font-style:
       italic;">'File/Save as...'</span> menu item. Enter a <span
       style="font-style: italic;">'.m'</span> or <i>'.ini' </i>filename,
+
 
 
 
@@ -680,6 +699,7 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
     or<span style="font-style: italic;"> 'Popovici', </span>with a
     flavour <span style="font-style: italic;">'ResLib','ResCal'</span>,
     <i>'AFILL' </i> or<span style="font-style: italic;"> 'Res3' </span>as
+
 
 
 
@@ -902,7 +922,7 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
     page.<br>
     <br>
     <table style="text-align: left;" border="1" cellpadding="2"
-      cellspacing="2" height="316" width="1016">
+      cellspacing="2" width="1016" height="316">
       <tbody>
         <tr>
           <td style="vertical-align: top; font-weight: bold; font-style:
@@ -934,7 +954,7 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
               href="http://ifit.mccode.org/images/Models_sqw_sine3d.png"><img
                 alt="sqw_sine3d" title="sqw_sine3d"
                 src="http://ifit.mccode.org/images/Models_sqw_sine3d.png"
-                align="middle" border="0" height="73" width="100"></a> </td>
+                align="middle" border="0" width="100" height="73"></a> </td>
           <td valign="top">zone center, energy gaps, periodicity</td>
         </tr>
         <tr>
@@ -946,7 +966,7 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
             <a href="http://ifit.mccode.org/images/Models_sqw_vaks.png"><img
                 alt="sqw_vaks" title="sqw_vaks"
                 src="http://ifit.mccode.org/images/Models_sqw_vaks.png"
-                align="middle" border="0" height="75" width="100"></a></td>
+                align="middle" border="0" width="100" height="75"></a></td>
           <td valign="top">acoustic and optical , coupling parameters,
             soft mode frequency<br>
           </td>
@@ -961,7 +981,7 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
               href="http://ifit.mccode.org/images/Models_sqw_cubic_mono.png"><img
                 alt="sqw_cubic_mono" title="sqw_cubic_mono"
                 src="http://ifit.mccode.org/images/Models_sqw_cubic_mono.png"
-                align="middle" border="0" height="76" width="100"></a></td>
+                align="middle" border="0" width="100" height="76"></a></td>
           <td valign="top">acoustic force constant ratio and scaling
             energy<br>
           </td>
@@ -1020,7 +1040,7 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
               href="http://ifit.mccode.org/images/Models_sqw_sine3d.png"><img
 src="http://ifit.mccode.org/images/Models_sqw_sine3d.png"
                 title="sqw_phonons Al fcc" alt="sqw_phonons Al fcc"
-                align="left" border="0" height="74" width="100"></a></td>
+                align="left" border="0" width="100" height="74"></a></td>
           <td valign="top">Creation: <a
               href="http://cms.mpi.univie.ac.at/vasp/guide/node59.html">POSCAR</a>,
             <a
@@ -1046,7 +1066,7 @@ src="http://ifit.mccode.org/images/Models_sqw_sine3d.png"
     energy axis, we use:<a href="ResLibCal_conv4D_sine3d.png"><img
         alt="ResLibCal 4D convolution" title="ResLibCal 4D convolution"
         src="ResLibCal_conv4D_sine3d.png" align="right" border="0"
-        height="218" width="300"></a><br>
+        width="300" height="218"></a><br>
     <pre>    figure; <font color="#3366ff">plot</font>(<font color="#3366ff">squeeze</font>([signal0 signal1/100])); <i>% plot the dispersion and simulated measurement</i></pre>
     Then we can plot the whole dispersion curve and the simulated signal
     along the given scan trajectory.<br>
@@ -1172,8 +1192,10 @@ href="http://www.mathworks.com/matlabcentral/fileexchange/13844-plot-an-ellipse-
 
 
 
+
       See [<a href="../rescal.for">Fortran code</a>].<br>
       [2] N. J. Chesser and J. D. e, <span style="font-style: italic;">Acta
+
 
 
 
@@ -1198,6 +1220,7 @@ href="http://www.mathworks.com/matlabcentral/fileexchange/13844-plot-an-ellipse-
         italic;">Acta Cryst.</span> <b>1</b>, 303 (1948) [<a
         href="http://dx.doi.org/10.1107/S0365110X48000831">doi:10.1107/S0365110X48000831</a>].<br>
       [5] S. A. Werner and R. Pynn, <span style="font-style: italic;">J.
+
 
 
 

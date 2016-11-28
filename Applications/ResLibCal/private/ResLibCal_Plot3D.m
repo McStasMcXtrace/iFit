@@ -1,4 +1,4 @@
-function out = ResLibCal_Plot3D(out, mode)
+function out = ResLibCal_Plot3D(out, modev)
 % adapted from ResLib
 %===================================================================================
 %  function ResPlot3D(
@@ -15,7 +15,7 @@ function out = ResLibCal_Plot3D(out, mode)
 
 % Calls: StandardSystem, GetLattice, scalar, modvec
 if nargin < 1, out = []; end
-if nargin < 2, mode=''; end
+if nargin < 2, modev=''; end
 if isempty(out), return; end
 
 if ~isfield(out, 'resolution') 
@@ -30,7 +30,7 @@ else
 end
 
 % clean up current axis if redraw
-if isempty(strfind(mode,'scan')) && ~isempty(findobj(gcf,'Tag','ResLibCal_View3_Context'))
+if isempty(strfind(modev,'scan')) && ~isempty(findobj(gcf,'Tag','ResLibCal_View3_Context'))
   delete(findobj(gcf,'Tag','ResLibCal_View3_Volume'));
   delete(findobj(gcf,'Tag','ResLibCal_View3_Cloud'));
 end
@@ -53,9 +53,9 @@ for index=1:numel(resolutions)
   H=resolution.HKLE(1); K=resolution.HKLE(2); 
   L=resolution.HKLE(3); W=resolution.HKLE(4);
 
-  if ~isempty(strfind(mode,'rlu'))
+  if ~isempty(strfind(modev,'rlu'))
     frame = resolution.rlu;
-  elseif ~isempty(strfind(upper(mode),'ABC'))
+  elseif ~isempty(strfind(upper(modev),'ABC'))
     frame = resolution.ABC;
   else
     frame = resolution.spec;
@@ -71,10 +71,10 @@ for index=1:numel(resolutions)
 
   if isempty(NP) || ~all(isreal(NP)), return; end
   
-  if isempty(strfind(mode,'cloud')), cloud=[]; end
+  if isempty(strfind(modev,'cloud')), cloud=[]; end
   
   % reduce dimensionality of the resolution mtrix
-  if ~isempty(strfind(mode,'qz'))
+  if ~isempty(strfind(modev,'qz'))
     [dummy, NP] = rc_int(4,1, NP); % this function strips out the row=col=4, and corrects determinant
                                    % using the cofactor rule.
     ResLibCal_Proj_plot3D([1 2 3], NP, Labels, FrameStr, Units, cloud, centre, max_points);  % xyz
