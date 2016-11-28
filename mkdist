@@ -140,6 +140,8 @@ then
                                                         ${BUILDDIR}/usr/share/applications/
       sudo cp    $IFIT_TARNAME-$IFIT_VERSION/Applications/standalone/ResLibCal.desktop \
                                                         ${BUILDDIR}/usr/share/applications/
+      sudo cp    $IFIT_TARNAME-$IFIT_VERSION/Applications/standalone/miFit.desktop \
+                                                        ${BUILDDIR}/usr/share/applications/
       sudo cp    $IFIT_TARNAME-$IFIT_VERSION/Applications/standalone/sqw_phonons.desktop \
                                                         ${BUILDDIR}/usr/share/applications/
       sudo cp    $IFIT_TARNAME-$IFIT_VERSION/Applications/standalone/iFit-logo.png \
