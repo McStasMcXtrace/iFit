@@ -92,7 +92,8 @@ else
   [dummy,p] = fileparts(p); % f=filename; p=last path name.
   index = [];
   % first searches for token.txt and token.html
-  if isempty(dir(url)) 
+  if isempty(dir(url))
+    url = [ p f ];
     if ~isempty(which([ url '.html' ])) && feature('ShowFigureWindows') && usejava('jvm')
       h = which([ url '.html' ]); % prefer HTML over TXT when Java/Display
     elseif ~isempty(which([ url '.txt' ]))

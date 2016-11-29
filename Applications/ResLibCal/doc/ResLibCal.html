@@ -86,6 +86,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
     in different implementations from:<br>
     <ul>
       <li><span style="font-weight: bold;"><a
@@ -223,6 +224,7 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
 
 
 
+
       </i><i>m &#955;<sub>i</sub></i> [deg]. The alpha/beta collimations are
       also limited by the effective divergence set from the geometry,
       e.g. <i>atan(width or height/distance) </i>[rad]. <br>
@@ -335,6 +337,7 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
 
 
 
+
       but it can be shown in [rlu<sup>3</sup>.meV] in the 2D and 3D
       views.<br>
     </p>
@@ -374,14 +377,15 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
             coordinate frame is direct ortho-normal (cartesian), with <i>x
               // Q</i> and <i>z</i> vertical. The corresponding
             resolution matrix is 'spec.RM' given in [Angs<sup>-3</sup>.meV].
+
             It is especially suitable for powders and liquids.</li>
           <li>[ABC] is relative to the user-defined A and B vectors
             which define the scattering plane ([U] matrix). These
-            vectors are specified in <i>rlu</i> from the main interface.
-            The vector A is normalised [to get Angs<sup>-1</sup>], the
-            vector B is used to compute a 'vertical' axis <i>C = A x B</i>,
-            and then a vector <i>B</i>' is computed so that the ABC
-            frame is ortho-normal, with <i>x // A</i> and <i>'C'</i>
+            vectors are specified in <i>rlu</i> from the main
+            interface. The vector A is normalised [to get Angs<sup>-1</sup>],
+            the vector B is used to compute a 'vertical' axis <i>C = A
+              x B</i>, and then a vector <i>B</i>' is computed so that
+            the ABC frame is ortho-normal, with <i>x // A</i> and <i>'C'</i>
             vertical. The angle A3=&lt;Ki,A&gt;.<br>
           </li>
         </ul>
@@ -423,6 +427,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
         Ellipsoid (2D and Matrix)</span> or <span style="font-style:
         italic;">View/Resolution Ellipsoid (3D)</span> menu item. The 2D
       view also prints the resolution function, its projection (flat
@@ -436,6 +441,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
       is vertical, w.r.t the scattering plane, in the laboratory
       coordinate frame.<br>
       In the sample coordinate frame, <i><b>a*, b* </b>and<b> c* </b>and
+
 
 
 
@@ -477,6 +483,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
         A geometric representation of the TAS can be shown in real
         space, using the instrument configuration parameters. This view
         is generated from the <span style="font-style: italic;">View/Instrument
+
 
 
 
@@ -581,6 +588,7 @@ href="http://www.ill.eu/fr/instruments-support/instruments-groups/instruments/in
 
 
 
+
         <a href="http://www.mlz-garching.de/trisp">MLZ_TRISP</a>. You
         may add files in this location with your preferred
         configurations by just copying and renaming e.g. any <span
@@ -595,6 +603,7 @@ href="http://www.ill.eu/fr/instruments-support/instruments-groups/instruments/in
     The results can be saved using the <span style="font-style:
       italic;">'File/Save as...'</span> menu item. Enter a <span
       style="font-style: italic;">'.m'</span> or <i>'.ini' </i>filename,
+
 
 
 
@@ -699,6 +708,7 @@ href="http://www.ill.eu/en/instruments-support/computing-for-science/cs-software
     or<span style="font-style: italic;"> 'Popovici', </span>with a
     flavour <span style="font-style: italic;">'ResLib','ResCal'</span>,
     <i>'AFILL' </i> or<span style="font-style: italic;"> 'Res3' </span>as
+
 
 
 
@@ -1049,6 +1059,37 @@ src="http://ifit.mccode.org/images/Models_sqw_sine3d.png"
             Then, only the DHO line shape. <i>ab-initio</i> implies no
             (few) tunable parameter. </td>
         </tr>
+        <tr>
+          <td valign="top"><a
+              href="http://ifit.mccode.org/Models.html#mozTocId908192"><b>sqw_spinw</b></a></td>
+          <td valign="top">Spin-wave dispersion in HKL using <a
+              href="https://www.psi.ch/spinw/">SpinW</a>.</td>
+          <td valign="top"><font color="#33cc00">4D (HKLw)</font><br>
+            <a
+              href="file:///home/farhi/dev/iFit/Docs/images/Models_sqw_sine3d.png"><img
+                alt="sw" title="sw"
+                src="http://ifit.mccode.org/images/Models_sqw_spinw.png"
+                align="middle" border="0" width="100" height="73"></a></td>
+          <td valign="top">energy broadening, Temperature, Amplitude,
+            coupling parameters J...</td>
+        </tr>
+        <tr>
+          <td valign="top"><b><a
+                href="http://ifit.mccode.org/Models.html#mozTocId774280"><b>sqw_linquad</b></a>
+            </b></td>
+          <td valign="top">A phenomenological dispersion which can
+            describe an acoustic or optical mode. This model can be
+            considered as a local expansion in series of any dispersion.</td>
+          <td valign="top"><font color="#33cc00">4D (HKLw)</font>
+            <div align="center"><a
+                href="file:///home/farhi/dev/iFit/Docs/images/Models_sqw_linquad.png"><img
+                  alt="sqw_linquad" title="sqw_linquad"
+                  src="http://ifit.mccode.org/images/Models_sqw_linquad.png"
+                  align="right" border="0" width="100" height="75"></a></div>
+          </td>
+          <td valign="top">Energy and location of 'gap', slopes,
+            directions of slopes, DHO width, temperature, background</td>
+        </tr>
       </tbody>
     </table>
     <br>
@@ -1078,14 +1119,17 @@ src="http://ifit.mccode.org/images/Models_sqw_sine3d.png"
     particular its 4D convolution feature. The following features are
     envisaged:<br>
     <ul>
-      <li>Support polarisation analysis in the models.</li>
+      <li>Support polarisation analysis in the models. <br>
+      </li>
       <li>Support <a href="http://phonopy.sourceforge.net/">PhonoPy</a>
         <i>FORCE_SET </i>input and <a
           href="http://www.computingformaterials.com/">PHONON/VASP</a>
         HFFILE.</li>
       <li>Provide more <i>S(q,w)</i> phonons with the small
         displacement method (<a href="https://wiki.fysik.dtu.dk/ase/">ASE</a>,
-        LJ, Morse, LAMMPS, VASP, GPAW, AbInit)</li>
+        LJ, Morse, LAMMPS, VASP, GPAW, AbInit). Not done, but can be
+        improved in ASE.<br>
+      </li>
       <li>Provide more <i>S(q,w) </i>models, e.g. molecular dynamics
         trajectories (<a href="https://wiki.fysik.dtu.dk/ase/">ASE</a>,
         NAMD, Moldy, GROMACS, ...), using <i>nMoldyn/MDANSE</i> for
@@ -1095,14 +1139,16 @@ src="http://ifit.mccode.org/images/Models_sqw_sine3d.png"
       <li>Provide 2D <i>S(</i>|<i>q</i>|<i>,w)</i> models from e.g. <a
           href="https://t2.lanl.gov/nis/publications/thermal.pdf">NJOY/LEAPR</a>.</li>
       <li> Properly handle mode polarisation and line-width/amplitude
-        per branch in supplied models. Properly evaluate mode intensity.<br>
-      </li>
+        per branch in supplied models. Properly evaluate mode intensity.
+        Now done in sqw_phonons. </li>
       <li>Extend the methodology to diffraction and time-of-flight
         neutron scattering instruments.</li>
       <li>Faster 4D convolution using Gaussian integrals.</li>
       <li>Integrate <i>S(q,w)</i> for spin-waves from <a
-          href="http://www.psi.ch/spinw/">SpinW</a>. </li>
-      <li>Couple with Horace.<br>
+          href="http://www.psi.ch/spinw/">SpinW</a>. Now done, but would
+        require a better model editor.<br>
+      </li>
+      <li>Couple with Horace. Now partly done.<br>
       </li>
       <li>Support the resolution function/matrix estimate from <a
           href="http://www.mcstas.org">McStas</a> and <a
@@ -1193,8 +1239,10 @@ href="http://www.mathworks.com/matlabcentral/fileexchange/13844-plot-an-ellipse-
 
 
 
+
       See [<a href="../rescal.for">Fortran code</a>].<br>
       [2] N. J. Chesser and J. D. e, <span style="font-style: italic;">Acta
+
 
 
 
@@ -1220,6 +1268,7 @@ href="http://www.mathworks.com/matlabcentral/fileexchange/13844-plot-an-ellipse-
         italic;">Acta Cryst.</span> <b>1</b>, 303 (1948) [<a
         href="http://dx.doi.org/10.1107/S0365110X48000831">doi:10.1107/S0365110X48000831</a>].<br>
       [5] S. A. Werner and R. Pynn, <span style="font-style: italic;">J.
+
 
 
 
