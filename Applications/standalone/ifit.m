@@ -287,7 +287,9 @@ function inline_display_banner
   disp('   Matlab help is fully available at <http://www.mathworks.com/help/techdoc>.')
   disp('   Type ''exit'' or Ctrl-C to exit.');
   disp('** Applications:');
-  disp('   mifit (GUI), rescal (neutron TAS), sqw_phonons (Phonons/DFT), sqw_spinw (SpinW, sw)');
+  disp('   mifit (GUI), rescal (neutron TAS), sqw_phonons (Phonons/DFT), ');
+  disp('   sqw_spinw (SpinW, sw)');
+  disp([ '** Example data files: ' fullfile(ifitpath ,'Data') ]);
   if ispc
     disp('WARNING: Windows: file names containing spaces, such as "My Documents" ')
     disp('         are not well supported. Rename files or move directories.')
