@@ -49,50 +49,48 @@ function [h, xlab, ylab, ret] = iData_plot_1d(a, method, this_method, varargin)
       % with errorbar -> plot both with and without errorbar so that we can
       % hide the errorbar, retaining the data set only
       
-      % with new HandleGraphics, errorbars are single objects, not two separate
-      % lines. To be able to hide the errorbar, we also plot the line alone.
-
-      % the returned handle is the plot, and then any errorbar stuff (hidable)
-      hg = hggroup; h=[];
-      if length(this_method)
-        try
-          h = errorbar(x,y,e,this_method, varargin{:}, 'Parent',hg);
-          if ~strcmpi(get(h, 'Type'),'hggroup')
-            h = [ plot(x,y,this_method, varargin{:}, 'Parent',hg) h ];
-          end
-        catch
-          delete(h)
-          this_method=[]; % indicate we failed so that we try without line option
-        end
-      end
-      if ~length(this_method)
-        try
-          h = errorbar(x,y,e,varargin{:}, 'Parent',hg);
-          if ~strcmpi(get(h, 'Type'),'hggroup')
-            h = [ plot(x,y,varargin{:}, 'Parent',hg) h ];
-          end
-        catch
-          delete(h)
-          h = errorbar(x,y,e, varargin{:});
-        end
-      end
+      % Matlab <= 2014a:
+      % errorbar returns a hggroup. Its children are 2 'Line' objects.
       
-      % make sure the linespec of the single plot and errorbar coincide
-      if numel(h) > 1 
-        l  = findobj(h,'Type','line');
-        er = findobj(h,'Type','errorbar');
-        if ~isempty(er)
-          specs = {'LineStyle','','LineWidth','','Color', '', ...
-            'MarkerEdgeColor','','MarkerFaceColor','','MarkerSize','' };
-          specs_values = specs;
-          for index=1:numel(specs)
-            if ~isempty(specs{index})
-              specs_values{index+1} = get(l(1), specs{index});
-            end
-          end
-          set(er, specs_values{:});
+      % Matlab >= 2014b:
+      % with new HandleGraphics (HG2), errorbars are single objects, not two separate
+      % lines. To be able to hide the errorbar, we also plot the line alone.
+      
+      % we first call errorbar. If the result is a not an hggroup, but a single 
+      % Errorbar object, we set its LineStyle to None and plot separately the line.
+      % then we create an hggroup
+      h=[];
+      try
+        if ~isempty(this_method)
+          h = errorbar(x,y,e,this_method, varargin{:});
         end
       end
+      if isempty(h) % if errorbar(this_method) failed or no 'this_method'
+        h = errorbar(x,y,e, varargin{:});
+      end
+      % handle the HG2 case
+      if ishandle(h) && strcmp(get(h,'Type'), 'errorbar')
+        % HG2 errorbar
+        set(h,'LineStyle','none');  % we only keep the error bars
+        % we plot the line separately
+        h2=[];
+        hold on
+        try
+          if ~isempty(this_method)
+            h2 = plot(x,y,this_method, varargin{:});
+          end
+        end
+        if isempty(h2) % plot(this_method) failed or no 'this_method'
+          h2 = plot(x,y, varargin{:});
+        end
+        if ishandle(h2)
+          h = [h2 h];
+          hg = hggroup;
+          set(h, 'Parent', hg);
+          h = hg;
+        end
+      end % HG2 case
+      
       % option to hide errorbar
       if ~isempty(strfind(method, 'hide_err')) || all(abs(e) >= abs(y) | e == 0) % && numel(h) > 1
         eh = findobj(h,'Type','errorbar');

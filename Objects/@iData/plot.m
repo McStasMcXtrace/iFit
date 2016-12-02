@@ -199,8 +199,14 @@ zlab = '';
 if ~isempty(strfind(method,'update')) || ~isempty(strfind(method,'replace'))
   h = findall(0, 'Tag', [ mfilename '_' a.Tag ]);
   if ~isempty(h)
+    % search parent figure
     ax = get(h(1),'Parent');
-    figure(get(ax,'Parent'));
+    try
+        while ~strcmp(get(ax,'Type'),'figure')
+            ax = get(ax,'Parent');
+        end
+    end
+    figure(ax);
     delete(h);
   end
 elseif ~isempty(strfind(method,'figure'))
@@ -315,7 +321,7 @@ end
 if ~isempty(strfind(method,'transparent')) || ~isempty(strfind(method,'alpha'))
   alpha(0.7);
 end
-if ~isempty(strfind(method,'light'))
+if ~isempty(strfind(method,'light')) && isempty(findobj(gca,'Type','light'))
   light;
 end
 if ~isempty(strfind(method,'view2'))
@@ -379,20 +385,22 @@ if length(T) > 23, T=[ T(1:20) '...' ]; end
 if length(S)+length(d) < 30,
   d = [ d ' ' T ];
 end
-try
-  if ~isempty(d)
-    set(h, 'DisplayName', [ d ]);
-  else
-    set(h, 'DisplayName', [ T a.Tag ' <' S '>' ]);
-  end
-catch
-end
+
 
 % install the contextual menu
 iData_plot_contextmenu(a, h, xlab, ylab, zlab, T, S, d, cmd, mp, name);
 
+% assign some settings to graphics handles, including Children
+children = get(h,'Children');
+if ~isempty(strtrim(d)), displayname = d; else displayname=[ T a.Tag ' <' S '>' ]; end
+try
+  set(h , 'DisplayName', displayname);
+  set(children , 'DisplayName', displayname);
+end
+
 try
   set(h,   'Tag',  [ mfilename '_' a.Tag ]);
+  set(children,   'Tag',  [ mfilename '_' a.Tag ]);
 end
 set(gcf, 'Name', char(a));
 
@@ -413,7 +421,7 @@ if (strfind(method,'legend'))
   legend(h);
 end
 
-% this plot should display model Parameters
+% display model value if available
 if isa(mv, 'iData') && ~isempty(mv) && ndims(mv) <= 2
   hold on
   axis(axis); % fix plot limits
