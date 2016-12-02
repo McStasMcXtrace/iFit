@@ -4,7 +4,8 @@ function mifit_Models_View_Parameters_Edit(source, event)
 
 if nargin < 2, return; end
 if isempty(source)   || isempty(event),   return; end
-if ~ishandle(source) || ~isstruct(event), return; end
+if ~ishandle(source) || (~isstruct(event) && ~isobject(event))
+  return; end
 if ~strcmpi(get(source,'Type'),'uitable'), return; end
 
 % test if data changed, else return
@@ -40,7 +41,7 @@ elseif ~isempty(getappdata(mifit_fig, 'CurrentModel'))
   model = getappdata(mifit_fig, 'CurrentModel');
   handle= getappdata(mifit_fig, 'CurrentModelHandle');
 end
-  
+model
 if isempty(model), return; end
 
 % check if the initial table has empty slots (which should then be converted to NaN or 0)
