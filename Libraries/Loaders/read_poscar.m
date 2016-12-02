@@ -15,7 +15,7 @@ function s = read_poscar(filename)
   s = import_poscar(filename);
 
 
-
+end
 
 % http://www.mathworks.com/matlabcentral/fileexchange/36836-vasplab/content/vasplab/import_poscar.m
 function [ geometry ] = import_poscar( filename )
