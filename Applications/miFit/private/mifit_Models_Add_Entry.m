@@ -53,7 +53,7 @@ function handle = mifit_Models_Add_Entry(model)
   elseif ~isa(model, 'iFunc')
     mifit_disp([ '[Models_Add_Entry] Invalid Model type ' class(model) '. Must be iFunc/cell/char/struct with "callback" member. Skipping.' ]);
   end
-  
+
   % determine the dimensionality
   if isa(model, 'iFunc') && ~isempty(model)
     dim      = model.Dimension;
@@ -103,7 +103,7 @@ function handle = mifit_Models_Add_Entry(model)
     mifit_disp([ '[Models_Add_Entry] ' label ' is already in the list of usable Models. Skipping.' ]);
     return; 
   end
-    
+
   handle = uimenu(submenu_handle, 'Label', label, 'UserData', callback, ...
                 'CallBack', 'mifit(''Data_AssignModel'',gcbo)');
                 
