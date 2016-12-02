@@ -5,7 +5,7 @@ function stop=mifit_Models_View_Parameters(varargin)
   % [ Parameters | ParameterValues | ParameterUncertainty | constraints.fixed | constraints.min | constraints.max ]
   
   persistent cache
-  
+
   if isempty(cache) || ~isstruct(cache)
     cache.numPars = 0;
     cache.modelTag='';
@@ -26,6 +26,9 @@ function stop=mifit_Models_View_Parameters(varargin)
       mifit_Models_View_Parameters_Histograms;
       return
     end
+  elseif nargin == 1 && ishandle(varargin{1})
+    stop = mifit_fig('mifit_View_Parameters');
+    if ~isempty(stop), figure(stop); end
   elseif nargin == 1 && isnumeric(varargin{1}) && ~all(ishandle(varargin{1}))
     % quick update of the 'Value' column with the given parameter vector
     Parameters = varargin{1};
