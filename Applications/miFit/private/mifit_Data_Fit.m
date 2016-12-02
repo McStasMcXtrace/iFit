@@ -83,6 +83,17 @@ function mifit_Data_Fit(varargin)
       mifit_disp(' Correlation matrix (non diagonal terms indicate non-independent parameters):', true)
       mifit_disp(corr, true);
     end
+    
+    % update plot
+    % evaluate model with its parameters (Edit) and Data set axes
+    model = this_d.Model;
+    if model.Duration < 0.5
+      % update plot, if found
+      h = mifit_fig([ 'plot_' d.Tag ]);
+      if ~isempty(h)
+        plot(this_d,'light transparent grid tight replace');
+      end
+    end
   end
   
   % show results for the 1st fit/dataset
@@ -103,3 +114,4 @@ function mifit_Data_Fit(varargin)
     mifit_Models_View_Parameters('histograms');
   end
   set(mifit_fig,'Pointer','arrow');
+  
