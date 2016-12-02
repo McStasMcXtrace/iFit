@@ -197,7 +197,8 @@ zlab = '';
 
 % replace/update existing plot
 if ~isempty(strfind(method,'update')) || ~isempty(strfind(method,'replace'))
-  h = findall(0, 'Tag', [ mfilename '_' a.Tag ]);
+  h = [ findall(0, 'Tag', [ 'iData_plot_' a.Tag ]) ...
+        findall(0,'Tag', [ 'iData_plot_' a.Tag '_contextmenu_object' ]) ];
   if ~isempty(h)
     % search parent figure
     ax = get(h(1),'Parent');
