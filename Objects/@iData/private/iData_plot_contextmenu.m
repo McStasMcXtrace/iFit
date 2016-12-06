@@ -77,8 +77,14 @@ ud.handle = h;
 % contextual menu for the single object being displayed
 % internal functions must be avoided as it uses LOTS of memory
 
+
+try
+    index1 = findobj(get(h,'Children'),'Tag',[ 'iData_plot_' a.Tag '_contextmenu_object' ]);
+catch
+    index1 = [];
+end
 index = [ findobj(h,'Tag',[ 'iData_plot_' a.Tag '_contextmenu_object' ]) ...
-          findobj(get(h,'Children'),'Tag',[ 'iData_plot_' a.Tag '_contextmenu_object' ]) ...
+          index1 ...
           findobj(gcf,'Tag',[ 'iData_plot_' a.Tag '_contextmenu_object' ]) ];
 
 % check if a context menu is already attached
@@ -144,7 +150,9 @@ if all(isempty(index))
   
   % set the menu also inside group objects
   try
-    h = get(h,'Children');
+    if strcmp(get(h,'Type'),'hggroup')
+      h = get(h,'Children');
+    end
   catch
     h = [];
   end

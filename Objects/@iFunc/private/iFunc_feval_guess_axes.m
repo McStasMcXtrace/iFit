@@ -72,7 +72,7 @@ check_numel  = cellfun(@numel, ax(1:model.Dimension));
 % check orientation (axis rank) for vectors. 0 for non vectors
 check_orient = zeros(1,model.Dimension);
 index        = find(check_vector);
-check_orient(index) = cellfun(@(c)find(size(c)==numel(c)), ax(index));
+check_orient(index) = cellfun(@(c)min(find(size(c)==numel(c))), ax(index));
 
 if model.Dimension > 1 && all(check_vector) ...
   && all(check_numel  == check_numel(1) | check_numel == 1) ...

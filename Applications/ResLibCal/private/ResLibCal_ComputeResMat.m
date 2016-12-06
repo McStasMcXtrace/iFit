@@ -168,11 +168,11 @@ function res= ResLibCal_ComputeResMat_Single(EXP, h,k,l,w)
       [sample,rsample]=GetLattice(EXP);
       res.Q=modvec(h,k,l,rsample);
       disp([ datestr(now) ': ' mfilename ': ' func2str(method) ': KI,KF,Q triangle will not close (kinematic equations). ' ]);
-      disp('  Change the value of KFIX,FX,QH,QK,QL or W.');
+      disp('  Change the value of KFIX,FX,QH,QK,QL or W. Here is [H K L W Ki Kf QM]');
       if (res.Q < .5)
         disp('  Try an other equivalent Bragg peak further in the reciprocal lattice.');
       end
-      disp([ h k l w])
+      disp([ h k l w EXP.ki EXP.kf res.Q])
     end
     
 % ------------------------------------------------------------------------------
