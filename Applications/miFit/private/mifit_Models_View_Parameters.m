@@ -26,7 +26,7 @@ function stop=mifit_Models_View_Parameters(varargin)
       mifit_Models_View_Parameters_Histograms;
       return
     end
-  elseif nargin == 1 && ishandle(varargin{1})
+  elseif nargin == 1 && numel(varargin{1}) == 1 && ishandle(varargin{1})
     stop = mifit_fig('mifit_View_Parameters');
     if ~isempty(stop), figure(stop); end
   elseif nargin == 1 && isnumeric(varargin{1}) && ~all(ishandle(varargin{1}))
@@ -122,6 +122,7 @@ function stop=mifit_Models_View_Parameters(varargin)
 
     % and trigger other updates (create all)
     resize                = 2;
+    created               = true;
     data_or_model_changed = 1;
     % add contextual menu
     uicm = uicontextmenu('Parent',f); 
@@ -144,6 +145,7 @@ function stop=mifit_Models_View_Parameters(varargin)
     % different update levels:
     %   resize table when numel(Parameters) change
     resize = (n ~= cache.numPars);
+    created               = false;
     %   update content when model.Tag or d.Tag has changed                 
     data_or_model_changed = (~isempty(d) && ~strcmp(cache.dataTag, d.Tag)) ...
       || ~strcmp(cache.modelTag, model.Tag);   
@@ -158,7 +160,7 @@ function stop=mifit_Models_View_Parameters(varargin)
     % height is given by the number of fields. Add 1 for the header line.
     height    = (n+1)*TextHeight;
     % width is given by the length of the longest RowName
-    width     = ones(1,numCol+1)*5;
+    width     = ones(1,numCol+1)*10;
     width(1)  = max(cellfun(@numel,strtok(model.Parameters)));
     width     = width*TextWidth;
     options.ColumnWidth = mat2cell(width, 1, ones(1,numCol+1,1));
@@ -168,8 +170,8 @@ function stop=mifit_Models_View_Parameters(varargin)
     if resize > 1, p(3) = sum(width); end
     p(4) = height;
     set(f, 'Position',p);
-    % resize the window only t creation
-    if resize> 1, set(t, 'ColumnWidth', options.ColumnWidth); end
+    % resize the window only at creation
+    if created, set(t, 'ColumnWidth', options.ColumnWidth); end
   end
   
   % things to update -------------------------------------------------------------
