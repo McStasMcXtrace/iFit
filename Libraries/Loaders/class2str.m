@@ -207,7 +207,9 @@ NL  = sprintf('\n');
 
 if ischar(data)
   str = [ '''' class2str_validstr(data) '''' ];
-elseif isobject(data)
+elseif numel(data) == 1 && ishandle(data)
+    % ignore
+elseif isobject(data) && numel(data) == 1
     str = [ str class(data) '(' class2str_eval(struct(data)) ')' ];
 elseif isnumeric(data)
   if ndims(data) <= 2, str = mat2str(data); end
