@@ -41,7 +41,7 @@ elseif ~isempty(getappdata(mifit_fig, 'CurrentModel'))
   model = getappdata(mifit_fig, 'CurrentModel');
   handle= getappdata(mifit_fig, 'CurrentModelHandle');
 end
-model
+
 if isempty(model), return; end
 
 % check if the initial table has empty slots (which should then be converted to NaN or 0)
