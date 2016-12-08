@@ -15,7 +15,7 @@ if isempty(fig) || ~ishandle(fig)
     % load Preferences
     mifit_Preferences_Load;
     config=mifit_Preferences_Apply;
-    pause
+
     % create the AppData default values
     setappdata(fig, 'Data',    []);
     setappdata(fig, 'History', {});
