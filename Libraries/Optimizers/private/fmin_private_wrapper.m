@@ -682,7 +682,15 @@ if strcmp(options.Display,'final') || strcmp(options.Display,'iter') ...
     % correlated parameters
     corr = output.parsHessianCorrelation;
     nb_true_independent_parameters = sum(1./sum(corr.^2));
-    disp([ ' Estimated number of independent parameters: ' num2str(nb_true_independent_parameters) ])
+    n_free = numel(pars);
+    if isfield(constraints, 'fixed')  % fix some parameters
+    constraints.fixed
+      n_free = n_free - numel(find(constraints.fixed & ~isnan(constraints.fixed)));
+    end
+    if n_free > ceil(nb_true_independent_parameters*1.2)+1
+      warn = [ '. WARNING: too many parameters (' num2str(numel(n_free)) ') in problem' ]; 
+    else warn = ''; end
+    disp([ ' Estimated number of independent parameters: ' num2str(nb_true_independent_parameters) warn ])
     disp(' Correlation matrix (non diagonal terms indicate non-independent parameters):')
     disp(corr)
   end
