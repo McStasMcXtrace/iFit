@@ -84,8 +84,11 @@ catch
     index1 = [];
 end
 index = [ findobj(h,'Tag',[ 'iData_plot_' a.Tag '_contextmenu_object' ]) ...
-          index1 ...
           findobj(gcf,'Tag',[ 'iData_plot_' a.Tag '_contextmenu_object' ]) ];
+try
+    index1 = findobj(get(h,'Children'),'Tag',[ 'iData_plot_' a.Tag '_contextmenu_object' ]);
+    index = [ index index1 ];
+end
 
 % check if a context menu is already attached
 if all(isempty(index))

@@ -23,6 +23,8 @@ function out = load(a, varargin)
 %     file://, ftp://, http:// and https://
 %   File names may end with an internal anchor reference '#anchor", as used in HTML 
 %     links, in which case the members matching the anchor are returned.
+%   The list of supported formats to create iData objects is obtained with:
+%     load(iData,'formats')
 %
 %  Type <a href="matlab:doc(iData,'Load')">doc(iData,'Load')</a> to access the iFit/Load Documentation.
 %

@@ -5,6 +5,8 @@ function out = load(a, filename)
 %   The input argument 'file' should be a file name or empty (then popup a file selector).
 %
 %   Default supported formats include: MAT, M, YAML, JSON, XML format holding a model (iFunc/save)
+%   The list of supported formats to create iFunc objects is obtained with:
+%     load(iFunc,'formats')
 %
 % input:  s: object (iFunc)
 %         file: file name(s) to import (char/cellstr)
@@ -28,7 +30,19 @@ function out = load(a, filename)
       '*.mat', 'SpinW object stored into a Matlab binary file (*.mat)'; ...
       '*.xml','XML file (*.xml)'; ...
       '*.yaml;*.yml','YAML interchange format (*.yaml)' };
-  
+
+  if strcmp(filename, 'formats')
+    fprintf(1, '       EXT  DESCRIPTION [%s(iFunc)]\n', mfilename);
+    fprintf(1, '-----------------------------------------------------------------\n'); 
+    for index=1:size(filterspec,1)
+      ext = upper(filterspec{index,1});
+      ext = strrep(ext,'.','');
+      ext = strrep(ext,'*','');
+      fprintf(1,'%10s  %s \n', ext, filterspec{index,2});
+    end
+    out = filterspec;
+    return
+  end
   if isempty(filename)
     % pop-up  GUI to select a Model file
     [filename, pathname, filterindex] = uigetfile( ...
