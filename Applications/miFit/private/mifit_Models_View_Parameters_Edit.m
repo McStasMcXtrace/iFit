@@ -85,6 +85,8 @@ if ~isempty(d)
     if ~isempty(h)
       plot(d,'light transparent grid tight replace');
     end
+    % and put back focus to the Parameter Window
+    figure(mifit_fig('mifit_View_Parameters'));
   end
   
   D     = getappdata(mifit_fig, 'Data');  % all data sets
