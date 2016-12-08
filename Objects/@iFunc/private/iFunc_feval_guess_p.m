@@ -125,10 +125,20 @@ if model.Dimension && ...
         % moments of distributions
         m1 = @(x,s) sum(s(:).*x(:))/sum(s(:));
         m2 = @(x,s) sqrt(abs( sum(x(:).*x(:).*s(:))/sum(s(:)) - m1(x,s).^2 ));
-        if n > 0 && length(ax) >= n
-          p2 = feval(model.Guess, ax{1:n}); % returns model vector
+        if n == ndims(model)+2
+            % syntax Guess: @(p,x,y,... signal)
+            if n > 0 && length(ax) >= n
+              p2 = feval(model.Guess, p, ax{1:n+1}); % returns model vector
+            else
+              p2 = feval(model.Guess, p, ax{:}); % returns model vector
+            end
         else
-          p2 = feval(model.Guess, ax{:}); % returns model vector
+            % syntax Guess: @(x,y,... signal)
+          if n > 0 && length(ax) >= n
+            p2 = feval(model.Guess, ax{1:n}); % returns model vector
+          else
+            p2 = feval(model.Guess, ax{:}); % returns model vector
+          end
         end
       catch ME
         disp([ mfilename ': Guess: ' ME.message ])
