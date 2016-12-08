@@ -1,5 +1,5 @@
-function config=mifit_Apply_Preferences(config)
-% [internal] mifit_Apply_Preferences: apply Preferences after load, from default 
+function config=mifit_Preferences_Apply(config)
+% [internal] mifit_Preferences_Apply: apply Preferences after load, from default 
 %   or specified config structure
 %   This function also handles User menus from the Preferences
 
@@ -105,7 +105,7 @@ function config=mifit_Apply_Preferences(config)
       end
     end
   end
-  if flag_added_new_menu
+  if flag_added_new_menu && 0
     % move the help menu to the right side
     menu_help  = findobj(fig, 'Tag','Menu_Help');
     right_help = copyobj(menu_help, fig);
