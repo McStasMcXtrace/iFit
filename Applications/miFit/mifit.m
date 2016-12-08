@@ -312,7 +312,7 @@ function mifit_File_Reset(varargin)
       file = fullfile(prefdir, [ mfilename '.ini' ]);
       if ~isempty(dir(file)), delete(file); end
       mifit_Preferences_Load();
-      mifit_Preferences_Save();
+      % mifit_Preferences_Save();
       setappdata(mifit_fig, 'Models',[]);
       setappdata(mifit_fig, 'Optimizers',[]);
       file = fullfile(prefdir, [ mfilename '.mat' ]);
@@ -474,12 +474,15 @@ function mifit_Data_Eval_Model(varargin)
   end
   mifit_disp([ '[Data Eval Model] evaluating Model value for data sets ...' ]);
   for index=1:numel(d)
-    this = d(index);
+    if numel(d) == 1, this = d; else this = d(index); end
     if iscell(model) && index <= numel(model) && ~isempty(model{index})
-      modelValue = this(model{index});  % eval iFunc
+      this_model = model{index};
+      modelValue = this(this_model);  % eval iFunc
       this = set(this, 'ModelValue', modelValue);
-      if numel(d) == 1, d=this; 
-      else d(index) = this; end
+      this = set(this, 'Model',      modelValue.Model);
+      mifit_disp(char(this))
+      mifit_disp([ '  [ ' num2str(modelValue.Model.ParameterValues(:)') ' ]' ]);
+      if numel(d) == 1, d=this; else d(index) = this; end
     end
   end
   mifit_List_Data_push(d, 'replace');  % replace existing data sets
@@ -806,6 +809,24 @@ function mifit_Help_Main(varargin)
   
 function mifit_Help_Loaders(varargin)
 % Help/Loaders: open web page Loaders
+  disp(' ');
+  data1 = iLoad('formats');
+  disp(' ');
+  data2 = save(iData, 'formats');
+  disp(' ');
+  data3 = save(iFunc, 'formats');
+  disp(' ');
+  if isfield(data1, 'loaders')
+    mifit_disp([ '[Help] Data loaders:   ' num2str(numel(data1.loaders)) ' formats' ]);
+  end
+  
+  if size(data2,1) > 1
+    mifit_disp([ '[Help] Data exporters: ' num2str(size(data2,1)) ' formats' ]);
+  end
+  
+  if size(data3,1) > 1
+    mifit_disp([ '[Help] Model exporters:' num2str(size(data3,1)) ' formats' ]);
+  end
   doc(iData,'Loaders');
   
 function mifit_Help_Models(varargin)

@@ -15,7 +15,7 @@ if isempty(fig) || ~ishandle(fig)
     % load Preferences
     mifit_Preferences_Load;
     config=mifit_Preferences_Apply;
-    
+    pause
     % create the AppData default values
     setappdata(fig, 'Data',    []);
     setappdata(fig, 'History', {});
@@ -35,7 +35,7 @@ if isempty(fig) || ~ishandle(fig)
     for index=1:numel(contrib)
       mifit_disp([ '  ' contrib{index} ])
     end
-    
+
     % get the list of Models and Optimizers
     models = []; d=[];
     file = fullfile(prefdir, [ 'mifit' '.mat' ]);
@@ -131,7 +131,7 @@ if isempty(fig) || ~ishandle(fig)
     % start Logging
     file = fullfile(prefdir, [ 'mifit' '.log' ]);
     mifit_disp([ '[Init] Log file is ' file ]);
-    
+
     % initialize Java hooks and activate Drag-n-Drop from external source (files, text)
     if ~(exist('org.yaml.snakeyaml.Yaml','class') == 8)
       javaaddpath(YAML.JARFILE);
@@ -141,7 +141,7 @@ if isempty(fig) || ~ishandle(fig)
       dndcontrol.initJava;
     end
     dndcontrol(hObject,@mifit,@mifit);
-    
+
     % activate Drag-n-Drop from the List to other Matlab windows
     % set(fig,'windowbuttonupfcn',  'disp(''up in:''); get(0,''pointerwindow'')')
     % set(fig,'windowbuttondownfcn','disp(''down in:''); get(0,''pointerwindow'')')
