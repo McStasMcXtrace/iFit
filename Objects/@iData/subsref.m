@@ -71,6 +71,7 @@ for i = 1:length(S)     % can handle multiple index levels
         if strcmp(pars,'guess')
           [modelValue, model, ax, name] = feval(model, modelValue, b, s.subs{2:end});
         end
+        pars = model.ParameterValues; % either initial or guessed parameters
         dm=iData_getAliasValue(b,'Monitor');
         if not(all(dm == 1 | dm == 0)) % fit(signal/monitor) 
           modelValue    = bsxfun(@times,modelValue(:), dm(:));
@@ -78,13 +79,12 @@ for i = 1:length(S)     % can handle multiple index levels
             modelValue = reshape(modelValue, size(dm));
           end
         end
-        
-        setalias(b,'Parameters', pars, [ model.Name ' model parameters for ' b.Title ]);
+        b=setalias(b,'Parameters', pars, [ model.Name ' model parameters for ' b.Title ]);
         b.Title = [ model.Name '(' char(b) ')' ];
         b.Label = b.Title;
         b.DisplayName = b.Title;
-        setalias(b, 'Model', model, model.Name);
-        setalias(b, 'ModelValue', modelValue, model.Name);
+        b=setalias(b, 'Model', model, model.Name);
+        b=setalias(b, 'ModelValue', modelValue, model.Name);
         
         setalias(b,'Error', 0);
         setalias(b,'Signal', 'ModelValue');
