@@ -83,9 +83,9 @@ Parameters{end+1} = 'BackGround';
 y.Parameters = Parameters;
 
 Expression  = @(p,x) p(1)*exp(-0.5*((x-p(2))/p(3)).^2); % single function to use as template
-y.Expression = '@(p,x) lorz(p(1:3),x)';
+y.Expression = '@(p,x) lorz([p(1:3) 0],x)';
 for index=2:n
-  y.Expression = [ y.Expression sprintf('+lorz(p(%i:%i),x)', 3*index-2, 3*index) ];
+  y.Expression = [ y.Expression sprintf('+lorz([p(%i:%i) 0],x)', 3*index-2, 3*index) ];
 end
 y.Expression = [ y.Expression sprintf('+p(%i)',3*n+1) ];
 
