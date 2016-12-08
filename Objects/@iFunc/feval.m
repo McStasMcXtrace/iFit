@@ -158,7 +158,7 @@ if ~isempty(varargin)
     % feval(model, p, struct('Axes','Signal'), ...)
     Signal = {};
     if isfield(this,'Signal')  
-      Signal  = this.Signal;
+      Signal  = getaxis(this,0);
       if isfield(this,'Monitor') && ~isa(this, 'iData')
         try
           Signal  = bsxfun(@rdivide,Signal, this.Monitor);
