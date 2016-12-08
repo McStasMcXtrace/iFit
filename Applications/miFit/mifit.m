@@ -12,15 +12,15 @@ function varargout = mifit(varargin)
 % Version: $Date$
 % (c) E.Farhi, ILL. License: EUPL.
 
-%  function config = mifit_Load_Preferences
-%  function mifit_Save_Preferences(config)
+%  function config = mifit_Preferences_Load
+%  function mifit_Preferences_Save(config)
 %  function mifit_File_New(handle)
 %  function mifit_File_Open(handle)
 %  function mifit_File_Save(varargin)
 %  function mifit_File_Saveas(varargin)
 %  function mifit_File_Print(varargin)
 %  function mifit_File_Preferences(varargin)
-%  function mifit_Apply_Preferences
+%  function mifit_Preferences_Apply
 %  function mifit_File_Exit(varargin)
 %  function mifit_File_Reset(varargin)
 %  function mifit_File_Log(varargin)
@@ -58,10 +58,9 @@ function varargout = mifit(varargin)
     else set(fig, 'NextPlot','new','HandleVisibility','callback');
     end
     out = fig;
-
     if ~isempty(varargin)
         if nargin == 2 && isa(varargin{1}, 'dndcontrol') && isstruct(varargin{2})
-          % called as a callback/event from Drag-n-Drop (import external file/text)
+          % ** Drag-n-Drop: called as a callback/event from Drag-n-Drop (import external file/text)
           evt = varargin{2};
           switch evt.DropType
           case 'file'
@@ -74,7 +73,7 @@ function varargout = mifit(varargin)
           end
         elseif ischar(varargin{1}) && isempty(dir(varargin{1})) ...
           && ~any(strncmp(varargin{1}, {'http:','ftp:/','file:','https'}, 5)) % a function/action to call ?
-          % callback with varargin{1} == 'action'
+          % ** ACTION: callback with varargin{1} == 'action'
           action = varargin{1};
           if strcmpi(action,'identify'), varargout{1} = []; return; end
           if any(strcmpi(action,{'data'}))
@@ -139,12 +138,12 @@ function varargout = mifit(varargin)
               % test if we import a config.ini file
               if isempty(d)
                 try
-                  config1 = mifit_Load_Preferences(file);
+                  config1 = mifit_Preferences_Load(file);
                 catch
                   config1 = [];
                 end
                 if ~isempty(config1)
-                  mifit_Apply_Preferences(config1);
+                  mifit_Preferences_Apply(config1);
                   % and merge with existing config
                   return
                 end
@@ -250,7 +249,7 @@ function mifit_File_Preferences(varargin)
 % save Preferences on dialogue close
   fig = mifit_fig;
   config = getappdata(mifit_fig, 'Preferences');
-  % defaults are set when calling Load_Preferences at OpeningFcn (main/startup)
+  % defaults are set when calling Preferences_Load at OpeningFcn (main/startup)
   options.Name       = [ mfilename ': Preferences' ];
   options.ListString = {'FontSize Font size [10-36]', ...
     'Save_Data_On_Exit Save Data sets on Exit [yes/no]', ...
@@ -273,8 +272,8 @@ function mifit_File_Preferences(varargin)
   config.Position = get(fig,'Position');
   
   setappdata(mifit_fig, 'Preferences', config);
-  mifit_Apply_Preferences;
-  mifit_Save_Preferences(config);
+  mifit_Preferences_Apply;
+  mifit_Preferences_Save(config);
 
 function mifit_File_Exit(varargin)
 % File/Exit: Quit and Save Data
@@ -283,7 +282,7 @@ function mifit_File_Exit(varargin)
   % save the window size and location
   set(mifit_fig,'Units','pixels');
   config.Position = get(mifit_fig,'Position');
-  mifit_Save_Preferences(config);
+  mifit_Preferences_Save(config);
   
   if isfield(config, 'Save_Data_On_Exit') && strcmp(config.Save_Data_On_Exit, 'yes')
     mifit_File_Save;
@@ -312,8 +311,8 @@ function mifit_File_Reset(varargin)
     if ~strcmp(ButtonName, 'Reset') % Factory settings
       file = fullfile(prefdir, [ mfilename '.ini' ]);
       if ~isempty(dir(file)), delete(file); end
-      mifit_Load_Preferences();
-      mifit_Apply_Preferences();
+      mifit_Preferences_Load();
+      mifit_Preferences_Save();
       setappdata(mifit_fig, 'Models',[]);
       setappdata(mifit_fig, 'Optimizers',[]);
       file = fullfile(prefdir, [ mfilename '.mat' ]);
@@ -665,7 +664,11 @@ function mifit_Models_Export(varargin)
     'Name','miFit: Select Models to Export', 'ListSize',[400 160]);
   if isempty(selection) || ok ~= 1, return; end
   % pop-up the iFunc.save export dialogue
-  save(ifuncs(selection),'gui');
+  if numel(ifuncs) == 1
+    save(ifuncs,'gui');
+  else
+    save(ifuncs(selection),'gui');
+  end
   
 function mifit_Models_Remove(varargin)
 % Models/Remove: clear user models

@@ -155,7 +155,12 @@ function [data, format] = iLoad(filename, loader, varargin)
     disp([ '% Loaded iLoad format descriptions from ' config.FileName ]);
     return
   elseif strcmp(loader, 'formats') || strcmp(loader, 'display config')  || strcmp(loader, 'list')
-    data = iLoad('','load config');
+
+    if ~isempty(filename)
+      data    = iLoad(filename, 'load config');
+    else
+      data = iLoad('','load config');
+    end
     fprintf(1, ' EXT                    READER  DESCRIPTION [%s]\n', mfilename);
     fprintf(1, '-----------------------------------------------------------------\n');  
     for index=1:length(data.loaders)
@@ -182,9 +187,6 @@ function [data, format] = iLoad(filename, loader, varargin)
       end
     end
     disp([ '% iLoad configuration file: ' config.FileName ]);
-    if ~isempty(filename)
-      data    = iLoad(filename, 'load config');
-    end
     return
   elseif any(strcmp(loader, {'save config','save'}))
     if isempty(filename) || nargin == 1

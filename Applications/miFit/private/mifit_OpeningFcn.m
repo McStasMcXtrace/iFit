@@ -13,8 +13,8 @@ if isempty(fig) || ~ishandle(fig)
     hoptim  = mifit_fig('Menu_Optimizers');
     
     % load Preferences
-    mifit_Load_Preferences;
-    config=mifit_Apply_Preferences;
+    mifit_Preferences_Load;
+    config=mifit_Preferences_Apply;
     
     % create the AppData default values
     setappdata(fig, 'Data',    []);
@@ -81,12 +81,16 @@ if isempty(fig) || ~ishandle(fig)
             else
                 algorithm = f{1};
             end
+            algorithm = strtrim(algorithm);
             if ~isempty(algorithm)
-              % TODO: must add callback to assign optimizer
-              uimenu(hoptim, 'Label', algorithm, 'UserData', f{1}, ...
-                'Callback', 'mifit(''Optimizers_Set'',gcbo);', ...
-                'separator', separator);
-              separator = 'off';
+              % search if this entry already exists
+              item_handle = findobj(hoptim, 'Type','uimenu', 'Label', algorithm);
+              if isempty(item_handle)
+                uimenu(hoptim, 'Label', algorithm, 'UserData', f{1}, ...
+                  'Callback', 'mifit(''Optimizers_Set'',gcbo);', ...
+                  'separator', separator);
+                separator = 'off';
+              end
             end
         end
     end

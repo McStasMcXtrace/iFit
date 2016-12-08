@@ -1,4 +1,4 @@
-function config = mifit_Load_Preferences(file)
+function config = mifit_Preferences_Load(file)
 % File/Load Preferences
   if nargin == 0, file = []; end
   if isempty(file)
