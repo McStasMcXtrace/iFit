@@ -151,15 +151,34 @@ if isFa && isFb
 
   c.Guess=Guess; clear Guess
   
-  % append UserData
-  if ~isempty(a.UserData) && ~isempty(b.UserData)
-    c.UserData.a=a.UserData;
-    c.UserData.b=b.UserData;
-  elseif ~isempty(a.UserData)
-    c.UserData=a.UserData;
-  else
-    c.UserData=b.UserData;
-  end
+  % store UserData
+  c.UserData.(tmp_a)=a.UserData;
+  c.UserData.(tmp_b)=b.UserData;
+  
+  % set expressions to store, set and reset parameters/UserData
+  string.head = [ ...
+    sprintf('%s_p          = p(%i:%i); %% store 1st object parameters\n', tmp_a, i1a, i2a), ...
+    sprintf('%s_p          = p(%i:%i); %% store 2nd object parameters\n', tmp_b, i1b, i2b), ...
+    sprintf('%s_UserData   = this.UserData.%s; %% store 1st object UserData\n', tmp_a, tmp_a), ...
+    sprintf('%s_UserData   = this.UserData.%s; %% store 2nd object UserData\n', tmp_b, tmp_b), ...
+    sprintf('p             = %s_p; %% get 1st object parameters\n', tmp_a), ...
+    sprintf('this.UserData = %s_UserData; %% get 1st object UserData\n', tmp_a), ...
+  ];
+  
+  string.core = [ ...
+    sprintf('%s_p          = p; %% update 1st object parameters\n', tmp_a), ...
+    sprintf('%s_UserData   = this.UserData; %% update 1st object UserData\n', tmp_a), ...
+    sprintf('p             = %s_p; %% get 2nd object parameters\n', tmp_b), ...
+    sprintf('this.UserData = %s_UserData; %% get 2nd object UserData\n', tmp_b), ...
+  ];
+  
+  string.tail = [ ...
+    sprintf('%s_p          = p; %% update 2nd object parameters\n', tmp_b), ...
+    sprintf('%s_UserData   = this.UserData; %% update 2nd object UserData\n', tmp_b), ...
+    sprintf('p = [ %s_p(:) ; %s_p(:) ]; %% upgrade whole parameters\n', tmp_a, tmp_b), ...
+    sprintf('this.UserData.%s = %s_UserData;\n', tmp_a, tmp_a), ...
+    sprintf('this.UserData.%s = %s_UserData;\n', tmp_b, tmp_b), ...
+  ];
   
   % append Description and Name
   if isempty(a.Description), a.Description = sprintf('%iD', ndims(a)); end
@@ -188,12 +207,11 @@ if isFa && isFb
   else
     % append Constraint: 1st
     c.Constraint.eval = [ ...
-      sprintf('%s_p = p; %% store the whole parameter values\n'  , tmp_a), ... % full parameter vector
-      sprintf('p=%s_p(%i:%i); %% evaluate 1st constraint for %s\n', tmp_a, i1a, i2a, op), ...
+      string.head, ...
       a.Constraint.eval, ...
-      sprintf('%s_p(%i:%i)=p; %% updated parameters\n', tmp_a, i1a, i2a) ];
+      string.core ];
       
-    % handle dimensionality expansion
+    % handle dimensionality expansion (orthogonal)
     if any(strcmp(op, {'mpower','mtimes','mrdivide'}))
       ax = 'xyztuvw';
       % store inital axes definitions
@@ -208,10 +226,8 @@ if isFa && isFb
     
     % append Constraint: 2nd
     c.Constraint.eval = [ c.Constraint.eval, ...
-      sprintf('p=%s_p(%i:%i); %% evaluate 2nd constraint for %s\n', tmp_a, i1b, i2b, op)
       b.Constraint.eval, ...
-      sprintf('%s_p(%i:%i)=p; %% updated parameters\n', tmp_a, i1b, i2b), ...
-      sprintf('p=%s_p; %% restore initial parameter values\n'  , tmp_a) ];
+      string.tail ];
     % restore initial axes definitions
     if any(strcmp(op, {'mpower','mtimes','mrdivide'}))
       for index=1:c.Dimension
@@ -241,18 +257,20 @@ if isFa && isFb
   end
   
   % append Guess ==========================================================
-  if ~isempty(a.Guess) && ~isempty(b.Guess)
+  if isempty(c.Guess) && ~isempty(a.Guess) && ~isempty(b.Guess)
     % append Guess: 1st
-    if strncmp(a.Guess(1:2),'p=',2) % 'a' is already the result of a binary operation
+    if strncmp(strtrim(a.Guess(1:2)),'p=',2) % 'a' is already the result of a binary operation
       c.Guess = [ ...
+        string.head, ...
         sprintf('%s; %% evaluate 1st guess for %s\n', a.Guess, op), ...
-        sprintf('%s_p(%i:%i)=p; %% updated parameters\n', tmp_a, i1a, i2a) ];
+      ];
     else
       c.Guess = [ ...
+        string.head, ...
         sprintf('p=%s; %% evaluate 1st guess for %s\n', a.Guess, op), ...
-        sprintf('%s_p(%i:%i)=p; %% updated parameters\n', tmp_a, i1a, i2a) ];
+      ];
     end
-    % handle dimensionality expansion
+    % handle dimensionality expansion (orthogonal)
     if any(strcmp(op, {'mpower','mtimes','mrdivide'}))
       ax = 'xyztuvw';
       % store inital axes definitions
@@ -268,28 +286,26 @@ if isFa && isFb
     % append Guess: 2nd
     if strncmp(b.Guess(1:2),'p=',2) % 'b' is already the result of a binary operation
       c.Guess = [ c.Guess, ...
+        string.core, ...
         sprintf('%s; %% evaluate 2nd Guess for %s\n', b.Guess, op), ...
-        sprintf('%s_p(%i:%i)=p; %% updated parameters\n', tmp_a, i1b, i2b), ...
-        sprintf('p=%s_p; %% restore initial parameter values\n'  , tmp_a) ];
+        string.tail ];
     else
       c.Guess = [ c.Guess, ...
         sprintf('p=%s; %% evaluate 2nd Guess for %s\n', b.Guess, op), ...
-        sprintf('%s_p(%i:%i)=p; %% updated parameters\n', tmp_a, i1b, i2b), ...
-        sprintf('p=%s_p; %% restore initial parameter values\n'  , tmp_a) ];
+        string.tail ];
     end
   end
   
   % append Expression:
   % =========================================================
-  c.Expression = { ...
-    sprintf('%s_p = p; %% store the whole parameter values\n'  , tmp_a), ...
-    sprintf('p=%s_p(%i:%i); %% evaluate 1st expression for %s\n', tmp_a, i1a, i2a, op), ...
-    a.Expression{:}, ...
-    sprintf('\n%s_s = signal;\n', tmp_a), ...
-    sprintf('%s_p(%i:%i)=p(1:%d); %% updated parameters\n', ...
-      tmp_a, i1a, i2a, length(a.Parameters)) };
+  %  and store 'p' and UserData for each object
   
-  % handle dimensionality expansion
+  c.Expression = { ...
+    string.head, ...
+    a.Expression{:}, ...
+    sprintf('\n%s_s = signal;\n', tmp_a) };
+  
+  % handle dimensionality expansion (orthogonal)
   if any(strcmp(op, {'mpower','mtimes','mrdivide'}))
     ax = 'xyztuvw';
     % store inital axes definitions
@@ -304,33 +320,31 @@ if isFa && isFb
   
   % append Expression: 2nd  
   c.Expression = { c.Expression{:}, ...
-    sprintf('p=%s_p(%i:%i); %% evaluate 2nd expression for %s\n', tmp_a, i1b, i2b, op), ...
+    string.core, ...
     b.Expression{:}, ...
-    sprintf('\n%s_p(%i:%i)=p(1:%d); %% updated parameters\n', ...
-      tmp_a, i1b, i2b, length(b.Parameters)), ...
-    sprintf('p=%s_p;\n'  , tmp_a) };
+    string.tail };
   if any(strcmp(op, {'mpower','mtimes','mrdivide'}))
     % orthogonal operation
     c.Expression{end+1} = sprintf('signal=bsxfun(@%s, %s_s, signal); %% operation: %s (orthogonal axes)\n', op(2:end), tmp_a, op);
   else
-    c.Expression{end+1} = sprintf('signal=feval(@%s, %s_s, signal%s); %% operation: %s\n', op, tmp_a, v, op);
+    c.Expression{end+1} = sprintf('signal=feval(@%s, %s_s, signal%s); %% operation: %s\n', op, tmp_a, v, op); % with additional parameters
   end
 
-elseif isFa && ischar(b)
+elseif isFa && ischar(b)  % syntax: iFunc+'string'
   if strcmp(op, 'plus') && ~isempty(find(b == '=' | b == ';'))
     c.Expression{end+1} = sprintf('\n%s%s;', b, v) ;
   else
     c.Expression{end+1} = sprintf('\nsignal=%s(signal,%s%s);', op, b, v);
   end
   c.Name       = sprintf('%s(%s,%s)', op, c.Name, b(1:min(10,length(b))));
-elseif isFb && ischar(a)
+elseif isFb && ischar(a)  % syntax: 'string'+iFunc
   if strcmp(op, 'plus') && ~isempty(find(a == '=' | a == ';'))
     c.Expression = { sprintf('%s%s;\n', a, v), c.Expression{:} } ;
   else
     c.Expression{end+1} = sprintf('\nsignal=%s(%s,signal%s);', op, a, v);
   end
   c.Name       = sprintf('%s(%s,%s)', op, a(1:min(10,length(a))), c.Name);
-elseif isFa && isnumeric(b)
+elseif isFa && isnumeric(b) % syntax: iFunc+array
   % special case for mpower iFunc^n -> dimension extension
   if strcmp(op, 'mpower') && b == floor(b) && b>1
     for index=1:(b-1)
@@ -342,7 +356,7 @@ elseif isFa && isnumeric(b)
     if length(b) > 13, b=[ b(1:10) '...' ]; end
   end
   c.Name       = sprintf('%s(%s,%g)', op, c.Name, b);
-elseif isFb && isnumeric(a)
+elseif isFb && isnumeric(a) % syntax: array+iFunc
   a = mat2str(double(a));
   c.Expression{end+1} = sprintf('\nsignal=%s(%s,signal%s);', op, a, v);
   if length(a) > 13, a=[ a(1:10) '...' ]; end

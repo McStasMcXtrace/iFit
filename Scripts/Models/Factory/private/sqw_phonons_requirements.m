@@ -1,6 +1,8 @@
 function status = sqw_phonons_requirements
 % sqw_phonons_requirements: check for availability of ASE and MD codes
 %
+% MPI, EMT, GPAW, NWChem, Dacapo, Abinit, Elk, QE, VASP
+%
 % returns a structure with a field for each MD software being 1 when available.
 status = [];
 
@@ -26,7 +28,7 @@ else
   for calc={'mpirun','mpiexec'}
     % now test executable
     [st,result]=system([ precmd 'echo "0" | ' calc{1} ]);
-    if st == 0
+    if any(st == 0:2)
         status.mpirun=calc{1};
         st = 0;
         break;
@@ -35,7 +37,7 @@ else
   
   % test for GPAW
   [st, result] = system([ precmd 'python -c "from gpaw import GPAW"' ]);
-  if st == 0
+  if any(st == 0:2)
     status.gpaw='gpaw-python';
     disp([ '  GPAW            (http://wiki.fysik.dtu.dk/gpaw) as "' status.gpaw '"' ]);
   else
@@ -45,13 +47,13 @@ else
   % test for NWChem
   [st, result] = system([ precmd 'python -c "from ase.calculators.nwchem import NWChem"' ]);
   status.nwchem='';
-  if st == 0
+  if any(st == 0:2)
     % now test executable
     % create a fake nwchem.nw
     f = tempname;
     dlmwrite([ f '.nw' ], '');
     [st,result]=system([ precmd 'nwchem ' f '.nw' ]);
-    if st==0 || st==139
+    if any(st == 0:2) || st==139
       status.nwchem='nwchem';
     end
     delete([ f '.*' ])
@@ -69,7 +71,7 @@ else
     % now test executable: serial
     for calc={'dacapo_serial.run','dacapo.run','dacapo'}
       [st,result]=system([ precmd calc{1} ]);
-      if st == 0 || st == 2
+      if any(st == 0:2)
           status.jacapo=calc{1};
           st = 0;
           break;
@@ -94,7 +96,7 @@ else
   % test for Elk
   [st, result] = system([ precmd 'python -c "from ase.calculators.elk import ELK"' ]);
   status.elk='';
-  if st == 0
+  if any(st == 0:2)
     % now test executable
     for calc={'elk','elk-lapw'}
       [st,result]=system([ precmd calc{1} ]);
@@ -112,11 +114,11 @@ else
   % test for ABINIT
   [st, result] = system([ precmd 'python -c "from ase.calculators.abinit import Abinit"' ]);
   status.abinit='';
-  if st == 0
+  if any(st == 0:2)
     for calc={'abinit','abinis','abinip'}
       % now test executable
       [st,result]=system([ precmd 'echo "0" | ' calc{1} ]);
-      if st == 0 || st == 2
+      if any(st == 0:2)
           status.abinit=calc{1};
           st = 0;
           break;
@@ -132,7 +134,7 @@ else
   for calc={'pw.x','pw.exe','pw','pwscf'}
     % now test executable
     [st,result]=system([ precmd 'echo "0" | ' calc{1} ]);
-    if st == 0 || st == 2
+    if any(st == 0:2)
         status.quantumespresso=calc{1};
         st = 0;
         break;
@@ -142,7 +144,7 @@ else
   % test for QE/ASE
   status.quantumespresso_ase = '';
   [st, result] = system([ precmd 'python -c "from qeutil import QuantumEspresso"' ]);
-  if st == 0
+  if any(st == 0:2)
     status.quantumespresso_ase='qeutil';
     disp([ '  QEutil          (https://jochym.github.io/qe-doc/) as "' status.quantumespresso_ase '"' ]);
   else
@@ -155,7 +157,7 @@ else
     delete('CRASH');
     delete('input_tmp.in');
   end
-  if st == 0 || st == 2
+  if any(st == 0:2)
     status.phon = 'phon';
   else
     status.phon = '';
@@ -169,7 +171,7 @@ else
   
   % test for VASP
   [st, result] = system([ precmd 'vasp' ]);
-  if st == 0 || st == 2
+  if any(st == 0:2)
     status.vasp = 'vasp';
   else
     status.vasp = '';
