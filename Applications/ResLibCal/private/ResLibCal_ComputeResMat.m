@@ -132,6 +132,10 @@ function res= ResLibCal_ComputeResMat_Single(EXP, h,k,l,w)
       % This method is 100% equivalent to ResCal5/Cooper-Nathans
       method    = @Rescal_AFILL; 
       [R0,RM]   = feval(method,h,k,l,w, EXP);
+    elseif ~isempty(strfind(EXP.method, 'mcstas'))
+      method    = @Rescal_AFILL; 
+      [R0,RM]   = feval(method,h,k,l,w, EXP);
+      % and we shal use Mcstas TAS for the cloud
     else % default is 'reslib'
       method = @ResMat;
       % calls ResLib/ResMat
