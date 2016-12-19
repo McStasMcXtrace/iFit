@@ -123,7 +123,7 @@ DEFINE INSTRUMENT templateTAS(
   A1=0,A2=0,A3=0,A4=0,A5=0,A6=0,
   NHM=9, NVM=9, WM=0.10, HM=0.12,
   NHA=9, NVA=9, WA=0.10, HA=0.12,
-  radius=0.01, height=0.05, WB=0.10, HB=0.10
+  radius=0.01, height=0.05, WB=0.10, HB=0.10, WD=0.05,HD=.085
 )
 
 DECLARE
@@ -191,7 +191,7 @@ AT (0,0,0) ABSOLUTE
 COMPONENT Source = Source_gen(
   xwidth = WB, yheight=HB,
   dist = L1,
-  focus_xw = WM, focus_yh = HM,
+  focus_xw = WM*sin(A1*DEG2RAD), focus_yh = HM,
   E0 = EI,
   dE = EI*0.03)
 AT (0,0,0) ABSOLUTE
@@ -199,11 +199,11 @@ AT (0,0,0) ABSOLUTE
 COMPONENT SC1 = Collimator_linear(
   xmin =-0.08/2, ymin =-0.11/2,
   xmax = 0.08/2, ymax = 0.11/2,
-  length = 2,
+  length = L1/2,
   divergence=ALF1,
   divergenceV=BET1)
 WHEN (ALF1 && BET1)
-AT (0, 0, L1/2) ABSOLUTE
+AT (0, 0, L1/4) ABSOLUTE
 
 COMPONENT Guide_out=Arm()
 AT (0, 0, L1) ABSOLUTE
@@ -246,7 +246,7 @@ COMPONENT Sample_Cradle = Monitor_nD(xwidth=0.01, yheight=0.01, options="per cm2
 
 COMPONENT Sample = Res_sample(
     radius = radius, yheight = height, 
-    target_index=+3, focus_aw=2, focus_ah=2, 
+    target_index=+3, focus_aw=RAD2DEG*atan2(WA*sin(A5*DEG2RAD),L3), focus_ah=RAD2DEG*atan2(HA,L3), 
     E0=EF, dE=0)
   AT (0, 0, 0) RELATIVE PREVIOUS
 
@@ -301,7 +301,7 @@ AT (0, 0, (L4-0.24)/2) RELATIVE Ana_Out
 // AT (0, 0, machine_hkl.l4) RELATIVE Ana_Out
 
 COMPONENT He3H = Res_monitor(filename="resolution.dat",
-  xwidth=2*0.0254, yheight=0.085,
+  xwidth=WD, yheight=HD,
   res_sample_comp=Sample)
 AT (0, 0, L4) RELATIVE Ana_Out
 
