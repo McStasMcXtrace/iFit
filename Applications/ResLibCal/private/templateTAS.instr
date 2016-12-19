@@ -235,13 +235,13 @@ ROTATED (0, A1, 0) RELATIVE Mono_Cradle
 COMPONENT Mono_Out = Arm()
   AT (0,0,0) RELATIVE Mono_Cradle
   ROTATED (0, A2, 0) RELATIVE Mono_Cradle
-  
+/* 
 COMPONENT D4_SC2_1D = Monitor_nD(
   xmin = -0.08/2, xmax = 0.08/2,
   ymin = -0.1200/2, ymax = 0.1200/2,
   options="lambda, cm2, auto", restore_neutron=1)
 AT (0, 0, L2/3) RELATIVE Mono_Out
-
+*/
 COMPONENT SC2 = Collimator_linear(
   xmin =-0.08/2, ymin =-0.12/2,
   xmax = 0.08/2, ymax = 0.12/2,
@@ -264,12 +264,12 @@ COMPONENT Sample = Res_sample(
 COMPONENT Sample_Out = Arm() /*        this is the sample-ana axis */
   AT (0,0,0) RELATIVE Sample_Cradle
   ROTATED (0, A4, 0) RELATIVE Mono_Out
-  
+/*
 COMPONENT D7_SC3_1D = Monitor_nD(
   xwidth = 0.08, yheight = HA, bins=50, restore_neutron=1,
   options="theta energy, all auto, banana")
 AT (0, 0, 0) RELATIVE Sample_Out
-
+*/
 COMPONENT SC3 =Collimator_linear(
   xmin =-0.08/2, ymin =-0.12/2,
   xmax = 0.08/2, ymax = 0.12/2,
