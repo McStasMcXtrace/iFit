@@ -178,13 +178,24 @@ INITIALIZE
 	  printf("EI=%g EF=%g meV\n",EI, EF);
 
 	}
+	
+	A1 = fabs(A1)*SM;
+	A2 = fabs(A2)*SM;
+	A3 = fabs(A3)*SS;
+	A4 = fabs(A4)*SS;
+	A5 = fabs(A5)*SA;
+	A6 = fabs(A6)*SA;
+	RMH=fabs(RMH)*SM;
+	RMV=fabs(RMV)*SM;
+	RAH=fabs(RAH)*SA;
+	RAV=fabs(RAV)*SA;
 %}
 /* end of INITIALIZE */
 
 TRACE
 /* Source description */
 
-COMPONENT Origin=Progress_bar()
+COMPONENT Origin=Progress_bar(profile="profiler.dat")
 AT (0,0,0) ABSOLUTE
 
 /* a flat constant source */
@@ -197,8 +208,8 @@ COMPONENT Source = Source_gen(
 AT (0,0,0) ABSOLUTE
 
 COMPONENT SC1 = Collimator_linear(
-  xmin =-0.08/2, ymin =-0.11/2,
-  xmax = 0.08/2, ymax = 0.11/2,
+  xmin =-0.08/2, ymin =-0.12/2,
+  xmax = 0.08/2, ymax = 0.12/2,
   length = L1/2,
   divergence=ALF1,
   divergenceV=BET1)
@@ -225,15 +236,15 @@ COMPONENT Mono_Out = Arm()
   AT (0,0,0) RELATIVE Mono_Cradle
   ROTATED (0, A2, 0) RELATIVE Mono_Cradle
   
-  COMPONENT D4_SC2_1D = Monitor_nD(
-  xmin = -0.0420/2, xmax = 0.0420/2,
+COMPONENT D4_SC2_1D = Monitor_nD(
+  xmin = -0.08/2, xmax = 0.08/2,
   ymin = -0.1200/2, ymax = 0.1200/2,
   options="lambda, cm2, auto", restore_neutron=1)
 AT (0, 0, L2/3) RELATIVE Mono_Out
 
 COMPONENT SC2 = Collimator_linear(
-  xmin =-0.04/2, ymin =-0.07/2,
-  xmax = 0.04/2, ymax = 0.07/2,
+  xmin =-0.08/2, ymin =-0.12/2,
+  xmax = 0.08/2, ymax = 0.12/2,
   length = 0.35,
   divergence=ALF2,
   divergenceV=BET2)
@@ -255,13 +266,13 @@ COMPONENT Sample_Out = Arm() /*        this is the sample-ana axis */
   ROTATED (0, A4, 0) RELATIVE Mono_Out
   
 COMPONENT D7_SC3_1D = Monitor_nD(
-  xwidth = 0.06, yheight = HA, bins=50, restore_neutron=1,
+  xwidth = 0.08, yheight = HA, bins=50, restore_neutron=1,
   options="theta energy, all auto, banana")
 AT (0, 0, 0) RELATIVE Sample_Out
 
 COMPONENT SC3 =Collimator_linear(
-  xmin =-0.06/2, ymin =-0.12/2,
-  xmax = 0.06/2, ymax = 0.12/2,
+  xmin =-0.08/2, ymin =-0.12/2,
+  xmax = 0.08/2, ymax = 0.12/2,
   length = 0.40,
   divergence=ALF3,
   divergenceV=BET3)
@@ -285,8 +296,8 @@ COMPONENT Ana_Out = Arm() /*        this is the sample-ana axis */
   ROTATED (0, A6, 0) RELATIVE Ana_Cradle
 
 COMPONENT SC4 =Collimator_linear(
-  xmin =-0.06/2, ymin =-0.12/2,
-  xmax = 0.06/2, ymax = 0.12/2,
+  xmin =-0.08/2, ymin =-0.12/2,
+  xmax = 0.08/2, ymax = 0.12/2,
   length = 0.24,
   divergence=ALF4,
   divergenceV=BET4)
