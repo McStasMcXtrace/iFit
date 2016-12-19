@@ -76,6 +76,30 @@ end
 disp([ compiled cmd ]);
 [status, result] = system([ precmd compiled cmd ]);
 
+% read results
+if ~isdir(d)
+  error('%s: Failed running McStas TAS model %s\n', mfilename, compiled);
+end
+
+if ~isempty(dir(fullfile(d,'resolution.dat')))
+  % read the cloud in Angs-1, independent of the sample lattice, except A3
+  cloud = iLoad(fullfile(d,'resolution.dat'),'mccode');
+  Ki= cloud.data(:,1:3); 
+  Kf= cloud.data(:,4:6);
+  Q = Ki-Kf;  % Q transfer in the A3=<Ki,A> rotated frame, e.g. ABC lattice (Ang-1) frame
+  QM= sqrt(sum(Q.^2,2));
+  VS2E= 5.22703725e-6;  % from McStas
+  K2V = 629.622368;
+  Vi = K2V*sqrt(sum(Ki.^2,2));
+  Vf = K2V*sqrt(sum(Kf.^2,2));
+  Ei = VS2E*Vi.^2;
+  Ef = VS2E*Vf.^2;
+  E  = Ei-Ef; % energy transfer
+  p  = prod(cloud.data(:,10:11),2); % pi*pf
+  % McStas orientation
+  % Z along A3, X vertical, Y on the 'right' from Z (looking at analyser).
+end
+rmdir(d, 's');
 
 %----- 
 
