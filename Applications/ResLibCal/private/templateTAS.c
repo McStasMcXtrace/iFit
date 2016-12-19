@@ -2,7 +2,7 @@
  * Format:     ANSI C source code
  * Creator:    McStas <http://www.mcstas.org>
  * Instrument: templateTAS.instr (templateTAS)
- * Date:       Fri Dec 16 17:29:53 2016
+ * Date:       Mon Dec 19 10:42:00 2016
  * File:       templateTAS.c
  * Compile:    cc -o templateTAS.out templateTAS.c 
  * CFLAGS=
@@ -13,6 +13,7 @@
 #define FLAVOR "mcstas"
 #define FLAVOR_UPPER "MCSTAS"
 #define MC_USE_DEFAULT_MAIN
+#define MC_TRACE_ENABLED
 #define MC_EMBEDDED_RUNTIME
 
 #line 1 "mccode-r.h"
@@ -684,7 +685,7 @@ NXhandle nxhandle;
 #endif /* MCCODE_R_H */
 /* End of file "mccode-r.h". */
 
-#line 687 "templateTAS.c"
+#line 688 "templateTAS.c"
 
 #line 1 "mcstas-r.h"
 /*******************************************************************************
@@ -917,7 +918,7 @@ void mcsetstate(double x, double y, double z, double vx, double vy, double vz,
 #endif /* MCSTAS_R_H */
 /* End of file "mcstas-r.h". */
 
-#line 920 "templateTAS.c"
+#line 921 "templateTAS.c"
 
 #line 1 "mccode-r.c"
 /*******************************************************************************
@@ -4827,7 +4828,7 @@ void neutronics_main_(float *inx, float *iny, float *inz, float *invx, float *in
 /* End of file "mccode-r.c". */
 /* End of file "mccode-r.c". */
 
-#line 4830 "templateTAS.c"
+#line 4831 "templateTAS.c"
 
 #line 1 "mcstas-r.c"
 /*******************************************************************************
@@ -5187,7 +5188,7 @@ plane_intersect(double *t, double x, double y, double z,
 #endif /* !MCSTAS_H */
 /* End of file "mcstas-r.c". */
 
-#line 5190 "templateTAS.c"
+#line 5191 "templateTAS.c"
 #ifdef MC_TRACE_ENABLED
 int mctraceenabled = 1;
 #else
@@ -6519,7 +6520,7 @@ double Table_Interp2d(double x, double y,
   }
 #endif
 
-#line 6522 "templateTAS.c"
+#line 6523 "templateTAS.c"
 
 /* Shared user declarations for all components 'Monochromator_curved'. */
 #line 112 "/usr/share/mcstas/2.3/optics/Monochromator_curved.comp"
@@ -6545,7 +6546,7 @@ double Table_Interp2d(double x, double y,
 #endif
 
 
-#line 6548 "templateTAS.c"
+#line 6549 "templateTAS.c"
 
 /* Shared user declarations for all components 'Monitor_nD'. */
 #line 235 "/usr/share/mcstas/2.3/monitors/Monitor_nD.comp"
@@ -9458,7 +9459,7 @@ void off_display(off_struct data)
 
 /* end of interoff-lib.c */
 
-#line 9461 "templateTAS.c"
+#line 9462 "templateTAS.c"
 
 /* Shared user declarations for all components 'Res_sample'. */
 #line 74 "/usr/share/mcstas/2.3/samples/Res_sample.comp"
@@ -9471,12 +9472,12 @@ void off_display(off_struct data)
       double xw,yh;       /* rectangular metrical dimensions */
       double tx,ty,tz;    /* target coords */
     };
-#line 9474 "templateTAS.c"
+#line 9475 "templateTAS.c"
 
 /* Shared user declarations for all components 'Res_monitor'. */
 #line 84 "/usr/share/mcstas/2.3/monitors/Res_monitor.comp"
 
-#line 9479 "templateTAS.c"
+#line 9480 "templateTAS.c"
 
 /* Instrument parameters. */
 MCNUM mcipKI;
@@ -9523,9 +9524,11 @@ MCNUM mcipradius;
 MCNUM mcipheight;
 MCNUM mcipWB;
 MCNUM mcipHB;
+MCNUM mcipWD;
+MCNUM mcipHD;
 
-#define mcNUMIPAR 44
-int mcnumipar = 44;
+#define mcNUMIPAR 46
+int mcnumipar = 46;
 struct mcinputtable_struct mcinputtable[mcNUMIPAR+1] = {
   "KI", &mcipKI, instr_type_double, "2.278", 
   "EN", &mcipEN, instr_type_double, "0", 
@@ -9571,6 +9574,8 @@ struct mcinputtable_struct mcinputtable[mcNUMIPAR+1] = {
   "height", &mcipheight, instr_type_double, "0.05", 
   "WB", &mcipWB, instr_type_double, "0.10", 
   "HB", &mcipHB, instr_type_double, "0.10", 
+  "WD", &mcipWD, instr_type_double, "0.05", 
+  "HD", &mcipHD, instr_type_double, ".085", 
   NULL, NULL, instr_type_double, ""
 };
 
@@ -9623,11 +9628,15 @@ struct mcinputtable_struct mcinputtable[mcNUMIPAR+1] = {
 #define height mcipheight
 #define WB mcipWB
 #define HB mcipHB
+#define WD mcipWD
+#define HD mcipHD
 #line 131 "templateTAS.instr"
 	  double EI=0, EF=0;
 	  double flag_analyzer=0;
 	  double flag_env=0;
-#line 9630 "templateTAS.c"
+#line 9637 "templateTAS.c"
+#undef HD
+#undef WD
 #undef HB
 #undef WB
 #undef height
@@ -9965,7 +9974,7 @@ MCNUM mccHe3H_restore_neutron;
   time_t StartTime;
   time_t EndTime;
   time_t CurrentTime;
-#line 9968 "templateTAS.c"
+#line 9977 "templateTAS.c"
 #undef minutes
 #undef flag_save
 #undef percent
@@ -10049,7 +10058,7 @@ MCNUM mccHe3H_restore_neutron;
   double pTable_dymin;
   double pTable_dymax;
 
-#line 10052 "templateTAS.c"
+#line 10061 "templateTAS.c"
 #undef target_index
 #undef zdepth
 #undef I3
@@ -10119,7 +10128,7 @@ MCNUM mccHe3H_restore_neutron;
 #define divergenceV mccSC1_divergenceV
 #line 57 "/usr/share/mcstas/2.3/optics/Collimator_linear.comp"
   double slope, slopeV;
-#line 10122 "templateTAS.c"
+#line 10131 "templateTAS.c"
 #undef divergenceV
 #undef transmission
 #undef divergence
@@ -10198,7 +10207,7 @@ MCNUM mccHe3H_restore_neutron;
   double row,col;
   double* tiltH;
   double* tiltV;
-#line 10201 "templateTAS.c"
+#line 10210 "templateTAS.c"
 #undef order
 #undef verbose
 #undef height
@@ -10279,7 +10288,7 @@ MCNUM mccHe3H_restore_neutron;
   MonitornD_Variables_type Vars;
   MCDETECTOR detector;
   off_struct offdata;
-#line 10282 "templateTAS.c"
+#line 10291 "templateTAS.c"
 #undef username3
 #undef username2
 #undef username1
@@ -10329,7 +10338,7 @@ MCNUM mccHe3H_restore_neutron;
 #define divergenceV mccSC2_divergenceV
 #line 57 "/usr/share/mcstas/2.3/optics/Collimator_linear.comp"
   double slope, slopeV;
-#line 10332 "templateTAS.c"
+#line 10341 "templateTAS.c"
 #undef divergenceV
 #undef transmission
 #undef divergence
@@ -10382,7 +10391,7 @@ MCNUM mccHe3H_restore_neutron;
   MonitornD_Variables_type Vars;
   MCDETECTOR detector;
   off_struct offdata;
-#line 10385 "templateTAS.c"
+#line 10394 "templateTAS.c"
 #undef username3
 #undef username2
 #undef username1
@@ -10437,7 +10446,7 @@ MCNUM mccHe3H_restore_neutron;
 #define target_index mccSample_target_index
 #line 87 "/usr/share/mcstas/2.3/samples/Res_sample.comp"
   struct Res_sample_struct res_struct;
-#line 10440 "templateTAS.c"
+#line 10449 "templateTAS.c"
 #undef target_index
 #undef zdepth
 #undef yheight
@@ -10503,7 +10512,7 @@ MCNUM mccHe3H_restore_neutron;
   MonitornD_Variables_type Vars;
   MCDETECTOR detector;
   off_struct offdata;
-#line 10506 "templateTAS.c"
+#line 10515 "templateTAS.c"
 #undef username3
 #undef username2
 #undef username1
@@ -10553,7 +10562,7 @@ MCNUM mccHe3H_restore_neutron;
 #define divergenceV mccSC3_divergenceV
 #line 57 "/usr/share/mcstas/2.3/optics/Collimator_linear.comp"
   double slope, slopeV;
-#line 10556 "templateTAS.c"
+#line 10565 "templateTAS.c"
 #undef divergenceV
 #undef transmission
 #undef divergence
@@ -10624,7 +10633,7 @@ MCNUM mccHe3H_restore_neutron;
   double row,col;
   double* tiltH;
   double* tiltV;
-#line 10627 "templateTAS.c"
+#line 10636 "templateTAS.c"
 #undef order
 #undef verbose
 #undef height
@@ -10687,7 +10696,7 @@ MCNUM mccHe3H_restore_neutron;
 #define divergenceV mccSC4_divergenceV
 #line 57 "/usr/share/mcstas/2.3/optics/Collimator_linear.comp"
   double slope, slopeV;
-#line 10690 "templateTAS.c"
+#line 10699 "templateTAS.c"
 #undef divergenceV
 #undef transmission
 #undef divergence
@@ -10730,7 +10739,7 @@ MCNUM mccHe3H_restore_neutron;
   MonitornD_Defines_type DEFS;
   MonitornD_Variables_type Vars;
   long buffer_index;
-#line 10733 "templateTAS.c"
+#line 10742 "templateTAS.c"
 #undef restore_neutron
 #undef bufsize
 #undef zmax
@@ -10845,6 +10854,8 @@ void mcinit(void) {
 #define height mcipheight
 #define WB mcipWB
 #define HB mcipHB
+#define WD mcipWD
+#define HD mcipHD
 #line 138 "templateTAS.instr"
 {
 	double Vi;
@@ -10890,7 +10901,9 @@ void mcinit(void) {
 
 	}
 }
-#line 10893 "templateTAS.c"
+#line 10904 "templateTAS.c"
+#undef HD
+#undef WD
 #undef HB
 #undef WB
 #undef height
@@ -10957,14 +10970,14 @@ void mcinit(void) {
   mccOrigin_flag_save = 0;
 #line 42 "templateTAS.instr"
   mccOrigin_minutes = 0;
-#line 10960 "templateTAS.c"
+#line 10973 "templateTAS.c"
 
   SIG_MESSAGE("Origin (Init:Place/Rotate)");
   rot_set_rotation(mcrotaOrigin,
     (0.0)*DEG2RAD,
     (0.0)*DEG2RAD,
     (0.0)*DEG2RAD);
-#line 10967 "templateTAS.c"
+#line 10980 "templateTAS.c"
   rot_copy(mcrotrOrigin, mcrotaOrigin);
   mcposaOrigin = coords_set(
 #line 188 "templateTAS.instr"
@@ -10973,7 +10986,7 @@ void mcinit(void) {
     0,
 #line 188 "templateTAS.instr"
     0);
-#line 10976 "templateTAS.c"
+#line 10989 "templateTAS.c"
   mctc1 = coords_neg(mcposaOrigin);
   mcposrOrigin = rot_apply(mcrotaOrigin, mctc1);
   mcDEBUG_COMPONENT("Origin", mcposaOrigin, mcrotaOrigin)
@@ -10995,7 +11008,7 @@ void mcinit(void) {
 #line 193 "templateTAS.instr"
   mccSource_dist = mcipL1;
 #line 194 "templateTAS.instr"
-  mccSource_focus_xw = mcipWM;
+  mccSource_focus_xw = mcipWM * sin ( mcipA1 * DEG2RAD );
 #line 194 "templateTAS.instr"
   mccSource_focus_yh = mcipHM;
 #line 145 "templateTAS.instr"
@@ -11044,14 +11057,14 @@ void mcinit(void) {
   mccSource_zdepth = 0;
 #line 149 "templateTAS.instr"
   mccSource_target_index = + 1;
-#line 11047 "templateTAS.c"
+#line 11060 "templateTAS.c"
 
   SIG_MESSAGE("Source (Init:Place/Rotate)");
   rot_set_rotation(mcrotaSource,
     (0.0)*DEG2RAD,
     (0.0)*DEG2RAD,
     (0.0)*DEG2RAD);
-#line 11054 "templateTAS.c"
+#line 11067 "templateTAS.c"
   rot_transpose(mcrotaOrigin, mctr1);
   rot_mul(mcrotaSource, mctr1, mcrotrSource);
   mcposaSource = coords_set(
@@ -11061,7 +11074,7 @@ void mcinit(void) {
     0,
 #line 197 "templateTAS.instr"
     0);
-#line 11064 "templateTAS.c"
+#line 11077 "templateTAS.c"
   mctc1 = coords_sub(mcposaOrigin, mcposaSource);
   mcposrSource = rot_apply(mcrotaSource, mctc1);
   mcDEBUG_COMPONENT("Source", mcposaSource, mcrotaSource)
@@ -11085,21 +11098,21 @@ void mcinit(void) {
 #line 52 "templateTAS.instr"
   mccSC1_yheight = 0;
 #line 202 "templateTAS.instr"
-  mccSC1_length = 2;
+  mccSC1_length = mcipL1 / 2;
 #line 203 "templateTAS.instr"
   mccSC1_divergence = mcipALF1;
 #line 52 "templateTAS.instr"
   mccSC1_transmission = 1;
 #line 204 "templateTAS.instr"
   mccSC1_divergenceV = mcipBET1;
-#line 11095 "templateTAS.c"
+#line 11108 "templateTAS.c"
 
   SIG_MESSAGE("SC1 (Init:Place/Rotate)");
   rot_set_rotation(mcrotaSC1,
     (0.0)*DEG2RAD,
     (0.0)*DEG2RAD,
     (0.0)*DEG2RAD);
-#line 11102 "templateTAS.c"
+#line 11115 "templateTAS.c"
   rot_transpose(mcrotaSource, mctr1);
   rot_mul(mcrotaSC1, mctr1, mcrotrSC1);
   mcposaSC1 = coords_set(
@@ -11108,8 +11121,8 @@ void mcinit(void) {
 #line 206 "templateTAS.instr"
     0,
 #line 206 "templateTAS.instr"
-    mcipL1 / 2);
-#line 11112 "templateTAS.c"
+    mcipL1 / 4);
+#line 11125 "templateTAS.c"
   mctc1 = coords_sub(mcposaSource, mcposaSC1);
   mcposrSC1 = rot_apply(mcrotaSC1, mctc1);
   mcDEBUG_COMPONENT("SC1", mcposaSC1, mcrotaSC1)
@@ -11126,7 +11139,7 @@ void mcinit(void) {
     (0.0)*DEG2RAD,
     (0.0)*DEG2RAD,
     (0.0)*DEG2RAD);
-#line 11129 "templateTAS.c"
+#line 11142 "templateTAS.c"
   rot_transpose(mcrotaSC1, mctr1);
   rot_mul(mcrotaGuide_out, mctr1, mcrotrGuide_out);
   mcposaGuide_out = coords_set(
@@ -11136,7 +11149,7 @@ void mcinit(void) {
     0,
 #line 209 "templateTAS.instr"
     mcipL1);
-#line 11139 "templateTAS.c"
+#line 11152 "templateTAS.c"
   mctc1 = coords_sub(mcposaSC1, mcposaGuide_out);
   mcposrGuide_out = rot_apply(mcrotaGuide_out, mctc1);
   mcDEBUG_COMPONENT("Guide_out", mcposaGuide_out, mcrotaGuide_out)
@@ -11153,7 +11166,7 @@ void mcinit(void) {
     (0.0)*DEG2RAD,
     (0.0)*DEG2RAD,
     (0.0)*DEG2RAD);
-#line 11156 "templateTAS.c"
+#line 11169 "templateTAS.c"
   rot_mul(mctr1, mcrotaGuide_out, mcrotaMono_Cradle);
   rot_transpose(mcrotaGuide_out, mctr1);
   rot_mul(mcrotaMono_Cradle, mctr1, mcrotrMono_Cradle);
@@ -11164,7 +11177,7 @@ void mcinit(void) {
     0,
 #line 212 "templateTAS.instr"
     0);
-#line 11167 "templateTAS.c"
+#line 11180 "templateTAS.c"
   rot_transpose(mcrotaGuide_out, mctr1);
   mctc2 = rot_apply(mctr1, mctc1);
   mcposaMono_Cradle = coords_add(mcposaGuide_out, mctc2);
@@ -11218,7 +11231,7 @@ void mcinit(void) {
   mccPG1Xtal_verbose = 0;
 #line 105 "templateTAS.instr"
   mccPG1Xtal_order = 0;
-#line 11221 "templateTAS.c"
+#line 11234 "templateTAS.c"
 
   SIG_MESSAGE("PG1Xtal (Init:Place/Rotate)");
   rot_set_rotation(mctr1,
@@ -11228,7 +11241,7 @@ void mcinit(void) {
     (mcipA1)*DEG2RAD,
 #line 221 "templateTAS.instr"
     (0)*DEG2RAD);
-#line 11231 "templateTAS.c"
+#line 11244 "templateTAS.c"
   rot_mul(mctr1, mcrotaMono_Cradle, mcrotaPG1Xtal);
   rot_transpose(mcrotaMono_Cradle, mctr1);
   rot_mul(mcrotaPG1Xtal, mctr1, mcrotrPG1Xtal);
@@ -11239,7 +11252,7 @@ void mcinit(void) {
     0,
 #line 220 "templateTAS.instr"
     0);
-#line 11242 "templateTAS.c"
+#line 11255 "templateTAS.c"
   rot_transpose(mcrotaMono_Cradle, mctr1);
   mctc2 = rot_apply(mctr1, mctc1);
   mcposaPG1Xtal = coords_add(mcposaMono_Cradle, mctc2);
@@ -11262,7 +11275,7 @@ void mcinit(void) {
     (mcipA2)*DEG2RAD,
 #line 226 "templateTAS.instr"
     (0)*DEG2RAD);
-#line 11265 "templateTAS.c"
+#line 11278 "templateTAS.c"
   rot_mul(mctr1, mcrotaMono_Cradle, mcrotaMono_Out);
   rot_transpose(mcrotaPG1Xtal, mctr1);
   rot_mul(mcrotaMono_Out, mctr1, mcrotrMono_Out);
@@ -11273,7 +11286,7 @@ void mcinit(void) {
     0,
 #line 225 "templateTAS.instr"
     0);
-#line 11276 "templateTAS.c"
+#line 11289 "templateTAS.c"
   rot_transpose(mcrotaMono_Cradle, mctr1);
   mctc2 = rot_apply(mctr1, mctc1);
   mcposaMono_Out = coords_add(mcposaMono_Cradle, mctc2);
@@ -11327,14 +11340,14 @@ void mcinit(void) {
   if("NULL") strncpy(mccD4_SC2_1D_username2, "NULL" ? "NULL" : "", 16384); else mccD4_SC2_1D_username2[0]='\0';
 #line 227 "templateTAS.instr"
   if("NULL") strncpy(mccD4_SC2_1D_username3, "NULL" ? "NULL" : "", 16384); else mccD4_SC2_1D_username3[0]='\0';
-#line 11330 "templateTAS.c"
+#line 11343 "templateTAS.c"
 
   SIG_MESSAGE("D4_SC2_1D (Init:Place/Rotate)");
   rot_set_rotation(mctr1,
     (0.0)*DEG2RAD,
     (0.0)*DEG2RAD,
     (0.0)*DEG2RAD);
-#line 11337 "templateTAS.c"
+#line 11350 "templateTAS.c"
   rot_mul(mctr1, mcrotaMono_Out, mcrotaD4_SC2_1D);
   rot_transpose(mcrotaMono_Out, mctr1);
   rot_mul(mcrotaD4_SC2_1D, mctr1, mcrotrD4_SC2_1D);
@@ -11345,7 +11358,7 @@ void mcinit(void) {
     0,
 #line 232 "templateTAS.instr"
     mcipL2 / 3);
-#line 11348 "templateTAS.c"
+#line 11361 "templateTAS.c"
   rot_transpose(mcrotaMono_Out, mctr1);
   mctc2 = rot_apply(mctr1, mctc1);
   mcposaD4_SC2_1D = coords_add(mcposaMono_Out, mctc2);
@@ -11379,14 +11392,14 @@ void mcinit(void) {
   mccSC2_transmission = 1;
 #line 239 "templateTAS.instr"
   mccSC2_divergenceV = mcipBET2;
-#line 11382 "templateTAS.c"
+#line 11395 "templateTAS.c"
 
   SIG_MESSAGE("SC2 (Init:Place/Rotate)");
   rot_set_rotation(mctr1,
     (0.0)*DEG2RAD,
     (0.0)*DEG2RAD,
     (0.0)*DEG2RAD);
-#line 11389 "templateTAS.c"
+#line 11402 "templateTAS.c"
   rot_mul(mctr1, mcrotaMono_Out, mcrotaSC2);
   rot_transpose(mcrotaD4_SC2_1D, mctr1);
   rot_mul(mcrotaSC2, mctr1, mcrotrSC2);
@@ -11397,7 +11410,7 @@ void mcinit(void) {
     0,
 #line 241 "templateTAS.instr"
     mcipL2 / 2);
-#line 11400 "templateTAS.c"
+#line 11413 "templateTAS.c"
   rot_transpose(mcrotaMono_Out, mctr1);
   mctc2 = rot_apply(mctr1, mctc1);
   mcposaSC2 = coords_add(mcposaMono_Out, mctc2);
@@ -11451,7 +11464,7 @@ void mcinit(void) {
   if("NULL") strncpy(mccSample_Cradle_username2, "NULL" ? "NULL" : "", 16384); else mccSample_Cradle_username2[0]='\0';
 #line 227 "templateTAS.instr"
   if("NULL") strncpy(mccSample_Cradle_username3, "NULL" ? "NULL" : "", 16384); else mccSample_Cradle_username3[0]='\0';
-#line 11454 "templateTAS.c"
+#line 11467 "templateTAS.c"
 
   SIG_MESSAGE("Sample_Cradle (Init:Place/Rotate)");
   rot_set_rotation(mctr1,
@@ -11461,7 +11474,7 @@ void mcinit(void) {
     (mcipA3)*DEG2RAD,
 #line 245 "templateTAS.instr"
     (0)*DEG2RAD);
-#line 11464 "templateTAS.c"
+#line 11477 "templateTAS.c"
   rot_mul(mctr1, mcrotaMono_Out, mcrotaSample_Cradle);
   rot_transpose(mcrotaSC2, mctr1);
   rot_mul(mcrotaSample_Cradle, mctr1, mcrotrSample_Cradle);
@@ -11472,7 +11485,7 @@ void mcinit(void) {
     0,
 #line 244 "templateTAS.instr"
     mcipL2);
-#line 11475 "templateTAS.c"
+#line 11488 "templateTAS.c"
   rot_transpose(mcrotaMono_Out, mctr1);
   mctc2 = rot_apply(mctr1, mctc1);
   mcposaSample_Cradle = coords_add(mcposaMono_Out, mctc2);
@@ -11507,9 +11520,9 @@ void mcinit(void) {
 #line 68 "templateTAS.instr"
   mccSample_focus_yh = 0;
 #line 249 "templateTAS.instr"
-  mccSample_focus_aw = 2;
+  mccSample_focus_aw = RAD2DEG * atan2 ( mcipWA * sin ( mcipA5 * DEG2RAD ) , mcipL3 );
 #line 249 "templateTAS.instr"
-  mccSample_focus_ah = 2;
+  mccSample_focus_ah = RAD2DEG * atan2 ( mcipHA , mcipL3 );
 #line 69 "templateTAS.instr"
   mccSample_xwidth = 0;
 #line 248 "templateTAS.instr"
@@ -11518,14 +11531,14 @@ void mcinit(void) {
   mccSample_zdepth = 0;
 #line 249 "templateTAS.instr"
   mccSample_target_index = + 3;
-#line 11521 "templateTAS.c"
+#line 11534 "templateTAS.c"
 
   SIG_MESSAGE("Sample (Init:Place/Rotate)");
   rot_set_rotation(mctr1,
     (0.0)*DEG2RAD,
     (0.0)*DEG2RAD,
     (0.0)*DEG2RAD);
-#line 11528 "templateTAS.c"
+#line 11541 "templateTAS.c"
   rot_mul(mctr1, mcrotaSample_Cradle, mcrotaSample);
   rot_transpose(mcrotaSample_Cradle, mctr1);
   rot_mul(mcrotaSample, mctr1, mcrotrSample);
@@ -11536,7 +11549,7 @@ void mcinit(void) {
     0,
 #line 251 "templateTAS.instr"
     0);
-#line 11539 "templateTAS.c"
+#line 11552 "templateTAS.c"
   rot_transpose(mcrotaSample_Cradle, mctr1);
   mctc2 = rot_apply(mctr1, mctc1);
   mcposaSample = coords_add(mcposaSample_Cradle, mctc2);
@@ -11559,7 +11572,7 @@ void mcinit(void) {
     (mcipA4)*DEG2RAD,
 #line 255 "templateTAS.instr"
     (0)*DEG2RAD);
-#line 11562 "templateTAS.c"
+#line 11575 "templateTAS.c"
   rot_mul(mctr1, mcrotaMono_Out, mcrotaSample_Out);
   rot_transpose(mcrotaSample, mctr1);
   rot_mul(mcrotaSample_Out, mctr1, mcrotrSample_Out);
@@ -11570,7 +11583,7 @@ void mcinit(void) {
     0,
 #line 254 "templateTAS.instr"
     0);
-#line 11573 "templateTAS.c"
+#line 11586 "templateTAS.c"
   rot_transpose(mcrotaSample_Cradle, mctr1);
   mctc2 = rot_apply(mctr1, mctc1);
   mcposaSample_Out = coords_add(mcposaSample_Cradle, mctc2);
@@ -11624,14 +11637,14 @@ void mcinit(void) {
   if("NULL") strncpy(mccD7_SC3_1D_username2, "NULL" ? "NULL" : "", 16384); else mccD7_SC3_1D_username2[0]='\0';
 #line 227 "templateTAS.instr"
   if("NULL") strncpy(mccD7_SC3_1D_username3, "NULL" ? "NULL" : "", 16384); else mccD7_SC3_1D_username3[0]='\0';
-#line 11627 "templateTAS.c"
+#line 11640 "templateTAS.c"
 
   SIG_MESSAGE("D7_SC3_1D (Init:Place/Rotate)");
   rot_set_rotation(mctr1,
     (0.0)*DEG2RAD,
     (0.0)*DEG2RAD,
     (0.0)*DEG2RAD);
-#line 11634 "templateTAS.c"
+#line 11647 "templateTAS.c"
   rot_mul(mctr1, mcrotaSample_Out, mcrotaD7_SC3_1D);
   rot_transpose(mcrotaSample_Out, mctr1);
   rot_mul(mcrotaD7_SC3_1D, mctr1, mcrotrD7_SC3_1D);
@@ -11642,7 +11655,7 @@ void mcinit(void) {
     0,
 #line 260 "templateTAS.instr"
     0);
-#line 11645 "templateTAS.c"
+#line 11658 "templateTAS.c"
   rot_transpose(mcrotaSample_Out, mctr1);
   mctc2 = rot_apply(mctr1, mctc1);
   mcposaD7_SC3_1D = coords_add(mcposaSample_Out, mctc2);
@@ -11676,14 +11689,14 @@ void mcinit(void) {
   mccSC3_transmission = 1;
 #line 267 "templateTAS.instr"
   mccSC3_divergenceV = mcipBET3;
-#line 11679 "templateTAS.c"
+#line 11692 "templateTAS.c"
 
   SIG_MESSAGE("SC3 (Init:Place/Rotate)");
   rot_set_rotation(mctr1,
     (0.0)*DEG2RAD,
     (0.0)*DEG2RAD,
     (0.0)*DEG2RAD);
-#line 11686 "templateTAS.c"
+#line 11699 "templateTAS.c"
   rot_mul(mctr1, mcrotaSample_Out, mcrotaSC3);
   rot_transpose(mcrotaD7_SC3_1D, mctr1);
   rot_mul(mcrotaSC3, mctr1, mcrotrSC3);
@@ -11694,7 +11707,7 @@ void mcinit(void) {
     0,
 #line 269 "templateTAS.instr"
     mcipL3 / 2);
-#line 11697 "templateTAS.c"
+#line 11710 "templateTAS.c"
   rot_transpose(mcrotaSample_Out, mctr1);
   mctc2 = rot_apply(mctr1, mctc1);
   mcposaSC3 = coords_add(mcposaSample_Out, mctc2);
@@ -11714,7 +11727,7 @@ void mcinit(void) {
     (0.0)*DEG2RAD,
     (0.0)*DEG2RAD,
     (0.0)*DEG2RAD);
-#line 11717 "templateTAS.c"
+#line 11730 "templateTAS.c"
   rot_mul(mctr1, mcrotaSample_Out, mcrotaAna_Cradle);
   rot_transpose(mcrotaSC3, mctr1);
   rot_mul(mcrotaAna_Cradle, mctr1, mcrotrAna_Cradle);
@@ -11725,7 +11738,7 @@ void mcinit(void) {
     0,
 #line 272 "templateTAS.instr"
     mcipL3);
-#line 11728 "templateTAS.c"
+#line 11741 "templateTAS.c"
   rot_transpose(mcrotaSample_Out, mctr1);
   mctc2 = rot_apply(mctr1, mctc1);
   mcposaAna_Cradle = coords_add(mcposaSample_Out, mctc2);
@@ -11779,7 +11792,7 @@ void mcinit(void) {
   mccPG2Xtal_verbose = 0;
 #line 105 "templateTAS.instr"
   mccPG2Xtal_order = 0;
-#line 11782 "templateTAS.c"
+#line 11795 "templateTAS.c"
 
   SIG_MESSAGE("PG2Xtal (Init:Place/Rotate)");
   rot_set_rotation(mctr1,
@@ -11789,7 +11802,7 @@ void mcinit(void) {
     (mcipA5)*DEG2RAD,
 #line 281 "templateTAS.instr"
     (0)*DEG2RAD);
-#line 11792 "templateTAS.c"
+#line 11805 "templateTAS.c"
   rot_mul(mctr1, mcrotaAna_Cradle, mcrotaPG2Xtal);
   rot_transpose(mcrotaAna_Cradle, mctr1);
   rot_mul(mcrotaPG2Xtal, mctr1, mcrotrPG2Xtal);
@@ -11800,7 +11813,7 @@ void mcinit(void) {
     0,
 #line 280 "templateTAS.instr"
     0);
-#line 11803 "templateTAS.c"
+#line 11816 "templateTAS.c"
   rot_transpose(mcrotaAna_Cradle, mctr1);
   mctc2 = rot_apply(mctr1, mctc1);
   mcposaPG2Xtal = coords_add(mcposaAna_Cradle, mctc2);
@@ -11823,7 +11836,7 @@ void mcinit(void) {
     (mcipA6)*DEG2RAD,
 #line 285 "templateTAS.instr"
     (0)*DEG2RAD);
-#line 11826 "templateTAS.c"
+#line 11839 "templateTAS.c"
   rot_mul(mctr1, mcrotaAna_Cradle, mcrotaAna_Out);
   rot_transpose(mcrotaPG2Xtal, mctr1);
   rot_mul(mcrotaAna_Out, mctr1, mcrotrAna_Out);
@@ -11834,7 +11847,7 @@ void mcinit(void) {
     0,
 #line 284 "templateTAS.instr"
     0);
-#line 11837 "templateTAS.c"
+#line 11850 "templateTAS.c"
   rot_transpose(mcrotaAna_Cradle, mctr1);
   mctc2 = rot_apply(mctr1, mctc1);
   mcposaAna_Out = coords_add(mcposaAna_Cradle, mctc2);
@@ -11868,14 +11881,14 @@ void mcinit(void) {
   mccSC4_transmission = 1;
 #line 292 "templateTAS.instr"
   mccSC4_divergenceV = mcipBET4;
-#line 11871 "templateTAS.c"
+#line 11884 "templateTAS.c"
 
   SIG_MESSAGE("SC4 (Init:Place/Rotate)");
   rot_set_rotation(mctr1,
     (0.0)*DEG2RAD,
     (0.0)*DEG2RAD,
     (0.0)*DEG2RAD);
-#line 11878 "templateTAS.c"
+#line 11891 "templateTAS.c"
   rot_mul(mctr1, mcrotaAna_Out, mcrotaSC4);
   rot_transpose(mcrotaAna_Out, mctr1);
   rot_mul(mcrotaSC4, mctr1, mcrotrSC4);
@@ -11886,7 +11899,7 @@ void mcinit(void) {
     0,
 #line 294 "templateTAS.instr"
     ( mcipL4 -0.24 ) / 2);
-#line 11889 "templateTAS.c"
+#line 11902 "templateTAS.c"
   rot_transpose(mcrotaAna_Out, mctr1);
   mctc2 = rot_apply(mctr1, mctc1);
   mcposaSC4 = coords_add(mcposaAna_Out, mctc2);
@@ -11905,9 +11918,9 @@ void mcinit(void) {
 #line 76 "templateTAS.instr"
   if(0) strncpy(mccHe3H_options, 0 ? 0 : "", 16384); else mccHe3H_options[0]='\0';
 #line 304 "templateTAS.instr"
-  mccHe3H_xwidth = 2 * 0.0254;
+  mccHe3H_xwidth = mcipWD;
 #line 304 "templateTAS.instr"
-  mccHe3H_yheight = 0.085;
+  mccHe3H_yheight = mcipHD;
 #line 76 "templateTAS.instr"
   mccHe3H_zdepth = 0;
 #line 76 "templateTAS.instr"
@@ -11928,14 +11941,14 @@ void mcinit(void) {
   mccHe3H_bufsize = 0;
 #line 77 "templateTAS.instr"
   mccHe3H_restore_neutron = 0;
-#line 11931 "templateTAS.c"
+#line 11944 "templateTAS.c"
 
   SIG_MESSAGE("He3H (Init:Place/Rotate)");
   rot_set_rotation(mctr1,
     (0.0)*DEG2RAD,
     (0.0)*DEG2RAD,
     (0.0)*DEG2RAD);
-#line 11938 "templateTAS.c"
+#line 11951 "templateTAS.c"
   rot_mul(mctr1, mcrotaAna_Out, mcrotaHe3H);
   rot_transpose(mcrotaSC4, mctr1);
   rot_mul(mcrotaHe3H, mctr1, mcrotrHe3H);
@@ -11946,7 +11959,7 @@ void mcinit(void) {
     0,
 #line 306 "templateTAS.instr"
     mcipL4);
-#line 11949 "templateTAS.c"
+#line 11962 "templateTAS.c"
   rot_transpose(mcrotaAna_Out, mctr1);
   mctc2 = rot_apply(mctr1, mctc1);
   mcposaHe3H = coords_add(mcposaAna_Out, mctc2);
@@ -11983,7 +11996,7 @@ void mcinit(void) {
     percent=1e5*100.0/mcget_ncount();
   }
 }
-#line 11986 "templateTAS.c"
+#line 11999 "templateTAS.c"
 #undef minutes
 #undef flag_save
 #undef percent
@@ -12320,7 +12333,7 @@ void mcinit(void) {
       printf("Source_gen: component %s unactivated", NAME_CURRENT_COMP);
   );
 }
-#line 12323 "templateTAS.c"
+#line 12336 "templateTAS.c"
 #undef target_index
 #undef zdepth
 #undef I3
@@ -12404,7 +12417,7 @@ void mcinit(void) {
   }
 
 }
-#line 12407 "templateTAS.c"
+#line 12420 "templateTAS.c"
 #undef divergenceV
 #undef transmission
 #undef divergence
@@ -12545,7 +12558,7 @@ void mcinit(void) {
   }
 
 }
-#line 12548 "templateTAS.c"
+#line 12561 "templateTAS.c"
 #undef order
 #undef verbose
 #undef height
@@ -12696,7 +12709,7 @@ MPI_MASTER(
 );
 #endif
 }
-#line 12699 "templateTAS.c"
+#line 12712 "templateTAS.c"
 #undef username3
 #undef username2
 #undef username1
@@ -12760,7 +12773,7 @@ MPI_MASTER(
   }
 
 }
-#line 12763 "templateTAS.c"
+#line 12776 "templateTAS.c"
 #undef divergenceV
 #undef transmission
 #undef divergence
@@ -12888,7 +12901,7 @@ MPI_MASTER(
 );
 #endif
 }
-#line 12891 "templateTAS.c"
+#line 12904 "templateTAS.c"
 #undef username3
 #undef username2
 #undef username1
@@ -12982,7 +12995,7 @@ MPI_MASTER(
     res_struct.ah = DEG2RAD*focus_ah;
   }
 }
-#line 12985 "templateTAS.c"
+#line 12998 "templateTAS.c"
 #undef target_index
 #undef zdepth
 #undef yheight
@@ -13118,7 +13131,7 @@ MPI_MASTER(
 );
 #endif
 }
-#line 13121 "templateTAS.c"
+#line 13134 "templateTAS.c"
 #undef username3
 #undef username2
 #undef username1
@@ -13182,7 +13195,7 @@ MPI_MASTER(
   }
 
 }
-#line 13185 "templateTAS.c"
+#line 13198 "templateTAS.c"
 #undef divergenceV
 #undef transmission
 #undef divergence
@@ -13320,7 +13333,7 @@ MPI_MASTER(
   }
 
 }
-#line 13323 "templateTAS.c"
+#line 13336 "templateTAS.c"
 #undef order
 #undef verbose
 #undef height
@@ -13392,7 +13405,7 @@ MPI_MASTER(
   }
 
 }
-#line 13395 "templateTAS.c"
+#line 13408 "templateTAS.c"
 #undef divergenceV
 #undef transmission
 #undef divergence
@@ -13474,7 +13487,7 @@ MPI_MASTER(
   if (filename != NULL)
     strncpy(Vars.Mon_File, filename, 128);
 }
-#line 13477 "templateTAS.c"
+#line 13490 "templateTAS.c"
 #undef restore_neutron
 #undef bufsize
 #undef zmax
@@ -13650,7 +13663,7 @@ MCNUM minutes = mccOrigin_minutes;
     if (flag_save) mcsave(NULL);
   }
 }
-#line 13653 "templateTAS.c"
+#line 13666 "templateTAS.c"
 }   /* End of Origin=Progress_bar() SETTING parameter declarations. */
 #undef CurrentTime
 #undef EndTime
@@ -13898,7 +13911,7 @@ int target_index = mccSource_target_index;
     SCATTER;
   }
 }
-#line 13901 "templateTAS.c"
+#line 13914 "templateTAS.c"
 }   /* End of Source=Source_gen() SETTING parameter declarations. */
 #undef pTable_dymax
 #undef pTable_dymin
@@ -14066,7 +14079,7 @@ if (( mcipALF1 && mcipBET1 ))
       SCATTER;
     }
 }
-#line 14068 "templateTAS.c"
+#line 14081 "templateTAS.c"
 }   /* End of SC1=Collimator_linear() SETTING parameter declarations. */
 #undef slopeV
 #undef slope
@@ -14637,7 +14650,7 @@ MCNUM order = mccPG1Xtal_order;
     }
   } /* End neutron moving towards crystal (if vx)*/
 }
-#line 14639 "templateTAS.c"
+#line 14652 "templateTAS.c"
 }   /* End of PG1Xtal=Monochromator_curved() SETTING parameter declarations. */
 #undef tiltV
 #undef tiltH
@@ -15054,7 +15067,7 @@ char* username3 = mccD4_SC2_1D_username3;
     RESTORE_NEUTRON(INDEX_CURRENT_COMP, x, y, z, vx, vy, vz, t, sx, sy, sz, p);
   }
 }
-#line 15056 "templateTAS.c"
+#line 15069 "templateTAS.c"
 }   /* End of D4_SC2_1D=Monitor_nD() SETTING parameter declarations. */
 #undef offdata
 #undef detector
@@ -15212,7 +15225,7 @@ if (( mcipALF2 && mcipBET2 ))
       SCATTER;
     }
 }
-#line 15213 "templateTAS.c"
+#line 15226 "templateTAS.c"
 }   /* End of SC2=Collimator_linear() SETTING parameter declarations. */
 #undef slopeV
 #undef slope
@@ -15516,7 +15529,7 @@ char* username3 = mccSample_Cradle_username3;
     RESTORE_NEUTRON(INDEX_CURRENT_COMP, x, y, z, vx, vy, vz, t, sx, sy, sz, p);
   }
 }
-#line 15517 "templateTAS.c"
+#line 15530 "templateTAS.c"
 }   /* End of Sample_Cradle=Monitor_nD() SETTING parameter declarations. */
 #undef offdata
 #undef detector
@@ -15722,7 +15735,7 @@ int target_index = mccSample_target_index;
     res_struct.kf_z = V2K*vz;
   }
 }
-#line 15723 "templateTAS.c"
+#line 15736 "templateTAS.c"
 }   /* End of Sample=Res_sample() SETTING parameter declarations. */
 #undef res_struct
 #undef mccompcurname
@@ -16128,7 +16141,7 @@ char* username3 = mccD7_SC3_1D_username3;
     RESTORE_NEUTRON(INDEX_CURRENT_COMP, x, y, z, vx, vy, vz, t, sx, sy, sz, p);
   }
 }
-#line 16129 "templateTAS.c"
+#line 16142 "templateTAS.c"
 }   /* End of D7_SC3_1D=Monitor_nD() SETTING parameter declarations. */
 #undef offdata
 #undef detector
@@ -16286,7 +16299,7 @@ if (( mcipALF3 && mcipBET3 ))
       SCATTER;
     }
 }
-#line 16286 "templateTAS.c"
+#line 16299 "templateTAS.c"
 }   /* End of SC3=Collimator_linear() SETTING parameter declarations. */
 #undef slopeV
 #undef slope
@@ -16754,7 +16767,7 @@ MCNUM order = mccPG2Xtal_order;
     }
   } /* End neutron moving towards crystal (if vx)*/
 }
-#line 16754 "templateTAS.c"
+#line 16767 "templateTAS.c"
 }   /* End of PG2Xtal=Monochromator_curved() SETTING parameter declarations. */
 #undef tiltV
 #undef tiltH
@@ -17020,7 +17033,7 @@ if (( mcipALF4 && mcipBET4 ))
       SCATTER;
     }
 }
-#line 17019 "templateTAS.c"
+#line 17032 "templateTAS.c"
 }   /* End of SC4=Collimator_linear() SETTING parameter declarations. */
 #undef slopeV
 #undef slope
@@ -17221,7 +17234,7 @@ MCNUM restore_neutron = mccHe3H_restore_neutron;
     }
 
 }
-#line 17220 "templateTAS.c"
+#line 17233 "templateTAS.c"
 }   /* End of He3H=Res_monitor() SETTING parameter declarations. */
 #undef buffer_index
 #undef Vars
@@ -17334,7 +17347,7 @@ MCNUM minutes = mccOrigin_minutes;
 
   }
 }
-#line 17333 "templateTAS.c"
+#line 17346 "templateTAS.c"
 }   /* End of Origin=Progress_bar() SETTING parameter declarations. */
 #undef CurrentTime
 #undef EndTime
@@ -17382,7 +17395,7 @@ char* username3 = mccD4_SC2_1D_username3;
   /* save results, but do not free pointers */
   detector = Monitor_nD_Save(&DEFS, &Vars);
 }
-#line 17381 "templateTAS.c"
+#line 17394 "templateTAS.c"
 }   /* End of D4_SC2_1D=Monitor_nD() SETTING parameter declarations. */
 #undef offdata
 #undef detector
@@ -17433,7 +17446,7 @@ char* username3 = mccSample_Cradle_username3;
   /* save results, but do not free pointers */
   detector = Monitor_nD_Save(&DEFS, &Vars);
 }
-#line 17432 "templateTAS.c"
+#line 17445 "templateTAS.c"
 }   /* End of Sample_Cradle=Monitor_nD() SETTING parameter declarations. */
 #undef offdata
 #undef detector
@@ -17484,7 +17497,7 @@ char* username3 = mccD7_SC3_1D_username3;
   /* save results, but do not free pointers */
   detector = Monitor_nD_Save(&DEFS, &Vars);
 }
-#line 17483 "templateTAS.c"
+#line 17496 "templateTAS.c"
 }   /* End of D7_SC3_1D=Monitor_nD() SETTING parameter declarations. */
 #undef offdata
 #undef detector
@@ -17526,7 +17539,7 @@ MCNUM restore_neutron = mccHe3H_restore_neutron;
   /* save results, but do not free pointers */
   Monitor_nD_Save(&DEFS, &Vars);
 }
-#line 17525 "templateTAS.c"
+#line 17538 "templateTAS.c"
 }   /* End of He3H=Res_monitor() SETTING parameter declarations. */
 #undef buffer_index
 #undef Vars
@@ -17570,7 +17583,7 @@ MCNUM minutes = mccOrigin_minutes;
     fprintf(stdout, "%g [min] ", difftime(NowTime,StartTime)/60.0);
   fprintf(stdout, "\n");
 }
-#line 17569 "templateTAS.c"
+#line 17582 "templateTAS.c"
 }   /* End of Origin=Progress_bar() SETTING parameter declarations. */
 #undef CurrentTime
 #undef EndTime
@@ -17642,7 +17655,7 @@ int target_index = mccSource_target_index;
   Table_Free(&pTable_x);
   Table_Free(&pTable_y);
 }
-#line 17640 "templateTAS.c"
+#line 17653 "templateTAS.c"
 }   /* End of Source=Source_gen() SETTING parameter declarations. */
 #undef pTable_dymax
 #undef pTable_dymin
@@ -17722,7 +17735,7 @@ MCNUM order = mccPG1Xtal_order;
   if (tiltH) free(tiltH); 
   if (tiltV) free(tiltV);
 }
-#line 17716 "templateTAS.c"
+#line 17729 "templateTAS.c"
 }   /* End of PG1Xtal=Monochromator_curved() SETTING parameter declarations. */
 #undef tiltV
 #undef tiltH
@@ -17784,7 +17797,7 @@ char* username3 = mccD4_SC2_1D_username3;
   /* free pointers */
   Monitor_nD_Finally(&DEFS, &Vars);
 }
-#line 17776 "templateTAS.c"
+#line 17789 "templateTAS.c"
 }   /* End of D4_SC2_1D=Monitor_nD() SETTING parameter declarations. */
 #undef offdata
 #undef detector
@@ -17841,7 +17854,7 @@ char* username3 = mccSample_Cradle_username3;
   /* free pointers */
   Monitor_nD_Finally(&DEFS, &Vars);
 }
-#line 17831 "templateTAS.c"
+#line 17844 "templateTAS.c"
 }   /* End of Sample_Cradle=Monitor_nD() SETTING parameter declarations. */
 #undef offdata
 #undef detector
@@ -17901,7 +17914,7 @@ char* username3 = mccD7_SC3_1D_username3;
   /* free pointers */
   Monitor_nD_Finally(&DEFS, &Vars);
 }
-#line 17888 "templateTAS.c"
+#line 17901 "templateTAS.c"
 }   /* End of D7_SC3_1D=Monitor_nD() SETTING parameter declarations. */
 #undef offdata
 #undef detector
@@ -17968,7 +17981,7 @@ MCNUM order = mccPG2Xtal_order;
   if (tiltH) free(tiltH); 
   if (tiltV) free(tiltV);
 }
-#line 17952 "templateTAS.c"
+#line 17965 "templateTAS.c"
 }   /* End of PG2Xtal=Monochromator_curved() SETTING parameter declarations. */
 #undef tiltV
 #undef tiltH
@@ -18026,7 +18039,7 @@ MCNUM restore_neutron = mccHe3H_restore_neutron;
   Monitor_nD_Finally(&DEFS, &Vars);
 
 }
-#line 18007 "templateTAS.c"
+#line 18020 "templateTAS.c"
 }   /* End of He3H=Res_monitor() SETTING parameter declarations. */
 #undef buffer_index
 #undef Vars
@@ -18071,7 +18084,7 @@ MCNUM minutes = mccOrigin_minutes;
 {
   magnify("");
 }
-#line 18051 "templateTAS.c"
+#line 18064 "templateTAS.c"
 }   /* End of Origin=Progress_bar() SETTING parameter declarations. */
 #undef CurrentTime
 #undef EndTime
@@ -18184,7 +18197,7 @@ int target_index = mccSource_target_index;
     dashed_line(0,0,0, -focus_xw/2, focus_yh/2,dist, 4);
   }
 }
-#line 18164 "templateTAS.c"
+#line 18177 "templateTAS.c"
 }   /* End of Source=Source_gen() SETTING parameter declarations. */
 #undef pTable_dymax
 #undef pTable_dymin
@@ -18241,7 +18254,7 @@ MCNUM divergenceV = mccSC1_divergenceV;
   line(xmin, ymin, length, xmax, ymin, length);
   line(xmin, ymax, length, xmax, ymax, length);
 }
-#line 18221 "templateTAS.c"
+#line 18234 "templateTAS.c"
 }   /* End of SC1=Collimator_linear() SETTING parameter declarations. */
 #undef slopeV
 #undef slope
@@ -18263,7 +18276,7 @@ MCNUM divergenceV = mccSC1_divergenceV;
   line(0,0,0,0,0.2,0);
   line(0,0,0,0,0,0.2);
 }
-#line 18243 "templateTAS.c"
+#line 18256 "templateTAS.c"
 #undef mccompcurname
 #undef mccompcurtype
 #undef mccompcurindex
@@ -18282,7 +18295,7 @@ MCNUM divergenceV = mccSC1_divergenceV;
   line(0,0,0,0,0.2,0);
   line(0,0,0,0,0,0.2);
 }
-#line 18262 "templateTAS.c"
+#line 18275 "templateTAS.c"
 #undef mccompcurname
 #undef mccompcurtype
 #undef mccompcurindex
@@ -18357,7 +18370,7 @@ MCNUM order = mccPG1Xtal_order;
      }
    }
 }
-#line 18337 "templateTAS.c"
+#line 18350 "templateTAS.c"
 }   /* End of PG1Xtal=Monochromator_curved() SETTING parameter declarations. */
 #undef tiltV
 #undef tiltH
@@ -18389,7 +18402,7 @@ MCNUM order = mccPG1Xtal_order;
   line(0,0,0,0,0.2,0);
   line(0,0,0,0,0,0.2);
 }
-#line 18369 "templateTAS.c"
+#line 18382 "templateTAS.c"
 #undef mccompcurname
 #undef mccompcurtype
 #undef mccompcurindex
@@ -18437,7 +18450,7 @@ char* username3 = mccD4_SC2_1D_username3;
     Monitor_nD_McDisplay(&DEFS, &Vars);
   }
 }
-#line 18417 "templateTAS.c"
+#line 18430 "templateTAS.c"
 }   /* End of D4_SC2_1D=Monitor_nD() SETTING parameter declarations. */
 #undef offdata
 #undef detector
@@ -18484,7 +18497,7 @@ MCNUM divergenceV = mccSC2_divergenceV;
   line(xmin, ymin, length, xmax, ymin, length);
   line(xmin, ymax, length, xmax, ymax, length);
 }
-#line 18464 "templateTAS.c"
+#line 18477 "templateTAS.c"
 }   /* End of SC2=Collimator_linear() SETTING parameter declarations. */
 #undef slopeV
 #undef slope
@@ -18535,7 +18548,7 @@ char* username3 = mccSample_Cradle_username3;
     Monitor_nD_McDisplay(&DEFS, &Vars);
   }
 }
-#line 18515 "templateTAS.c"
+#line 18528 "templateTAS.c"
 }   /* End of Sample_Cradle=Monitor_nD() SETTING parameter declarations. */
 #undef offdata
 #undef detector
@@ -18616,7 +18629,7 @@ int target_index = mccSample_target_index;
     }
   }
 }
-#line 18596 "templateTAS.c"
+#line 18609 "templateTAS.c"
 }   /* End of Sample=Res_sample() SETTING parameter declarations. */
 #undef res_struct
 #undef mccompcurname
@@ -18637,7 +18650,7 @@ int target_index = mccSample_target_index;
   line(0,0,0,0,0.2,0);
   line(0,0,0,0,0,0.2);
 }
-#line 18617 "templateTAS.c"
+#line 18630 "templateTAS.c"
 #undef mccompcurname
 #undef mccompcurtype
 #undef mccompcurindex
@@ -18685,7 +18698,7 @@ char* username3 = mccD7_SC3_1D_username3;
     Monitor_nD_McDisplay(&DEFS, &Vars);
   }
 }
-#line 18665 "templateTAS.c"
+#line 18678 "templateTAS.c"
 }   /* End of D7_SC3_1D=Monitor_nD() SETTING parameter declarations. */
 #undef offdata
 #undef detector
@@ -18732,7 +18745,7 @@ MCNUM divergenceV = mccSC3_divergenceV;
   line(xmin, ymin, length, xmax, ymin, length);
   line(xmin, ymax, length, xmax, ymax, length);
 }
-#line 18712 "templateTAS.c"
+#line 18725 "templateTAS.c"
 }   /* End of SC3=Collimator_linear() SETTING parameter declarations. */
 #undef slopeV
 #undef slope
@@ -18754,7 +18767,7 @@ MCNUM divergenceV = mccSC3_divergenceV;
   line(0,0,0,0,0.2,0);
   line(0,0,0,0,0,0.2);
 }
-#line 18734 "templateTAS.c"
+#line 18747 "templateTAS.c"
 #undef mccompcurname
 #undef mccompcurtype
 #undef mccompcurindex
@@ -18829,7 +18842,7 @@ MCNUM order = mccPG2Xtal_order;
      }
    }
 }
-#line 18809 "templateTAS.c"
+#line 18822 "templateTAS.c"
 }   /* End of PG2Xtal=Monochromator_curved() SETTING parameter declarations. */
 #undef tiltV
 #undef tiltH
@@ -18861,7 +18874,7 @@ MCNUM order = mccPG2Xtal_order;
   line(0,0,0,0,0.2,0);
   line(0,0,0,0,0,0.2);
 }
-#line 18841 "templateTAS.c"
+#line 18854 "templateTAS.c"
 #undef mccompcurname
 #undef mccompcurtype
 #undef mccompcurindex
@@ -18900,7 +18913,7 @@ MCNUM divergenceV = mccSC4_divergenceV;
   line(xmin, ymin, length, xmax, ymin, length);
   line(xmin, ymax, length, xmax, ymax, length);
 }
-#line 18880 "templateTAS.c"
+#line 18893 "templateTAS.c"
 }   /* End of SC4=Collimator_linear() SETTING parameter declarations. */
 #undef slopeV
 #undef slope
@@ -18937,7 +18950,7 @@ MCNUM restore_neutron = mccHe3H_restore_neutron;
 {
   Monitor_nD_McDisplay(&DEFS, &Vars);
 }
-#line 18917 "templateTAS.c"
+#line 18930 "templateTAS.c"
 }   /* End of He3H=Res_monitor() SETTING parameter declarations. */
 #undef buffer_index
 #undef Vars
