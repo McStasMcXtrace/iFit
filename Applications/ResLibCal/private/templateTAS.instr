@@ -114,16 +114,16 @@ INITIALIZE
 %{
 	double Vi;
 
-	  Vi = K2V*fabs(KI);
-	  EI = VS2E*Vi*Vi;
-	  EF = EI - EN;
-	  A1 *= SM;
-	  A2 *= SM;
-
-	  A4 *= SS;
-
-	  A6 *= SA;
-	  A5 *= SA;
+  Vi = K2V*fabs(KI);
+  EI = VS2E*Vi*Vi;
+  EF = EI - EN;
+  
+  A1 *= SM;
+	A2 *= SM;
+	/* A3 = <KI,A> A3 *= SS;  is determined in absolute angle */
+	A4 *= SS;
+	A5 *= SA;
+	A6 *= SA;
 
 	if (verbose) {
 	  printf("%s: Detailed TAS configuration\n", NAME_CURRENT_COMP);
@@ -154,24 +154,18 @@ INITIALIZE
 	  printf("EI=%g EF=%g meV\n",EI, EF);
 
 	}
-	
-	A1 = fabs(A1)*SM;
-	A2 = fabs(A2)*SM;
-	A3 = -fabs(A3)*SS;  /* A3 = <KI,A> */
-	A4 = fabs(A4)*SS;
-	A5 = fabs(A5)*SA;
-	A6 = fabs(A6)*SA;
 	RMH=fabs(RMH)*SM;
 	RMV=fabs(RMV)*SM;
 	RAH=fabs(RAH)*SA;
 	RAV=fabs(RAV)*SA;
+	
 %}
 /* end of INITIALIZE */
 
 TRACE
 /* Source description */
 
-COMPONENT Origin=Progress_bar(profile="profiler.dat")
+COMPONENT Origin=Progress_bar()
 AT (0,0,0) ABSOLUTE
 
 /* a flat constant source */
@@ -198,7 +192,7 @@ AT (0, 0, L1) ABSOLUTE
 COMPONENT Mono_Cradle = Arm()
   AT (0, 0, 0) RELATIVE PREVIOUS
   
-COMPONENT PG1Xtal = Monochromator_curved(
+SPLIT COMPONENT PG1Xtal = Monochromator_curved(
   width  = WM,
   height = HM,
   NH=NHM, NV=NVM,

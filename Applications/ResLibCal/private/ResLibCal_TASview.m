@@ -34,7 +34,7 @@ if ~iscell(resolution)
   resolution = { resolution };
 end
 for index=1:numel(resolution)
-  if ~resolution{index}.R0, continue; end
+  if ~isreal(resolution{index}.R0) || ~resolution{index}.R0, continue; end
   angles    = resolution{index}.angles*pi/180;
 
   angles = real(angles); % in case the configuration is not possible (angles are imaginary)

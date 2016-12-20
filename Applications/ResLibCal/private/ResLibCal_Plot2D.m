@@ -32,12 +32,12 @@ else
   resolutions = out.resolution;
 end
 
-max_points = ceil(max(100, 300/numel(resolutions))); % nb of MC points per cloud in 3 panes
+max_points = ceil(max(400, 1000/numel(resolutions))); % nb of MC points per cloud in 3 panes
 
 for index=1:numel(resolutions)
   resolution = resolutions{index};
   
-  if ~resolution.R0, continue; end
+  if ~isreal(resolution.R0) || ~resolution.R0, continue; end
   H=resolution.HKLE(1); K=resolution.HKLE(2); 
   L=resolution.HKLE(3); W=resolution.HKLE(4);
 

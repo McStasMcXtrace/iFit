@@ -133,8 +133,9 @@ function res= ResLibCal_ComputeResMat_Single(EXP, h,k,l,w)
       method    = @Rescal_AFILL; 
       [R0,RM]   = feval(method,h,k,l,w, EXP);
     elseif ~isempty(strfind(EXP.method, 'mcstas'))
-      method    = @Rescal_AFILL; 
-      [R0,RM]   = feval(method,h,k,l,w, EXP);
+    f=0.4826; % f converts from energy units into k^2, f=0.4826 for meV
+      method    = @rc_popma; 
+      [R0,RM]   = feval(method,f,0,EXP,0);
       % and we shal use Mcstas TAS for the cloud
     else % default is 'reslib'
       method = @ResMat;
@@ -153,7 +154,7 @@ function res= ResLibCal_ComputeResMat_Single(EXP, h,k,l,w)
     % xyz is relative to Q, and vertical axis.
     %
     % RM is the resolution matrix in [xyz] frame with x // Q, z vertical
-    
+    if ~isfinite(R0), R0=0; end
     res.R0    = R0;
     res.HKLE  = [ h k l w ];  % evaluation location
     res.method= method_orig;
