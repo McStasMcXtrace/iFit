@@ -15,7 +15,8 @@ function data = read_bruker(file)
 %   <http://matnmr.sourceforge.net/>
 %
 % See also: read_jeol, read_varian, read_opus
-
+  data = [];
+  if nargin == 0, return; end
   if ~isdir(file)
     file = fileparts(file);
   end

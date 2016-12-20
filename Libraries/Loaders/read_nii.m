@@ -14,6 +14,7 @@ function data = read_nii(filename)
 % See also: read_poscar, read_pdb, read_xyz, read_mrc, read_analyze
 
 data = [];
+if nargin == 0, return; end
 
 try
   % a good, reliable loader by Jimmy Shen
@@ -100,6 +101,7 @@ while(test)
     if info.SizeofHdr > info.Filesize || info.Extents > info.Filesize
       fprintf([ mfilename ': wrong file hdr extent %i %i\n' ], info.SizeofHdr, info.Extents);
       info = [];
+      fclose(fid);
       return
     end
 end
@@ -186,11 +188,11 @@ info.SrowY=fread(fid,4,'float');
 info.SrowZ=fread(fid,4,'float');
 info.IntentName=fread(fid, 16, 'uint8=>char')';
 info.Magic=fread(fid, 4, 'uint8=>char')';
+
+fclose(fid);
 if ~strncmp(info.Magic, 'nii', 3) && ~strncmp(info.Magic, 'n+1', 3)
   error([ mfilename ': ' filename ' is probably not a NifTI volume file.' ])
 end
-
-fclose(fid);
 
 % ------------------------------------------------------------------------------
 function V = nii_read_volume(info)
@@ -506,6 +508,7 @@ function [hdr, filetype, fileprefix, machine] = load_nii_hdr(fileprefix)
                %  Now throw an error
                %
                msg = sprintf('File "%s" is corrupted.',fn);
+               fclose(fid);
                error(msg);
             end
 
@@ -901,6 +904,7 @@ function [img,hdr] = read_image(hdr,filetype,fileprefix,machine,img_idx,dim5_idx
    case 1792,
       hdr.dime.bitpix = 128; precision = 'float64';
    otherwise
+      fclose(fid);
       error('This datatype is not supported'); 
    end
 

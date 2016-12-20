@@ -39,11 +39,13 @@ function [ geometry ] = import_poscar( filename )
     geometry.comment = fgetl(fid); % comment
     scale = fscanf(fid, '%f',1); % scale factor for coordinates
     if isempty(scale) || scale == 0
+      fclose(fid);
       error([mfilename ': File ' filename ' is not a VASP/POSCAR type file (scale is NULL).']); 
     end
     geometry.scale   = scale;
     geometry.lattice = fscanf(fid, '%f %f %f', [3 3])'; 
     if numel(geometry.lattice) ~= 9
+      fclose(fid);
       error([mfilename ': File ' filename ' is not a VASP/POSCAR type file (lattice).']);
     end
     geometry.lattice = geometry.lattice*scale;
@@ -60,6 +62,7 @@ function [ geometry ] = import_poscar( filename )
     end
     geometry.atomcount = sscanf(line,'%d');
     if isempty(geometry.atomcount)
+      fclose(fid);
       error([mfilename ': File ' filename ' is not a VASP/POSCAR type file (atom count).']);
     end
     natoms = sum(geometry.atomcount);
@@ -77,6 +80,7 @@ function [ geometry ] = import_poscar( filename )
     elseif lower(line(1)) =='d'
         cartesian = 0;
     else
+        fclose(fid);
         error([mfilename ': File ' filename ' is not a VASP/POSCAR type file (Direct/Cartesian).']); 
     end
     

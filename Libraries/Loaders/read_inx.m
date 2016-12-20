@@ -38,6 +38,7 @@ s.header = '';
 s.Par    = [];
 s.Mat    = [];
 %--------------find-path-and-load---------------------------------
+if nargin == 0, return; end
 
 FID = fopen(filename);
 

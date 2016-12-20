@@ -491,7 +491,7 @@ struct format_struct Global_Formats[NUMFORMATS] = {
       "%% in-line function to read binary blocks\n"
       "function d=bin_ref(f,b,m,n)\n"
       "  [fid,mess]=fopen(f,'rb');\n"
-      "  if fid == -1, disp([ 'Error opening bin file ' f ': ' mess ]); end\n"
+      "  if fid == -1, disp([ 'Error opening bin file ' f ': ' mess ]); d=[]; return; end\n"
       "  fseek(fid,b,-1);\n"
       "  d=fread(fid,m*n,'double'); fclose(fid);\n"
       "  if m*n ~= numel(d), disp([ 'File ' f ': read ' num2str(numel(d)) ' elements but expected ' mat2str([ m n ]) ]); f=dir(f); disp(f); end\n"

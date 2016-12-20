@@ -11,6 +11,8 @@
 function s = read_xyz(filename)
 
   s = [];
+  if nargin == 0, return; end
+  
   fid = fopen(filename,'r');
 
 

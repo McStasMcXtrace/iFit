@@ -8,6 +8,9 @@ function s = read_image(filename)
 % (c) E.Farhi, ILL. License: EUPL.
 % See also: read_fits, imformats
 
+s=[];
+if nargin == 0, return; end
+
 s       = imfinfo(filename);
 s.image = imread(filename);
 if exist('exifread') == 2

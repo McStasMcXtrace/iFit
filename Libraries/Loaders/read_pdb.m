@@ -73,6 +73,9 @@
 % ***************** The Actual Function *************************************
 function result = read_pdb(name)
 
+result = [];
+if nargin == 0, return; end
+
 rho_water = 0.334611 ; % Density of electrons per cubic Angstrom in solvent.
 
 

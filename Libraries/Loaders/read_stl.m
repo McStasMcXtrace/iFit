@@ -16,6 +16,8 @@ function data=read_stl(file, option)
 % See also: read_obj
 
 data=[];
+if nargin == 0, return; end
+
 if isempty(file), return; end
 [file, remain] = strtok(file);
 if nargin == 1, option=remain; end
@@ -354,6 +356,7 @@ ftitle=fread(fid,80,'uchar=>schar'); % Read file title
 numFaces=fread(fid,1,'int32'); % Read number of Faces
 if ~all(isstrprop(ftitle,'print'))
   v=[]; f=[]; n=[]; c=[]; stltitle=[];
+  fclose(fid);  % invalid 'title'
   return
 end
 

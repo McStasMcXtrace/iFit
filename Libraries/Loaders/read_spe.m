@@ -37,7 +37,8 @@ frame = struct('header',[], 'data',[]);
 % check minimum number of input arguments
 if (nargin < 1)
     % image_read_sub_help(mfilename,'SPE');
-    error('At least the filename has to be specified as input parameter.');
+    disp([ mfilename ': At least the filename has to be specified as input parameter.' ]);
+    return;
 end
 
 % accept cell array with name/value pairs as well

@@ -11,6 +11,9 @@ function s = read_edf(filename)
 % See also: read_edf, read_adsc, read_cbf, read_sif, read_mar, read_spe, read_fits, read_image, read_hbin
 
 s = [];
+
+if nargin == 0, return; end
+
 % read the file
 [header, data] = pmedf_read(filename);
 if isempty(header), return; end
@@ -149,6 +152,8 @@ end
 if isempty(strfind(header,'DataType')) || isempty(strfind(header,'ByteOrder')) ...
 || isempty(strfind(header, 'Size')) || isempty(strfind(header, 'Dim_1'))
   %error([ mfilename ': ' f ' is probably not an EDF file.' ])
+  if is_pipe, pclose(fid);
+  else fclose(fid); end
   return
 end
 
@@ -161,6 +166,8 @@ while ~strcmp(header(length(header)-length(closing)+1:length(header)), closing)
 	if count<512 % this is not an edf file
 	    header = [];
 	    data = [];
+	    if is_pipe, pclose(fid);
+      else fclose(fid); end
 	    return; 
 	end
     end
@@ -169,9 +176,9 @@ end
 if nargout == 1
     % One output argument requested => return immediately with just the header.
     if is_pipe
-	pclose(fid);
+	    pclose(fid);
     else
-	fclose(fid);
+	    fclose(fid);
     end
     return
 end
@@ -199,7 +206,10 @@ switch edf.datatype
     case 'SignedByte', dt='int8'; db=1;
     case {'Float', 'FloatValue'}, dt='single'; db=4;
     case {'Double', 'DoubleValue'}, dt='double'; db=8;
-    otherwise error(['Unknown data type "', edf.datatype, '" of file "', f, '"']);
+    otherwise 
+      if is_pipe, pclose(fid);
+      else fclose(fid); end
+      error(['Unknown data type "', edf.datatype, '" of file "', f, '"']);
 end
 
 % Checking -- what is more reliable?
@@ -246,29 +256,33 @@ if edf.dim1*edf.dim2 ~= count
     % Let's try to reopen and reread the file.
     fprintf('  --> ooops, problem reading last %i B out of %i B, retrying...\n', edf.dim1*edf.dim2-count, edf.dim1*edf.dim2);
     if is_pipe
-	pclose(fid);
-	pause(1); % pause 1 second
-	fid = popen(popen_cmd,'r');
+	    pclose(fid);
+	    pause(1); % pause 1 second
+	    fid = popen(popen_cmd,'r');
     else
-	fclose(fid);
-	pause(1); % pause 1 second
-	[fid, msg] = fopen(f,'rb');
+	    fclose(fid);
+	    pause(1); % pause 1 second
+	    [fid, msg] = fopen(f,'rb');
     end
     if fid == -1,
-	fprintf('    --> pmedf_read: cannot reopen file "%s"\n',f);
-	return
+	    fprintf('    --> pmedf_read: cannot reopen file "%s"\n',f);
+	    return
     end
     % skip the header
     [data, count] = fread(fid, length(header), 'uchar', 0, arch);
     if count~=length(header)
-	fprintf('    --> pmedf_read: cannot reread header from file "%s"\n',f);
-	return
+	    fprintf('    --> pmedf_read: cannot reread header from file "%s"\n',f);
+	    if is_pipe, pclose(fid);
+      else fclose(fid); end
+	    return
     end
     % read the data again
     [data, count] = fread(fid, [edf.dim1,edf.dim2], dt, 0, arch);
     if edf.dim1*edf.dim2 ~= count
-	fprintf('    --> pmedf_read: cannot reread data from file "%s"\n',f);
-	return
+	    fprintf('    --> pmedf_read: cannot reread data from file "%s"\n',f);
+	    if is_pipe, pclose(fid);
+      else fclose(fid); end
+	    return
     end
 end
 

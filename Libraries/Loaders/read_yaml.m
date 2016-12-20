@@ -8,6 +8,8 @@ function s = read_yaml(filename)
 % (c) E.Farhi, ILL. License: EUPL.
 % See also: read_json
 
+s=[];
+if nargin == 0, return; end
 
 s       = YAML.read(filename);
 

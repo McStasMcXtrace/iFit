@@ -9,6 +9,8 @@ function S = read_nc(File,varargin)
 % netcdfobj contribution on Matlab Central
 %
 % See also: read_hdf4, read_hdf5, read_cdf
+  S=[];
+  if nargin == 0, return; end
   
   try
     % a NetCDF reader using netcdf lib (faster)

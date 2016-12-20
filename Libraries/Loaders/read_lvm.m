@@ -188,7 +188,9 @@ else
     if fid ~= -1, % then file exists
         fclose(fid);
     else
-        error(['File not found in current directory! (' pwd ')']);
+        data = [];
+        disp([mfilename ': File ' filename ' not found in current directory! (' pwd ')']);
+        return
     end
 end
 
@@ -210,6 +212,7 @@ if ~strcmp(sscanf(linein,'%s'),'LabVIEWMeasurement')
     catch fileEx
         % error([ mfilename ': This does not appear to be a text-format LVM file (no header).' ]);
         data = [];
+        fclose(fid);
         return
     end
 end

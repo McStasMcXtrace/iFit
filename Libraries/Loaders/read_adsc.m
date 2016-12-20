@@ -39,7 +39,7 @@
 function frame = read_adsc(fname)
 
 frame = [];
-
+if nargin == 0, return; end
 % Open the image file
 fid = fopen(fname,'r'); 
 if (fid<0)
@@ -74,6 +74,7 @@ if all(test)
   imag = fread(fid, [Xsize, Ysize], 'uint16');
 else
   fprintf(1,'\n Adsc_read() file %s does not begin with a 512 byte text header.\n',fname);
+  fclose(fid);
   return;
 end
 

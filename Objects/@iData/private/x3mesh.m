@@ -130,8 +130,10 @@ if ( size(inps.color, 1)==1 )
 % if color is a nx3 vector
 else
     if (inps.reduction~=1)
+        fclose(file1);
         error('Set ''reduction'' to 1 if assigning color to each of the indices.');
     elseif (size(inps.color,1) ~= size(inps.v,1))
+        fclose(file1);
         error('Color and vertices arrays must be the same size');
     else
         clist=reshape(inps.color', 1, size(inps.color, 1)*size(inps.color,2));

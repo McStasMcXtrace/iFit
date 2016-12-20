@@ -86,7 +86,7 @@ file.name = fopen(file.name, 'r', 'l', 'UTF-8');
 % Check version
 if isempty(file.key)
     varargout{1} = [];
-    
+    fclose(file.name);
     disp([mfilename ': Input data of type ''V.', num2str(file.version), ''' is currently unsupported.']);
     return
 end

@@ -11,6 +11,8 @@ function data = read_jeol(file)
 % <http://dosytoolbox.chemistry.manchester.ac.uk>
 %
 % See also: read_bruker, read_varian, read_opus
+data = [];
+if nargin == 0, return; end
 
   if ~isdir(file)
     [p,f,ext] = fileparts(file);
@@ -177,7 +179,7 @@ if ~isempty(file)
         case 'MHz'
             jeoldata.sfrq=jeoldata.sfrq;
         otherwise
-            error('Unknown unit')
+            error([ 'Unknown unit ' unit ])
     end
     
     %sw (ppm)
@@ -193,7 +195,7 @@ if ~isempty(file)
         case 'Hz'
             jeoldata.sw=jeoldata.sw;
         otherwise
-            error('Unknown unit')
+            error([ 'Unknown unit ' unit ])
     end
     jeoldata.sw=jeoldata.sw/jeoldata.sfrq; %now in ppm
     %sw1 (ppm)
@@ -210,7 +212,7 @@ if ~isempty(file)
             case 'Hz'
                 jeoldata.sw1=jeoldata.sw1;
             otherwise
-                error('Unknown unit')
+                error([ 'Unknown unit ' unit ])
         end
         jeoldata.sw1=jeoldata.sw1/jeoldata.sfrq; %now in ppm
     end
@@ -242,7 +244,7 @@ if ~isempty(file)
             end
             
         otherwise
-            error('Unknown unit')
+            error([ 'Unknown unit ' unit ])
     end
     
     
@@ -261,7 +263,7 @@ if ~isempty(file)
             tmp(2)=find(procpar.y_stop==']');
             jeoldata.at_stop=str2double(procpar.y_stop(1:tmp(1)-1));
         otherwise
-            error('Unknown unit')
+            error([ 'Unknown unit ' unit ])
     end
     
     jeoldata.at=jeoldata.at_stop-jeoldata.at_start;
@@ -285,7 +287,7 @@ if ~isempty(file)
                     case 'T/km'
                         jeoldata.Gzlvl(k)=jeoldata.Gzlvl(k)*1e-3;
                     otherwise
-                        error('Unknown unit')
+                        error([ 'Unknown unit ' unit ])
                 end
             end
             
@@ -303,7 +305,7 @@ if ~isempty(file)
                     case 'T/km'
                         jeoldata.Gzlvl(k)=jeoldata.Gzlvl(k)*1e-3;
                     otherwise
-                        error('Unknown unit')
+                        error([ 'Unknown unit ' unit ])
                 end
             end
         else
@@ -324,7 +326,7 @@ if ~isempty(file)
                     jeoldata.delta=jeoldata.delta;
                     
                 otherwise
-                    error('Unknown unit')
+                    error([ 'Unknown unit ' unit ])
             end
         else
             disp('WARNING! delta is missing from the parameter set')
@@ -345,7 +347,7 @@ if ~isempty(file)
                     jeoldata.DELTA=jeoldata.DELTA;
                     
                 otherwise
-                    error('Unknown unit')
+                    error([ 'Unknown unit ' unit ])
             end
             
             tmp(1)=find(procpar.delta_large=='[');
@@ -359,7 +361,7 @@ if ~isempty(file)
                     jeoldata.DELTA=jeoldata.DELTA;
                     
                 otherwise
-                    error('Unknown unit')
+                    error([ 'Unknown unit ' unit ])
             end
         else
             disp('WARNING! delta_large is missing from the parameter set')
@@ -389,7 +391,7 @@ if ~isempty(file)
                     jeoldata.tau=tau.tau;
                     
                 otherwise
-                    error('Unknown unit')
+                    error([ 'Unknown unit ' unit ])
             end
         elseif isfield(procpar, 'dtau')
             tmp(1)=find(procpar.dtau=='[');
@@ -403,7 +405,7 @@ if ~isempty(file)
                     jeoldata.tau=jeoldata.tau;
                     
                 otherwise
-                    error('Unknown unit')
+                    error([ 'Unknown unit ' unit ])
             end
         else
             disp('Dtau is missing from the parameter set')
@@ -424,7 +426,7 @@ if ~isempty(file)
                     jeoldata.st_coef=jeoldata.st_coef;
                     
                 otherwise
-                    error('Unknown unit of st_coef')
+                    error([ 'Unknown unit of st_coef ' unit ])
             end
             
             
@@ -699,7 +701,7 @@ if Endian==0
 else
     byte_format='l'; % Little Endian
 end
-
+fclose(fileid);
 fileid=fopen(fullfile(path, file),'r',byte_format);
 fread(fileid,Param_Start);
 % read parameter section header
@@ -817,6 +819,7 @@ switch Data_Format
             disp('32bit data - untested import')
             
         else
+            fclose(fileid);
             error('unknown Data_Type')
         end
         
@@ -879,6 +882,7 @@ switch Data_Format
 %             plot(abs((fft(xxx))))
         
     otherwise
+        fclose(fileid);
         error('Only 1D and 2D data supported - this looks like a higher dimensionality')
         
 end

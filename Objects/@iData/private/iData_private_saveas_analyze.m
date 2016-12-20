@@ -172,6 +172,7 @@ fwrite(pid,zeros(20,1),'char');
 if ~isreal(pre)                    % Complex number (2x32 bit float)
   pre=imag(pre);
   if (pre~=32)
+    fclose(pid);
     error('Only 32 bit float can be written as complex numbers');
   else
     fwrite(pid,32,'int16');
@@ -193,6 +194,7 @@ elseif (pre == 64),                % 64 bit float
   fwrite(pid,64,'int16');
   BitPix=64;
 else
+  fclose(pid);
   error('WriteAnalyzeHdr, pre parameter do not have allowable value');
 end  
 
@@ -201,6 +203,7 @@ fwrite(pid,BitPix,'int16');
 fwrite(pid,zeros(6,1),'char');
 
 if (length(siz) ~= 3)
+  fclose(pid);
   error('WriteAnalyzeHdr, siz parameter do not have allowable value');
 end;  
 fwrite(pid,siz,'float32');
@@ -220,6 +223,7 @@ fwrite(pid,zeros(24,1),'char');
 fwrite(pid,0,'char');  % orientation
 
 if (length(origin) ~= 3)
+  fclose(pid);
   error('WriteAnalyzeHdr, origin parameter do not have allowable value');
 end;  
 fwrite(pid,origin,'int16');  
@@ -412,6 +416,7 @@ if (pid ~= -1),
    elseif (pre == 64)  
      f=fwrite(pid,img,'float64');
    else
+     fclose(pid);
      error('Illegal precision');
    end;  
    %    

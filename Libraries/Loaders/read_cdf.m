@@ -6,6 +6,10 @@ function s = read_cdf(filename)
 %
 % See also: read_nc, read_hdf4, read_hdf5
 
+s=[];
+
+if nargin == 0, return; end
+
 % turn OFF file validation to improve performance
 cdflib.setValidate('VALIDATEFILEoff');
 

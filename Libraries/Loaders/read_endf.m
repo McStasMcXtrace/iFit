@@ -42,6 +42,8 @@ if ~exist('status') || isempty(status) || ~isstruct(status)
   status = read_endf_pyne_present;  % private function inline below
 end
 
+if nargin == 0, return; end
+
 if status
   endf = read_endf_pyne(filename);  % private function inline below
   if ~isempty(endf), return; end
