@@ -21,13 +21,6 @@
 * This instrument is a simple model of triple-axis spectrometer.
 * It is directly illuminated by the moderator,
 * and has curved monochromator and analyzer. 
-* Sample can be specified as a powder, liquid/amorphous or a pure incoherent 
-* scatterer (e.g. vanadium, which is the default). 
-* Sample geometry can be spherical or cylindrical.
-* For PG002 monochromator/analyzer setting, a reflectivity curve vs. wavelength 
-* is used, else reflectivity is set to 70 %. To suppress collimators, set their 
-* divergence to 0 (ALFn BETn).
-* Default instrument geometry is from IN20@ILL with PG monochromator/analyzer.
 *
 * Si       111 DM=3.135 AA
 * PG       002 DM=3.355 AA (Highly Oriented Pyrolythic Graphite)
@@ -39,16 +32,7 @@
 * %Parameters
 * INPUT PARAMETERS:
 * KI:   Incoming neutron wavevector [Angs-1]
-* KF:   Outgoing neutron wavevector [Angs-1]
-* EI:   Incoming neutron energy [meV]
-* EF:   Outgoing neutron energy [meV]
-* QH:   Measurement QH position in crystal [rlu]
-* QK:   Measurement QK position in crystal [rlu]
-* QL:   Measurement QL position in crystal [rlu]
 * EN:   Energy transfer in crystal [meV]
-* QM:   Wavevector transfer in crystal [Angs-1]
-* KFIX: Fixed KI or KF value for Rescal compatibility [Angs-1]
-* FX:   Fixed KI or KF type for Rescal compatibility [1:KI,2:KF]
 * L1:   Source-Monochromator distance. Contains 1st Collimator of length 5.34 [m]
 * L2:   Monochromator-Sample distance. Contains 2nd Collimator of length 0.35 [m]
 * L3:   Sample-Analyzer distance. Contains 3rd Collimator of length 0.40 [m]
@@ -72,18 +56,6 @@
 * BET2: Vertical collimation from Monochromator to Sample A[arc min]
 * BET3: Vertical collimation from Sample to Analyzer [arc min]
 * BET4: Vertical collimation from Analyzer to Detector [arc min]
-* AS:   Sample lattice parameter A [Angs]
-* BS:   Sample lattice parameter B [Angs]
-* CS:   Sample lattice parameter C [Angs]
-* AA:   Angle between lattice vectors B,C [deg]
-* BB:   Angle between lattice vectors C,A [deg]
-* CC:   Angle between lattice vectors A,B [deg]
-* AX:   First reciprocal lattice vector in scattering plane, X [rlu]
-* AY:   First reciprocal lattice vector in scattering plane, Y [rlu]
-* AZ:   First reciprocal lattice vector in scattering plane, Z [rlu]
-* BX:   Second reciprocal lattice vector in scattering plane, X [rlu]
-* BY:   Second reciprocal lattice vector in scattering plane, Y [rlu]
-* BZ:   Second reciprocal lattice vector in scattering plane, Z [rlu]
 * A1:   Monohromator rotation angle [deg]
 * A2:   Monohromator take-off angle [deg]
 * A3:   Sample rotation angle [deg]
@@ -92,16 +64,20 @@
 * A6:   Analyzer take-off angle [deg]
 * verbose: print TAS configuration. 0 to be quiet [1]
 *
-* WM:   Width of monochromator [m]
+* WM:   Width  of monochromator [m]
 * HM:   Height of monochromator [m]
 * NVM:  Number of vertical slabs composing the monochromator [1]
 * NHM:  Number of horizontal slabs composing the monochromator [1]
-* WA:   Width of analyzer [m]
+* WA:   Width  of analyzer [m]
 * HA:   Height of analyzer [m]
 * NVA:  Number of vertical slabs composing the analyzer [1]
 * NHA:  Number of horizontal slabs composing the analyzer [1]
 * radius:    outer radius of sample hollow cylinder/sphere [m]
 * height:    sample height. Use 0 for a spherical shape [m]
+* WB:   Width  of the incoming beam/source, at L1 from monochromator [m]
+* HB:   Height of the incoming beam/source, at L1 from monochromator [m]
+* WD:   Width  of the detector [m]
+* HD:   Height of the detector [m]
 *
 * %Link
 * Rescal for Matlab at http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/matlab-ill/
@@ -181,7 +157,7 @@ INITIALIZE
 	
 	A1 = fabs(A1)*SM;
 	A2 = fabs(A2)*SM;
-	A3 = fabs(A3)*SS;
+	A3 = -fabs(A3)*SS;  /* A3 = <KI,A> */
 	A4 = fabs(A4)*SS;
 	A5 = fabs(A5)*SA;
 	A6 = fabs(A6)*SA;

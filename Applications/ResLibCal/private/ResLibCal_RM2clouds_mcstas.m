@@ -98,36 +98,20 @@ if ~isempty(dir(fullfile(d,'resolution.dat')))
   p  = prod(cloud.data(:,10:11),2); % pi*pf
   % McStas orientation
   % Z along A3, X vertical, Y on the 'right' from Z (looking at analyser).
+  % ResLibCal   McStas
+  % X           Z
+  % Y          -X
+  % Z           Y
+  resolution.ABC.cloud = { Q(:,3) -Q(:,1) Q(:,2) E };
+  HKLE = [ Q(:,3) -Q(:,1) Q(:,2) ]';          % in [ABC]
+  % compute the cloud for other frames: 
+  HKLE = HKLE'*inv(resolution.ABC.rlu2frame);  % in [rlu] from [ABC] by ABC.frame2rlu
+  resolution.rlu.cloud = { HKLE(:,1) HKLE(:,2) HKLE(:,3) E };
+  HKLE = resolution.spec.rlu2frame*HKLE';      % in [spec] from [rlu]
+  resolution.spec.cloud= { HKLE(1,:)' HKLE(2,:)' HKLE(3,:)' E };
 end
 rmdir(d, 's');
 
-%----- 
-
-% method: rescal5/rc_conv
-% this code is very compact and efficient, after re-factoring and testing 
-% against rescal5.
-
-RMC = randn(4,NMC); % Monte Carlo points
-
-% [rlu] [R] frame: Resolution ellipsoid in terms of H,K,L,EN ([Rlu] & [meV])
-for frames={'rlu','spec','ABC'}  % others: 'cart','rlu_ABC','ABC'
-  frame = resolution.(frames{1});
-  M=frame.RM;
-  [V,E]=eig(M);
-  sigma=1./sqrt(diag(E)); % length along principal axes of gaussian
-
-  % compute MC points on axes (with NMC points)
-  xp   = bsxfun(@times,sigma,RMC);
-  % get cloud in HKLE [rlu^3.meV], centred at 0.
-  XMC  = inv(V)'*xp; % this is delta(HKLE) as a Gaussian distribution
-  % compute the HKLE position in the lattice frame [a*,b*,c*,w]
-  HKLE(1:3) = frame.rlu2frame*resolution.HKLE(1:3)';
-  HKLE(4)   = resolution.HKLE(4);
-  HKLE = bsxfun(@plus,HKLE',XMC); % add HKLE location to Gaussian
-
-  resolution.(frames{1}).cloud = { HKLE(1,:)' HKLE(2,:)' HKLE(3,:)' HKLE(4,:)' }; % get 1D arrays per axis
-  clear HKLE
-end
 
 % !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 % method: ResLib/ConvRes
