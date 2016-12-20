@@ -1,10 +1,10 @@
 /* Automatically generated file. Do not edit. 
  * Format:     ANSI C source code
  * Creator:    McStas <http://www.mcstas.org>
- * Instrument: ./templateTAS.instr (templateTAS)
- * Date:       Mon Dec 19 11:18:54 2016
- * File:       ./templateTAS.c
- * Compile:    cc -o templateTAS.out ./templateTAS.c 
+ * Instrument: Applications/ResLibCal/private/templateTAS.instr (templateTAS)
+ * Date:       Tue Dec 20 12:01:26 2016
+ * File:       Applications/ResLibCal/private/templateTAS.c
+ * Compile:    cc -o templateTAS.out Applications/ResLibCal/private/templateTAS.c 
  * CFLAGS=
  */
 
@@ -685,7 +685,7 @@ NXhandle nxhandle;
 #endif /* MCCODE_R_H */
 /* End of file "mccode-r.h". */
 
-#line 688 "./templateTAS.c"
+#line 688 "Applications/ResLibCal/private/templateTAS.c"
 
 #line 1 "mcstas-r.h"
 /*******************************************************************************
@@ -918,7 +918,7 @@ void mcsetstate(double x, double y, double z, double vx, double vy, double vz,
 #endif /* MCSTAS_R_H */
 /* End of file "mcstas-r.h". */
 
-#line 921 "./templateTAS.c"
+#line 921 "Applications/ResLibCal/private/templateTAS.c"
 
 #line 1 "mccode-r.c"
 /*******************************************************************************
@@ -4828,7 +4828,7 @@ void neutronics_main_(float *inx, float *iny, float *inz, float *invx, float *in
 /* End of file "mccode-r.c". */
 /* End of file "mccode-r.c". */
 
-#line 4831 "./templateTAS.c"
+#line 4831 "Applications/ResLibCal/private/templateTAS.c"
 
 #line 1 "mcstas-r.c"
 /*******************************************************************************
@@ -5188,7 +5188,7 @@ plane_intersect(double *t, double x, double y, double z,
 #endif /* !MCSTAS_H */
 /* End of file "mcstas-r.c". */
 
-#line 5191 "./templateTAS.c"
+#line 5191 "Applications/ResLibCal/private/templateTAS.c"
 #ifdef MC_TRACE_ENABLED
 int mctraceenabled = 1;
 #else
@@ -5197,7 +5197,7 @@ int mctraceenabled = 0;
 #define MCSTAS "/usr/share/mcstas/2.3/"
 int mcdefaultmain = 1;
 char mcinstrument_name[] = "templateTAS";
-char mcinstrument_source[] = "./templateTAS.instr";
+char mcinstrument_source[] = "Applications/ResLibCal/private/templateTAS.instr";
 char *mcinstrument_exe=NULL; /* will be set to argv[0] in main */
 int main(int argc, char *argv[]){return mccode_main(argc, argv);}
 void mcinit(void);
@@ -6520,7 +6520,7 @@ double Table_Interp2d(double x, double y,
   }
 #endif
 
-#line 6523 "./templateTAS.c"
+#line 6523 "Applications/ResLibCal/private/templateTAS.c"
 
 /* Shared user declarations for all components 'Monochromator_curved'. */
 #line 112 "/usr/share/mcstas/2.3/optics/Monochromator_curved.comp"
@@ -6546,7 +6546,7 @@ double Table_Interp2d(double x, double y,
 #endif
 
 
-#line 6549 "./templateTAS.c"
+#line 6549 "Applications/ResLibCal/private/templateTAS.c"
 
 /* Shared user declarations for all components 'Monitor_nD'. */
 #line 235 "/usr/share/mcstas/2.3/monitors/Monitor_nD.comp"
@@ -9459,7 +9459,7 @@ void off_display(off_struct data)
 
 /* end of interoff-lib.c */
 
-#line 9462 "./templateTAS.c"
+#line 9462 "Applications/ResLibCal/private/templateTAS.c"
 
 /* Shared user declarations for all components 'Res_sample'. */
 #line 74 "/usr/share/mcstas/2.3/samples/Res_sample.comp"
@@ -9472,12 +9472,12 @@ void off_display(off_struct data)
       double xw,yh;       /* rectangular metrical dimensions */
       double tx,ty,tz;    /* target coords */
     };
-#line 9475 "./templateTAS.c"
+#line 9475 "Applications/ResLibCal/private/templateTAS.c"
 
 /* Shared user declarations for all components 'Res_monitor'. */
 #line 84 "/usr/share/mcstas/2.3/monitors/Res_monitor.comp"
 
-#line 9480 "./templateTAS.c"
+#line 9480 "Applications/ResLibCal/private/templateTAS.c"
 
 /* Instrument parameters. */
 MCNUM mcipKI;
@@ -9630,11 +9630,11 @@ struct mcinputtable_struct mcinputtable[mcNUMIPAR+1] = {
 #define HB mcipHB
 #define WD mcipWD
 #define HD mcipHD
-#line 131 "./templateTAS.instr"
+#line 135 "Applications/ResLibCal/private/templateTAS.instr"
 	  double EI=0, EF=0;
 	  double flag_analyzer=0;
 	  double flag_env=0;
-#line 9637 "./templateTAS.c"
+#line 9637 "Applications/ResLibCal/private/templateTAS.c"
 #undef HD
 #undef WD
 #undef HB
@@ -9688,17 +9688,17 @@ struct mcinputtable_struct mcinputtable[mcNUMIPAR+1] = {
 
 /* neutron state table at each component input (local coords) */
 /* [x, y, z, vx, vy, vz, t, sx, sy, sz, p] */
-MCNUM mccomp_storein[11*21];
+MCNUM mccomp_storein[11*19];
 /* Components position table (absolute and relative coords) */
-Coords mccomp_posa[21];
-Coords mccomp_posr[21];
+Coords mccomp_posa[19];
+Coords mccomp_posr[19];
 /* Counter for each comp to check for inactive ones */
-MCNUM  mcNCounter[21];
-MCNUM  mcPCounter[21];
-MCNUM  mcP2Counter[21];
-#define mcNUMCOMP 20 /* number of components */
+MCNUM  mcNCounter[19];
+MCNUM  mcPCounter[19];
+MCNUM  mcP2Counter[19];
+#define mcNUMCOMP 18 /* number of components */
 /* Counter for PROP ABSORB */
-MCNUM  mcAbsorbProp[21];
+MCNUM  mcAbsorbProp[19];
 /* Flag true when previous component acted on the neutron (SCATTER) */
 MCNUM mcScattered=0;
 /* Flag true when neutron should be restored (RESTORE) */
@@ -9777,33 +9777,7 @@ MCNUM mccPG1Xtal_height;
 MCNUM mccPG1Xtal_verbose;
 MCNUM mccPG1Xtal_order;
 
-/* Definition parameters for component 'D4_SC2_1D' [8]. */
-#define mccD4_SC2_1D_user1 FLT_MAX
-#define mccD4_SC2_1D_user2 FLT_MAX
-#define mccD4_SC2_1D_user3 FLT_MAX
-/* Setting parameters for component 'D4_SC2_1D' [8]. */
-MCNUM mccD4_SC2_1D_xwidth;
-MCNUM mccD4_SC2_1D_yheight;
-MCNUM mccD4_SC2_1D_zdepth;
-MCNUM mccD4_SC2_1D_xmin;
-MCNUM mccD4_SC2_1D_xmax;
-MCNUM mccD4_SC2_1D_ymin;
-MCNUM mccD4_SC2_1D_ymax;
-MCNUM mccD4_SC2_1D_zmin;
-MCNUM mccD4_SC2_1D_zmax;
-MCNUM mccD4_SC2_1D_bins;
-MCNUM mccD4_SC2_1D_min;
-MCNUM mccD4_SC2_1D_max;
-MCNUM mccD4_SC2_1D_restore_neutron;
-MCNUM mccD4_SC2_1D_radius;
-char mccD4_SC2_1D_options[16384];
-char mccD4_SC2_1D_filename[16384];
-char mccD4_SC2_1D_geometry[16384];
-char mccD4_SC2_1D_username1[16384];
-char mccD4_SC2_1D_username2[16384];
-char mccD4_SC2_1D_username3[16384];
-
-/* Setting parameters for component 'SC2' [9]. */
+/* Setting parameters for component 'SC2' [8]. */
 MCNUM mccSC2_xmin;
 MCNUM mccSC2_xmax;
 MCNUM mccSC2_ymin;
@@ -9815,11 +9789,11 @@ MCNUM mccSC2_divergence;
 MCNUM mccSC2_transmission;
 MCNUM mccSC2_divergenceV;
 
-/* Definition parameters for component 'Sample_Cradle' [10]. */
+/* Definition parameters for component 'Sample_Cradle' [9]. */
 #define mccSample_Cradle_user1 FLT_MAX
 #define mccSample_Cradle_user2 FLT_MAX
 #define mccSample_Cradle_user3 FLT_MAX
-/* Setting parameters for component 'Sample_Cradle' [10]. */
+/* Setting parameters for component 'Sample_Cradle' [9]. */
 MCNUM mccSample_Cradle_xwidth;
 MCNUM mccSample_Cradle_yheight;
 MCNUM mccSample_Cradle_zdepth;
@@ -9841,7 +9815,7 @@ char mccSample_Cradle_username1[16384];
 char mccSample_Cradle_username2[16384];
 char mccSample_Cradle_username3[16384];
 
-/* Setting parameters for component 'Sample' [11]. */
+/* Setting parameters for component 'Sample' [10]. */
 MCNUM mccSample_thickness;
 MCNUM mccSample_radius;
 MCNUM mccSample_focus_r;
@@ -9859,33 +9833,7 @@ MCNUM mccSample_yheight;
 MCNUM mccSample_zdepth;
 int mccSample_target_index;
 
-/* Definition parameters for component 'D7_SC3_1D' [13]. */
-#define mccD7_SC3_1D_user1 FLT_MAX
-#define mccD7_SC3_1D_user2 FLT_MAX
-#define mccD7_SC3_1D_user3 FLT_MAX
-/* Setting parameters for component 'D7_SC3_1D' [13]. */
-MCNUM mccD7_SC3_1D_xwidth;
-MCNUM mccD7_SC3_1D_yheight;
-MCNUM mccD7_SC3_1D_zdepth;
-MCNUM mccD7_SC3_1D_xmin;
-MCNUM mccD7_SC3_1D_xmax;
-MCNUM mccD7_SC3_1D_ymin;
-MCNUM mccD7_SC3_1D_ymax;
-MCNUM mccD7_SC3_1D_zmin;
-MCNUM mccD7_SC3_1D_zmax;
-MCNUM mccD7_SC3_1D_bins;
-MCNUM mccD7_SC3_1D_min;
-MCNUM mccD7_SC3_1D_max;
-MCNUM mccD7_SC3_1D_restore_neutron;
-MCNUM mccD7_SC3_1D_radius;
-char mccD7_SC3_1D_options[16384];
-char mccD7_SC3_1D_filename[16384];
-char mccD7_SC3_1D_geometry[16384];
-char mccD7_SC3_1D_username1[16384];
-char mccD7_SC3_1D_username2[16384];
-char mccD7_SC3_1D_username3[16384];
-
-/* Setting parameters for component 'SC3' [14]. */
+/* Setting parameters for component 'SC3' [12]. */
 MCNUM mccSC3_xmin;
 MCNUM mccSC3_xmax;
 MCNUM mccSC3_ymin;
@@ -9897,7 +9845,7 @@ MCNUM mccSC3_divergence;
 MCNUM mccSC3_transmission;
 MCNUM mccSC3_divergenceV;
 
-/* Setting parameters for component 'PG2Xtal' [16]. */
+/* Setting parameters for component 'PG2Xtal' [14]. */
 char mccPG2Xtal_reflect[16384];
 char mccPG2Xtal_transmit[16384];
 MCNUM mccPG2Xtal_zwidth;
@@ -9919,7 +9867,7 @@ MCNUM mccPG2Xtal_height;
 MCNUM mccPG2Xtal_verbose;
 MCNUM mccPG2Xtal_order;
 
-/* Setting parameters for component 'SC4' [18]. */
+/* Setting parameters for component 'SC4' [16]. */
 MCNUM mccSC4_xmin;
 MCNUM mccSC4_xmax;
 MCNUM mccSC4_ymin;
@@ -9931,9 +9879,9 @@ MCNUM mccSC4_divergence;
 MCNUM mccSC4_transmission;
 MCNUM mccSC4_divergenceV;
 
-/* Definition parameters for component 'He3H' [19]. */
+/* Definition parameters for component 'He3H' [17]. */
 #define mccHe3H_res_sample_comp Sample
-/* Setting parameters for component 'He3H' [19]. */
+/* Setting parameters for component 'He3H' [17]. */
 char mccHe3H_filename[16384];
 char mccHe3H_options[16384];
 MCNUM mccHe3H_xwidth;
@@ -9974,7 +9922,7 @@ MCNUM mccHe3H_restore_neutron;
   time_t StartTime;
   time_t EndTime;
   time_t CurrentTime;
-#line 9977 "./templateTAS.c"
+#line 9925 "Applications/ResLibCal/private/templateTAS.c"
 #undef minutes
 #undef flag_save
 #undef percent
@@ -10058,7 +10006,7 @@ MCNUM mccHe3H_restore_neutron;
   double pTable_dymin;
   double pTable_dymax;
 
-#line 10061 "./templateTAS.c"
+#line 10009 "Applications/ResLibCal/private/templateTAS.c"
 #undef target_index
 #undef zdepth
 #undef I3
@@ -10128,7 +10076,7 @@ MCNUM mccHe3H_restore_neutron;
 #define divergenceV mccSC1_divergenceV
 #line 57 "/usr/share/mcstas/2.3/optics/Collimator_linear.comp"
   double slope, slopeV;
-#line 10131 "./templateTAS.c"
+#line 10079 "Applications/ResLibCal/private/templateTAS.c"
 #undef divergenceV
 #undef transmission
 #undef divergence
@@ -10207,7 +10155,7 @@ MCNUM mccHe3H_restore_neutron;
   double row,col;
   double* tiltH;
   double* tiltV;
-#line 10210 "./templateTAS.c"
+#line 10158 "Applications/ResLibCal/private/templateTAS.c"
 #undef order
 #undef verbose
 #undef height
@@ -10252,78 +10200,10 @@ MCNUM mccHe3H_restore_neutron;
 #undef mccompcurtype
 #undef mccompcurindex
 
-/* User declarations for component 'D4_SC2_1D' [8]. */
-#define mccompcurname  D4_SC2_1D
-#define mccompcurtype  Monitor_nD
-#define mccompcurindex 8
-#define user1 mccD4_SC2_1D_user1
-#define user2 mccD4_SC2_1D_user2
-#define user3 mccD4_SC2_1D_user3
-#define DEFS mccD4_SC2_1D_DEFS
-#define Vars mccD4_SC2_1D_Vars
-#define detector mccD4_SC2_1D_detector
-#define offdata mccD4_SC2_1D_offdata
-#define xwidth mccD4_SC2_1D_xwidth
-#define yheight mccD4_SC2_1D_yheight
-#define zdepth mccD4_SC2_1D_zdepth
-#define xmin mccD4_SC2_1D_xmin
-#define xmax mccD4_SC2_1D_xmax
-#define ymin mccD4_SC2_1D_ymin
-#define ymax mccD4_SC2_1D_ymax
-#define zmin mccD4_SC2_1D_zmin
-#define zmax mccD4_SC2_1D_zmax
-#define bins mccD4_SC2_1D_bins
-#define min mccD4_SC2_1D_min
-#define max mccD4_SC2_1D_max
-#define restore_neutron mccD4_SC2_1D_restore_neutron
-#define radius mccD4_SC2_1D_radius
-#define options mccD4_SC2_1D_options
-#define filename mccD4_SC2_1D_filename
-#define geometry mccD4_SC2_1D_geometry
-#define username1 mccD4_SC2_1D_username1
-#define username2 mccD4_SC2_1D_username2
-#define username3 mccD4_SC2_1D_username3
-#line 243 "/usr/share/mcstas/2.3/monitors/Monitor_nD.comp"
-  MonitornD_Defines_type DEFS;
-  MonitornD_Variables_type Vars;
-  MCDETECTOR detector;
-  off_struct offdata;
-#line 10291 "./templateTAS.c"
-#undef username3
-#undef username2
-#undef username1
-#undef geometry
-#undef filename
-#undef options
-#undef radius
-#undef restore_neutron
-#undef max
-#undef min
-#undef bins
-#undef zmax
-#undef zmin
-#undef ymax
-#undef ymin
-#undef xmax
-#undef xmin
-#undef zdepth
-#undef yheight
-#undef xwidth
-#undef offdata
-#undef detector
-#undef Vars
-#undef DEFS
-#undef user3
-#undef user2
-#undef user1
-#undef mccompcurname
-#undef mccompcurtype
-#undef mccompcurindex
-
-/* User declarations for component 'SC2' [9]. */
+/* User declarations for component 'SC2' [8]. */
 #define mccompcurname  SC2
 #define mccompcurtype  Collimator_linear
-#define mccompcurindex 9
+#define mccompcurindex 8
 #define slope mccSC2_slope
 #define slopeV mccSC2_slopeV
 #define xmin mccSC2_xmin
@@ -10338,7 +10218,7 @@ MCNUM mccHe3H_restore_neutron;
 #define divergenceV mccSC2_divergenceV
 #line 57 "/usr/share/mcstas/2.3/optics/Collimator_linear.comp"
   double slope, slopeV;
-#line 10341 "./templateTAS.c"
+#line 10221 "Applications/ResLibCal/private/templateTAS.c"
 #undef divergenceV
 #undef transmission
 #undef divergence
@@ -10355,10 +10235,10 @@ MCNUM mccHe3H_restore_neutron;
 #undef mccompcurtype
 #undef mccompcurindex
 
-/* User declarations for component 'Sample_Cradle' [10]. */
+/* User declarations for component 'Sample_Cradle' [9]. */
 #define mccompcurname  Sample_Cradle
 #define mccompcurtype  Monitor_nD
-#define mccompcurindex 10
+#define mccompcurindex 9
 #define user1 mccSample_Cradle_user1
 #define user2 mccSample_Cradle_user2
 #define user3 mccSample_Cradle_user3
@@ -10391,7 +10271,7 @@ MCNUM mccHe3H_restore_neutron;
   MonitornD_Variables_type Vars;
   MCDETECTOR detector;
   off_struct offdata;
-#line 10394 "./templateTAS.c"
+#line 10274 "Applications/ResLibCal/private/templateTAS.c"
 #undef username3
 #undef username2
 #undef username1
@@ -10423,10 +10303,10 @@ MCNUM mccHe3H_restore_neutron;
 #undef mccompcurtype
 #undef mccompcurindex
 
-/* User declarations for component 'Sample' [11]. */
+/* User declarations for component 'Sample' [10]. */
 #define mccompcurname  Sample
 #define mccompcurtype  Res_sample
-#define mccompcurindex 11
+#define mccompcurindex 10
 #define res_struct mccSample_res_struct
 #define thickness mccSample_thickness
 #define radius mccSample_radius
@@ -10446,7 +10326,7 @@ MCNUM mccHe3H_restore_neutron;
 #define target_index mccSample_target_index
 #line 87 "/usr/share/mcstas/2.3/samples/Res_sample.comp"
   struct Res_sample_struct res_struct;
-#line 10449 "./templateTAS.c"
+#line 10329 "Applications/ResLibCal/private/templateTAS.c"
 #undef target_index
 #undef zdepth
 #undef yheight
@@ -10468,86 +10348,18 @@ MCNUM mccHe3H_restore_neutron;
 #undef mccompcurtype
 #undef mccompcurindex
 
-/* User declarations for component 'Sample_Out' [12]. */
+/* User declarations for component 'Sample_Out' [11]. */
 #define mccompcurname  Sample_Out
 #define mccompcurtype  Arm
-#define mccompcurindex 12
+#define mccompcurindex 11
 #undef mccompcurname
 #undef mccompcurtype
 #undef mccompcurindex
 
-/* User declarations for component 'D7_SC3_1D' [13]. */
-#define mccompcurname  D7_SC3_1D
-#define mccompcurtype  Monitor_nD
-#define mccompcurindex 13
-#define user1 mccD7_SC3_1D_user1
-#define user2 mccD7_SC3_1D_user2
-#define user3 mccD7_SC3_1D_user3
-#define DEFS mccD7_SC3_1D_DEFS
-#define Vars mccD7_SC3_1D_Vars
-#define detector mccD7_SC3_1D_detector
-#define offdata mccD7_SC3_1D_offdata
-#define xwidth mccD7_SC3_1D_xwidth
-#define yheight mccD7_SC3_1D_yheight
-#define zdepth mccD7_SC3_1D_zdepth
-#define xmin mccD7_SC3_1D_xmin
-#define xmax mccD7_SC3_1D_xmax
-#define ymin mccD7_SC3_1D_ymin
-#define ymax mccD7_SC3_1D_ymax
-#define zmin mccD7_SC3_1D_zmin
-#define zmax mccD7_SC3_1D_zmax
-#define bins mccD7_SC3_1D_bins
-#define min mccD7_SC3_1D_min
-#define max mccD7_SC3_1D_max
-#define restore_neutron mccD7_SC3_1D_restore_neutron
-#define radius mccD7_SC3_1D_radius
-#define options mccD7_SC3_1D_options
-#define filename mccD7_SC3_1D_filename
-#define geometry mccD7_SC3_1D_geometry
-#define username1 mccD7_SC3_1D_username1
-#define username2 mccD7_SC3_1D_username2
-#define username3 mccD7_SC3_1D_username3
-#line 243 "/usr/share/mcstas/2.3/monitors/Monitor_nD.comp"
-  MonitornD_Defines_type DEFS;
-  MonitornD_Variables_type Vars;
-  MCDETECTOR detector;
-  off_struct offdata;
-#line 10515 "./templateTAS.c"
-#undef username3
-#undef username2
-#undef username1
-#undef geometry
-#undef filename
-#undef options
-#undef radius
-#undef restore_neutron
-#undef max
-#undef min
-#undef bins
-#undef zmax
-#undef zmin
-#undef ymax
-#undef ymin
-#undef xmax
-#undef xmin
-#undef zdepth
-#undef yheight
-#undef xwidth
-#undef offdata
-#undef detector
-#undef Vars
-#undef DEFS
-#undef user3
-#undef user2
-#undef user1
-#undef mccompcurname
-#undef mccompcurtype
-#undef mccompcurindex
-
-/* User declarations for component 'SC3' [14]. */
+/* User declarations for component 'SC3' [12]. */
 #define mccompcurname  SC3
 #define mccompcurtype  Collimator_linear
-#define mccompcurindex 14
+#define mccompcurindex 12
 #define slope mccSC3_slope
 #define slopeV mccSC3_slopeV
 #define xmin mccSC3_xmin
@@ -10562,7 +10374,7 @@ MCNUM mccHe3H_restore_neutron;
 #define divergenceV mccSC3_divergenceV
 #line 57 "/usr/share/mcstas/2.3/optics/Collimator_linear.comp"
   double slope, slopeV;
-#line 10565 "./templateTAS.c"
+#line 10377 "Applications/ResLibCal/private/templateTAS.c"
 #undef divergenceV
 #undef transmission
 #undef divergence
@@ -10579,18 +10391,18 @@ MCNUM mccHe3H_restore_neutron;
 #undef mccompcurtype
 #undef mccompcurindex
 
-/* User declarations for component 'Ana_Cradle' [15]. */
+/* User declarations for component 'Ana_Cradle' [13]. */
 #define mccompcurname  Ana_Cradle
 #define mccompcurtype  Arm
-#define mccompcurindex 15
+#define mccompcurindex 13
 #undef mccompcurname
 #undef mccompcurtype
 #undef mccompcurindex
 
-/* User declarations for component 'PG2Xtal' [16]. */
+/* User declarations for component 'PG2Xtal' [14]. */
 #define mccompcurname  PG2Xtal
 #define mccompcurtype  Monochromator_curved
-#define mccompcurindex 16
+#define mccompcurindex 14
 #define mos_rms_y mccPG2Xtal_mos_rms_y
 #define mos_rms_z mccPG2Xtal_mos_rms_z
 #define mos_rms_max mccPG2Xtal_mos_rms_max
@@ -10633,7 +10445,7 @@ MCNUM mccHe3H_restore_neutron;
   double row,col;
   double* tiltH;
   double* tiltV;
-#line 10636 "./templateTAS.c"
+#line 10448 "Applications/ResLibCal/private/templateTAS.c"
 #undef order
 #undef verbose
 #undef height
@@ -10670,18 +10482,18 @@ MCNUM mccHe3H_restore_neutron;
 #undef mccompcurtype
 #undef mccompcurindex
 
-/* User declarations for component 'Ana_Out' [17]. */
+/* User declarations for component 'Ana_Out' [15]. */
 #define mccompcurname  Ana_Out
 #define mccompcurtype  Arm
-#define mccompcurindex 17
+#define mccompcurindex 15
 #undef mccompcurname
 #undef mccompcurtype
 #undef mccompcurindex
 
-/* User declarations for component 'SC4' [18]. */
+/* User declarations for component 'SC4' [16]. */
 #define mccompcurname  SC4
 #define mccompcurtype  Collimator_linear
-#define mccompcurindex 18
+#define mccompcurindex 16
 #define slope mccSC4_slope
 #define slopeV mccSC4_slopeV
 #define xmin mccSC4_xmin
@@ -10696,7 +10508,7 @@ MCNUM mccHe3H_restore_neutron;
 #define divergenceV mccSC4_divergenceV
 #line 57 "/usr/share/mcstas/2.3/optics/Collimator_linear.comp"
   double slope, slopeV;
-#line 10699 "./templateTAS.c"
+#line 10511 "Applications/ResLibCal/private/templateTAS.c"
 #undef divergenceV
 #undef transmission
 #undef divergence
@@ -10713,10 +10525,10 @@ MCNUM mccHe3H_restore_neutron;
 #undef mccompcurtype
 #undef mccompcurindex
 
-/* User declarations for component 'He3H' [19]. */
+/* User declarations for component 'He3H' [17]. */
 #define mccompcurname  He3H
 #define mccompcurtype  Res_monitor
-#define mccompcurindex 19
+#define mccompcurindex 17
 #define res_sample_comp mccHe3H_res_sample_comp
 #define DEFS mccHe3H_DEFS
 #define Vars mccHe3H_Vars
@@ -10739,7 +10551,7 @@ MCNUM mccHe3H_restore_neutron;
   MonitornD_Defines_type DEFS;
   MonitornD_Variables_type Vars;
   long buffer_index;
-#line 10742 "./templateTAS.c"
+#line 10554 "Applications/ResLibCal/private/templateTAS.c"
 #undef restore_neutron
 #undef bufsize
 #undef zmax
@@ -10776,8 +10588,6 @@ Coords mcposaPG1Xtal, mcposrPG1Xtal;
 Rotation mcrotaPG1Xtal, mcrotrPG1Xtal;
 Coords mcposaMono_Out, mcposrMono_Out;
 Rotation mcrotaMono_Out, mcrotrMono_Out;
-Coords mcposaD4_SC2_1D, mcposrD4_SC2_1D;
-Rotation mcrotaD4_SC2_1D, mcrotrD4_SC2_1D;
 Coords mcposaSC2, mcposrSC2;
 Rotation mcrotaSC2, mcrotrSC2;
 Coords mcposaSample_Cradle, mcposrSample_Cradle;
@@ -10786,8 +10596,6 @@ Coords mcposaSample, mcposrSample;
 Rotation mcrotaSample, mcrotrSample;
 Coords mcposaSample_Out, mcposrSample_Out;
 Rotation mcrotaSample_Out, mcrotrSample_Out;
-Coords mcposaD7_SC3_1D, mcposrD7_SC3_1D;
-Rotation mcrotaD7_SC3_1D, mcrotrD7_SC3_1D;
 Coords mcposaSC3, mcposrSC3;
 Rotation mcrotaSC3, mcrotrSC3;
 Coords mcposaAna_Cradle, mcposrAna_Cradle;
@@ -10856,7 +10664,7 @@ void mcinit(void) {
 #define HB mcipHB
 #define WD mcipWD
 #define HD mcipHD
-#line 138 "./templateTAS.instr"
+#line 142 "Applications/ResLibCal/private/templateTAS.instr"
 {
 	double Vi;
 
@@ -10903,7 +10711,7 @@ void mcinit(void) {
 	
 	A1 = fabs(A1)*SM;
 	A2 = fabs(A2)*SM;
-	A3 = fabs(A3)*SS;
+	A3 = -fabs(A3)*SS;
 	A4 = fabs(A4)*SS;
 	A5 = fabs(A5)*SA;
 	A6 = fabs(A6)*SA;
@@ -10912,7 +10720,7 @@ void mcinit(void) {
 	RAH=fabs(RAH)*SA;
 	RAV=fabs(RAV)*SA;
 }
-#line 10915 "./templateTAS.c"
+#line 10723 "Applications/ResLibCal/private/templateTAS.c"
 #undef HD
 #undef WD
 #undef HB
@@ -10973,31 +10781,31 @@ void mcinit(void) {
     /* Component Origin. */
   /* Setting parameters for component Origin. */
   SIG_MESSAGE("Origin (Init:SetPar)");
-#line 198 "./templateTAS.instr"
+#line 202 "Applications/ResLibCal/private/templateTAS.instr"
   if("profiler.dat") strncpy(mccOrigin_profile, "profiler.dat" ? "profiler.dat" : "", 16384); else mccOrigin_profile[0]='\0';
-#line 42 "./templateTAS.instr"
+#line 42 "Applications/ResLibCal/private/templateTAS.instr"
   mccOrigin_percent = 10;
-#line 42 "./templateTAS.instr"
+#line 42 "Applications/ResLibCal/private/templateTAS.instr"
   mccOrigin_flag_save = 0;
-#line 42 "./templateTAS.instr"
+#line 42 "Applications/ResLibCal/private/templateTAS.instr"
   mccOrigin_minutes = 0;
-#line 10984 "./templateTAS.c"
+#line 10792 "Applications/ResLibCal/private/templateTAS.c"
 
   SIG_MESSAGE("Origin (Init:Place/Rotate)");
   rot_set_rotation(mcrotaOrigin,
     (0.0)*DEG2RAD,
     (0.0)*DEG2RAD,
     (0.0)*DEG2RAD);
-#line 10991 "./templateTAS.c"
+#line 10799 "Applications/ResLibCal/private/templateTAS.c"
   rot_copy(mcrotrOrigin, mcrotaOrigin);
   mcposaOrigin = coords_set(
-#line 199 "./templateTAS.instr"
+#line 203 "Applications/ResLibCal/private/templateTAS.instr"
     0,
-#line 199 "./templateTAS.instr"
+#line 203 "Applications/ResLibCal/private/templateTAS.instr"
     0,
-#line 199 "./templateTAS.instr"
+#line 203 "Applications/ResLibCal/private/templateTAS.instr"
     0);
-#line 11000 "./templateTAS.c"
+#line 10808 "Applications/ResLibCal/private/templateTAS.c"
   mctc1 = coords_neg(mcposaOrigin);
   mcposrOrigin = rot_apply(mcrotaOrigin, mctc1);
   mcDEBUG_COMPONENT("Origin", mcposaOrigin, mcrotaOrigin)
@@ -11008,84 +10816,84 @@ void mcinit(void) {
     /* Component Source. */
   /* Setting parameters for component Source. */
   SIG_MESSAGE("Source (Init:SetPar)");
-#line 144 "./templateTAS.instr"
+#line 144 "Applications/ResLibCal/private/templateTAS.instr"
   if("NULL") strncpy(mccSource_flux_file, "NULL" ? "NULL" : "", 16384); else mccSource_flux_file[0]='\0';
-#line 144 "./templateTAS.instr"
+#line 144 "Applications/ResLibCal/private/templateTAS.instr"
   if("NULL") strncpy(mccSource_xdiv_file, "NULL" ? "NULL" : "", 16384); else mccSource_xdiv_file[0]='\0';
-#line 144 "./templateTAS.instr"
+#line 144 "Applications/ResLibCal/private/templateTAS.instr"
   if("NULL") strncpy(mccSource_ydiv_file, "NULL" ? "NULL" : "", 16384); else mccSource_ydiv_file[0]='\0';
-#line 145 "./templateTAS.instr"
+#line 145 "Applications/ResLibCal/private/templateTAS.instr"
   mccSource_radius = 0.0;
-#line 204 "./templateTAS.instr"
+#line 208 "Applications/ResLibCal/private/templateTAS.instr"
   mccSource_dist = mcipL1;
-#line 205 "./templateTAS.instr"
+#line 209 "Applications/ResLibCal/private/templateTAS.instr"
   mccSource_focus_xw = mcipWM * sin ( mcipA1 * DEG2RAD );
-#line 205 "./templateTAS.instr"
+#line 209 "Applications/ResLibCal/private/templateTAS.instr"
   mccSource_focus_yh = mcipHM;
-#line 145 "./templateTAS.instr"
+#line 145 "Applications/ResLibCal/private/templateTAS.instr"
   mccSource_focus_aw = 0;
-#line 145 "./templateTAS.instr"
+#line 145 "Applications/ResLibCal/private/templateTAS.instr"
   mccSource_focus_ah = 0;
-#line 206 "./templateTAS.instr"
+#line 210 "Applications/ResLibCal/private/templateTAS.instr"
   mccSource_E0 = EI;
-#line 207 "./templateTAS.instr"
+#line 211 "Applications/ResLibCal/private/templateTAS.instr"
   mccSource_dE = EI * 0.03;
-#line 146 "./templateTAS.instr"
+#line 146 "Applications/ResLibCal/private/templateTAS.instr"
   mccSource_lambda0 = 0;
-#line 146 "./templateTAS.instr"
+#line 146 "Applications/ResLibCal/private/templateTAS.instr"
   mccSource_dlambda = 0;
-#line 146 "./templateTAS.instr"
+#line 146 "Applications/ResLibCal/private/templateTAS.instr"
   mccSource_I1 = 1;
-#line 203 "./templateTAS.instr"
+#line 207 "Applications/ResLibCal/private/templateTAS.instr"
   mccSource_yheight = mcipHB;
-#line 203 "./templateTAS.instr"
+#line 207 "Applications/ResLibCal/private/templateTAS.instr"
   mccSource_xwidth = mcipWB;
-#line 147 "./templateTAS.instr"
+#line 147 "Applications/ResLibCal/private/templateTAS.instr"
   mccSource_verbose = 0;
-#line 147 "./templateTAS.instr"
+#line 147 "Applications/ResLibCal/private/templateTAS.instr"
   mccSource_T1 = 0;
-#line 148 "./templateTAS.instr"
+#line 148 "Applications/ResLibCal/private/templateTAS.instr"
   mccSource_flux_file_perAA = 0;
-#line 148 "./templateTAS.instr"
+#line 148 "Applications/ResLibCal/private/templateTAS.instr"
   mccSource_flux_file_log = 0;
-#line 149 "./templateTAS.instr"
+#line 149 "Applications/ResLibCal/private/templateTAS.instr"
   mccSource_Lmin = 0;
-#line 149 "./templateTAS.instr"
+#line 149 "Applications/ResLibCal/private/templateTAS.instr"
   mccSource_Lmax = 0;
-#line 149 "./templateTAS.instr"
+#line 149 "Applications/ResLibCal/private/templateTAS.instr"
   mccSource_Emin = 0;
-#line 149 "./templateTAS.instr"
+#line 149 "Applications/ResLibCal/private/templateTAS.instr"
   mccSource_Emax = 0;
-#line 149 "./templateTAS.instr"
+#line 149 "Applications/ResLibCal/private/templateTAS.instr"
   mccSource_T2 = 0;
-#line 149 "./templateTAS.instr"
+#line 149 "Applications/ResLibCal/private/templateTAS.instr"
   mccSource_I2 = 0;
-#line 149 "./templateTAS.instr"
+#line 149 "Applications/ResLibCal/private/templateTAS.instr"
   mccSource_T3 = 0;
-#line 149 "./templateTAS.instr"
+#line 149 "Applications/ResLibCal/private/templateTAS.instr"
   mccSource_I3 = 0;
-#line 149 "./templateTAS.instr"
+#line 149 "Applications/ResLibCal/private/templateTAS.instr"
   mccSource_zdepth = 0;
-#line 149 "./templateTAS.instr"
+#line 149 "Applications/ResLibCal/private/templateTAS.instr"
   mccSource_target_index = + 1;
-#line 11071 "./templateTAS.c"
+#line 10879 "Applications/ResLibCal/private/templateTAS.c"
 
   SIG_MESSAGE("Source (Init:Place/Rotate)");
   rot_set_rotation(mcrotaSource,
     (0.0)*DEG2RAD,
     (0.0)*DEG2RAD,
     (0.0)*DEG2RAD);
-#line 11078 "./templateTAS.c"
+#line 10886 "Applications/ResLibCal/private/templateTAS.c"
   rot_transpose(mcrotaOrigin, mctr1);
   rot_mul(mcrotaSource, mctr1, mcrotrSource);
   mcposaSource = coords_set(
-#line 208 "./templateTAS.instr"
+#line 212 "Applications/ResLibCal/private/templateTAS.instr"
     0,
-#line 208 "./templateTAS.instr"
+#line 212 "Applications/ResLibCal/private/templateTAS.instr"
     0,
-#line 208 "./templateTAS.instr"
+#line 212 "Applications/ResLibCal/private/templateTAS.instr"
     0);
-#line 11088 "./templateTAS.c"
+#line 10896 "Applications/ResLibCal/private/templateTAS.c"
   mctc1 = coords_sub(mcposaOrigin, mcposaSource);
   mcposrSource = rot_apply(mcrotaSource, mctc1);
   mcDEBUG_COMPONENT("Source", mcposaSource, mcrotaSource)
@@ -11096,44 +10904,44 @@ void mcinit(void) {
     /* Component SC1. */
   /* Setting parameters for component SC1. */
   SIG_MESSAGE("SC1 (Init:SetPar)");
-#line 211 "./templateTAS.instr"
+#line 215 "Applications/ResLibCal/private/templateTAS.instr"
   mccSC1_xmin = -0.08 / 2;
-#line 212 "./templateTAS.instr"
+#line 216 "Applications/ResLibCal/private/templateTAS.instr"
   mccSC1_xmax = 0.08 / 2;
-#line 211 "./templateTAS.instr"
+#line 215 "Applications/ResLibCal/private/templateTAS.instr"
   mccSC1_ymin = -0.12 / 2;
-#line 212 "./templateTAS.instr"
+#line 216 "Applications/ResLibCal/private/templateTAS.instr"
   mccSC1_ymax = 0.12 / 2;
-#line 52 "./templateTAS.instr"
+#line 52 "Applications/ResLibCal/private/templateTAS.instr"
   mccSC1_xwidth = 0;
-#line 52 "./templateTAS.instr"
+#line 52 "Applications/ResLibCal/private/templateTAS.instr"
   mccSC1_yheight = 0;
-#line 213 "./templateTAS.instr"
+#line 217 "Applications/ResLibCal/private/templateTAS.instr"
   mccSC1_length = mcipL1 / 2;
-#line 214 "./templateTAS.instr"
+#line 218 "Applications/ResLibCal/private/templateTAS.instr"
   mccSC1_divergence = mcipALF1;
-#line 52 "./templateTAS.instr"
+#line 52 "Applications/ResLibCal/private/templateTAS.instr"
   mccSC1_transmission = 1;
-#line 215 "./templateTAS.instr"
+#line 219 "Applications/ResLibCal/private/templateTAS.instr"
   mccSC1_divergenceV = mcipBET1;
-#line 11119 "./templateTAS.c"
+#line 10927 "Applications/ResLibCal/private/templateTAS.c"
 
   SIG_MESSAGE("SC1 (Init:Place/Rotate)");
   rot_set_rotation(mcrotaSC1,
     (0.0)*DEG2RAD,
     (0.0)*DEG2RAD,
     (0.0)*DEG2RAD);
-#line 11126 "./templateTAS.c"
+#line 10934 "Applications/ResLibCal/private/templateTAS.c"
   rot_transpose(mcrotaSource, mctr1);
   rot_mul(mcrotaSC1, mctr1, mcrotrSC1);
   mcposaSC1 = coords_set(
-#line 217 "./templateTAS.instr"
+#line 221 "Applications/ResLibCal/private/templateTAS.instr"
     0,
-#line 217 "./templateTAS.instr"
+#line 221 "Applications/ResLibCal/private/templateTAS.instr"
     0,
-#line 217 "./templateTAS.instr"
+#line 221 "Applications/ResLibCal/private/templateTAS.instr"
     mcipL1 / 4);
-#line 11136 "./templateTAS.c"
+#line 10944 "Applications/ResLibCal/private/templateTAS.c"
   mctc1 = coords_sub(mcposaSource, mcposaSC1);
   mcposrSC1 = rot_apply(mcrotaSC1, mctc1);
   mcDEBUG_COMPONENT("SC1", mcposaSC1, mcrotaSC1)
@@ -11150,17 +10958,17 @@ void mcinit(void) {
     (0.0)*DEG2RAD,
     (0.0)*DEG2RAD,
     (0.0)*DEG2RAD);
-#line 11153 "./templateTAS.c"
+#line 10961 "Applications/ResLibCal/private/templateTAS.c"
   rot_transpose(mcrotaSC1, mctr1);
   rot_mul(mcrotaGuide_out, mctr1, mcrotrGuide_out);
   mcposaGuide_out = coords_set(
-#line 220 "./templateTAS.instr"
+#line 224 "Applications/ResLibCal/private/templateTAS.instr"
     0,
-#line 220 "./templateTAS.instr"
+#line 224 "Applications/ResLibCal/private/templateTAS.instr"
     0,
-#line 220 "./templateTAS.instr"
+#line 224 "Applications/ResLibCal/private/templateTAS.instr"
     mcipL1);
-#line 11163 "./templateTAS.c"
+#line 10971 "Applications/ResLibCal/private/templateTAS.c"
   mctc1 = coords_sub(mcposaSC1, mcposaGuide_out);
   mcposrGuide_out = rot_apply(mcrotaGuide_out, mctc1);
   mcDEBUG_COMPONENT("Guide_out", mcposaGuide_out, mcrotaGuide_out)
@@ -11177,18 +10985,18 @@ void mcinit(void) {
     (0.0)*DEG2RAD,
     (0.0)*DEG2RAD,
     (0.0)*DEG2RAD);
-#line 11180 "./templateTAS.c"
+#line 10988 "Applications/ResLibCal/private/templateTAS.c"
   rot_mul(mctr1, mcrotaGuide_out, mcrotaMono_Cradle);
   rot_transpose(mcrotaGuide_out, mctr1);
   rot_mul(mcrotaMono_Cradle, mctr1, mcrotrMono_Cradle);
   mctc1 = coords_set(
-#line 223 "./templateTAS.instr"
+#line 227 "Applications/ResLibCal/private/templateTAS.instr"
     0,
-#line 223 "./templateTAS.instr"
+#line 227 "Applications/ResLibCal/private/templateTAS.instr"
     0,
-#line 223 "./templateTAS.instr"
+#line 227 "Applications/ResLibCal/private/templateTAS.instr"
     0);
-#line 11191 "./templateTAS.c"
+#line 10999 "Applications/ResLibCal/private/templateTAS.c"
   rot_transpose(mcrotaGuide_out, mctr1);
   mctc2 = rot_apply(mctr1, mctc1);
   mcposaMono_Cradle = coords_add(mcposaGuide_out, mctc2);
@@ -11202,68 +11010,68 @@ void mcinit(void) {
     /* Component PG1Xtal. */
   /* Setting parameters for component PG1Xtal. */
   SIG_MESSAGE("PG1Xtal (Init:SetPar)");
-#line 102 "./templateTAS.instr"
+#line 102 "Applications/ResLibCal/private/templateTAS.instr"
   if("NULL") strncpy(mccPG1Xtal_reflect, "NULL" ? "NULL" : "", 16384); else mccPG1Xtal_reflect[0]='\0';
-#line 102 "./templateTAS.instr"
+#line 102 "Applications/ResLibCal/private/templateTAS.instr"
   if("NULL") strncpy(mccPG1Xtal_transmit, "NULL" ? "NULL" : "", 16384); else mccPG1Xtal_transmit[0]='\0';
-#line 103 "./templateTAS.instr"
+#line 103 "Applications/ResLibCal/private/templateTAS.instr"
   mccPG1Xtal_zwidth = 0.01;
-#line 103 "./templateTAS.instr"
+#line 103 "Applications/ResLibCal/private/templateTAS.instr"
   mccPG1Xtal_yheight = 0.01;
-#line 104 "./templateTAS.instr"
+#line 104 "Applications/ResLibCal/private/templateTAS.instr"
   mccPG1Xtal_gap = 0.0005;
-#line 228 "./templateTAS.instr"
+#line 232 "Applications/ResLibCal/private/templateTAS.instr"
   mccPG1Xtal_NH = mcipNHM;
-#line 228 "./templateTAS.instr"
+#line 232 "Applications/ResLibCal/private/templateTAS.instr"
   mccPG1Xtal_NV = mcipNVM;
-#line 230 "./templateTAS.instr"
+#line 234 "Applications/ResLibCal/private/templateTAS.instr"
   mccPG1Xtal_mosaich = mcipETAM;
-#line 230 "./templateTAS.instr"
+#line 234 "Applications/ResLibCal/private/templateTAS.instr"
   mccPG1Xtal_mosaicv = mcipETAM;
-#line 104 "./templateTAS.instr"
+#line 104 "Applications/ResLibCal/private/templateTAS.instr"
   mccPG1Xtal_r0 = 0.7;
-#line 104 "./templateTAS.instr"
+#line 104 "Applications/ResLibCal/private/templateTAS.instr"
   mccPG1Xtal_t0 = 1.0;
-#line 104 "./templateTAS.instr"
+#line 104 "Applications/ResLibCal/private/templateTAS.instr"
   mccPG1Xtal_Q = 1.8734;
-#line 229 "./templateTAS.instr"
+#line 233 "Applications/ResLibCal/private/templateTAS.instr"
   mccPG1Xtal_RV = mcipRMV;
-#line 229 "./templateTAS.instr"
+#line 233 "Applications/ResLibCal/private/templateTAS.instr"
   mccPG1Xtal_RH = mcipRMH;
-#line 230 "./templateTAS.instr"
+#line 234 "Applications/ResLibCal/private/templateTAS.instr"
   mccPG1Xtal_DM = mcipDM;
-#line 105 "./templateTAS.instr"
+#line 105 "Applications/ResLibCal/private/templateTAS.instr"
   mccPG1Xtal_mosaic = 0;
-#line 226 "./templateTAS.instr"
+#line 230 "Applications/ResLibCal/private/templateTAS.instr"
   mccPG1Xtal_width = mcipWM;
-#line 227 "./templateTAS.instr"
+#line 231 "Applications/ResLibCal/private/templateTAS.instr"
   mccPG1Xtal_height = mcipHM;
-#line 105 "./templateTAS.instr"
+#line 105 "Applications/ResLibCal/private/templateTAS.instr"
   mccPG1Xtal_verbose = 0;
-#line 105 "./templateTAS.instr"
+#line 105 "Applications/ResLibCal/private/templateTAS.instr"
   mccPG1Xtal_order = 0;
-#line 11245 "./templateTAS.c"
+#line 11053 "Applications/ResLibCal/private/templateTAS.c"
 
   SIG_MESSAGE("PG1Xtal (Init:Place/Rotate)");
   rot_set_rotation(mctr1,
-#line 232 "./templateTAS.instr"
+#line 236 "Applications/ResLibCal/private/templateTAS.instr"
     (0)*DEG2RAD,
-#line 232 "./templateTAS.instr"
+#line 236 "Applications/ResLibCal/private/templateTAS.instr"
     (mcipA1)*DEG2RAD,
-#line 232 "./templateTAS.instr"
+#line 236 "Applications/ResLibCal/private/templateTAS.instr"
     (0)*DEG2RAD);
-#line 11255 "./templateTAS.c"
+#line 11063 "Applications/ResLibCal/private/templateTAS.c"
   rot_mul(mctr1, mcrotaMono_Cradle, mcrotaPG1Xtal);
   rot_transpose(mcrotaMono_Cradle, mctr1);
   rot_mul(mcrotaPG1Xtal, mctr1, mcrotrPG1Xtal);
   mctc1 = coords_set(
-#line 231 "./templateTAS.instr"
+#line 235 "Applications/ResLibCal/private/templateTAS.instr"
     0,
-#line 231 "./templateTAS.instr"
+#line 235 "Applications/ResLibCal/private/templateTAS.instr"
     0,
-#line 231 "./templateTAS.instr"
+#line 235 "Applications/ResLibCal/private/templateTAS.instr"
     0);
-#line 11266 "./templateTAS.c"
+#line 11074 "Applications/ResLibCal/private/templateTAS.c"
   rot_transpose(mcrotaMono_Cradle, mctr1);
   mctc2 = rot_apply(mctr1, mctc1);
   mcposaPG1Xtal = coords_add(mcposaMono_Cradle, mctc2);
@@ -11280,24 +11088,24 @@ void mcinit(void) {
 
   SIG_MESSAGE("Mono_Out (Init:Place/Rotate)");
   rot_set_rotation(mctr1,
-#line 237 "./templateTAS.instr"
+#line 241 "Applications/ResLibCal/private/templateTAS.instr"
     (0)*DEG2RAD,
-#line 237 "./templateTAS.instr"
+#line 241 "Applications/ResLibCal/private/templateTAS.instr"
     (mcipA2)*DEG2RAD,
-#line 237 "./templateTAS.instr"
+#line 241 "Applications/ResLibCal/private/templateTAS.instr"
     (0)*DEG2RAD);
-#line 11289 "./templateTAS.c"
+#line 11097 "Applications/ResLibCal/private/templateTAS.c"
   rot_mul(mctr1, mcrotaMono_Cradle, mcrotaMono_Out);
   rot_transpose(mcrotaPG1Xtal, mctr1);
   rot_mul(mcrotaMono_Out, mctr1, mcrotrMono_Out);
   mctc1 = coords_set(
-#line 236 "./templateTAS.instr"
+#line 240 "Applications/ResLibCal/private/templateTAS.instr"
     0,
-#line 236 "./templateTAS.instr"
+#line 240 "Applications/ResLibCal/private/templateTAS.instr"
     0,
-#line 236 "./templateTAS.instr"
+#line 240 "Applications/ResLibCal/private/templateTAS.instr"
     0);
-#line 11300 "./templateTAS.c"
+#line 11108 "Applications/ResLibCal/private/templateTAS.c"
   rot_transpose(mcrotaMono_Cradle, mctr1);
   mctc2 = rot_apply(mctr1, mctc1);
   mcposaMono_Out = coords_add(mcposaMono_Cradle, mctc2);
@@ -11308,427 +11116,283 @@ void mcinit(void) {
   mccomp_posr[7] = mcposrMono_Out;
   mcNCounter[7]  = mcPCounter[7] = mcP2Counter[7] = 0;
   mcAbsorbProp[7]= 0;
-    /* Component D4_SC2_1D. */
-  /* Setting parameters for component D4_SC2_1D. */
-  SIG_MESSAGE("D4_SC2_1D (Init:SetPar)");
-#line 223 "./templateTAS.instr"
-  mccD4_SC2_1D_xwidth = 0;
-#line 223 "./templateTAS.instr"
-  mccD4_SC2_1D_yheight = 0;
-#line 223 "./templateTAS.instr"
-  mccD4_SC2_1D_zdepth = 0;
-#line 240 "./templateTAS.instr"
-  mccD4_SC2_1D_xmin = -0.08 / 2;
-#line 240 "./templateTAS.instr"
-  mccD4_SC2_1D_xmax = 0.08 / 2;
-#line 241 "./templateTAS.instr"
-  mccD4_SC2_1D_ymin = -0.1200 / 2;
-#line 241 "./templateTAS.instr"
-  mccD4_SC2_1D_ymax = 0.1200 / 2;
-#line 224 "./templateTAS.instr"
-  mccD4_SC2_1D_zmin = 0;
-#line 224 "./templateTAS.instr"
-  mccD4_SC2_1D_zmax = 0;
-#line 225 "./templateTAS.instr"
-  mccD4_SC2_1D_bins = 0;
-#line 225 "./templateTAS.instr"
-  mccD4_SC2_1D_min = -1e40;
-#line 225 "./templateTAS.instr"
-  mccD4_SC2_1D_max = 1e40;
-#line 242 "./templateTAS.instr"
-  mccD4_SC2_1D_restore_neutron = 1;
-#line 225 "./templateTAS.instr"
-  mccD4_SC2_1D_radius = 0;
-#line 242 "./templateTAS.instr"
-  if("lambda, cm2, auto") strncpy(mccD4_SC2_1D_options, "lambda, cm2, auto" ? "lambda, cm2, auto" : "", 16384); else mccD4_SC2_1D_options[0]='\0';
-#line 226 "./templateTAS.instr"
-  if("NULL") strncpy(mccD4_SC2_1D_filename, "NULL" ? "NULL" : "", 16384); else mccD4_SC2_1D_filename[0]='\0';
-#line 226 "./templateTAS.instr"
-  if("NULL") strncpy(mccD4_SC2_1D_geometry, "NULL" ? "NULL" : "", 16384); else mccD4_SC2_1D_geometry[0]='\0';
-#line 227 "./templateTAS.instr"
-  if("NULL") strncpy(mccD4_SC2_1D_username1, "NULL" ? "NULL" : "", 16384); else mccD4_SC2_1D_username1[0]='\0';
-#line 227 "./templateTAS.instr"
-  if("NULL") strncpy(mccD4_SC2_1D_username2, "NULL" ? "NULL" : "", 16384); else mccD4_SC2_1D_username2[0]='\0';
-#line 227 "./templateTAS.instr"
-  if("NULL") strncpy(mccD4_SC2_1D_username3, "NULL" ? "NULL" : "", 16384); else mccD4_SC2_1D_username3[0]='\0';
-#line 11354 "./templateTAS.c"
-
-  SIG_MESSAGE("D4_SC2_1D (Init:Place/Rotate)");
-  rot_set_rotation(mctr1,
-    (0.0)*DEG2RAD,
-    (0.0)*DEG2RAD,
-    (0.0)*DEG2RAD);
-#line 11361 "./templateTAS.c"
-  rot_mul(mctr1, mcrotaMono_Out, mcrotaD4_SC2_1D);
-  rot_transpose(mcrotaMono_Out, mctr1);
-  rot_mul(mcrotaD4_SC2_1D, mctr1, mcrotrD4_SC2_1D);
-  mctc1 = coords_set(
-#line 243 "./templateTAS.instr"
-    0,
-#line 243 "./templateTAS.instr"
-    0,
-#line 243 "./templateTAS.instr"
-    mcipL2 / 3);
-#line 11372 "./templateTAS.c"
-  rot_transpose(mcrotaMono_Out, mctr1);
-  mctc2 = rot_apply(mctr1, mctc1);
-  mcposaD4_SC2_1D = coords_add(mcposaMono_Out, mctc2);
-  mctc1 = coords_sub(mcposaMono_Out, mcposaD4_SC2_1D);
-  mcposrD4_SC2_1D = rot_apply(mcrotaD4_SC2_1D, mctc1);
-  mcDEBUG_COMPONENT("D4_SC2_1D", mcposaD4_SC2_1D, mcrotaD4_SC2_1D)
-  mccomp_posa[8] = mcposaD4_SC2_1D;
-  mccomp_posr[8] = mcposrD4_SC2_1D;
-  mcNCounter[8]  = mcPCounter[8] = mcP2Counter[8] = 0;
-  mcAbsorbProp[8]= 0;
     /* Component SC2. */
   /* Setting parameters for component SC2. */
   SIG_MESSAGE("SC2 (Init:SetPar)");
-#line 246 "./templateTAS.instr"
+#line 250 "Applications/ResLibCal/private/templateTAS.instr"
   mccSC2_xmin = -0.08 / 2;
-#line 247 "./templateTAS.instr"
+#line 251 "Applications/ResLibCal/private/templateTAS.instr"
   mccSC2_xmax = 0.08 / 2;
-#line 246 "./templateTAS.instr"
+#line 250 "Applications/ResLibCal/private/templateTAS.instr"
   mccSC2_ymin = -0.12 / 2;
-#line 247 "./templateTAS.instr"
+#line 251 "Applications/ResLibCal/private/templateTAS.instr"
   mccSC2_ymax = 0.12 / 2;
-#line 52 "./templateTAS.instr"
+#line 52 "Applications/ResLibCal/private/templateTAS.instr"
   mccSC2_xwidth = 0;
-#line 52 "./templateTAS.instr"
+#line 52 "Applications/ResLibCal/private/templateTAS.instr"
   mccSC2_yheight = 0;
-#line 248 "./templateTAS.instr"
+#line 252 "Applications/ResLibCal/private/templateTAS.instr"
   mccSC2_length = 0.35;
-#line 249 "./templateTAS.instr"
+#line 253 "Applications/ResLibCal/private/templateTAS.instr"
   mccSC2_divergence = mcipALF2;
-#line 52 "./templateTAS.instr"
+#line 52 "Applications/ResLibCal/private/templateTAS.instr"
   mccSC2_transmission = 1;
-#line 250 "./templateTAS.instr"
+#line 254 "Applications/ResLibCal/private/templateTAS.instr"
   mccSC2_divergenceV = mcipBET2;
-#line 11406 "./templateTAS.c"
+#line 11142 "Applications/ResLibCal/private/templateTAS.c"
 
   SIG_MESSAGE("SC2 (Init:Place/Rotate)");
   rot_set_rotation(mctr1,
     (0.0)*DEG2RAD,
     (0.0)*DEG2RAD,
     (0.0)*DEG2RAD);
-#line 11413 "./templateTAS.c"
+#line 11149 "Applications/ResLibCal/private/templateTAS.c"
   rot_mul(mctr1, mcrotaMono_Out, mcrotaSC2);
-  rot_transpose(mcrotaD4_SC2_1D, mctr1);
+  rot_transpose(mcrotaMono_Out, mctr1);
   rot_mul(mcrotaSC2, mctr1, mcrotrSC2);
   mctc1 = coords_set(
-#line 252 "./templateTAS.instr"
+#line 256 "Applications/ResLibCal/private/templateTAS.instr"
     0,
-#line 252 "./templateTAS.instr"
+#line 256 "Applications/ResLibCal/private/templateTAS.instr"
     0,
-#line 252 "./templateTAS.instr"
+#line 256 "Applications/ResLibCal/private/templateTAS.instr"
     mcipL2 / 2);
-#line 11424 "./templateTAS.c"
+#line 11160 "Applications/ResLibCal/private/templateTAS.c"
   rot_transpose(mcrotaMono_Out, mctr1);
   mctc2 = rot_apply(mctr1, mctc1);
   mcposaSC2 = coords_add(mcposaMono_Out, mctc2);
-  mctc1 = coords_sub(mcposaD4_SC2_1D, mcposaSC2);
+  mctc1 = coords_sub(mcposaMono_Out, mcposaSC2);
   mcposrSC2 = rot_apply(mcrotaSC2, mctc1);
   mcDEBUG_COMPONENT("SC2", mcposaSC2, mcrotaSC2)
-  mccomp_posa[9] = mcposaSC2;
-  mccomp_posr[9] = mcposrSC2;
-  mcNCounter[9]  = mcPCounter[9] = mcP2Counter[9] = 0;
-  mcAbsorbProp[9]= 0;
+  mccomp_posa[8] = mcposaSC2;
+  mccomp_posr[8] = mcposrSC2;
+  mcNCounter[8]  = mcPCounter[8] = mcP2Counter[8] = 0;
+  mcAbsorbProp[8]= 0;
     /* Component Sample_Cradle. */
   /* Setting parameters for component Sample_Cradle. */
   SIG_MESSAGE("Sample_Cradle (Init:SetPar)");
-#line 254 "./templateTAS.instr"
+#line 258 "Applications/ResLibCal/private/templateTAS.instr"
   mccSample_Cradle_xwidth = 0.01;
-#line 254 "./templateTAS.instr"
+#line 258 "Applications/ResLibCal/private/templateTAS.instr"
   mccSample_Cradle_yheight = 0.01;
-#line 223 "./templateTAS.instr"
+#line 223 "Applications/ResLibCal/private/templateTAS.instr"
   mccSample_Cradle_zdepth = 0;
-#line 224 "./templateTAS.instr"
+#line 224 "Applications/ResLibCal/private/templateTAS.instr"
   mccSample_Cradle_xmin = 0;
-#line 224 "./templateTAS.instr"
+#line 224 "Applications/ResLibCal/private/templateTAS.instr"
   mccSample_Cradle_xmax = 0;
-#line 224 "./templateTAS.instr"
+#line 224 "Applications/ResLibCal/private/templateTAS.instr"
   mccSample_Cradle_ymin = 0;
-#line 224 "./templateTAS.instr"
+#line 224 "Applications/ResLibCal/private/templateTAS.instr"
   mccSample_Cradle_ymax = 0;
-#line 224 "./templateTAS.instr"
+#line 224 "Applications/ResLibCal/private/templateTAS.instr"
   mccSample_Cradle_zmin = 0;
-#line 224 "./templateTAS.instr"
+#line 224 "Applications/ResLibCal/private/templateTAS.instr"
   mccSample_Cradle_zmax = 0;
-#line 225 "./templateTAS.instr"
+#line 225 "Applications/ResLibCal/private/templateTAS.instr"
   mccSample_Cradle_bins = 0;
-#line 225 "./templateTAS.instr"
+#line 225 "Applications/ResLibCal/private/templateTAS.instr"
   mccSample_Cradle_min = -1e40;
-#line 225 "./templateTAS.instr"
+#line 225 "Applications/ResLibCal/private/templateTAS.instr"
   mccSample_Cradle_max = 1e40;
-#line 254 "./templateTAS.instr"
+#line 258 "Applications/ResLibCal/private/templateTAS.instr"
   mccSample_Cradle_restore_neutron = 1;
-#line 225 "./templateTAS.instr"
+#line 225 "Applications/ResLibCal/private/templateTAS.instr"
   mccSample_Cradle_radius = 0;
-#line 254 "./templateTAS.instr"
+#line 258 "Applications/ResLibCal/private/templateTAS.instr"
   if("per cm2") strncpy(mccSample_Cradle_options, "per cm2" ? "per cm2" : "", 16384); else mccSample_Cradle_options[0]='\0';
-#line 226 "./templateTAS.instr"
+#line 226 "Applications/ResLibCal/private/templateTAS.instr"
   if("NULL") strncpy(mccSample_Cradle_filename, "NULL" ? "NULL" : "", 16384); else mccSample_Cradle_filename[0]='\0';
-#line 226 "./templateTAS.instr"
+#line 226 "Applications/ResLibCal/private/templateTAS.instr"
   if("NULL") strncpy(mccSample_Cradle_geometry, "NULL" ? "NULL" : "", 16384); else mccSample_Cradle_geometry[0]='\0';
-#line 227 "./templateTAS.instr"
+#line 227 "Applications/ResLibCal/private/templateTAS.instr"
   if("NULL") strncpy(mccSample_Cradle_username1, "NULL" ? "NULL" : "", 16384); else mccSample_Cradle_username1[0]='\0';
-#line 227 "./templateTAS.instr"
+#line 227 "Applications/ResLibCal/private/templateTAS.instr"
   if("NULL") strncpy(mccSample_Cradle_username2, "NULL" ? "NULL" : "", 16384); else mccSample_Cradle_username2[0]='\0';
-#line 227 "./templateTAS.instr"
+#line 227 "Applications/ResLibCal/private/templateTAS.instr"
   if("NULL") strncpy(mccSample_Cradle_username3, "NULL" ? "NULL" : "", 16384); else mccSample_Cradle_username3[0]='\0';
-#line 11478 "./templateTAS.c"
+#line 11214 "Applications/ResLibCal/private/templateTAS.c"
 
   SIG_MESSAGE("Sample_Cradle (Init:Place/Rotate)");
   rot_set_rotation(mctr1,
-#line 256 "./templateTAS.instr"
+#line 260 "Applications/ResLibCal/private/templateTAS.instr"
     (0)*DEG2RAD,
-#line 256 "./templateTAS.instr"
+#line 260 "Applications/ResLibCal/private/templateTAS.instr"
     (mcipA3)*DEG2RAD,
-#line 256 "./templateTAS.instr"
+#line 260 "Applications/ResLibCal/private/templateTAS.instr"
     (0)*DEG2RAD);
-#line 11488 "./templateTAS.c"
+#line 11224 "Applications/ResLibCal/private/templateTAS.c"
   rot_mul(mctr1, mcrotaMono_Out, mcrotaSample_Cradle);
   rot_transpose(mcrotaSC2, mctr1);
   rot_mul(mcrotaSample_Cradle, mctr1, mcrotrSample_Cradle);
   mctc1 = coords_set(
-#line 255 "./templateTAS.instr"
+#line 259 "Applications/ResLibCal/private/templateTAS.instr"
     0,
-#line 255 "./templateTAS.instr"
+#line 259 "Applications/ResLibCal/private/templateTAS.instr"
     0,
-#line 255 "./templateTAS.instr"
+#line 259 "Applications/ResLibCal/private/templateTAS.instr"
     mcipL2);
-#line 11499 "./templateTAS.c"
+#line 11235 "Applications/ResLibCal/private/templateTAS.c"
   rot_transpose(mcrotaMono_Out, mctr1);
   mctc2 = rot_apply(mctr1, mctc1);
   mcposaSample_Cradle = coords_add(mcposaMono_Out, mctc2);
   mctc1 = coords_sub(mcposaSC2, mcposaSample_Cradle);
   mcposrSample_Cradle = rot_apply(mcrotaSample_Cradle, mctc1);
   mcDEBUG_COMPONENT("Sample_Cradle", mcposaSample_Cradle, mcrotaSample_Cradle)
-  mccomp_posa[10] = mcposaSample_Cradle;
-  mccomp_posr[10] = mcposrSample_Cradle;
-  mcNCounter[10]  = mcPCounter[10] = mcP2Counter[10] = 0;
-  mcAbsorbProp[10]= 0;
+  mccomp_posa[9] = mcposaSample_Cradle;
+  mccomp_posr[9] = mcposrSample_Cradle;
+  mcNCounter[9]  = mcPCounter[9] = mcP2Counter[9] = 0;
+  mcAbsorbProp[9]= 0;
     /* Component Sample. */
   /* Setting parameters for component Sample. */
   SIG_MESSAGE("Sample (Init:SetPar)");
-#line 67 "./templateTAS.instr"
+#line 67 "Applications/ResLibCal/private/templateTAS.instr"
   mccSample_thickness = 0;
-#line 259 "./templateTAS.instr"
+#line 263 "Applications/ResLibCal/private/templateTAS.instr"
   mccSample_radius = mcipradius;
-#line 67 "./templateTAS.instr"
+#line 67 "Applications/ResLibCal/private/templateTAS.instr"
   mccSample_focus_r = 0.05;
-#line 261 "./templateTAS.instr"
+#line 265 "Applications/ResLibCal/private/templateTAS.instr"
   mccSample_E0 = EF;
-#line 261 "./templateTAS.instr"
+#line 265 "Applications/ResLibCal/private/templateTAS.instr"
   mccSample_dE = 0;
-#line 68 "./templateTAS.instr"
+#line 68 "Applications/ResLibCal/private/templateTAS.instr"
   mccSample_target_x = 0;
-#line 68 "./templateTAS.instr"
+#line 68 "Applications/ResLibCal/private/templateTAS.instr"
   mccSample_target_y = 0;
-#line 68 "./templateTAS.instr"
+#line 68 "Applications/ResLibCal/private/templateTAS.instr"
   mccSample_target_z = .5;
-#line 68 "./templateTAS.instr"
+#line 68 "Applications/ResLibCal/private/templateTAS.instr"
   mccSample_focus_xw = 0;
-#line 68 "./templateTAS.instr"
+#line 68 "Applications/ResLibCal/private/templateTAS.instr"
   mccSample_focus_yh = 0;
-#line 260 "./templateTAS.instr"
+#line 264 "Applications/ResLibCal/private/templateTAS.instr"
   mccSample_focus_aw = RAD2DEG * atan2 ( mcipWA * sin ( mcipA5 * DEG2RAD ) , mcipL3 );
-#line 260 "./templateTAS.instr"
+#line 264 "Applications/ResLibCal/private/templateTAS.instr"
   mccSample_focus_ah = RAD2DEG * atan2 ( mcipHA , mcipL3 );
-#line 69 "./templateTAS.instr"
+#line 69 "Applications/ResLibCal/private/templateTAS.instr"
   mccSample_xwidth = 0;
-#line 259 "./templateTAS.instr"
+#line 263 "Applications/ResLibCal/private/templateTAS.instr"
   mccSample_yheight = mcipheight;
-#line 69 "./templateTAS.instr"
+#line 69 "Applications/ResLibCal/private/templateTAS.instr"
   mccSample_zdepth = 0;
-#line 260 "./templateTAS.instr"
+#line 264 "Applications/ResLibCal/private/templateTAS.instr"
   mccSample_target_index = + 3;
-#line 11545 "./templateTAS.c"
+#line 11281 "Applications/ResLibCal/private/templateTAS.c"
 
   SIG_MESSAGE("Sample (Init:Place/Rotate)");
   rot_set_rotation(mctr1,
     (0.0)*DEG2RAD,
     (0.0)*DEG2RAD,
     (0.0)*DEG2RAD);
-#line 11552 "./templateTAS.c"
+#line 11288 "Applications/ResLibCal/private/templateTAS.c"
   rot_mul(mctr1, mcrotaSample_Cradle, mcrotaSample);
   rot_transpose(mcrotaSample_Cradle, mctr1);
   rot_mul(mcrotaSample, mctr1, mcrotrSample);
   mctc1 = coords_set(
-#line 262 "./templateTAS.instr"
+#line 266 "Applications/ResLibCal/private/templateTAS.instr"
     0,
-#line 262 "./templateTAS.instr"
+#line 266 "Applications/ResLibCal/private/templateTAS.instr"
     0,
-#line 262 "./templateTAS.instr"
+#line 266 "Applications/ResLibCal/private/templateTAS.instr"
     0);
-#line 11563 "./templateTAS.c"
+#line 11299 "Applications/ResLibCal/private/templateTAS.c"
   rot_transpose(mcrotaSample_Cradle, mctr1);
   mctc2 = rot_apply(mctr1, mctc1);
   mcposaSample = coords_add(mcposaSample_Cradle, mctc2);
   mctc1 = coords_sub(mcposaSample_Cradle, mcposaSample);
   mcposrSample = rot_apply(mcrotaSample, mctc1);
   mcDEBUG_COMPONENT("Sample", mcposaSample, mcrotaSample)
-  mccomp_posa[11] = mcposaSample;
-  mccomp_posr[11] = mcposrSample;
-  mcNCounter[11]  = mcPCounter[11] = mcP2Counter[11] = 0;
-  mcAbsorbProp[11]= 0;
+  mccomp_posa[10] = mcposaSample;
+  mccomp_posr[10] = mcposrSample;
+  mcNCounter[10]  = mcPCounter[10] = mcP2Counter[10] = 0;
+  mcAbsorbProp[10]= 0;
     /* Component Sample_Out. */
   /* Setting parameters for component Sample_Out. */
   SIG_MESSAGE("Sample_Out (Init:SetPar)");
 
   SIG_MESSAGE("Sample_Out (Init:Place/Rotate)");
   rot_set_rotation(mctr1,
-#line 266 "./templateTAS.instr"
+#line 270 "Applications/ResLibCal/private/templateTAS.instr"
     (0)*DEG2RAD,
-#line 266 "./templateTAS.instr"
+#line 270 "Applications/ResLibCal/private/templateTAS.instr"
     (mcipA4)*DEG2RAD,
-#line 266 "./templateTAS.instr"
+#line 270 "Applications/ResLibCal/private/templateTAS.instr"
     (0)*DEG2RAD);
-#line 11586 "./templateTAS.c"
+#line 11322 "Applications/ResLibCal/private/templateTAS.c"
   rot_mul(mctr1, mcrotaMono_Out, mcrotaSample_Out);
   rot_transpose(mcrotaSample, mctr1);
   rot_mul(mcrotaSample_Out, mctr1, mcrotrSample_Out);
   mctc1 = coords_set(
-#line 265 "./templateTAS.instr"
+#line 269 "Applications/ResLibCal/private/templateTAS.instr"
     0,
-#line 265 "./templateTAS.instr"
+#line 269 "Applications/ResLibCal/private/templateTAS.instr"
     0,
-#line 265 "./templateTAS.instr"
+#line 269 "Applications/ResLibCal/private/templateTAS.instr"
     0);
-#line 11597 "./templateTAS.c"
+#line 11333 "Applications/ResLibCal/private/templateTAS.c"
   rot_transpose(mcrotaSample_Cradle, mctr1);
   mctc2 = rot_apply(mctr1, mctc1);
   mcposaSample_Out = coords_add(mcposaSample_Cradle, mctc2);
   mctc1 = coords_sub(mcposaSample, mcposaSample_Out);
   mcposrSample_Out = rot_apply(mcrotaSample_Out, mctc1);
   mcDEBUG_COMPONENT("Sample_Out", mcposaSample_Out, mcrotaSample_Out)
-  mccomp_posa[12] = mcposaSample_Out;
-  mccomp_posr[12] = mcposrSample_Out;
-  mcNCounter[12]  = mcPCounter[12] = mcP2Counter[12] = 0;
-  mcAbsorbProp[12]= 0;
-    /* Component D7_SC3_1D. */
-  /* Setting parameters for component D7_SC3_1D. */
-  SIG_MESSAGE("D7_SC3_1D (Init:SetPar)");
-#line 269 "./templateTAS.instr"
-  mccD7_SC3_1D_xwidth = 0.08;
-#line 269 "./templateTAS.instr"
-  mccD7_SC3_1D_yheight = mcipHA;
-#line 223 "./templateTAS.instr"
-  mccD7_SC3_1D_zdepth = 0;
-#line 224 "./templateTAS.instr"
-  mccD7_SC3_1D_xmin = 0;
-#line 224 "./templateTAS.instr"
-  mccD7_SC3_1D_xmax = 0;
-#line 224 "./templateTAS.instr"
-  mccD7_SC3_1D_ymin = 0;
-#line 224 "./templateTAS.instr"
-  mccD7_SC3_1D_ymax = 0;
-#line 224 "./templateTAS.instr"
-  mccD7_SC3_1D_zmin = 0;
-#line 224 "./templateTAS.instr"
-  mccD7_SC3_1D_zmax = 0;
-#line 269 "./templateTAS.instr"
-  mccD7_SC3_1D_bins = 50;
-#line 225 "./templateTAS.instr"
-  mccD7_SC3_1D_min = -1e40;
-#line 225 "./templateTAS.instr"
-  mccD7_SC3_1D_max = 1e40;
-#line 269 "./templateTAS.instr"
-  mccD7_SC3_1D_restore_neutron = 1;
-#line 225 "./templateTAS.instr"
-  mccD7_SC3_1D_radius = 0;
-#line 270 "./templateTAS.instr"
-  if("theta energy, all auto, banana") strncpy(mccD7_SC3_1D_options, "theta energy, all auto, banana" ? "theta energy, all auto, banana" : "", 16384); else mccD7_SC3_1D_options[0]='\0';
-#line 226 "./templateTAS.instr"
-  if("NULL") strncpy(mccD7_SC3_1D_filename, "NULL" ? "NULL" : "", 16384); else mccD7_SC3_1D_filename[0]='\0';
-#line 226 "./templateTAS.instr"
-  if("NULL") strncpy(mccD7_SC3_1D_geometry, "NULL" ? "NULL" : "", 16384); else mccD7_SC3_1D_geometry[0]='\0';
-#line 227 "./templateTAS.instr"
-  if("NULL") strncpy(mccD7_SC3_1D_username1, "NULL" ? "NULL" : "", 16384); else mccD7_SC3_1D_username1[0]='\0';
-#line 227 "./templateTAS.instr"
-  if("NULL") strncpy(mccD7_SC3_1D_username2, "NULL" ? "NULL" : "", 16384); else mccD7_SC3_1D_username2[0]='\0';
-#line 227 "./templateTAS.instr"
-  if("NULL") strncpy(mccD7_SC3_1D_username3, "NULL" ? "NULL" : "", 16384); else mccD7_SC3_1D_username3[0]='\0';
-#line 11651 "./templateTAS.c"
-
-  SIG_MESSAGE("D7_SC3_1D (Init:Place/Rotate)");
-  rot_set_rotation(mctr1,
-    (0.0)*DEG2RAD,
-    (0.0)*DEG2RAD,
-    (0.0)*DEG2RAD);
-#line 11658 "./templateTAS.c"
-  rot_mul(mctr1, mcrotaSample_Out, mcrotaD7_SC3_1D);
-  rot_transpose(mcrotaSample_Out, mctr1);
-  rot_mul(mcrotaD7_SC3_1D, mctr1, mcrotrD7_SC3_1D);
-  mctc1 = coords_set(
-#line 271 "./templateTAS.instr"
-    0,
-#line 271 "./templateTAS.instr"
-    0,
-#line 271 "./templateTAS.instr"
-    0);
-#line 11669 "./templateTAS.c"
-  rot_transpose(mcrotaSample_Out, mctr1);
-  mctc2 = rot_apply(mctr1, mctc1);
-  mcposaD7_SC3_1D = coords_add(mcposaSample_Out, mctc2);
-  mctc1 = coords_sub(mcposaSample_Out, mcposaD7_SC3_1D);
-  mcposrD7_SC3_1D = rot_apply(mcrotaD7_SC3_1D, mctc1);
-  mcDEBUG_COMPONENT("D7_SC3_1D", mcposaD7_SC3_1D, mcrotaD7_SC3_1D)
-  mccomp_posa[13] = mcposaD7_SC3_1D;
-  mccomp_posr[13] = mcposrD7_SC3_1D;
-  mcNCounter[13]  = mcPCounter[13] = mcP2Counter[13] = 0;
-  mcAbsorbProp[13]= 0;
+  mccomp_posa[11] = mcposaSample_Out;
+  mccomp_posr[11] = mcposrSample_Out;
+  mcNCounter[11]  = mcPCounter[11] = mcP2Counter[11] = 0;
+  mcAbsorbProp[11]= 0;
     /* Component SC3. */
   /* Setting parameters for component SC3. */
   SIG_MESSAGE("SC3 (Init:SetPar)");
-#line 274 "./templateTAS.instr"
+#line 278 "Applications/ResLibCal/private/templateTAS.instr"
   mccSC3_xmin = -0.08 / 2;
-#line 275 "./templateTAS.instr"
+#line 279 "Applications/ResLibCal/private/templateTAS.instr"
   mccSC3_xmax = 0.08 / 2;
-#line 274 "./templateTAS.instr"
+#line 278 "Applications/ResLibCal/private/templateTAS.instr"
   mccSC3_ymin = -0.12 / 2;
-#line 275 "./templateTAS.instr"
+#line 279 "Applications/ResLibCal/private/templateTAS.instr"
   mccSC3_ymax = 0.12 / 2;
-#line 52 "./templateTAS.instr"
+#line 52 "Applications/ResLibCal/private/templateTAS.instr"
   mccSC3_xwidth = 0;
-#line 52 "./templateTAS.instr"
+#line 52 "Applications/ResLibCal/private/templateTAS.instr"
   mccSC3_yheight = 0;
-#line 276 "./templateTAS.instr"
+#line 280 "Applications/ResLibCal/private/templateTAS.instr"
   mccSC3_length = 0.40;
-#line 277 "./templateTAS.instr"
+#line 281 "Applications/ResLibCal/private/templateTAS.instr"
   mccSC3_divergence = mcipALF3;
-#line 52 "./templateTAS.instr"
+#line 52 "Applications/ResLibCal/private/templateTAS.instr"
   mccSC3_transmission = 1;
-#line 278 "./templateTAS.instr"
+#line 282 "Applications/ResLibCal/private/templateTAS.instr"
   mccSC3_divergenceV = mcipBET3;
-#line 11703 "./templateTAS.c"
+#line 11367 "Applications/ResLibCal/private/templateTAS.c"
 
   SIG_MESSAGE("SC3 (Init:Place/Rotate)");
   rot_set_rotation(mctr1,
     (0.0)*DEG2RAD,
     (0.0)*DEG2RAD,
     (0.0)*DEG2RAD);
-#line 11710 "./templateTAS.c"
+#line 11374 "Applications/ResLibCal/private/templateTAS.c"
   rot_mul(mctr1, mcrotaSample_Out, mcrotaSC3);
-  rot_transpose(mcrotaD7_SC3_1D, mctr1);
+  rot_transpose(mcrotaSample_Out, mctr1);
   rot_mul(mcrotaSC3, mctr1, mcrotrSC3);
   mctc1 = coords_set(
-#line 280 "./templateTAS.instr"
+#line 284 "Applications/ResLibCal/private/templateTAS.instr"
     0,
-#line 280 "./templateTAS.instr"
+#line 284 "Applications/ResLibCal/private/templateTAS.instr"
     0,
-#line 280 "./templateTAS.instr"
+#line 284 "Applications/ResLibCal/private/templateTAS.instr"
     mcipL3 / 2);
-#line 11721 "./templateTAS.c"
+#line 11385 "Applications/ResLibCal/private/templateTAS.c"
   rot_transpose(mcrotaSample_Out, mctr1);
   mctc2 = rot_apply(mctr1, mctc1);
   mcposaSC3 = coords_add(mcposaSample_Out, mctc2);
-  mctc1 = coords_sub(mcposaD7_SC3_1D, mcposaSC3);
+  mctc1 = coords_sub(mcposaSample_Out, mcposaSC3);
   mcposrSC3 = rot_apply(mcrotaSC3, mctc1);
   mcDEBUG_COMPONENT("SC3", mcposaSC3, mcrotaSC3)
-  mccomp_posa[14] = mcposaSC3;
-  mccomp_posr[14] = mcposrSC3;
-  mcNCounter[14]  = mcPCounter[14] = mcP2Counter[14] = 0;
-  mcAbsorbProp[14]= 0;
+  mccomp_posa[12] = mcposaSC3;
+  mccomp_posr[12] = mcposrSC3;
+  mcNCounter[12]  = mcPCounter[12] = mcP2Counter[12] = 0;
+  mcAbsorbProp[12]= 0;
     /* Component Ana_Cradle. */
   /* Setting parameters for component Ana_Cradle. */
   SIG_MESSAGE("Ana_Cradle (Init:SetPar)");
@@ -11738,249 +11402,249 @@ void mcinit(void) {
     (0.0)*DEG2RAD,
     (0.0)*DEG2RAD,
     (0.0)*DEG2RAD);
-#line 11741 "./templateTAS.c"
+#line 11405 "Applications/ResLibCal/private/templateTAS.c"
   rot_mul(mctr1, mcrotaSample_Out, mcrotaAna_Cradle);
   rot_transpose(mcrotaSC3, mctr1);
   rot_mul(mcrotaAna_Cradle, mctr1, mcrotrAna_Cradle);
   mctc1 = coords_set(
-#line 283 "./templateTAS.instr"
+#line 287 "Applications/ResLibCal/private/templateTAS.instr"
     0,
-#line 283 "./templateTAS.instr"
+#line 287 "Applications/ResLibCal/private/templateTAS.instr"
     0,
-#line 283 "./templateTAS.instr"
+#line 287 "Applications/ResLibCal/private/templateTAS.instr"
     mcipL3);
-#line 11752 "./templateTAS.c"
+#line 11416 "Applications/ResLibCal/private/templateTAS.c"
   rot_transpose(mcrotaSample_Out, mctr1);
   mctc2 = rot_apply(mctr1, mctc1);
   mcposaAna_Cradle = coords_add(mcposaSample_Out, mctc2);
   mctc1 = coords_sub(mcposaSC3, mcposaAna_Cradle);
   mcposrAna_Cradle = rot_apply(mcrotaAna_Cradle, mctc1);
   mcDEBUG_COMPONENT("Ana_Cradle", mcposaAna_Cradle, mcrotaAna_Cradle)
-  mccomp_posa[15] = mcposaAna_Cradle;
-  mccomp_posr[15] = mcposrAna_Cradle;
-  mcNCounter[15]  = mcPCounter[15] = mcP2Counter[15] = 0;
-  mcAbsorbProp[15]= 0;
+  mccomp_posa[13] = mcposaAna_Cradle;
+  mccomp_posr[13] = mcposrAna_Cradle;
+  mcNCounter[13]  = mcPCounter[13] = mcP2Counter[13] = 0;
+  mcAbsorbProp[13]= 0;
     /* Component PG2Xtal. */
   /* Setting parameters for component PG2Xtal. */
   SIG_MESSAGE("PG2Xtal (Init:SetPar)");
-#line 102 "./templateTAS.instr"
+#line 102 "Applications/ResLibCal/private/templateTAS.instr"
   if("NULL") strncpy(mccPG2Xtal_reflect, "NULL" ? "NULL" : "", 16384); else mccPG2Xtal_reflect[0]='\0';
-#line 102 "./templateTAS.instr"
+#line 102 "Applications/ResLibCal/private/templateTAS.instr"
   if("NULL") strncpy(mccPG2Xtal_transmit, "NULL" ? "NULL" : "", 16384); else mccPG2Xtal_transmit[0]='\0';
-#line 103 "./templateTAS.instr"
+#line 103 "Applications/ResLibCal/private/templateTAS.instr"
   mccPG2Xtal_zwidth = 0.01;
-#line 103 "./templateTAS.instr"
+#line 103 "Applications/ResLibCal/private/templateTAS.instr"
   mccPG2Xtal_yheight = 0.01;
-#line 104 "./templateTAS.instr"
+#line 104 "Applications/ResLibCal/private/templateTAS.instr"
   mccPG2Xtal_gap = 0.0005;
-#line 288 "./templateTAS.instr"
+#line 292 "Applications/ResLibCal/private/templateTAS.instr"
   mccPG2Xtal_NH = mcipNHA;
-#line 288 "./templateTAS.instr"
+#line 292 "Applications/ResLibCal/private/templateTAS.instr"
   mccPG2Xtal_NV = mcipNVA;
-#line 290 "./templateTAS.instr"
+#line 294 "Applications/ResLibCal/private/templateTAS.instr"
   mccPG2Xtal_mosaich = mcipETAA;
-#line 290 "./templateTAS.instr"
+#line 294 "Applications/ResLibCal/private/templateTAS.instr"
   mccPG2Xtal_mosaicv = mcipETAA;
-#line 104 "./templateTAS.instr"
+#line 104 "Applications/ResLibCal/private/templateTAS.instr"
   mccPG2Xtal_r0 = 0.7;
-#line 104 "./templateTAS.instr"
+#line 104 "Applications/ResLibCal/private/templateTAS.instr"
   mccPG2Xtal_t0 = 1.0;
-#line 104 "./templateTAS.instr"
+#line 104 "Applications/ResLibCal/private/templateTAS.instr"
   mccPG2Xtal_Q = 1.8734;
-#line 289 "./templateTAS.instr"
+#line 293 "Applications/ResLibCal/private/templateTAS.instr"
   mccPG2Xtal_RV = mcipRAV;
-#line 289 "./templateTAS.instr"
+#line 293 "Applications/ResLibCal/private/templateTAS.instr"
   mccPG2Xtal_RH = mcipRAH;
-#line 290 "./templateTAS.instr"
+#line 294 "Applications/ResLibCal/private/templateTAS.instr"
   mccPG2Xtal_DM = mcipDA;
-#line 105 "./templateTAS.instr"
+#line 105 "Applications/ResLibCal/private/templateTAS.instr"
   mccPG2Xtal_mosaic = 0;
-#line 286 "./templateTAS.instr"
+#line 290 "Applications/ResLibCal/private/templateTAS.instr"
   mccPG2Xtal_width = mcipWA;
-#line 287 "./templateTAS.instr"
+#line 291 "Applications/ResLibCal/private/templateTAS.instr"
   mccPG2Xtal_height = mcipHA;
-#line 105 "./templateTAS.instr"
+#line 105 "Applications/ResLibCal/private/templateTAS.instr"
   mccPG2Xtal_verbose = 0;
-#line 105 "./templateTAS.instr"
+#line 105 "Applications/ResLibCal/private/templateTAS.instr"
   mccPG2Xtal_order = 0;
-#line 11806 "./templateTAS.c"
+#line 11470 "Applications/ResLibCal/private/templateTAS.c"
 
   SIG_MESSAGE("PG2Xtal (Init:Place/Rotate)");
   rot_set_rotation(mctr1,
-#line 292 "./templateTAS.instr"
+#line 296 "Applications/ResLibCal/private/templateTAS.instr"
     (0)*DEG2RAD,
-#line 292 "./templateTAS.instr"
+#line 296 "Applications/ResLibCal/private/templateTAS.instr"
     (mcipA5)*DEG2RAD,
-#line 292 "./templateTAS.instr"
+#line 296 "Applications/ResLibCal/private/templateTAS.instr"
     (0)*DEG2RAD);
-#line 11816 "./templateTAS.c"
+#line 11480 "Applications/ResLibCal/private/templateTAS.c"
   rot_mul(mctr1, mcrotaAna_Cradle, mcrotaPG2Xtal);
   rot_transpose(mcrotaAna_Cradle, mctr1);
   rot_mul(mcrotaPG2Xtal, mctr1, mcrotrPG2Xtal);
   mctc1 = coords_set(
-#line 291 "./templateTAS.instr"
+#line 295 "Applications/ResLibCal/private/templateTAS.instr"
     0,
-#line 291 "./templateTAS.instr"
+#line 295 "Applications/ResLibCal/private/templateTAS.instr"
     0,
-#line 291 "./templateTAS.instr"
+#line 295 "Applications/ResLibCal/private/templateTAS.instr"
     0);
-#line 11827 "./templateTAS.c"
+#line 11491 "Applications/ResLibCal/private/templateTAS.c"
   rot_transpose(mcrotaAna_Cradle, mctr1);
   mctc2 = rot_apply(mctr1, mctc1);
   mcposaPG2Xtal = coords_add(mcposaAna_Cradle, mctc2);
   mctc1 = coords_sub(mcposaAna_Cradle, mcposaPG2Xtal);
   mcposrPG2Xtal = rot_apply(mcrotaPG2Xtal, mctc1);
   mcDEBUG_COMPONENT("PG2Xtal", mcposaPG2Xtal, mcrotaPG2Xtal)
-  mccomp_posa[16] = mcposaPG2Xtal;
-  mccomp_posr[16] = mcposrPG2Xtal;
-  mcNCounter[16]  = mcPCounter[16] = mcP2Counter[16] = 0;
-  mcAbsorbProp[16]= 0;
+  mccomp_posa[14] = mcposaPG2Xtal;
+  mccomp_posr[14] = mcposrPG2Xtal;
+  mcNCounter[14]  = mcPCounter[14] = mcP2Counter[14] = 0;
+  mcAbsorbProp[14]= 0;
     /* Component Ana_Out. */
   /* Setting parameters for component Ana_Out. */
   SIG_MESSAGE("Ana_Out (Init:SetPar)");
 
   SIG_MESSAGE("Ana_Out (Init:Place/Rotate)");
   rot_set_rotation(mctr1,
-#line 296 "./templateTAS.instr"
+#line 300 "Applications/ResLibCal/private/templateTAS.instr"
     (0)*DEG2RAD,
-#line 296 "./templateTAS.instr"
+#line 300 "Applications/ResLibCal/private/templateTAS.instr"
     (mcipA6)*DEG2RAD,
-#line 296 "./templateTAS.instr"
+#line 300 "Applications/ResLibCal/private/templateTAS.instr"
     (0)*DEG2RAD);
-#line 11850 "./templateTAS.c"
+#line 11514 "Applications/ResLibCal/private/templateTAS.c"
   rot_mul(mctr1, mcrotaAna_Cradle, mcrotaAna_Out);
   rot_transpose(mcrotaPG2Xtal, mctr1);
   rot_mul(mcrotaAna_Out, mctr1, mcrotrAna_Out);
   mctc1 = coords_set(
-#line 295 "./templateTAS.instr"
+#line 299 "Applications/ResLibCal/private/templateTAS.instr"
     0,
-#line 295 "./templateTAS.instr"
+#line 299 "Applications/ResLibCal/private/templateTAS.instr"
     0,
-#line 295 "./templateTAS.instr"
+#line 299 "Applications/ResLibCal/private/templateTAS.instr"
     0);
-#line 11861 "./templateTAS.c"
+#line 11525 "Applications/ResLibCal/private/templateTAS.c"
   rot_transpose(mcrotaAna_Cradle, mctr1);
   mctc2 = rot_apply(mctr1, mctc1);
   mcposaAna_Out = coords_add(mcposaAna_Cradle, mctc2);
   mctc1 = coords_sub(mcposaPG2Xtal, mcposaAna_Out);
   mcposrAna_Out = rot_apply(mcrotaAna_Out, mctc1);
   mcDEBUG_COMPONENT("Ana_Out", mcposaAna_Out, mcrotaAna_Out)
-  mccomp_posa[17] = mcposaAna_Out;
-  mccomp_posr[17] = mcposrAna_Out;
-  mcNCounter[17]  = mcPCounter[17] = mcP2Counter[17] = 0;
-  mcAbsorbProp[17]= 0;
+  mccomp_posa[15] = mcposaAna_Out;
+  mccomp_posr[15] = mcposrAna_Out;
+  mcNCounter[15]  = mcPCounter[15] = mcP2Counter[15] = 0;
+  mcAbsorbProp[15]= 0;
     /* Component SC4. */
   /* Setting parameters for component SC4. */
   SIG_MESSAGE("SC4 (Init:SetPar)");
-#line 299 "./templateTAS.instr"
+#line 303 "Applications/ResLibCal/private/templateTAS.instr"
   mccSC4_xmin = -0.08 / 2;
-#line 300 "./templateTAS.instr"
+#line 304 "Applications/ResLibCal/private/templateTAS.instr"
   mccSC4_xmax = 0.08 / 2;
-#line 299 "./templateTAS.instr"
+#line 303 "Applications/ResLibCal/private/templateTAS.instr"
   mccSC4_ymin = -0.12 / 2;
-#line 300 "./templateTAS.instr"
+#line 304 "Applications/ResLibCal/private/templateTAS.instr"
   mccSC4_ymax = 0.12 / 2;
-#line 52 "./templateTAS.instr"
+#line 52 "Applications/ResLibCal/private/templateTAS.instr"
   mccSC4_xwidth = 0;
-#line 52 "./templateTAS.instr"
+#line 52 "Applications/ResLibCal/private/templateTAS.instr"
   mccSC4_yheight = 0;
-#line 301 "./templateTAS.instr"
+#line 305 "Applications/ResLibCal/private/templateTAS.instr"
   mccSC4_length = 0.24;
-#line 302 "./templateTAS.instr"
+#line 306 "Applications/ResLibCal/private/templateTAS.instr"
   mccSC4_divergence = mcipALF4;
-#line 52 "./templateTAS.instr"
+#line 52 "Applications/ResLibCal/private/templateTAS.instr"
   mccSC4_transmission = 1;
-#line 303 "./templateTAS.instr"
+#line 307 "Applications/ResLibCal/private/templateTAS.instr"
   mccSC4_divergenceV = mcipBET4;
-#line 11895 "./templateTAS.c"
+#line 11559 "Applications/ResLibCal/private/templateTAS.c"
 
   SIG_MESSAGE("SC4 (Init:Place/Rotate)");
   rot_set_rotation(mctr1,
     (0.0)*DEG2RAD,
     (0.0)*DEG2RAD,
     (0.0)*DEG2RAD);
-#line 11902 "./templateTAS.c"
+#line 11566 "Applications/ResLibCal/private/templateTAS.c"
   rot_mul(mctr1, mcrotaAna_Out, mcrotaSC4);
   rot_transpose(mcrotaAna_Out, mctr1);
   rot_mul(mcrotaSC4, mctr1, mcrotrSC4);
   mctc1 = coords_set(
-#line 305 "./templateTAS.instr"
+#line 309 "Applications/ResLibCal/private/templateTAS.instr"
     0,
-#line 305 "./templateTAS.instr"
+#line 309 "Applications/ResLibCal/private/templateTAS.instr"
     0,
-#line 305 "./templateTAS.instr"
+#line 309 "Applications/ResLibCal/private/templateTAS.instr"
     ( mcipL4 -0.24 ) / 2);
-#line 11913 "./templateTAS.c"
+#line 11577 "Applications/ResLibCal/private/templateTAS.c"
   rot_transpose(mcrotaAna_Out, mctr1);
   mctc2 = rot_apply(mctr1, mctc1);
   mcposaSC4 = coords_add(mcposaAna_Out, mctc2);
   mctc1 = coords_sub(mcposaAna_Out, mcposaSC4);
   mcposrSC4 = rot_apply(mcrotaSC4, mctc1);
   mcDEBUG_COMPONENT("SC4", mcposaSC4, mcrotaSC4)
-  mccomp_posa[18] = mcposaSC4;
-  mccomp_posr[18] = mcposrSC4;
-  mcNCounter[18]  = mcPCounter[18] = mcP2Counter[18] = 0;
-  mcAbsorbProp[18]= 0;
+  mccomp_posa[16] = mcposaSC4;
+  mccomp_posr[16] = mcposrSC4;
+  mcNCounter[16]  = mcPCounter[16] = mcP2Counter[16] = 0;
+  mcAbsorbProp[16]= 0;
     /* Component He3H. */
   /* Setting parameters for component He3H. */
   SIG_MESSAGE("He3H (Init:SetPar)");
-#line 314 "./templateTAS.instr"
+#line 318 "Applications/ResLibCal/private/templateTAS.instr"
   if("resolution.dat") strncpy(mccHe3H_filename, "resolution.dat" ? "resolution.dat" : "", 16384); else mccHe3H_filename[0]='\0';
-#line 76 "./templateTAS.instr"
+#line 76 "Applications/ResLibCal/private/templateTAS.instr"
   if(0) strncpy(mccHe3H_options, 0 ? 0 : "", 16384); else mccHe3H_options[0]='\0';
-#line 315 "./templateTAS.instr"
+#line 319 "Applications/ResLibCal/private/templateTAS.instr"
   mccHe3H_xwidth = mcipWD;
-#line 315 "./templateTAS.instr"
+#line 319 "Applications/ResLibCal/private/templateTAS.instr"
   mccHe3H_yheight = mcipHD;
-#line 76 "./templateTAS.instr"
+#line 76 "Applications/ResLibCal/private/templateTAS.instr"
   mccHe3H_zdepth = 0;
-#line 76 "./templateTAS.instr"
+#line 76 "Applications/ResLibCal/private/templateTAS.instr"
   mccHe3H_radius = 0;
-#line 77 "./templateTAS.instr"
+#line 77 "Applications/ResLibCal/private/templateTAS.instr"
   mccHe3H_xmin = 0;
-#line 77 "./templateTAS.instr"
+#line 77 "Applications/ResLibCal/private/templateTAS.instr"
   mccHe3H_xmax = 0;
-#line 77 "./templateTAS.instr"
+#line 77 "Applications/ResLibCal/private/templateTAS.instr"
   mccHe3H_ymin = 0;
-#line 77 "./templateTAS.instr"
+#line 77 "Applications/ResLibCal/private/templateTAS.instr"
   mccHe3H_ymax = 0;
-#line 77 "./templateTAS.instr"
+#line 77 "Applications/ResLibCal/private/templateTAS.instr"
   mccHe3H_zmin = 0;
-#line 77 "./templateTAS.instr"
+#line 77 "Applications/ResLibCal/private/templateTAS.instr"
   mccHe3H_zmax = 0;
-#line 77 "./templateTAS.instr"
+#line 77 "Applications/ResLibCal/private/templateTAS.instr"
   mccHe3H_bufsize = 0;
-#line 77 "./templateTAS.instr"
+#line 77 "Applications/ResLibCal/private/templateTAS.instr"
   mccHe3H_restore_neutron = 0;
-#line 11955 "./templateTAS.c"
+#line 11619 "Applications/ResLibCal/private/templateTAS.c"
 
   SIG_MESSAGE("He3H (Init:Place/Rotate)");
   rot_set_rotation(mctr1,
     (0.0)*DEG2RAD,
     (0.0)*DEG2RAD,
     (0.0)*DEG2RAD);
-#line 11962 "./templateTAS.c"
+#line 11626 "Applications/ResLibCal/private/templateTAS.c"
   rot_mul(mctr1, mcrotaAna_Out, mcrotaHe3H);
   rot_transpose(mcrotaSC4, mctr1);
   rot_mul(mcrotaHe3H, mctr1, mcrotrHe3H);
   mctc1 = coords_set(
-#line 317 "./templateTAS.instr"
+#line 321 "Applications/ResLibCal/private/templateTAS.instr"
     0,
-#line 317 "./templateTAS.instr"
+#line 321 "Applications/ResLibCal/private/templateTAS.instr"
     0,
-#line 317 "./templateTAS.instr"
+#line 321 "Applications/ResLibCal/private/templateTAS.instr"
     mcipL4);
-#line 11973 "./templateTAS.c"
+#line 11637 "Applications/ResLibCal/private/templateTAS.c"
   rot_transpose(mcrotaAna_Out, mctr1);
   mctc2 = rot_apply(mctr1, mctc1);
   mcposaHe3H = coords_add(mcposaAna_Out, mctc2);
   mctc1 = coords_sub(mcposaSC4, mcposaHe3H);
   mcposrHe3H = rot_apply(mcrotaHe3H, mctc1);
   mcDEBUG_COMPONENT("He3H", mcposaHe3H, mcrotaHe3H)
-  mccomp_posa[19] = mcposaHe3H;
-  mccomp_posr[19] = mcposrHe3H;
-  mcNCounter[19]  = mcPCounter[19] = mcP2Counter[19] = 0;
-  mcAbsorbProp[19]= 0;
+  mccomp_posa[17] = mcposaHe3H;
+  mccomp_posr[17] = mcposrHe3H;
+  mcNCounter[17]  = mcPCounter[17] = mcP2Counter[17] = 0;
+  mcAbsorbProp[17]= 0;
   /* Component initializations. */
   /* Initializations for component Origin. */
   SIG_MESSAGE("Origin (Init)");
@@ -12007,7 +11671,7 @@ void mcinit(void) {
     percent=1e5*100.0/mcget_ncount();
   }
 }
-#line 12010 "./templateTAS.c"
+#line 11674 "Applications/ResLibCal/private/templateTAS.c"
 #undef minutes
 #undef flag_save
 #undef percent
@@ -12344,7 +12008,7 @@ void mcinit(void) {
       printf("Source_gen: component %s unactivated", NAME_CURRENT_COMP);
   );
 }
-#line 12347 "./templateTAS.c"
+#line 12011 "Applications/ResLibCal/private/templateTAS.c"
 #undef target_index
 #undef zdepth
 #undef I3
@@ -12428,7 +12092,7 @@ void mcinit(void) {
   }
 
 }
-#line 12431 "./templateTAS.c"
+#line 12095 "Applications/ResLibCal/private/templateTAS.c"
 #undef divergenceV
 #undef transmission
 #undef divergence
@@ -12569,7 +12233,7 @@ void mcinit(void) {
   }
 
 }
-#line 12572 "./templateTAS.c"
+#line 12236 "Applications/ResLibCal/private/templateTAS.c"
 #undef order
 #undef verbose
 #undef height
@@ -12609,154 +12273,11 @@ void mcinit(void) {
   /* Initializations for component Mono_Out. */
   SIG_MESSAGE("Mono_Out (Init)");
 
-  /* Initializations for component D4_SC2_1D. */
-  SIG_MESSAGE("D4_SC2_1D (Init)");
-#define mccompcurname  D4_SC2_1D
-#define mccompcurtype  Monitor_nD
-#define mccompcurindex 8
-#define user1 mccD4_SC2_1D_user1
-#define user2 mccD4_SC2_1D_user2
-#define user3 mccD4_SC2_1D_user3
-#define DEFS mccD4_SC2_1D_DEFS
-#define Vars mccD4_SC2_1D_Vars
-#define detector mccD4_SC2_1D_detector
-#define offdata mccD4_SC2_1D_offdata
-#define xwidth mccD4_SC2_1D_xwidth
-#define yheight mccD4_SC2_1D_yheight
-#define zdepth mccD4_SC2_1D_zdepth
-#define xmin mccD4_SC2_1D_xmin
-#define xmax mccD4_SC2_1D_xmax
-#define ymin mccD4_SC2_1D_ymin
-#define ymax mccD4_SC2_1D_ymax
-#define zmin mccD4_SC2_1D_zmin
-#define zmax mccD4_SC2_1D_zmax
-#define bins mccD4_SC2_1D_bins
-#define min mccD4_SC2_1D_min
-#define max mccD4_SC2_1D_max
-#define restore_neutron mccD4_SC2_1D_restore_neutron
-#define radius mccD4_SC2_1D_radius
-#define options mccD4_SC2_1D_options
-#define filename mccD4_SC2_1D_filename
-#define geometry mccD4_SC2_1D_geometry
-#define username1 mccD4_SC2_1D_username1
-#define username2 mccD4_SC2_1D_username2
-#define username3 mccD4_SC2_1D_username3
-#line 250 "/usr/share/mcstas/2.3/monitors/Monitor_nD.comp"
-{
-  char tmp[CHAR_BUF_LENGTH];
-  strcpy(Vars.compcurname, NAME_CURRENT_COMP);
-  if (options != NULL)
-    strncpy(Vars.option, options, CHAR_BUF_LENGTH);
-  else {
-    strcpy(Vars.option, "x y");
-    printf("Monitor_nD: %s has no option specified. Setting to PSD ('x y') monitor.\n", NAME_CURRENT_COMP);
-  }
-  Vars.compcurpos = POS_A_CURRENT_COMP;
-
-  if (strstr(Vars.option, "source"))
-    strcat(Vars.option, " list, x y z vx vy vz t sx sy sz ");
-
-  if (bins) { sprintf(tmp, " all bins=%ld ", (long)bins); strcat(Vars.option, tmp); }
-  if (min > -FLT_MAX && max < FLT_MAX) { sprintf(tmp, " all limits=[%g %g]", min, max); strcat(Vars.option, tmp); }
-  else if (min > -FLT_MAX) { sprintf(tmp, " all min=%g", min); strcat(Vars.option, tmp); }
-  else if (max <  FLT_MAX) { sprintf(tmp, " all max=%g", max); strcat(Vars.option, tmp); }
-
-  strncpy(Vars.UserName1, 
-    username1 && strlen(username1) && strcmp(username1, "0") && strcmp(username1, "NULL") ? 
-    username1 : "", 128);
-  strncpy(Vars.UserName2, 
-    username2 && strlen(username2) && strcmp(username2, "0") && strcmp(username2, "NULL") ? 
-    username2 : "", 128);
-  strncpy(Vars.UserName3, 
-    username3 && strlen(username3) && strcmp(username3, "0") && strcmp(username3, "NULL") ? 
-    username3 : "", 128);
-  if (radius) { 
-    xwidth = zdepth = 2*radius;
-    if (yheight && !strstr(Vars.option, "cylinder") && !strstr(Vars.option, "banana") && !strstr(Vars.option, "sphere")) 
-      strcat(Vars.option, " banana");
-    else if (!yheight && !strstr(Vars.option ,"sphere")) {
-      strcat(Vars.option, " sphere");
-      yheight=2*radius;
-    }
-  }
-  int offflag=0;
-  if (geometry && strlen(geometry) && strcmp(geometry,"0") && strcmp(geometry, "NULL"))
-    if (!off_init(  geometry, xwidth, yheight, zdepth, 1, &offdata )) {
-      printf("Monitor_nD: %s could not initiate the OFF geometry %s. \n"
-             "            Defaulting to normal Monitor dimensions.\n", 
-             NAME_CURRENT_COMP, geometry);
-      strcpy(geometry, "");
-    } else {
-      offflag=1;
-    }
-      
-  if (!radius && !xwidth && !yheight && !zdepth && !xmin && !xmax && !ymin && !ymax && 
-    !strstr(Vars.option, "previous") && (!geometry || !strlen(geometry)))
-    exit(printf("Monitor_nD: %s has no dimension specified. Aborting (radius, xwidth, yheight, zdepth, previous, geometry).\n", NAME_CURRENT_COMP));
-
-  Monitor_nD_Init(&DEFS, &Vars, xwidth, yheight, zdepth, xmin,xmax,ymin,ymax,zmin,zmax,offflag);
-
-  if (Vars.Flag_OFF) {
-    offdata.mantidflag=Vars.Flag_mantid;
-    offdata.mantidoffset=Vars.Coord_Min[Vars.Coord_Number-1];
-  }
-
-  
-  if (filename && strlen(filename) && strcmp(filename,"NULL") && strcmp(filename,"0"))
-    strncpy(Vars.Mon_File, filename, 128);
-
-  /* check if user given filename with ext will be used more than once */
-  if ( ((Vars.Flag_Multiple && Vars.Coord_Number > 1) || Vars.Flag_List) && strchr(Vars.Mon_File,'.') )
-  { char *XY; XY = strrchr(Vars.Mon_File,'.'); *XY='_'; }
-  
-  if (restore_neutron) Vars.Flag_parallel=1;
-  detector.m = 0;
-  
-#ifdef USE_MPI
-MPI_MASTER(
-  if (strstr(Vars.option, "auto") && mpi_node_count > 1)
-    printf("Monitor_nD: %s is using automatic limits option 'auto' together with MPI.\n"
-           "WARNING     this may create incorrect distributions (but integrated flux will be right).\n", NAME_CURRENT_COMP);
-);
-#endif
-}
-#line 12723 "./templateTAS.c"
-#undef username3
-#undef username2
-#undef username1
-#undef geometry
-#undef filename
-#undef options
-#undef radius
-#undef restore_neutron
-#undef max
-#undef min
-#undef bins
-#undef zmax
-#undef zmin
-#undef ymax
-#undef ymin
-#undef xmax
-#undef xmin
-#undef zdepth
-#undef yheight
-#undef xwidth
-#undef offdata
-#undef detector
-#undef Vars
-#undef DEFS
-#undef user3
-#undef user2
-#undef user1
-#undef mccompcurname
-#undef mccompcurtype
-#undef mccompcurindex
-
   /* Initializations for component SC2. */
   SIG_MESSAGE("SC2 (Init)");
 #define mccompcurname  SC2
 #define mccompcurtype  Collimator_linear
-#define mccompcurindex 9
+#define mccompcurindex 8
 #define slope mccSC2_slope
 #define slopeV mccSC2_slopeV
 #define xmin mccSC2_xmin
@@ -12784,7 +12305,7 @@ MPI_MASTER(
   }
 
 }
-#line 12787 "./templateTAS.c"
+#line 12308 "Applications/ResLibCal/private/templateTAS.c"
 #undef divergenceV
 #undef transmission
 #undef divergence
@@ -12805,7 +12326,7 @@ MPI_MASTER(
   SIG_MESSAGE("Sample_Cradle (Init)");
 #define mccompcurname  Sample_Cradle
 #define mccompcurtype  Monitor_nD
-#define mccompcurindex 10
+#define mccompcurindex 9
 #define user1 mccSample_Cradle_user1
 #define user2 mccSample_Cradle_user2
 #define user3 mccSample_Cradle_user3
@@ -12912,7 +12433,7 @@ MPI_MASTER(
 );
 #endif
 }
-#line 12915 "./templateTAS.c"
+#line 12436 "Applications/ResLibCal/private/templateTAS.c"
 #undef username3
 #undef username2
 #undef username1
@@ -12948,7 +12469,7 @@ MPI_MASTER(
   SIG_MESSAGE("Sample (Init)");
 #define mccompcurname  Sample
 #define mccompcurtype  Res_sample
-#define mccompcurindex 11
+#define mccompcurindex 10
 #define res_struct mccSample_res_struct
 #define thickness mccSample_thickness
 #define radius mccSample_radius
@@ -13006,7 +12527,7 @@ MPI_MASTER(
     res_struct.ah = DEG2RAD*focus_ah;
   }
 }
-#line 13009 "./templateTAS.c"
+#line 12530 "Applications/ResLibCal/private/templateTAS.c"
 #undef target_index
 #undef zdepth
 #undef yheight
@@ -13031,154 +12552,11 @@ MPI_MASTER(
   /* Initializations for component Sample_Out. */
   SIG_MESSAGE("Sample_Out (Init)");
 
-  /* Initializations for component D7_SC3_1D. */
-  SIG_MESSAGE("D7_SC3_1D (Init)");
-#define mccompcurname  D7_SC3_1D
-#define mccompcurtype  Monitor_nD
-#define mccompcurindex 13
-#define user1 mccD7_SC3_1D_user1
-#define user2 mccD7_SC3_1D_user2
-#define user3 mccD7_SC3_1D_user3
-#define DEFS mccD7_SC3_1D_DEFS
-#define Vars mccD7_SC3_1D_Vars
-#define detector mccD7_SC3_1D_detector
-#define offdata mccD7_SC3_1D_offdata
-#define xwidth mccD7_SC3_1D_xwidth
-#define yheight mccD7_SC3_1D_yheight
-#define zdepth mccD7_SC3_1D_zdepth
-#define xmin mccD7_SC3_1D_xmin
-#define xmax mccD7_SC3_1D_xmax
-#define ymin mccD7_SC3_1D_ymin
-#define ymax mccD7_SC3_1D_ymax
-#define zmin mccD7_SC3_1D_zmin
-#define zmax mccD7_SC3_1D_zmax
-#define bins mccD7_SC3_1D_bins
-#define min mccD7_SC3_1D_min
-#define max mccD7_SC3_1D_max
-#define restore_neutron mccD7_SC3_1D_restore_neutron
-#define radius mccD7_SC3_1D_radius
-#define options mccD7_SC3_1D_options
-#define filename mccD7_SC3_1D_filename
-#define geometry mccD7_SC3_1D_geometry
-#define username1 mccD7_SC3_1D_username1
-#define username2 mccD7_SC3_1D_username2
-#define username3 mccD7_SC3_1D_username3
-#line 250 "/usr/share/mcstas/2.3/monitors/Monitor_nD.comp"
-{
-  char tmp[CHAR_BUF_LENGTH];
-  strcpy(Vars.compcurname, NAME_CURRENT_COMP);
-  if (options != NULL)
-    strncpy(Vars.option, options, CHAR_BUF_LENGTH);
-  else {
-    strcpy(Vars.option, "x y");
-    printf("Monitor_nD: %s has no option specified. Setting to PSD ('x y') monitor.\n", NAME_CURRENT_COMP);
-  }
-  Vars.compcurpos = POS_A_CURRENT_COMP;
-
-  if (strstr(Vars.option, "source"))
-    strcat(Vars.option, " list, x y z vx vy vz t sx sy sz ");
-
-  if (bins) { sprintf(tmp, " all bins=%ld ", (long)bins); strcat(Vars.option, tmp); }
-  if (min > -FLT_MAX && max < FLT_MAX) { sprintf(tmp, " all limits=[%g %g]", min, max); strcat(Vars.option, tmp); }
-  else if (min > -FLT_MAX) { sprintf(tmp, " all min=%g", min); strcat(Vars.option, tmp); }
-  else if (max <  FLT_MAX) { sprintf(tmp, " all max=%g", max); strcat(Vars.option, tmp); }
-
-  strncpy(Vars.UserName1, 
-    username1 && strlen(username1) && strcmp(username1, "0") && strcmp(username1, "NULL") ? 
-    username1 : "", 128);
-  strncpy(Vars.UserName2, 
-    username2 && strlen(username2) && strcmp(username2, "0") && strcmp(username2, "NULL") ? 
-    username2 : "", 128);
-  strncpy(Vars.UserName3, 
-    username3 && strlen(username3) && strcmp(username3, "0") && strcmp(username3, "NULL") ? 
-    username3 : "", 128);
-  if (radius) { 
-    xwidth = zdepth = 2*radius;
-    if (yheight && !strstr(Vars.option, "cylinder") && !strstr(Vars.option, "banana") && !strstr(Vars.option, "sphere")) 
-      strcat(Vars.option, " banana");
-    else if (!yheight && !strstr(Vars.option ,"sphere")) {
-      strcat(Vars.option, " sphere");
-      yheight=2*radius;
-    }
-  }
-  int offflag=0;
-  if (geometry && strlen(geometry) && strcmp(geometry,"0") && strcmp(geometry, "NULL"))
-    if (!off_init(  geometry, xwidth, yheight, zdepth, 1, &offdata )) {
-      printf("Monitor_nD: %s could not initiate the OFF geometry %s. \n"
-             "            Defaulting to normal Monitor dimensions.\n", 
-             NAME_CURRENT_COMP, geometry);
-      strcpy(geometry, "");
-    } else {
-      offflag=1;
-    }
-      
-  if (!radius && !xwidth && !yheight && !zdepth && !xmin && !xmax && !ymin && !ymax && 
-    !strstr(Vars.option, "previous") && (!geometry || !strlen(geometry)))
-    exit(printf("Monitor_nD: %s has no dimension specified. Aborting (radius, xwidth, yheight, zdepth, previous, geometry).\n", NAME_CURRENT_COMP));
-
-  Monitor_nD_Init(&DEFS, &Vars, xwidth, yheight, zdepth, xmin,xmax,ymin,ymax,zmin,zmax,offflag);
-
-  if (Vars.Flag_OFF) {
-    offdata.mantidflag=Vars.Flag_mantid;
-    offdata.mantidoffset=Vars.Coord_Min[Vars.Coord_Number-1];
-  }
-
-  
-  if (filename && strlen(filename) && strcmp(filename,"NULL") && strcmp(filename,"0"))
-    strncpy(Vars.Mon_File, filename, 128);
-
-  /* check if user given filename with ext will be used more than once */
-  if ( ((Vars.Flag_Multiple && Vars.Coord_Number > 1) || Vars.Flag_List) && strchr(Vars.Mon_File,'.') )
-  { char *XY; XY = strrchr(Vars.Mon_File,'.'); *XY='_'; }
-  
-  if (restore_neutron) Vars.Flag_parallel=1;
-  detector.m = 0;
-  
-#ifdef USE_MPI
-MPI_MASTER(
-  if (strstr(Vars.option, "auto") && mpi_node_count > 1)
-    printf("Monitor_nD: %s is using automatic limits option 'auto' together with MPI.\n"
-           "WARNING     this may create incorrect distributions (but integrated flux will be right).\n", NAME_CURRENT_COMP);
-);
-#endif
-}
-#line 13145 "./templateTAS.c"
-#undef username3
-#undef username2
-#undef username1
-#undef geometry
-#undef filename
-#undef options
-#undef radius
-#undef restore_neutron
-#undef max
-#undef min
-#undef bins
-#undef zmax
-#undef zmin
-#undef ymax
-#undef ymin
-#undef xmax
-#undef xmin
-#undef zdepth
-#undef yheight
-#undef xwidth
-#undef offdata
-#undef detector
-#undef Vars
-#undef DEFS
-#undef user3
-#undef user2
-#undef user1
-#undef mccompcurname
-#undef mccompcurtype
-#undef mccompcurindex
-
   /* Initializations for component SC3. */
   SIG_MESSAGE("SC3 (Init)");
 #define mccompcurname  SC3
 #define mccompcurtype  Collimator_linear
-#define mccompcurindex 14
+#define mccompcurindex 12
 #define slope mccSC3_slope
 #define slopeV mccSC3_slopeV
 #define xmin mccSC3_xmin
@@ -13206,7 +12584,7 @@ MPI_MASTER(
   }
 
 }
-#line 13209 "./templateTAS.c"
+#line 12587 "Applications/ResLibCal/private/templateTAS.c"
 #undef divergenceV
 #undef transmission
 #undef divergence
@@ -13230,7 +12608,7 @@ MPI_MASTER(
   SIG_MESSAGE("PG2Xtal (Init)");
 #define mccompcurname  PG2Xtal
 #define mccompcurtype  Monochromator_curved
-#define mccompcurindex 16
+#define mccompcurindex 14
 #define mos_rms_y mccPG2Xtal_mos_rms_y
 #define mos_rms_z mccPG2Xtal_mos_rms_z
 #define mos_rms_max mccPG2Xtal_mos_rms_max
@@ -13344,7 +12722,7 @@ MPI_MASTER(
   }
 
 }
-#line 13347 "./templateTAS.c"
+#line 12725 "Applications/ResLibCal/private/templateTAS.c"
 #undef order
 #undef verbose
 #undef height
@@ -13388,7 +12766,7 @@ MPI_MASTER(
   SIG_MESSAGE("SC4 (Init)");
 #define mccompcurname  SC4
 #define mccompcurtype  Collimator_linear
-#define mccompcurindex 18
+#define mccompcurindex 16
 #define slope mccSC4_slope
 #define slopeV mccSC4_slopeV
 #define xmin mccSC4_xmin
@@ -13416,7 +12794,7 @@ MPI_MASTER(
   }
 
 }
-#line 13419 "./templateTAS.c"
+#line 12797 "Applications/ResLibCal/private/templateTAS.c"
 #undef divergenceV
 #undef transmission
 #undef divergence
@@ -13437,7 +12815,7 @@ MPI_MASTER(
   SIG_MESSAGE("He3H (Init)");
 #define mccompcurname  He3H
 #define mccompcurtype  Res_monitor
-#define mccompcurindex 19
+#define mccompcurindex 17
 #define res_sample_comp mccHe3H_res_sample_comp
 #define DEFS mccHe3H_DEFS
 #define Vars mccHe3H_Vars
@@ -13498,7 +12876,7 @@ MPI_MASTER(
   if (filename != NULL)
     strncpy(Vars.Mon_File, filename, 128);
 }
-#line 13501 "./templateTAS.c"
+#line 12879 "Applications/ResLibCal/private/templateTAS.c"
 #undef restore_neutron
 #undef bufsize
 #undef zmax
@@ -13674,7 +13052,7 @@ MCNUM minutes = mccOrigin_minutes;
     if (flag_save) mcsave(NULL);
   }
 }
-#line 13677 "./templateTAS.c"
+#line 13055 "Applications/ResLibCal/private/templateTAS.c"
 }   /* End of Origin=Progress_bar() SETTING parameter declarations. */
 #undef CurrentTime
 #undef EndTime
@@ -13922,7 +13300,7 @@ int target_index = mccSource_target_index;
     SCATTER;
   }
 }
-#line 13925 "./templateTAS.c"
+#line 13303 "Applications/ResLibCal/private/templateTAS.c"
 }   /* End of Source=Source_gen() SETTING parameter declarations. */
 #undef pTable_dymax
 #undef pTable_dymin
@@ -14090,7 +13468,7 @@ if (( mcipALF1 && mcipBET1 ))
       SCATTER;
     }
 }
-#line 14092 "./templateTAS.c"
+#line 13470 "Applications/ResLibCal/private/templateTAS.c"
 }   /* End of SC1=Collimator_linear() SETTING parameter declarations. */
 #undef slopeV
 #undef slope
@@ -14661,7 +14039,7 @@ MCNUM order = mccPG1Xtal_order;
     }
   } /* End neutron moving towards crystal (if vx)*/
 }
-#line 14663 "./templateTAS.c"
+#line 14041 "Applications/ResLibCal/private/templateTAS.c"
 }   /* End of PG1Xtal=Monochromator_curved() SETTING parameter declarations. */
 #undef tiltV
 #undef tiltH
@@ -14821,316 +14199,7 @@ mcnlsy,
 mcnlsz,
 mcnlp)
 
-  /* TRACE Component D4_SC2_1D [8] */
-  mccoordschange(mcposrD4_SC2_1D, mcrotrD4_SC2_1D,
-    &mcnlx,
-    &mcnly,
-    &mcnlz,
-    &mcnlvx,
-    &mcnlvy,
-    &mcnlvz,
-    &mcnlsx,
-    &mcnlsy,
-    &mcnlsz);
-  /* define label inside component D4_SC2_1D (without coords transformations) */
-  mcJumpTrace_D4_SC2_1D:
-  SIG_MESSAGE("D4_SC2_1D (Trace)");
-  mcDEBUG_COMP("D4_SC2_1D")
-  mcDEBUG_STATE(
-    mcnlx,
-    mcnly,
-    mcnlz,
-    mcnlvx,
-    mcnlvy,
-    mcnlvz,
-    mcnlt,
-    mcnlsx,
-    mcnlsy,
-    mcnlsz,
-    mcnlp)
-#define x mcnlx
-#define y mcnly
-#define z mcnlz
-#define vx mcnlvx
-#define vy mcnlvy
-#define vz mcnlvz
-#define t mcnlt
-#define sx mcnlsx
-#define sy mcnlsy
-#define sz mcnlsz
-#define p mcnlp
-
-#define mcabsorbComp mcabsorbCompD4_SC2_1D
-  STORE_NEUTRON(8,
-    mcnlx,
-    mcnly,
-    mcnlz,
-    mcnlvx,
-    mcnlvy,
-    mcnlvz,
-    mcnlt,
-    mcnlsx,
-    mcnlsy,
-    mcnlsz,
-    mcnlp);
-  mcScattered=0;
-  mcRestore=0;
-  mcNCounter[8]++;
-  mcPCounter[8] += p;
-  mcP2Counter[8] += p*p;
-#define mccompcurname  D4_SC2_1D
-#define mccompcurtype  Monitor_nD
-#define mccompcurindex 8
-#define user1 mccD4_SC2_1D_user1
-#define user2 mccD4_SC2_1D_user2
-#define user3 mccD4_SC2_1D_user3
-#define DEFS mccD4_SC2_1D_DEFS
-#define Vars mccD4_SC2_1D_Vars
-#define detector mccD4_SC2_1D_detector
-#define offdata mccD4_SC2_1D_offdata
-{   /* Declarations of D4_SC2_1D=Monitor_nD() SETTING parameters. */
-MCNUM xwidth = mccD4_SC2_1D_xwidth;
-MCNUM yheight = mccD4_SC2_1D_yheight;
-MCNUM zdepth = mccD4_SC2_1D_zdepth;
-MCNUM xmin = mccD4_SC2_1D_xmin;
-MCNUM xmax = mccD4_SC2_1D_xmax;
-MCNUM ymin = mccD4_SC2_1D_ymin;
-MCNUM ymax = mccD4_SC2_1D_ymax;
-MCNUM zmin = mccD4_SC2_1D_zmin;
-MCNUM zmax = mccD4_SC2_1D_zmax;
-MCNUM bins = mccD4_SC2_1D_bins;
-MCNUM min = mccD4_SC2_1D_min;
-MCNUM max = mccD4_SC2_1D_max;
-MCNUM restore_neutron = mccD4_SC2_1D_restore_neutron;
-MCNUM radius = mccD4_SC2_1D_radius;
-char* options = mccD4_SC2_1D_options;
-char* filename = mccD4_SC2_1D_filename;
-char* geometry = mccD4_SC2_1D_geometry;
-char* username1 = mccD4_SC2_1D_username1;
-char* username2 = mccD4_SC2_1D_username2;
-char* username3 = mccD4_SC2_1D_username3;
-#line 330 "/usr/share/mcstas/2.3/monitors/Monitor_nD.comp"
-{
-  double  XY=0;
-  double  t0 = 0;
-  double  t1 = 0;
-  double  pp;
-  int     intersect   = 0;
-  char    Flag_Restore = 0;
-
-  if (user1 != FLT_MAX) Vars.UserVariable1 = user1;
-  if (user2 != FLT_MAX) Vars.UserVariable2 = user2;
-  if (user3 != FLT_MAX) Vars.UserVariable3 = user3;
-
-  /* this is done automatically
-    STORE_NEUTRON(INDEX_CURRENT_COMP, x, y, z, vx, vy, vz, t, sx, sy, sz, p);
-  */
-  
-  if (geometry && strlen(geometry) && strcmp(geometry,"0") && strcmp(geometry, "NULL"))
-  {
-    /* determine intersections with object */
-    intersect = off_intersect_all(&t0, &t1, NULL, NULL,
-       x,y,z, vx, vy, vz, &offdata );
-    if (Vars.Flag_mantid) {
-      if(intersect) {
-        Vars.OFF_polyidx=(offdata.intersects[offdata.nextintersect]).index;
-      } else {
-        Vars.OFF_polyidx=-1;
-      }
-    }
-  }
-  else if ( (abs(Vars.Flag_Shape) == DEFS.SHAPE_SQUARE)
-            || (abs(Vars.Flag_Shape) == DEFS.SHAPE_DISK) ) /* square xy or disk xy */
-  {
-    // propagate to xy plane and find intersection
-    // make sure the event is recoverable afterwards
-    t0 = t;
-    ALLOW_BACKPROP;
-    PROP_Z0;
-    if ( (t>=t0) && (z==0.0) ) // forward propagation to xy plane was successful
-    {
-      if (abs(Vars.Flag_Shape) == DEFS.SHAPE_SQUARE)
-      {
-        // square xy
-        intersect = (x>=Vars.mxmin && x<=Vars.mxmax && y>=Vars.mymin && y<=Vars.mymax);
-      }
-      else
-      {
-        // disk xy
-        intersect = (SQR(x) + SQR(y)) <= SQR(Vars.Sphere_Radius);
-      }
-    }
-    else
-    {
-      intersect=0;
-    }
-  }
-  else if (abs(Vars.Flag_Shape) == DEFS.SHAPE_SPHERE) /* sphere */
-  {
-    intersect = sphere_intersect(&t0, &t1, x, y, z, vx, vy, vz, Vars.Sphere_Radius);
-  /*      intersect = (intersect && t0 > 0); */
-  }
-  else if ((abs(Vars.Flag_Shape) == DEFS.SHAPE_CYLIND) || (abs(Vars.Flag_Shape) == DEFS.SHAPE_BANANA)) /* cylinder */
-  {
-    intersect = cylinder_intersect(&t0, &t1, x, y, z, vx, vy, vz, Vars.Sphere_Radius, Vars.Cylinder_Height);
-  }
-  else if (abs(Vars.Flag_Shape) == DEFS.SHAPE_BOX) /* box */
-  {
-    intersect = box_intersect(&t0, &t1, x, y, z, vx, vy, vz, 
-                              fabs(Vars.mxmax-Vars.mxmin), fabs(Vars.mymax-Vars.mymin), fabs(Vars.mzmax-Vars.mzmin));
-  }
-  else if (abs(Vars.Flag_Shape) == DEFS.SHAPE_PREVIOUS) /* previous comp */
-  { intersect = 1; }
-
-  if (intersect)
-  {
-    if ((abs(Vars.Flag_Shape) == DEFS.SHAPE_SPHERE) || (abs(Vars.Flag_Shape) == DEFS.SHAPE_CYLIND) 
-     || (abs(Vars.Flag_Shape) == DEFS.SHAPE_BOX) || (abs(Vars.Flag_Shape) == DEFS.SHAPE_BANANA)
-     || (geometry && strlen(geometry) && strcmp(geometry,"0") && strcmp(geometry, "NULL")) )
-    {
-      /* check if we have to remove the top/bottom with BANANA shape */
-      if ((abs(Vars.Flag_Shape) == DEFS.SHAPE_BANANA) && (intersect != 1)) {
-        double y0,y1;
-        /* propagate to intersection point as temporary variable to check top/bottom */
-        y0 = y+t0*vy; 
-        y1 = y+t1*vy;
-        if (fabs(y0) >= Vars.Cylinder_Height/2*0.99) t0 = t1;
-        if (fabs(y1) >= Vars.Cylinder_Height/2*0.99) t1 = t0;
-      }
-      if (t0 < 0 && t1 > 0)
-        t0 = t;  /* neutron was already inside ! */
-      if (t1 < 0 && t0 > 0) /* neutron exit before entering !! */
-        t1 = t;
-      /* t0 is now time of incoming intersection with the detection area */
-      if ((Vars.Flag_Shape < 0) && (t1 > 0))
-        PROP_DT(t1); /* t1 outgoing beam */
-      else
-        PROP_DT(t0); /* t0 incoming beam */
-      /* Final test if we are on lid / bottom of banana/sphere */
-      if (abs(Vars.Flag_Shape) == DEFS.SHAPE_BANANA || abs(Vars.Flag_Shape) == DEFS.SHAPE_SPHERE) {
-        if (fabs(y) >= Vars.Cylinder_Height/2*0.99) {
-          intersect=0;
-          Flag_Restore=1;
-        }
-      }
-    }
-  }
-  
-  if (intersect)
-  {
-    /* Now get the data to monitor: current or keep from PreMonitor */
-    if (Vars.Flag_UsePreMonitor != 1)
-    {
-      Vars.cp  = p;
-      Vars.cx  = x;
-      Vars.cvx = vx;
-      Vars.csx = sx;
-      Vars.cy  = y;
-      Vars.cvy = vy;
-      Vars.csy = sy;
-      Vars.cz  = z;
-      Vars.cvz = vz;
-      Vars.csz = sz;
-      Vars.ct  = t;
-    }
-
-    if ((Vars.He3_pressure > 0) && (t1 != t0) && ((abs(Vars.Flag_Shape) == DEFS.SHAPE_SPHERE) || (abs(Vars.Flag_Shape) == DEFS.SHAPE_CYLIND) || (abs(Vars.Flag_Shape) == DEFS.SHAPE_BOX)))
-    {
-      XY = exp(-7.417*Vars.He3_pressure*fabs(t1-t0)*2*PI*K2V);
-      /* will monitor the absorbed part */
-      Vars.cp *= 1-XY;
-      /* and modify the neutron weight after monitor, only remains 1-p_detect */
-      p *= XY;
-    }
-
-    if (Vars.Flag_capture)
-    {
-      XY = sqrt(Vars.cvx*Vars.cvx+Vars.cvy*Vars.cvy+Vars.cvz*Vars.cvz);
-      XY *= V2K;
-      if (XY != 0) XY = 2*PI/XY; /* lambda. lambda(2200 m/2) = 1.7985 Angs  */
-      Vars.cp *= XY/1.7985;
-    }
-
-    pp = Monitor_nD_Trace(&DEFS, &Vars);
-    if (pp==0.0)
-    { ABSORB;
-    }
-    else
-    { 
-      SCATTER;
-    }
-
-    if (Vars.Flag_parallel) /* back to neutron state before detection */
-      Flag_Restore = 1;
-  } /* end if intersection */
-  else {
-    if (Vars.Flag_Absorb && !Vars.Flag_parallel)
-    {
-      // restore neutron ray before absorbing for correct mcdisplay
-      RESTORE_NEUTRON(INDEX_CURRENT_COMP, x, y, z, vx, vy, vz, t, sx, sy, sz, p);
-      ABSORB;
-    }
-    else Flag_Restore = 1;  /* no intersection, back to previous state */
-  }
-
-  if (Flag_Restore)
-  {
-    RESTORE_NEUTRON(INDEX_CURRENT_COMP, x, y, z, vx, vy, vz, t, sx, sy, sz, p);
-  }
-}
-#line 15080 "./templateTAS.c"
-}   /* End of D4_SC2_1D=Monitor_nD() SETTING parameter declarations. */
-#undef offdata
-#undef detector
-#undef Vars
-#undef DEFS
-#undef user3
-#undef user2
-#undef user1
-#undef mccompcurname
-#undef mccompcurtype
-#undef mccompcurindex
-  /* Label for restoring  neutron */
-  mcabsorbCompD4_SC2_1D:
-  if (RESTORE) /* restore if needed */
-  { RESTORE_NEUTRON(8,
-      mcnlx,
-      mcnly,
-      mcnlz,
-      mcnlvx,
-      mcnlvy,
-      mcnlvz,
-      mcnlt,
-      mcnlsx,
-      mcnlsy,
-      mcnlsz,
-      mcnlp); }
-#undef mcabsorbComp
-#undef p
-#undef sz
-#undef sy
-#undef sx
-#undef t
-#undef vz
-#undef vy
-#undef vx
-#undef z
-#undef y
-#undef x
-  mcDEBUG_STATE(
-mcnlx,
-mcnly,
-mcnlz,
-mcnlvx,
-mcnlvy,
-mcnlvz,
-mcnlt,
-mcnlsx,
-mcnlsy,
-mcnlsz,
-mcnlp)
-
-  /* TRACE Component SC2 [9] */
+  /* TRACE Component SC2 [8] */
   mccoordschange(mcposrSC2, mcrotrSC2,
     &mcnlx,
     &mcnly,
@@ -15170,7 +14239,7 @@ mcnlp)
 #define p mcnlp
 
 #define mcabsorbComp mcabsorbCompSC2
-  STORE_NEUTRON(9,
+  STORE_NEUTRON(8,
     mcnlx,
     mcnly,
     mcnlz,
@@ -15184,12 +14253,12 @@ mcnlp)
     mcnlp);
   mcScattered=0;
   mcRestore=0;
-  mcNCounter[9]++;
-  mcPCounter[9] += p;
-  mcP2Counter[9] += p*p;
+  mcNCounter[8]++;
+  mcPCounter[8] += p;
+  mcP2Counter[8] += p*p;
 #define mccompcurname  SC2
 #define mccompcurtype  Collimator_linear
-#define mccompcurindex 9
+#define mccompcurindex 8
 #define slope mccSC2_slope
 #define slopeV mccSC2_slopeV
 {   /* Declarations of SC2=Collimator_linear() SETTING parameters. */
@@ -15236,7 +14305,7 @@ if (( mcipALF2 && mcipBET2 ))
       SCATTER;
     }
 }
-#line 15237 "./templateTAS.c"
+#line 14306 "Applications/ResLibCal/private/templateTAS.c"
 }   /* End of SC2=Collimator_linear() SETTING parameter declarations. */
 #undef slopeV
 #undef slope
@@ -15246,7 +14315,7 @@ if (( mcipALF2 && mcipBET2 ))
   /* Label for restoring  neutron */
   mcabsorbCompSC2:
   if (RESTORE) /* restore if needed */
-  { RESTORE_NEUTRON(9,
+  { RESTORE_NEUTRON(8,
       mcnlx,
       mcnly,
       mcnlz,
@@ -15283,7 +14352,7 @@ mcnlsy,
 mcnlsz,
 mcnlp)
 
-  /* TRACE Component Sample_Cradle [10] */
+  /* TRACE Component Sample_Cradle [9] */
   mccoordschange(mcposrSample_Cradle, mcrotrSample_Cradle,
     &mcnlx,
     &mcnly,
@@ -15323,7 +14392,7 @@ mcnlp)
 #define p mcnlp
 
 #define mcabsorbComp mcabsorbCompSample_Cradle
-  STORE_NEUTRON(10,
+  STORE_NEUTRON(9,
     mcnlx,
     mcnly,
     mcnlz,
@@ -15337,12 +14406,12 @@ mcnlp)
     mcnlp);
   mcScattered=0;
   mcRestore=0;
-  mcNCounter[10]++;
-  mcPCounter[10] += p;
-  mcP2Counter[10] += p*p;
+  mcNCounter[9]++;
+  mcPCounter[9] += p;
+  mcP2Counter[9] += p*p;
 #define mccompcurname  Sample_Cradle
 #define mccompcurtype  Monitor_nD
-#define mccompcurindex 10
+#define mccompcurindex 9
 #define user1 mccSample_Cradle_user1
 #define user2 mccSample_Cradle_user2
 #define user3 mccSample_Cradle_user3
@@ -15540,7 +14609,7 @@ char* username3 = mccSample_Cradle_username3;
     RESTORE_NEUTRON(INDEX_CURRENT_COMP, x, y, z, vx, vy, vz, t, sx, sy, sz, p);
   }
 }
-#line 15541 "./templateTAS.c"
+#line 14610 "Applications/ResLibCal/private/templateTAS.c"
 }   /* End of Sample_Cradle=Monitor_nD() SETTING parameter declarations. */
 #undef offdata
 #undef detector
@@ -15555,7 +14624,7 @@ char* username3 = mccSample_Cradle_username3;
   /* Label for restoring  neutron */
   mcabsorbCompSample_Cradle:
   if (RESTORE) /* restore if needed */
-  { RESTORE_NEUTRON(10,
+  { RESTORE_NEUTRON(9,
       mcnlx,
       mcnly,
       mcnlz,
@@ -15592,7 +14661,7 @@ mcnlsy,
 mcnlsz,
 mcnlp)
 
-  /* TRACE Component Sample [11] */
+  /* TRACE Component Sample [10] */
   mccoordschange(mcposrSample, mcrotrSample,
     &mcnlx,
     &mcnly,
@@ -15632,7 +14701,7 @@ mcnlp)
 #define p mcnlp
 
 #define mcabsorbComp mcabsorbCompSample
-  STORE_NEUTRON(11,
+  STORE_NEUTRON(10,
     mcnlx,
     mcnly,
     mcnlz,
@@ -15646,12 +14715,12 @@ mcnlp)
     mcnlp);
   mcScattered=0;
   mcRestore=0;
-  mcNCounter[11]++;
-  mcPCounter[11] += p;
-  mcP2Counter[11] += p*p;
+  mcNCounter[10]++;
+  mcPCounter[10] += p;
+  mcP2Counter[10] += p*p;
 #define mccompcurname  Sample
 #define mccompcurtype  Res_sample
-#define mccompcurindex 11
+#define mccompcurindex 10
 #define res_struct mccSample_res_struct
 {   /* Declarations of Sample=Res_sample() SETTING parameters. */
 MCNUM thickness = mccSample_thickness;
@@ -15746,7 +14815,7 @@ int target_index = mccSample_target_index;
     res_struct.kf_z = V2K*vz;
   }
 }
-#line 15747 "./templateTAS.c"
+#line 14816 "Applications/ResLibCal/private/templateTAS.c"
 }   /* End of Sample=Res_sample() SETTING parameter declarations. */
 #undef res_struct
 #undef mccompcurname
@@ -15755,7 +14824,7 @@ int target_index = mccSample_target_index;
   /* Label for restoring  neutron */
   mcabsorbCompSample:
   if (RESTORE) /* restore if needed */
-  { RESTORE_NEUTRON(11,
+  { RESTORE_NEUTRON(10,
       mcnlx,
       mcnly,
       mcnlz,
@@ -15792,7 +14861,7 @@ mcnlsy,
 mcnlsz,
 mcnlp)
 
-  /* TRACE Component Sample_Out [12] */
+  /* TRACE Component Sample_Out [11] */
   mccoordschange(mcposrSample_Out, mcrotrSample_Out,
     &mcnlx,
     &mcnly,
@@ -15832,7 +14901,7 @@ mcnlp)
 #define p mcnlp
 
 #define mcabsorbComp mcabsorbCompSample_Out
-  STORE_NEUTRON(12,
+  STORE_NEUTRON(11,
     mcnlx,
     mcnly,
     mcnlz,
@@ -15846,19 +14915,19 @@ mcnlp)
     mcnlp);
   mcScattered=0;
   mcRestore=0;
-  mcNCounter[12]++;
-  mcPCounter[12] += p;
-  mcP2Counter[12] += p*p;
+  mcNCounter[11]++;
+  mcPCounter[11] += p;
+  mcP2Counter[11] += p*p;
 #define mccompcurname  Sample_Out
 #define mccompcurtype  Arm
-#define mccompcurindex 12
+#define mccompcurindex 11
 #undef mccompcurname
 #undef mccompcurtype
 #undef mccompcurindex
   /* Label for restoring  neutron */
   mcabsorbCompSample_Out:
   if (RESTORE) /* restore if needed */
-  { RESTORE_NEUTRON(12,
+  { RESTORE_NEUTRON(11,
       mcnlx,
       mcnly,
       mcnlz,
@@ -15895,316 +14964,7 @@ mcnlsy,
 mcnlsz,
 mcnlp)
 
-  /* TRACE Component D7_SC3_1D [13] */
-  mccoordschange(mcposrD7_SC3_1D, mcrotrD7_SC3_1D,
-    &mcnlx,
-    &mcnly,
-    &mcnlz,
-    &mcnlvx,
-    &mcnlvy,
-    &mcnlvz,
-    &mcnlsx,
-    &mcnlsy,
-    &mcnlsz);
-  /* define label inside component D7_SC3_1D (without coords transformations) */
-  mcJumpTrace_D7_SC3_1D:
-  SIG_MESSAGE("D7_SC3_1D (Trace)");
-  mcDEBUG_COMP("D7_SC3_1D")
-  mcDEBUG_STATE(
-    mcnlx,
-    mcnly,
-    mcnlz,
-    mcnlvx,
-    mcnlvy,
-    mcnlvz,
-    mcnlt,
-    mcnlsx,
-    mcnlsy,
-    mcnlsz,
-    mcnlp)
-#define x mcnlx
-#define y mcnly
-#define z mcnlz
-#define vx mcnlvx
-#define vy mcnlvy
-#define vz mcnlvz
-#define t mcnlt
-#define sx mcnlsx
-#define sy mcnlsy
-#define sz mcnlsz
-#define p mcnlp
-
-#define mcabsorbComp mcabsorbCompD7_SC3_1D
-  STORE_NEUTRON(13,
-    mcnlx,
-    mcnly,
-    mcnlz,
-    mcnlvx,
-    mcnlvy,
-    mcnlvz,
-    mcnlt,
-    mcnlsx,
-    mcnlsy,
-    mcnlsz,
-    mcnlp);
-  mcScattered=0;
-  mcRestore=0;
-  mcNCounter[13]++;
-  mcPCounter[13] += p;
-  mcP2Counter[13] += p*p;
-#define mccompcurname  D7_SC3_1D
-#define mccompcurtype  Monitor_nD
-#define mccompcurindex 13
-#define user1 mccD7_SC3_1D_user1
-#define user2 mccD7_SC3_1D_user2
-#define user3 mccD7_SC3_1D_user3
-#define DEFS mccD7_SC3_1D_DEFS
-#define Vars mccD7_SC3_1D_Vars
-#define detector mccD7_SC3_1D_detector
-#define offdata mccD7_SC3_1D_offdata
-{   /* Declarations of D7_SC3_1D=Monitor_nD() SETTING parameters. */
-MCNUM xwidth = mccD7_SC3_1D_xwidth;
-MCNUM yheight = mccD7_SC3_1D_yheight;
-MCNUM zdepth = mccD7_SC3_1D_zdepth;
-MCNUM xmin = mccD7_SC3_1D_xmin;
-MCNUM xmax = mccD7_SC3_1D_xmax;
-MCNUM ymin = mccD7_SC3_1D_ymin;
-MCNUM ymax = mccD7_SC3_1D_ymax;
-MCNUM zmin = mccD7_SC3_1D_zmin;
-MCNUM zmax = mccD7_SC3_1D_zmax;
-MCNUM bins = mccD7_SC3_1D_bins;
-MCNUM min = mccD7_SC3_1D_min;
-MCNUM max = mccD7_SC3_1D_max;
-MCNUM restore_neutron = mccD7_SC3_1D_restore_neutron;
-MCNUM radius = mccD7_SC3_1D_radius;
-char* options = mccD7_SC3_1D_options;
-char* filename = mccD7_SC3_1D_filename;
-char* geometry = mccD7_SC3_1D_geometry;
-char* username1 = mccD7_SC3_1D_username1;
-char* username2 = mccD7_SC3_1D_username2;
-char* username3 = mccD7_SC3_1D_username3;
-#line 330 "/usr/share/mcstas/2.3/monitors/Monitor_nD.comp"
-{
-  double  XY=0;
-  double  t0 = 0;
-  double  t1 = 0;
-  double  pp;
-  int     intersect   = 0;
-  char    Flag_Restore = 0;
-
-  if (user1 != FLT_MAX) Vars.UserVariable1 = user1;
-  if (user2 != FLT_MAX) Vars.UserVariable2 = user2;
-  if (user3 != FLT_MAX) Vars.UserVariable3 = user3;
-
-  /* this is done automatically
-    STORE_NEUTRON(INDEX_CURRENT_COMP, x, y, z, vx, vy, vz, t, sx, sy, sz, p);
-  */
-  
-  if (geometry && strlen(geometry) && strcmp(geometry,"0") && strcmp(geometry, "NULL"))
-  {
-    /* determine intersections with object */
-    intersect = off_intersect_all(&t0, &t1, NULL, NULL,
-       x,y,z, vx, vy, vz, &offdata );
-    if (Vars.Flag_mantid) {
-      if(intersect) {
-        Vars.OFF_polyidx=(offdata.intersects[offdata.nextintersect]).index;
-      } else {
-        Vars.OFF_polyidx=-1;
-      }
-    }
-  }
-  else if ( (abs(Vars.Flag_Shape) == DEFS.SHAPE_SQUARE)
-            || (abs(Vars.Flag_Shape) == DEFS.SHAPE_DISK) ) /* square xy or disk xy */
-  {
-    // propagate to xy plane and find intersection
-    // make sure the event is recoverable afterwards
-    t0 = t;
-    ALLOW_BACKPROP;
-    PROP_Z0;
-    if ( (t>=t0) && (z==0.0) ) // forward propagation to xy plane was successful
-    {
-      if (abs(Vars.Flag_Shape) == DEFS.SHAPE_SQUARE)
-      {
-        // square xy
-        intersect = (x>=Vars.mxmin && x<=Vars.mxmax && y>=Vars.mymin && y<=Vars.mymax);
-      }
-      else
-      {
-        // disk xy
-        intersect = (SQR(x) + SQR(y)) <= SQR(Vars.Sphere_Radius);
-      }
-    }
-    else
-    {
-      intersect=0;
-    }
-  }
-  else if (abs(Vars.Flag_Shape) == DEFS.SHAPE_SPHERE) /* sphere */
-  {
-    intersect = sphere_intersect(&t0, &t1, x, y, z, vx, vy, vz, Vars.Sphere_Radius);
-  /*      intersect = (intersect && t0 > 0); */
-  }
-  else if ((abs(Vars.Flag_Shape) == DEFS.SHAPE_CYLIND) || (abs(Vars.Flag_Shape) == DEFS.SHAPE_BANANA)) /* cylinder */
-  {
-    intersect = cylinder_intersect(&t0, &t1, x, y, z, vx, vy, vz, Vars.Sphere_Radius, Vars.Cylinder_Height);
-  }
-  else if (abs(Vars.Flag_Shape) == DEFS.SHAPE_BOX) /* box */
-  {
-    intersect = box_intersect(&t0, &t1, x, y, z, vx, vy, vz, 
-                              fabs(Vars.mxmax-Vars.mxmin), fabs(Vars.mymax-Vars.mymin), fabs(Vars.mzmax-Vars.mzmin));
-  }
-  else if (abs(Vars.Flag_Shape) == DEFS.SHAPE_PREVIOUS) /* previous comp */
-  { intersect = 1; }
-
-  if (intersect)
-  {
-    if ((abs(Vars.Flag_Shape) == DEFS.SHAPE_SPHERE) || (abs(Vars.Flag_Shape) == DEFS.SHAPE_CYLIND) 
-     || (abs(Vars.Flag_Shape) == DEFS.SHAPE_BOX) || (abs(Vars.Flag_Shape) == DEFS.SHAPE_BANANA)
-     || (geometry && strlen(geometry) && strcmp(geometry,"0") && strcmp(geometry, "NULL")) )
-    {
-      /* check if we have to remove the top/bottom with BANANA shape */
-      if ((abs(Vars.Flag_Shape) == DEFS.SHAPE_BANANA) && (intersect != 1)) {
-        double y0,y1;
-        /* propagate to intersection point as temporary variable to check top/bottom */
-        y0 = y+t0*vy; 
-        y1 = y+t1*vy;
-        if (fabs(y0) >= Vars.Cylinder_Height/2*0.99) t0 = t1;
-        if (fabs(y1) >= Vars.Cylinder_Height/2*0.99) t1 = t0;
-      }
-      if (t0 < 0 && t1 > 0)
-        t0 = t;  /* neutron was already inside ! */
-      if (t1 < 0 && t0 > 0) /* neutron exit before entering !! */
-        t1 = t;
-      /* t0 is now time of incoming intersection with the detection area */
-      if ((Vars.Flag_Shape < 0) && (t1 > 0))
-        PROP_DT(t1); /* t1 outgoing beam */
-      else
-        PROP_DT(t0); /* t0 incoming beam */
-      /* Final test if we are on lid / bottom of banana/sphere */
-      if (abs(Vars.Flag_Shape) == DEFS.SHAPE_BANANA || abs(Vars.Flag_Shape) == DEFS.SHAPE_SPHERE) {
-        if (fabs(y) >= Vars.Cylinder_Height/2*0.99) {
-          intersect=0;
-          Flag_Restore=1;
-        }
-      }
-    }
-  }
-  
-  if (intersect)
-  {
-    /* Now get the data to monitor: current or keep from PreMonitor */
-    if (Vars.Flag_UsePreMonitor != 1)
-    {
-      Vars.cp  = p;
-      Vars.cx  = x;
-      Vars.cvx = vx;
-      Vars.csx = sx;
-      Vars.cy  = y;
-      Vars.cvy = vy;
-      Vars.csy = sy;
-      Vars.cz  = z;
-      Vars.cvz = vz;
-      Vars.csz = sz;
-      Vars.ct  = t;
-    }
-
-    if ((Vars.He3_pressure > 0) && (t1 != t0) && ((abs(Vars.Flag_Shape) == DEFS.SHAPE_SPHERE) || (abs(Vars.Flag_Shape) == DEFS.SHAPE_CYLIND) || (abs(Vars.Flag_Shape) == DEFS.SHAPE_BOX)))
-    {
-      XY = exp(-7.417*Vars.He3_pressure*fabs(t1-t0)*2*PI*K2V);
-      /* will monitor the absorbed part */
-      Vars.cp *= 1-XY;
-      /* and modify the neutron weight after monitor, only remains 1-p_detect */
-      p *= XY;
-    }
-
-    if (Vars.Flag_capture)
-    {
-      XY = sqrt(Vars.cvx*Vars.cvx+Vars.cvy*Vars.cvy+Vars.cvz*Vars.cvz);
-      XY *= V2K;
-      if (XY != 0) XY = 2*PI/XY; /* lambda. lambda(2200 m/2) = 1.7985 Angs  */
-      Vars.cp *= XY/1.7985;
-    }
-
-    pp = Monitor_nD_Trace(&DEFS, &Vars);
-    if (pp==0.0)
-    { ABSORB;
-    }
-    else
-    { 
-      SCATTER;
-    }
-
-    if (Vars.Flag_parallel) /* back to neutron state before detection */
-      Flag_Restore = 1;
-  } /* end if intersection */
-  else {
-    if (Vars.Flag_Absorb && !Vars.Flag_parallel)
-    {
-      // restore neutron ray before absorbing for correct mcdisplay
-      RESTORE_NEUTRON(INDEX_CURRENT_COMP, x, y, z, vx, vy, vz, t, sx, sy, sz, p);
-      ABSORB;
-    }
-    else Flag_Restore = 1;  /* no intersection, back to previous state */
-  }
-
-  if (Flag_Restore)
-  {
-    RESTORE_NEUTRON(INDEX_CURRENT_COMP, x, y, z, vx, vy, vz, t, sx, sy, sz, p);
-  }
-}
-#line 16153 "./templateTAS.c"
-}   /* End of D7_SC3_1D=Monitor_nD() SETTING parameter declarations. */
-#undef offdata
-#undef detector
-#undef Vars
-#undef DEFS
-#undef user3
-#undef user2
-#undef user1
-#undef mccompcurname
-#undef mccompcurtype
-#undef mccompcurindex
-  /* Label for restoring  neutron */
-  mcabsorbCompD7_SC3_1D:
-  if (RESTORE) /* restore if needed */
-  { RESTORE_NEUTRON(13,
-      mcnlx,
-      mcnly,
-      mcnlz,
-      mcnlvx,
-      mcnlvy,
-      mcnlvz,
-      mcnlt,
-      mcnlsx,
-      mcnlsy,
-      mcnlsz,
-      mcnlp); }
-#undef mcabsorbComp
-#undef p
-#undef sz
-#undef sy
-#undef sx
-#undef t
-#undef vz
-#undef vy
-#undef vx
-#undef z
-#undef y
-#undef x
-  mcDEBUG_STATE(
-mcnlx,
-mcnly,
-mcnlz,
-mcnlvx,
-mcnlvy,
-mcnlvz,
-mcnlt,
-mcnlsx,
-mcnlsy,
-mcnlsz,
-mcnlp)
-
-  /* TRACE Component SC3 [14] */
+  /* TRACE Component SC3 [12] */
   mccoordschange(mcposrSC3, mcrotrSC3,
     &mcnlx,
     &mcnly,
@@ -16244,7 +15004,7 @@ mcnlp)
 #define p mcnlp
 
 #define mcabsorbComp mcabsorbCompSC3
-  STORE_NEUTRON(14,
+  STORE_NEUTRON(12,
     mcnlx,
     mcnly,
     mcnlz,
@@ -16258,12 +15018,12 @@ mcnlp)
     mcnlp);
   mcScattered=0;
   mcRestore=0;
-  mcNCounter[14]++;
-  mcPCounter[14] += p;
-  mcP2Counter[14] += p*p;
+  mcNCounter[12]++;
+  mcPCounter[12] += p;
+  mcP2Counter[12] += p*p;
 #define mccompcurname  SC3
 #define mccompcurtype  Collimator_linear
-#define mccompcurindex 14
+#define mccompcurindex 12
 #define slope mccSC3_slope
 #define slopeV mccSC3_slopeV
 {   /* Declarations of SC3=Collimator_linear() SETTING parameters. */
@@ -16310,7 +15070,7 @@ if (( mcipALF3 && mcipBET3 ))
       SCATTER;
     }
 }
-#line 16310 "./templateTAS.c"
+#line 15070 "Applications/ResLibCal/private/templateTAS.c"
 }   /* End of SC3=Collimator_linear() SETTING parameter declarations. */
 #undef slopeV
 #undef slope
@@ -16320,7 +15080,7 @@ if (( mcipALF3 && mcipBET3 ))
   /* Label for restoring  neutron */
   mcabsorbCompSC3:
   if (RESTORE) /* restore if needed */
-  { RESTORE_NEUTRON(14,
+  { RESTORE_NEUTRON(12,
       mcnlx,
       mcnly,
       mcnlz,
@@ -16357,7 +15117,7 @@ mcnlsy,
 mcnlsz,
 mcnlp)
 
-  /* TRACE Component Ana_Cradle [15] */
+  /* TRACE Component Ana_Cradle [13] */
   mccoordschange(mcposrAna_Cradle, mcrotrAna_Cradle,
     &mcnlx,
     &mcnly,
@@ -16397,7 +15157,7 @@ mcnlp)
 #define p mcnlp
 
 #define mcabsorbComp mcabsorbCompAna_Cradle
-  STORE_NEUTRON(15,
+  STORE_NEUTRON(13,
     mcnlx,
     mcnly,
     mcnlz,
@@ -16411,19 +15171,19 @@ mcnlp)
     mcnlp);
   mcScattered=0;
   mcRestore=0;
-  mcNCounter[15]++;
-  mcPCounter[15] += p;
-  mcP2Counter[15] += p*p;
+  mcNCounter[13]++;
+  mcPCounter[13] += p;
+  mcP2Counter[13] += p*p;
 #define mccompcurname  Ana_Cradle
 #define mccompcurtype  Arm
-#define mccompcurindex 15
+#define mccompcurindex 13
 #undef mccompcurname
 #undef mccompcurtype
 #undef mccompcurindex
   /* Label for restoring  neutron */
   mcabsorbCompAna_Cradle:
   if (RESTORE) /* restore if needed */
-  { RESTORE_NEUTRON(15,
+  { RESTORE_NEUTRON(13,
       mcnlx,
       mcnly,
       mcnlz,
@@ -16460,7 +15220,7 @@ mcnlsy,
 mcnlsz,
 mcnlp)
 
-  /* TRACE Component PG2Xtal [16] */
+  /* TRACE Component PG2Xtal [14] */
   mccoordschange(mcposrPG2Xtal, mcrotrPG2Xtal,
     &mcnlx,
     &mcnly,
@@ -16500,7 +15260,7 @@ mcnlp)
 #define p mcnlp
 
 #define mcabsorbComp mcabsorbCompPG2Xtal
-  STORE_NEUTRON(16,
+  STORE_NEUTRON(14,
     mcnlx,
     mcnly,
     mcnlz,
@@ -16514,12 +15274,12 @@ mcnlp)
     mcnlp);
   mcScattered=0;
   mcRestore=0;
-  mcNCounter[16]++;
-  mcPCounter[16] += p;
-  mcP2Counter[16] += p*p;
+  mcNCounter[14]++;
+  mcPCounter[14] += p;
+  mcP2Counter[14] += p*p;
 #define mccompcurname  PG2Xtal
 #define mccompcurtype  Monochromator_curved
-#define mccompcurindex 16
+#define mccompcurindex 14
 #define mos_rms_y mccPG2Xtal_mos_rms_y
 #define mos_rms_z mccPG2Xtal_mos_rms_z
 #define mos_rms_max mccPG2Xtal_mos_rms_max
@@ -16778,7 +15538,7 @@ MCNUM order = mccPG2Xtal_order;
     }
   } /* End neutron moving towards crystal (if vx)*/
 }
-#line 16778 "./templateTAS.c"
+#line 15538 "Applications/ResLibCal/private/templateTAS.c"
 }   /* End of PG2Xtal=Monochromator_curved() SETTING parameter declarations. */
 #undef tiltV
 #undef tiltH
@@ -16798,7 +15558,7 @@ MCNUM order = mccPG2Xtal_order;
   /* Label for restoring  neutron */
   mcabsorbCompPG2Xtal:
   if (RESTORE) /* restore if needed */
-  { RESTORE_NEUTRON(16,
+  { RESTORE_NEUTRON(14,
       mcnlx,
       mcnly,
       mcnlz,
@@ -16835,7 +15595,7 @@ mcnlsy,
 mcnlsz,
 mcnlp)
 
-  /* TRACE Component Ana_Out [17] */
+  /* TRACE Component Ana_Out [15] */
   mccoordschange(mcposrAna_Out, mcrotrAna_Out,
     &mcnlx,
     &mcnly,
@@ -16875,7 +15635,7 @@ mcnlp)
 #define p mcnlp
 
 #define mcabsorbComp mcabsorbCompAna_Out
-  STORE_NEUTRON(17,
+  STORE_NEUTRON(15,
     mcnlx,
     mcnly,
     mcnlz,
@@ -16889,19 +15649,19 @@ mcnlp)
     mcnlp);
   mcScattered=0;
   mcRestore=0;
-  mcNCounter[17]++;
-  mcPCounter[17] += p;
-  mcP2Counter[17] += p*p;
+  mcNCounter[15]++;
+  mcPCounter[15] += p;
+  mcP2Counter[15] += p*p;
 #define mccompcurname  Ana_Out
 #define mccompcurtype  Arm
-#define mccompcurindex 17
+#define mccompcurindex 15
 #undef mccompcurname
 #undef mccompcurtype
 #undef mccompcurindex
   /* Label for restoring  neutron */
   mcabsorbCompAna_Out:
   if (RESTORE) /* restore if needed */
-  { RESTORE_NEUTRON(17,
+  { RESTORE_NEUTRON(15,
       mcnlx,
       mcnly,
       mcnlz,
@@ -16938,7 +15698,7 @@ mcnlsy,
 mcnlsz,
 mcnlp)
 
-  /* TRACE Component SC4 [18] */
+  /* TRACE Component SC4 [16] */
   mccoordschange(mcposrSC4, mcrotrSC4,
     &mcnlx,
     &mcnly,
@@ -16978,7 +15738,7 @@ mcnlp)
 #define p mcnlp
 
 #define mcabsorbComp mcabsorbCompSC4
-  STORE_NEUTRON(18,
+  STORE_NEUTRON(16,
     mcnlx,
     mcnly,
     mcnlz,
@@ -16992,12 +15752,12 @@ mcnlp)
     mcnlp);
   mcScattered=0;
   mcRestore=0;
-  mcNCounter[18]++;
-  mcPCounter[18] += p;
-  mcP2Counter[18] += p*p;
+  mcNCounter[16]++;
+  mcPCounter[16] += p;
+  mcP2Counter[16] += p*p;
 #define mccompcurname  SC4
 #define mccompcurtype  Collimator_linear
-#define mccompcurindex 18
+#define mccompcurindex 16
 #define slope mccSC4_slope
 #define slopeV mccSC4_slopeV
 {   /* Declarations of SC4=Collimator_linear() SETTING parameters. */
@@ -17044,7 +15804,7 @@ if (( mcipALF4 && mcipBET4 ))
       SCATTER;
     }
 }
-#line 17043 "./templateTAS.c"
+#line 15803 "Applications/ResLibCal/private/templateTAS.c"
 }   /* End of SC4=Collimator_linear() SETTING parameter declarations. */
 #undef slopeV
 #undef slope
@@ -17054,7 +15814,7 @@ if (( mcipALF4 && mcipBET4 ))
   /* Label for restoring  neutron */
   mcabsorbCompSC4:
   if (RESTORE) /* restore if needed */
-  { RESTORE_NEUTRON(18,
+  { RESTORE_NEUTRON(16,
       mcnlx,
       mcnly,
       mcnlz,
@@ -17091,7 +15851,7 @@ mcnlsy,
 mcnlsz,
 mcnlp)
 
-  /* TRACE Component He3H [19] */
+  /* TRACE Component He3H [17] */
   mccoordschange(mcposrHe3H, mcrotrHe3H,
     &mcnlx,
     &mcnly,
@@ -17131,7 +15891,7 @@ mcnlp)
 #define p mcnlp
 
 #define mcabsorbComp mcabsorbCompHe3H
-  STORE_NEUTRON(19,
+  STORE_NEUTRON(17,
     mcnlx,
     mcnly,
     mcnlz,
@@ -17145,12 +15905,12 @@ mcnlp)
     mcnlp);
   mcScattered=0;
   mcRestore=0;
-  mcNCounter[19]++;
-  mcPCounter[19] += p;
-  mcP2Counter[19] += p*p;
+  mcNCounter[17]++;
+  mcPCounter[17] += p;
+  mcP2Counter[17] += p*p;
 #define mccompcurname  He3H
 #define mccompcurtype  Res_monitor
-#define mccompcurindex 19
+#define mccompcurindex 17
 #define res_sample_comp mccHe3H_res_sample_comp
 #define DEFS mccHe3H_DEFS
 #define Vars mccHe3H_Vars
@@ -17245,7 +16005,7 @@ MCNUM restore_neutron = mccHe3H_restore_neutron;
     }
 
 }
-#line 17244 "./templateTAS.c"
+#line 16004 "Applications/ResLibCal/private/templateTAS.c"
 }   /* End of He3H=Res_monitor() SETTING parameter declarations. */
 #undef buffer_index
 #undef Vars
@@ -17257,7 +16017,7 @@ MCNUM restore_neutron = mccHe3H_restore_neutron;
   /* Label for restoring  neutron */
   mcabsorbCompHe3H:
   if (RESTORE) /* restore if needed */
-  { RESTORE_NEUTRON(19,
+  { RESTORE_NEUTRON(17,
       mcnlx,
       mcnly,
       mcnlz,
@@ -17358,7 +16118,7 @@ MCNUM minutes = mccOrigin_minutes;
 
   }
 }
-#line 17357 "./templateTAS.c"
+#line 16117 "Applications/ResLibCal/private/templateTAS.c"
 }   /* End of Origin=Progress_bar() SETTING parameter declarations. */
 #undef CurrentTime
 #undef EndTime
@@ -17368,62 +16128,11 @@ MCNUM minutes = mccOrigin_minutes;
 #undef mccompcurtype
 #undef mccompcurindex
 
-  /* User SAVE code for component 'D4_SC2_1D'. */
-  SIG_MESSAGE("D4_SC2_1D (Save)");
-#define mccompcurname  D4_SC2_1D
-#define mccompcurtype  Monitor_nD
-#define mccompcurindex 8
-#define user1 mccD4_SC2_1D_user1
-#define user2 mccD4_SC2_1D_user2
-#define user3 mccD4_SC2_1D_user3
-#define DEFS mccD4_SC2_1D_DEFS
-#define Vars mccD4_SC2_1D_Vars
-#define detector mccD4_SC2_1D_detector
-#define offdata mccD4_SC2_1D_offdata
-{   /* Declarations of D4_SC2_1D=Monitor_nD() SETTING parameters. */
-MCNUM xwidth = mccD4_SC2_1D_xwidth;
-MCNUM yheight = mccD4_SC2_1D_yheight;
-MCNUM zdepth = mccD4_SC2_1D_zdepth;
-MCNUM xmin = mccD4_SC2_1D_xmin;
-MCNUM xmax = mccD4_SC2_1D_xmax;
-MCNUM ymin = mccD4_SC2_1D_ymin;
-MCNUM ymax = mccD4_SC2_1D_ymax;
-MCNUM zmin = mccD4_SC2_1D_zmin;
-MCNUM zmax = mccD4_SC2_1D_zmax;
-MCNUM bins = mccD4_SC2_1D_bins;
-MCNUM min = mccD4_SC2_1D_min;
-MCNUM max = mccD4_SC2_1D_max;
-MCNUM restore_neutron = mccD4_SC2_1D_restore_neutron;
-MCNUM radius = mccD4_SC2_1D_radius;
-char* options = mccD4_SC2_1D_options;
-char* filename = mccD4_SC2_1D_filename;
-char* geometry = mccD4_SC2_1D_geometry;
-char* username1 = mccD4_SC2_1D_username1;
-char* username2 = mccD4_SC2_1D_username2;
-char* username3 = mccD4_SC2_1D_username3;
-#line 500 "/usr/share/mcstas/2.3/monitors/Monitor_nD.comp"
-{
-  /* save results, but do not free pointers */
-  detector = Monitor_nD_Save(&DEFS, &Vars);
-}
-#line 17405 "./templateTAS.c"
-}   /* End of D4_SC2_1D=Monitor_nD() SETTING parameter declarations. */
-#undef offdata
-#undef detector
-#undef Vars
-#undef DEFS
-#undef user3
-#undef user2
-#undef user1
-#undef mccompcurname
-#undef mccompcurtype
-#undef mccompcurindex
-
   /* User SAVE code for component 'Sample_Cradle'. */
   SIG_MESSAGE("Sample_Cradle (Save)");
 #define mccompcurname  Sample_Cradle
 #define mccompcurtype  Monitor_nD
-#define mccompcurindex 10
+#define mccompcurindex 9
 #define user1 mccSample_Cradle_user1
 #define user2 mccSample_Cradle_user2
 #define user3 mccSample_Cradle_user3
@@ -17457,59 +16166,8 @@ char* username3 = mccSample_Cradle_username3;
   /* save results, but do not free pointers */
   detector = Monitor_nD_Save(&DEFS, &Vars);
 }
-#line 17456 "./templateTAS.c"
+#line 16165 "Applications/ResLibCal/private/templateTAS.c"
 }   /* End of Sample_Cradle=Monitor_nD() SETTING parameter declarations. */
-#undef offdata
-#undef detector
-#undef Vars
-#undef DEFS
-#undef user3
-#undef user2
-#undef user1
-#undef mccompcurname
-#undef mccompcurtype
-#undef mccompcurindex
-
-  /* User SAVE code for component 'D7_SC3_1D'. */
-  SIG_MESSAGE("D7_SC3_1D (Save)");
-#define mccompcurname  D7_SC3_1D
-#define mccompcurtype  Monitor_nD
-#define mccompcurindex 13
-#define user1 mccD7_SC3_1D_user1
-#define user2 mccD7_SC3_1D_user2
-#define user3 mccD7_SC3_1D_user3
-#define DEFS mccD7_SC3_1D_DEFS
-#define Vars mccD7_SC3_1D_Vars
-#define detector mccD7_SC3_1D_detector
-#define offdata mccD7_SC3_1D_offdata
-{   /* Declarations of D7_SC3_1D=Monitor_nD() SETTING parameters. */
-MCNUM xwidth = mccD7_SC3_1D_xwidth;
-MCNUM yheight = mccD7_SC3_1D_yheight;
-MCNUM zdepth = mccD7_SC3_1D_zdepth;
-MCNUM xmin = mccD7_SC3_1D_xmin;
-MCNUM xmax = mccD7_SC3_1D_xmax;
-MCNUM ymin = mccD7_SC3_1D_ymin;
-MCNUM ymax = mccD7_SC3_1D_ymax;
-MCNUM zmin = mccD7_SC3_1D_zmin;
-MCNUM zmax = mccD7_SC3_1D_zmax;
-MCNUM bins = mccD7_SC3_1D_bins;
-MCNUM min = mccD7_SC3_1D_min;
-MCNUM max = mccD7_SC3_1D_max;
-MCNUM restore_neutron = mccD7_SC3_1D_restore_neutron;
-MCNUM radius = mccD7_SC3_1D_radius;
-char* options = mccD7_SC3_1D_options;
-char* filename = mccD7_SC3_1D_filename;
-char* geometry = mccD7_SC3_1D_geometry;
-char* username1 = mccD7_SC3_1D_username1;
-char* username2 = mccD7_SC3_1D_username2;
-char* username3 = mccD7_SC3_1D_username3;
-#line 500 "/usr/share/mcstas/2.3/monitors/Monitor_nD.comp"
-{
-  /* save results, but do not free pointers */
-  detector = Monitor_nD_Save(&DEFS, &Vars);
-}
-#line 17507 "./templateTAS.c"
-}   /* End of D7_SC3_1D=Monitor_nD() SETTING parameter declarations. */
 #undef offdata
 #undef detector
 #undef Vars
@@ -17525,7 +16183,7 @@ char* username3 = mccD7_SC3_1D_username3;
   SIG_MESSAGE("He3H (Save)");
 #define mccompcurname  He3H
 #define mccompcurtype  Res_monitor
-#define mccompcurindex 19
+#define mccompcurindex 17
 #define res_sample_comp mccHe3H_res_sample_comp
 #define DEFS mccHe3H_DEFS
 #define Vars mccHe3H_Vars
@@ -17550,7 +16208,7 @@ MCNUM restore_neutron = mccHe3H_restore_neutron;
   /* save results, but do not free pointers */
   Monitor_nD_Save(&DEFS, &Vars);
 }
-#line 17549 "./templateTAS.c"
+#line 16207 "Applications/ResLibCal/private/templateTAS.c"
 }   /* End of He3H=Res_monitor() SETTING parameter declarations. */
 #undef buffer_index
 #undef Vars
@@ -17594,7 +16252,7 @@ MCNUM minutes = mccOrigin_minutes;
     fprintf(stdout, "%g [min] ", difftime(NowTime,StartTime)/60.0);
   fprintf(stdout, "\n");
 }
-#line 17593 "./templateTAS.c"
+#line 16251 "Applications/ResLibCal/private/templateTAS.c"
 }   /* End of Origin=Progress_bar() SETTING parameter declarations. */
 #undef CurrentTime
 #undef EndTime
@@ -17666,7 +16324,7 @@ int target_index = mccSource_target_index;
   Table_Free(&pTable_x);
   Table_Free(&pTable_y);
 }
-#line 17664 "./templateTAS.c"
+#line 16322 "Applications/ResLibCal/private/templateTAS.c"
 }   /* End of Source=Source_gen() SETTING parameter declarations. */
 #undef pTable_dymax
 #undef pTable_dymin
@@ -17746,7 +16404,7 @@ MCNUM order = mccPG1Xtal_order;
   if (tiltH) free(tiltH); 
   if (tiltV) free(tiltV);
 }
-#line 17740 "./templateTAS.c"
+#line 16398 "Applications/ResLibCal/private/templateTAS.c"
 }   /* End of PG1Xtal=Monochromator_curved() SETTING parameter declarations. */
 #undef tiltV
 #undef tiltH
@@ -17770,68 +16428,14 @@ MCNUM order = mccPG1Xtal_order;
     if (!mcNCounter[7]) fprintf(stderr, "Warning: No neutron could reach Component[7] Mono_Out\n");
     if (mcAbsorbProp[7]) fprintf(stderr, "Warning: %g events were removed in Component[7] Mono_Out=Arm()\n"
 "         (negative time, miss next components, rounding errors, Nan, Inf).\n", mcAbsorbProp[7]);
-  /* User FINALLY code for component 'D4_SC2_1D'. */
-  SIG_MESSAGE("D4_SC2_1D (Finally)");
-#define mccompcurname  D4_SC2_1D
-#define mccompcurtype  Monitor_nD
-#define mccompcurindex 8
-#define user1 mccD4_SC2_1D_user1
-#define user2 mccD4_SC2_1D_user2
-#define user3 mccD4_SC2_1D_user3
-#define DEFS mccD4_SC2_1D_DEFS
-#define Vars mccD4_SC2_1D_Vars
-#define detector mccD4_SC2_1D_detector
-#define offdata mccD4_SC2_1D_offdata
-{   /* Declarations of D4_SC2_1D=Monitor_nD() SETTING parameters. */
-MCNUM xwidth = mccD4_SC2_1D_xwidth;
-MCNUM yheight = mccD4_SC2_1D_yheight;
-MCNUM zdepth = mccD4_SC2_1D_zdepth;
-MCNUM xmin = mccD4_SC2_1D_xmin;
-MCNUM xmax = mccD4_SC2_1D_xmax;
-MCNUM ymin = mccD4_SC2_1D_ymin;
-MCNUM ymax = mccD4_SC2_1D_ymax;
-MCNUM zmin = mccD4_SC2_1D_zmin;
-MCNUM zmax = mccD4_SC2_1D_zmax;
-MCNUM bins = mccD4_SC2_1D_bins;
-MCNUM min = mccD4_SC2_1D_min;
-MCNUM max = mccD4_SC2_1D_max;
-MCNUM restore_neutron = mccD4_SC2_1D_restore_neutron;
-MCNUM radius = mccD4_SC2_1D_radius;
-char* options = mccD4_SC2_1D_options;
-char* filename = mccD4_SC2_1D_filename;
-char* geometry = mccD4_SC2_1D_geometry;
-char* username1 = mccD4_SC2_1D_username1;
-char* username2 = mccD4_SC2_1D_username2;
-char* username3 = mccD4_SC2_1D_username3;
-#line 506 "/usr/share/mcstas/2.3/monitors/Monitor_nD.comp"
-{
-  /* free pointers */
-  Monitor_nD_Finally(&DEFS, &Vars);
-}
-#line 17800 "./templateTAS.c"
-}   /* End of D4_SC2_1D=Monitor_nD() SETTING parameter declarations. */
-#undef offdata
-#undef detector
-#undef Vars
-#undef DEFS
-#undef user3
-#undef user2
-#undef user1
-#undef mccompcurname
-#undef mccompcurtype
-#undef mccompcurindex
-
-    if (!mcNCounter[8]) fprintf(stderr, "Warning: No neutron could reach Component[8] D4_SC2_1D\n");
-    if (mcAbsorbProp[8]) fprintf(stderr, "Warning: %g events were removed in Component[8] D4_SC2_1D=Monitor_nD()\n"
+    if (!mcNCounter[8]) fprintf(stderr, "Warning: No neutron could reach Component[8] SC2\n");
+    if (mcAbsorbProp[8]) fprintf(stderr, "Warning: %g events were removed in Component[8] SC2=Collimator_linear()\n"
 "         (negative time, miss next components, rounding errors, Nan, Inf).\n", mcAbsorbProp[8]);
-    if (!mcNCounter[9]) fprintf(stderr, "Warning: No neutron could reach Component[9] SC2\n");
-    if (mcAbsorbProp[9]) fprintf(stderr, "Warning: %g events were removed in Component[9] SC2=Collimator_linear()\n"
-"         (negative time, miss next components, rounding errors, Nan, Inf).\n", mcAbsorbProp[9]);
   /* User FINALLY code for component 'Sample_Cradle'. */
   SIG_MESSAGE("Sample_Cradle (Finally)");
 #define mccompcurname  Sample_Cradle
 #define mccompcurtype  Monitor_nD
-#define mccompcurindex 10
+#define mccompcurindex 9
 #define user1 mccSample_Cradle_user1
 #define user2 mccSample_Cradle_user2
 #define user3 mccSample_Cradle_user3
@@ -17865,7 +16469,7 @@ char* username3 = mccSample_Cradle_username3;
   /* free pointers */
   Monitor_nD_Finally(&DEFS, &Vars);
 }
-#line 17855 "./templateTAS.c"
+#line 16460 "Applications/ResLibCal/private/templateTAS.c"
 }   /* End of Sample_Cradle=Monitor_nD() SETTING parameter declarations. */
 #undef offdata
 #undef detector
@@ -17878,80 +16482,26 @@ char* username3 = mccSample_Cradle_username3;
 #undef mccompcurtype
 #undef mccompcurindex
 
-    if (!mcNCounter[10]) fprintf(stderr, "Warning: No neutron could reach Component[10] Sample_Cradle\n");
-    if (mcAbsorbProp[10]) fprintf(stderr, "Warning: %g events were removed in Component[10] Sample_Cradle=Monitor_nD()\n"
+    if (!mcNCounter[9]) fprintf(stderr, "Warning: No neutron could reach Component[9] Sample_Cradle\n");
+    if (mcAbsorbProp[9]) fprintf(stderr, "Warning: %g events were removed in Component[9] Sample_Cradle=Monitor_nD()\n"
+"         (negative time, miss next components, rounding errors, Nan, Inf).\n", mcAbsorbProp[9]);
+    if (!mcNCounter[10]) fprintf(stderr, "Warning: No neutron could reach Component[10] Sample\n");
+    if (mcAbsorbProp[10]) fprintf(stderr, "Warning: %g events were removed in Component[10] Sample=Res_sample()\n"
 "         (negative time, miss next components, rounding errors, Nan, Inf).\n", mcAbsorbProp[10]);
-    if (!mcNCounter[11]) fprintf(stderr, "Warning: No neutron could reach Component[11] Sample\n");
-    if (mcAbsorbProp[11]) fprintf(stderr, "Warning: %g events were removed in Component[11] Sample=Res_sample()\n"
+    if (!mcNCounter[11]) fprintf(stderr, "Warning: No neutron could reach Component[11] Sample_Out\n");
+    if (mcAbsorbProp[11]) fprintf(stderr, "Warning: %g events were removed in Component[11] Sample_Out=Arm()\n"
 "         (negative time, miss next components, rounding errors, Nan, Inf).\n", mcAbsorbProp[11]);
-    if (!mcNCounter[12]) fprintf(stderr, "Warning: No neutron could reach Component[12] Sample_Out\n");
-    if (mcAbsorbProp[12]) fprintf(stderr, "Warning: %g events were removed in Component[12] Sample_Out=Arm()\n"
+    if (!mcNCounter[12]) fprintf(stderr, "Warning: No neutron could reach Component[12] SC3\n");
+    if (mcAbsorbProp[12]) fprintf(stderr, "Warning: %g events were removed in Component[12] SC3=Collimator_linear()\n"
 "         (negative time, miss next components, rounding errors, Nan, Inf).\n", mcAbsorbProp[12]);
-  /* User FINALLY code for component 'D7_SC3_1D'. */
-  SIG_MESSAGE("D7_SC3_1D (Finally)");
-#define mccompcurname  D7_SC3_1D
-#define mccompcurtype  Monitor_nD
-#define mccompcurindex 13
-#define user1 mccD7_SC3_1D_user1
-#define user2 mccD7_SC3_1D_user2
-#define user3 mccD7_SC3_1D_user3
-#define DEFS mccD7_SC3_1D_DEFS
-#define Vars mccD7_SC3_1D_Vars
-#define detector mccD7_SC3_1D_detector
-#define offdata mccD7_SC3_1D_offdata
-{   /* Declarations of D7_SC3_1D=Monitor_nD() SETTING parameters. */
-MCNUM xwidth = mccD7_SC3_1D_xwidth;
-MCNUM yheight = mccD7_SC3_1D_yheight;
-MCNUM zdepth = mccD7_SC3_1D_zdepth;
-MCNUM xmin = mccD7_SC3_1D_xmin;
-MCNUM xmax = mccD7_SC3_1D_xmax;
-MCNUM ymin = mccD7_SC3_1D_ymin;
-MCNUM ymax = mccD7_SC3_1D_ymax;
-MCNUM zmin = mccD7_SC3_1D_zmin;
-MCNUM zmax = mccD7_SC3_1D_zmax;
-MCNUM bins = mccD7_SC3_1D_bins;
-MCNUM min = mccD7_SC3_1D_min;
-MCNUM max = mccD7_SC3_1D_max;
-MCNUM restore_neutron = mccD7_SC3_1D_restore_neutron;
-MCNUM radius = mccD7_SC3_1D_radius;
-char* options = mccD7_SC3_1D_options;
-char* filename = mccD7_SC3_1D_filename;
-char* geometry = mccD7_SC3_1D_geometry;
-char* username1 = mccD7_SC3_1D_username1;
-char* username2 = mccD7_SC3_1D_username2;
-char* username3 = mccD7_SC3_1D_username3;
-#line 506 "/usr/share/mcstas/2.3/monitors/Monitor_nD.comp"
-{
-  /* free pointers */
-  Monitor_nD_Finally(&DEFS, &Vars);
-}
-#line 17912 "./templateTAS.c"
-}   /* End of D7_SC3_1D=Monitor_nD() SETTING parameter declarations. */
-#undef offdata
-#undef detector
-#undef Vars
-#undef DEFS
-#undef user3
-#undef user2
-#undef user1
-#undef mccompcurname
-#undef mccompcurtype
-#undef mccompcurindex
-
-    if (!mcNCounter[13]) fprintf(stderr, "Warning: No neutron could reach Component[13] D7_SC3_1D\n");
-    if (mcAbsorbProp[13]) fprintf(stderr, "Warning: %g events were removed in Component[13] D7_SC3_1D=Monitor_nD()\n"
+    if (!mcNCounter[13]) fprintf(stderr, "Warning: No neutron could reach Component[13] Ana_Cradle\n");
+    if (mcAbsorbProp[13]) fprintf(stderr, "Warning: %g events were removed in Component[13] Ana_Cradle=Arm()\n"
 "         (negative time, miss next components, rounding errors, Nan, Inf).\n", mcAbsorbProp[13]);
-    if (!mcNCounter[14]) fprintf(stderr, "Warning: No neutron could reach Component[14] SC3\n");
-    if (mcAbsorbProp[14]) fprintf(stderr, "Warning: %g events were removed in Component[14] SC3=Collimator_linear()\n"
-"         (negative time, miss next components, rounding errors, Nan, Inf).\n", mcAbsorbProp[14]);
-    if (!mcNCounter[15]) fprintf(stderr, "Warning: No neutron could reach Component[15] Ana_Cradle\n");
-    if (mcAbsorbProp[15]) fprintf(stderr, "Warning: %g events were removed in Component[15] Ana_Cradle=Arm()\n"
-"         (negative time, miss next components, rounding errors, Nan, Inf).\n", mcAbsorbProp[15]);
   /* User FINALLY code for component 'PG2Xtal'. */
   SIG_MESSAGE("PG2Xtal (Finally)");
 #define mccompcurname  PG2Xtal
 #define mccompcurtype  Monochromator_curved
-#define mccompcurindex 16
+#define mccompcurindex 14
 #define mos_rms_y mccPG2Xtal_mos_rms_y
 #define mos_rms_z mccPG2Xtal_mos_rms_z
 #define mos_rms_max mccPG2Xtal_mos_rms_max
@@ -17992,7 +16542,7 @@ MCNUM order = mccPG2Xtal_order;
   if (tiltH) free(tiltH); 
   if (tiltV) free(tiltV);
 }
-#line 17976 "./templateTAS.c"
+#line 16528 "Applications/ResLibCal/private/templateTAS.c"
 }   /* End of PG2Xtal=Monochromator_curved() SETTING parameter declarations. */
 #undef tiltV
 #undef tiltH
@@ -18010,20 +16560,20 @@ MCNUM order = mccPG2Xtal_order;
 #undef mccompcurtype
 #undef mccompcurindex
 
-    if (!mcNCounter[16]) fprintf(stderr, "Warning: No neutron could reach Component[16] PG2Xtal\n");
-    if (mcAbsorbProp[16]) fprintf(stderr, "Warning: %g events were removed in Component[16] PG2Xtal=Monochromator_curved()\n"
+    if (!mcNCounter[14]) fprintf(stderr, "Warning: No neutron could reach Component[14] PG2Xtal\n");
+    if (mcAbsorbProp[14]) fprintf(stderr, "Warning: %g events were removed in Component[14] PG2Xtal=Monochromator_curved()\n"
+"         (negative time, miss next components, rounding errors, Nan, Inf).\n", mcAbsorbProp[14]);
+    if (!mcNCounter[15]) fprintf(stderr, "Warning: No neutron could reach Component[15] Ana_Out\n");
+    if (mcAbsorbProp[15]) fprintf(stderr, "Warning: %g events were removed in Component[15] Ana_Out=Arm()\n"
+"         (negative time, miss next components, rounding errors, Nan, Inf).\n", mcAbsorbProp[15]);
+    if (!mcNCounter[16]) fprintf(stderr, "Warning: No neutron could reach Component[16] SC4\n");
+    if (mcAbsorbProp[16]) fprintf(stderr, "Warning: %g events were removed in Component[16] SC4=Collimator_linear()\n"
 "         (negative time, miss next components, rounding errors, Nan, Inf).\n", mcAbsorbProp[16]);
-    if (!mcNCounter[17]) fprintf(stderr, "Warning: No neutron could reach Component[17] Ana_Out\n");
-    if (mcAbsorbProp[17]) fprintf(stderr, "Warning: %g events were removed in Component[17] Ana_Out=Arm()\n"
-"         (negative time, miss next components, rounding errors, Nan, Inf).\n", mcAbsorbProp[17]);
-    if (!mcNCounter[18]) fprintf(stderr, "Warning: No neutron could reach Component[18] SC4\n");
-    if (mcAbsorbProp[18]) fprintf(stderr, "Warning: %g events were removed in Component[18] SC4=Collimator_linear()\n"
-"         (negative time, miss next components, rounding errors, Nan, Inf).\n", mcAbsorbProp[18]);
   /* User FINALLY code for component 'He3H'. */
   SIG_MESSAGE("He3H (Finally)");
 #define mccompcurname  He3H
 #define mccompcurtype  Res_monitor
-#define mccompcurindex 19
+#define mccompcurindex 17
 #define res_sample_comp mccHe3H_res_sample_comp
 #define DEFS mccHe3H_DEFS
 #define Vars mccHe3H_Vars
@@ -18050,7 +16600,7 @@ MCNUM restore_neutron = mccHe3H_restore_neutron;
   Monitor_nD_Finally(&DEFS, &Vars);
 
 }
-#line 18031 "./templateTAS.c"
+#line 16583 "Applications/ResLibCal/private/templateTAS.c"
 }   /* End of He3H=Res_monitor() SETTING parameter declarations. */
 #undef buffer_index
 #undef Vars
@@ -18060,9 +16610,9 @@ MCNUM restore_neutron = mccHe3H_restore_neutron;
 #undef mccompcurtype
 #undef mccompcurindex
 
-    if (!mcNCounter[19]) fprintf(stderr, "Warning: No neutron could reach Component[19] He3H\n");
-    if (mcAbsorbProp[19]) fprintf(stderr, "Warning: %g events were removed in Component[19] He3H=Res_monitor()\n"
-"         (negative time, miss next components, rounding errors, Nan, Inf).\n", mcAbsorbProp[19]);
+    if (!mcNCounter[17]) fprintf(stderr, "Warning: No neutron could reach Component[17] He3H\n");
+    if (mcAbsorbProp[17]) fprintf(stderr, "Warning: %g events were removed in Component[17] He3H=Res_monitor()\n"
+"         (negative time, miss next components, rounding errors, Nan, Inf).\n", mcAbsorbProp[17]);
   mcsiminfo_close(); 
 } /* end finally */
 #define magnify mcdis_magnify
@@ -18095,7 +16645,7 @@ MCNUM minutes = mccOrigin_minutes;
 {
   magnify("");
 }
-#line 18075 "./templateTAS.c"
+#line 16627 "Applications/ResLibCal/private/templateTAS.c"
 }   /* End of Origin=Progress_bar() SETTING parameter declarations. */
 #undef CurrentTime
 #undef EndTime
@@ -18208,7 +16758,7 @@ int target_index = mccSource_target_index;
     dashed_line(0,0,0, -focus_xw/2, focus_yh/2,dist, 4);
   }
 }
-#line 18188 "./templateTAS.c"
+#line 16740 "Applications/ResLibCal/private/templateTAS.c"
 }   /* End of Source=Source_gen() SETTING parameter declarations. */
 #undef pTable_dymax
 #undef pTable_dymin
@@ -18265,7 +16815,7 @@ MCNUM divergenceV = mccSC1_divergenceV;
   line(xmin, ymin, length, xmax, ymin, length);
   line(xmin, ymax, length, xmax, ymax, length);
 }
-#line 18245 "./templateTAS.c"
+#line 16797 "Applications/ResLibCal/private/templateTAS.c"
 }   /* End of SC1=Collimator_linear() SETTING parameter declarations. */
 #undef slopeV
 #undef slope
@@ -18287,7 +16837,7 @@ MCNUM divergenceV = mccSC1_divergenceV;
   line(0,0,0,0,0.2,0);
   line(0,0,0,0,0,0.2);
 }
-#line 18267 "./templateTAS.c"
+#line 16819 "Applications/ResLibCal/private/templateTAS.c"
 #undef mccompcurname
 #undef mccompcurtype
 #undef mccompcurindex
@@ -18306,7 +16856,7 @@ MCNUM divergenceV = mccSC1_divergenceV;
   line(0,0,0,0,0.2,0);
   line(0,0,0,0,0,0.2);
 }
-#line 18286 "./templateTAS.c"
+#line 16838 "Applications/ResLibCal/private/templateTAS.c"
 #undef mccompcurname
 #undef mccompcurtype
 #undef mccompcurindex
@@ -18381,7 +16931,7 @@ MCNUM order = mccPG1Xtal_order;
      }
    }
 }
-#line 18361 "./templateTAS.c"
+#line 16913 "Applications/ResLibCal/private/templateTAS.c"
 }   /* End of PG1Xtal=Monochromator_curved() SETTING parameter declarations. */
 #undef tiltV
 #undef tiltH
@@ -18413,63 +16963,7 @@ MCNUM order = mccPG1Xtal_order;
   line(0,0,0,0,0.2,0);
   line(0,0,0,0,0,0.2);
 }
-#line 18393 "./templateTAS.c"
-#undef mccompcurname
-#undef mccompcurtype
-#undef mccompcurindex
-
-  /* MCDISPLAY code for component 'D4_SC2_1D'. */
-  SIG_MESSAGE("D4_SC2_1D (McDisplay)");
-  printf("MCDISPLAY: component %s\n", "D4_SC2_1D");
-#define mccompcurname  D4_SC2_1D
-#define mccompcurtype  Monitor_nD
-#define mccompcurindex 8
-#define user1 mccD4_SC2_1D_user1
-#define user2 mccD4_SC2_1D_user2
-#define user3 mccD4_SC2_1D_user3
-#define DEFS mccD4_SC2_1D_DEFS
-#define Vars mccD4_SC2_1D_Vars
-#define detector mccD4_SC2_1D_detector
-#define offdata mccD4_SC2_1D_offdata
-{   /* Declarations of D4_SC2_1D=Monitor_nD() SETTING parameters. */
-MCNUM xwidth = mccD4_SC2_1D_xwidth;
-MCNUM yheight = mccD4_SC2_1D_yheight;
-MCNUM zdepth = mccD4_SC2_1D_zdepth;
-MCNUM xmin = mccD4_SC2_1D_xmin;
-MCNUM xmax = mccD4_SC2_1D_xmax;
-MCNUM ymin = mccD4_SC2_1D_ymin;
-MCNUM ymax = mccD4_SC2_1D_ymax;
-MCNUM zmin = mccD4_SC2_1D_zmin;
-MCNUM zmax = mccD4_SC2_1D_zmax;
-MCNUM bins = mccD4_SC2_1D_bins;
-MCNUM min = mccD4_SC2_1D_min;
-MCNUM max = mccD4_SC2_1D_max;
-MCNUM restore_neutron = mccD4_SC2_1D_restore_neutron;
-MCNUM radius = mccD4_SC2_1D_radius;
-char* options = mccD4_SC2_1D_options;
-char* filename = mccD4_SC2_1D_filename;
-char* geometry = mccD4_SC2_1D_geometry;
-char* username1 = mccD4_SC2_1D_username1;
-char* username2 = mccD4_SC2_1D_username2;
-char* username3 = mccD4_SC2_1D_username3;
-#line 512 "/usr/share/mcstas/2.3/monitors/Monitor_nD.comp"
-{
-  if (geometry && strlen(geometry) && strcmp(geometry,"0") && strcmp(geometry, "NULL"))
-  {
-    off_display(offdata);
-  } else {
-    Monitor_nD_McDisplay(&DEFS, &Vars);
-  }
-}
-#line 18441 "./templateTAS.c"
-}   /* End of D4_SC2_1D=Monitor_nD() SETTING parameter declarations. */
-#undef offdata
-#undef detector
-#undef Vars
-#undef DEFS
-#undef user3
-#undef user2
-#undef user1
+#line 16945 "Applications/ResLibCal/private/templateTAS.c"
 #undef mccompcurname
 #undef mccompcurtype
 #undef mccompcurindex
@@ -18479,7 +16973,7 @@ char* username3 = mccD4_SC2_1D_username3;
   printf("MCDISPLAY: component %s\n", "SC2");
 #define mccompcurname  SC2
 #define mccompcurtype  Collimator_linear
-#define mccompcurindex 9
+#define mccompcurindex 8
 #define slope mccSC2_slope
 #define slopeV mccSC2_slopeV
 {   /* Declarations of SC2=Collimator_linear() SETTING parameters. */
@@ -18508,7 +17002,7 @@ MCNUM divergenceV = mccSC2_divergenceV;
   line(xmin, ymin, length, xmax, ymin, length);
   line(xmin, ymax, length, xmax, ymax, length);
 }
-#line 18488 "./templateTAS.c"
+#line 16984 "Applications/ResLibCal/private/templateTAS.c"
 }   /* End of SC2=Collimator_linear() SETTING parameter declarations. */
 #undef slopeV
 #undef slope
@@ -18521,7 +17015,7 @@ MCNUM divergenceV = mccSC2_divergenceV;
   printf("MCDISPLAY: component %s\n", "Sample_Cradle");
 #define mccompcurname  Sample_Cradle
 #define mccompcurtype  Monitor_nD
-#define mccompcurindex 10
+#define mccompcurindex 9
 #define user1 mccSample_Cradle_user1
 #define user2 mccSample_Cradle_user2
 #define user3 mccSample_Cradle_user3
@@ -18559,7 +17053,7 @@ char* username3 = mccSample_Cradle_username3;
     Monitor_nD_McDisplay(&DEFS, &Vars);
   }
 }
-#line 18539 "./templateTAS.c"
+#line 17035 "Applications/ResLibCal/private/templateTAS.c"
 }   /* End of Sample_Cradle=Monitor_nD() SETTING parameter declarations. */
 #undef offdata
 #undef detector
@@ -18577,7 +17071,7 @@ char* username3 = mccSample_Cradle_username3;
   printf("MCDISPLAY: component %s\n", "Sample");
 #define mccompcurname  Sample
 #define mccompcurtype  Res_sample
-#define mccompcurindex 11
+#define mccompcurindex 10
 #define res_struct mccSample_res_struct
 {   /* Declarations of Sample=Res_sample() SETTING parameters. */
 MCNUM thickness = mccSample_thickness;
@@ -18640,7 +17134,7 @@ int target_index = mccSample_target_index;
     }
   }
 }
-#line 18620 "./templateTAS.c"
+#line 17116 "Applications/ResLibCal/private/templateTAS.c"
 }   /* End of Sample=Res_sample() SETTING parameter declarations. */
 #undef res_struct
 #undef mccompcurname
@@ -18652,7 +17146,7 @@ int target_index = mccSample_target_index;
   printf("MCDISPLAY: component %s\n", "Sample_Out");
 #define mccompcurname  Sample_Out
 #define mccompcurtype  Arm
-#define mccompcurindex 12
+#define mccompcurindex 11
 #line 42 "/usr/share/mcstas/2.3/optics/Arm.comp"
 {
   /* A bit ugly; hard-coded dimensions. */
@@ -18661,63 +17155,7 @@ int target_index = mccSample_target_index;
   line(0,0,0,0,0.2,0);
   line(0,0,0,0,0,0.2);
 }
-#line 18641 "./templateTAS.c"
-#undef mccompcurname
-#undef mccompcurtype
-#undef mccompcurindex
-
-  /* MCDISPLAY code for component 'D7_SC3_1D'. */
-  SIG_MESSAGE("D7_SC3_1D (McDisplay)");
-  printf("MCDISPLAY: component %s\n", "D7_SC3_1D");
-#define mccompcurname  D7_SC3_1D
-#define mccompcurtype  Monitor_nD
-#define mccompcurindex 13
-#define user1 mccD7_SC3_1D_user1
-#define user2 mccD7_SC3_1D_user2
-#define user3 mccD7_SC3_1D_user3
-#define DEFS mccD7_SC3_1D_DEFS
-#define Vars mccD7_SC3_1D_Vars
-#define detector mccD7_SC3_1D_detector
-#define offdata mccD7_SC3_1D_offdata
-{   /* Declarations of D7_SC3_1D=Monitor_nD() SETTING parameters. */
-MCNUM xwidth = mccD7_SC3_1D_xwidth;
-MCNUM yheight = mccD7_SC3_1D_yheight;
-MCNUM zdepth = mccD7_SC3_1D_zdepth;
-MCNUM xmin = mccD7_SC3_1D_xmin;
-MCNUM xmax = mccD7_SC3_1D_xmax;
-MCNUM ymin = mccD7_SC3_1D_ymin;
-MCNUM ymax = mccD7_SC3_1D_ymax;
-MCNUM zmin = mccD7_SC3_1D_zmin;
-MCNUM zmax = mccD7_SC3_1D_zmax;
-MCNUM bins = mccD7_SC3_1D_bins;
-MCNUM min = mccD7_SC3_1D_min;
-MCNUM max = mccD7_SC3_1D_max;
-MCNUM restore_neutron = mccD7_SC3_1D_restore_neutron;
-MCNUM radius = mccD7_SC3_1D_radius;
-char* options = mccD7_SC3_1D_options;
-char* filename = mccD7_SC3_1D_filename;
-char* geometry = mccD7_SC3_1D_geometry;
-char* username1 = mccD7_SC3_1D_username1;
-char* username2 = mccD7_SC3_1D_username2;
-char* username3 = mccD7_SC3_1D_username3;
-#line 512 "/usr/share/mcstas/2.3/monitors/Monitor_nD.comp"
-{
-  if (geometry && strlen(geometry) && strcmp(geometry,"0") && strcmp(geometry, "NULL"))
-  {
-    off_display(offdata);
-  } else {
-    Monitor_nD_McDisplay(&DEFS, &Vars);
-  }
-}
-#line 18689 "./templateTAS.c"
-}   /* End of D7_SC3_1D=Monitor_nD() SETTING parameter declarations. */
-#undef offdata
-#undef detector
-#undef Vars
-#undef DEFS
-#undef user3
-#undef user2
-#undef user1
+#line 17137 "Applications/ResLibCal/private/templateTAS.c"
 #undef mccompcurname
 #undef mccompcurtype
 #undef mccompcurindex
@@ -18727,7 +17165,7 @@ char* username3 = mccD7_SC3_1D_username3;
   printf("MCDISPLAY: component %s\n", "SC3");
 #define mccompcurname  SC3
 #define mccompcurtype  Collimator_linear
-#define mccompcurindex 14
+#define mccompcurindex 12
 #define slope mccSC3_slope
 #define slopeV mccSC3_slopeV
 {   /* Declarations of SC3=Collimator_linear() SETTING parameters. */
@@ -18756,7 +17194,7 @@ MCNUM divergenceV = mccSC3_divergenceV;
   line(xmin, ymin, length, xmax, ymin, length);
   line(xmin, ymax, length, xmax, ymax, length);
 }
-#line 18736 "./templateTAS.c"
+#line 17176 "Applications/ResLibCal/private/templateTAS.c"
 }   /* End of SC3=Collimator_linear() SETTING parameter declarations. */
 #undef slopeV
 #undef slope
@@ -18769,7 +17207,7 @@ MCNUM divergenceV = mccSC3_divergenceV;
   printf("MCDISPLAY: component %s\n", "Ana_Cradle");
 #define mccompcurname  Ana_Cradle
 #define mccompcurtype  Arm
-#define mccompcurindex 15
+#define mccompcurindex 13
 #line 42 "/usr/share/mcstas/2.3/optics/Arm.comp"
 {
   /* A bit ugly; hard-coded dimensions. */
@@ -18778,7 +17216,7 @@ MCNUM divergenceV = mccSC3_divergenceV;
   line(0,0,0,0,0.2,0);
   line(0,0,0,0,0,0.2);
 }
-#line 18758 "./templateTAS.c"
+#line 17198 "Applications/ResLibCal/private/templateTAS.c"
 #undef mccompcurname
 #undef mccompcurtype
 #undef mccompcurindex
@@ -18788,7 +17226,7 @@ MCNUM divergenceV = mccSC3_divergenceV;
   printf("MCDISPLAY: component %s\n", "PG2Xtal");
 #define mccompcurname  PG2Xtal
 #define mccompcurtype  Monochromator_curved
-#define mccompcurindex 16
+#define mccompcurindex 14
 #define mos_rms_y mccPG2Xtal_mos_rms_y
 #define mos_rms_z mccPG2Xtal_mos_rms_z
 #define mos_rms_max mccPG2Xtal_mos_rms_max
@@ -18853,7 +17291,7 @@ MCNUM order = mccPG2Xtal_order;
      }
    }
 }
-#line 18833 "./templateTAS.c"
+#line 17273 "Applications/ResLibCal/private/templateTAS.c"
 }   /* End of PG2Xtal=Monochromator_curved() SETTING parameter declarations. */
 #undef tiltV
 #undef tiltH
@@ -18876,7 +17314,7 @@ MCNUM order = mccPG2Xtal_order;
   printf("MCDISPLAY: component %s\n", "Ana_Out");
 #define mccompcurname  Ana_Out
 #define mccompcurtype  Arm
-#define mccompcurindex 17
+#define mccompcurindex 15
 #line 42 "/usr/share/mcstas/2.3/optics/Arm.comp"
 {
   /* A bit ugly; hard-coded dimensions. */
@@ -18885,7 +17323,7 @@ MCNUM order = mccPG2Xtal_order;
   line(0,0,0,0,0.2,0);
   line(0,0,0,0,0,0.2);
 }
-#line 18865 "./templateTAS.c"
+#line 17305 "Applications/ResLibCal/private/templateTAS.c"
 #undef mccompcurname
 #undef mccompcurtype
 #undef mccompcurindex
@@ -18895,7 +17333,7 @@ MCNUM order = mccPG2Xtal_order;
   printf("MCDISPLAY: component %s\n", "SC4");
 #define mccompcurname  SC4
 #define mccompcurtype  Collimator_linear
-#define mccompcurindex 18
+#define mccompcurindex 16
 #define slope mccSC4_slope
 #define slopeV mccSC4_slopeV
 {   /* Declarations of SC4=Collimator_linear() SETTING parameters. */
@@ -18924,7 +17362,7 @@ MCNUM divergenceV = mccSC4_divergenceV;
   line(xmin, ymin, length, xmax, ymin, length);
   line(xmin, ymax, length, xmax, ymax, length);
 }
-#line 18904 "./templateTAS.c"
+#line 17344 "Applications/ResLibCal/private/templateTAS.c"
 }   /* End of SC4=Collimator_linear() SETTING parameter declarations. */
 #undef slopeV
 #undef slope
@@ -18937,7 +17375,7 @@ MCNUM divergenceV = mccSC4_divergenceV;
   printf("MCDISPLAY: component %s\n", "He3H");
 #define mccompcurname  He3H
 #define mccompcurtype  Res_monitor
-#define mccompcurindex 19
+#define mccompcurindex 17
 #define res_sample_comp mccHe3H_res_sample_comp
 #define DEFS mccHe3H_DEFS
 #define Vars mccHe3H_Vars
@@ -18961,7 +17399,7 @@ MCNUM restore_neutron = mccHe3H_restore_neutron;
 {
   Monitor_nD_McDisplay(&DEFS, &Vars);
 }
-#line 18941 "./templateTAS.c"
+#line 17381 "Applications/ResLibCal/private/templateTAS.c"
 }   /* End of He3H=Res_monitor() SETTING parameter declarations. */
 #undef buffer_index
 #undef Vars
@@ -18980,4 +17418,4 @@ MCNUM restore_neutron = mccHe3H_restore_neutron;
 #undef rectangle
 #undef box
 #undef circle
-/* end of generated C code ./templateTAS.c */
+/* end of generated C code Applications/ResLibCal/private/templateTAS.c */
