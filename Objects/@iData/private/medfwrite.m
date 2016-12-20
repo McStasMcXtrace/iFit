@@ -181,31 +181,30 @@ else
     [fid, msg] = fopen(edffile,'wb');
 end
 if fid == -1
-  fprintf('pmedf_write: cannot write file "%s"\n', edffile);
+  fprintf(1, 'pmedf_write: cannot write file "%s"\n', edffile);
   return
 end
 
-if fid==-1
-    fprintf('pmedf_write: cannot write file "%s"\n', edffile);
-else
-    fprintf('Writing %i x %i x %s to file "%s"\n',edf.dim1,edf.dim2,edf.datatype,edffile);
+
+  fprintf('Writing %i x %i x %s to file "%s"\n',edf.dim1,edf.dim2,edf.datatype,edffile);
 %    if (ehf.offset ~= 0)
 %	fprintf('SKIPPING offset is not yet supported! But it is easy...\n');
 %    end
-    % Write header:
-    fprintf(fid, '%s', header);
-    % Write data:
-    count = fwrite(fid, data, dt, 0, arch);
+  % Write header:
+  fprintf(fid, '%s', header);
+  % Write data:
+  count = fwrite(fid, data, dt, 0, arch);
 %   count = fwrite(fid, data', s, 0, arch);
-    if count~=nr*nc
-	fprintf('ERROR writing file %s (disk full?)\n', edffile);
-    end
-    if is_pipe
-	pclose(fid);
-    else
-	fclose(fid);
-    end
-end
+  if is_pipe
+    pclose(fid);
+  else
+    fclose(fid);
+  end
+
+  if count~=nr*nc
+    fprintf('ERROR writing file %s (disk full?)\n', edffile);
+  end
+  
 
 new_header = header;
 

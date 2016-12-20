@@ -59,7 +59,7 @@ dolower=0;
 split=0;
 % variables is a struct array that contains info about each variable found
 variables=[];
-
+outargs=[]; 
 filename=[];
 if nargin > 0,
     for i=1:nargin
@@ -83,7 +83,7 @@ if nargin > 0,
                     frestore_verbose=1;
                     verbose=1;
                 end
-                if strcmp(lower(mystring),'split'),
+                if strcmpi(mystring,'split'),
                     split=1;
                 end
             end
@@ -91,11 +91,14 @@ if nargin > 0,
     end
 end
 if isempty(filename),
-    [fname,pathname]=uigetfile('*.*','Select IDL save file to restore');
+    [fname,pathname]=uigetfile('*.*','Select IDL saved file to restore');
     filename=fullfile(pathname,fname);
 end
 disp(filename);
+if isempty(filename), return; end
+
 fid=fopen(filename);
+if fid==-1, return; end
 signature=char(fread(fid,2,'char')');
 if verbose, disp(['SIGNATURE = ' signature]), end
 alldone=0;

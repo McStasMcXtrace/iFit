@@ -9,8 +9,11 @@ function data = read_obj(filename)
 %
 % See also: read_stl
 
-  [p,f,e] = fileparts(filename);
+  
   data = [];
+  if nargin == 0, return; end
+  
+  [p,f,e] = fileparts(filename);
   if ~strcmpi(e, '.obj'), return; end
   OBJ = read_wobj(filename);
 

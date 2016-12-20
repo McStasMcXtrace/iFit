@@ -8,7 +8,8 @@ function data = read_igor(filename)
 %  <http://www.mathworks.com/matlabcentral/fileexchange/42679-igor-pro-file-format-ibw-to-matlab-variable>
 %
 % See also: read_tdms, read_lvm, read_idl, read_fig
-
+data = [];
+if nargin == 0, return; end
 data = IBWread(filename);
 
 
@@ -50,7 +51,7 @@ end
 % read headers
 [D.binHeader, D.waveHeader, FFN] = readIBWheaders(FN);
 fid = fopen(FFN,'r');
-fid = fopen(FFN,'r');
+
 % 	For numeric waves, the type field is interpreted bitwise. One of the following bits, as represented by symbols defined in IgorBin.h, will be set:
 % 
 % % #define NT_CMPLX 1   % Complex numbers.
@@ -78,7 +79,7 @@ switch datatype,
     case 64+8, prec = 'uint8';
     case 64+16, prec = 'uint16';
     case 64+32, prec = 'uint32';
-    otherwise, error([ mfilename ': Invalid numerical datatype.' ]);
+    otherwise, fclose(fid); error([ mfilename ': Invalid numerical datatype.' ]);
 end
 
 D.bname = D.waveHeader.bname;

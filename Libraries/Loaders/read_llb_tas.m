@@ -8,6 +8,8 @@ function data = read_llb_tas( filename )
 
 % built from B. Nennion wfal/read_fich.f
 data = [];
+if nargin == 0, return; end
+
 [p,f,e]= fileparts(filename);
 if isempty(f)
     % this is a dot file (hidden)
@@ -67,6 +69,7 @@ switch(upper(f(1)))
         % a few tests
         if ~any(data.fx == [1 2]) || data.np < 0 || data.xmon < 0 || data.kfix < 0 ...
           || data.nmon < 0 || data.imax < 0 || data.idpart < 0
+          fclose(fid);
           error([ mfilename ': ' filename ': ERROR: the header format is not valid. Probably not an LLB/TAS file format.' ])
         end
 

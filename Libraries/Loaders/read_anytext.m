@@ -164,6 +164,7 @@ end
 [fid,message] = fopen(argv{1}, 'r');
 if fid ~= -1
   file_start = fread(fid, 1000, 'uint8=>char')';
+  fclose(fid);
   if length(find(file_start >= 32 & file_start < 127))/length(file_start) < 0.4,
     return  % this is a binary file. Skip.
   end
@@ -247,10 +248,13 @@ function d=read_anytext_eval(str)
   
 function d=bin_ref(f,b,m,n)
   [fid,mess]=fopen(f,'rb');
-  if fid == -1, disp([ 'Error opening bin file ' f ': ' mess ]); end
+  if fid == -1, disp([ 'Error opening bin file ' f ': ' mess ]); d=[]; return; end
   fseek(fid,b,-1);
   d=fread(fid,m*n,'double'); fclose(fid);
-  if m*n ~= numel(d), disp([ 'File ' f ': read ' num2str(numel(d)) ' elements but expected ' mat2str([ m n ]) ]); f=dir(f); disp(f); end
+  if m*n ~= numel(d), 
+    disp([ 'File ' f ': read ' num2str(numel(d)) ' elements but expected ' mat2str([ m n ]) ]); 
+    f=dir(f); disp(f); 
+  end
   d=reshape(d,n,m);
   d=d'; return
 

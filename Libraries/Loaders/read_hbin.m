@@ -9,6 +9,7 @@ function [s, header, data] = read_hbin(filename)
 % See also: read_edf, read_adsc, read_cbf, read_sif, read_mar, read_spe, read_fits, read_image
 
 s = [];
+if nargin == 0, return; end
 
 fid = fopen(filename);
 if fid == -1, return; end

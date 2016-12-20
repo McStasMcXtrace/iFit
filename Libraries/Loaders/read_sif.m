@@ -36,6 +36,8 @@
 function info=read_sif(filename, framenumber)
 
 info = [];
+if nargin == 0, return; end
+
 file = filename;
 if nargin==1
   currentFrameNumber = 0;

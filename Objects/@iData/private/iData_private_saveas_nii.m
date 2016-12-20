@@ -538,6 +538,7 @@ function write_nii(nii, filetype, fileprefix, old_RGB)
       %  RGB planes are expected to be in the 4th dimension of nii.img
       %
       if(size(nii.img,4)~=3)
+         fclose(fid);
          error(['The NII structure does not appear to have 3 RGB color planes in the 4th dimension']);
       end
 
@@ -553,6 +554,7 @@ function write_nii(nii, filetype, fileprefix, old_RGB)
       %  RGB planes are expected to be in the 4th dimension of nii.img
       %
       if(size(nii.img,4)~=3)
+         fclose(fid);
          error(['The NII structure does not appear to have 3 RGB color planes in the 4th dimension']);
       end
 
@@ -589,10 +591,12 @@ function write_nii(nii, filetype, fileprefix, old_RGB)
 function save_nii_hdr(hdr, fid)
    
    if ~exist('hdr','var') | ~exist('fid','var')
+      fclose(fid);
       error('Usage: save_nii_hdr(hdr, fid)');
    end
    
    if ~isequal(hdr.hk.sizeof_hdr,348),
+      fclose(fid);
       error('hdr.hk.sizeof_hdr must be 348.');
    end
    

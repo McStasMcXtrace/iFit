@@ -8,8 +8,12 @@ function [data, this] = read_cif(file)
 %   <http://www.ill.eu/sites/fullprof/php/programs24b7.html>
 
   data = []; this = [];
+  
   if exist('cif2hkl') == 3 || exist('cif2hkl') == 7 || exist('cif2hkl') == 2
     % use MeX in verbose and no-output-files mode ('-')
+    
+    if nargin == 0, return; end
+    
     if ischar(file) && ~isempty(dir(file))
       this = cif2hkl(file,[],[],'-',1);
       this = str2struct(this);

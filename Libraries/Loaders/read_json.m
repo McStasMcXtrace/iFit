@@ -8,6 +8,8 @@ function M=read_json(J)
 %  <http://www.mathworks.com/matlabcentral/fileexchange/27169-json4mat>
 %
 % See also: read_yaml, read_mccode
+M=[];
+if nargin == 0, return; end
 
   M = json2mat(J);
   if ~isstruct(M) && ~isnumeric(M)

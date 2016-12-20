@@ -32,7 +32,9 @@ function data=read_tdms(filename)
 %CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 %ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 %POSSIBILITY OF SUCH DAMAGE.
-
+  data = [];
+  if nargin == 0, return; end
+  
   data = convertTDMS(0,filename);
 end
 
@@ -370,7 +372,7 @@ for fnum=1:numel(infilename)
     
     % Get the raw data
     ob=getData(fid,channelinfo,SegInfo);  %Returns the objects which have data.  See postProcess function (appends to all of the objects)
-    fclose(fid);
+    try; fclose(fid); end
     
     %Assign the outputs
     ConvertedData(fnum).FileName=FileNameShort;
@@ -561,18 +563,19 @@ while (ftell(fid) ~= eoff)
 %         end
         
         if kTocDaqMxRawData
+            fclose(fid);
             error(sprintf(['\n Seqment %.0f of the above file contains data in the DAQmxRaw NI datatype format which is not supported '...
                 'with this function. See help documentation in convertTDMS.m for how to fix this. '],segCnt),'DAQmxRawData Format Not Supported');
-            fclose(fid);
+            
         end
 
         %TDMS format version number
         vernum=fread(fid,1,'uint32',kTocEndian);
         if ~ismember(vernum,[4712,4713])
+            fclose(fid);
             error(sprintf(['\n Seqment %.0f of the above file used LabView TDMS file format version %.0f which is not '...
                 'supported with this function (%s.m).'],segCnt,vernum),...
                 'TDMS File Format Not Supported');
-            fclose(fid);
         end
         
         %From the National Instruments web page (http://zone.ni.com/devzone/cda/tut/p/id/5696) under the 'Lead In'
@@ -1078,6 +1081,7 @@ for segCnt=1:NumOfSeg
                 if ccnt>0   %If segement has raw data
                     if kTocInterleavedData
                         if index.(obname).dataType==32 %Datatype is a string
+                            fclose(fid);
                             error('Interleaved string channels are not supported.')
                         end
                         index.(obname).multiplier(ccnt)=numAppSegs*index.(obname).nValues(ccnt);
@@ -1102,6 +1106,7 @@ for segCnt=1:NumOfSeg
                     if ccnt>0  %If segement has raw data
                         if (index.(obname).index(ccnt)==segCnt)   %If the object has rawdata in the current segment
                             if index.(obname).dataType==32 %Datatype is a string
+                              fclose(fid);
                                error('Interleaved string channels are not supported.')  
                             end
                             index.(obname).multiplier(ccnt)=index.(obname).nValues(ccnt);

@@ -9,7 +9,9 @@ function data = read_varian(file)
 % <http://dosytoolbox.chemistry.manchester.ac.uk>
 %
 % See also: read_jeol, read_bruker, read_opus
-
+  data = [];
+  if nargin == 0, return; end
+  
   if ~isdir(file)
     file = fileparts(file);
   end
@@ -126,6 +128,7 @@ if path
         elseif bitstatus(3)==0
             fid_data=fread(fileid_fid,np,'int16');
         else
+            fclose(fileid_fid);
             error('Illegal combination in file header status')
         end
         

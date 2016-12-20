@@ -12,6 +12,9 @@
 
 function s = read_poscar(filename)
 
+  s=[];
+  if nargin == 0, return; end
+  
   s = import_poscar(filename);
 
 

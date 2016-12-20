@@ -10,6 +10,8 @@ function [Data] = read_mrc(file)
 %  <http://www.biochem.mpg.de/en/rd/baumeister/tom_e/>
 %
 % See also: read_poscar, read_pdb, read_xyz, read_nii, read_analyze
+Data = [];
+if nargin == 0, return; end
 
 % first try as a legacy MRC file
 Data = tom_mrcread(file);       % inline below
@@ -189,6 +191,7 @@ MRC.nz = fread(fid,[1],'int');        %integer: 4 bytes
 MRC.mode = fread(fid,[1],'int');      %integer: 4 bytes
 if MRC.mode > 5 || MRC.mode < 0
   fprintf([ mfilename ': wrong MODE=%i (MRC)\n' ], MRC.mode);
+  fclose(fid);
   return;
 end
 MRC.nxstart= fread(fid,[1],'int');    %integer: 4 bytes
@@ -220,6 +223,7 @@ MRC.unused2 = fread(fid,[28]);        %not used: 28 bytes
 MRC.idtype= fread(fid,[1],'short');   %integer: 2 bytes
 if MRC.idtype > 4 || MRC.idtype < 0
   fprintf([ mfilename ': wrong IDTYPE=%i\n' ], MRC.idtype);
+  fclose(fid);
   return
 end
 MRC.lens=fread(fid,[1],'short');      %integer: 2 bytes
@@ -236,6 +240,7 @@ MRC.zorg = fread(fid,[1],'float');    %float: 4 bytes
 MRC.cmap = fread(fid,[4],'uint8=>char');     %Character: 4 bytes # 53
 if ~strncmp(MRC.cmap, 'MAP',3)
   fprintf([ mfilename ': wrong CMAP token=%s\n' ], MRC.cmap);
+  fclose(fid);
   return; % not an MRC file
 end
 MRC.stamp = fread(fid,[4],'char');    %Character: 4 bytes
@@ -263,25 +268,25 @@ Extended.tiltaxis(1)=0;
 if MRC.next~=0%Extended Header
     nbh=MRC.next./128;%128=lengh of FEI extended header
     if nbh==1024%FEI extended Header
-	for lauf=1:nbh
-	    Extended.a_tilt(lauf)= fread(fid,[1],'float');	  %float: 4 bytes
-	    Extended.b_tilt(lauf)= fread(fid,[1],'float');	  %float: 4 bytes
-	    Extended.x_stage(lauf)= fread(fid,[1],'float');	  %float: 4 bytes
-	    Extended.y_stage(lauf)=fread(fid,[1],'float');	  %float: 4 bytes
-	    Extended.z_stage(lauf)=fread(fid,[1],'float');	  %float: 4 bytes
-	    Extended.x_shift(lauf)=fread(fid,[1],'float');	  %float: 4 bytes
-	    Extended.y_shift(lauf)=fread(fid,[1],'float');	  %float: 4 bytes
-	    Extended.defocus(lauf)=fread(fid,[1],'float');	  %float: 4 bytes
-	    Extended.exp_time(lauf)=fread(fid,[1],'float');	  %float: 4 bytes
-	    Extended.mean_int(lauf)=fread(fid,[1],'float');	  %float: 4 bytes
-	    Extended.tiltaxis(lauf)=fread(fid,[1],'float');	  %float: 4 bytes
-	    Extended.pixelsize(lauf)=fread(fid,[1],'float');	  %float: 4 bytes
-	    Extended.magnification(lauf)=fread(fid,[1],'float');  %float: 4 bytes
-	    fseek(fid,128-52,0);
-	    %position = ftell(fid)
-	end
+	    for lauf=1:nbh
+	        Extended.a_tilt(lauf)= fread(fid,[1],'float');	  %float: 4 bytes
+	        Extended.b_tilt(lauf)= fread(fid,[1],'float');	  %float: 4 bytes
+	        Extended.x_stage(lauf)= fread(fid,[1],'float');	  %float: 4 bytes
+	        Extended.y_stage(lauf)=fread(fid,[1],'float');	  %float: 4 bytes
+	        Extended.z_stage(lauf)=fread(fid,[1],'float');	  %float: 4 bytes
+	        Extended.x_shift(lauf)=fread(fid,[1],'float');	  %float: 4 bytes
+	        Extended.y_shift(lauf)=fread(fid,[1],'float');	  %float: 4 bytes
+	        Extended.defocus(lauf)=fread(fid,[1],'float');	  %float: 4 bytes
+	        Extended.exp_time(lauf)=fread(fid,[1],'float');	  %float: 4 bytes
+	        Extended.mean_int(lauf)=fread(fid,[1],'float');	  %float: 4 bytes
+	        Extended.tiltaxis(lauf)=fread(fid,[1],'float');	  %float: 4 bytes
+	        Extended.pixelsize(lauf)=fread(fid,[1],'float');	  %float: 4 bytes
+	        Extended.magnification(lauf)=fread(fid,[1],'float');  %float: 4 bytes
+	        fseek(fid,128-52,0);
+	        %position = ftell(fid)
+	    end
     else %IMOD extended Header
-	fseek(fid,MRC.next,'cof');%go to end end of extended Header
+      fseek(fid,MRC.next,'cof');%go to end end of extended Header
     end
 end
 %fseek(fid,0,'eof'); %go to the end of file
@@ -297,6 +302,7 @@ for i=1:MRC.nz
 	Data_read(:,:,i) = fread(fid,[MRC.nx,MRC.ny],'float');
     else
         return
+        fclose(fid);
 	%error(['Sorry, i cannot read this as an MRC-File !!!']);
 	%Data_read=[];
     end
@@ -408,6 +414,7 @@ MRC.nz = fread(fid,[1],'int');        %integer: 4 bytes
 MRC.mode = fread(fid,[1],'int');      %integer: 4 bytes
 if MRC.mode > 5 || MRC.mode < 0
   fprintf([ mfilename ': wrong MODE=%i (CCP4)\n' ], MRC.mode);
+  fclose(fid);
   return;
 end
 MRC.nxstart= fread(fid,[1],'int');    %integer: 4 bytes
@@ -437,6 +444,7 @@ MRC.zorigin = fread(fid,[1],'int');     %float: 4 bytes
 MRC.cmap = fread(fid,[4],'uint8=>char');     %Character: 4 bytes # 53
 if ~strncmp(MRC.cmap, 'MAP',3)
   fprintf([ mfilename ': wrong CMAP token=%s\n' ], MRC.cmap);
+  fclose(fid);
   return; % not an MRC file
 end
 MRC.stamp = fread(fid,[4],'char');    %Character: 4 bytes
@@ -456,7 +464,8 @@ for i=1:MRC.nz
 	%fseek(fid,-beval,0); %go to the beginning of the values
 	Data_read(:,:,i) = fread(fid,[MRC.nx,MRC.ny],'float');
     else
-	error(['Sorry, i cannot read this as an MRC/CCP4-File !!!']);
+	    error(['Sorry, i cannot read this as an MRC/CCP4-File !!!']);
+	    fclose(fid);
     end
 end
 fclose(fid);

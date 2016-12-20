@@ -32,7 +32,7 @@ debug_level = 0;
 
 % initialize return argument
 frame = struct('header',[], 'data',[]);
-
+if nargin == 0, return; end
 
 % check minimum number of input arguments
 if (nargin < 1)
