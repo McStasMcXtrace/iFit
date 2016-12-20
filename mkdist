@@ -65,12 +65,12 @@ rm mkdist
 if [ -x `which rpl` ]
 then
   echo "Update revision/date/authors with rpl ..."
-  rpl -R -d '@IFIT_VERSION@'  "$IFIT_VERSION" .
-  rpl -R -d '@IFIT_NAME@'     "$IFIT_NAME" .
-  rpl -R -d '@IFIT_TARNAME@'  "$IFIT_TARNAME" .
-  rpl -R -d "@IFIT_DATE@"     "$IFIT_DATE" .
-  rpl -R -i -d '$Date$'     "$IFIT_DATE" .
-  rpl -R -i -d '$Revision$' "$IFIT_VERSION" .
+  rpl -R -d -x'.m' -x'.html' -x'.md' -x'.txt' '@IFIT_VERSION@'  "$IFIT_VERSION" .
+  rpl -R -d -x'.m' -x'.html' -x'.md' -x'.txt' '@IFIT_NAME@'     "$IFIT_NAME" .
+  rpl -R -d -x'.m' -x'.html' -x'.md' -x'.txt' '@IFIT_TARNAME@'  "$IFIT_TARNAME" .
+  rpl -R -d -x'.m' -x'.html' -x'.md' -x'.txt' "@IFIT_DATE@"     "$IFIT_DATE" .
+  rpl -R -i -d -x'.m' -x'.html' -x'.md' -x'.txt' '$Date$'     "$IFIT_DATE" .
+  rpl -R -i -d -x'.m' -x'.html' -x'.md' -x'.txt' '$Revision$' "$IFIT_VERSION" .
 else
   echo "Update revision/date/authors with sed (partial, please install 'rpl') ..."
   for file in README.md Objects/@iData/version.m Docs/index.html Docs/Install.html Applications/standalone/deb/control Applications/standalone/deb/debcreate
