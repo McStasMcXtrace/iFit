@@ -26,6 +26,7 @@ if isempty(NMC), NMC  = 2000; end
 
 if ~isempty(strfind(EXP.method, 'mcstas'))
   resolution = ResLibCal_RM2clouds_mcstas(EXP, resolution);
+  return
 end
 
 % method: rescal5/rc_conv

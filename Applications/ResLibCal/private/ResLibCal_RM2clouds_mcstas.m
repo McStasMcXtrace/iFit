@@ -58,7 +58,7 @@ pars=struct( ...
   'WB',p.WB/100,'HB',p.HB/100, ...
   'WD',p.WB/100,'HD',p.HB/100, ...
   'A1',abs(resolution.angles(1)),'A2',abs(resolution.angles(2)), ...
-  'A3',abs(resolution.angles(3)),'A4',abs(resolution.angles(4)), ...
+  'A3',    resolution.angles(3), 'A4',abs(resolution.angles(4)), ...
   'A5',abs(resolution.angles(5)),'A6',abs(resolution.angles(6)));
 
 % now launch the Mcstas simulation with given parameters
@@ -68,7 +68,7 @@ else precmd=''; end
 
 % get temporary directory for results
 d = tempname;
-cmd = sprintf(' --dir=%s ',d);
+cmd = sprintf(' --dir=%s -n %i ',d, NMC);
 
 for f=fieldnames(pars)'
   cmd = [ cmd ' ' f{1} '=' num2str(pars.(f{1})) ];
@@ -100,15 +100,16 @@ if ~isempty(dir(fullfile(d,'resolution.dat')))
   % Z along A3, X vertical, Y on the 'right' from Z (looking at analyser).
   % ResLibCal   McStas
   % X           Z
-  % Y          -X
+  % Y           X
   % Z           Y
-  resolution.ABC.cloud = { Q(:,3) -Q(:,1) Q(:,2) E };
-  HKLE = [ Q(:,3) -Q(:,1) Q(:,2) ]';          % in [ABC]
+  resolution.ABC.cloud = { Q(:,3) Q(:,1) Q(:,2) E };
+  HKLE = [ Q(:,3) Q(:,1) Q(:,2) ]';          % in [ABC]
   % compute the cloud for other frames: 
   HKLE = HKLE'*inv(resolution.ABC.rlu2frame);  % in [rlu] from [ABC] by ABC.frame2rlu
   resolution.rlu.cloud = { HKLE(:,1) HKLE(:,2) HKLE(:,3) E };
   HKLE = resolution.spec.rlu2frame*HKLE';      % in [spec] from [rlu]
   resolution.spec.cloud= { HKLE(1,:)' HKLE(2,:)' HKLE(3,:)' E };
+  disp([ mfilename ': using ' num2str(numel(E)) ' points in cloud.' ]);
 end
 rmdir(d, 's');
 
