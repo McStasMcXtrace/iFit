@@ -76,23 +76,23 @@ for index=1:numel(resolutions)
   if ~isempty(strfind(modev,'qz'))
     [dummy, NP2] = rc_int(4,1, NP);
     [dummy, NP2] = rc_int(2,1, NP2);
-    ResLibCal_Proj_plot2D(2, 1,3, NP2, Labels, FrameStr, Units, 'xz', cloud, centre, max_points);  % xe
+    ResLibCal_Proj_plot2D(2, 1,3, NP2, Labels, FrameStr, Units, 'xz', cloud, centre, max_points);  % xz
     if index == 1, title('Vertical Q_z resolution'); end
     if index < numel(resolutions), hold on; else hold off; end
     
     [dummy, NP2] = rc_int(4,1, NP);
     [dummy, NP2] = rc_int(1,1, NP2);
-    ResLibCal_Proj_plot2D(3, 2,3, NP2, Labels, FrameStr, Units, 'yz', cloud, centre, max_points);  % ye
+    ResLibCal_Proj_plot2D(3, 2,3, NP2, Labels, FrameStr, Units, 'yz', cloud, centre, max_points);  % yz
   else
     [dummy, NP2] = rc_int(3,1, NP);
     [dummy, NP2] = rc_int(2,1, NP2);
-    ResLibCal_Proj_plot2D(2, 1,4, NP2, Labels, FrameStr, Units, 'xz', cloud, centre, max_points);  % xe
+    ResLibCal_Proj_plot2D(2, 1,4, NP2, Labels, FrameStr, Units, 'xe', cloud, centre, max_points);  % xe
     if index == 1, title('Energy resolution'); end
     if index < numel(resolutions), hold on; else hold off; end
     
     [dummy, NP2] = rc_int(3,1, NP);
     [dummy, NP2] = rc_int(1,1, NP2);
-    ResLibCal_Proj_plot2D(3, 2,4, NP2, Labels, FrameStr, Units, 'yz', cloud, centre, max_points);  % ye
+    ResLibCal_Proj_plot2D(3, 2,4, NP2, Labels, FrameStr, Units, 'ye', cloud, centre, max_points);  % ye
   end
   if index == 1, title(EXP.method); end
   if index < numel(resolutions), hold on; else hold off; end
@@ -166,7 +166,11 @@ function h=ResLibCal_Proj_plot2D(isub, ix,iy,NP, Labels, FrameStr, Units, panel_
     % contextual menu
     if isempty(findobj(gca, 'Tag',[ 'ResLibCal_Proj_Context_' panel_name ]))
       uicm = uicontextmenu;
-      uimenu(uicm, 'Label', [ 'ResLibCal: Resolution: Q' panel_name(1) 'Q' panel_name(2) ' projection' ]) ;
+      if panel_name(2) == 'e'
+        uimenu(uicm, 'Label', [ 'ResLibCal: Resolution: Q' panel_name(1) upper(panel_name(2)) ' projection' ]) ;
+      else
+        uimenu(uicm, 'Label', [ 'ResLibCal: Resolution: Q' panel_name(1) 'Q' panel_name(2) ' projection' ]) ;
+      end
       uimenu(uicm, 'Separator','on', 'Label', 'Duplicate View...', 'Callback', ...
          [ 'tmp_cb.g=gca;' ...
            'tmp_cb.f=figure; tmp_cb.c=copyobj(tmp_cb.g,gcf); ' ...
@@ -177,6 +181,9 @@ function h=ResLibCal_Proj_plot2D(isub, ix,iy,NP, Labels, FrameStr, Units, panel_
            'set(gca,''ZTickLabelMode'',''auto'',''ZTickMode'',''auto'');']);
       uimenu(uicm, 'Label','Toggle grid', 'Callback','grid');
       uimenu(uicm, 'Label','Reset View', 'Callback','view(2);alpha(0.5);axis tight;rotate3d off;');
+      if isub==1 || panel_name(2) ~= 'e'
+        uimenu(uicm, 'Label','Fix aspect Q ratio to 1', 'Callback','daspect([1 1 1])');
+      end
       uimenu(uicm, 'Separator','on','Label', 'About ResLibCal...', ...
         'Callback',[ 'msgbox(''' ResLibCal_version ''',''About ResLibCal'',''help'')' ]);
       set(gca, 'UIContextMenu', uicm, 'Tag',[ 'ResLibCal_Proj_Context_' panel_name ]);

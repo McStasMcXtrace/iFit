@@ -119,7 +119,7 @@ function signal = ResLibCal_tas_conv4d_model(dispersion, config, frame)
 %    model(p, iData_with_scan_axis)
 
 % select computation mode: normal or fast
-% the 'hkle' mode uses the ResLibCal cloud as is, i.e. HKLE with NMC points (e.g. 2000)
+% the 'hkle' mode uses the ResLibCal cloud as is, i.e. HKLE with NMC points (e.g. 200)
 % the 'hkl'  mode only uses the HKL cloud projection, and builds a E regular axis
 computation_mode = 'hkl';
 
@@ -252,34 +252,29 @@ for index = 1:numel(axes_symbols) % also searches for 'lower' names
   end
 end
 
+% *** RESCAL parameters ***
 if isfield(config,'ResCal')
-  rescal = config.ResCal;
+  rescal = config.ResCal; % from the interface
 else
   rescal = [];
 end
 
 % search for ResCal parameters in the data set
 if ~isempty(rescal) && isstruct(rescal)
-  for f = fieldnames(rescal)'
-    [match, types, nelements]=findfield(a, f{1},'exact first numeric cache');
-    if ~isempty(match)
-      rescal.(f{1}) = get(a, match);
-    end
-  end
   % make sure the HKLE coordinates are single values
   for index = 1:numel(axes_symbols)
     if isfield(rescal, axes_symbols{index})
       rescal.(axes_symbols{index}) = mean(rescal.(axes_symbols{index}));
     end
   end
-  config.ResCal = rescal;
+  disp([ mfilename ': using current parameters from the main ResLibCal window.' ])
+  disp('    To upload parameters from the data file:')
+  disp([ '      ' char(a)) ])
+  disp('    open it with File>Open menu item ResLibCal');
 end
-% send the updated ResCal configuration (from data set) to ResLibCal interface (when opened)
-% make sure we remove the EXP field which has not been updated
-if isfield(config, 'EXP')
-  config = rmfield(config, 'EXP');
-end
+
 ResLibCal('silent','open',rescal);
+
 
 % get the model from the data set
 model = [];
