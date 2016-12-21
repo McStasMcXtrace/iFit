@@ -350,8 +350,8 @@ while ~isempty(varargin)
       else
         NMC=get(ResLibCal_fig('View_NMC'), 'UserData');
       end
-      if isempty(NMC) || ~isnumeric(NMC), NMC  = 2000; end
-      NMC = inputdlg('Enter the number of Monte-Carlo iterations', ...
+      if isempty(NMC) || ~isnumeric(NMC), NMC  = 200; end
+      NMC = inputdlg('Enter the number of Monte-Carlo iterations (cloud)', ...
         'ResLibCal: Monte-Carlo iterations ?',1,{ num2str(NMC) });
       if ~isempty(NMC)
         NMC=str2double(NMC{1});
@@ -769,7 +769,9 @@ function ResLibCal_MethodEnableControls(out)
   for tag=Popovici
     hObject = ResLibCal_fig(tag{1});
     if ~isempty(hObject)
-      if ~isempty(strfind(lower(out.EXP.method), 'popovici')) % this is Popovici method
+      if ~isempty(strfind(lower(out.EXP.method), 'popovici')) || ...
+         ~isempty(strfind(lower(out.EXP.method), 'mcstas'))
+       % this is Popovici or Mcstas method
         set(hObject, 'Enable','on');
       else
         set(hObject, 'Enable','off');

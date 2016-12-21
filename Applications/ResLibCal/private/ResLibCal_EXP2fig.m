@@ -81,7 +81,7 @@ function [fig, out] = ResLibCal_EXP2fig(EXP, fig)
     set(ResLibCal_fig('EXP_method'),'Value', EXP.method+1);
   end
   if isfield(EXP, 'NMC') 
-    if isscalar(EXP.NMC) && EXP.NMC > 0, NMC=EXP.NMC; else NMC=2000; end
+    if isscalar(EXP.NMC) && EXP.NMC > 0, NMC=EXP.NMC; else NMC=200; end
     set(ResLibCal_fig('View_NMC'), 'UserData', NMC);
   end
 

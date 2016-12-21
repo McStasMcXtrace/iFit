@@ -2,7 +2,7 @@
  * Format:     ANSI C source code
  * Creator:    McStas <http://www.mcstas.org>
  * Instrument: templateTAS.instr (templateTAS)
- * Date:       Tue Dec 20 17:31:59 2016
+ * Date:       Wed Dec 21 09:23:39 2016
  * File:       templateTAS.c
  * Compile:    cc -o templateTAS.out templateTAS.c 
  * CFLAGS=
@@ -10899,13 +10899,13 @@ void mcinit(void) {
   /* Setting parameters for component SC1. */
   SIG_MESSAGE("SC1 (Init:SetPar)");
 #line 181 "templateTAS.instr"
-  mccSC1_xmin = -0.08 / 2;
+  mccSC1_xmin = - mcipWB / 2;
 #line 182 "templateTAS.instr"
-  mccSC1_xmax = 0.08 / 2;
+  mccSC1_xmax = mcipWB / 2;
 #line 181 "templateTAS.instr"
-  mccSC1_ymin = -0.12 / 2;
+  mccSC1_ymin = - mcipHB / 2;
 #line 182 "templateTAS.instr"
-  mccSC1_ymax = 0.12 / 2;
+  mccSC1_ymax = mcipHB / 2;
 #line 52 "templateTAS.instr"
   mccSC1_xwidth = 0;
 #line 52 "templateTAS.instr"
@@ -11114,13 +11114,13 @@ void mcinit(void) {
   /* Setting parameters for component SC2. */
   SIG_MESSAGE("SC2 (Init:SetPar)");
 #line 216 "templateTAS.instr"
-  mccSC2_xmin = -0.08 / 2;
+  mccSC2_xmin = - mcipWM * sin ( mcipA1 * DEG2RAD ) / 2;
 #line 217 "templateTAS.instr"
-  mccSC2_xmax = 0.08 / 2;
+  mccSC2_xmax = mcipWM * sin ( mcipA1 * DEG2RAD ) / 2;
 #line 216 "templateTAS.instr"
-  mccSC2_ymin = -0.12 / 2;
+  mccSC2_ymin = - mcipHM / 2;
 #line 217 "templateTAS.instr"
-  mccSC2_ymax = 0.12 / 2;
+  mccSC2_ymax = mcipHM / 2;
 #line 52 "templateTAS.instr"
   mccSC2_xwidth = 0;
 #line 52 "templateTAS.instr"
@@ -11339,13 +11339,13 @@ void mcinit(void) {
   /* Setting parameters for component SC3. */
   SIG_MESSAGE("SC3 (Init:SetPar)");
 #line 244 "templateTAS.instr"
-  mccSC3_xmin = -0.08 / 2;
+  mccSC3_xmin = - mcipWA * sin ( mcipA5 * DEG2RAD ) / 2;
 #line 245 "templateTAS.instr"
-  mccSC3_xmax = 0.08 / 2;
+  mccSC3_xmax = mcipWA * sin ( mcipA5 * DEG2RAD ) / 2;
 #line 244 "templateTAS.instr"
-  mccSC3_ymin = -0.12 / 2;
+  mccSC3_ymin = - mcipHA / 2;
 #line 245 "templateTAS.instr"
-  mccSC3_ymax = 0.12 / 2;
+  mccSC3_ymax = mcipHA / 2;
 #line 52 "templateTAS.instr"
   mccSC3_xwidth = 0;
 #line 52 "templateTAS.instr"
@@ -11531,13 +11531,13 @@ void mcinit(void) {
   /* Setting parameters for component SC4. */
   SIG_MESSAGE("SC4 (Init:SetPar)");
 #line 269 "templateTAS.instr"
-  mccSC4_xmin = -0.08 / 2;
+  mccSC4_xmin = - mcipWA * sin ( mcipA5 * DEG2RAD ) / 2;
 #line 270 "templateTAS.instr"
-  mccSC4_xmax = 0.08 / 2;
+  mccSC4_xmax = mcipWA * sin ( mcipA5 * DEG2RAD ) / 2;
 #line 269 "templateTAS.instr"
-  mccSC4_ymin = -0.12 / 2;
+  mccSC4_ymin = - mcipHA / 2;
 #line 270 "templateTAS.instr"
-  mccSC4_ymax = 0.12 / 2;
+  mccSC4_ymax = mcipHA / 2;
 #line 52 "templateTAS.instr"
   mccSC4_xwidth = 0;
 #line 52 "templateTAS.instr"
@@ -12935,6 +12935,8 @@ extern double mcnt, mcnsx, mcnsy, mcnsz, mcnp;
 #define mcabsorb mcabsorbAll
   /* SPLIT counter for component PG1Xtal */
   int mcSplit_PG1Xtal=0;
+  /* SPLIT counter for component Sample */
+  int mcSplit_Sample=0;
   /* TRACE Component Origin [1] */
   mccoordschange(mcposrOrigin, mcrotrOrigin,
     &mcnlx,
@@ -13048,7 +13050,7 @@ MCNUM minutes = mccOrigin_minutes;
     if (flag_save) mcsave(NULL);
   }
 }
-#line 13051 "templateTAS.c"
+#line 13053 "templateTAS.c"
 }   /* End of Origin=Progress_bar() SETTING parameter declarations. */
 #undef CurrentTime
 #undef EndTime
@@ -13296,7 +13298,7 @@ int target_index = mccSource_target_index;
     SCATTER;
   }
 }
-#line 13299 "templateTAS.c"
+#line 13301 "templateTAS.c"
 }   /* End of Source=Source_gen() SETTING parameter declarations. */
 #undef pTable_dymax
 #undef pTable_dymin
@@ -13464,7 +13466,7 @@ if (( mcipALF1 && mcipBET1 ))
       SCATTER;
     }
 }
-#line 13466 "templateTAS.c"
+#line 13468 "templateTAS.c"
 }   /* End of SC1=Collimator_linear() SETTING parameter declarations. */
 #undef slopeV
 #undef slope
@@ -14052,7 +14054,7 @@ MCNUM order = mccPG1Xtal_order;
     }
   } /* End neutron moving towards crystal (if vx)*/
 }
-#line 14054 "templateTAS.c"
+#line 14056 "templateTAS.c"
 }   /* End of PG1Xtal=Monochromator_curved() SETTING parameter declarations. */
 #undef tiltV
 #undef tiltH
@@ -14318,7 +14320,7 @@ if (( mcipALF2 && mcipBET2 ))
       SCATTER;
     }
 }
-#line 14319 "templateTAS.c"
+#line 14321 "templateTAS.c"
 }   /* End of SC2=Collimator_linear() SETTING parameter declarations. */
 #undef slopeV
 #undef slope
@@ -14622,7 +14624,7 @@ char* username3 = mccSample_Cradle_username3;
     RESTORE_NEUTRON(INDEX_CURRENT_COMP, x, y, z, vx, vy, vz, t, sx, sy, sz, p);
   }
 }
-#line 14623 "templateTAS.c"
+#line 14625 "templateTAS.c"
 }   /* End of Sample_Cradle=Monitor_nD() SETTING parameter declarations. */
 #undef offdata
 #undef detector
@@ -14714,18 +14716,35 @@ mcnlp)
 #define p mcnlp
 
 #define mcabsorbComp mcabsorbCompSample
-  STORE_NEUTRON(10,
-    mcnlx,
-    mcnly,
-    mcnlz,
-    mcnlvx,
-    mcnlvy,
-    mcnlvz,
-    mcnlt,
-    mcnlsx,
-    mcnlsy,
-    mcnlsz,
-    mcnlp);
+  if (!mcSplit_Sample) {                   /* STORE only the first time */
+    if (floor(10) > 1) p /= floor(10); /* adapt weight for SPLITed neutron */
+    STORE_NEUTRON(10,
+      mcnlx,
+      mcnly,
+      mcnlz,
+      mcnlvx,
+      mcnlvy,
+      mcnlvz,
+      mcnlt,
+      mcnlsx,
+      mcnlsy,
+      mcnlsz,
+      mcnlp);
+  } else {
+    RESTORE_NEUTRON(10,
+      mcnlx,
+      mcnly,
+      mcnlz,
+      mcnlvx,
+      mcnlvy,
+      mcnlvz,
+      mcnlt,
+      mcnlsx,
+      mcnlsy,
+      mcnlsz,
+      mcnlp);
+  }
+  mcSplit_Sample++; /* SPLIT number */
   mcScattered=0;
   mcRestore=0;
   mcNCounter[10]++;
@@ -14828,7 +14847,7 @@ int target_index = mccSample_target_index;
     res_struct.kf_z = V2K*vz;
   }
 }
-#line 14829 "templateTAS.c"
+#line 14848 "templateTAS.c"
 }   /* End of Sample=Res_sample() SETTING parameter declarations. */
 #undef res_struct
 #undef mccompcurname
@@ -15083,7 +15102,7 @@ if (( mcipALF3 && mcipBET3 ))
       SCATTER;
     }
 }
-#line 15083 "templateTAS.c"
+#line 15102 "templateTAS.c"
 }   /* End of SC3=Collimator_linear() SETTING parameter declarations. */
 #undef slopeV
 #undef slope
@@ -15551,7 +15570,7 @@ MCNUM order = mccPG2Xtal_order;
     }
   } /* End neutron moving towards crystal (if vx)*/
 }
-#line 15551 "templateTAS.c"
+#line 15570 "templateTAS.c"
 }   /* End of PG2Xtal=Monochromator_curved() SETTING parameter declarations. */
 #undef tiltV
 #undef tiltH
@@ -15817,7 +15836,7 @@ if (( mcipALF4 && mcipBET4 ))
       SCATTER;
     }
 }
-#line 15816 "templateTAS.c"
+#line 15835 "templateTAS.c"
 }   /* End of SC4=Collimator_linear() SETTING parameter declarations. */
 #undef slopeV
 #undef slope
@@ -16018,7 +16037,7 @@ MCNUM restore_neutron = mccHe3H_restore_neutron;
     }
 
 }
-#line 16017 "templateTAS.c"
+#line 16036 "templateTAS.c"
 }   /* End of He3H=Res_monitor() SETTING parameter declarations. */
 #undef buffer_index
 #undef Vars
@@ -16069,6 +16088,10 @@ mcnlp)
 
   mcabsorbAll:
   /* SPLIT loops in reverse order */
+  if (mcSplit_Sample && mcSplit_Sample < (10)) {
+    goto mcJumpTrace_Sample;
+  }
+    else mcSplit_Sample=0;
   if (mcSplit_PG1Xtal && mcSplit_PG1Xtal < (10)) {
     goto mcJumpTrace_PG1Xtal;
   }
@@ -16137,7 +16160,7 @@ MCNUM minutes = mccOrigin_minutes;
 
   }
 }
-#line 16131 "templateTAS.c"
+#line 16150 "templateTAS.c"
 }   /* End of Origin=Progress_bar() SETTING parameter declarations. */
 #undef CurrentTime
 #undef EndTime
@@ -16185,7 +16208,7 @@ char* username3 = mccSample_Cradle_username3;
   /* save results, but do not free pointers */
   detector = Monitor_nD_Save(&DEFS, &Vars);
 }
-#line 16179 "templateTAS.c"
+#line 16198 "templateTAS.c"
 }   /* End of Sample_Cradle=Monitor_nD() SETTING parameter declarations. */
 #undef offdata
 #undef detector
@@ -16227,7 +16250,7 @@ MCNUM restore_neutron = mccHe3H_restore_neutron;
   /* save results, but do not free pointers */
   Monitor_nD_Save(&DEFS, &Vars);
 }
-#line 16221 "templateTAS.c"
+#line 16240 "templateTAS.c"
 }   /* End of He3H=Res_monitor() SETTING parameter declarations. */
 #undef buffer_index
 #undef Vars
@@ -16271,7 +16294,7 @@ MCNUM minutes = mccOrigin_minutes;
     fprintf(stdout, "%g [min] ", difftime(NowTime,StartTime)/60.0);
   fprintf(stdout, "\n");
 }
-#line 16265 "templateTAS.c"
+#line 16284 "templateTAS.c"
 }   /* End of Origin=Progress_bar() SETTING parameter declarations. */
 #undef CurrentTime
 #undef EndTime
@@ -16343,7 +16366,7 @@ int target_index = mccSource_target_index;
   Table_Free(&pTable_x);
   Table_Free(&pTable_y);
 }
-#line 16336 "templateTAS.c"
+#line 16355 "templateTAS.c"
 }   /* End of Source=Source_gen() SETTING parameter declarations. */
 #undef pTable_dymax
 #undef pTable_dymin
@@ -16423,7 +16446,7 @@ MCNUM order = mccPG1Xtal_order;
   if (tiltH) free(tiltH); 
   if (tiltV) free(tiltV);
 }
-#line 16412 "templateTAS.c"
+#line 16431 "templateTAS.c"
 }   /* End of PG1Xtal=Monochromator_curved() SETTING parameter declarations. */
 #undef tiltV
 #undef tiltH
@@ -16492,7 +16515,7 @@ char* username3 = mccSample_Cradle_username3;
   /* free pointers */
   Monitor_nD_Finally(&DEFS, &Vars);
 }
-#line 16475 "templateTAS.c"
+#line 16494 "templateTAS.c"
 }   /* End of Sample_Cradle=Monitor_nD() SETTING parameter declarations. */
 #undef offdata
 #undef detector
@@ -16509,6 +16532,10 @@ char* username3 = mccSample_Cradle_username3;
     if (mcAbsorbProp[9]) fprintf(stderr, "Warning: %g events were removed in Component[9] Sample_Cradle=Monitor_nD()\n"
 "         (negative time, miss next components, rounding errors, Nan, Inf).\n", mcAbsorbProp[9]);
     if (!mcNCounter[10]) fprintf(stderr, "Warning: No neutron could reach Component[10] Sample\n");
+    if (mcNCounter[10] < 1000*(10)) fprintf(stderr, 
+"Warning: Number of events %g reaching SPLIT position Component[10] Sample=Res_sample()\n"
+"         is probably too low. Increase Ncount.\n", mcNCounter[10]);
+
     if (mcAbsorbProp[10]) fprintf(stderr, "Warning: %g events were removed in Component[10] Sample=Res_sample()\n"
 "         (negative time, miss next components, rounding errors, Nan, Inf).\n", mcAbsorbProp[10]);
     if (!mcNCounter[11]) fprintf(stderr, "Warning: No neutron could reach Component[11] Sample_Out\n");
@@ -16565,7 +16592,7 @@ MCNUM order = mccPG2Xtal_order;
   if (tiltH) free(tiltH); 
   if (tiltV) free(tiltV);
 }
-#line 16543 "templateTAS.c"
+#line 16563 "templateTAS.c"
 }   /* End of PG2Xtal=Monochromator_curved() SETTING parameter declarations. */
 #undef tiltV
 #undef tiltH
@@ -16623,7 +16650,7 @@ MCNUM restore_neutron = mccHe3H_restore_neutron;
   Monitor_nD_Finally(&DEFS, &Vars);
 
 }
-#line 16598 "templateTAS.c"
+#line 16618 "templateTAS.c"
 }   /* End of He3H=Res_monitor() SETTING parameter declarations. */
 #undef buffer_index
 #undef Vars
@@ -16668,7 +16695,7 @@ MCNUM minutes = mccOrigin_minutes;
 {
   magnify("");
 }
-#line 16642 "templateTAS.c"
+#line 16662 "templateTAS.c"
 }   /* End of Origin=Progress_bar() SETTING parameter declarations. */
 #undef CurrentTime
 #undef EndTime
@@ -16781,7 +16808,7 @@ int target_index = mccSource_target_index;
     dashed_line(0,0,0, -focus_xw/2, focus_yh/2,dist, 4);
   }
 }
-#line 16755 "templateTAS.c"
+#line 16775 "templateTAS.c"
 }   /* End of Source=Source_gen() SETTING parameter declarations. */
 #undef pTable_dymax
 #undef pTable_dymin
@@ -16838,7 +16865,7 @@ MCNUM divergenceV = mccSC1_divergenceV;
   line(xmin, ymin, length, xmax, ymin, length);
   line(xmin, ymax, length, xmax, ymax, length);
 }
-#line 16812 "templateTAS.c"
+#line 16832 "templateTAS.c"
 }   /* End of SC1=Collimator_linear() SETTING parameter declarations. */
 #undef slopeV
 #undef slope
@@ -16860,7 +16887,7 @@ MCNUM divergenceV = mccSC1_divergenceV;
   line(0,0,0,0,0.2,0);
   line(0,0,0,0,0,0.2);
 }
-#line 16834 "templateTAS.c"
+#line 16854 "templateTAS.c"
 #undef mccompcurname
 #undef mccompcurtype
 #undef mccompcurindex
@@ -16879,7 +16906,7 @@ MCNUM divergenceV = mccSC1_divergenceV;
   line(0,0,0,0,0.2,0);
   line(0,0,0,0,0,0.2);
 }
-#line 16853 "templateTAS.c"
+#line 16873 "templateTAS.c"
 #undef mccompcurname
 #undef mccompcurtype
 #undef mccompcurindex
@@ -16954,7 +16981,7 @@ MCNUM order = mccPG1Xtal_order;
      }
    }
 }
-#line 16928 "templateTAS.c"
+#line 16948 "templateTAS.c"
 }   /* End of PG1Xtal=Monochromator_curved() SETTING parameter declarations. */
 #undef tiltV
 #undef tiltH
@@ -16986,7 +17013,7 @@ MCNUM order = mccPG1Xtal_order;
   line(0,0,0,0,0.2,0);
   line(0,0,0,0,0,0.2);
 }
-#line 16960 "templateTAS.c"
+#line 16980 "templateTAS.c"
 #undef mccompcurname
 #undef mccompcurtype
 #undef mccompcurindex
@@ -17025,7 +17052,7 @@ MCNUM divergenceV = mccSC2_divergenceV;
   line(xmin, ymin, length, xmax, ymin, length);
   line(xmin, ymax, length, xmax, ymax, length);
 }
-#line 16999 "templateTAS.c"
+#line 17019 "templateTAS.c"
 }   /* End of SC2=Collimator_linear() SETTING parameter declarations. */
 #undef slopeV
 #undef slope
@@ -17076,7 +17103,7 @@ char* username3 = mccSample_Cradle_username3;
     Monitor_nD_McDisplay(&DEFS, &Vars);
   }
 }
-#line 17050 "templateTAS.c"
+#line 17070 "templateTAS.c"
 }   /* End of Sample_Cradle=Monitor_nD() SETTING parameter declarations. */
 #undef offdata
 #undef detector
@@ -17157,7 +17184,7 @@ int target_index = mccSample_target_index;
     }
   }
 }
-#line 17131 "templateTAS.c"
+#line 17151 "templateTAS.c"
 }   /* End of Sample=Res_sample() SETTING parameter declarations. */
 #undef res_struct
 #undef mccompcurname
@@ -17178,7 +17205,7 @@ int target_index = mccSample_target_index;
   line(0,0,0,0,0.2,0);
   line(0,0,0,0,0,0.2);
 }
-#line 17152 "templateTAS.c"
+#line 17172 "templateTAS.c"
 #undef mccompcurname
 #undef mccompcurtype
 #undef mccompcurindex
@@ -17217,7 +17244,7 @@ MCNUM divergenceV = mccSC3_divergenceV;
   line(xmin, ymin, length, xmax, ymin, length);
   line(xmin, ymax, length, xmax, ymax, length);
 }
-#line 17191 "templateTAS.c"
+#line 17211 "templateTAS.c"
 }   /* End of SC3=Collimator_linear() SETTING parameter declarations. */
 #undef slopeV
 #undef slope
@@ -17239,7 +17266,7 @@ MCNUM divergenceV = mccSC3_divergenceV;
   line(0,0,0,0,0.2,0);
   line(0,0,0,0,0,0.2);
 }
-#line 17213 "templateTAS.c"
+#line 17233 "templateTAS.c"
 #undef mccompcurname
 #undef mccompcurtype
 #undef mccompcurindex
@@ -17314,7 +17341,7 @@ MCNUM order = mccPG2Xtal_order;
      }
    }
 }
-#line 17288 "templateTAS.c"
+#line 17308 "templateTAS.c"
 }   /* End of PG2Xtal=Monochromator_curved() SETTING parameter declarations. */
 #undef tiltV
 #undef tiltH
@@ -17346,7 +17373,7 @@ MCNUM order = mccPG2Xtal_order;
   line(0,0,0,0,0.2,0);
   line(0,0,0,0,0,0.2);
 }
-#line 17320 "templateTAS.c"
+#line 17340 "templateTAS.c"
 #undef mccompcurname
 #undef mccompcurtype
 #undef mccompcurindex
@@ -17385,7 +17412,7 @@ MCNUM divergenceV = mccSC4_divergenceV;
   line(xmin, ymin, length, xmax, ymin, length);
   line(xmin, ymax, length, xmax, ymax, length);
 }
-#line 17359 "templateTAS.c"
+#line 17379 "templateTAS.c"
 }   /* End of SC4=Collimator_linear() SETTING parameter declarations. */
 #undef slopeV
 #undef slope
@@ -17422,7 +17449,7 @@ MCNUM restore_neutron = mccHe3H_restore_neutron;
 {
   Monitor_nD_McDisplay(&DEFS, &Vars);
 }
-#line 17396 "templateTAS.c"
+#line 17416 "templateTAS.c"
 }   /* End of He3H=Res_monitor() SETTING parameter declarations. */
 #undef buffer_index
 #undef Vars

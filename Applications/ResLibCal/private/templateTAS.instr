@@ -120,7 +120,7 @@ INITIALIZE
   
   A1 *= SM;
 	A2 *= SM;
-	/* A3 = <KI,A> A3 *= SS;  is determined in absolute angle */
+	/* A3 = <KI,A> is determined in absolute angle */
 	A4 *= SS;
 	A5 *= SA;
 	A6 *= SA;
@@ -139,17 +139,18 @@ INITIALIZE
 	if (RAH < 0) RAH = fabs(2*L/sin(DEG2RAD*A5));
 
 	if (verbose) {
-		printf("Angles: A1=%.4g A2=%.4g A3=%.4g A4=%.4g A6=%.4g [deg]\n",
+		printf("Angles: A1=%.4g A2=%.4g A3=%.4g A4=%.4g A5=%.4g A6=%.4g [deg]\n",
 		    A1, A2,
 		    A3, A4,
-		    A6);
+		    A5, A6);
 
 	  printf("Monochromator: DM=%.4g [Angs] RMH=%.4g [m] RMV=%.4g [m] %s\n",
 	    DM, RMH, RMV,
 	    (!RMH && !RMV ? "flat" : "curved"));
 
-	  printf("Analyzer:      DA=%.4g [Angs]\n",
-			    DA );
+	  printf("Analyzer:      DA=%.4g [Angs] RAH=%.4g [m] RAV=%.4g [m] %s\n",
+			DA, RAH, RAV,
+	    (!RAH && !RAV ? "flat" : "curved"));
 
 	  printf("EI=%g EF=%g meV\n",EI, EF);
 
@@ -178,8 +179,8 @@ COMPONENT Source = Source_gen(
 AT (0,0,0) ABSOLUTE
 
 COMPONENT SC1 = Collimator_linear(
-  xmin =-0.08/2, ymin =-0.12/2,
-  xmax = 0.08/2, ymax = 0.12/2,
+  xmin =-WB/2, ymin =-HB/2,
+  xmax = WB/2, ymax = HB/2,
   length = L1/2,
   divergence=ALF1,
   divergenceV=BET1)
@@ -213,8 +214,8 @@ COMPONENT D4_SC2_1D = Monitor_nD(
 AT (0, 0, L2/3) RELATIVE Mono_Out
 */
 COMPONENT SC2 = Collimator_linear(
-  xmin =-0.08/2, ymin =-0.12/2,
-  xmax = 0.08/2, ymax = 0.12/2,
+  xmin =-WM*sin(A1*DEG2RAD)/2, ymin =-HM/2,
+  xmax = WM*sin(A1*DEG2RAD)/2, ymax = HM/2,
   length = 0.35,
   divergence=ALF2,
   divergenceV=BET2)
@@ -225,7 +226,7 @@ COMPONENT Sample_Cradle = Monitor_nD(xwidth=0.01, yheight=0.01, options="per cm2
   AT (0, 0, L2) RELATIVE Mono_Out
   ROTATED (0, A3, 0) RELATIVE Mono_Out
 
-COMPONENT Sample = Res_sample(
+SPLIT COMPONENT Sample = Res_sample(
     radius = radius, yheight = height, 
     target_index=+3, focus_aw=RAD2DEG*atan2(WA*sin(A5*DEG2RAD),L3), focus_ah=RAD2DEG*atan2(HA,L3), 
     E0=EF, dE=0)
@@ -241,8 +242,8 @@ COMPONENT D7_SC3_1D = Monitor_nD(
 AT (0, 0, 0) RELATIVE Sample_Out
 */
 COMPONENT SC3 =Collimator_linear(
-  xmin =-0.08/2, ymin =-0.12/2,
-  xmax = 0.08/2, ymax = 0.12/2,
+  xmin =-WA*sin(A5*DEG2RAD)/2, ymin =-HA/2,
+  xmax = WA*sin(A5*DEG2RAD)/2, ymax = HA/2,
   length = 0.40,
   divergence=ALF3,
   divergenceV=BET3)
@@ -266,8 +267,8 @@ COMPONENT Ana_Out = Arm() /*        this is the sample-ana axis */
   ROTATED (0, A6, 0) RELATIVE Ana_Cradle
 
 COMPONENT SC4 =Collimator_linear(
-  xmin =-0.08/2, ymin =-0.12/2,
-  xmax = 0.08/2, ymax = 0.12/2,
+  xmin =-WA*sin(A5*DEG2RAD)/2, ymin =-HA/2,
+  xmax = WA*sin(A5*DEG2RAD)/2, ymax = HA/2,
   length = 0.24,
   divergence=ALF4,
   divergenceV=BET4)

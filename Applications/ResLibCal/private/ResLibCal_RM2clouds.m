@@ -20,7 +20,7 @@ function resolution = ResLibCal_RM2clouds(EXP, resolution)
 NMC=get(ResLibCal_fig('View_NMC'), 'UserData');
 if     isfield(EXP, 'NMC'),         NMC=EXP.NMC;
 elseif isfield(resolution, 'NMC'),  NMC=resolution.NMC; end
-if isempty(NMC), NMC  = 2000; end
+if isempty(NMC), NMC  = 200; end
 
 %----- 
 

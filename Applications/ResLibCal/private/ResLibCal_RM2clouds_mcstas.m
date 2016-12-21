@@ -24,7 +24,7 @@ persistent compiled;
 NMC=get(ResLibCal_fig('View_NMC'), 'UserData');
 if     isfield(EXP, 'NMC'),         NMC=EXP.NMC;
 elseif isfield(resolution, 'NMC'),  NMC=resolution.NMC; end
-if isempty(NMC), NMC  = 2000; end
+if isempty(NMC), NMC  = 200; end
 
 % get Rescal parameters
 [p, labels] = ResLibCal_EXP2RescalPar(EXP);
@@ -68,7 +68,7 @@ else precmd=''; end
 
 % get temporary directory for results
 d = tempname;
-cmd = sprintf(' --dir=%s -n %i ',d, NMC);
+cmd = sprintf(' --dir=%s -n %i ',d, NMC*200);
 
 for f=fieldnames(pars)'
   cmd = [ cmd ' ' f{1} '=' num2str(pars.(f{1})) ];
@@ -84,8 +84,15 @@ end
 if ~isempty(dir(fullfile(d,'resolution.dat')))
   % read the cloud in Angs-1, independent of the sample lattice, except A3
   cloud = iLoad(fullfile(d,'resolution.dat'),'mccode');
-  Ki= cloud.data(:,1:3); 
-  Kf= cloud.data(:,4:6);
+  p  = prod(cloud.data(:,10:11),2); % pi*pf
+  
+  % we select only points which are within the RMS. The central part (p > 50%) is 
+  % always extracted, the lower part follows a random distribution.
+  threshold = max(p)*rand(size(p))/2;
+  index     = find(p >= threshold);
+  
+  Ki= cloud.data(index,1:3); 
+  Kf= cloud.data(index,4:6);
   Q = Ki-Kf;  % Q transfer in the A3=<Ki,A> rotated frame, e.g. ABC lattice (Ang-1) frame
   QM= sqrt(sum(Q.^2,2));
   VS2E= 5.22703725e-6;  % from McStas
@@ -95,21 +102,31 @@ if ~isempty(dir(fullfile(d,'resolution.dat')))
   Ei = VS2E*Vi.^2;
   Ef = VS2E*Vf.^2;
   E  = Ei-Ef; % energy transfer
-  p  = prod(cloud.data(:,10:11),2); % pi*pf
+  
   % McStas orientation
   % Z along A3, X vertical, Y on the 'right' from Z (looking at analyser).
   % ResLibCal   McStas
   % X           Z
   % Y           X
   % Z           Y
-  resolution.ABC.cloud = { Q(:,3) Q(:,1) Q(:,2) E };
-  HKLE = [ Q(:,3) Q(:,1) Q(:,2) ]';          % in [ABC]
+  HKLE = Q(:,[3 1 2])';          % in [ABC]
+  resolution.ABC.cloud = { HKLE(1,:)' HKLE(2,:)' HKLE(3,:)' E };
   % compute the cloud for other frames: 
   HKLE = HKLE'*inv(resolution.ABC.rlu2frame);  % in [rlu] from [ABC] by ABC.frame2rlu
   resolution.rlu.cloud = { HKLE(:,1) HKLE(:,2) HKLE(:,3) E };
   HKLE = resolution.spec.rlu2frame*HKLE';      % in [spec] from [rlu]
   resolution.spec.cloud= { HKLE(1,:)' HKLE(2,:)' HKLE(3,:)' E };
-  disp([ mfilename ': using ' num2str(numel(E)) ' points in cloud.' ]);
+  disp([ mfilename ': using ' num2str(numel(E)) ' points in cloud out of ' num2str(numel(p)) ]);
+  p = p(index);
+  
+  index=find(p > mean(p));
+  % compute the resolution matrix
+  for frames={'rlu','spec','ABC'}
+    frame  = resolution.(frames{1});
+    HKLE   = [ frame.cloud{:} ];
+    resolution.(frames{1}).RM = MinVolEllipse(HKLE(index,:)');
+  end
+
 end
 rmdir(d, 's');
 
