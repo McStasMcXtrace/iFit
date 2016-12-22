@@ -53,7 +53,9 @@ function x = iData_private_resize(x,newsiz)
 %   website: <a
 %   href='matlab:web('http://www.biomecardio.com')'>www.BiomeCardio.com</a>
 
-error(nargchk(2,2,nargin));
+if nargin ~= 2
+  error([ mfilename ': Too many input arguments.' ]);
+end
 
 siz = size(x);
 N = prod(siz);

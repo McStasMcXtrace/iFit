@@ -6,7 +6,7 @@ function result=test_iData_conv
   d=xcorr(a,a);
   e=deconv(b,a);
   f=figure;
-  subplot([a b c d e])
+  h=subplot([a b c d e]);
   if all(0.3 < std([b c d])-std(a)) && all(std([b c d])-std(a) < 0.5)
     result = [ 'OK     ' mfilename ];
   else
