@@ -84,7 +84,7 @@ end
 if ~isempty(dir(fullfile(d,'resolution.dat')))
   % read the cloud in Angs-1, independent of the sample lattice, except A3
   cloud = iLoad(fullfile(d,'resolution.dat'),'mccode');
-  p  = prod(cloud.data(:,10:11),2); % pi*pf
+  p  = prod(cloud.data(:,10:11),2); % pi*pf = intensity (e.g. gaussian profile)
   
   % we select only points which are within the RMS. The central part (p > 50%) is 
   % always extracted, the lower part follows a random distribution.
@@ -94,7 +94,7 @@ if ~isempty(dir(fullfile(d,'resolution.dat')))
   Ki= cloud.data(index,1:3); 
   Kf= cloud.data(index,4:6);
   Q = Ki-Kf;  % Q transfer in the A3=<Ki,A> rotated frame, e.g. ABC lattice (Ang-1) frame
-  QM= sqrt(sum(Q.^2,2));
+  % QM= sqrt(sum(Q.^2,2));  % not needed
   VS2E= 5.22703725e-6;  % from McStas
   K2V = 629.622368;
   Vi = K2V*sqrt(sum(Ki.^2,2));
@@ -116,11 +116,11 @@ if ~isempty(dir(fullfile(d,'resolution.dat')))
   resolution.rlu.cloud = { HKLE(:,1) HKLE(:,2) HKLE(:,3) E };
   HKLE = resolution.spec.rlu2frame*HKLE';      % in [spec] from [rlu]
   resolution.spec.cloud= { HKLE(1,:)' HKLE(2,:)' HKLE(3,:)' E };
-  disp([ mfilename ': using ' num2str(numel(E)) ' points in cloud out of ' num2str(numel(p)) ]);
+  % disp([ mfilename ': using ' num2str(numel(E)) ' points in cloud out of ' num2str(numel(p)) ]);
   p = p(index);
   
-  index=find(p > mean(p));
-  % compute the resolution matrix
+  index=find(p > max(p)*.5);
+  % compute the resolution matrix on the central part
   for frames={'rlu','spec','ABC'}
     frame  = resolution.(frames{1});
     HKLE   = [ frame.cloud{:} ];
@@ -130,34 +130,14 @@ if ~isempty(dir(fullfile(d,'resolution.dat')))
 end
 rmdir(d, 's');
 
-
-% !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-% method: ResLib/ConvRes
-% the code extracted from ConvRes does not seem to produce sensible Monte-Carlo
-% points. The distribution is clearly not Gaussian, and extends very far from 
-% the HKLE position.
-% !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-
-
-% and now we can evaluate the function onto the axes.... and sum all values
-% sum(feval(model, parameters, ax{:}))*resolution.R0/NMC
-
-% the opposite operation (cloud -> RM) is computed from:
-% <http://stackoverflow.com/questions/3417028/ellipse-around-the-data-in-matlab>
-% B as columns
-% Center = mean(B,1);
-% X0 = bsxfun(@minus,B,Center);
-% RM=X0'*X0 ./ (size(X0,1)-1);
-
 % ------------------------------------------------------------------------------
 % -------------------------------------------------------------------------
 function compiled = ResLibCal_compile_mcstas_tas(compile)
-  % compile looktxt as binary when does not exist yet
+  % compile templateTAS as binary when does not exist yet
   
   compiled = ''; 
   if nargin == 0, compile = ''; end
-  if ismac,  precmd = 'DYLD_LIBRARY_PATH= ;';
+  if ismac,      precmd = 'DYLD_LIBRARY_PATH= ;';
   elseif isunix, precmd = 'LD_LIBRARY_PATH= ; '; 
   else precmd=''; end
   
@@ -179,7 +159,7 @@ function compiled = ResLibCal_compile_mcstas_tas(compile)
     end
   end
   
-  % when we get there, compile looktxt_arch, not existing yet
+  % when we get there, compile templateTAS_arch, not existing yet
   target = fullfile(this_path, [ 'templateTAS_' computer('arch') ext ]);
   
   % search for a C compiler
