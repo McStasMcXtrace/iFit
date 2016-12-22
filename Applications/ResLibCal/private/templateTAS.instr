@@ -173,7 +173,7 @@ AT (0,0,0) ABSOLUTE
 COMPONENT Source = Source_gen(
   xwidth = WB, yheight=HB,
   dist = L1,
-  focus_xw = WM*sin(A1*DEG2RAD), focus_yh = HM,
+  focus_xw = fabs(WM*sin(A1*DEG2RAD))+1e-3, focus_yh = HM,
   E0 = EI,
   dE = EI*0.03)
 AT (0,0,0) ABSOLUTE
@@ -214,8 +214,8 @@ COMPONENT D4_SC2_1D = Monitor_nD(
 AT (0, 0, L2/3) RELATIVE Mono_Out
 */
 COMPONENT SC2 = Collimator_linear(
-  xmin =-WM*sin(A1*DEG2RAD)/2, ymin =-HM/2,
-  xmax = WM*sin(A1*DEG2RAD)/2, ymax = HM/2,
+  xmin =-fabs(WM*sin(A1*DEG2RAD))/2+1e-3, ymin =-HM/2,
+  xmax = fabs(WM*sin(A1*DEG2RAD))/2+1e-3, ymax = HM/2,
   length = 0.35,
   divergence=ALF2,
   divergenceV=BET2)
@@ -228,7 +228,7 @@ COMPONENT Sample_Cradle = Monitor_nD(xwidth=0.01, yheight=0.01, options="per cm2
 
 SPLIT COMPONENT Sample = Res_sample(
     radius = radius, yheight = height, 
-    target_index=+3, focus_aw=RAD2DEG*atan2(WA*sin(A5*DEG2RAD),L3), focus_ah=RAD2DEG*atan2(HA,L3), 
+    target_index=+3, focus_aw=fabs(RAD2DEG*atan2(WA*sin(A5*DEG2RAD),L3)), focus_ah=RAD2DEG*atan2(HA,L3), 
     E0=EF, dE=0)
   AT (0, 0, 0) RELATIVE PREVIOUS
 
@@ -242,8 +242,8 @@ COMPONENT D7_SC3_1D = Monitor_nD(
 AT (0, 0, 0) RELATIVE Sample_Out
 */
 COMPONENT SC3 =Collimator_linear(
-  xmin =-WA*sin(A5*DEG2RAD)/2, ymin =-HA/2,
-  xmax = WA*sin(A5*DEG2RAD)/2, ymax = HA/2,
+  xmin =-fabs(WA*sin(A5*DEG2RAD))/2+1e-3, ymin =-HA/2,
+  xmax = fabs(WA*sin(A5*DEG2RAD))/2+1e-3, ymax = HA/2,
   length = 0.40,
   divergence=ALF3,
   divergenceV=BET3)
@@ -267,8 +267,8 @@ COMPONENT Ana_Out = Arm() /*        this is the sample-ana axis */
   ROTATED (0, A6, 0) RELATIVE Ana_Cradle
 
 COMPONENT SC4 =Collimator_linear(
-  xmin =-WA*sin(A5*DEG2RAD)/2, ymin =-HA/2,
-  xmax = WA*sin(A5*DEG2RAD)/2, ymax = HA/2,
+  xmin =-fabs(WA*sin(A5*DEG2RAD))/2+1e-3, ymin =-HA/2,
+  xmax = fabs(WA*sin(A5*DEG2RAD))/2+1e-3, ymax = HA/2,
   length = 0.24,
   divergence=ALF4,
   divergenceV=BET4)
