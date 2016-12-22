@@ -47,7 +47,7 @@ end
 
 % model parameters
 if ~isempty(mp)
-  mproperties = { ['Fit parameters: ' mname ] };
+  mproperties = { ['Model parameters: ' mname ] };
   if isstruct(mp)
     for f=fieldnames(mp)'
       mproperties{end+1} = sprintf('* %s = %g', f{1}, mp.(f{1}));

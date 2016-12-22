@@ -79,7 +79,10 @@ function stlwrite(filename, varargin)
 
 
 % Check valid filename path
-error(nargchk(2, inf,nargin));
+if nargin < 2
+  error([ mfilename ': Too few input arguments.' ]);
+end
+
 path = fileparts(filename);
 if ~isempty(path) && ~exist(path,'dir')
     error('Directory "%s" does not exist.',path);

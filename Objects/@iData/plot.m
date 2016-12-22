@@ -264,7 +264,7 @@ if isempty(mp)
   end
 end
 % make it a structure
-if numel(names) == numel(mp)
+if ~isempty(mp) && numel(names) == numel(mp)
   mp = cell2struct(num2cell(mp(:)),strtok(names(:)));
 end
 
