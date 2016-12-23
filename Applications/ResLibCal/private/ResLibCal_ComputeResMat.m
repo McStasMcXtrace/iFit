@@ -115,6 +115,9 @@ function res= ResLibCal_ComputeResMat_Single(EXP, h,k,l,w)
     % sample rotation. We ignore it in this implementation.
     % [EXP,x,y,z]       = ResLibCal_SampleRotateS(h,k,l,EXP);
     
+    res.HKLE  = [ h k l w ];  % evaluation location
+    res.method= method_orig;
+    
     % choice of method
     if ~isempty(strfind(EXP.method, 'rescal5'))
       % a,b,c,alpha,beta,gamma, QH,QK,QL
@@ -133,10 +136,15 @@ function res= ResLibCal_ComputeResMat_Single(EXP, h,k,l,w)
       method    = @Rescal_AFILL; 
       [R0,RM]   = feval(method,h,k,l,w, EXP);
     elseif ~isempty(strfind(EXP.method, 'mcstas'))
-    f=0.4826; % f converts from energy units into k^2, f=0.4826 for meV
-      method    = @rc_popma; 
-      [R0,RM]   = feval(method,f,0,EXP,0);
+      % we need an initial RM2RMS call so that we can get angles and conversion matrices
+      res.spec.RM=eye(4);
+      [res]               = ResLibCal_RM2RMS(EXP, res);    % RM is other coordinate frames
       % and we shal use Mcstas TAS for the cloud
+      [res.angles, res.Q] = ResLibCal_ComputeResMat_Angles(h,k,l,w, ...
+                                    EXP, res.ABC.rlu2frame); % spectrometer angles
+      [res, R0,RM]        = ResLibCal_RM2clouds_mcstas(EXP, res, res.angles); % generate MC clouds (spec, ABC, rlu)
+      res.spec.RM= RM;  % store true RM and update other frames
+      res                 = ResLibCal_RM2RMS(EXP, res);    % RM is other coordinate frames
     else % default is 'reslib'
       method = @ResMat;
       % calls ResLib/ResMat
@@ -156,18 +164,18 @@ function res= ResLibCal_ComputeResMat_Single(EXP, h,k,l,w)
     % RM is the resolution matrix in [xyz] frame with x // Q, z vertical
     if ~isfinite(R0), R0=0; end
     res.R0    = R0;
-    res.HKLE  = [ h k l w ];  % evaluation location
-    res.method= method_orig;
 
     % resolution matrix in [abc] and transformation [HKL] -> [ABC] frame
     % S = inv([x y z]) when [x y z ] = StandardSystem(EXP);
     % S = matrix 's' in inline (below) ResLibCal_ComputeResMat_Angles
     if ~isempty(RM) && isreal(R0)
-      res.spec.RM= RM;
-      res                 = ResLibCal_RM2RMS(EXP, res);    % RM is other coordinate frames
-      [res.angles, res.Q] = ResLibCal_ComputeResMat_Angles(h,k,l,w, ...
-                                  EXP, res.ABC.rlu2frame); % spectrometer angles
-      res                 = ResLibCal_RM2clouds(EXP, res); % generate MC clouds (spec, rlu)
+      if isempty(strfind(EXP.method, 'mcstas'))
+        res.spec.RM= RM;
+        res                 = ResLibCal_RM2RMS(EXP, res);    % RM is other coordinate frames
+        [res.angles, res.Q] = ResLibCal_ComputeResMat_Angles(h,k,l,w, ...
+                                    EXP, res.ABC.rlu2frame); % spectrometer angles
+        res                 = ResLibCal_RM2clouds(EXP, res); % generate MC clouds (spec, rlu)
+      end
     else
       res.README='Could not compute the resolution';
       [sample,rsample]=GetLattice(EXP);

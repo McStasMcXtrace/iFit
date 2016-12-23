@@ -1,4 +1,4 @@
-function resolution = ResLibCal_RM2clouds_mcstas(EXP, resolution)
+function [resolution,R0,RM] = ResLibCal_RM2clouds_mcstas(EXP, resolution, angles)
 % ResLibCal_RM2clouds_mcstas: creates an axis system of Monte-Carlo points
 %   which represent the resolution function in [abc] and [xyz] frames, using 
 %   McStas templateTAS
@@ -39,6 +39,7 @@ if ~isempty(p)
   p = cell2struct(p(:),labels_c(:),1);
 end
 
+
 % assemble the McStas command line arguments as a struct
 % WARNING: angles are given with signs, so we use abs(angles) and
 %'SM',p.SM, 'SS',p.SS, 'SA',p.SA, ... -> 1
@@ -57,9 +58,9 @@ pars=struct( ...
   'radius',2*p.WS/100, 'height',p.HS/100, ...
   'WB',p.WB/100,'HB',p.HB/100, ...
   'WD',p.WB/100,'HD',p.HB/100, ...
-  'A1',abs(resolution.angles(1)),'A2',abs(resolution.angles(2)), ...
-  'A3',    resolution.angles(3), 'A4',abs(resolution.angles(4)), ...
-  'A5',abs(resolution.angles(5)),'A6',abs(resolution.angles(6)));
+  'A1',abs(angles(1)),'A2',abs(angles(2)), ...
+  'A3',    angles(3), 'A4',abs(angles(4)), ...
+  'A5',abs(angles(5)),'A6',abs(angles(6)));
 
 % now launch the Mcstas simulation with given parameters
 if ismac,      precmd = 'DYLD_LIBRARY_PATH= ;';
@@ -85,6 +86,7 @@ if ~isempty(dir(fullfile(d,'resolution.dat')))
   % read the cloud in Angs-1, independent of the sample lattice, except A3
   cloud = iLoad(fullfile(d,'resolution.dat'),'mccode');
   p  = prod(cloud.data(:,10:11),2); % pi*pf = intensity (e.g. gaussian profile)
+  R0 = sum(p)*1e6;  % total intensity
   
   % we select only points which are within the RMS. The central part (p > 50%) is 
   % always extracted, the lower part follows a random distribution.
@@ -121,11 +123,8 @@ if ~isempty(dir(fullfile(d,'resolution.dat')))
   
   index=find(p > max(p)*.5);
   % compute the resolution matrix on the central part
-  for frames={'rlu','spec','ABC'}
-    frame  = resolution.(frames{1});
-    HKLE   = [ frame.cloud{:} ];
-    resolution.(frames{1}).RM = MinVolEllipse(HKLE(index,:)');
-  end
+  HKLE   = [ resolution.spec.cloud{:} ];
+  RM = MinVolEllipse(HKLE(index,:)');
 
 end
 rmdir(d, 's');
