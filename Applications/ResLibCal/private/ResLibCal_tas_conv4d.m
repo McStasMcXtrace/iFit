@@ -269,7 +269,7 @@ if ~isempty(rescal) && isstruct(rescal)
   end
   disp([ mfilename ': using current parameters from the main ResLibCal window.' ])
   disp('    To upload parameters from the data file:')
-  disp([ '      ' char(a)) ])
+  disp([ '      ' char(a) ])
   disp('    open it with File>Open menu item ResLibCal');
 end
 
