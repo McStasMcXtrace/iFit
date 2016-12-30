@@ -96,10 +96,10 @@ else
     url = [ p f ];
     if ~isempty(which([ url '.html' ])) && feature('ShowFigureWindows') && usejava('jvm')
       h = which([ url '.html' ]); % prefer HTML over TXT when Java/Display
-    elseif ~isempty(which([ url '.txt' ]))
-      h = which([ url '.txt' ]); % prefer TXT when no Java/no Display
     elseif ~isempty(which([ url '.html' ]))
       h = which([ url '.html' ]); % use HTML if no TXT
+    elseif ~isempty(which([ url '.txt' ]))
+      h = which([ url '.txt' ]); % prefer TXT when no Java/no Display
     else
       h = which(url);
     end
