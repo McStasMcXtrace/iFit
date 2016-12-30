@@ -24,8 +24,15 @@ res = ''; inst = '';
 if isfield(out, 'resolution')
   if iscell(out.resolution)
     res={}; inst={};
+    this_EXP = EXP;
     for index=1:numel(out.resolution)
-        [this_res, this_inst] = ResLibCal_FormatString_Resolution(out.resolution{index}, EXP, modev);
+        if numel(EXP.ki) == numel(out.resolution)
+          this_EXP.ki=EXP.ki(index);
+        end
+        if numel(EXP.kf) == numel(out.resolution)
+          this_EXP.kf=EXP.kf(index);
+        end
+        [this_res, this_inst] = ResLibCal_FormatString_Resolution(out.resolution{index}, this_EXP, modev);
         res = [ res(:) ;  this_res(:) ];
         inst= [ inst(:) ; this_inst(:)];
     end
@@ -74,7 +81,7 @@ res = { ...
   ['Bragg width in ' frame.README ' (FWHM):'], ...
     sprintf([' d' QA '=%7.3g d' QB '=%7.3g d' QC '=%7.3g [' frame.unit ']' ], Bragg(1:3)), ...
     sprintf( ' dE=%7.3g  V=%7.3g (Vanadium width) [meV]', Bragg(4:5)),' ' };
-    
+
 inst = { ...
           'Instrument parameters:', ...
   sprintf('QH=%5.3g QK=%5.3g QL=%5.3g E=%5.3g [meV]', H,K,L,W), ...

@@ -91,16 +91,17 @@ if isempty(frame),
   else frame='spec'; end
 end
 
-% display message about [abc] or [xyz] cloud usage, and axes used
-disp([ mfilename ': Using reference frame: ' frame ])
-if isstruct(config) && isfield(config, 'resolution')
-  if ~iscell(config.resolution), resolution={ config.resolution }; 
-  else resolution = config.resolution; end
-  disp(resolution{1}.(frame).README);
-end
+
 
 % assemble the convoluted model/data set
 if isa(data,'iFunc')
+  % display message about [abc] or [xyz] cloud usage, and axes used
+  disp([ mfilename ': Using reference frame: ' frame ])
+  if isstruct(config) && isfield(config, 'resolution')
+    if ~iscell(config.resolution), resolution={ config.resolution }; 
+    else resolution = config.resolution; end
+    disp(resolution{1}.(frame).README);
+  end
   signal = ResLibCal_tas_conv4d_model(data, config, frame);
 elseif isa(data,'iData')
   signal = ResLibCal_tas_conv4d_data(data, config, frame);
@@ -133,7 +134,7 @@ if ndims(dispersion) ~= 2 && ndims(dispersion) ~= 4
   return
 end
 
-% check if the model is not already convovulted with TAS
+% check if the model is not already convoluted with TAS
 if any(~cellfun(@isempty,strfind(dispersion.Expression,'ResLibCal')))
   signal = dispersion;
   return
@@ -156,6 +157,7 @@ else
 end
 signal.Dimension = dispersion.Dimension;
 signal.Guess     = dispersion.Guess;
+signal.Constraint= dispersion.Constraint;
 
 % we store the dispersion into UserData so that we can evaluate it at feval
 signal.UserData.dispersion = dispersion;
@@ -204,7 +206,8 @@ signal.Expression = { ...
 [ '  cloud=resolution{index}.' frame '.cloud;' ], ...
      plugin, ...
   '  [this_signal,dispersion]=feval(dispersion, p, cloud{:});', ...
-  '  signal(index) = sum(this_signal(:))*resolution{index}.R0/numel(cloud{1})', ...
+  '  dispersion.ParameterValues = p;', ...
+  '  signal(index) = sum(this_signal(:))*resolution{index}.R0/numel(cloud{1});', ...
   'end % for', ...
   'this.UserData.dispersion = dispersion;', ...
   'end % try', ...
@@ -246,6 +249,7 @@ for index = 1:numel(axes_symbols) % also searches for 'lower' names
         || (numel(this_axis) == prod(sz))
         a=setaxis(a, index, match{index_match});
         a=label(a, index, axes_symbols{index});
+        disp([ mfilename ': setting axis ' num2str(index) ' ' axes_symbols{index} ' as ' match{index_match} ]);
         break
       end
     end
@@ -285,7 +289,7 @@ elseif ~isempty(findfield(a, 'Model'))
 end
 
 % update the embedded model with 4D convolution
-if isa(model, 'iFunc') && ~isempty(model)
+if isa(model, 'iFunc') && ~isempty(model) && any(ndims(model) == [2 4])
 
   % 4D convolution/ResLibCal
   model = ResLibCal(model);  % calls iFunc.conv == ResLibCal(model)
