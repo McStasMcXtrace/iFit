@@ -636,11 +636,11 @@ covp = [];
 if ((strcmp(options.Display,'final') || strcmp(options.Display,'iter') ...
   || (strcmp(options.Display,'notify') && isempty(strfind(message, 'Converged')))) || nargout == 4) ...
   && ((isfield(options,'Diagnostics') && strcmp(options.Diagnostics,'on')) ...
- || (length(pars)^2*output.fevalDuration/2 < 60 ... % should spend less than a minute to compute the Hessian
+ || (length(pars)^2*output.fevalDuration < 60 ... % should spend less than a minute to compute the Hessian
   && (~isfield(options,'Diagnostics') || ~strcmp(options.Diagnostics,'off')) ...
   && exitflag ~= -6)) % not when user explicitely requested premature end (Abort)
-  if length(pars)^2*output.fevalDuration/2 > 5
-    disp([ '  Estimating Hessian matrix... (' num2str(length(pars)^2*output.fevalDuration/2) ' [s] remaining, please wait)' ]);
+  if length(pars)^2*output.fevalDuration > 5
+    disp([ '  Estimating Hessian matrix... (' num2str(length(pars)^2*output.fevalDuration) ' [s] remaining, please wait)' ]);
   end
   try
     [dp, covp, corp,jac,hessian]  = inline_estimate_uncertainty(fun, pars, options, varargin{:});
