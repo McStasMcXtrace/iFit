@@ -419,7 +419,7 @@ function [data, format] = iLoad(filename, loader, varargin)
       end
     end
     if isempty(filterspec), filterspec='*.*'; end
-    if exist('uigetfiles') && ((isfield(config, 'UseSystemDialogs') && strcmp(config.UseSystemDialogs, 'no')) || isdeployed || ~usejava('jvm'))
+    if exist('uigetfiles') && ((isfield(config, 'UseSystemDialogs') && strcmp(config.UseSystemDialogs, 'no')) || ~usejava('jvm'))
         [filename, pathname] = uigetfiles(filterspec,'Select file(s) to load');
     else
       if usejava('swing')
