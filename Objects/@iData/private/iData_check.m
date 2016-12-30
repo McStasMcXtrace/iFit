@@ -217,7 +217,7 @@ end % if no Signal defined
 sz = size(in);
 % check the axes orientations
 % for all axes, determine when possible their preferred rank by looking at their dimension
-if ndims(in)>=2
+if ndims(in)>=2 && ~isvector(in)
   for index=1:ndims(in)
     % when axis is vector: its length should match some of the signal dimension
     x  = getaxis(in, index);  % axis value
