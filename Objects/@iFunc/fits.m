@@ -621,7 +621,9 @@ end
     end
     
     % overlay data and Model when in 'OutputFcn' mode
-    if (isfield(options, 'OutputFcn') && ~isempty(options.OutputFcn) && ~isscalar(a.Signal) && ndims(a.Signal) <= 2)
+    if ( (isfield(options, 'OutputFcn') && ~isempty(options.OutputFcn)) ...
+      || (isfield(options, 'PlotFcns') && ~isempty(options.PlotFcns)) ) ...
+      && ~isscalar(a.Signal) && ndims(a.Signal) <= 2
       if ~isfield(options, 'updated')
         options.updated   = -clock;
         options.funcCount = 0;
@@ -733,7 +735,16 @@ function iFunc_private_fminplot(a,model,p,ModelValue,options,criteria)
   end
 
   if isvector(a.Signal)
-    x = a.Axes{1};
+    maxstd     = 0;
+    getthatone = 1;
+    for index=1:numel(a.Axes)
+      % search axis which varies most (in case we have an event data set)
+      x    = a.Axes{index};
+      if std(x) > maxstd
+        getthatone = index;
+      end
+    end
+    x    = a.Axes{getthatone};
     if length(x) ~= length(a.Signal)
       x = 1:length(a.Signal);
     end
