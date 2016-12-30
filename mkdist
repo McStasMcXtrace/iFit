@@ -71,18 +71,18 @@ then
   rpl -R -d -x'.m' -x'.html' -x'.md' -x'.txt' "@IFIT_DATE@"     "$IFIT_DATE" .
   rpl -R -i -d -x'.m' -x'.html' -x'.md' -x'.txt' '$Date$'     "$IFIT_DATE" .
   rpl -R -i -d -x'.m' -x'.html' -x'.md' -x'.txt' '$Revision$' "$IFIT_VERSION" .
-else
-  echo "Update revision/date/authors with sed (partial, please install 'rpl') ..."
-  for file in README.md Objects/@iData/version.m Docs/index.html Docs/Install.html Applications/standalone/deb/control Applications/standalone/deb/debcreate
-  do
+fi
+echo "Update revision/date/authors with sed (partial) ..."
+for file in README.md Objects/@iData/version.m Docs/index.html Docs/Install.html Applications/standalone/deb/control Applications/standalone/deb/debcreate
+do
   sed 's/@IFIT_VERSION@/'$IFIT_VERSION'/'  $file     > $file.tmp
   sed 's/@IFIT_NAME@/'$IFIT_NAME'/'        $file.tmp > $file
   sed 's/@IFIT_TARNAME@/'$IFIT_TARNAME'/'  $file     > $file.tmp
   sed 's/@IFIT_DATE@/'$MONTH'. '$DAY', '$YEAR'/'  $file.tmp > $file
   rm $file.tmp
-  done
+done
 # find . -name "*.txt" -print0 | xargs -0 sed -i '' -e 's/foo/bar/g'
-fi
+
 
 # detect architecture
 arch=`uname -m`
