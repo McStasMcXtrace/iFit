@@ -9,6 +9,10 @@ function a = munlock(a, varargin)
 %
 %   munlock(model, {'Parameter1', 'Parameter2', ...})
 %     unlock/free parameter for further fits
+%   munlock(model, [1 2 ...])
+%     unlock/free parameters given their index
+%   munlock(model, 'all')
+%     unlock/free all parameters
 %   munlock(model)
 %     display free parameters
 %
@@ -84,10 +88,11 @@ else
 end
 
 % now with a single input argument
+if iscell(name) && numel(name) == 1 && isnumeric(name{1}), name = strtok(a.Parameters(name{1})); end
+if ischar(name) && strcmp(name, 'all'), name = strtok(a.Parameters); end
 if ~ischar(name) && ~iscellstr(name)
   error([ mfilename ': can not unlock model parameters with a Parameter name of class ' class(name) ' in iFunc model ' a.Tag '.' ]);
 end
-
 if ischar(name), name = cellstr(name); end
 % now with a single cellstr
 for index=1:length(name)

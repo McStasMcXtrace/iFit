@@ -9,6 +9,10 @@ function a = mlock(a, varargin)
 %
 %   mlock(model, {'Parameter1', 'Parameter2', ...})
 %     lock/fix parameter for further fits
+%   mlock(model, [1 2 ...])
+%     lock/fix parameters given their index
+%   mlock(model, 'all')
+%     lock/fix all parameters
 %   mlock(model)
 %     display fixed parameters
 %
@@ -77,6 +81,8 @@ end
 
 % now with a single input argument
 if isempty(name), return; end
+if iscell(name) && numel(name) == 1 && isnumeric(name{1}), name = strtok(a.Parameters(name{1})); end
+if ischar(name) && strcmp(name, 'all'), name = strtok(a.Parameters); end
 if ~ischar(name) && ~iscellstr(name)
   error([ mfilename ': can not lock model parameters with a Parameter name of class ' class(name) ' in iFunc model ' a.Tag '.' ]);
 end
