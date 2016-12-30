@@ -681,12 +681,13 @@ if strcmp(options.Display,'final') || strcmp(options.Display,'iter') ...
     % the trace of the correlation matrix is M. The non diagonal terms indicate 
     % correlated parameters
     corr = output.parsHessianCorrelation;
-    nb_true_independent_parameters = sum(1./sum(corr.^2));
     n_free = numel(pars);
     if isfield(constraints, 'fixed')  % fix some parameters
-    constraints.fixed
       n_free = n_free - numel(find(constraints.fixed & ~isnan(constraints.fixed)));
+      corr=corr(find(~constraints.fixed),find(~constraints.fixed));
     end
+    nb_true_independent_parameters = sum(1./sum(corr.^2));
+    
     if n_free > ceil(nb_true_independent_parameters*1.2)+1
       warn = [ '. WARNING: too many parameters (' num2str(numel(n_free)) ') in problem' ]; 
     else warn = ''; end
