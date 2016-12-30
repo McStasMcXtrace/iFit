@@ -550,7 +550,7 @@ while ~isempty(varargin)
       out.EXP = EXP; 
     end
     varargin(1) = [];
-  elseif isnumeric(varargin{1}) && numel(varargin{1}) == 4
+  elseif isnumeric(varargin{1}) && numel(varargin{1}) == 4 && numel(varargin) == 1
     % ResLibCal([qh qk ql w])
     hkle = varargin{1};
     varargin = { hkle(1) hkle(2) hkle(3) hkle(4) };
@@ -567,28 +567,28 @@ while ~isempty(varargin)
     if ~isempty(varargin) && isnumeric(varargin{1}) 
       if ~isempty(varargin{1}),
         EXP.QH = varargin{1};
-        set(ResLibCal_fig('EXP_QH'),'String', mat2str(EXP.QH));
+        if ~silent_mode,set(ResLibCal_fig('EXP_QH'),'String', mat2str(EXP.QH));end
       end
       varargin(1)=[];
     end
     if ~isempty(varargin) && isnumeric(varargin{1}) 
       if ~isempty(varargin{1}),
         EXP.QK = varargin{1};;
-        set(ResLibCal_fig('EXP_QK'),'String', mat2str(EXP.QK));
+        if ~silent_mode,set(ResLibCal_fig('EXP_QK'),'String', mat2str(EXP.QK));end
       end
       varargin(1)=[];
     end
     if ~isempty(varargin) && isnumeric(varargin{1}) 
       if ~isempty(varargin{1}),
         EXP.QL = varargin{1};
-        set(ResLibCal_fig('EXP_QL'),'String', mat2str(EXP.QL));
+        if ~silent_mode,set(ResLibCal_fig('EXP_QL'),'String', mat2str(EXP.QL));end
       end
       varargin(1)=[];
     end
     if ~isempty(varargin) && isnumeric(varargin{1}) 
       if ~isempty(varargin{1}),
         EXP.W = varargin{1};
-        set(ResLibCal_fig('EXP_W'),'String', mat2str(EXP.W));
+        if ~silent_mode,set(ResLibCal_fig('EXP_W'),'String', mat2str(EXP.W));end
       end
       varargin(1)=[];
     end
