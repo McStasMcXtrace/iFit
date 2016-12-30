@@ -279,33 +279,47 @@ function mifit_Models_View_Parameters_Histograms(varargin)
   if isempty(o), return; end
   if iscell(o), o=o{1}; end
   figure('Name',[ 'Parameter distributions: ' datestr(now) ' ' o.optimizer ' ' o.model.Name ]);
-  M=numel(o.parsBest); m=floor(sqrt(M)); n=ceil(M./m);
+  M=numel(o.parsBest);
+  if isfield(o.constraints, 'fixed')
+    M=M-sum(o.constraints.fixed); 
+  end
+  m=floor(sqrt(M)); n=ceil(M./m);
   index      = find(o.criteriaHistory < min(o.criteriaHistory)*10); % select a portion close to the optimum
+  if numel(index)<20, index=1:numel(o.criteriaHistory); end
   
   % identify the parameters which are independent, from the Hessian Correlation matrix
+  Plist = 1:M;
+  if isfield(o.constraints, 'fixed')
+    Plist = find(~o.constraints.fixed);
+  end
   if ~isfield(o,'parsHessianCorrelation') || isempty(o.parsHessianCorrelation)
     corr = eye(M);
   else
     corr = o.parsHessianCorrelation;
+    corr = corr(Plist,Plist);
   end
+  
   parameters_independent = 1./sum(corr.^2);
   corr = corr - eye(M);
-  
+
+  % plot distributions
   for P=1:M
-    subplot(m,n,P); [N,X]=hist(o.parsHistory(index,P));
+    subplot(m,n,P);
+    [N,X]=hist(o.parsHistory(index,Plist(P)));
     h=bar(X,N);
     if parameters_independent(P) < 0.7, 
       set(h, 'FaceColor','red');
       [~,most_correlated] = max(abs(corr(:,P)));
       if corr(most_correlated) < 0
-        most_correlated = sprintf('\nCorrelated to -%s', o.parsNames{most_correlated});
+        most_correlated = sprintf('\nCorrelated to -%s', o.parsNames{Plist(most_correlated)});
       else
-        most_correlated = sprintf('\nCorrelated to %s', o.parsNames{most_correlated});
+        most_correlated = sprintf('\nCorrelated to %s', o.parsNames{Plist(most_correlated)});
       end
     else
       most_correlated = '';
     end
-    title(sprintf('p(%i):%s = %g +/- %g%s', P, o.parsNames{P}, o.parsBest(P), ...
-      o.parsHistoryUncertainty(P), most_correlated));
-    xlabel(o.parsNames{P});
+    title(sprintf('p(%i):%s = %g +/- %g%s', Plist(P), ...
+      o.parsNames{Plist(P)}, o.parsBest(Plist(P)), ...
+      o.parsHistoryUncertainty(Plist(P)), most_correlated));
+    xlabel(o.parsNames{Plist(P)});
   end

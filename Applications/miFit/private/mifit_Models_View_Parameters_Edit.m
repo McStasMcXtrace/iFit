@@ -77,16 +77,22 @@ if ~isempty(d)
   d = setalias(d, 'Model', model);
   % update the modelValue when the evaluation time is small (< .5 sec)
   if model.Duration < 0.5
-    % evaluate model with its parameters (Edit) and Data set axes
-    modelValue = d(model);
-    d = set(d, 'ModelValue', modelValue);
-    % update plot, if found
-    h = mifit_fig([ 'plot_' d.Tag ]);
-    if ~isempty(h)
-      plot(d,'light transparent grid tight replace');
+    try
+      % evaluate model with its parameters (Edit) and Data set axes
+      if ndims(d) == ndims(model)
+          modelValue = d(model);
+          d = set(d, 'ModelValue', modelValue);
+          % update plot, if found
+          h = mifit_fig([ 'plot_' d.Tag ]);
+          if ~isempty(h)
+            plot(d,'light transparent grid tight replace');
+          end
+          % and put back focus to the Parameter Window
+          figure(mifit_fig('mifit_View_Parameters'));
+      end
+    catch ME
+      disp(getReport(ME))
     end
-    % and put back focus to the Parameter Window
-    figure(mifit_fig('mifit_View_Parameters'));
   end
   
   D     = getappdata(mifit_fig, 'Data');  % all data sets
