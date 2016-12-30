@@ -112,7 +112,7 @@ signal.Expression     = { ...
 'this.UserData.maxFreq=max(wq(:));', ...
 'if T<=0, T=300; end', ...
 'n_w    = 1./(exp(t*11.609/T)-1);', ...
-'signal = p(17)+p(14)*p(15)*t.*(n_w+1)./((t.^2-wqs).^2+(p(15)*t).^2);' };
+'signal = p(17)+abs(p(14)*p(15))*t.*(n_w+1)./((t.^2-wqs).^2+(p(15)*t).^2);' };
 
 signal=iFunc(signal);
 
@@ -121,8 +121,10 @@ p = [ 1 0 0 ...
       20 40 40 ...
       0.25 0 0 5 ...
       1 0.05 10 0];
+      
 if nargin == 0
   signal.ParameterValues=p;
+  signal = fix(signal, [1:6]);
 elseif nargin == 1 && isnumeric(varargin{1})
   if isscalar(varargin{1}) % [E]
     p(13) = varargin{1};
@@ -131,6 +133,7 @@ elseif nargin == 1 && isnumeric(varargin{1})
     % [ h k l E0 ] acoustic
   end
   signal.ParameterValues = p;
+  signal = fix(signal, [1:6]);
 elseif nargin > 1
   signal = signal(varargin{:});
 end
