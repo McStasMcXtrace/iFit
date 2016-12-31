@@ -158,9 +158,9 @@ while ~isempty(varargin)
       if isfield(EXP,'EXP'), EXP = EXP.EXP; end
       if length(varargin) <= 1, varargin{2} = ''; end
       if length(varargin) <= 2, varargin{3} = EXP; end
-      EXP = ResLibCal_Open(varargin{2:3});  % (filename, EXP)
+      EXP = ResLibCal_Open(varargin{2:3}, silent_mode);  % (filename, EXP)
       if isempty(config)
-        config=ResLibCal_GetConfig;
+        config=ResLibCal_GetConfig(silent_mode);
       end
       out = config;
       if ~isfield(EXP,'EXP')
@@ -422,7 +422,7 @@ while ~isempty(varargin)
     case 'reset'    % restore settings from ini file (when exists) or default
       filename = fullfile(prefdir, 'ResLibCal.ini');
       if exist(filename, 'file')
-        out = ResLibCal_Open(filename); % open the 'ResLibCal.ini' file (last saved configuration)
+        out = ResLibCal_Open(filename, [], silent_mode); % open the 'ResLibCal.ini' file (last saved configuration)
         out = ResLibCal_Compute(out);
       else
         out = ResLibCal('default');
@@ -498,7 +498,7 @@ while ~isempty(varargin)
       feval(mfilename, 'update');
     case {'config','EXP'}
       if isempty(config)
-        config=ResLibCal_GetConfig;
+        config=ResLibCal_GetConfig(silent_mode);
       end
       out = config;
     case 'hkle'
@@ -520,15 +520,15 @@ while ~isempty(varargin)
       end
       if isempty(out), 
         if isempty(config)
-          config=ResLibCal_GetConfig;
+          config=ResLibCal_GetConfig(silent_mode);
         end
         out = config;
       end
       if ~isempty(action)
-        out = ResLibCal_Open(action, out); % update 'out/EXP' from file
+        out = ResLibCal_Open(action, out, silent_mode); % update 'out/EXP' from file
         ResLibCal_EXP2fig(out);                        % put it into the main GUI
       elseif isempty(out)
-        out = ResLibCal_GetConfig;
+        out = ResLibCal_GetConfig(silent_mode);
       end
       if numel(varargin) == 0
         out = ResLibCal_Compute(out); % compute the resolution
@@ -560,8 +560,14 @@ while ~isempty(varargin)
     % ResLibCal(qh, qk, ql, w)
     % read HKLE coordinates and compute resolution there
     % get current config
-    out = ResLibCal_GetConfig;
-    if isfield(out,'EXP') EXP = out.EXP; else EXP=[]; end
+    if isempty(config)
+      config = ResLibCal_GetConfig;
+    end
+    out = config;
+    if isfield(out,'EXP') EXP = out.EXP; else 
+      if isfield(out,'method') && isfield(out, 'Kfixed'), EXP=out;
+      else EXP=[]; end
+    end
     if isempty(EXP) || ~isstruct(EXP), return; end
 
     if ~isempty(varargin) && isnumeric(varargin{1}) 
@@ -601,7 +607,7 @@ while ~isempty(varargin)
       end
     end
   elseif numel(varargin) >= 1 && isempty(varargin{1})
-    if nargout, out = ResLibCal_GetConfig; end
+    if nargout, config = ResLibCal_GetConfig(silent_mode); out=config; end
     varargin(1)=[];
   else
     disp([ mfilename ': unknown parameter of class ' class(varargin{1}) ' . Skipping.' ]);

@@ -487,6 +487,8 @@ function mifit_Data_Eval_Model(varargin)
   end
   mifit_List_Data_push(d, 'replace');  % replace existing data sets
   set(mifit_fig,'Pointer','arrow');
+  
+  mifit_History_push;
 
 function mifit_Data_Saveas(varargin)
 % Data/Saveas: export selected data sets
