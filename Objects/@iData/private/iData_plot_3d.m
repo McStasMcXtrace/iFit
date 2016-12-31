@@ -2,7 +2,16 @@ function [h, xlab, ylab, zlab, ret] = iData_plot_3d(a, method, this_method, vara
 % iData_plot_3d: plot a 3D iData object
 % used in iData/plot
 
-ret = 0;
+ret = 0; 
+if ndims(a) == 1
+  zlab='';
+  if strcmp(method, 'scatter'), method='plot'; end
+  [h, xlab, ylab, ret] = iData_plot_1d(a, method, this_method, varargin{:}); % in private
+  return
+elseif ndims(a) == 2
+  [h, xlab, ylab, zlab] = iData_plot_2d(a, method, this_method, varargin{:}); % in private
+  return
+end
 
 % first test if this is an image
   if isfield(a.Data,'cdata')

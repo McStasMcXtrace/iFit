@@ -2,6 +2,12 @@ function [h, xlab, ylab, zlab] = iData_plot_2d(a, method, this_method, varargin)
 % iData_plot_2d: plot a 2D iData object
 % used in iData/plot
 
+if ndims(a) == 1
+  zlab='';
+  [h, xlab, ylab, ret] = iData_plot_1d(a, method, this_method, varargin{:}); % in private
+  return
+end
+
 % check if a re-grid is needed
   if isvector(a)
     a_is_vector = 1; % plot as lines

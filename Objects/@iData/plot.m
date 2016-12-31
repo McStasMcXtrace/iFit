@@ -290,12 +290,14 @@ otherwise % 3d data sets: volumes
       extent(index) = max(this_axis(:)) - min(this_axis(:));
     end
     % now get the largest extents
-    [~,extent_index] = sort(extent);
+    [extent,extent_index] = sort(extent);
     extent_index = extent_index(end:-1:1);  % descending order
+    extent       = extent(end:-1:1);
     % we use extend_index(1:3)
     % we keep axes [1:2 ndims(a)] (this allows e.g. to plot S(q,w))
     if isvector(a) > 1  % event data set
-      for index=4:ndims(a)
+      for index=1:ndims(a)
+        if index <= 4 && extent(index) > extent(1)*1e-4, continue; end
         a = rmaxis(a, extent_index(index));
       end
     else
@@ -423,15 +425,19 @@ if (strfind(method,'legend'))
 end
 
 % display model value if available
-if isa(mv, 'iData') && ~isempty(mv) && ndims(mv) <= 2
+if isa(mv, 'iData') && ~isempty(mv) && (ndims(mv) <= 2 || isvector(mv) > 1)
   hold on
   axis(axis); % fix plot limits
   h2 = [];
-  switch ndims(mv)
-  case 1
+  if isvector(mv) > 1
     h2 = plot(mv,'r--');
-  case 2
-    h2 = contour3(mv);
+  else
+    switch ndims(mv)
+    case 1
+      h2 = plot(mv,'r--');
+    case 2
+      h2 = contour3(mv);
+    end
   end
   h = [ h(:) ;  h2(:) ];
 end
