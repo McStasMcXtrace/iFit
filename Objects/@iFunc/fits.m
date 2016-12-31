@@ -611,13 +611,14 @@ end
     if isempty(Model)
       error([ 'iFunc:' mfilename ],[ 'The model ' model ' could not be evaluated (returned empty).' ]);
     end
-    
+
     % compute criteria
     c = feval(criteria, a.Signal(:), a.Error(:), Model(:));
     % divide by the number of degrees of freedom
     % <http://en.wikipedia.org/wiki/Goodness_of_fit>
-    if numel(a.Signal) > length(p)-1
-      c = c/(numel(a.Signal) - length(p) - 1); % reduced 'Chi^2'
+    m = numel(p) - sum(constraints.fixed);
+    if m > 0 && numel(a.Signal) - m > 0
+      c = c/(numel(a.Signal) - m); % reduced 'Chi^2'
     end
     
     % overlay data and Model when in 'OutputFcn' mode
