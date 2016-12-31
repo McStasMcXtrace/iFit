@@ -1,4 +1,4 @@
-function EXP = ResLibCal_Open(filename, EXP)
+function EXP = ResLibCal_Open(filename, EXP, silent)
 % EXP = ResLibCal_Open(filename): open an EXP/ResLib file and update main GUI
 %
 % Input:
@@ -14,6 +14,7 @@ function EXP = ResLibCal_Open(filename, EXP)
 
   if nargin < 1, filename = ''; end
   if nargin < 2, EXP = []; end
+  if nargin < 3, silent = 0; end
   if isempty(filename) || (ischar(filename) && isdir(filename))
     [filename, pathname] = uigetfile( ...
        {'*.m;*.ini',  'ResLibCal configuration M-file (*.m;*.ini)'; ...
@@ -86,11 +87,13 @@ function EXP = ResLibCal_Open(filename, EXP)
       end
       % force full update of all fields
       ResLibCal('update_d_tau_popup');
-      if isstruct(filename)
-        disp([ datestr(now) ': Loaded ' titl ' from ' ]);
-        disp(filename)
-      else
-        disp([ datestr(now) ': Loaded ' titl ' from ' filename ]);
+      if ~silent
+        if isstruct(filename)
+          disp([ datestr(now) ': Loaded ' titl ' from ' ]);
+          disp(filename)
+        else
+          disp([ datestr(now) ': Loaded ' titl ' from ' filename ]);
+        end
       end
     catch
       warning([ datestr(now) ': Could not load ResLibCal configuration '  ]);
