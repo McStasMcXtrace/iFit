@@ -1,4 +1,4 @@
-function web(varargin)
+function url = web(varargin)
 % WEB Open Web browser on site or files.
 %    WEB opens up an empty internal web browser.  The default internal web
 %    browser includes a toolbar with standard web browser icons, and an address
@@ -23,10 +23,11 @@ if isempty(url)
   url = fullfile(ifitpath,'Docs','index.html');
 end
 
-if ~isempty(private_help(url))
-  return
+h=private_help(url);
+if ~isempty(h)
+  url = h;
+  if isstruct(h), return; end
 end
-
 
 % launches our internal Web browser which follows 'matlab:' URL's
 webbrowser(url, 'system');
@@ -63,7 +64,7 @@ if isempty(allfiles)
   % keep only HTML and TXT files
   for index=1:numel(allfiles)
     [p,f,e] = fileparts(allfiles{index});
-    if strcmp(lower(e),'.html') || strcmp(lower(e),'.txt')
+    if strcmp(lower(e),'.html')
       doccount=doccount+1;
       docfiles(doccount) = allfiles(index);
     end
@@ -84,9 +85,13 @@ else
   url = '';
 end
 if isempty(url), return; end
-if ~isdeployed
-  builtin('help',varargin{:});
-else
+
+if strcmp(url, 'config')
+  h.html = allfiles;
+  h.txt  = allfiles_txt;
+  return
+end
+if~isdeployed
   % attempts to guess what to display. Is there a match with words (file + last path token) ?
   [p,f,e]   = fileparts(url);
   [dummy,p] = fileparts(p); % f=filename; p=last path name.
@@ -127,7 +132,7 @@ else
   end
   
   % display the help URL
-  webbrowser(h, 'system');
+  % webbrowser(h, 'system');
 end
 
 % ------------------------------------------------------------------------------
