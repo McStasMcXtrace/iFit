@@ -14,7 +14,7 @@ MimeType=text/plain;application/x-netcdf;application/cdf;application/x-cdf;appli
 Actions=Help;
 
 [Desktop Action Help]
-Name=Open iFit Help (on-line)
-Exec=xdg-open http://ifit.mccode.org
+Name=Open iFit Help
+Exec=xdg-open /usr/local/ifit/Docs/index.html
 OnlyShowIn=Unity;Gnome;
 

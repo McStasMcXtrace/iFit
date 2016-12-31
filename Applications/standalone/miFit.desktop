@@ -13,6 +13,7 @@ MimeType=text/plain;application/x-netcdf;application/cdf;application/x-cdf;appli
 Actions=Help;
 
 [Desktop Action Help]
-Name=Open miFit Help (on-line)
+Name=Open miFit Help
 Exec=xdg-open http://ifit.mccode.org/Applications/miFit/doc/index.html
+
 OnlyShowIn=Unity;Gnome;
