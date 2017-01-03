@@ -53,8 +53,9 @@ function mifit_Data_AssignModel(varargin)
   mifit_History_push();
   for index=index_selected(:)'
     if numel(D) > 1, this_d = D(index); else this_d = D; end
-    this_d = setalias(this_d, 'Model', model);
+    this_d = setalias(this_d, 'Model', model, model.Name);
     this_d = setalias(this_d, 'ModelValue', []);
+    this_d = setalias(this_d, 'ModelParameters', []);
     mifit_disp(char(this_d));
     if numel(D) > 1, D(index) = this_d; else D = this_d; end
     if index==index_selected(1), 
@@ -62,6 +63,7 @@ function mifit_Data_AssignModel(varargin)
     end
   end
   setappdata(mifit_fig, 'Data', D);
+  mifit_History_push;
   
   % trigger an update of the Parameter window when already opened
   if ~isempty(mifit_fig('mifit_View_Parameters'))
