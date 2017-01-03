@@ -616,7 +616,10 @@ end
     c = feval(criteria, a.Signal(:), a.Error(:), Model(:));
     % divide by the number of degrees of freedom
     % <http://en.wikipedia.org/wiki/Goodness_of_fit>
-    m = numel(p) - sum(constraints.fixed);
+    m = numel(p);
+    if isfield(constraints,'fixed')
+      m = m - sum(constraints.fixed);
+    end
     if m > 0 && numel(a.Signal) - m > 0
       c = c/(numel(a.Signal) - m); % reduced 'Chi^2'
     end
