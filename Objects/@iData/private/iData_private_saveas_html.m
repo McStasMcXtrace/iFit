@@ -133,7 +133,7 @@ function filename = iData_private_saveas_html(a, filename, format)
   % 2D: mat dat/data hdf5/mantid png json      xml      yaml      nc fig pdf svg 
   % 3D: mat dat/data hdf5/mantid png json/data xml/data yaml/data nc fig pdf vtk mrc nc   
   % nD: mat dat/data hdf5/mantid png json/data xml/data yaml/data nc
-  export       = {'mat','dat data',' mantid', 'json','xml','yaml','nc' };
+  export       = {'mat','dat data','hdf mantid', 'json','xml','yaml','nc' };
   export_label = { ...
   'Matlab binary file. Open with Matlab or <a href="http://ifit.mccode.org">iFit</a>.', ...
   'Flat text file which contains axes and the data set. You will have to reshape the matrix after reading the contents. View with any text editor.', ...
@@ -196,9 +196,11 @@ function filename = iData_private_saveas_html(a, filename, format)
   % display list of available formats, as well as suggested software to use
  fprintf(fid, '<p>Exported to: <br><ul>\n');
   for index=1:numel(export)
-    if ~isempty(dir([ basename '.' export{index} ]))
-      fprintf(fid, [ '<li><b><a href="' basename_img '.' export{index} '">' export{index} '</a></b>: ' ...
+    if ~isempty(dir([ basename '.' strtok(export{index}) ]))
+      fprintf(fid, [ '<li><b><a href="' basename_img '.' strtok(export{index}) '">' export{index} '</a></b>: ' ...
         export_label{index} '</li>\n' ]);
+    else
+      disp([ mfilename ': skipping ' basename '.' strtok(export{index}) ])
     end
   end
   fprintf(fid, '</ul></p>\n');
