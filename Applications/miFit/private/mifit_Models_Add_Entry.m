@@ -42,6 +42,7 @@ function handle = mifit_Models_Add_Entry(model)
   % determine the 'callback' for the menu item
   if iscellstr(model)
     callback = char(model)';
+    if size(callback,2) == 1, callback=callback'; end
   elseif isstruct(model) && isfield(model,'callback')
     callback = model.callback;
     if isfield(model, 'label'),     label = model.label; end
@@ -73,7 +74,8 @@ function handle = mifit_Models_Add_Entry(model)
   if isempty(dim) % this is a model creator (new instance) from expression
     % we assume this is an expression and try to evaluate it as such
     try
-      modelF    = feval(callback, 'identify');
+      if   ischar(callback), modelF    = eval(callback);
+      else isa(callback,'iFunc'), modelF=callback; end
     catch
       mifit_disp([ '[Models_Add_Entry] Invalid Model expression ' callback '. Skipping.' ]);
       return
