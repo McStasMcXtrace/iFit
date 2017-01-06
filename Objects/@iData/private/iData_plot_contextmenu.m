@@ -39,6 +39,7 @@ for index=0:min([ ndims(a) length(getaxis(a)) ])
       minmaxstd=[ minmaxstd sprintf(' <%g +/- %g>', f,s) ];
     end
   end
+  if isnumeric(v), v=''; end
   t = sprintf('%6i %15s  %s %s', index, v, l, minmaxstd);
   tproperties{end+1} = t;
   properties{end+1}  = t;
