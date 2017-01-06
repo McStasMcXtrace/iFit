@@ -14,6 +14,6 @@ Actions=Help;
 
 [Desktop Action Help]
 Name=Open miFit Help
-Exec=xdg-open http://ifit.mccode.org/Applications/miFit/doc/index.html
+Exec=xdg-open /usr/local/ifit/Docs/miFit.html
 
 OnlyShowIn=Unity;Gnome;
