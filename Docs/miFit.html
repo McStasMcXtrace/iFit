@@ -1,26 +1,386 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
-<head>
-  <meta http-equiv="refresh" content="1; URL=../Applications/miFit/doc/index.html">
-</head>
-  <title>iData: miFit redirecting... (1 sec)</title>
-</head>
-<body>
-<br>
-</body>
-</html>
+  <head>
+    <meta content="text/html; charset=windows-1252"
+      http-equiv="content-type">
+    <title>Empty Web Page</title>
+  </head>
+  <body>
+    <h1 align="center"><a class="mozTocH1" name="mozTocId760940"></a>
+      miFit: a user interface for iFit</h1>
+    <div align="center"><img alt="iFit" title="iFit"
+        src="images/iFit-logo.png" width="116" align="middle"
+        height="64"><img alt="miFit" title="miFit"
+        src="images/miFit.png" width="80" align="middle" height="64"><br>
+    </div>
+    <ol id="mozToc">
+      <!--mozToc h3 1 h4 2 h5 3-->
+      <li><a href="#mozTocId772540">Starting</a></li>
+      <li><a href="#mozTocId449791"> Loading data and Models </a>
+        <ol>
+          <li><a href="#mozTocId647875">from files</a></li>
+          <li><a href="#mozTocId487410">from the Matlab/iFit prompt:
+              Data sets</a></li>
+          <li><a href="#mozTocId315062">from the Matlab/iFit prompt:
+              Models</a></li>
+          <li><a href="#mozTocId805610">from copy/paste</a></li>
+          <li><a href="#mozTocId565408">from drag-and-drop</a></li>
+          <li><a href="#mozTocId997017">creating a new Data set</a></li>
+          <li><a href="#mozTocId638950">creating new Models</a></li>
+        </ol>
+      </li>
+      <li><a href="#mozTocId82620">Working with Data sets</a>
+        <ol>
+          <li><a href="#mozTocId207324"> Plotting data</a></li>
+          <li><a href="#mozTocId97236"> Sorting and searching data</a></li>
+          <li><a href="#mozTocId467624"> Mathematical operators on Data
+              sets</a></li>
+        </ol>
+      </li>
+      <li><a href="#mozTocId729437">Working with Models (fitting)</a>
+        <ol>
+          <li><a href="#mozTocId892073"> Assigning and Evaluating Models
+              to Data sets</a></li>
+          <li><a href="#mozTocId830396"> Fitting Models to Data sets</a></li>
+          <li><a href="#mozTocId687239"> Selecting a fit routine
+              (optimization algorithm)</a></li>
+        </ol>
+      </li>
+      <li><a href="#mozTocId457482"> Preferences</a></li>
+      <li><a href="#mozTocId430134"> Saving your work</a>
+        <ol>
+          <li><a href="#mozTocId319597"> Saving all data sets, Models
+              and Preferences</a></li>
+          <li><a href="#mozTocId557435"> Exporting selected Data sets</a></li>
+          <li><a href="#mozTocId887221"> Exporting Models (and importing
+              them as well)</a></li>
+        </ol>
+      </li>
+    </ol>
+    <hr size="2" width="100%"><br>
+    This is the miFit help<br>
+    <br>
+    <h3><a class="mozTocH3" name="mozTocId772540"></a>Starting</h3>
+    To start the miFit interface, just type <code>'mifit'</code> from
+    the Matlab prompt when iFit is installed, or from the iFit
+    stand-alone prompt. The main window will then appear, as follows:<br>
+    <br>
+    <div align="center"><img alt="miFit" title="miFit"
+        src="images/miFit.png" width="296" align="middle" height="238"><br>
+      <i>The miFit main window</i><br>
+    </div>
+    <br>
+    The main window has menus, a toolbar with icons, and tips that show
+    up when bringing the mouse pointer over items.<br>
+    <h3><a class="mozTocH3" name="mozTocId449791"></a> Loading data and
+      Models </h3>
+    <ul>
+    </ul>
+    <h4><a class="mozTocH4" name="mozTocId647875"></a>from files</h4>
+    <p>The legacy way to import data files into miFit is to select the <i>Open
 
-  <img alt="iFit" title="iFit"
-        src="images/iFit-logo.png"
-        align="right" width="116" height="64">
-  <img
-          alt="the ILL" title="the ILL"
-          src="images/ILL-web-jpeg.jpg"
-          align="right" border="0" width="68" height="64">
+        item in the File menu</i>. A file selector will pop-up, and
+      allow to select one or more data files (use Ctrl-click to select
+      files one-by-one, and Shift-click to select a range). You can
+      equally select the <i>Open icon</i> in the toolbar.<br>
+    </p>
+    <p>It is possible to import data files in any supported format
+      (whole list available in the <a href="Loaders.html">Loaders</a>
+      page). Once loaded, the data sets appear in the Data Sets list in
+      the main window. The Models are inserted in the <i>Models</i>
+      menu, sorted by dimensionality (1d, 2D, 3D, 4D, others).<br>
+    </p>
+    <p>Supported formats for Data Sets (stored as <a href="iData.html">iData</a>
+      objects):<br>
+      <meta http-equiv="content-type" content="text/html;
+        charset=windows-1252">
+    </p>
+    <ul style="color: rgb(0, 0, 0); font-family: &quot;Times New
+      Roman&quot;; font-size: medium; font-style: normal;
+      font-variant-ligatures: normal; font-variant-caps: normal;
+      font-weight: normal; letter-spacing: normal; orphans: 2;
+      text-align: start; text-indent: 0px; text-transform: none;
+      white-space: normal; widows: 2; word-spacing: 0px;
+      -webkit-text-stroke-width: 0px;">
+      <li><small>any Data in text format<br>
+        </small></li>
+      <small> </small>
+      <li><small>ILL Data (legacy, text, most instruments at the<span
+            class="Apple-converted-space">&nbsp;</span><a
+            href="http://www.ill.fr/YellowBook/">ILL</a>)<br>
+        </small></li>
+      <small> </small>
+      <li><small>ILL TAS Data (legacy, text, polarized or not)</small></li>
+      <small> </small>
+      <li><small>ILL<span class="Apple-converted-space">&nbsp;</span><a
+href="http://www.ill.eu/instruments-support/instruments-groups/instruments/cyclops/description/instrument-layout/">Cyclops</a><span
+            class="Apple-converted-space">&nbsp;</span>neutron Laue
+          diffractometer image (HBIN)<br>
+        </small></li>
+      <small> </small>
+      <li><small>Chalk River<span class="Apple-converted-space">&nbsp;</span><a
+            href="http://www.nrc-cnrc.gc.ca/cnbc/">CNBC</a><span
+            class="Apple-converted-space">&nbsp;</span>NRU data,
+          including multi-wire and polarized data<br>
+        </small></li>
+      <small> </small>
+      <li><small>SPEC ESRF<br>
+        </small></li>
+      <small> </small>
+      <li><small><a href="http://www.mcstas.org">McStas</a><span
+            class="Apple-converted-space">&nbsp;</span>(Scan DAT output,
+          1D, 2D monitor, event lists, sim file, Sqw, LAZ, LAU tables)</small></li>
+      <small> </small>
+      <li><small>ISIS/SPE and SQW tof data (see<span
+            class="Apple-converted-space">&nbsp;</span><a
+            href="http://horace.isis.rl.ac.uk/">Horace</a><span
+            class="Apple-converted-space">&nbsp;</span>and<span
+            class="Apple-converted-space">&nbsp;</span><a
+            href="http://www.libisis.org/">LibISIS</a>)<br>
+        </small></li>
+      <small> </small>
+      <li><small>INX tof data (ILL<span class="Apple-converted-space">&nbsp;</span><a
+href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/tofhr/inx/">processed
 
-<h1>iData: miFit redirecting... (1 sec)</h1>
-Now redirecting to <a href="../Applications/miFit/doc/index.html">miFit help</a> (1 sec)...
-<html>
+            TOF</a>)<br>
+        </small></li>
+      <small> </small>
+      <li><small>ESRF data format (*.edf)</small></li>
+      <small> </small>
+      <li><small>Xray/neutron diffraction<span
+            class="Apple-converted-space">&nbsp;</span><a
+            href="http://www.esrf.fr/computing/Forum/imgCIF/cbf_definition.html">Crystallographic
 
-</body>
+            binary file</a><span class="Apple-converted-space">&nbsp;</span>(*.cbf)</small></li>
+      <small> </small>
+      <li><small><a
+            href="http://en.wikipedia.org/wiki/Analyze_%28imaging_software%29">MRI
 
+            3D volume</a><span class="Apple-converted-space">&nbsp;</span>Analyze
+
+          7.5 (*.hdr with associated *.img)</small></li>
+      <small> </small>
+      <li><small><a href="http://nifti.nimh.nih.gov/">NifTI</a><span
+            class="Apple-converted-space">&nbsp;</span>medical imaging
+          volume data format (*.nii)<br>
+        </small></li>
+      <small> </small>
+      <li><small>NeXT/SUN (.au) sound</small></li>
+      <small> </small>
+      <li><small>Microsoft WAVE (.wav) sound</small></li>
+      <small> </small>
+      <li><small>Audio/Video Interleaved (*.avi)</small></li>
+      <small> </small>
+      <li><small><a href="http://www.unidata.ucar.edu/software/netcdf/">NetCDF</a><span
+            class="Apple-converted-space">&nbsp;</span>(*.nc)<br>
+        </small></li>
+      <small> </small>
+      <li><small>CDF (*.cdf)<br>
+        </small></li>
+      <small> </small>
+      <li><small><a href="http://fits.gsfc.nasa.gov/">FITS</a><span
+            class="Apple-converted-space">&nbsp;</span>(*.fits) used in
+          astronomy<br>
+        </small></li>
+      <small> </small>
+      <li><small>Microsoft Excel (*.xls)</small></li>
+      <small> </small>
+      <li><small>Image/Picture (*.gif, *.bmp, *.tif, *.jpg, *.png, ppm,
+          pgm, pbm)<br>
+        </small></li>
+      <small> </small>
+      <li><small><a href="http://www.hdfgroup.org/">HDF4</a><span
+            class="Apple-converted-space">&nbsp;</span>(*.hdf4)<br>
+        </small></li>
+      <small> </small>
+      <li><small><a href="http://www.hdfgroup.org/">HDF5</a><span
+            class="Apple-converted-space">&nbsp;</span>(*.hdf5)
+          including the<span class="Apple-converted-space">&nbsp;</span><a
+            href="http://nexusformat.org">NeXus</a><span
+            class="Apple-converted-space">&nbsp;</span>format (*.nx,
+          *.n4, *.ns, *.n5, *.nxs) and more specifically<span
+            class="Apple-converted-space">&nbsp;</span><a
+            href="http://www.mantidproject.org">Mantid</a><span
+            class="Apple-converted-space">&nbsp;</span>workspaces.<br>
+        </small></li>
+      <small> </small>
+      <li><small>Matlab workspace (*.mat) a customized HDF<br>
+        </small></li>
+      <small> </small>
+      <li><small>Comma Separated Values (*.csv)<br>
+        </small></li>
+      <small> </small>
+      <li><small>Numerical single block (*.dlm)<br>
+        </small></li>
+      <small> </small>
+      <li><small><a href="http://www.w3.org/XML/">XML</a><span
+            class="Apple-converted-space">&nbsp;</span>(*.xml)</small></li>
+      <small> </small>
+      <li><small>FIG (Matlab figure, *.fig)</small></li>
+      <small> </small>
+      <li><small><a href="http://www.rcsb.org/pdb/">Protein Data Bank
+            (*.pdb)<br>
+          </a></small></li>
+      <small> </small>
+      <li><small><a href="en.wikipedia.org/wiki/STL_%28file_format%29">STL</a><span
+            class="Apple-converted-space">&nbsp;</span>stereolithography
+          (*.stl)</small></li>
+      <small> </small>
+      <li><small><a href="http://www.geomview.org/docs/html/OFF.html">OFF</a><span
+            class="Apple-converted-space">&nbsp;</span>object geometry
+          (*.off)</small></li>
+      <small> </small>
+      <li><small><a
+            href="http://en.wikipedia.org/wiki/PLY_%28file_format%29">PLY</a><span
+            class="Apple-converted-space">&nbsp;</span>Polygon File
+          Format or the Stanford Triangle Format (*.ply)</small></li>
+      <small> </small>
+      <li><small><a href="http://www.marresearch.com/">MAR</a><span
+            class="Apple-converted-space">&nbsp;</span>MarResearch CCD
+          Camera (*.mar, *.mccd), a variant of the TIFF format<br>
+        </small></li>
+      <small> </small>
+      <li><small><a href="http://www.andor.com/scientific-cameras">SIF</a><span
+            class="Apple-converted-space">&nbsp;</span>Andor SIF CCD
+          Camera (*.sif)</small></li>
+      <small> </small>
+      <li><small><a
+            href="http://www.princetoninstruments.com/products/software/#1">SPE</a><span
+            class="Apple-converted-space">&nbsp;</span>Princeton/Roper
+          Scientific WinView CCD / PI Acton Camera file (*.spe)</small></li>
+      <small> </small>
+      <li><small><a href="http://www.adsc-xray.com/products.html">IMG</a><span
+            class="Apple-converted-space">&nbsp;</span>ADSC Quantum CCD
+          Camera (*.img)</small></li>
+      <small> </small>
+      <li><small><a
+            href="http://en.wikipedia.org/wiki/Crystallographic_Information_File">CIF</a>,<span
+            class="Apple-converted-space">&nbsp;</span><a
+            href="http://www.ill.eu/sites/fullprof/">CFL/PCR</a>,<span
+            class="Apple-converted-space">&nbsp;</span><a
+            href="http://shelx.uni-ac.gwdg.de/SHELX/">INS/RES/SHX</a><span
+            class="Apple-converted-space">&nbsp;</span>Crystallography
+          files (FullProf, ShelX)<br>
+        </small></li>
+      <small> </small>
+      <li><small>EZD, MRC and<span class="Apple-converted-space">&nbsp;</span><a
+            href="http://en.wikipedia.org/wiki/CCP4_%28file_format%29">CCP4</a><span
+            class="Apple-converted-space">&nbsp;</span>electron density
+          maps (*.map, *.ezd, *.ccp4)</small></li>
+      <small> </small>
+      <li><small><a href="http://en.wikipedia.org/wiki/Yaml">YAML</a><span
+            class="Apple-converted-space">&nbsp;</span>and<span
+            class="Apple-converted-space">&nbsp;</span><a
+            href="http://en.wikipedia.org/wiki/JSON">JSON</a><span
+            class="Apple-converted-space">&nbsp;</span>(*.yaml, *.yml,
+          *.json)</small></li>
+      <small> </small>
+      <li><small>NMR Bruker, Varian and JEOL data files</small></li>
+      <small> </small>
+      <li><small><a href="http://www.wavemetrics.com/">IBW</a><span
+            class="Apple-converted-space">&nbsp;</span>Igor Wave data
+          file (*.ibw)</small></li>
+      <small> </small>
+      <li><small><a
+            href="http://en.wikipedia.org/wiki/Wavefront_.obj_file">OBJ</a><span
+            class="Apple-converted-space">&nbsp;</span>Wavefront 3D
+          (*.obj)</small></li>
+      <small> </small>
+      <li><small>LabView<span class="Apple-converted-space">&nbsp;</span><a
+            href="http://www.ni.com/white-paper/4139/en/">LVM</a><span
+            class="Apple-converted-space">&nbsp;</span>and<span
+            class="Apple-converted-space">&nbsp;</span><a
+            href="http://www.ni.com/white-paper/3727/en/">TDMS</a><span
+            class="Apple-converted-space">&nbsp;</span>files (*.lvm;
+          *.tdms)</small></li>
+      <small> </small>
+      <li><small>Bruker FT-IR<span class="Apple-converted-space">&nbsp;</span><a
+href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectroscopy/opus-software/overview.html">OPUS</a><span
+            class="Apple-converted-space">&nbsp;</span>data files
+          (*.0001, *.0002, ...)</small></li>
+      <small> </small>
+      <li><small>LLB TAS binary data files (R* and C*)</small></li>
+      <small> </small>
+      <li><small><a
+            href="https://en.wikipedia.org/wiki/IDL_%28programming_language%29">IDL</a><span
+            class="Apple-converted-space">&nbsp;</span>SAV data (*.sav)</small></li>
+      <small> </small>
+      <li><small>DAT<span class="Apple-converted-space">&nbsp;</span><a
+            href="http://www.qdusa.com/products/mpms3.html">Quantum
+            Design</a><span class="Apple-converted-space">&nbsp;</span>VMS
+          ppms/mpms</small></li>
+      <small> </small>
+      <li><small>XVG<span class="Apple-converted-space">&nbsp;</span><a
+            href="http://plasma-gate.weizmann.ac.il/Grace/">XmGrace</a><span
+            class="Apple-converted-space">&nbsp;</span>data set</small></li>
+      <small> </small>
+      <li><small>Agilent Mass Spectrometry (*.CH, *.D, *.MS)</small></li>
+      <small> </small>
+      <li><small>Thermo Finnigan Mass Spectrometry (*.RAW)</small></li>
+      <small> </small>
+      <li><small><a
+            href="https://www.oecd-nea.org/dbdata/data/manual-endf/endf102.pdf">ENDF</a><span
+            class="Apple-converted-space">&nbsp;</span><a
+            href="https://en.wikipedia.org/wiki/Nuclear_data">Evaluated
+            Nuclear Data File</a><span class="Apple-converted-space">&nbsp;</span>(*.endf,*.tsl)</small></li>
+      <small> </small>
+      <li><small>ACE<span class="Apple-converted-space">&nbsp;</span><a
+            href="https://mcnp.lanl.gov/">MCNP</a><span
+            class="Apple-converted-space">&nbsp;</span>files (*.ace)
+          [requires<span class="Apple-converted-space">&nbsp;</span><a
+            href="http://pyne.io/">PyNE</a>]</small></li>
+    </ul>
+    <p>Supported formats for Models (stored as <a href="iFunc.html">iFunc</a>
+      objects):
+      <meta http-equiv="content-type" content="text/html;
+        charset=windows-1252">
+    </p>
+    <ul>
+      <li><small>M Matlab script/function (*.m) </small></li>
+      <li><small>MAT Matlab binary file (*.mat) </small></li>
+      <li><small>JSON JavaScript Object Notation (*.json)</small></li>
+      <li><small>YAML interchange format (*.yaml)</small></li>
+      <li><small>XML file (*.xml)</small></li>
+    </ul>
+    <pre style="color: rgb(0, 0, 0); font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; margin-left: 40px;"><meta http-equiv="content-type" content="text/html; charset=windows-1252"><pre style="color: rgb(0, 0, 0); font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; margin-left: 40px;"></pre></pre><h4><a class="mozTocH4" name="mozTocId487410"></a>from the Matlab/iFit prompt: Data sets<br></h4><p>It is possible to work from the Matlab/iFit prompt, and send any numerical array, as well as iData (data sets) and iFunc (models) objects.<br></p><p>To import a numerical array:</p><ul><li><a href="file:///home/farhi/dev/iFit/Docs/images/iFit_standalone.png"><img alt="iFit standalone
+            window (no Matlab license required)" title="iFit standalone
+            window (no Matlab license required)" src="file:///home/farhi/dev/iFit/Docs/images/iFit_standalone.png" style="border: 0px solid;
+            border: 0px solid; width: 300px; height: 198px;" align="right"></a><code>a=<font color="#3366ff">rand</font>(10);</code><code><br></code><code><font color="#3366ff">mifit</font>(a);</code></li></ul><p>or</p><ul><li><code>x = 0:.1:8*pi; y = sin(x);</code><code><br></code><code><font color="#3366ff">mifit</font></code><code>(x,y);</code><br></li></ul><p>or</p><ul><li><code>a=[ &nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0</code><code><br></code><code>&nbsp;&nbsp;&nbsp; 0.1000&nbsp;&nbsp;&nbsp; 0.0998</code><code><br></code><code>&nbsp;&nbsp;&nbsp; 0.2000&nbsp;&nbsp;&nbsp; 0.1987</code><code><br></code><code>&nbsp;&nbsp;&nbsp; 0.3000&nbsp;&nbsp;&nbsp; 0.2955</code><code><br></code><code>&nbsp;&nbsp;&nbsp; 0.4000&nbsp;&nbsp;&nbsp; 0.3894</code><code><br></code><code>&nbsp;&nbsp;&nbsp; 0.5000&nbsp;&nbsp;&nbsp; 0.4794</code><code><br></code><code>&nbsp;&nbsp;&nbsp; 0.6000&nbsp;&nbsp;&nbsp; 0.5646</code><code><br></code><code>&nbsp;&nbsp;&nbsp; 0.7000&nbsp;&nbsp;&nbsp; 0.6442</code><code><br></code><code>&nbsp;&nbsp;&nbsp; 0.8000&nbsp;&nbsp;&nbsp; 0.7174</code><code><br></code><code>&nbsp;&nbsp;&nbsp; 0.9000&nbsp;&nbsp;&nbsp; 0.7833</code><code><br></code><code>&nbsp;&nbsp;&nbsp; 1.0000&nbsp;&nbsp;&nbsp; 0.8415</code><code><br></code><code>&nbsp;&nbsp;&nbsp; 1.1000&nbsp;&nbsp;&nbsp; 0.8912</code><code><br></code><code>&nbsp;&nbsp;&nbsp; 1.2000&nbsp;&nbsp;&nbsp; 0.9320 ];<br></code><code><font color="#3366ff">mifit</font></code><code>(a);</code><br></li></ul><p>To import an iData object (data set):</p><ul><li><code>a = iData(peaks);</code></li><li><code>a.Title = <font color="#cc33cc">'Peak function'</font>; <font color="#3366ff">label</font>(a,1,<font color="#cc33cc">'my X axis'</font>); <font color="#3366ff">label</font>(a,2,<font color="#cc33cc">'my Y axis'</font>);</code></li><li><code><font color="#3366ff">mifit</font>(a);</code></li></ul><h4><a class="mozTocH4" name="mozTocId315062"></a>from the Matlab/iFit prompt: Models</h4><p>To import a Model:<br></p><ul><li><code>f=gauss+lorz; f.Background_2=0; <font color="#3366ff">fix</font>(f,<font color="#cc33cc">'Background_2'</font>);</code></li><li><code><font color="#3366ff">mifit</font>(f);</code></li></ul>The new model is added to the <i>1D</i> Models menu, as a <b><font color="#3366ff">blue</font></b> entry, which is used to label 'user' models. Such models are <b><i>'static'</i></b> in the sense that once in the Models menu only their model parameters can be changed. These models are assigned a unique iD in the form <i>iFxxxx</i>.<br><br>It is also possible to add Models as expressions, which are then evaluated to create a model. Such models, shown in <b><font color="#33cc00">green</font></b> in the Models menu, are <i><b>'dynamic'</b></i> in the sense that they are used to effectively create <i>other</i> static models. Such model creators do not have a unique model iD. For instance, the '<i>sqw_phonons</i>' model is dynamic. When called, it requires to enter parameters to initiate the model creation, such as the DFT code to use, the k-mesk, ... Then, a <i>static</i> model is created, but the parameters used initially (DFT, k-mesh, ...) can not be changed further. However, the model parameters (intensity, ...) can be changed, e.g. during fit processes.<br><br>To import a Model expression as a dynamic model (creator), use:<br><ul><li><code><font color="#3366ff">mifit</font>(<font color="#cc33cc">'Models_Add_Entry'</font>,<font color="#cc33cc">'gauss+lorz'</font>);</code></li></ul><h4><a class="mozTocH4" name="mozTocId805610"></a>from copy/paste</h4><p>It is possible to use the Copy/Paste mechanism to import data sets. If the copied element is a file, it will be imported the same way as with the Open item above when selecting the <i>Paste</i> item in the <i>Edit</i> menu. You can also click on the grey window background or the 'Data Sets' label above the list, and press <i>Ctrl-Z</i>.<br></p><p>You can also copy whole data blocks (e.g. numerical values/array from a text editor or a spreadsheet), and paste them into miFit.<br></p><h4><a class="mozTocH4" name="mozTocId565408"></a>from drag-and-drop</h4><p>A very convenient way to import data is to drag a data file, and drop it into the miFit window. A new data sets object is then read, and added to the list.<br></p><h4><a class="mozTocH4" name="mozTocId997017"></a>creating a new Data set</h4><p>You may create a new data set using a spreadsheet by selecting the <i>New</i> item in the <i>File</i> menu, or the white page icon in the toolbar. Type in your data (Copy/Paste works). The data set will be imported into miFit when you close the window.<br></p><h4><a class="mozTocH4" name="mozTocId638950"></a>creating new Models</h4><p>The way to define new Models into miFit is <i>via</i> the Matlab/iFit prompt (see <a href="#mozTocId315062">above</a>), or by importing a data file containing a model (iFunc) definition.<br></p><h3><a class="mozTocH3" name="mozTocId82620"></a>Working with Data sets<br></h3><h4><a class="mozTocH3" name="mozTocId207324"></a>
+    Plotting data</h4>
+    <br><h4><a class="mozTocH3" name="mozTocId97236"></a>
+    Sorting and searching data</h4>
+    <br><h4><a class="mozTocH3" name="mozTocId467624"></a>
+    Mathematical operators on Data sets</h4><ul>
+      <li>Unary</li>
+      <li>Binary</li>
+      <li>Others</li></ul><h3><a class="mozTocH4" name="mozTocId729437"></a>Working with Models (fitting)</h3><ul>
+    </ul><h4><a class="mozTocH3" name="mozTocId892073"></a>
+    Assigning and Evaluating Models to Data sets</h4><h4><a class="mozTocH3" name="mozTocId830396"></a>
+    Fitting Models to Data sets</h4><h4><a class="mozTocH3" name="mozTocId687239"></a>
+    Selecting a fit routine (optimization algorithm)</h4><ul>
+      <li>Configuration of the algorithm</li>
+      <li>Selecting the optimization criteria (least-squares, ...)</li>
+    </ul><h3><a class="mozTocH3" name="mozTocId457482"></a>
+    Preferences</h3><h3><a class="mozTocH3" name="mozTocId430134"></a>
+    Saving your work</h3><h4><a class="mozTocH3" name="mozTocId319597"></a>
+    Saving all data sets, Models and Preferences</h4>
+    <br><h4><a class="mozTocH3" name="mozTocId557435"></a>
+    Exporting selected Data sets</h4>
+    Into files<br>To the Matlab/iFit prompt<br>Copy/Paste<br><h4><a class="mozTocH3" name="mozTocId887221"></a>
+    Exporting Models (and importing them as well)</h4>
+    <br>
+    <br>
+      
+    
+    <hr style="width: 100%; height: 2px;">
+    <div style="text-align: center;"><span style="font-style: italic;">E.
+Farhi
+
+
+        - miFit/GUI - </span><span style="font-style: italic;"></span><span style="font-style: italic;"> $Date$ $Revision$ </span><span style="font-style: italic;"> </span>- back to <a href="file:///home/farhi/dev/iFit/Docs/index.html">Main iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France
+          &lt;www.ill.eu&gt;" src="file:///home/farhi/dev/iFit/Docs/images/ILL-web-jpeg.jpg" alt="ILL,
+          Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid
+          ; width: 53px; height: 50px;" align="right"></a> </div>
+  
+
+</body></html>
