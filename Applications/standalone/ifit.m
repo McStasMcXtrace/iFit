@@ -286,8 +286,8 @@ function inline_display_banner
   disp('   iFit   help is fully available at <http://ifit.mccode.org>.')
   disp('   Matlab help is fully available at <http://www.mathworks.com/help/techdoc>.')
   disp('   Type ''exit'' or Ctrl-C to exit.');
-  disp('** Applications:');
-  disp('   mifit (GUI), rescal (neutron TAS), sqw_phonons (Phonons/DFT), ');
+  disp('** Applications (User Interfaces):');
+  disp('   mifit (main GUI), rescal (neutron TAS), sqw_phonons (Phonons/DFT), ');
   disp('   sqw_spinw (SpinW, sw)');
   disp([ '** Example data files: ' fullfile(ifitpath ,'Data') ]);
   if ispc

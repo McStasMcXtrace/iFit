@@ -34,8 +34,15 @@
     <br>
     <hr style="width: 100%; height: 2px;">
     <div style="text-align: center;">Commands we use in this page: <span
-        style="font-style: italic;">iData, load, </span><a
-        href="Methods.html">methods</a>
+        style="font-style: italic;">iData, load(iData, filename), </span><a
+        href="Methods.html">methods</a><br>
+      <span style="font-style: italic;"><b>See also</b>: <a
+          href="Loaders.html">Low level Loaders</a></span><span
+        style="font-style: italic;">, <a
+          href="Save.html">Save
+          (export) data sets</a> and <a
+          href="iFunc.html#mozTocId2492">Save
+          Models</a></span><br>
       <div style="text-align: left;"><br>
         In this document we present how to import data as <a
           href="iData.html">iData</a> objects from files, variables and
@@ -64,8 +71,7 @@
     <br>
     These commands result in the following output, which produce an
     iData object:<br>
-    <table style="text-align: left; width: 100%;" border="1"
-      cellpadding="2" cellspacing="2">
+    <table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
       <tbody>
         <tr>
           <td style="vertical-align: top;">
@@ -79,9 +85,7 @@
     Linux/Unix/MacOSX and '\' for Windows) is automatically adapted to
     the system used.<a href="images/uigetfiles.gif"><img alt="File
         selector to inport files into iData" title="File selector to
-        inport files into iData" src="images/uigetfiles.gif"
-        style="border: 0px solid ; width: 308px; height: 428px;"
-        align="right"></a><br>
+        inport files into iData" src="images/uigetfiles.gif" style="border: 0px solid ; width: 308px; height: 428px;" align="right"></a><br>
     Directory may be imported (and thus all files therein) as well as
     lists of files (given as a cell of strings {...})<br>
     <div style="margin-left: 40px;">
@@ -93,8 +97,7 @@
     A <a href="../Loaders/doc/uigetfiles.html">file selector</a>, which
     supports multiple file selection, may be used by issuing<br>
     <pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">''</span>)<br>&gt;&gt; a = <span style="color: rgb(51, 102, 255);">load</span>(iData,<span style="color: rgb(204, 51, 204);">''</span>)<br></pre>
-    The choice of the file selector style can be done in the <span
-      style="font-style: italic;">iLoad</span> configuration (refer to
+    The choice of the file selector style can be done in the <span style="font-style: italic;">iLoad</span> configuration (refer to
     the <a href="Loaders.html#mozTocId56356">Loaders</a> page).<br>
     <br>
     By default, an analysis of the file name extension and the file
@@ -105,8 +108,7 @@
     A list of the supported formats is shown <a href="#mozTocId59221">below.</a><br>
     <br>
     The resulting objects will usually be 1D, 2D, 3D, nD histograms or
-    nD event lists. Refer to the <a href="iData.html">iData</a> and <a
-      href="Math.html">Math</a> page to learn how to manipulate these
+    nD event lists. Refer to the <a href="iData.html">iData</a> and <a href="Math.html">Math</a> page to learn how to manipulate these
     objects (set, get, setalias, getalias, setaxis, getaxis), and in
     particular how to reduce/extend their dimensionality (<i>sum,
       indexing,</i> ...), or convert events into histograms (<i>hist,
@@ -116,14 +118,10 @@
     </h4>
     The specified file names may include URL tags such as<br>
     <ul>
-      <li><span style="font-weight: bold;">file://</span><span
-          style="font-style: italic;">filename</span></li>
-      <li><span style="font-weight: bold;">ftp://</span><span
-          style="font-style: italic;">filename</span></li>
-      <li><span style="font-weight: bold;">http://</span><span
-          style="font-style: italic;">filename</span></li>
-      <li><span style="font-weight: bold;">https://</span><span
-          style="font-style: italic;">filename<br>
+      <li><span style="font-weight: bold;">file://</span><span style="font-style: italic;">filename</span></li>
+      <li><span style="font-weight: bold;">ftp://</span><span style="font-style: italic;">filename</span></li>
+      <li><span style="font-weight: bold;">http://</span><span style="font-style: italic;">filename</span></li>
+      <li><span style="font-weight: bold;">https://</span><span style="font-style: italic;">filename<br>
         </span></li>
     </ul>
     were the two latter cases first get a copy of the distant file
@@ -203,8 +201,7 @@
       Axes when they are not set properly</h4>
     There may be cases for which the reading of the file is done
     properly, but the Signal, Error and Axes are set to their default
-    values, that is the largest numerical block as the Signal, the <span
-      style="font-style: italic;">sqrt(Signal)</span> as the Error, and
+    values, that is the largest numerical block as the Signal, the <span style="font-style: italic;">sqrt(Signal)</span> as the Error, and
     simple indices as Axes. In this case it may be appropriate to
     customize the appearence of the scientific data set by setting the
     Signal, Error aliases, and defining the Axes values.<br>
@@ -221,8 +218,7 @@
     Alias as a link to the <span style="color: rgb(204, 51, 204);
       font-style: italic;">IIIIIIIIIIIIIIIIIIIIIIIIIIIII_17</span> field
     in the Data member of the object, of size 340 rows by 1024 columns.
-    Letting the Error to its default empty definition assigns it to <span
-      style="font-style: italic; color: rgb(204, 51, 204);">sqrt(this.Signal)</span>,
+    Letting the Error to its default empty definition assigns it to <span style="font-style: italic; color: rgb(204, 51, 204);">sqrt(this.Signal)</span>,
     but you may define it as a link to a part of the Data, just as for
     the Signal. The <span style="font-style: italic;">Signal</span>
     label can optionally be defined as <br>
@@ -251,39 +247,30 @@
     </div>
     <h3><a class="mozTocH3" name="mozTocId59221"></a>Supported data
       formats</h3>
-    In principle, any text based file is loaded transparently (see <a
-      href="#mozTocId141862">below</a>). Binary files require a
+    In principle, any text based file is loaded transparently (see <a href="#mozTocId141862">below</a>). Binary files require a
     dedicated wrapper, but many formats are supported. In some case,
     additional axis definition specific to the format will be applied.<br>
     <br>
-    The list of available methods is usually stored in the <a
-      href="../Librarires/Loaders/iLoad_ini.m"><span style="font-style:
+    The list of available methods is usually stored in the <a href="../Librarires/Loaders/iLoad_ini.m"><span style="font-style:
         italic; color: rgb(204, 51, 204);">iFit/Librarires/Loaders/iLoad_ini.m</span></a>
     file, <br>
     and can be obtained from the <span style="font-weight: bold;
       font-style: italic;">iLoad</span> function<br>
     <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">iLoad</span>(<span style="color: rgb(204, 51, 204);"></span><span style="color: rgb(204, 51, 204);">'formats'</span>);	<span style="font-style: italic;">% or: iData('formats')</span></pre>
     A local <span style="font-style: italic;">iLoad.ini</span>
-    configuration file may be stored in the Matlab <span
-      style="font-style: italic;">Preferences</span> directory, which
-    then overrides the system default (refer to the <a
-      href="Loaders.html#mozTocId56356">iLoad configuration</a> help
+    configuration file may be stored in the Matlab <span style="font-style: italic;">Preferences</span> directory, which
+    then overrides the system default (refer to the <a href="Loaders.html#mozTocId56356">iLoad configuration</a> help
     page).<br>
     <br>
-    The current supported format list is (details in <a
-      style="font-weight: bold;" href="Loaders.html">Loaders</a>):<img
-      style="width: 340px; height: 338px;" alt="iData load import method
-      selector" title="iData load import method selector"
-      src="images/iData_load_method_selector.png" align="right"><br>
+    The current supported format list is (details in <a style="font-weight: bold;" href="Loaders.html">Loaders</a>):<img style="width: 340px; height: 338px;" alt="iData load import method
+      selector" title="iData load import method selector" src="images/iData_load_method_selector.png" align="right"><br>
     <ul>
       <li>any Data in text format<br>
       </li>
-      <li>ILL Data (legacy, text, most instruments at the <a
-          href="http://www.ill.fr/YellowBook/">ILL</a>)<br>
+      <li>ILL Data (legacy, text, most instruments at the <a href="http://www.ill.fr/YellowBook/">ILL</a>)<br>
       </li>
       <li>ILL TAS Data (legacy, text, polarized or not)</li>
-      <li>ILL <a
-href="http://www.ill.eu/instruments-support/instruments-groups/instruments/cyclops/description/instrument-layout/">Cyclops</a>
+      <li>ILL <a href="http://www.ill.eu/instruments-support/instruments-groups/instruments/cyclops/description/instrument-layout/">Cyclops</a>
         neutron Laue diffractometer image (HBIN)<br>
       </li>
       <li>Chalk River <a href="http://www.nrc-cnrc.gc.ca/cnbc/">CNBC</a>
@@ -293,12 +280,9 @@ href="http://www.ill.eu/instruments-support/instruments-groups/instruments/cyclo
       </li>
       <li><a href="http://www.mcstas.org">McStas</a> (Scan DAT output,
         1D, 2D monitor, event lists, sim file, Sqw, LAZ, LAU tables)</li>
-      <li>ISIS/SPE and SQW tof data (see <a
-          href="http://horace.isis.rl.ac.uk/">Horace</a> and <a
-          href="http://www.libisis.org/">LibISIS</a>)<br>
+      <li>ISIS/SPE and SQW tof data (see <a href="http://horace.isis.rl.ac.uk/">Horace</a> and <a href="http://www.libisis.org/">LibISIS</a>)<br>
       </li>
-      <li>INX tof data (ILL <a
-href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/tofhr/inx/">processed
+      <li>INX tof data (ILL <a href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/tofhr/inx/">processed
 
 
 
@@ -322,8 +306,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
           TOF</a>)<br>
       </li>
       <li>ESRF data format (*.edf)</li>
-      <li>Xray/neutron diffraction <a
-          href="http://www.esrf.fr/computing/Forum/imgCIF/cbf_definition.html">Crystallographic
+      <li>Xray/neutron diffraction <a href="http://www.esrf.fr/computing/Forum/imgCIF/cbf_definition.html">Crystallographic
 
 
 
@@ -345,8 +328,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
           binary file</a> (*.cbf)</li>
-      <li><a
-          href="http://en.wikipedia.org/wiki/Analyze_%28imaging_software%29">MRI
+      <li><a href="http://en.wikipedia.org/wiki/Analyze_%28imaging_software%29">MRI
 
 
 
@@ -390,8 +372,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
       </li>
       <li><a href="http://www.hdfgroup.org/">HDF5</a> (*.hdf5) including
         the <a href="http://nexusformat.org">NeXus</a> format (*.nx,
-        *.n4, *.ns, *.n5, *.nxs) and more specifically <a
-          href="http://www.mantidproject.org">Mantid</a> workspaces.<br>
+        *.n4, *.ns, *.n5, *.nxs) and more specifically <a href="http://www.mantidproject.org">Mantid</a> workspaces.<br>
       </li>
       <li>Matlab workspace (*.mat) a customized HDF<br>
       </li>
@@ -414,23 +395,18 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
       </li>
       <li><a href="http://www.andor.com/scientific-cameras">SIF</a>
         Andor SIF CCD Camera (*.sif)</li>
-      <li><a
-          href="http://www.princetoninstruments.com/products/software/#1">SPE</a>
+      <li><a href="http://www.princetoninstruments.com/products/software/#1">SPE</a>
         Princeton/Roper Scientific WinView CCD / PI Acton Camera file
         (*.spe)</li>
       <li><a href="http://www.adsc-xray.com/products.html">IMG</a> ADSC
         Quantum CCD Camera (*.img)</li>
-      <li><a
-          href="http://en.wikipedia.org/wiki/Crystallographic_Information_File">CIF</a>,
-        <a href="http://www.ill.eu/sites/fullprof/">CFL/PCR</a>, <a
-          href="http://shelx.uni-ac.gwdg.de/SHELX/">INS/RES/SHX</a>
+      <li><a href="http://en.wikipedia.org/wiki/Crystallographic_Information_File">CIF</a>,
+        <a href="http://www.ill.eu/sites/fullprof/">CFL/PCR</a>, <a href="http://shelx.uni-ac.gwdg.de/SHELX/">INS/RES/SHX</a>
         Crystallography files (FullProf, ShelX)<br>
       </li>
-      <li>EZD, MRC and <a
-          href="http://en.wikipedia.org/wiki/CCP4_%28file_format%29">CCP4</a>
+      <li>EZD, MRC and <a href="http://en.wikipedia.org/wiki/CCP4_%28file_format%29">CCP4</a>
         electron density maps (*.map, *.ezd, *.ccp4)</li>
-      <li><a href="http://en.wikipedia.org/wiki/Yaml">YAML</a> and <a
-          href="http://en.wikipedia.org/wiki/JSON">JSON</a> (*.yaml,
+      <li><a href="http://en.wikipedia.org/wiki/Yaml">YAML</a> and <a href="http://en.wikipedia.org/wiki/JSON">JSON</a> (*.yaml,
         *.yml, *.json)</li>
       <li>NMR Bruker, Varian and JEOL data files</li>
       <li><a href="http://www.wavemetrics.com/">IBW</a> Igor Wave data
@@ -440,12 +416,10 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
       <li>LabView <a href="http://www.ni.com/white-paper/4139/en/">LVM</a>
         and <a href="http://www.ni.com/white-paper/3727/en/">TDMS</a>
         files (*.lvm; *.tdms)</li>
-      <li>Bruker FT-IR <a
-href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectroscopy/opus-software/overview.html">OPUS</a>
+      <li>Bruker FT-IR <a href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectroscopy/opus-software/overview.html">OPUS</a>
         data files (*.0001, *.0002, ...)</li>
       <li>LLB TAS binary data files (R* and C*)</li>
-      <li><a
-          href="https://en.wikipedia.org/wiki/IDL_%28programming_language%29">IDL</a>
+      <li><a href="https://en.wikipedia.org/wiki/IDL_%28programming_language%29">IDL</a>
         SAV data (*.sav)</li>
       <li>DAT <a href="http://www.qdusa.com/products/mpms3.html">Quantum
 
@@ -459,23 +433,20 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
         data set</li>
       <li>Agilent Mass Spectrometry (*.CH, *.D, *.MS)</li>
       <li>Thermo Finnigan Mass Spectrometry (*.RAW)</li>
-      <li><a
-          href="https://www.oecd-nea.org/dbdata/data/manual-endf/endf102.pdf">ENDF</a>
+      <li><a href="https://www.oecd-nea.org/dbdata/data/manual-endf/endf102.pdf">ENDF</a>
         <a href="https://en.wikipedia.org/wiki/Nuclear_data">Evaluated
           Nuclear Data File</a> (*.endf,*.tsl)</li>
       <li>ACE <a href="https://mcnp.lanl.gov/">MCNP</a> files (*.ace)
         [requires <a href="http://pyne.io/">PyNE</a>]<br>
       </li>
     </ul>
-    A detailed list of format descriptions can be found in the <a
-      style="font-weight: bold;" href="Loaders.html">Loaders</a> help
+    A detailed list of format descriptions can be found in the <a style="font-weight: bold;" href="Loaders.html">Loaders</a> help
     pages, as well as the <a href="Loaders.html#mozTocId120998">procedure</a>
     to be used to define new data formats. Some of these formats are
     also available for <a href="Save.html">Saving</a> iData objects.<br>
     <br>
     To force a file to be imported with a specific data format, specify
-    the format description or extension as listed from the <span
-      style="font-style: italic;"><span style="color: rgb(51, 102,
+    the format description or extension as listed from the <span style="font-style: italic;"><span style="color: rgb(51, 102,
         255);">iData</span>(<span style="color: rgb(204, 51, 204);">'formats'</span>)</span>
     output e.g.:<br>
     <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);"></span><span style="color: rgb(204, 51, 204);">'formats'</span>)<br>...<br>PDB        read_pdb/load_xyen  Protein Data Bank<br>...<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">'filename','Protein Data Bank'<span style="color: rgb(0, 0, 0);">)<br></span></span>&gt;&gt; <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">'filename','PDB'<span style="color: rgb(0, 0, 0);">)</span></span><br></pre>
@@ -486,8 +457,7 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
     in memory. You will probably need to assign manually some of the
     Signal and Axes (see <a href="iData.html">iData</a> object help).<br>
     <br>
-    If you want to tune the way a <b>text file</b> is read, read the '<a
-      href="Loaders.html#mozTocId149630">Unsupported data formats</a>'
+    If you want to tune the way a <b>text file</b> is read, read the '<a href="Loaders.html#mozTocId149630">Unsupported data formats</a>'
     section in the Loaders page. You can for instance handle wrapped
     lines, specific tokens to search for, automatic append mode, ...<br>
     <br>
@@ -497,31 +467,22 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
     <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">iLoad</span>(<font color="#cc33cc">' '</font>,<font color="#cc33cc">'text'</font>,<font color="#cc33cc">'--help'</font>)
 </pre>
     It may also be that the <span style="font-style: italic;">looktxt</span>
-    MeX file is corrupted. Refer to the <a
-      href="Changes.html#mozTocId556618">Changes/Bugs</a> and <a
-      href="Install.html#mozTocId359173">Install</a> pages.<br>
+    MeX file is corrupted. Refer to the <a href="Changes.html#mozTocId556618">Changes/Bugs</a> and <a href="Install.html#mozTocId359173">Install</a> pages.<br>
     <h3><a class="mozTocH3" name="mozTocId782211"></a>Example data files</h3>
-    <a href="images/iFit_Data.png"><img alt="iFit: example Data"
-        title="iFit: example Data" src="images/iFit_Data.png"
-        style="border: 0px solid ; width: 300px; height: 266px;"
-        align="right"></a>The iFit package provides a set of <a
-      href="../Data/">example data files</a> used to demonstrate the
-    functionality of the package. The description of each format is in <a
-      style="font-weight: bold;" href="Loaders.html">Loaders</a>.
+    <a href="images/iFit_Data.png"><img alt="iFit: example Data" title="iFit: example Data" src="images/iFit_Data.png" style="border: 0px solid ; width: 300px; height: 266px;" align="right"></a>The iFit package provides a set of <a href="../Data/">example data files</a> used to demonstrate the
+    functionality of the package. The description of each format is in <a style="font-weight: bold;" href="Loaders.html">Loaders</a>.
     <ul>
       <li><a href="../Data/ILL_D10.dat"><span style="font-weight: bold;">ILL_D10.dat</span></a>:
         some <a href="http://www.ill.eu/d10">D10</a> neutron
         diffractometer measurement at the ILL [text] </li>
       <li><a href="../Data/ILL_IN20.dat"><span style="font-weight:
-            bold;">ILL_IN20.dat</span></a>: some <a
-          href="http://www.ill.eu/in20">IN20</a> neutron triple-axis
+            bold;">ILL_IN20.dat</span></a>: some <a href="http://www.ill.eu/in20">IN20</a> neutron triple-axis
         diffractometer at the ILL (GL goniometer scan) [text] </li>
       <li><a href="../Data/ILL_IN6.dat"><span style="font-weight: bold;">ILL_IN6.dat</span></a>:
         some <a href="http://www.ill.eu/in6">IN6</a> neutron time of
         flight spectrometer at the ILL (liquid water) [text] </li>
       <li><a href="../Data/ILL_IN6_2.dat"><span style="font-weight:
-            bold;">ILL_IN6_2.dat</span></a>: some <a
-          href="http://www.ill.eu/in6">IN6</a> neutron time of flight
+            bold;">ILL_IN6_2.dat</span></a>: some <a href="http://www.ill.eu/in6">IN6</a> neutron time of flight
         spectrometer at the ILL (liquid 3He) [text] </li>
       <li><a href="../Data/MCA.dat"><span style="font-weight: bold;">MCA.dat</span></a>:
         some Canberra multichannel analyzer data (from a Sandercock
@@ -539,8 +500,7 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
         some <a href="http://www.ill.fr/in12">IN12</a> neutron
         triple-axis diffractometer at the ILL [text]</li>
       <li><a href="../Data/Example.spe"><span style="font-weight: bold;">Example.spe</span></a>:
-        an ISIS SPE file from a TOF spectrometer (from the <a
-          href="http://www.mantidproject.org">Mantid Project</a>) [SPE]<br>
+        an ISIS SPE file from a TOF spectrometer (from the <a href="http://www.mantidproject.org">Mantid Project</a>) [SPE]<br>
       </li>
       <li><a href="../Data/30dor.fits"><span style="font-weight: bold;">30dor.fits</span></a>:
         30Dor Spitzer IRAC 8um image from SAGE [binary, FITS format]</li>
@@ -553,28 +513,20 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
       <li><a href="../Data/SQW_coh_lGe.nc"><span style="font-weight:
             bold;">SQW_coh_lGe.nc</span></a>: the coherent dynamic
         structure factor obtained from<span style="font-style: italic;">
-          ab-initio</span> molecular dynamics (<a
-          href="http://cms.mpi.univie.ac.at/vasp/">VASP</a>) and
+          ab-initio</span> molecular dynamics (<a href="http://cms.mpi.univie.ac.at/vasp/">VASP</a>) and
         analyzed with <a href="https://forge.ill.fr/projects/nmoldyn">nMoldyn</a>
         [binary, NetCDF]</li>
-      <li><a href="../Data/IRS21360_graphite002_ipg.nxs"><span
-            style="font-weight: bold;">IRS21360_graphite002_ipg.nxs</span></a>:
+      <li><a href="../Data/IRS21360_graphite002_ipg.nxs"><span style="font-weight: bold;">IRS21360_graphite002_ipg.nxs</span></a>:
         an <a href="http://www.isis.stfc.ac.uk/instruments/iris/">ISIS/IRIS</a>
-        high resolution TOF spectrometer (<a
-          href="http://nexusformat.org/">NeXus</a> file from the <a
-          href="http://www.mantidproject.org">Mantid Project</a>)
+        high resolution TOF spectrometer (<a href="http://nexusformat.org/">NeXus</a> file from the <a href="http://www.mantidproject.org">Mantid Project</a>)
         [binary, HDF5/NeXus with compression]</li>
       <li><a style="font-weight: bold;" href="../Data/peg268.csv">peg268.csv</a>:
         an example Comma Separated values files from Excel [text].</li>
-      <li><a style="font-weight: bold;"
-          href="../Data/YIG_4A_corr_vana_spectre.inx">YIG_4A_corr_vana_spectre.inx</a>:
-        an INX example file obtained from <a
-          href="http://www.ill.eu/in5">IN5</a> tof at the ILL [text,
+      <li><a style="font-weight: bold;" href="../Data/YIG_4A_corr_vana_spectre.inx">YIG_4A_corr_vana_spectre.inx</a>:
+        an INX example file obtained from <a href="http://www.ill.eu/in5">IN5</a> tof at the ILL [text,
         INX].</li>
-      <li><a style="font-weight: bold;"
-          href="../Data/cyno_atlas.4dint.hdr">cyno_atlas.4dint.hdr</a>
-        and <a href="../Data/cyno_atlas.4dint.img"><span
-            style="font-weight: bold;">cyno_atlas.4dint.im</span>g</a>:
+      <li><a style="font-weight: bold;" href="../Data/cyno_atlas.4dint.hdr">cyno_atlas.4dint.hdr</a>
+        and <a href="../Data/cyno_atlas.4dint.img"><span style="font-weight: bold;">cyno_atlas.4dint.im</span>g</a>:
         Tomographic monkey brain data - Volume dataset in Analyze
         format. Open the<span style="font-style: italic;"> 'hdr' </span>file.
 
@@ -597,8 +549,7 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
 
 
 
-        See <a
-          href="http://www.mathworks.com/matlabcentral/fileexchange/3760">ReadAnalyze</a>&nbsp;
+        See <a href="http://www.mathworks.com/matlabcentral/fileexchange/3760">ReadAnalyze</a>&nbsp;
 
 
 
@@ -620,55 +571,41 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
 
 
         [binary]</li>
-      <li><a style="font-weight: bold;"
-          href="../Data/insulin_pilatus6mconverted_orig.cbf">insulin_pilatus6mconverted_orig.cbf</a>:
-        a CBF insulin small angle scattering pattern, e.g. from<a
-          href="http://www.psi.ch/sls/csaxs/software"> cSAXS@SLS</a>
+      <li><a style="font-weight: bold;" href="../Data/insulin_pilatus6mconverted_orig.cbf">insulin_pilatus6mconverted_orig.cbf</a>:
+        a CBF insulin small angle scattering pattern, e.g. from<a href="http://www.psi.ch/sls/csaxs/software"> cSAXS@SLS</a>
         [binary, CBF]</li>
-      <li><a style="font-weight: bold;"
-          href="../Data/rita22010n021140.hdf">rita22010n021140.hdf</a>:
+      <li><a style="font-weight: bold;" href="../Data/rita22010n021140.hdf">rita22010n021140.hdf</a>:
         a <a href="http://spectroscopy.web.psi.ch/rita2/">RITA2@PSI</a>
         data file [binary, HDF5/NeXus with compression]</li>
       <li><a style="font-weight: bold;" href="../Data/PDBSilk.pdb">PDBSilk.pdb</a>:
         an example PDB file [text, PDB]</li>
-      <li><a style="font-weight: bold;"
-          href="../Data/nano_50K_4.8a_03_h4.hdf">nano_50K_4.8a_03_h4.hdf</a>:
-        an inelastic scattering example from <a
-          href="http://www.ill.eu/in5">IN5</a> tof at the ILL [binary,
+      <li><a style="font-weight: bold;" href="../Data/nano_50K_4.8a_03_h4.hdf">nano_50K_4.8a_03_h4.hdf</a>:
+        an inelastic scattering example from <a href="http://www.ill.eu/in5">IN5</a> tof at the ILL [binary,
         HDF4/NeXus with compression]</li>
-      <li><a href="../Data/Diff_BananaTheta_1314088587.th"
-          style="font-weight: bold;">Diff_BananaTheta_1314088587.th</a>
-        and <a style="font-weight: bold;"
-          href="../Data/Diff_BananaPSD_1314088587.th_y">Diff_BananaPSD_1314088587.th_y</a>:
+      <li><a href="../Data/Diff_BananaTheta_1314088587.th" style="font-weight: bold;">Diff_BananaTheta_1314088587.th</a>
+        and <a style="font-weight: bold;" href="../Data/Diff_BananaPSD_1314088587.th_y">Diff_BananaPSD_1314088587.th_y</a>:
         example <a href="http://www.mcstas.org">McStas</a> simulation
         result files, 1D and 2D [text, McStas]</li>
-      <li><a style="font-weight: bold;"
-          href="../Data/Monitor_GV_1330447143_list.L.x.y.z">Monitor_GV_1330447143_list.L.x.y.z</a>:
-        a list of events simulated with <a
-          href="http://www.mcstas.org/">McStas</a>, for the L3
+      <li><a style="font-weight: bold;" href="../Data/Monitor_GV_1330447143_list.L.x.y.z">Monitor_GV_1330447143_list.L.x.y.z</a>:
+        a list of events simulated with <a href="http://www.mcstas.org/">McStas</a>, for the L3
         strain-scanner at <a href="http://www.nrc-cnrc.gc.ca/cnbc/">CNBC</a>
         NRU [text, McStas]</li>
       <li><a style="font-weight: bold;" href="../Data/AL20_017.DAT">AL20_017.DAT</a>:
-        example data files from the D3 reflectometer at Chalk River <a
-          href="http://www.nrc-cnrc.gc.ca/cnbc/">CNBC</a> NRU [text]</li>
+        example data files from the D3 reflectometer at Chalk River <a href="http://www.nrc-cnrc.gc.ca/cnbc/">CNBC</a> NRU [text]</li>
       <li><a style="font-weight: bold;" href="../Data/nac_1645179.dat">nac_1645179.dat</a>:
         a D20@ILL diffractogram of a Na2Ca3Al2F14 powder&nbsp; [text]</li>
       <li><a style="font-weight: bold;" href="../Data/Na2Ca3Al2F14.cfl">Na2Ca3Al2F14.cfl</a>:
         a NaCaAlF standard powder used to calibrate neutron
         diffractometers [text]</li>
-      <li><a style="font-weight: bold;"
-          href="../Data/111107AgBH.0001.mccd">111107AgBH.0001.mccd</a>:
+      <li><a style="font-weight: bold;" href="../Data/111107AgBH.0001.mccd">111107AgBH.0001.mccd</a>:
         an X-ray MarCCD image [binary/TIFF]</li>
-      <li><a style="font-weight: bold;"
-          href="../Data/Q1_Test_Protein.img">Q1_Test_Protein.img</a>: an
+      <li><a style="font-weight: bold;" href="../Data/Q1_Test_Protein.img">Q1_Test_Protein.img</a>: an
         X-ray ADSC CCD Camera [binary]</li>
       <li><b><a href="../Data/gluco_toluene.0001">gluco_toluene.0001</a></b>:
         an OPUS file [binary]</li>
       <li><b><a href="../Data/simple_test.tdms">simple_test.tdms</a></b>:
         a LabView TDMS file [binary]</li>
-      <li><a href="../Data/C004"><b>C004</b></a> and <a
-          href="../Data/R014"><b>R014</b></a>: <a
-          href="http://www-llb.cea.fr/">LLB</a> TAS [binary]</li>
+      <li><a href="../Data/C004"><b>C004</b></a> and <a href="../Data/R014"><b>R014</b></a>: <a href="http://www-llb.cea.fr/">LLB</a> TAS [binary]</li>
       <li><b><a href="../Data/POSCAR_MgO">POSCAR_MgO:</a></b> a VASP
         system configuration for MgO insulator [POSCAR]</li>
       <li><a href="../Data/POSCAR_SrTiO3"><b>POSCAR_SrTiO3</b></a>: a
@@ -681,8 +618,7 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
         system configuration for Al metal [POSCAR]<b><br>
         </b></li>
       <li><b><a href="../Data/008545.spe">008545.spe</a></b>: an ISIS
-        SPE file from a TOF spectrometer (from <a
-          href="http://www.ill.eu/in5">IN5@ILL</a>) [SPE]<br>
+        SPE file from a TOF spectrometer (from <a href="http://www.ill.eu/in5">IN5@ILL</a>) [SPE]<br>
       </li>
     </ul>
     All of these can be directly accessed with e.g.<br>
@@ -786,16 +722,12 @@ identify
 
     the proper importation method to use.<br>
     <br>
-    The text files are processed with the <a
-      href="../Loaders/doc/looktxt.html">looktxt</a> parser (refer to <a
-      href="http://looktxt.sourceforge.net">http://looktxt.sourceforge.net</a>)
+    The text files are processed with the <a href="../Loaders/doc/looktxt.html">looktxt</a> parser (refer to <a href="http://looktxt.sourceforge.net">http://looktxt.sourceforge.net</a>)
     and translated into a Matlab script which is then read into the
     workspace. Binary files are read with dedicated read routines, as it
-    is usually not possible to interpret correctly the file structure <span
-      style="font-style: italic;">ab-initio</span>. <br>
+    is usually not possible to interpret correctly the file structure <span style="font-style: italic;">ab-initio</span>. <br>
     <br>
-    The resulting Matlab variable is a structure, which holds a <span
-      style="font-style: italic;">Data</span> field with all numerical
+    The resulting Matlab variable is a structure, which holds a <span style="font-style: italic;">Data</span> field with all numerical
     blocks from the initial file, and a <span style="font-style:
       italic;">Header</span> field which holds any preceding comment
     strings for each field. Data fields are automatically named from
@@ -813,8 +745,7 @@ identify
     learn how to customize load methods and import filters.<br>
     <br>
     <div style="text-align: right;"><span style="font-weight: bold;">To
-        get more help: </span><a href="Loaders.html">Loaders</a>, <a
-        href="../Loaders/doc/looktxt.html">looktxt</a><br>
+        get more help: </span><a href="Loaders.html">Loaders</a>, <a href="../Loaders/doc/looktxt.html">looktxt</a><br>
     </div>
     <br>
     <hr style="width: 100%; height: 2px;">
@@ -847,5 +778,6 @@ Farhi
           &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL,
           Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid
           ; width: 53px; height: 50px;" align="right"></a> </div>
-  </body>
-</html>
+  
+
+</body></html>

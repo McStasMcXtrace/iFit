@@ -1,54 +1,73 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-
-
-
-
-
-
-  <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
-  <title>iFit: Quick Start/Tutorial</title>
-</head><body>
-<h1 style="text-align: center;"><a class="mozTocH1" name="mozTocId294096"></a>iFit: a quick start/tutorial</h1><br>
-<ol id="mozToc">
-<!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId889413">Starting</a></li><li><a href="#mozTocId112717">Load/import data
-</a></li><li><a href="#mozTocId59850">Axes and Aliases</a></li><li><a href="#mozTocId884273">Display objects</a></li><li><a href="#mozTocId590879">Mathematical operators</a></li><li><a href="#mozTocId383454">Advanced Math operators: interpolation,
-catenating, fitting
-</a></li><li><a href="#mozTocId892374">Saving your work</a></li>
-</ol>
-
-<hr style="width: 100%; height: 2px;">
-<div style="text-align: center;">Commands we use in this page: <span style="font-style: italic;">iData</span>, doc, plot, subplot, fits,
-saveas<br>
-</div>
-<br>
-In this document, we demonstrate shortly how to use the <a href="index.html">iFit</a> library, which mainly manipulates <a href="iData.html">iData</a> objects.<br>
-<br>
-The object of these tools is to<br>
-<ul>
-  <li>import transparently data files, whatever be their format [<a href="Load.html">Load</a>]<br>
-  </li>
-  <li>organize the data files contents, and in particular define their
-axes if needed [<a href="iData.html">iData axes and aliases</a>]<br>
-  </li>
-  <li>display/plot the data [<a href="Plot.html">Plot</a>]<br>
-  </li>
-  <li>apply mathematical operations [<a href="Math.html">Math</a>]<br>
-  </li>
-  <li>fit multi parameter models onto data sets [<a href="Fit.html">Fit</a>]<br>
-  </li>
-  <li>save results transparently into some common scientific formats [<a href="Save.html">Save</a>]<br>
-  </li>
-</ul>
-Each of these tasks has dedicated, detailed, documentation, as shown in
-links above.<br>
-<div style="text-align: center;">
-<h3><a class="mozTocH3" name="mozTocId889413"></a>Starting</h3>
-</div>
-Currently, iFit depends on a Matlab installation, and we assume that
-IFit has been installed properly before. If no, please refer to the <a href="Install.html">Install</a> page. Then we start Matlab, and
-declare the iFit library location.<br>
-<pre style="margin-left: 40px;">$ matlab                              <span style="font-style: italic;">% start Matlab (or click its icon)</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">addpath</span>(<span style="color: rgb(51, 102, 255);">genpath</span>(<span style="color: rgb(204, 51, 204);">'/path/to/iFit'</span>))  <span style="font-style: italic;">% declare the iFit library location</span><span style="color: rgb(51, 102, 255); font-style: italic;"></span><span style="font-style: italic;"> so that we can use it</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">doc</span>(iData)                         <span style="font-style: italic;">% open the iFit/iData documentation</span> (if you feel like reading it)<br></pre>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html;
+      charset=windows-1252">
+    <title>iFit: Quick Start/Tutorial</title>
+  </head>
+  <body>
+    <h1 style="text-align: center;"><a class="mozTocH1"
+        name="mozTocId294096"></a>iFit: a quick start/tutorial</h1>
+    <br>
+    <ol id="mozToc">
+      <!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6-->
+      <li><a href="#mozTocId889413">Starting</a></li>
+      <li><a href="#mozTocId112717">Load/import data
+        </a></li>
+      <li><a href="#mozTocId59850">Axes and Aliases</a></li>
+      <li><a href="#mozTocId884273">Display objects</a></li>
+      <li><a href="#mozTocId590879">Mathematical operators</a></li>
+      <li><a href="#mozTocId383454">Advanced Math operators:
+          interpolation,
+          catenating, fitting
+        </a></li>
+      <li><a href="#mozTocId892374">Saving your work</a></li>
+    </ol>
+    <hr style="width: 100%; height: 2px;">
+    <div style="text-align: center;">Commands we use in this page: <span
+        style="font-style: italic;">iData</span>, doc, plot, subplot,
+      fits,
+      saveas<br>
+    </div>
+    <br>
+    In this document, we demonstrate shortly how to use the <a
+      href="index.html">iFit</a> library, which mainly manipulates <a
+      href="iData.html">iData</a> objects. We focus on commands. <br>
+    If you prefer a simpler User Interface (with menus, icons, ...),
+    please read the <a href="miFit.html">miFit</a>
+    help.<br>
+    <br>
+    The object iFit is to:<br>
+    <ul>
+      <li>import transparently data files, whatever be their format [<a
+          href="Load.html">Load</a>]<br>
+      </li>
+      <li>organize the data files contents, and in particular define
+        their
+        axes if needed [<a href="iData.html">iData axes and aliases</a>]<br>
+      </li>
+      <li>display/plot the data [<a href="Plot.html">Plot</a>]<br>
+      </li>
+      <li>apply mathematical operations [<a href="Math.html">Math</a>]<br>
+      </li>
+      <li>fit multi parameter models onto data sets [<a href="Fit.html">Fit</a>]<br>
+      </li>
+      <li>save results transparently into some common scientific formats
+        [<a href="Save.html">Save</a>]<br>
+      </li>
+    </ul>
+    Each of these tasks has dedicated, detailed, documentation, as shown
+    in
+    links above.<br>
+    <div style="text-align: center;">
+      <h3><a class="mozTocH3" name="mozTocId889413"></a>Starting</h3>
+    </div>
+    Currently, iFit depends on a Matlab installation, and we assume that
+    iFit has been installed properly before. If not so, please refer to
+    the <a href="Install.html">Install</a> page. Then we start Matlab,
+    and
+    declare the iFit library location.<br>
+    <pre style="margin-left: 40px;">$ matlab                              <span style="font-style: italic;">% start Matlab (or click its icon)</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">addpath</span>(<span style="color: rgb(51, 102, 255);">genpath</span>(<span style="color: rgb(204, 51, 204);">'/path/to/iFit'</span>))  <span style="font-style: italic;">% declare the iFit library location</span><span style="color: rgb(51, 102, 255); font-style: italic;"></span><span style="font-style: italic;"> so that we can use it</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">doc</span>(iData)                         <span style="font-style: italic;">% open the iFit/iData documentation</span> (if you feel like reading it)<br></pre>
 We are ready to work. For the purpose of this tutorial, we shall handle
 some 1D and 2D example data sets.<br>
 <h3 style="text-align: center;"><a class="mozTocH3" name="mozTocId112717"></a>Load/import data<br>
@@ -196,7 +215,7 @@ To save your work simply specify the object, a file name (or empty) and
 optionally a file format (which can also be set from the file name
 extension).<br>
 <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">save</span>(a, <span style="color: rgb(204, 51, 204);">''</span>, <span style="color: rgb(204, 51, 204);">'svg'</span>)<br></pre>
-The recommended formats are Matlab MAT, HDF5, SVG, PDF, PNG, Matlab M and flat DAT.<br>
+The recommended formats are <b>Matlab</b> MAT, HDF5, SVG, PDF, PNG, Matlab M and flat DAT.<br>
 <br>
 <div style="text-align: right;"><span style="font-weight: bold;">More about</span> <a href="Save.html">Saving</a><br>
 </div>
