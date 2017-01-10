@@ -118,11 +118,11 @@ if ~isempty(dir(fullfile(d,'resolution.dat')))
   resolution.rlu.cloud = { HKLE(:,1) HKLE(:,2) HKLE(:,3) E };
   HKLE = resolution.spec.rlu2frame*HKLE';      % in [spec] from [rlu]
   resolution.spec.cloud= { HKLE(1,:)' HKLE(2,:)' HKLE(3,:)' E };
-  % disp([ mfilename ': using ' num2str(numel(E)) ' points in cloud out of ' num2str(numel(p)) ]);
+  disp([ mfilename ': using ' num2str(numel(E)) ' points in cloud out of ' num2str(numel(p)) ]);
   p = p(index);
   
+  % compute the resolution matrix on the central part (FWHM)
   index=find(p > max(p)*.5);
-  % compute the resolution matrix on the central part
   HKLE   = [ resolution.spec.cloud{:} ];
   RM = MinVolEllipse(HKLE(index,:)');
 

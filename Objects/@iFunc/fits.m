@@ -132,7 +132,7 @@ function [pars_out,criteria,message,output] = fits(model, a, pars, options, cons
 % a.Monitor (numeric)
 % a.Axes (cell of numeric)
 
-% singlme empty argument: show funcs/optim list ================================
+% single empty argument: show funcs/optim list =================================
 % handle default parameters, if missing
 if nargin == 1 && isempty(model)
   % return the list of all available optimizers
