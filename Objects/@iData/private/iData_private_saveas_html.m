@@ -1,6 +1,8 @@
 function filename = iData_private_saveas_html(a, filename, format)
   % save an iData into an HTML document
   % if the document already exists, the new content is appended
+  %
+  % 'data' in format triggers minimalistic mode for printing.
   if isempty(a), filename=[]; return; end
   if isempty(dir(filename))
     mode = 'w+';
@@ -199,7 +201,7 @@ function filename = iData_private_saveas_html(a, filename, format)
     if ~isempty(dir([ basename '.' strtok(export{index}) ]))
       fprintf(fid, [ '<li><b><a href="' basename_img '.' strtok(export{index}) '">' export{index} '</a></b>: ' ...
         export_label{index} '</li>\n' ]);
-    else
+    elseif isempty(strfind(format, 'data'))
       disp([ mfilename ': skipping ' basename '.' strtok(export{index}) ])
     end
   end
