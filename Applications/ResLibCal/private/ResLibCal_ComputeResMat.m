@@ -138,13 +138,13 @@ function res= ResLibCal_ComputeResMat_Single(EXP, h,k,l,w)
     elseif ~isempty(strfind(EXP.method, 'mcstas'))
       % we need an initial RM2RMS call so that we can get angles and conversion matrices
       res.spec.RM=eye(4);
-      [res]               = ResLibCal_RM2RMS(EXP, res);    % RM is other coordinate frames
-      % and we shal use Mcstas TAS for the cloud
+      [res]               = ResLibCal_RM2RMS(EXP, res);    % get transformation matrices (UB)
+      % and we shall use McStas TAS for the cloud
       [res.angles, res.Q] = ResLibCal_ComputeResMat_Angles(h,k,l,w, ...
                                     EXP, res.ABC.rlu2frame); % spectrometer angles
       [res, R0,RM]        = ResLibCal_RM2clouds_mcstas(EXP, res, res.angles); % generate MC clouds (spec, ABC, rlu)
       res.spec.RM= RM;  % store true RM and update other frames
-      res                 = ResLibCal_RM2RMS(EXP, res);    % RM is other coordinate frames
+      res                 = ResLibCal_RM2RMS(EXP, res);    % RM in other coordinate frames
     else % default is 'reslib'
       method = @ResMat;
       % calls ResLib/ResMat
