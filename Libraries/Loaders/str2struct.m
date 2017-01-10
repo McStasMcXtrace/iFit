@@ -17,7 +17,7 @@ function s=str2struct(string)
 %
 % Part of: Loaders utilities (ILL library)
 % Author:  E. Farhi <farhi@ill.fr>. $Date$
-% (c) E.Farhi, ILL. License: EUPL.
+% (c) E.Farhi, ILL. License: BSD.
 
 s={};
 if nargin ==0, return; end

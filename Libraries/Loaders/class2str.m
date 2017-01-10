@@ -32,7 +32,7 @@ function str=class2str(this, data, options)
 %
 % Part of: Loaders utilities (ifit.mccode.org)
 % Author:  E. Farhi <farhi@ill.fr>. $Date$
-% (c) E.Farhi, ILL. License: EUPL.
+% (c) E.Farhi, ILL. License: BSD.
 
 if     nargin == 0
   str=[]; return
