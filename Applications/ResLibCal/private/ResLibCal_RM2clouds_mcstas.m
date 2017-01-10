@@ -113,18 +113,36 @@ if ~isempty(dir(fullfile(d,'resolution.dat')))
   % Z           Y
   HKLE = Q(:,[3 1 2])';          % in [ABC]
   resolution.ABC.cloud = { HKLE(1,:)' HKLE(2,:)' HKLE(3,:)' E };
+  HKLE_ABC = HKLE;
+
   % compute the cloud for other frames: 
-  HKLE = HKLE'*inv(resolution.ABC.rlu2frame);  % in [rlu] from [ABC] by ABC.frame2rlu
-  resolution.rlu.cloud = { HKLE(:,1) HKLE(:,2) HKLE(:,3) E };
-  HKLE = resolution.spec.rlu2frame*HKLE';      % in [spec] from [rlu]
+  
+  % [ABC] U -> [rlu] R
+  U2R = inv(resolution.ABC.rlu2frame);
+  HKLE = U2R*HKLE;  % in [rlu] from [ABC] by ABC.frame2rlu
+  resolution.rlu.cloud = { HKLE(1,:)' HKLE(2,:)' HKLE(3,:)' E };
+
+  % [ABC] U -> [spec] Q
+  % U2Q = R2Q * U2R = res.spec.rlu2frame * inv(res.ABC.rlu2frame)
+  U2Q = resolution.spec.rlu2frame * inv(resolution.ABC.rlu2frame);
+  HKLE = U2Q*HKLE_ABC;      % in [spec] from [ABC]
   resolution.spec.cloud= { HKLE(1,:)' HKLE(2,:)' HKLE(3,:)' E };
   disp([ mfilename ': using ' num2str(numel(E)) ' points in cloud out of ' num2str(numel(p)) ]);
   p = p(index);
-  
-  % compute the resolution matrix on the central part (FWHM)
-  index=find(p > max(p)*.5);
-  HKLE   = [ resolution.spec.cloud{:} ];
-  RM = MinVolEllipse(HKLE(index,:)');
+
+  % compute the resolution matrix on the central part (FWHM), starting from [ABC]
+  index=find(p > max(p)*.65);
+  HKLE   = [ resolution.ABC.cloud{:} ];
+  RM_U = MinVolEllipse(HKLE(index,:)'); % in [ABC]
+  % now we convert to [rlu]
+  % RM_U = T'*RM_Q*T
+  % T=diag([0 0 0 1]); T(1:3,1:3)=Q'*U;
+  % res.ABC.cart2frame    = U'
+  % res.spec.cart2frame   = Q'
+  U = resolution.ABC.cart2frame';
+  Q = resolution.spec.cart2frame';
+  T=diag([0 0 0 1]); T(1:3,1:3)=Q'*U;
+  RM = T*RM_U*T'; % in the cartesian spectrometer space
 
 end
 rmdir(d, 's');
