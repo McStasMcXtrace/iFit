@@ -105,7 +105,7 @@ end
 % simple plot of the model "name" signal(ax)
 function h=iFunc_plot(name, signal, ax)
 % this internal function plots a single model, 1D, 2D or 3D.
-
+h=[];
 if isempty(signal)
   h = [];
   return
@@ -124,18 +124,26 @@ elseif ndims(signal) == 3
   set(h,'EdgeColor','None','FaceColor','green'); alpha(0.7);
   light
   view(3)
-elseif ndims(signal) == 4
-  signal=squeeze(signal(:,:,1,:));
-  if all(cellfun(@(x)numel(x)==length(x), ax)), [ax{:}]=ndgrid(ax{:}); end
-  x=ax{1}; y=ax{2}; z=ax{3}; t=ax{4};
-  x=squeeze(x(:,:,1,:));
-  y=squeeze(y(:,:,1,:));
-  t=squeeze(t(:,:,1,:));
-  h =patch(isosurface(y,x,t, signal, mean(signal(:))));
-  set(h,'EdgeColor','None','FaceColor','green'); alpha(0.7);
-  light
-  view(3)
 else
+  try 
+    if ndims(signal) == 4
+      signal=squeeze(signal(:,:,1,:));
+      if all(cellfun(@(x)numel(x)==length(x), ax)), [ax{:}]=ndgrid(ax{:}); end
+      x=ax{1}; y=ax{2}; z=ax{3}; t=ax{4};
+      x=squeeze(x(:,:,1,:));
+      y=squeeze(y(:,:,1,:));
+      t=squeeze(t(:,:,1,:));
+      h =patch(isosurface(y,x,t, signal, mean(signal(:))));
+      set(h,'EdgeColor','None','FaceColor','green'); alpha(0.7);
+      light
+      view(3)
+    else
+      h=[];
+    end
+  end
+end
+
+if isempty(h)
   % we use iData plotting
   iD = iData(ax{:}, signal); sz = size(iD); sz(4:end) = 1;
   disp([ 'iFunc.plot: ' name ': Reducing ' num2str(ndims(iD)) '-th dimensional data to 3D ' mat2str(sz) ]);
