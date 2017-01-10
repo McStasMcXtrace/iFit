@@ -39,12 +39,16 @@ function ifit(varargin)
 % mcc -m ifit -a /home/farhi/svn/Matlab/iFit/trunk
 % buildmcr('.')
 
+if ~isdeployed, return; end
+
 inline_display_banner; % see inline below
 
 ifit_options.line     ='';     % the current line to execute
 ifit_options.index    =1;      % the index of the input
 this                  ={};     % the buffer from the command line
 ifit_options.save     =0;
+ifit_options.varargin =varargin;
+ifit_options.nodesktop=0;
 
 while ~strcmp(ifit_options.line, 'exit') && ~strcmp(ifit_options.line, 'return')
   ifit_options.line = strtrim(ifit_options.line);
@@ -149,6 +153,7 @@ while ~strcmp(ifit_options.line, 'exit') && ~strcmp(ifit_options.line, 'return')
     % some startup arguments known as commands
     elseif strcmp(ifit_options.line, '-nodesktop') || strcmp(ifit_options.line, '-nosplash')
       ifit_options.line = ''; % ignore these which are Matlab-desktop specific
+      ifit_options.nodesktop=1;
     elseif strcmp(ifit_options.line, '--save') || strcmp(ifit_options.line, '-s')
       ifit_options.save='ifit.mat'; ifit_options.line = '';
     elseif strncmp(ifit_options.line, '--save=', 7)
@@ -213,36 +218,45 @@ while ~strcmp(ifit_options.line, 'exit') && ~strcmp(ifit_options.line, 'return')
 
     ifit_options.index=ifit_options.index+1;
     
-    if isempty(varargin) && ~isempty(this) % last argument has just been processed
-      if numel(this) > 1
-        disp('Info: all imported arguments have been stored in cell array ''this''.');
-        disp('      access them with e.g. this{1} ... this{end}');
-        disp('      to get all models:    this(cellfun(''isclass'',this,''iFunc''))')
-        disp('      to get all data sets: this(cellfun(''isclass'',this,''iData'')).')
-      else
-        this = this{1};
-        disp('Info: imported argument has been stored in the array ''this''.');
+    if isempty(varargin) 
+      if ~ifit_options.nodesktop
+        % open miFit and send imported objects there
+        inline_sendtomifit(this);
       end
-      disp('''this'' is:')
-      disp(this);
-      clear varargin
-      % last file imported. Plot all imported data sets / functions
-      if  isempty(ifit_options.line) && iscell(this) % no command was given as last argument
-        if 0 < length(this(cellfun('isclass',this,'iData'))) && length(this(cellfun('isclass',this,'iData'))) <= 20
-          figure('Name','iFit: imported data sets'); 
-          subplot(this{cellfun('isclass',this,'iData')});
-        elseif isa(this, 'iData') && numel(this) < 20
-          figure('Name','iFit: imported data sets');
-          subplot(this);
+      if ~isempty(this) % last argument has just been processed
+      
+        % last file imported. Plot all imported data sets / functions
+        if  isempty(ifit_options.line) % no command was given as last argument
+          if iscell(this) && 0 < length(this(cellfun('isclass',this,'iData'))) && length(this(cellfun('isclass',this,'iData'))) <= 20
+            figure('Name','iFit: imported data sets'); 
+            subplot(this{cellfun('isclass',this,'iData')});
+          elseif isa(this, 'iData') && numel(this) < 20
+            figure('Name','iFit: imported data sets');
+            subplot(this);
+          end
+          if iscell(this) && 0 < length(this(cellfun('isclass',this,'iFunc'))) && length(this(cellfun('isclass',this,'iFunc'))) <= 20
+            figure('Name','iFit: imported models'); 
+            subplot(this{cellfun('isclass',this,'iFunc')});
+          elseif isa(this, 'iFunc') && numel(this) < 20
+            figure('Name','iFit: imported models');
+            subplot(this);
+          end
         end
-        if 0 < length(this(cellfun('isclass',this,'iFunc'))) && length(this(cellfun('isclass',this,'iFunc'))) <= 20
-          figure('Name','iFit: imported models'); 
-          subplot(this{cellfun('isclass',this,'iFunc')});
-        elseif isa(this, 'iFunc') && numel(this) < 20
-          figure('Name','iFit: imported models');
-          subplot(this);
+        
+        if numel(this) > 1
+          disp('Info: all imported arguments have been stored in cell array ''this''.');
+          disp('      access them with e.g. this{1} ... this{end}');
+          disp('      to get all models:    this(cellfun(''isclass'',this,''iFunc''))')
+          disp('      to get all data sets: this(cellfun(''isclass'',this,''iData'')).')
+        else
+          this = this{1};
+          disp('Info: imported argument has been stored in the array ''this''.');
         end
+        disp('''this'' is:')
+        disp(this);
+        clear varargin
       end
+      
     end
   else % not from varargin, from prompt ----------------------------------------
     ifit_options.line = input([ 'iFit:' num2str(ifit_options.index) ' ' ],'s');
@@ -402,4 +416,16 @@ function varargin = inline_cat_strings(varargin)
     end
     % update string argument. Now contains {1:index}
     varargin{1} = v1;
+  end
+  
+function inline_sendtomifit(this)
+  % send 'this' to mifit
+  h = mifit; % open miFit
+  if isempty(this), return; end
+  if iscell(this)
+    for index=1:numel(this)
+      mifit(this{index});
+    end
+  else
+    mifit(this);
   end
