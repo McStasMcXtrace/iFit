@@ -41,7 +41,7 @@ function structure = structdlg(structure,options)
   %   structdlg([a a], options);
   %
   % Version: $Date$
-  % (c) E.Farhi, ILL. License: EUPL.
+  % (c) E.Farhi, ILL. License: BSD.
   
   fields  = fieldnames(structure);    % members of the structure
   

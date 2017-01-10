@@ -14,7 +14,7 @@ function ret=webbrowser(url, method)
 %   webbrowser(url)   Opens a browser displaying the specified URL.
 %   webbrowser(url,'system') tries first to open the web page with the system browser.
 %
-%   Copyright: Licensed under the EUPL V.1.1
+%   Copyright: Licensed under the BSD
 %              E. Farhi, ILL, France <farhi@ill.fr> Aug 2012, http://ifit.mccode.org
 
   list = {};
