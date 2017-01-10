@@ -27,6 +27,7 @@ create_help(ifitpath);
 
 % test MeX/binary external calls
 iLoad force
+ResLibCal compile
 
 % activate some standalone only scripts (which are in principle forbidden by Matlab Compiler)
 cd(m);
