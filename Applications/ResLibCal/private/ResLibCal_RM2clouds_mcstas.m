@@ -18,6 +18,12 @@ function [resolution,R0,RM] = ResLibCal_RM2clouds_mcstas(EXP, resolution, angles
 persistent labels_c;
 persistent compiled;
 
+if ischar(EXP) && strcmp(EXP,'compile')
+  resolution = ResLibCal_compile_mcstas_tas;
+  R0=0; RM=[];
+  return
+end
+
 % accuracy obtrained from McStas estimates:
 % NMC=1000  -> 10%
 % NMC=10000 -> 2.5%
@@ -69,7 +75,7 @@ else precmd=''; end
 
 % get temporary directory for results
 d = tempname;
-cmd = sprintf(' --dir=%s -n %i ',d, NMC*200);
+cmd = sprintf(' --dir=%s -n %i ',d, NMC*400);
 
 for f=fieldnames(pars)'
   cmd = [ cmd ' ' f{1} '=' num2str(pars.(f{1})) ];
@@ -133,7 +139,13 @@ if ~isempty(dir(fullfile(d,'resolution.dat')))
   % compute the resolution matrix on the central part (FWHM), starting from [ABC]
   index=find(p > max(p)*.65);
   HKLE   = [ resolution.ABC.cloud{:} ];
-  RM_U = MinVolEllipse(HKLE(index,:)'); % in [ABC]
+  try
+    RM_U = MinVolEllipse(HKLE(index,:)'); % in [ABC]
+  catch ME
+    disp([ mfilename ': ERROR: not enough points in cloud to compute the resolution matrix.'])
+    disp([ '*** Increase the number of Monte-Carlo points (currently ' num2str(NMC) ')' ]);
+    rethrow(ME);
+  end
   % now we convert to [rlu]
   % RM_U = T'*RM_Q*T
   % T=diag([0 0 0 1]); T(1:3,1:3)=Q'*U;

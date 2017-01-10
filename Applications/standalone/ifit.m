@@ -49,6 +49,7 @@ this                  ={};     % the buffer from the command line
 ifit_options.save     =0;
 ifit_options.varargin =varargin;
 ifit_options.nodesktop=0;
+ifit_options.starting =1;
 
 while ~strcmp(ifit_options.line, 'exit') && ~strcmp(ifit_options.line, 'return')
   ifit_options.line = strtrim(ifit_options.line);
@@ -115,6 +116,10 @@ while ~strcmp(ifit_options.line, 'exit') && ~strcmp(ifit_options.line, 'return')
   end
   
   % collect next command to execute: from input arguments, or prompt
+  if isempty(ifit_options.varargin) && ~ifit_options.nodesktop && ...
+      feature('ShowFigureWindows') && ifit_options.starting
+    mifit;  % open mifit when no argin and desktop/java on
+  end
   if exist('varargin') == 1 && ~isempty(varargin) % from command line ----------
     % we clear the argument from the command line after reading it
     varargin = inline_cat_strings(varargin{:});
@@ -219,7 +224,7 @@ while ~strcmp(ifit_options.line, 'exit') && ~strcmp(ifit_options.line, 'return')
     ifit_options.index=ifit_options.index+1;
     
     if isempty(varargin) 
-      if ~ifit_options.nodesktop
+      if ~ifit_options.nodesktop && feature('ShowFigureWindows') && ifit_options.starting
         % open miFit and send imported objects there
         inline_sendtomifit(this);
       end
@@ -260,6 +265,7 @@ while ~strcmp(ifit_options.line, 'exit') && ~strcmp(ifit_options.line, 'return')
     end
   else % not from varargin, from prompt ----------------------------------------
     ifit_options.line = input([ 'iFit:' num2str(ifit_options.index) ' ' ],'s');
+    ifit_options.starting = 0;
   end
   if ~isempty(strtrim(ifit_options.line))
     ifit_options.index=ifit_options.index+1;

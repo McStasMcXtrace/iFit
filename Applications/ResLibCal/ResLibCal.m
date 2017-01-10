@@ -511,6 +511,15 @@ while ~isempty(varargin)
         out = {};
       end
       return;
+    case 'compile'
+      try
+        out = ResLibCal_RM2clouds_mcstas('compile');
+      catch ME
+        out = 'FAILED';
+        disp(getReport(ME));
+      end
+      disp([ mfilename ': using McStas/templateTAS executable: ' out ]);
+      return
     otherwise
       % open file name or list of parameters given as 'VAR=VAL; ...'  
       if numel(varargin) > 1 && isstruct(varargin{2})
