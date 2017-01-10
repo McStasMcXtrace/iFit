@@ -236,7 +236,8 @@ function mifit_File_Print(varargin)
 % generate an HTML report and display in browser for printing.
   d=mifit_List_Data_pull(); % get selected objects
   if all(isempty(d)), return; end
-  filename = [ tempname '.html' ];
+  dirname  = tempname;
+  filename = fullfile(dirname,'index.html');
   mifit_disp([ '[File_Print] Exporting Data sets to HTML ' filename ' for printing...' ]);
   save(d, filename, 'html data');
   webbrowser(filename,'system');  % tries to open with the system browser
@@ -250,7 +251,8 @@ function mifit_File_Preferences(varargin)
   fig = mifit_fig;
   config = getappdata(mifit_fig, 'Preferences');
   % defaults are set when calling Preferences_Load at OpeningFcn (main/startup)
-  options.Name       = [ mfilename ': Preferences' ];
+  filename = fullfile(prefdir, [ 'mifit' '.ini' ]);
+  options.Name       = [ mfilename ': Preferences ' filename ];
   options.ListString = {'FontSize Font size [10-36]', ...
     'Save_Data_On_Exit Save Data sets on Exit [yes/no]', ...
     'Store_Models Store Models when creation time is longer than [sec, 0:always, Inf:never, default=3]', ...
@@ -487,6 +489,11 @@ function mifit_Data_Eval_Model(varargin)
   end
   mifit_List_Data_push(d, 'replace');  % replace existing data sets
   set(mifit_fig,'Pointer','arrow');
+  
+  if ~isempty(mifit_fig('mifit_View_Parameters'))
+    % trigger an update of the Parameter window when already opened
+    mifit_Models_View_Parameters('update');
+  end
   
   mifit_History_push;
 
