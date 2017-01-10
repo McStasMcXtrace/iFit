@@ -64,6 +64,7 @@
 
 
 
+
         release of iFit</a><span style="font-weight: bold; font-style:
         italic;"><span style="font-weight: bold;"> </span>page for more
         information on the features and limitations.</span><br>
@@ -98,10 +99,12 @@
 
 
 
+
       can be compiled (usually this is done automatically). We supply
       these executable files in the Download/binary section of the iFit
       web site. We recommend to install <a
         href="http://gcc.gnu.org/wiki/GFortranBinaries">gfortran, </a>which
+
 
 
 
@@ -125,6 +128,7 @@
 
 
 
+
         Canopy</a> for all systems. Refer to our <a href="Python.html">PyFit</a>
       help pages.<br>
     </blockquote>
@@ -137,6 +141,7 @@
     fully use multi-core systems (e.g. though threads and MPI). You may
     use our <a
 href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/illcs-livedvd/">ILL/CS
+
 
 
 
@@ -196,10 +201,12 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
                   bits</a>:</span></i><i> </i><i>Not supported anymore.</i></td>
           <td style="vertical-align: top;"><span style="font-weight:
               bold;"><span style="color: rgb(204, 51, 204);"><a
                   href="http://ifit.mccode.org/Downloads/binary/glnx64">64
+
 
 
 
@@ -216,9 +223,11 @@ href="http://ifit.mccode.org/Downloads/binary/glnx64/mcrinstaller-7.13-2010a-amd
 
 
 
+
                 repository</b></a> (see below).<br>
             <span style="font-style: italic;">Other: </span>Use the <a
 href="http://ifit.mccode.org/Downloads/binary/glnx64/MCRInstaller-amd64.bin">MCR
+
 
 
 
@@ -241,11 +250,13 @@ href="http://ifit.mccode.org/Downloads/binary/glnx64/MCRInstaller-amd64.bin">MCR
 
 
 
+
                   bits</a>:</span></i><i> </i><i>Not supported anymore.</i>
           </td>
           <td style="vertical-align: top;"><span style="font-weight:
               bold;"><span style="color: rgb(204, 51, 204);"><a
                   href="http://ifit.mccode.org/Downloads/binary/win64">64
+
 
 
 
@@ -274,11 +285,13 @@ href="http://ifit.mccode.org/Downloads/binary/glnx64/MCRInstaller-amd64.bin">MCR
 
 
 
+
                   bits</a>:</span></i><i> </i><i><br>
             </i><i>Not supported anymore.</i></td>
           <td style="vertical-align: top;"><span style="font-weight:
               bold;"><span style="color: rgb(204, 51, 204);"><a
                   href="http://ifit.mccode.org/Downloads/binary/mac64">64
+
 
 
 
@@ -312,7 +325,7 @@ href="http://ifit.mccode.org/Downloads/binary/glnx64/MCRInstaller-amd64.bin">MCR
       packages it to make use of the <a
         href="http://packages.mccode.org">mccode.org repository</a>.&nbsp;</p>
     <blockquote>
-      <pre>% sudo apt-add-repository 'deb http://packages.mccode.org/debian stable main'<br>% sudo apt-get update<br>% sudo apt-get install ifit mcrinstaller<br></pre>
+      <pre>% sudo apt-add-repository 'deb http://packages.mccode.org/debian stable main'<br>% sudo apt-get update<br>% sudo apt-get install ifit mcrinstaller libxp6<br></pre>
     </blockquote>
     <p>This can also be done from e.g. <i>Synaptic</i> (menu
       Settings/repositories) and <i>Ubuntu Software Center</i> (menu
@@ -366,7 +379,7 @@ href="http://ifit.mccode.org/Downloads/binary/glnx64/MCRInstaller-amd64.bin">MCR
       links, especially if you do not have Matlab and wish to use iFit
       as a replacement:<br>
     </p>
-    <pre style="margin-left: 40px;">% sudo ln -s /usr/local/ifit/ifit /usr/local/bin/ifit<br>% sudo ln -s /usr/local/ifit/ifit /usr/local/bin/matlab<br></pre>Recent MacOSX systems (El capitan, Sierra) provide a Java 7 or 8 version, whereas the standalone requires a Java 6. It is not possible to install Java 6 over an existing more recent version. However, you can start by temporarily uninstalling the Mac OS Java 7/8, then install the Java 6 from <a href="http://ifit.mccode.org/Downloads/binary/mac64/javaforosx.dmg">here</a>, install iFit standalone, and finally re-install the official Java release.<br>
+    <pre style="margin-left: 40px;">% sudo ln -s /usr/local/ifit/ifit /usr/local/bin/ifit<br>% sudo ln -s /usr/local/ifit/ifit /usr/local/bin/matlab<br></pre>Recent MacOSX systems (El capitan, Sierra) provide a Java 7 or 8 version, whereas the standalone requires a Java 6. It is not possible to install Java 6 over an existing more recent version. However, you can start by temporarily uninstalling the Mac OS Java 7/8, then install the Java 6 from <a href="http://ifit.mccode.org/Downloads/binary/mac64/javaforosx.dmg">here</a>, install iFit standalone, and finally re-install the official Java release. The two Java version will then be available consecutively.<br>
     <div style="margin-left: 40px;"> </div>
     <p><span style="font-weight: bold;">On Windows systems</span>,
       install the MCR by double-clicking the corresponding <span style="font-style: italic;">MCRInstaller.exe</span>. The install
