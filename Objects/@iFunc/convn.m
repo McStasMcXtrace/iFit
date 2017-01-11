@@ -1,7 +1,7 @@
 function c = convn(a,b)
 % c = convn(a,b) : computes the convolution of an iFunc object with a response function 
 %
-%   @iData/convn function to compute the convolution of data sets with automatic centering
+%   @iFunc/convn function to compute the convolution of data sets with automatic centering
 %     and normalization of the filter. This is a shortucut for
 %       conv(a,b, 'same pad background center normalize')
 %     When used with a single scalar value, it is used as a width to build a 

@@ -1,7 +1,7 @@
 function c = xcorr(a,b, shape)
 % c = xcorr(a,b) : computes the correlation of iFunc models
 %
-%   @iData/xcorr function to compute the correlation of data sets (FFT based).
+%   @iFunc/xcorr function to compute the correlation of data sets (FFT based).
 %     A decorrelation mode is also possible. When only one argument is given, 
 %     the auto-correlation is computed.
 %     when one of the argument is a character string, it is used as-is in the 
