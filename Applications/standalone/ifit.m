@@ -28,6 +28,8 @@ function ifit(varargin)
 %      save the workspace variables when commands have been executed.
 %  --run=SCRIPT or -r=SCRIPT
 %      executes the SCRIPT when starting.
+%  -nodesktop
+%      do not start the miFit GUI (prompt only)
 %
 %  Examples:
 %    ifit --save file1.*  subplot 
