@@ -41,7 +41,7 @@ function structure = structdlg(structure,options)
   %   structdlg([a a], options);
   %
   % Version: $Date$
-  % (c) E.Farhi, ILL. License: BSD.
+  % (c) E.Farhi, ILL. License: BSD. <ifit.mccode.org>
   
   fields  = fieldnames(structure);    % members of the structure
   
@@ -118,7 +118,7 @@ function structure = structdlg(structure,options)
       item = Data0{index,index_s+2};
       % uitable only support char or scalar numeric/logical
       flag = ischar(item) || (numel(item) ==1 && (isnumeric(item) || islogical(item)));
-      if ~flag
+      if ~flag && exist('class2str')
         fields_type{index,index_s+2} = class(item);
         Data0{index,index_s+2} = class2str('', Data0{index,index_s+2}, 'eval');
       end

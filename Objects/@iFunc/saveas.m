@@ -229,7 +229,7 @@ case 'dat'  % flat text file with commented blocks
           class2str('', a, 'flat') ];
   [fid, message]=fopen(filename,'w+');
   if fid == -1
-    iData_private_warning(mfilename,[ 'Error opening file ' filename ' to save object ' a.Tag 'in format ' format ]);
+    warning(mfilename,[ 'Error opening file ' filename ' to save object ' a.Tag 'in format ' format ]);
     disp(message)
     return
   end
