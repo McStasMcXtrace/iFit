@@ -31,10 +31,6 @@ if isempty(fig) || ~ishandle(fig)
     
     % Display welcome dialog during menu build
     h = mifit_Help_About(fig);
-    contrib = textwrap({ version(iData,2) },80);
-    for index=1:numel(contrib)
-      mifit_disp([ '  ' contrib{index} ])
-    end
 
     % get the list of Models and Optimizers
     models = []; d=[];
