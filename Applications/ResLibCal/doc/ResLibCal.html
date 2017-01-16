@@ -89,6 +89,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
     in different implementations from:<br>
     <ul>
       <li><span style="font-weight: bold;"><a
@@ -108,8 +109,8 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/vtas/">vTAS</a>_view</span>
         (Y.Raoul/A. Bouvet/A. Filhol) [<a href="../rescal.for">Fortran
           code</a>]</li>
-      <li><a href="http://www.mcstas.org">McStas</a> (K. Nielsen, K.
-        Lefmann, E. Farhi, P. Willendrup et al.) using the <a
+      <li><b><a href="http://www.mcstas.org">McStas</a></b> (K. Nielsen,
+        K. Lefmann, E. Farhi, P. Willendrup et al.) using the <a
           href="../private/templateTAS.instr">templateTAS</a> (E. Farhi)
         instrument<br>
       </li>
@@ -242,8 +243,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
     </blockquote>
     <br>
     Computation takes a few 10ms, whatever be the analytical method
-    used.
-    <h3><a class="mozTocH3" name="mozTocId637458"></a>Usage to compute
+    used.The Full Monte-Carlo takes a few 100 ms.<br><h3><a class="mozTocH3" name="mozTocId637458"></a>Usage to compute
       the TAS resolution function (with plots)<br>
     </h3>
     The normal use of the application is through its GUI, which is a
@@ -359,10 +359,10 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
         frames:<br>
         <ul>
           <li><i>[rlu</i><i>]</i> is relative to the sample lattice
-            frame ([B] matrix). The coordinate frame is defined by the
+            frame ([a*b*c*] matrix). The coordinate frame is defined by the
             a*, b* and c* lattice vectors, as specified by the AS,BS,CS
             lattice parameters, and angles AA,BB,CC (aka &#945;, &#946;, &#947;). The
-            corresponding resolution matrix is 'rlu.RM', given in [rlu<sup>3</sup>.meV].<br>
+            corresponding resolution matrix is 'rlu.RM', given in [rlu<sup>3</sup>.meV]. <font color="#ff0000">WARNING: in this frame, all lattices appear ortho-normal</font>, as we use a*, b* and c* as axes, and plots use a Cartesian frame for rendering, even when e.g. &#947;=120.<br>
           </li>
           <li><i>[spec</i><i>] </i>is relative to Q, and vertical axis
             (spectrometer frame) ([Q] matrix). The<i> [spec]</i>
@@ -378,8 +378,8 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
             the vector B is used to compute a 'vertical' axis <i>C = A
               x B</i>, and then a vector <i>B</i>' is computed so that
             the ABC frame is ortho-normal, with <i>x // A</i> and <i>'C'</i>
-            vertical. The angle A3=&lt;Ki,A&gt;.<br>
-          </li>
+            vertical. The angle A3=&lt;Ki,A&gt;. This is the default frame.</li><li>[a* b* c* cartesian] is relative to the sample lattice Cartesian&nbsp;            frame ([B] matrix).  The coordinate frame is defined by the
+            a*, and two vector b'* and c'* forming an ortho-normal frame. The resolution is given in [Angs<sup>-1</sup>.meV]. This is a convenient frame to visualise the reciprocal lattice, independently of the sample orientation in the spectrometer.<br></li>
         </ul>
         The usual definition of the sample reciprocal lattice
         orientation vectors <b>A</b> and <b>B</b> (defined by the

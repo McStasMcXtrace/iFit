@@ -133,6 +133,14 @@ if ~isempty(dir(fullfile(d,'resolution.dat')))
   U2Q = resolution.spec.rlu2frame * inv(resolution.ABC.rlu2frame);
   HKLE = U2Q*HKLE_ABC;      % in [spec] from [ABC]
   resolution.spec.cloud= { HKLE(1,:)' HKLE(2,:)' HKLE(3,:)' E };
+  
+  % [ABC] U -> [a*b*c* cartesian] B
+  % U2B = U;  % ortho-normal res.ABC.cart2frame
+  U = resolution.ABC.cart2frame';
+  U2B  = U;
+  HKLE = U2B*HKLE_ABC;      % in [cart] from [ABC]
+  resolution.cart.cloud= { HKLE(1,:)' HKLE(2,:)' HKLE(3,:)' E };
+  
   disp([ mfilename ': using ' num2str(numel(E)) ' points in cloud out of ' num2str(numel(p)) ]);
   p = p(index);
 
@@ -142,16 +150,15 @@ if ~isempty(dir(fullfile(d,'resolution.dat')))
   try
     RM_U = MinVolEllipse(HKLE(index,:)'); % in [ABC]
   catch ME
-    disp([ mfilename ': ERROR: not enough points in cloud to compute the resolution matrix.'])
-    disp([ '*** Increase the number of Monte-Carlo points (currently ' num2str(NMC) ')' ]);
-    rethrow(ME);
+    disp([ mfilename ': WARNING: not enough points in cloud to compute the resolution matrix (currently ' num2str(NMC) ')' ])
+    disp([ '*** Using all points ***' ]);
+    RM_U = MinVolEllipse(HKLE(index,:)'); % in [ABC]
   end
   % now we convert to [rlu]
   % RM_U = T'*RM_Q*T
   % T=diag([0 0 0 1]); T(1:3,1:3)=Q'*U;
   % res.ABC.cart2frame    = U'
   % res.spec.cart2frame   = Q'
-  U = resolution.ABC.cart2frame';
   Q = resolution.spec.cart2frame';
   T=diag([0 0 0 1]); T(1:3,1:3)=Q'*U;
   RM = T*RM_U*T'; % in the cartesian spectrometer space

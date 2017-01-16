@@ -317,16 +317,25 @@ while ~isempty(varargin)
       set(ResLibCal_fig('View_ResolutionRLU'), 'Checked', 'on');
       set(ResLibCal_fig('View_ResolutionSPEC'),'Checked', 'off');
       set(ResLibCal_fig('View_ResolutionABC'), 'Checked', 'off');
+      set(ResLibCal_fig('View_ResolutionLattice'), 'Checked', 'off');
       ResLibCal_UpdateViews([],'force');
     case {'view_resolutionabc','abc'}
       set(ResLibCal_fig('View_ResolutionRLU'), 'Checked', 'off');
       set(ResLibCal_fig('View_ResolutionSPEC'),'Checked', 'off');
       set(ResLibCal_fig('View_ResolutionABC'), 'Checked', 'on');
+      set(ResLibCal_fig('View_ResolutionLattice'), 'Checked', 'off');
       ResLibCal_UpdateViews([],'force');
     case {'view_resolutionspec','spec'}
       set(ResLibCal_fig('View_ResolutionRLU'), 'Checked', 'off');
       set(ResLibCal_fig('View_ResolutionSPEC'),'Checked', 'on');
       set(ResLibCal_fig('View_ResolutionABC'), 'Checked', 'off');
+      set(ResLibCal_fig('View_ResolutionLattice'), 'Checked', 'off');
+      ResLibCal_UpdateViews([],'force');
+    case {'view_resolutionlattice','lattice'}
+      set(ResLibCal_fig('View_ResolutionRLU'), 'Checked', 'off');
+      set(ResLibCal_fig('View_ResolutionSPEC'),'Checked', 'off');
+      set(ResLibCal_fig('View_ResolutionABC'), 'Checked', 'off');
+      set(ResLibCal_fig('View_ResolutionLattice'), 'Checked', 'on');
       ResLibCal_UpdateViews([],'force');
     case {'view_resolutionxyz','zw'}
       status = get(ResLibCal_fig('View_ResolutionXYZ'), 'Checked');
@@ -663,13 +672,15 @@ function out = ResLibCal_UpdateViews(out, modev)
   if isempty(fig) || strcmp(modev, 'stdout') ...
   || isempty([ findobj(0, 'Tag','ResLibCal_View2') findobj(0, 'Tag','ResLibCal_View3') ])
 		% display result in the console
-		rlu = get(ResLibCal_fig('View_ResolutionRLU'), 'Checked');
-		spec= get(ResLibCal_fig('View_ResolutionSPEC'),'Checked');
-		abc = get(ResLibCal_fig('View_ResolutionABC'), 'Checked');
+		rlu = get(ResLibCal_fig('View_ResolutionRLU'), 'Checked');    % [a* b*  c* ]
+		spec= get(ResLibCal_fig('View_ResolutionSPEC'),'Checked');    % [Ql Qt  Qv ]
+		abc = get(ResLibCal_fig('View_ResolutionABC'), 'Checked');    % [A  B   C  ]
+		lat = get(ResLibCal_fig('View_ResolutionLattice'), 'Checked');% [a* b'* c'*]
 		modev='abc'; % default
 		if     strcmp(rlu, 'on') modev='rlu'; 
 		elseif strcmp(spec,'on') modev='spec'; 
-		elseif strcmp(abc, 'on') modev='abc'; end
+		elseif strcmp(abc, 'on') modev='abc';
+		elseif strcmp(lat, 'on') modev='lattice'; end
 		[res, inst] = ResLibCal_FormatString(out, modev);
 		disp(char(res));
 		disp(char(inst));
@@ -716,13 +727,15 @@ function out = ResLibCal_UpdateResolution2(out)
   set(0,'CurrentFigure', h);
 
   % update/show the resolution projections
-  rlu = get(ResLibCal_fig('View_ResolutionRLU'), 'Checked');
-	spec= get(ResLibCal_fig('View_ResolutionSPEC'),'Checked');
-	abc = get(ResLibCal_fig('View_ResolutionABC'), 'Checked');
+  rlu = get(ResLibCal_fig('View_ResolutionRLU'), 'Checked');    % [a* b*  c* ]
+	spec= get(ResLibCal_fig('View_ResolutionSPEC'),'Checked');    % [Ql Qt  Qv ]
+	abc = get(ResLibCal_fig('View_ResolutionABC'), 'Checked');    % [A  B   C  ]
+	lat = get(ResLibCal_fig('View_ResolutionLattice'), 'Checked');% [a* b'* c'*]
 	modev='abc'; % default
 	if     strcmp(rlu, 'on') modev='rlu'; 
 	elseif strcmp(spec,'on') modev='spec'; 
-	elseif strcmp(abc, 'on') modev='abc'; end
+	elseif strcmp(abc, 'on') modev='abc';
+	elseif strcmp(lat, 'on') modev='lattice'; end
   qz  = get(ResLibCal_fig('View_ResolutionXYZ'), 'Checked');
   MC  = get(ResLibCal_fig('View_Resolution_Cloud'), 'Checked');
   if strcmp(qz, 'on'),  qz='qz'; end
@@ -740,12 +753,15 @@ function out = ResLibCal_UpdateResolution3(out)
   set(0,'CurrentFigure', h);
 
   % update/show the resolution projections
-  rlu = get(ResLibCal_fig('View_ResolutionRLU'), 'Checked');
-	spec= get(ResLibCal_fig('View_ResolutionSPEC'),'Checked');
-	abc = get(ResLibCal_fig('View_ResolutionABC'), 'Checked');
+  rlu = get(ResLibCal_fig('View_ResolutionRLU'), 'Checked');    % [a* b*  c* ]
+	spec= get(ResLibCal_fig('View_ResolutionSPEC'),'Checked');    % [Ql Qt  Qv ]
+	abc = get(ResLibCal_fig('View_ResolutionABC'), 'Checked');    % [A  B   C  ]
+	lat = get(ResLibCal_fig('View_ResolutionLattice'), 'Checked');% [a* b'* c'*]
 	if     strcmp(rlu, 'on') modev='rlu'; 
 	elseif strcmp(spec,'on') modev='spec'; 
-	elseif strcmp(abc, 'on') modev='abc'; end
+	elseif strcmp(abc, 'on') modev='abc';
+	elseif strcmp(lat, 'on') modev='lattice'; end
+	
   qz  = get(ResLibCal_fig('View_ResolutionXYZ'), 'Checked');
   MC  = get(ResLibCal_fig('View_Resolution_Cloud'), 'Checked');
   if strcmp(qz, 'on'),  qz='qz'; end
