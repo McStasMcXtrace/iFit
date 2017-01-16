@@ -53,12 +53,14 @@ for index=1:numel(resolutions)
   H=resolution.HKLE(1); K=resolution.HKLE(2); 
   L=resolution.HKLE(3); W=resolution.HKLE(4);
 
-  if ~isempty(strfind(modev,'rlu'))
+  if ~isempty(strfind(upper(modev),'RLU'))
     frame = resolution.rlu;
   elseif ~isempty(strfind(upper(modev),'ABC'))
     frame = resolution.ABC;
-  else
+  elseif ~isempty(strfind(upper(modev),'SPEC'))
     frame = resolution.spec;
+  elseif ~isempty(strfind(upper(modev),'LATTICE'))
+    frame = resolution.cart;
   end
   NP       = frame.RM;
   FrameStr = {frame.frameStr{:},'\omega meV'};

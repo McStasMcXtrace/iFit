@@ -54,12 +54,14 @@ if ~isreal(resolution.R0) || ~resolution.R0 || isempty(resolution.spec) || isemp
   res=[]; inst=[];
   return
 end
-if ~isempty(strfind(modev,'rlu'))
+if ~isempty(strfind(upper(modev),'RLU'))
   frame = resolution.rlu;
 elseif ~isempty(strfind(upper(modev),'ABC'))
   frame = resolution.ABC;
-else
+elseif ~isempty(strfind(upper(modev),'SPEC'))
   frame = resolution.spec;
+elseif ~isempty(strfind(upper(modev),'LATTICE'))
+  frame = resolution.cart;
 end
 
 NP    = frame.RM;
