@@ -98,6 +98,51 @@ if ~isempty(d)
   D     = getappdata(mifit_fig, 'Data');  % all data sets
   if numel(D) > 1
     D(getappdata(mifit_fig, 'CurrentDataSetIndex')) = d;
+    
+    val = val(event.Indices(1));  % only the modified value is forwarded
+    pars=model.Parameters;
+    name= pars{event.Indices(1)};
+    
+    % now also set other selected data sets, when this is the same model
+    % parameter values, fixed, limits
+    index_selected = get(mifit_fig('List_Data_Files'),'Value');
+    for index=index_selected(:)'
+      % not the current data set (already updated)
+      if getappdata(mifit_fig, 'CurrentDataSetIndex') == index, continue; end
+      if numel(D) > 1, this_d = D(index); else this_d = D; end
+      this_ = [];
+      if isfield(this_d, 'Model')
+        this_model = get(this_d, 'Model');
+      elseif ~isempty(findfield(this_d, 'Model'))
+        this_model = get(this_d, findfield(this_d, 'Model', 'cache first'));
+      end
+      if isempty(this_model), continue; end
+      % the model must have similar parameters
+      try
+        switch event.Indices(2)
+        case 2
+          % 2: Value -> store in Model.ParameterValues
+          this_model.(name) = val;
+          this_model.(name) = val;  % duplicated in case no parameter values
+                                    % were assigned before (none -> 0 -> val)
+        case 4
+          % 4: Fixed -> store in Model.constraint.fixed
+          if isfinite(val) && val
+            mlock(this_model,name);
+          else
+            munlock(this_model,name);
+          end
+        case 5
+          % 5: Min   -> store in Model.constraint.min
+          this_model.Constraint.min(event.Indices(1)) = val;
+        case 6
+          % 6: Max   -> store in Model.constraint.max
+          this_model.Constraint.max(event.Indices(1)) = val;
+        end
+      end
+      set(this_d, 'Model', this_model);
+      if numel(D) > 1, D(index) = this_d; else D = this_d; end
+    end  
   else
     D = d;
   end

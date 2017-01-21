@@ -482,6 +482,7 @@ function mifit_Data_Eval_Model(varargin)
       modelValue = this(this_model);  % eval iFunc
       this = set(this, 'ModelValue', modelValue);
       this = set(this, 'Model',      modelValue.Model);
+      setappdata(mifit_fig, 'CurrentModel', modelValue.Model);
       mifit_disp(char(this))
       mifit_disp([ '  [ ' num2str(modelValue.Model.ParameterValues(:)') ' ]' ]);
       if numel(d) == 1, d=this; else d(index) = this; end
