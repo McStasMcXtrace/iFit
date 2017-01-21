@@ -66,6 +66,4 @@ function mifit_Data_AssignModel(varargin)
   mifit_History_push;
   
   % trigger an update of the Parameter window when already opened
-  if ~isempty(mifit_fig('mifit_View_Parameters'))
-    mifit_Models_View_Parameters();
-  end
+  mifit_Models_View_Parameters();
