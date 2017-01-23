@@ -110,9 +110,7 @@ while ~strcmp(ifit_options.line, 'exit') && ~strcmp(ifit_options.line, 'return')
       if length(ifit_options.line) > 250
         ifit_options.line = [ ifit_options.line(1:250) ' ...' ];
       end
-      disp('Error when evaluating expression:')
-      disp(ifit_options.line)
-      disp(lasterr)
+      inline_error(ifit_options.line);
       ifit_options.line = '';
     end
   end
@@ -403,6 +401,16 @@ function line = inline_runscript(line)
     line=fileread(line);
   else
     disp([ 'Error: iFit: Can not open script ' line ]);
+  end
+  
+function inline_error(err)
+  % display error trace
+  disp('Error when evaluating expression:')
+  disp(err)
+  disp(lasterr)
+  disp('Trace (last is where the error is detected):')
+  for stack=getfield(lasterror,'stack') 
+    fprintf('%s at line %i\n',stack.name,stack.line); 
   end
 
 function varargin = inline_cat_strings(varargin)
