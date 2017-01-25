@@ -31,6 +31,7 @@ if isempty(fig) || ~ishandle(fig)
     
     % Display welcome dialog during menu build
     h = mifit_Help_About(fig);
+    mifit_disp([ version(iData) sprintf(' Visit <http://ifit.mccode.org>') ]);
 
     % get the list of Models and Optimizers
     models = []; d=[];
