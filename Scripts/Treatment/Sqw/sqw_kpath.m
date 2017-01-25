@@ -15,6 +15,8 @@ function S = sqw_kpath(f, qLim, E)
 % input:
 %   f:    a 4D HKLE model S(q,w) (iFunc)
 %   path: a list of k-locations given as a cell/array of HKL locations (cell or matrix)
+%         can also be 'Cubic','Hexagonal','Trigonal','Tetragonal','Orthorhombic','Monoclinic';
+%                     'Triclinic
 %   w:    a vector of energies (4-th axis) for which to evaluate the model (double)
 %
 % output:
@@ -114,25 +116,30 @@ function S = sqw_kpath(f, qLim, E)
   K = qOut(2,:);
   L = qOut(3,:);
   % assemble all HKLw points
-  h=[]; k=[]; l=[]; w=[]; index=1;
+  h=zeros(1,numel(H)*numel(E)); k=h; l=h; w=h; index=1;
+
   for i=1:numel(H)
-    for j=1:numel(E)
-      h(index) = H(i);
-      k(index) = K(i);
-      l(index) = L(i);
-      w(index) = E(j);
-      index=index+1;
-    end
+    h(index:(index+numel(E)-1)) = H(i);
+    k(index:(index+numel(E)-1)) = K(i);
+    l(index:(index+numel(E)-1)) = L(i);
+    w(index:(index+numel(E)-1)) = E;
+    index = index+numel(E);
   end
+  
   % now we evaluate the model, without the intensities
   if isfield(f.UserData, 'properties') && isfield(f.UserData.properties, 'b_coh')
     b_coh = f.UserData.properties.b_coh;
   else b_coh = 0;
   end
-  % unactivate intensity estimate, else some modes are not visible from |Q.e|
-  f.UserData.properties.b_coh = 0; 
+  % unactivate intensity estimate, else some modes may not be visible from |Q.e|
+  if isfield(f.UserData,'properties')
+    f.UserData.properties.b_coh = 0; 
+  end
+
   [S, f, ax, name] = feval(f, f.p, h,k,l,E);
-  f.UserData.properties.b_coh = b_coh;
+  if isfield(f.UserData,'properties')
+    f.UserData.properties.b_coh = b_coh;
+  end
   
   % retain only HKL locations (get rid of optional n)
   if isscalar(qLim{end}), 
@@ -150,13 +157,12 @@ function S = sqw_kpath(f, qLim, E)
   % now we generate a 2D iData
   % S = reshape(S, [  numel(ax{1}) numel(E) ]);
 
-  
   % create an iData
   x = linspace(0, numel(qLim)-1, numel(ax{1}));
   S = iData(E,x,S);
   % set title, labels, ...
   title(S, 'Model value along path');
-  S.Title = [ f.Name ' along path' ];
+  S.Title = [ f.Name ' along path. ' crystalsystem ];
   S=setalias(S, 'HKL',     qOut, 'HKL locations along path');
   S=setalias(S, 'kpoints', cell2mat(qLim'), 'set of HKL locations which form path');
   if ~isempty(xticks)
