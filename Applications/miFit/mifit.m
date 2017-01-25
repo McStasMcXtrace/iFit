@@ -345,6 +345,16 @@ function mifit_Edit_Undo(varargin)
 % Edit/Undo: set the Data stack to the previous state from History
   mifit_History_pull();
   mifit_List_Data_UpdateStrings();
+  [d, index_selected]=mifit_List_Data_pull(); % get selected objects
+  if ~isempty(index_selected)
+    if numel(d) > 1, d=d(1); end
+    setappdata(mifit_fig, 'CurrentDataSet', d);
+    setappdata(mifit_fig, 'CurrentDataSetIndex', index_selected);
+    if ~isempty(mifit_fig('mifit_View_Parameters'))
+      % trigger an update of the Parameter window when already opened
+      mifit_Models_View_Parameters('update');
+    end
+  end
 
 function mifit_Edit_Cut(varargin)
 % Edit/Cut: get the selected indices in the List, copy these elements to the clipboard
