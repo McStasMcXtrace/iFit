@@ -21,9 +21,21 @@ function result = test_Models_phonons
   f=iData(s,[],qh,qk,ql,w); 	
   [w3,c3]=std(f(1,:,:,:));
   close(fig);
+
+  % acoustopt
+  s=sqw_acoustopt(5); 
+  qh=linspace(0,.5,50);qk=qh; ql=qh'; w=linspace(0.01,10,50);
+  f=iData(s,[],qh,qk,ql,w); 	
+  [w4,c4]=std(f(1,:,:,:));
+  
+  % linquad
+  s=sqw_linquad(5); 
+  qh=linspace(0,.5,50);qk=qh; ql=qh'; w=linspace(0.01,10,50);
+  f=iData(s,[],qh,qk,ql,w); 	
+  [w5,c5]=std(f(1,:,:,:));
   
   if c1 < 0.01 && w1 < 0.1 && c2 < 0.01 && w2 < .05 ...
-    && c3 < .02 && w3 < .06
+    && c3 < .02 && w3 < .06 && w4 < .15 && w5 < 0.02
     result = [ 'OK     ' mfilename ];
   else
     result = [ 'FAILED ' mfilename ];
