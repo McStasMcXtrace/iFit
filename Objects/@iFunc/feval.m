@@ -18,8 +18,10 @@ function [signal, model, ax, name] = feval(model, p, varargin)
 %     values are then replaced by guessed ones, and the model value is returned.
 %   signal = feval(model, parameters, x,y, ...)
 %     evaluates the model with given parameters and axes
-%   signal = model(p, iData object)
-%     evaluates the model on the given iData object axes
+%   signal = model(p, iData_object)
+%     evaluates the model on the given iData object axes and return the values
+%   iData_object(model,p,...)
+%     evaluate the model and return an iData object
 %
 % input:  model: model function (iFunc, single or array)
 %         parameters: model parameters (vector, cell or vectors, structure, iData) or 'guess'

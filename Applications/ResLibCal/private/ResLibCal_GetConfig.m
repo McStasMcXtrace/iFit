@@ -9,6 +9,7 @@ function [out, fig] = ResLibCal_GetConfig(silent_mode)
     out.handle = fig;
   else
     filename = fullfile(prefdir, 'ResLibCal.ini');
+    if nargin < 1, silent_mode = 0; end
     out = ResLibCal_Open(filename,[],silent_mode); % open the 'ResLibCal.ini' file (last saved configuration)
     if ~isfield(out,'EXP'),
       EXP = out;
