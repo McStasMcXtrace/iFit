@@ -24,7 +24,9 @@ else
   if isdeployed || ~usejava('jvm'), id='iFunc';
   else           id=[ '<a href="matlab:doc iFunc">iFunc</a> (<a href="matlab:methods iFunc">methods</a>,<a href="matlab:doc(iFunc)">doc</a>,<a href="matlab:figure;subplot(' iname ');">plot</a>,<a href="matlab:char(' iname ')">code</a>)' ];
   end
-  fprintf(1,'%s = %s %iD model:\n',iname, id, s_in.Dimension);
+  u = s_in.Name; u(~isstrprop(u,'print'))=' '; u=strtrim(u); 
+  if length(u) > 40, u = [ u(1:38) '...' ]; end
+  fprintf(1,'%s = %s %iD model: "%s"\n',iname, id, s_in.Dimension, u);
   % clean up redundant/empty fields
   s = struct(s_in);
   if isfield(s.Constraint, 'eval') && ~isempty(s.Constraint.eval)
