@@ -115,17 +115,13 @@ function S = sqw_kpath(f, qLim, E)
   H = qOut(1,:);
   K = qOut(2,:);
   L = qOut(3,:);
-  % assemble all HKLw points
-  h=zeros(1,numel(H)*numel(E)); k=h; l=h; w=h; index=1;
 
-  for i=1:numel(H)
-    h(index:(index+numel(E)-1)) = H(i);
-    k(index:(index+numel(E)-1)) = K(i);
-    l(index:(index+numel(E)-1)) = L(i);
-    w(index:(index+numel(E)-1)) = E;
-    index = index+numel(E);
-  end
-  
+  % assemble all HKLw points (event list)
+  h=ones(numel(E),1)*H; h=h(:)';
+  k=ones(numel(E),1)*K; k=k(:)';
+  l=ones(numel(E),1)*L; l=l(:)';
+  w=E'*ones(1,numel(H)); w=w(:)';
+
   % now we evaluate the model, without the intensities
   if isfield(f.UserData, 'properties') && isfield(f.UserData.properties, 'b_coh')
     b_coh = f.UserData.properties.b_coh;
