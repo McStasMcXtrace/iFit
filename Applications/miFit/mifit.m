@@ -482,7 +482,7 @@ function mifit_Data_Eval_Model(varargin)
       model = { get(d, findfield(d, 'Model', 'cache first')) };
     end
   else
-    model = get(d, 'Model');
+    model = getalias(d, 'Model');
   end
   mifit_disp([ '[Data Eval Model] evaluating Model value for data sets ...' ]);
   for index=1:numel(d)

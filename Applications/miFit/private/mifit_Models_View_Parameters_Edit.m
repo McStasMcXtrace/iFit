@@ -76,7 +76,7 @@ end
 if ~isempty(d)
   d = setalias(d, 'Model', model);
   % update the modelValue when the evaluation time is small (< .5 sec)
-  if model.Duration < 0.5
+  if model.Duration > 0 && model.Duration < 0.5
     try
       % evaluate model with its parameters (Edit) and Data set axes
       if ndims(d) == ndims(model)
