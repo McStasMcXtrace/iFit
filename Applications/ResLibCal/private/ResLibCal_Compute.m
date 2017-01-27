@@ -37,9 +37,9 @@ function out = ResLibCal_Compute(EXP)
   else
     try
       resolution = ResLibCal_ComputeResMat(out.EXP);
-    catch
+    catch ME
       warning([ datestr(now) ': ' mfilename ': Computation can not be completed.']);
-      rethrow(lasterror)
+      disp(getReport(ME))
       resolution = [];
     end
     out.resolution = resolution;

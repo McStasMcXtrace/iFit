@@ -18,9 +18,10 @@ function [resolution,R0,RM] = ResLibCal_RM2clouds_mcstas(EXP, resolution, angles
 persistent labels_c;
 persistent compiled;
 
+R0=0; RM=[];
+
 if ischar(EXP) && strcmp(EXP,'compile')
   resolution = ResLibCal_compile_mcstas_tas;
-  R0=0; RM=[];
   return
 end
 
@@ -162,7 +163,8 @@ if ~isempty(dir(fullfile(d,'resolution.dat')))
   Q = resolution.spec.cart2frame';
   T=diag([0 0 0 1]); T(1:3,1:3)=Q'*U;
   RM = T*RM_U*T'; % in the cartesian spectrometer space
-
+else
+  fprintf(1,'%s: Failed running McStas TAS model %s: no neutron counts on detector (R0=0)\n', mfilename, compiled);
 end
 rmdir(d, 's');
 
