@@ -330,6 +330,11 @@ function mifit_File_Reset(varargin)
 
     file = fullfile(prefdir, [ mfilename '.log' ]);
     if ~isempty(dir(file)), delete(file); end
+    
+    if ~strcmp(ButtonName, 'Reset') % Factory settings
+      mifit_File_Exit;
+      mifit;
+    end
   end
   
 function mifit_File_Log(varargin)
