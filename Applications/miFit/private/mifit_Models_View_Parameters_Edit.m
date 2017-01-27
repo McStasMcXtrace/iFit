@@ -96,7 +96,7 @@ if ~isempty(d)
   end
   
   D     = getappdata(mifit_fig, 'Data');  % all data sets
-  if numel(D) > 1
+  if numel(D) > 1 && getappdata(mifit_fig, 'CurrentDataSetIndex') <= numel(D)
     D(getappdata(mifit_fig, 'CurrentDataSetIndex')) = d;
     
     val = val(event.Indices(1));  % only the modified value is forwarded
