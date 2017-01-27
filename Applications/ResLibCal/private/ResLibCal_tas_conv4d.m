@@ -96,7 +96,9 @@ end
 % assemble the convoluted model/data set
 if isa(data,'iFunc')
   % display message about [abc] or [xyz] cloud usage, and axes used
-  disp([ mfilename ': Using reference frame: ' frame ])
+  if isstruct(config) && isfield(config, 'method')
+    method = config.method; else method='unknown'; end
+  disp([ mfilename ': Using reference frame: ' frame ' and method: ' method ])
   if isstruct(config) && isfield(config, 'resolution')
     if ~iscell(config.resolution), resolution={ config.resolution }; 
     else resolution = config.resolution; end
@@ -121,7 +123,8 @@ function signal = ResLibCal_tas_conv4d_model(dispersion, config, frame)
 
 % select computation mode: normal or fast
 % the 'hkle' mode uses the ResLibCal cloud as is, i.e. HKLE with NMC points (e.g. 200)
-% the 'hkl'  mode only uses the HKL cloud projection, and builds a E regular axis
+% the 'hkl'  mode only uses the HKL cloud projection, and builds a E regular axis. 
+%   This is more efficient when the model computes more than one mode per HKL location.
 computation_mode = 'hkl';
 
 if isempty(dispersion), signal = []; return; end
@@ -136,8 +139,11 @@ end
 
 % check if the model is not already convoluted with TAS
 if any(~cellfun(@isempty,strfind(dispersion.Expression,'ResLibCal')))
-  signal = dispersion;
-  return
+  % we then get the initial model (not convoluted) and apply ResLibCal on it
+  % this allows to update the ResLibCal configuration.
+  if isfield(dispersion.UserData, 'dispersion') && isa(dispersion.UserData.dispersion,'iFunc')
+    dispersion = dispersion.UserData.dispersion;
+  end
 end
 
 % the built model parameters will be that of the model
@@ -158,6 +164,11 @@ end
 signal.Dimension = dispersion.Dimension;
 signal.Guess     = dispersion.Guess;
 signal.Constraint= dispersion.Constraint;
+if isfield(config, 'EXP')
+  signal.Duration  = dispersion.duration*config.EXP.NMC;
+else
+  signal.Duration  = dispersion.duration*200;
+end
 
 % we store the dispersion into UserData so that we can evaluate it at feval
 signal.UserData.dispersion = dispersion;
@@ -171,14 +182,16 @@ signal.UserData.config     = config;
 % if dispersion.Dimension == 2 (liquid,powder,gas,glass,polymer...), then use |q|,w as axes. Should use spec frame
 if dispersion.Dimension == 2
   % TODO: must use reciprocal space frame, as in sqw_powder
-  plugin = 'cloud{1} = sqrt(cloud{1}.^2+cloud{2}.^2+cloud{3}.^2); cloud(2:3)=[]; ';
-else plugin='';
+  plugin = { 'cloud{1} = sqrt(cloud{1}.^2+cloud{2}.^2+cloud{3}.^2); cloud(2:3)=[]; ' };
+else plugin={};
 end
 
-% handle normal and fast computation mode.
-if ~strfind(computation_mode, 'hkle')
+% handle normal and fast computation mode: not with McStas: (hkl, w) -> event list
+if isempty(strfind(computation_mode, 'hkle'))
   % transform energy random sampling into a regular one
-  plugin = [ plugin 'cloud = { cloud{1:3} linspace(min(cloud{4}),max(cloud{4}),ceil(numel(cloud{1})^.33)) };' ];
+  plugin{end+1} = 'if isempty(strfind(lower(method),''mcstas''))';
+  plugin{end+1} = 'cloud = { cloud{1:3} linspace(min(cloud{4}),max(cloud{4}),ceil(numel(cloud{1})^.33))'' };' ;
+  plugin{end+1} = 'end';
 end
 
 % we use the Sqw evaluation as:
@@ -188,9 +201,14 @@ signal.Expression = { ...
   'if numel(varargin) >= 1 && ~isempty(varargin{1}) && (isstruct(varargin{1}) || ~isempty(dir(varargin{1})))', ...
   '  config = varargin{1};', ...
   'else config=[]; end', ...
-  'if isempty(config) && ~isempty(this.UserData.config), config = this.UserData.config; end', ...
   '% save current HKLE location', ...
   'hkle = ResLibCal(''silent'',''hkle'');', ...
+  'if ~isempty(hkle), config = ResLibCal(''config''); end', ...
+  'if isempty(config) && ~isempty(this.UserData.config), config = this.UserData.config; end', ...
+  '% get the method', ...
+  'if isfield(config,''method''), method = config.method;', ...
+  'elseif isfield(config,''EXP'') && isfield(config.EXP,''method''), method = config.EXP.method;', ...
+  'else method = []; end', ...
   '% put it in a try catch so that we always restore the HKLE location', ...
   'try', ...
   '% compute the resolution, using either given config, or default/GUI', ...
@@ -204,12 +222,15 @@ signal.Expression = { ...
   'for index=1:numel(resolution)', ...
   '  if ~resolution{index}.R0, continue; end', ...
 [ '  cloud=resolution{index}.' frame '.cloud;' ], ...
-     plugin, ...
+     plugin{:}, ...
+     'save toto', ...
   '  [this_signal,dispersion]=feval(dispersion, p, cloud{:});', ...
+  '%  fprintf(1,''%s: HKLE=[%g %g %g %g] NMC=%i Signal=%g %s\n'', this.Tag, resolution{index}.HKLE, numel(cloud{1}), sum(this_signal(:)), mat2str(size(this_signal)));', ...
   '  dispersion.ParameterValues = p;', ...
   '  signal(index) = sum(this_signal(:))*resolution{index}.R0/numel(cloud{1});', ...
   'end % for', ...
   'this.UserData.dispersion = dispersion;', ...
+  'this.UserData.config = config', ...
   'end % try', ...
   '% restore previous HKLE location', ...
   'if ~isempty(hkle) ResLibCal(''silent'',hkle{:}); end'};
@@ -294,19 +315,26 @@ if isa(model, 'iFunc') && ~isempty(model) && any(ndims(model) == [2 4])
   % 4D convolution/ResLibCal
   model = ResLibCal(model);  % calls iFunc.conv == ResLibCal(model)
   % the ResLibCal config is stored in model.UserData.config
+  if isempty(model.UserData)
+    model.UserData.config.ResCal = rescal;
+  else
   
-  % store the ResCal parameters so that they can be used in subsequent convolutions
-  % the parameters are automatically used in the model Expression 
-  % which calls "ResLibCal('silent', config, x,y,z,t)" in model.Expression
-  % where config = this.UserData.config which contains ResCal
-  for f=fieldnames(rescal)'
-    model.UserData.config.ResCal.(f{1}) = rescal.(f{1});
+      % store the ResCal parameters so that they can be used in subsequent convolutions
+      % the parameters are automatically used in the model Expression 
+      % which calls "ResLibCal('silent', config, x,y,z,t)" in model.Expression
+      % where config = this.UserData.config which contains ResCal
+      for f=fieldnames(rescal)'
+        model.UserData.config.ResCal.(f{1}) = rescal.(f{1});
+      end
   end
   
   % to force the use of Rescal parameters, and not ResLib ones, we remove the 
   % 'EXP' member from ResLibCal config.
   % update the Model.UserData stuff with this so that ResLibCal can use it later
   if isfield(model.UserData.config, 'EXP')
+    if isfield(model.UserData.config.EXP,'method')
+      model.UserData.config.method = model.UserData.config.EXP.method;
+    end
     model.UserData.config = rmfield(model.UserData.config, 'EXP');
   end
   
