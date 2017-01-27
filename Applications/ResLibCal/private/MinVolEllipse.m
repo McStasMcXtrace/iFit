@@ -49,9 +49,11 @@ if nargin < 2
 end
 
 % use speed improvement with convex hull
-K=convhulln(P.'); 
-K=unique(K(:)); 
-P=P(:,K);
+try
+  K=convhulln(P.'); 
+  K=unique(K(:)); 
+  P=P(:,K);
+end
 
 %%%%%%%%%%%%%%%%%%%%% Solving the Dual problem%%%%%%%%%%%%%%%%%%%%%%%%%%%5
 % ---------------------------------
