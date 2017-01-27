@@ -130,6 +130,8 @@ function stop=mifit_Models_View_Parameters(varargin)
     uimenu(uicm, 'Label', [ 'Data set:' char(d) ]);
     uimenu(uicm, 'Separator','on','Label','Copy all to clipboard', ...
       'Callback', @mifit_Models_View_Parameters_copy);
+    uimenu(uicm, 'Label','Paste Values from clipboard', ...
+      'Callback', @mifit_Models_View_Parameters_paste);
     uimenu(uicm, 'Label','Export to CSV file...', ...
       'Callback', @mifit_Models_View_Parameters_export);
     uimenu(uicm, 'Label','Plot parameter distributions...', ...
@@ -253,6 +255,35 @@ function mifit_Models_View_Parameters_copy(varargin)
     c = [ c sprintf('%20s %g %g\n', d{index,1:3}) ];
   end
   clipboard('copy', c);
+  
+function mifit_Models_View_Parameters_paste(varargin)
+  str = clipboard('paste');
+  t = getappdata(gcbf, 'TableHandle');
+  d = get(t, 'Data');
+
+  % check if this is a multiline string which can be evaluated as values (e.g. '0.01\n0.02 ...')
+  val = str2num(str);
+  if size(val,1) == size(d,1) % same number as lines
+    d(:,2) = val(:,1);
+    set(t, 'Data',          d);
+  else
+  % check if we find parameter names as first token
+    str = textscan(str,'%s','delimiter','\n','whitespace',''); % read all lines
+    str = str{1};
+    % get par names from the Table
+    tbl_names = strtok(d(:,1));
+    for index=1:numel(str)
+      if isempty(str{index}), continue; end
+      str_name  = strtok(str{index});  % parameter name from the clipboard line
+      str_val   = regexp(str{index},'\<(([1-9][0-9]*\.?[0-9]*)|(\.[0-9]+))([Ee][+-]?[0-9]+)?\>','match');
+      if isempty(str_val) || isempty(str_name), continue; end
+      str_val=str2num(str_val{1});
+      to_change = find(~cellfun(@isempty, strfind(tbl_names,str_name)));  % search it in the Table
+      if isempty(to_change), continue; end  % not found in names
+      d{to_change,2} = str_val(1);
+    end
+    set(t, 'Data',          d);
+  end
   
 function mifit_Models_View_Parameters_export(varargin)
   % exports the data set to a CSV file
