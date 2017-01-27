@@ -145,6 +145,7 @@ function res= ResLibCal_ComputeResMat_Single(EXP, h,k,l,w)
       [res, R0,RM]        = ResLibCal_RM2clouds_mcstas(EXP, res, res.angles); % generate MC clouds (spec, ABC, rlu)
       res.spec.RM= RM;  % store true RM and update other frames
       res                 = ResLibCal_RM2RMS(EXP, res);    % RM in other coordinate frames
+      method = @mcstas;
     else % default is 'reslib'
       method = @ResMat;
       % calls ResLib/ResMat
@@ -180,10 +181,14 @@ function res= ResLibCal_ComputeResMat_Single(EXP, h,k,l,w)
       res.README='Could not compute the resolution';
       [sample,rsample]=GetLattice(EXP);
       res.Q=modvec(h,k,l,rsample);
-      disp([ datestr(now) ': ' mfilename ': ' func2str(method) ': KI,KF,Q triangle will not close (kinematic equations). ' ]);
-      disp('  Change the value of KFIX,FX,QH,QK,QL or W. Here is [H K L W Ki Kf QM]');
-      if (res.Q < .5)
-        disp('  Try an other equivalent Bragg peak further in the reciprocal lattice.');
+      if isempty(strfind(EXP.method, 'mcstas'))
+        disp([ datestr(now) ': ' mfilename ': ' func2str(method) ': KI,KF,Q triangle will not close (kinematic equations) or null intensity. ' ]);
+        disp('  Change the value of KFIX,FX,QH,QK,QL or W. Here is [H K L W Ki Kf QM]');
+        if (res.Q < .5)
+          disp('  Try an other equivalent Bragg peak further in the reciprocal lattice.');
+        end
+      else
+        disp([ datestr(now) ': ' mfilename ': ' func2str(method) ': no neutron reach detector (R0=0). Here is [H K L W Ki Kf QM]' ]);
       end
       disp([ h k l w EXP.ki EXP.kf res.Q])
     end
