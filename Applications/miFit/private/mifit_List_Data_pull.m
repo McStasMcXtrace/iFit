@@ -12,6 +12,6 @@ function [d, index_selected]=mifit_List_Data_pull(varargin)
 
   if numel(d) > 1
       % index_selected must only have items up to numel(d)
-      index_selected = index_selected(index_selected < numel(d));
+      index_selected = index_selected(index_selected <= numel(d));
       d = d(index_selected);
   end
