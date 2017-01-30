@@ -52,6 +52,7 @@
 
 
 
+
     You can get iFit there, as well as extensive documentation.<br>
     <br>
     If you do not know about Matlab, refer to the quick tutorial <a
@@ -120,9 +121,7 @@
         only one data file/directory is imported, it is automatically
         plotted.<br>
         <br>
-        <img alt="miFit" title="miFit" src="images/miFit.png"
-          height="121" width="150" align="left">When starting, the <a
-          href="miFit.html">miFit</a> graphical user interface will be
+        <img alt="miFit" title="miFit" src="images/miFit.png" width="150" height="121" align="left">When starting, the <a href="miFit.html">miFit</a> graphical user interface will be
         displayed, allowing a mouse-driven data treatment and fitting.
         The <i>-nodesktop</i> option when starting suppresses this
         behavior to only provide the command prompt.<br>
@@ -132,29 +131,22 @@
           through commands and scripts. However, there exist a few
           dedicated Applications which provide a User Interface.<br>
         </p>
-        <table width="100%" border="1" cellpadding="2" cellspacing="2">
+        <table width="100%" cellspacing="2" cellpadding="2" border="1">
           <tbody>
             <tr>
-              <td valign="top"><a
-                  href="../Applications/ResLibCal/doc/ResLibCal.html">ResLibCal</a></td>
+              <td valign="top"><a href="../Applications/ResLibCal/doc/ResLibCal.html">ResLibCal</a></td>
               <td valign="top">Triple-Axis neutron spectrometer
                 simulator<br>
               </td>
             </tr>
             <tr>
-              <td valign="top"><a href="Models.html#mozTocId990577">Sqw_Phonons</a><a
-                  href="../Applications/ResLibCal/doc/ResLibCal.html"><img
-                    alt="Sqw_Phonons" title="Sqw_Phonons"
-                    src="images/Models_sqw_ph_ase.png" height="50"
-                    width="67" align="middle" border="0"></a></td>
+              <td valign="top"><a href="Models.html#mozTocId990577">Sqw_Phonons</a><a href="../Applications/ResLibCal/doc/ResLibCal.html"><img alt="Sqw_Phonons" title="Sqw_Phonons" src="images/Models_sqw_ph_ase.png" width="67" height="50" align="middle" border="0"></a></td>
               <td valign="top">Phonon dispersion computations using DFT
                 and dynamical matrix<br>
               </td>
             </tr>
             <tr>
-              <td valign="top"><a href="miFit.html">miFit</a> <img
-                  alt="miFit" title="miFit" src="images/miFit.png"
-                  height="51" width="64" align="middle"><br>
+              <td valign="top"><a href="miFit.html">miFit</a> <img alt="miFit" title="miFit" src="images/miFit.png" width="64" height="51" align="middle"><br>
               </td>
               <td valign="top">a simple yet powerful User Interface.
                 This one is automatically started with iFit.<br>
@@ -173,8 +165,7 @@
       <div style="text-align: left;">You can start the iFit program with
         additional arguments which allow to perform predefined
         operations when starting.<br>
-        <table style="text-align: left;" height="389" width="1178"
-          border="1" cellpadding="2" cellspacing="2">
+        <table style="text-align: left;" width="1178" height="389" cellspacing="2" cellpadding="2" border="1">
           <tbody>
             <tr>
               <td style="vertical-align: top; font-weight: bold;">--save<br>
@@ -182,8 +173,7 @@
               <td style="vertical-align: top;">saves automatically all
                 files to '<span style="font-style: italic;">ifit.mat</span>'
                 (HDF format) before exiting the program (except with
-                Ctrl-C). You can then re-import the workspace with '<span
-                  style="font-style: italic;">load ifit.mat</span>' in
+                Ctrl-C). You can then re-import the workspace with '<span style="font-style: italic;">load ifit.mat</span>' in
                 any further Matlab or iFit session.<br>
               </td>
             </tr>
@@ -218,13 +208,13 @@
               <td style="vertical-align: top; font-weight: bold;">--exit<br>
               </td>
               <td style="vertical-align: top;">Exits iFit when all
-                commands have been executed<br>
+                commands have been executed. The Ctrl-C key exits immediately (aborts)<br>
               </td>
             </tr>
             <tr>
               <td valign="top"><b>-nodesktop</b><br>
               </td>
-              <td valign="top">Do not start the miFit GUI (prompt only)<br>
+              <td valign="top">Do not start the <a href="file:///home/farhi/dev/iFit/Docs/miFit.html">miFit</a> GUI (prompt only)<br>
               </td>
             </tr>
             <tr>
@@ -251,8 +241,7 @@
               </td>
             </tr>
             <tr>
-              <td style="vertical-align: top; font-weight: bold;">'<span
-                  style="color: rgb(204, 51, 204);">"any string"</span>'<br>
+              <td style="vertical-align: top; font-weight: bold;">'<span style="color: rgb(204, 51, 204);">"any string"</span>'<br>
               </td>
               <td style="vertical-align: top;">An argument containing a
                 double quote string is interpreted as a static string,
@@ -268,8 +257,7 @@
               </td>
             </tr>
             <tr>
-              <td style="vertical-align: top; font-weight: bold;">"<span
-                  style="color: rgb(51, 102, 255);">'any expression'</span>"<br>
+              <td style="vertical-align: top; font-weight: bold;">"<span style="color: rgb(51, 102, 255);">'any expression'</span>"<br>
               </td>
               <td style="vertical-align: top;">An argument containing a
                 single quote string is evaluated as a Matlab
@@ -287,12 +275,8 @@
         </div>
         <div style="margin-left: 80px;"> imports two data files, exports
           them in a single MAT file (HDF based), and exit. The list of
-          all available file formats for import is available in the <a
-            href="Load.html">Load</a> page.<br>
-          This is the same as <span style="color: rgb(51, 102, 255);">save</span>(<span
-            style="color: rgb(51, 102, 255);">iData</span>({<span
-            style="color: rgb(204, 51, 204);">'Data/Ag_3_a.edf','Data/ILL_IN6.dat'</span>}),<span
-            style="color: rgb(204, 51, 204);">'ifit.mat'</span>)<br>
+          all available file formats for import is available in the <a href="Load.html">Load</a> page.<br>
+          This is the same as <span style="color: rgb(51, 102, 255);">save</span>(<span style="color: rgb(51, 102, 255);">iData</span>({<span style="color: rgb(204, 51, 204);">'Data/Ag_3_a.edf','Data/ILL_IN6.dat'</span>}),<span style="color: rgb(204, 51, 204);">'ifit.mat'</span>)<br>
         </div>
         <div style="margin-left: 40px;"><span style="font-style:
             italic;"></span><span style="font-style: italic;
@@ -300,21 +284,14 @@
             subplot</span><br>
         </div>
         <div style="margin-left: 80px;"> imports two data files, display
-          them with subplot (from <a href="iData.html">iData</a>/<a
-            href="Plot.html">Plot</a>) and waits for further commands
-          (switch to interactive mode). The two files are stored in the<span
-            style="font-weight: bold;"> '</span><span style="font-style:
-            italic; font-weight: bold;">this</span><span
-            style="font-weight: bold;">' </span>cell array.<br>
-          This is the same as <span style="color: rgb(51, 102, 255);">subplot</span>(<span
-            style="color: rgb(51, 102, 255);">iData</span>({<span
-            style="color: rgb(204, 51, 204);">'Data/Ag_3_a.edf','Data/ILL_IN6.dat'</span>}))<br>
+          them with subplot (from <a href="iData.html">iData</a>/<a href="Plot.html">Plot</a>) and waits for further commands
+          (switch to interactive mode). The two files are stored in the<span style="font-weight: bold;"> '</span><span style="font-style:
+            italic; font-weight: bold;">this</span><span style="font-weight: bold;">' </span>cell array.<br>
+          This is the same as <span style="color: rgb(51, 102, 255);">subplot</span>(<span style="color: rgb(51, 102, 255);">iData</span>({<span style="color: rgb(204, 51, 204);">'Data/Ag_3_a.edf','Data/ILL_IN6.dat'</span>}))<br>
         </div>
         <div style="margin-left: 40px;"><span style="font-style: italic;
-            font-weight: bold;">ifit Data/Ag_3_a.edf Data/ILL_IN6.dat </span><span
-            style="font-weight: bold;">"</span><span style="color:
-            rgb(51, 102, 255); font-weight: bold;">'save(this{:},'mydata','HDF')'</span><span
-            style="font-weight: bold;">"</span><br>
+            font-weight: bold;">ifit Data/Ag_3_a.edf Data/ILL_IN6.dat </span><span style="font-weight: bold;">"</span><span style="color:
+            rgb(51, 102, 255); font-weight: bold;">'save(this{:},'mydata','HDF')'</span><span style="font-weight: bold;">"</span><br>
         </div>
         <div style="margin-left: 80px;"> imports two data files, then
           evaluates the iData/save command to save in HDF5 format. The
@@ -329,29 +306,20 @@
           to a Gaussian model (default). The list of all available fit
           models is available in the <a href="Models.html">Models</a>
           page.<br>
-          This is the same as <span style="color: rgb(51, 102, 255);">fits</span>(<span
-            style="font-style: italic;">gauss</span>, <span
-            style="color: rgb(51, 102, 255);">iData</span>(<span
-            style="color: rgb(204, 51, 204);">'Data/ILL_IN20.dat'</span>}))<br>
+          This is the same as <span style="color: rgb(51, 102, 255);">fits</span>(<span style="font-style: italic;">gauss</span>, <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">'Data/ILL_IN20.dat'</span>}))<br>
         </div>
         <div style="margin-left: 40px;"><span style="font-style: italic;
-            font-weight: bold;">ifit Data/ILL_IN20.dat '<span
-              style="color: rgb(204, 51, 204);">"lorz"</span>'fits</span><br>
+            font-weight: bold;">ifit Data/ILL_IN20.dat '<span style="color: rgb(204, 51, 204);">"lorz"</span>'fits</span><br>
         </div>
         <div style="margin-left: 80px;"> imports a data file, and fit it
           to a Lorentzian model.<br>
-          This is the same as <span style="color: rgb(51, 102, 255);">fits</span>(<span
-            style="font-style: italic;">lorz</span>, <span
-            style="color: rgb(51, 102, 255);">iData</span>(<span
-            style="color: rgb(204, 51, 204);">'Data/ILL_IN20.dat'</span>}))<br>
+          This is the same as <span style="color: rgb(51, 102, 255);">fits</span>(<span style="font-style: italic;">lorz</span>, <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">'Data/ILL_IN20.dat'</span>}))<br>
         </div>
         <div style="margin-left: 40px;"><span style="font-style: italic;
-            font-weight: bold;">ifit Data/ILL_IN*.dat --run=SCRIPT</span><span
-            style="font-weight: bold;"> --exit</span><br>
+            font-weight: bold;">ifit Data/ILL_IN*.dat --run=SCRIPT</span><span style="font-weight: bold;"> --exit</span><br>
         </div>
         <div style="margin-left: 80px;"> imports a set of data files,
-          and then run the Matlab SCRIPT, which can use the <span
-            style="font-style: italic;">'this'</span> cell array in the
+          and then run the Matlab SCRIPT, which can use the <span style="font-style: italic;">'this'</span> cell array in the
           further processing, and finally exits.<br>
         </div>
         <h3><a class="mozTocH3" name="mozTocId80479"></a>Limitations</h3>
@@ -367,10 +335,8 @@
           <li>Plotting capabilities with e.g. openGL rendering and plot
             editor<br>
           </li>
-          <li>Third-party tools such as <a
-              href="http://www.mathworks.com/matlabcentral/fileexchange/764">slice-o-matic</a></li>
-          <li>The <a
-              href="../Applications/ResLibCal/doc/ResLibCal.html">ResLibCal</a>
+          <li>Third-party tools such as <a href="http://www.mathworks.com/matlabcentral/fileexchange/764">slice-o-matic</a></li>
+          <li>The <a href="../Applications/ResLibCal/doc/ResLibCal.html">ResLibCal</a>
             application</li>
           <li>Hooks to the <a href="http://www.mcstas.org/">McStas</a>
             and <a href="http://www.mcxtrace.org/">McXtrace</a>
@@ -389,19 +355,16 @@
         labels, ...), you can use:<br>
         <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">edit</span>(gcf);	<span style="font-style: italic;">% edit the current figure</span>. <span style="font-weight: bold;">Select the 'arrow'</span> tool in the tool bar then double-click objects.<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">inspect</span>(gcf) <span style="font-style: italic;">% open a property editor</span><br></pre>
         The edit command also works with files, to launch the system
-        text editor or a simplistic editor.<br>
+        text editor or a simplistic editor.<br><br>The <font color="#ff0000"><b>Ctrl-C</b></font> key in the iFit terminal exits immediately iFit. It is safer to use the 'exit' command which will give a chance to opened interfaces to properly quit.<br><br><hr width="100%" size="2"><br>
       </div>
       <div style="text-align: left;">
         <h3><a class="mozTocH3" name="mozTocId711798"></a>Short
           introduction to Matlab syntax</h3>
         <a href="http://www.mathworks.com">Matlab</a> can be regarded as
         a powerful numeric calculator. It works in interactive mode
-        (with a prompt waiting for new instructions). Type <span
-          style="font-style: italic;">exit</span> to exit Matlab, and <span
-          style="font-style: italic;">doc</span> to get the Matlab help
+        (with a prompt waiting for new instructions). Type <span style="font-style: italic;">exit</span> to exit Matlab, and <span style="font-style: italic;">doc</span> to get the Matlab help
         (not in stand-alone version). The full Matlab help can be
-        accessed freely at &lt;<a
-          href="http://www.mathworks.com/help/techdoc/">http://www.mathworks.com/help/techdoc/</a>&gt;.<br>
+        accessed freely at &lt;<a href="http://www.mathworks.com/help/techdoc/">http://www.mathworks.com/help/techdoc/</a>&gt;.<br>
         <h4><a class="mozTocH4" name="mozTocId315210"></a>Variables and
           data type</h4>
         Matlab supports real ('double'), complex, integer, character
@@ -410,13 +373,10 @@
         sets, and <a href="iFunc.html">iFunc</a> to store models for
         e.g. fitting. These data types can be stored in named variables
         with the equal sign, or in the '<span style="font-style:
-          italic;">ans</span>' (latest answer) variable: The <span
-          style="font-weight: bold;">';'</span> sign at the end of a
-        statement suppresses the display of the result. The <span
-          style="font-weight: bold;">'%'</span> character indicates a
+          italic;">ans</span>' (latest answer) variable: The <span style="font-weight: bold;">';'</span> sign at the end of a
+        statement suppresses the display of the result. The <span style="font-weight: bold;">'%'</span> character indicates a
         comment. The square brackets<span style="font-weight: bold;"> []</span>
-        are used to define vectors and matrices. The curly brackets<span
-          style="font-weight: bold;"> {}</span> are used to access cell
+        are used to define vectors and matrices. The curly brackets<span style="font-weight: bold;"> {}</span> are used to access cell
         array (lists) elements. To access elements from a string or an
         array, use the the parenthesis <span style="font-weight: bold;
           font-style: italic;">(index) </span>with an index starting
@@ -429,8 +389,7 @@
         <h4><a class="mozTocH4" name="mozTocId495160"></a> Control
           statements</h4>
         <p>Matlab supports a set of control statements:</p>
-        <table style=" text-align: left; width: 100%;" border="1"
-          cellpadding="2" cellspacing="2">
+        <table style=" text-align: left; width: 100%;" cellspacing="2" cellpadding="2" border="1">
           <tbody>
             <tr>
               <td style="vertical-align: top;">
@@ -470,8 +429,7 @@
           lists of statements<br>
         </h4>
         Matlab scripts are text files containing a list of statements
-        and control keywords as listed above. To execute them, use <span
-          style="font-style: italic;"><br>
+        and control keywords as listed above. To execute them, use <span style="font-style: italic;"><br>
         </span>
         <pre style="margin-left: 40px;">&gt;&gt; run SCRIPT.m</pre>
         where the script can contain a full path name, and should have a
@@ -502,8 +460,7 @@
         Within iFit, the <a href="iFunc.html">iFunc</a> objects provide
         a work-around solution for numerical functions to be used for
         models. Such objects use '<span style="font-style: italic;">p</span>'
-        as parameters (which can be given names), and axes '<span
-          style="font-style: italic;">x,y,z,t,u,v,w</span>'.<br>
+        as parameters (which can be given names), and axes '<span style="font-style: italic;">x,y,z,t,u,v,w</span>'.<br>
         <pre style="margin-left: 40px;">&gt;&gt; f = <span style="color: rgb(51, 102, 255);">iFunc</span>(<span style="color: rgb(204, 51, 204);">'p(1)*x + p(2)'</span>)<br>&gt;&gt; plot(f)<br></pre>
         <a href="iFunc.html">iFunc</a> objects can be manipulated just
         as numbers, and you can create more complex models by assembling
@@ -516,10 +473,7 @@
         <pre style="margin-left: 40px;">&gt;&gt; d = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">'filename'</span>);<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(d)<br>&gt;&gt; fits(d, gauss)<br></pre>
         A large set of functions and operators allow to manipulate these
         objects just as numbers. Refer to the <a href="Methods.html">Methods</a>,
-        <a href="Load.html">Load</a>, <a href="Save.html">Save</a>, <a
-          href="Plot.html">Plot</a>, <a href="Fit.html">Fit</a> and <a
-          href="Math.html">Math</a> pages. The same remark holds for <a
-          href="iFunc.html">iFunc</a> fit models.<br>
+        <a href="Load.html">Load</a>, <a href="Save.html">Save</a>, <a href="Plot.html">Plot</a>, <a href="Fit.html">Fit</a> and <a href="Math.html">Math</a> pages. The same remark holds for <a href="iFunc.html">iFunc</a> fit models.<br>
         <br>
         As seen <a href="#mozTocId889413">above, </a>data files can be
         directly imported when starting iFit, if the corresponding file
@@ -539,13 +493,10 @@ Farhi
 
 
 
-        - iFit/executable - </span><span style="font-style: italic;"></span><span
-        style="font-style: italic;"> $Date$ $Revision$ </span><span
-        style="font-style: italic;"> </span>- back to <a
-        href="index.html">Main iFit Page </a><a
-        href="http://www.ill.eu/"><img title="ILL, Grenoble, France
+        - iFit/executable - </span><span style="font-style: italic;"></span><span style="font-style: italic;"> $Date$ $Revision$ </span><span style="font-style: italic;"> </span>- back to <a href="index.html">Main iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France
           &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL,
           Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid
           ; width: 53px; height: 50px;" align="right"></a> </div>
-  </body>
-</html>
+  
+
+</body></html>
