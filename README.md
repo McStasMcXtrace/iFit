@@ -35,9 +35,12 @@ Requirements
 **Requirements for standalone (binary) package: NONE**
   Stand-alone versions do not require a Matlab license, and have no dependency
   except the Matlab Compiler Runtime (MCR). This latter is included in some of the 
-  packages, or have to be installed separately.
+  packages (Mac OSX), or has to be installed separately (Windows, Linux).
   You can get the MCR installer at 
     http://ifit.mccode.org/Downloads/binary
+    
+  Under MacOSX, you may need to install Java 6. Get it at:
+    http://ifit.mccode.org/Downloads/binary/mac64/javaforosx.dmg
 
 **Requirements for Source package**
   Matlab (any version from 7.x, R2007a), possibly a C compiler for the looktxt  
@@ -60,6 +63,13 @@ Installation
 **Installation for standalone (binary) package**
   Install the MCR (see above, prefer /opt/MATLAB location on Linux systems), then 
   extract the iFit binary package and launch 'ifit'.
+  
+**MacOSX**
+  Drag and drop the iFit icon into your Applications folder. 
+  To open the standalone App the first time, use Ctrl-Click on the icon. 
+  
+  If you get an error dialogue stating you need Java 6, install it from:
+    http://ifit.mccode.org/Downloads/binary/mac64/javaforosx.dmg
 
 **Quick start**
   type at Matlab prompt:
@@ -67,6 +77,9 @@ Installation
     >> doc(iData)
 
   Then refer to the Quick Start tutorial (in iFit/Docs/QuickStart.html).
+  
+  The miFit interface will be automaticaly opened. It allows to drag-and-drop 
+  data files, plot them, do basic data treatment, fitting, export, ...
   
 Useful links
 ------------
