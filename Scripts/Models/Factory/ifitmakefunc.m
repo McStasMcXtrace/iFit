@@ -97,10 +97,8 @@ else
 end
 
 % test arguments
-expr = char(expr); 
-while ~isempty(strfind(expr,'  '))
-  expr = strrep(expr,'  ',' ');
-end
+expr = cellstr(expr); 
+
 if isnumeric(guess), guess = mat2str(guess);
 else                 guess = char(guess); end
 
@@ -130,7 +128,7 @@ if nargin < 5
                 [ '{\bf Constraint}' NL '(any expresion or function handle {\color{blue} @(p,x,...) constraint} executed before the function Value, returning a new set of parameters "p", optional)' ]};
   dlg_title = 'iFit: Make fit function';
   num_lines = [ 1 1 1 3 1 3]';
-  defAns    = {name, descr, pars, expr, guess, constraint};
+  defAns    = {name, descr, pars, char(expr), guess, constraint};
   options.Resize      = 'on';
   options.WindowStyle = 'normal';   
   options.Interpreter = 'tex';
