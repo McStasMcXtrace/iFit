@@ -16,7 +16,8 @@ function mifit_Data_Fit(varargin)
   options.Display='iter';
   if isfield(config,'Fit_Verbose') && ...
           (strcmp(config.Fit_Verbose,'yes') || strcmp(config.Fit_Verbose,'on') ...
-          || strcmp(config.Fit_Verbose,'1') || config.Fit_Verbose == 1)
+          || strcmp(config.Fit_Verbose,'1') || ...
+            (isscalar(config.Fit_Verbose) && config.Fit_Verbose == 1))
     if ~isfield(options, 'PlotFcns') || isempty(options.PlotFcns), options.PlotFcns = {}; end
     options.PlotFcns{end+1} = 'fminplot';
     options.PlotFcns{end+1} = @(x,optimValues,state)mifit_Models_View_Parameters(x);
