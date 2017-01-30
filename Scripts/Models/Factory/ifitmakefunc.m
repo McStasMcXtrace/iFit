@@ -97,7 +97,12 @@ else
 end
 
 % test arguments
-expr = cellstr(expr); 
+if ischar(expr)
+  expr = cellstr(expr);
+else
+  expr = char(expr);
+  expr = cellstr(expr);
+end
 
 if isnumeric(guess), guess = mat2str(guess);
 else                 guess = char(guess); end
