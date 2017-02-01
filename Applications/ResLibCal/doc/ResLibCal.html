@@ -91,6 +91,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
     in different implementations from:<br>
     <ul>
       <li><span style="font-weight: bold;"><a
@@ -886,7 +887,7 @@ the sample orientation in the spectrometer.</li><li><u>Spectrometer</u><i> [spec
     computation at the cost of a coarser results (more noisy), by
     changing it from the menu item '<i>View/</i><i>Set Monte-Carlo
       iterations...</i>', or from the EXP.NMC ResLib structure
-    (out.EXP.NMC when returned from ResLibCal). When using the Full Monte-Carlo computation, more than NMC points can be generated in the cloud, so that the resolution matrices can be computed with enough accuracy.<br><br>The data sets can also be processed by ResLibCal in order to convert them into 4D data sets that can be compared (and fit) with 4D models. The syntax is similar to that of models:<br><pre style="margin-left: 40px;">&gt;&gt; d_4d = <font color="#3366ff">ResLibCal</font>(d);</pre>will search for (Qhkl E) Axes and extend the data set dimensionality.<br>
+    (out.EXP.NMC when returned from ResLibCal). When using the Full Monte-Carlo computation, more than NMC points can be generated in the cloud, so that the resolution matrices can be computed with enough accuracy.<br><br>The data sets can also be processed by ResLibCal in order to convert them into 4D data sets that can be compared (and fit) with 4D models. The syntax is similar to that of models:<br><pre style="margin-left: 40px;">&gt;&gt; d_4d = <font color="#3366ff">ResLibCal</font>(d);</pre>will search for (Qhkl E) Axes and extend the data set dimensionality. In addition, if the data set contains a 4D model (as 'Model' alias), it will also be convoluted by the 4D TAS resolution.<br>
     <h4><a class="mozTocH4" name="mozTocId280415"></a>Dispersion model:
       4D dynamic structure factors S(q,w)</h4>
     As we have seen the 4D convolution procedure seems straight-forward,
@@ -1001,7 +1002,7 @@ the sample orientation in the spectrometer.</li><li><u>Spectrometer</u><i> [spec
         </tr>
         <tr>
           <td valign="top"><a href="http://ifit.mccode.org/Models.html#mozTocId908192"><b>sqw_spinw</b></a></td>
-          <td valign="top">Spin-wave dispersion in HKL using <a href="https://www.psi.ch/spinw/">SpinW</a>.</td>
+          <td valign="top">Spin-wave dispersion in HKL using <a href="https://www.psi.ch/spinw/">SpinW</a>. Ann initial SpinW object must be given, or defaults to the 'squareAF' with J1=2, J2=0<br></td>
           <td valign="top"><font color="#33cc00">4D (HKLw)</font><br>
             <a href="http://ifit.mccode.org/images/Models_sqw_sine3d.png"><img alt="sw" title="sw" src="http://ifit.mccode.org/images/Models_sqw_spinw.png" width="100" height="73" align="middle" border="0"></a></td>
           <td valign="top">energy broadening, Temperature, Amplitude,
@@ -1018,7 +1019,7 @@ the sample orientation in the spectrometer.</li><li><u>Spectrometer</u><i> [spec
           </td>
           <td valign="top">Energy and location of 'gap', slopes,
             directions of slopes, DHO width, temperature, background</td>
-        </tr><tr><td valign="top"><b>sqw_acoustopt</b><br></td><td valign="top">A phenomenological dispersion which can
+        </tr><tr><td valign="top"><a href="http://ifit.mccode.org/Models.html#mozTocId897311"><b>sqw_acoustopt</b></a><br></td><td valign="top">A phenomenological dispersion which can
             describe an acoustic or optical mode.Acoustic slope and 'optical' minimum energy can be specified.<br></td><td valign="top"><font color="#33cc00">4D (HKLw)<br></font><div align="left"><a href="http://ifit.mccode.org/images/Models_sqw_acoustopt.png"><img alt="sqw_acoustopt" title="sqw_acoustopt" src="http://ifit.mccode.org/images/Models_sqw_acoustopt.png" width="100" height="75" align="right" border="0"></a></div><br></td><td valign="top">Energy and location of 'gap', slopes,
             directions of slopes, DHO width, temperature, background</td></tr>
       </tbody>
