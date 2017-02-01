@@ -84,9 +84,9 @@ function [pars_out,criteria,message,output] = fits(model, a, pars, options, cons
 %           options.criteria
 %             Minimization criteria. Default is 'least_square' (char/function handle)
 %             the syntax for evaluating the criteria is criteria(Signal, Error, Model)
-%           options.OutputFcn
+%           options.OutputFcn and options.PlotFcns
 %             Function called at each iteration as outfun(pars, optimValues, state)
-%             The 'fminplot' function may be used.
+%             The 'fminplot' or 'fminstop' functions may be used.
 %           options.Display
 %             Display additional information during fit: 'iter','off','final'. Default is 'iter'.
 %           options.Diagnostics
@@ -526,7 +526,12 @@ if strcmp(options.Display, 'iter') || strcmp(options.Display, 'final')
   end
   
   disp([ '** Final parameters (duration ' num2str(output.duration) ' [s]):' ]);
+
   for index=1:length(model.Parameters); 
+    if numel(sigma) < index, 
+        sigma(index)=0; 
+        output.parsHistoryUncertainty = sigma;
+    end
     fprintf(1,'  p(%3d):%20s=%g +/- %g', index,strtok(model.Parameters{index}), pars_out(index), sigma(index)); 
     if isfield(constraints, 'fixed') && length(constraints.fixed) >= index && constraints.fixed(index)
       fprintf(1, ' (fixed)'); end
@@ -625,8 +630,7 @@ end
     end
     
     % overlay data and Model when in 'OutputFcn' mode
-    if ( (isfield(options, 'OutputFcn') && ~isempty(options.OutputFcn)) ...
-      || (isfield(options, 'PlotFcns') && ~isempty(options.PlotFcns)) ) ...
+    if ( (isfield(options, 'PlotFcns') && ~isempty(options.PlotFcns)) ) ...
       && ~isscalar(a.Signal) && ndims(a.Signal) <= 2
       if ~isfield(options, 'updated')
         options.updated   = -clock;

@@ -21,6 +21,8 @@ function mifit_Data_Fit(varargin)
     if ~isfield(options, 'PlotFcns') || isempty(options.PlotFcns), options.PlotFcns = {}; end
     options.PlotFcns{end+1} = 'fminplot';
     options.PlotFcns{end+1} = @(x,optimValues,state)mifit_Models_View_Parameters(x);
+  else
+    options.OutputFcn = 'fminstop';
   end
   if isappdata(mifit_fig,'CurrentOptimizerCriteria')
     options.criteria=getappdata(mifit_fig,'CurrentOptimizerCriteria');

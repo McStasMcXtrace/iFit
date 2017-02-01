@@ -14,6 +14,12 @@ function stop = fminplot(pars, optimValues, state)
 % To retrieve the optimisation history from the fminplot window, use:
 %   h = fminplot;
 %
+% Other defined function to be used as OutputFcn and PlotFcns:
+%   @fminstop           displays a stop button (very fast, allow clean abort of fit)
+%   @optimplotx         plots the current point
+%   @optimplotfval      plots the function value
+%   @optimplotfunccount plots the function count
+%
 % example: 
 %   fmin(@objective, [], 'OutputFcn=fminplot')
 
