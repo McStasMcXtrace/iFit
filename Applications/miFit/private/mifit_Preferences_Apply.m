@@ -47,7 +47,37 @@ function config=mifit_Preferences_Apply(config)
     set(fig, 'Position',Position);
   end
   
-  % handle User menus
+  % handle Proxy settings
+  if isfield(config, 'ProxyHost') 
+    if ~isempty(config.ProxyHost) && ischar(config.ProxyHost)
+      java.lang.System.setProperty('http.proxyHost',config.ProxyHost);  % old Matlab stuff
+      try
+        com.mathworks.mlwidgets.html.HTMLPrefs.setUseProxy(true);
+        com.mathworks.mlwidgets.html.HTMLPrefs.setProxyHost(config.ProxyHost);
+      end
+      % proxy port
+      if ~isempty(config.ProxyPort)
+        if isnumeric(config.ProxyPort) && isscalar(config.ProxyPort) && config.ProxyPort > 0
+          config.ProxyPort = num2str(config.ProxyPort); 
+        elseif ~ischar(config.ProxyPort)
+          config.ProxyPort = '';
+        end
+        java.lang.System.setProperty('http.proxyPort',config.ProxyPort);
+        try
+          com.mathworks.mlwidgets.html.HTMLPrefs.setProxyPort(config.ProxyPort);
+        end
+      end
+    else  % no proxy
+      java.lang.System.setProperty('http.proxyHost','');
+      java.lang.System.setProperty('http.proxyPort','');
+      try
+        com.mathworks.mlwidgets.html.HTMLPrefs.setUseProxy(false);
+      end
+    end
+  end
+    
+  
+  % handle User menus ==========================================================
   % dynamically build any other 'Menu_' items in the configuration
   % example: config.Menu_Tools={'Label','command'}; will add the label in the Menu
   flag_added_new_menu = false;
@@ -104,12 +134,6 @@ function config=mifit_Preferences_Apply(config)
         separator = 'off';
       end
     end
-  end
-  if flag_added_new_menu && 0
-    % move the help menu to the right side
-    menu_help  = findobj(fig, 'Tag','Menu_Help');
-    right_help = copyobj(menu_help, fig);
-    delete(menu_help);
   end
   
   % for uimenu, could we use tip given by Y Altman 

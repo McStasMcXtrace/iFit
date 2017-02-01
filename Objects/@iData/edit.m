@@ -201,7 +201,7 @@ function iData_edit_display(hObject, eventdata, varargin)
   % hObject is the handle of the context menu item
   
   [Selection, rows, columns] = iData_edit_getselection;
-  
+  UserData  = get(fig, 'UserData');
   % plot it (no axes here ?)
   if isscalar(Selection) || ndims(Selection) > 2
     return;

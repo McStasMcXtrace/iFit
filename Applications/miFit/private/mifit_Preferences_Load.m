@@ -22,7 +22,9 @@ function config = mifit_Preferences_Load(file)
     if ~isfield(config, 'Save_Data_On_Exit'), config.Save_Data_On_Exit= 'yes'; end
     if ~isfield(config, 'Store_Models'),      config.Store_Models     = 3; end
     if ~isfield(config, 'History_Level'),     config.History_Level    = 10; end
-    if ~isfield(config, 'Fit_Verbose'),       config.Fit_Verbose      = 'no'; end
+    if ~isfield(config, 'Fit_Verbose'),       config.Fit_Verbose      = 'yes'; end
+    if ~isfield(config, 'ProxyHost'),         config.ProxyHost        = ''; end
+    if ~isfield(config, 'ProxyPort'),         config.ProxyPort        = 0; end
     setappdata(mifit_fig, 'Preferences', config);
     if isfield(config, 'FontSize')
       set(0,'defaultUicontrolFontSize', config.FontSize);
