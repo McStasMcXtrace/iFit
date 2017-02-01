@@ -264,7 +264,7 @@ function mifit_Models_View_Parameters_paste(varargin)
   % check if this is a multiline string which can be evaluated as values (e.g. '0.01\n0.02 ...')
   val = str2num(str);
   if size(val,1) == size(d,1) % same number as lines
-    d(:,2) = val(:,1);
+    for index=1:size(val,1); d{index,2} = val(index,1); end
     set(t, 'Data',          d);
   else
   % check if we find parameter names as first token
