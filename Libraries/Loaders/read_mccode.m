@@ -347,7 +347,7 @@ function structure=mcplot_load_mccode(filename)
     end
   elseif ~isempty(strmatch('array_2d',structure.type)) % 2d
     % update size from the actual read data (can be different for e.g. event list)
-    if rem(numel(structure.data), structure.size(1)) == 0
+    if rem(numel(structure.data), structure.size(1)) == 0 && numel(structure.data) ~= prod(structure.size)*3
       structure.size = [ structure.size(1) numel(structure.data)/structure.size(1) ];
     end
     len      = prod(structure.size);
