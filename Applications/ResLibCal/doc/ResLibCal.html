@@ -92,6 +92,8 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
+
     in different implementations from:<br>
     <ul>
       <li><span style="font-weight: bold;"><a
@@ -170,7 +172,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
       machines mostly use optics focusing so that this method is
       probably more suited to model today's spectrometers.<br>The <b>Full Monte-Carlo</b> uses a Monte-Carlo instrument simulation with McStas (<a href="../private/templateTAS.instr">templateTAS</a> instrument) to evaluate the resolution as a cloud of points in the reciprocal space. This cloud can then be used for 4D convolution.<br>
     </blockquote>
-    The following computational methods are available:<br>
+    The analytical methods, Cooper-Nathans and Popovici, define the resolution matrix as:<br><br><div align="center"><i>M = [B.A. [C'.F.C+G]</i><i><sup>-1</sup></i><i> A'.B']</i><i><sup>-1</sup></i><br></div> where:<br><ul><li>the <i>G</i> matrix contains the horizontal and vertical collimation (alpha and beta parameters)</li><li>the <i>F</i> matrix contains the monochromator and analyser mosaicity (vertical and horizontal)</li><li>the <i>A</i> matrix holds the k<sub>i</sub> and <i>k</i><i><sub>f</sub></i><i> cotan(&#952;)</i> terms (apparent monochromator and analyzer beam cross sections)</li><li>the <i>B</i> matrix represents the orientation of the sample (angle A3), i.e. the momentum exchange Q in the k<sub>i</sub> frame</li><li>the <i>C</i> matrix is roughly 1/2, with monochromator and analyzer projection terms.</li></ul>The term <i>C'.F.C</i> is often labeled as <i>H</i>, and has a slightly more developed expression in the Popovici formalism, with additional geometrical terms involving distances and dimensions of the spectrometer parts.<br><br>The following computational methods are available (top left <font color="#ff0000">red</font> pop-up menu):<br>
     <ul>
       <li><b>Cooper-Nathans/AFILL</b>: the original Cooper-Nathans [<a href="#mozTocId811100">1</a>] code RESCAL from Brookhaven
         'AFILL'. Mosaicities are isotropic (horizontal equals vertical).
@@ -855,7 +857,15 @@ the sample orientation in the spectrometer.</li><li><u>Spectrometer</u><i> [spec
     <br>
     <h3><a class="mozTocH3" name="mozTocId368787"></a>Convolution of the
       TAS resolution function with a model, in 4D</h3>
-    Once ResLibCal can properly describe a TAS setting, it is possible
+    <br>The measured signal from a TAS can be schematically described as:<br>
+<br>
+<div align="center"><i>I(q,w) = &#8747; S(q,w) * R(q,w) dq dw</i><br>
+</div>
+<i><br>
+</i>where <i>S(q,w)</i> is the dynamic structure factor of the measured sample, and <i>R(q,w)</i>
+ is the resolution function (response) of the neutron TAS. The 
+resolution function is directly obtained from the resolution matrix <a href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId121795"><i>M</i> detailed above</a>.<br>
+<br>Once ResLibCal can properly describe a TAS setting, it is possible
     to use the computed resolution to convolve a model dispersion in
     materials. The methodology is (for each QH,QK,QL,W location in the
     reciprocal space):<br>
@@ -863,7 +873,7 @@ the sample orientation in the spectrometer.</li><li><u>Spectrometer</u><i> [spec
       <li>compute the resolution function</li>
       <li>build a Monte-Carlo cloud of points which is a random
         statistical description of the TAS response</li>
-      <li>multiply this cloud of points with the dispersion, and sum it
+      <li>evaluate the dispersion for all points in the resolution cloud, and sum it
         to get an estimate of the integrated counts on the detector
         arising from the 'capture' of the dispersion by the TAS
         resolution function.</li>
