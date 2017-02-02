@@ -20,6 +20,7 @@ d = [d ones(1,2-length(d))]; % Make sure siz is at least 2-D
 
 if numel(a) == 1
   sz = isvector(a);
+  if sz > 1, return; end
   if ~sz, sz = length(size(a)); end
   % this is a single iData object
   if ndims(a) <= 2 && length(size(a)) ==2, return; end

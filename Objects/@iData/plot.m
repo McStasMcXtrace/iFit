@@ -295,11 +295,15 @@ otherwise % 3d data sets: volumes
     extent       = extent(end:-1:1);
     % we use extend_index(1:3)
     % we keep axes [1:2 ndims(a)] (this allows e.g. to plot S(q,w))
-    if isvector(a) > 1  % event data set
-      for index=1:ndims(a)
-        if index <= 4 && extent(index) > extent(1)*1e-4, continue; end
-        a = rmaxis(a, extent_index(index));
+    if isvector(a) > 1 % event data set
+      to_remove = [];
+      for index=2:ndims(a)
+        if isempty([ strfind(method,'whole') strfind(method,'full') ])
+          if index <= 4 && extent(index) > extent(1)*1e-2, continue; end
+        elseif index <= 3, continue; end
+        to_remove = [ to_remove extent_index(index) ];
       end
+      a = rmaxis(a,to_remove);
     else
       sz = size(a); sz(extent_index(4:end)) = 1;
       iData_private_warning(mfilename, [ 'Reducing ' num2str(ndims(a)) '-th dimensional data ' a.Tag ' "' a.Title '" to 3D with a=resize(a, ' mat2str(sz) ')' ]);
