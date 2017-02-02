@@ -53,8 +53,8 @@ if isempty(m)
     m = size(a,1); n = size(a,2);
   else
     p = numel(a);
-    n = floor(sqrt(p));
-    m = ceil(p/n);
+    n = ceil(sqrt(p));
+    m = floor(p/n);
   end
 elseif isempty(n)
   n = ceil(length(a(:))/m);
