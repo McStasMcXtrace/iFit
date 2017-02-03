@@ -1,4 +1,4 @@
-function stop = fminstop(x, optimValues, state)
+function val = fminstop(x, optimValues, state)
 % fminstop: an OutputFcn / PlotFcns function which displays a 'STOP' button
 %
 % this later can be pressed during a fit to abort the current fit procedure.
@@ -12,9 +12,13 @@ function stop = fminstop(x, optimValues, state)
 % example: 
 %   fmin(@objective, [], 'OutputFcn=fminplot')
 
-persistent fig
+persistent fig stop
 
-stop = false;
+if isempty(stop), stop = false; end
+
+if  stop &&  isempty(fig), stop  = false;  end  % remains from last stop event
+if  stop && ~isempty(fig) && ~ishandle(fig), state = 'done'; end  % close figure 
+if ~stop &&  isempty(fig), fig = fminstop_create; end % waiting without figure: create it.
 
 switch state
 case 'init'
@@ -22,32 +26,33 @@ case 'init'
   fig = findall(0, 'Tag','Optim:fminstop');
   if length(fig) > 1, delete(fig(2:end)); end % unique instance
 
-  if isempty(fig) % create window in case state was never 'init'
+  if isempty(fig) % create window
     fig = fminstop_create;
   end
+  stop = false;
   
 case {'iter','interrupt'}
   % return stop if the figure is closed
-  if ~isempty(fig) && ~ishandle(fig) % closed by user
-    stop = true;
-    fig  = [];
-    return; 
-  end
-
-  if isempty(fig) % create window in case state was never 'init'
-    fig = fminstop_create;
+  if ~isempty(fig)
+    if ~ishandle(fig) || ~strcmp(get(fig,'Tag'), 'Optim:fminstop') % closed by user
+      stop = true;
+    end
+    drawnow;
   end
 case 'done'
   % close window
-  close(fig);
+  delete(fig);
+  drawnow;
   stop = true;
-  fig = [];
+  fig  = [];
 end
+
+val = stop;
 
 % ------------------------------------------------------------------------------
 function fig = fminstop_create
   fig = figure('Tag','Optim:fminstop','MenuBar','None','NextPlot','new', ...
-      'HandleVisibility','callback','Name','Fit [close to abort]');
+      'Name','Fit [close to abort]','CloseRequestFcn','fminstop([],[],''done'');');
   p = get(fig, 'Position');
   p(3:4) = [100 50];
   set(fig, 'Position',p);
