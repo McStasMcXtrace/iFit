@@ -179,7 +179,8 @@ if ~isempty(value)
   setalias(this, alias, value);
   % check if the axis is reverted
   myisvector = @(c)max(size(c)) == numel(c);
-  if myisvector(this) <= 1 && numel(value) > 1 && rank > 0 && isnumeric(value) && myisvector(value) && value(1) > value(end)
+  isevent = (isvector(this) > 1);
+  if ~isevent && myisvector(this) <= 1 && numel(value) > 1 && rank > 0 && isnumeric(value) && myisvector(value) && value(1) > value(end)
     this = sort(this, rank);
   end
 end
@@ -197,6 +198,7 @@ function this = iData_checkaxes(this)
   % makes a check of axes and Signal, notice invalid ones, move unused singleton to end.
   axis_1D=[];
   size_this=size(this);
+  isevent = (isvector(this) > 1);
   for index=1:length(this.Alias.Axis) % scan axis definitions and values
     link = this.Alias.Axis{index};
     if length(size_this) < index, size_this(index)=1; end
@@ -215,7 +217,7 @@ function this = iData_checkaxes(this)
       end
       % check if the axis is reverted
       myisvector = @(c)length(c) == numel(c);
-      if numel(val) > 1 && isnumeric(val) && myisvector(val) && val(1) > val(end)
+      if ~isevent && numel(val) > 1 && isnumeric(val) && myisvector(val) && val(1) > val(end)
         this = sort(this, index);
       end
     catch ME

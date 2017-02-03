@@ -307,10 +307,16 @@ iFunc_ax = 'x y z t u v w ';
 iFunc_dim= abs(this.Dimension);
 iFunc_t0 = clock;
 
-if iFunc_dim && numel(varargin) >= iFunc_dim
-  eval([ '[' iFunc_ax(1:(2*iFunc_dim)) ']=deal(varargin{' mat2str(1:iFunc_dim) '});' ]);
-  % remove axes from varargin -> leaves additional optional arguments to the function
-  varargin(1:iFunc_dim) = []; 
+if iFunc_dim
+  if numel(varargin) >= iFunc_dim
+    eval([ '[' iFunc_ax(1:(2*iFunc_dim)) ']=deal(varargin{' mat2str(1:iFunc_dim) '});' ]);
+    % remove axes from varargin -> leaves additional optional arguments to the function
+    varargin(1:iFunc_dim) = [];
+  else
+    disp([ mfilename ': WARNING: Model ' num2str(ndims(this)) 'D but Axes ' num2str(numel(varargin)) 'D !!' ])
+    disp([ '  the model ' this.Name ' ' this.Tag ' is ' num2str(ndims(this)) 'D but' ]);
+    disp([ '  the axes provide only ' num2str(numel(varargin)) ' dimensions.' ]);
+  end
 end
 
 
