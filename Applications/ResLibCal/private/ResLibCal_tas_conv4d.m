@@ -280,7 +280,15 @@ for index = 1:numel(axes_symbols) % also searches for 'lower' names
         || (numel(this_axis) == prod(sz))
         a=setaxis(a, index, match{index_match});
         a=label(a, index, axes_symbols{index});
-        disp([ mfilename ': setting axis ' num2str(index) ' ' axes_symbols{index} ' as ' match{index_match} ]);
+        x = [];
+        try
+          x = get(a, match{index_match});
+          if ~isempty(x) && isnumeric(x)
+            if numel(x) == 1, x = num2str(x);
+            else x = sprintf('[%g:%g]', min(x(:)), max(x(:))); end
+          end
+        end
+        disp([ mfilename ': setting axis ' num2str(index) ' ' axes_symbols{index} ' as ' match{index_match} ' ' x ]);
         break
       end
     end
