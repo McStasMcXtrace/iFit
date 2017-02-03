@@ -94,6 +94,8 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
+
     in different implementations from:<br>
     <ul>
       <li><span style="font-weight: bold;"><a
@@ -172,7 +174,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
       machines mostly use optics focusing so that this method is
       probably more suited to model today's spectrometers.<br>The <b>Full Monte-Carlo</b> uses a Monte-Carlo instrument simulation with McStas (<a href="../private/templateTAS.instr">templateTAS</a> instrument) to evaluate the resolution as a cloud of points in the reciprocal space. This cloud can then be used for 4D convolution.<br>
     </blockquote>
-    The analytical methods, Cooper-Nathans and Popovici, define the resolution matrix as:<br><br><div align="center"><i>M = [B.A. [C'.F.C+G]</i><i><sup>-1</sup></i><i> A'.B']</i><i><sup>-1</sup></i><br></div> where:<br><ul><li>the <i>G</i> matrix contains the horizontal and vertical collimation (alpha and beta parameters)</li><li>the <i>F</i> matrix contains the monochromator and analyser mosaicity (vertical and horizontal)</li><li>the <i>A</i> matrix holds the k<sub>i</sub> and <i>k</i><i><sub>f</sub></i><i> cotan(&#952;)</i> terms (apparent monochromator and analyzer beam cross sections)</li><li>the <i>B</i> matrix represents the orientation of the sample (angle A3), i.e. the momentum exchange Q in the k<sub>i</sub> frame</li><li>the <i>C</i> matrix is roughly 1/2, with monochromator and analyzer projection terms.</li></ul>The term <i>C'.F.C</i> is often labeled as <i>H</i>, and has a slightly more developed expression in the Popovici formalism, with additional geometrical terms involving distances and dimensions of the spectrometer parts.<br><br>The following computational methods are available (top left <font color="#ff0000">red</font> pop-up menu):<br>
+    The analytical methods, Cooper-Nathans and Popovici, define the resolution matrix as  [<a href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">3</a>]:<br><br><div align="center"><i>M = [B.A. [C'.F.C+G]</i><i><sup>-1</sup></i><i> A'.B']</i><i><sup>-1</sup></i><br></div> where:<br><ul><li>the <i>G</i> matrix contains the horizontal and vertical collimation (alpha and beta parameters)</li><li>the <i>F</i> matrix contains the monochromator and analyser mosaicity (vertical and horizontal)</li><li>the <i>A</i> matrix holds the k<sub>i</sub><sup><i>3</i></sup> <i>cotan(&#952;<sub>M</sub>)</i> and <i>k</i><i><sub>f</sub></i><i><sup>3</sup> cotan(&#952;<sub>A</sub>)</i> resolution volume terms (apparent monochromator and analyzer beam cross sections)</li><li>the <i>B</i> matrix represents the orientation of the sample (angle A3), i.e. the momentum exchange Q in the k<sub>i</sub> frame</li><li>the <i>C</i> matrix is roughly 1/2, with monochromator and analyzer projection terms.</li></ul>The term <i>C'.F.C</i> is often labeled as <i>H</i>, and has a slightly more developed expression in the Popovici formalism, with additional geometrical terms involving distances and dimensions of the spectrometer parts.<br><br>The intensity pre-factor <i>R</i><i><sub>0</sub></i> can be estimated as (in Cooper-Nathans formalism)  [<a href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html#mozTocId811100">3</a>]:<br><br><div align="center"><i>R</i><i><sub>0</sub></i><i> = [R</i><i><sub>M</sub></i><i> R</i><i><sub>A</sub></i><i> (2&#960;)</i><i><sup>4</sup></i><i> det(F) ] / [ 64&#960;</i><i><sup>2</sup></i><i> sin</i><i>(&#952;</i><i><sub>M</sub></i><i>) </i><i>sin(&#952;</i><i><sub>A</sub></i><i>)</i><i> det(H) ]</i><br></div><br>where <i>R</i><i><sub>M</sub></i> and <i>R</i><i><sub>A</sub></i>  are the monochromator and analyzer reflectivity. A similar expression holds for Popovici.<br><br>From there, the resolution Gaussian distribution is obtained from <br><br><div align="center"><i>R(q,w) = </i><i>R</i><i><sub>0</sub></i><i> </i><i>e </i><i><sup>-x'.M.x</sup></i><br></div> <br>where <i>x = [qx qy qz w]</i> is the offset to the center of the resolution, in the HKLE 4D space.<br><br>The following computational methods are available (top left <font color="#ff0000">red</font> pop-up menu):<br>
     <ul>
       <li><b>Cooper-Nathans/AFILL</b>: the original Cooper-Nathans [<a href="#mozTocId811100">1</a>] code RESCAL from Brookhaven
         'AFILL'. Mosaicities are isotropic (horizontal equals vertical).
@@ -194,14 +196,14 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
       <li><b>Popovici/ResLib</b>: the Popovici formulation of the
         resolution [<a href="#mozTocId811100">3</a>]. The analyzer
         reflectivity is also taken into account (with analyzer thickness
-        'WA') and correction [<a href="#mozTocId811100">7</a>]..</li>
+        'WA') and correction [<a href="#mozTocId811100">7</a>].</li>
       <li><b>Popovici/ResCal5</b>: the Popovici formulation of the
         resolution [<a href="#mozTocId811100">3</a>], with vertical
         sample mosaicity , but <i>homogeneous</i> mosaicity for
         monochromator and analyzer [<a href="#mozTocId811100">7</a>].</li><li><b>Full Monte-Carlo (McStas)</b>: the instrument is modeled as a source, a monochromator, a sample, an analyzer and a detector. The simulation is assembled using McStas [<a href="#mozTocId811100">8</a>] and compiled locally from a C source. This is the most accurate description of the instrument.</li></ul><u>Tip:</u> If you do not know which method to use, prefer any of the <b>Popovici</b> methods. The Cooper-Nathans method is not recommended (highly approximate). The most accurate method is the full Monte-Carlo, but it is slower.<br><ul>
     </ul>
     <u>Intensity</u>: <br>
-    <blockquote>The Cooper-Nathans/AFILL method uses the Chesser and e
+    <blockquote>The Cooper-Nathans/AFILL method uses the Chesser and Axe
       intensity estimate [<a href="#mozTocId811100">2</a>], whereas all
       the other methods use the Popovici formulation [<a href="#mozTocId811100%5C">3</a>]. The intensity estimate is
       given w.r.t the source, and is given in [a.u.]. The monochromator
@@ -345,7 +347,25 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
         All items have contextual help. When the </span>View/Auto-update<span style="font-style: italic;"> menu item is checked, any change in
         the interface triggers a re-computation of the resolution, and
         an update of opened plots.</span><br>
-      <div align="left"><br>
+      <div align="left"><br>The collimations are given in [arcmin], but are bound between 0 and the geometrical angular aperture defined by the distances and dimensions of the spectrometer parts. The source-monochromator collimations (ALF1 and BET1) can be defined as a wavelength dependent divergence when given a negative value '-m' for a guide m-coating reading: <i>0.1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </i><i>m &#955;<sub>i</sub></i> [deg] where <i>&#955;<sub>i</sub></i> is the incident wavelength.<br><br>The monochromator and analyser curvatures can be given as the curvature radius [in cm], or set to 0 for a flat geometry, or to a negative value (e.g. -1) to request an automatic computation using the following expressions (for both monochromator and analyser):<br><br><meta http-equiv="content-type" content="text/html; charset=windows-1252"><div align="center">RV = 2*L*sin(<i>&#952;</i>)<br>RH = 2*L/sin(<i>&#952;</i>)<br><br></div>where <i>&#952;</i> is the tilt angle, and 1/L=1/L<sub>before</sub> + 1/L<sub>after</sub> is the effective focal distance.<br>
         <h4><a class="mozTocH4" name="mozTocId44543"></a> ResCal
           standard nomenclature for configurations<br>
         </h4>
@@ -859,7 +879,7 @@ the sample orientation in the spectrometer.</li><li><u>Spectrometer</u><i> [spec
       TAS resolution function with a model, in 4D</h3>
     <br>The measured signal from a TAS can be schematically described as:<br>
 <br>
-<div align="center"><i>I(q,w) = &#8747; S(q,w) * R(q,w) dq dw</i><br>
+<div align="center"><i>I(q<sub>0</sub>,w<sub>0</sub>) = &#8747; S(q,w) R(q-q<sub>0</sub>,w-w<sub>0</sub>) dq dw</i><br>
 </div>
 <i><br>
 </i>where <i>S(q,w)</i> is the dynamic structure factor of the measured sample, and <i>R(q,w)</i>
@@ -1159,7 +1179,7 @@ resolution function is directly obtained from the resolution matrix <a href="fil
 
 
       See [<a href="../rescal.for">Fortran code</a>].<br>
-      [2] N. J. Chesser and J. D. e, <span style="font-style: italic;">Acta
+      [2] N. J. Chesser and J. D. Axe, <span style="font-style: italic;">Acta
 
 
 
