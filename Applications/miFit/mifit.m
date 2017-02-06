@@ -546,11 +546,9 @@ function mifit_Data_View(varargin)
   end
   
 function mifit_Data_Properties(varargin)
-% TODO
-  disp([ mfilename ': Data_Properties: TODO: should display properties from "disp" and allow to re-assign signal, axes, define new aliases...' ])
-% Data_Properties ?
-% re-assign data set signal, axes, ... to aliases/new ones
-% display statistics
+% Data/Properties: display dialogue about data sets
+  d = mifit_List_Data_pull;
+  help(d);  % this is very basic. Not edit there.
 
 function mifit_Data_Search(varargin)
 % Data/Search: search all Data sets for a token
