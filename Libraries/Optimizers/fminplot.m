@@ -32,6 +32,7 @@ function stop = fminplot(pars, optimValues, state)
   persistent parsHistory;
   persistent fvalHistory;
   persistent updatePlot
+  
   stop = false;
   flag_input_is_struct = 0;
   
@@ -45,6 +46,8 @@ function stop = fminplot(pars, optimValues, state)
         stop.fvalHistory = fvalHistory;
     end
     return
+  elseif nargin == 1 && (strcmp(pars, 'defaults') || strcmp(pars, 'identify'))
+    return;
   end
   
   old_gcf = get(0, 'CurrentFigure');
