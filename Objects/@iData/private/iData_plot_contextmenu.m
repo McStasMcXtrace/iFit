@@ -5,79 +5,17 @@ function ud=iData_plot_contextmenu(a, h, xlab, ylab, zlab,  T, S, d, cmd, mp, mn
 % ==============================================================================
 % assemble UserData stuff
 
-% make up title string and Properties dialog content
-properties={ [ 'Data ' a.Tag ': ' num2str(ndims(a)) 'D object ' mat2str(size(a)) ], ...
-             [ 'Title: "' char(T) '" ' d ], ...
-             [ 'Source: ' a.Source ], ...
-             [ 'Last command: ' cmd ]};
-tproperties = {};
-% axes and Signal stuff
-properties{end+1} = '[Rank]         [Value] [Description]';
-myisvector = @(c)length(c) == numel(c);
-for index=0:min([ ndims(a) length(getaxis(a)) ])
-  [v, l] = getaxis(a, num2str(index));
-  if length(l) > 20, l = [l(1:18) '...' ]; end 
-  x      = getaxis(a, index);
-  m      = get(a, 'Monitor');
-  if length(x) == 1
-    minmaxstd = sprintf('[%g]', full(x));
-  elseif myisvector(x)
-    minmaxstd = sprintf('[%g:%g] length [%i]', full(min(x)), full(max(x)),length(x));
-  else
-    x=x(:);
-    minmaxstd = sprintf('[%g:%g] size [%s]', full(min(x)), full(max(x)),num2str(size(x)));
-  end
-  if index==0
-    if not(all(m==1 | m==0))
-      minmaxstd=[ minmaxstd sprintf(' (per monitor=%g)', mean(m(:))) ];
-    end
-    minmaxstd=[ minmaxstd sprintf(' sum=%g', full(sum(iData_private_cleannaninf(x)))) ];
-  end
-  if prod(size(a)) < 1e4
-    try
-      [s, f] = std(a, -index);
-      minmaxstd=[ minmaxstd sprintf(' <%g +/- %g>', f,s) ];
-    end
-  end
-  if isnumeric(v), v=''; end
-  t = sprintf('%6i %15s  %s %s', index, v, l, minmaxstd);
-  tproperties{end+1} = t;
-  properties{end+1}  = t;
-  clear x m
-end
+ud = help(a); % gather properties and other information 
 
-% model parameters
-if ~isempty(mp)
-  mproperties = { ['Model parameters: ' mname ] };
-  if isstruct(mp)
-    for f=fieldnames(mp)'
-      mproperties{end+1} = sprintf('* %s = %g', f{1}, mp.(f{1}));
-    end
-  elseif isnumeric(mp)
-    mproperties{end+1} = mat2str(mp);
-  end
-else mproperties = {};
-end
-properties = { properties{:} ...
-   ' ' ...
-   mproperties{:} };
-
-% attach contexual menu to plot with UserData storage
-ud.properties=properties;
-ud.xlabel = xlab;
-ud.ylabel = ylab;
-ud.zlabel = zlab;
-ud.title  = T;
-ud.name   = char(a);
-ud.commands = commandhistory(a);
-ud.handle = h;
+if isempty(h), return; end
+tproperties = ud.tproperties;
+mproperties = ud.mproperties;
 
 % treat HG2 hggroup which do not properly transfer UIContextMenu settings
 
 % ==============================================================================
 % contextual menu for the single object being displayed
 % internal functions must be avoided as it uses LOTS of memory
-
 
 try
     index1 = findobj(get(h,'Children'),'Tag',[ 'iData_plot_' a.Tag '_contextmenu_object' ]);
