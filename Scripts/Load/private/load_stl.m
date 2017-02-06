@@ -4,7 +4,7 @@ function b=load_stl(a)
 % Returns an iData style dataset from a STL file (ascii or binary)
 % or an OFF, PLY, CFL, EZD file
 
-vertices = []; faces = [];
+vertices = []; faces = []; nf=0;
 if isfield(a.Data, 'MetaData') && isfield(a.Data.MetaData, 'OFF')
   % this is an OFF format file read by looktxt
   nvf=a.Data.MetaData.OFF;      % 'NVertices  NFaces  NEdges'
@@ -96,25 +96,27 @@ if (isfield(a.Data, 'MetaData') && isfield(a.Data.MetaData, 'OFF')) || strncmpi(
 end  
 
 % store the vertices and faces
-if isempty(vertices)
+if isempty(vertices) && isempty(a.Data.vertices)
   warning([ mfilename ': The loaded data set ' a.Tag ' from ' a.Source ' is not a STL/SLP/OFF/PLY/CFL/EZD data format.' ]); 
   b = a;
   return
 end
 
-a.Data.vertices = vertices;
-a.Data.vertex   = size(a.Data.vertices,1);
-if nf
-  a.Data.faces    = faces;
-  a.Data.face     = size(a.Data.faces,1);
-else
-  a.Data.faces    = [];
-  a.Data.face     = 0;
+if ~isempty(vertices) && ~isfield(a.Data,'vertices')
+  a.Data.vertices = vertices;
 end
+a.Data.vertex   = size(a.Data.vertices,1);
+
+if ~isempty(faces) && ~isfield(a.Data,'faces')
+  a.Data.faces    = faces;
+elseif ~isfield(a.Data,'faces')
+  a.Data.faces    = [];
+end
+a.Data.face     = size(a.Data.faces,1);
+
 if isfield(a.Data,'MetaData')
   a.Data.MetaData.OFF = [ size(a.Data.vertices,1) size(a.Data.faces,1) ];
 end
-
 
 a.Data.Signal=ones(size(a.Data.vertices, 1),1);
 setalias(a, 'Signal', 'Data.Signal');
