@@ -14,11 +14,13 @@ function val = fminstop(x, optimValues, state)
 
 persistent fig stop
 
+if nargin < 3, return; end
+
 if isempty(stop), stop = false; end
 
 if  stop &&  isempty(fig), stop  = false;  end  % remains from last stop event
 if  stop && ~isempty(fig) && ~ishandle(fig), state = 'done'; end  % close figure 
-if ~stop &&  isempty(fig), fig = fminstop_create; end % waiting without figure: create it.
+if ~stop &&  isempty(fig) && ~strcmp(state,'done'), fig = fminstop_create; end % waiting without figure: create it.
 
 switch state
 case 'init'
@@ -36,6 +38,7 @@ case {'iter','interrupt'}
   if ~isempty(fig)
     if ~ishandle(fig) || ~strcmp(get(fig,'Tag'), 'Optim:fminstop') % closed by user
       stop = true;
+      delete(fig);
     end
     drawnow;
   end
