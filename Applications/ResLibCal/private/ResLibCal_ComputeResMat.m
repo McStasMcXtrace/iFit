@@ -51,7 +51,8 @@ function resolution = ResLibCal_ComputeResMat(EXP)
   
   % prepare potential scan in HKLE
   QH  = EXP.QH; QK = EXP.QK; QL = EXP.QL; W =EXP.W;
-  
+  KI=EXP.ki; 
+  KF=EXP.kf;
   % handle case where all HKLE are vectors of same length
   myisvector=@(c)length(c) == numel(c);
   sz = [ numel(QH) numel(QK) numel(QL) numel(W) ];
@@ -59,18 +60,22 @@ function resolution = ResLibCal_ComputeResMat(EXP)
   if sz(1) > 1 && myisvector(QH) && myisvector(QK) && myisvector(QL) && myisvector(W) && all(sz == sz(1))
     % all are vectors of same length: line
     for index=1:sz(1)
+      if numel(KI) == sz(1), EXP.ki=KI(index); end
+      if numel(KF) == sz(1), EXP.kf=KF(index); end
       resolution{end+1} = ResLibCal_ComputeResMat_Single(EXP, QH(index), QK(index), QL(index), W(index));
     end
   else
     % 4D case or single scalars
   
     len = prod([ numel(QH) numel(QK) numel(QL) numel(W) ]);
-
+    index=1;
     for iqh=1:numel(QH), 
     for iqk=1:numel(QK), 
     for iql=1:numel(QL), 
     for ien=1:numel(W),  
       % loop on scan steps
+      if numel(KI)==len, EXP.ki=KI(index); end
+      if numel(KF)==len, EXP.kf=KF(index); end
       res = ResLibCal_ComputeResMat_Single(EXP, QH(iqh), QK(iqk), QL(iql), W(ien));
       
       % store resolution
