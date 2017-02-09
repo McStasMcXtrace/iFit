@@ -145,7 +145,7 @@ for index=1:numel(s)
 
   % model parameters
   if ~isempty(mp)
-    mproperties = { ['Model parameters: ' mname ] };
+    mproperties = { ['Model parameters: ' name ] };
     if isstruct(mp)
       for f=fieldnames(mp)'
         mproperties{end+1} = sprintf('* %s = %g', f{1}, mp.(f{1}));
