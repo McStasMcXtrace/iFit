@@ -28,6 +28,7 @@ except ImportError:
 import sys
 import pickle
 import numpy
+import warnings
 
 from ase.atoms import Atoms
 from ase.utils import opencew
@@ -222,7 +223,7 @@ def phonons_run(phonon):
         # test if the equilibrium is good
         is_equilibrated = numpy.max(output) < 1e-10
         if not is_equilibrated:
-            warnings.warn('WARNING: The lattice is not equilibrated ! The force estimate may be wrong.')
+            warnings.warn('WARNING: The lattice is not equilibrated ! The force estimate may be wrong. Max Force=%g' % numpy.max(output) )
 
     # Positions of atoms to be displaced in the reference cell
     natoms = len(phonon.atoms)
@@ -244,6 +245,8 @@ def phonons_run(phonon):
                     continue
 
                 # Update atomic positions
+                disp    = [0,0,0]
+                disp[i] = sign * phonon.delta
                 atoms_N.positions[offset + a, i] = \
                     pos[a, i] + sign * phonon.delta
                 
@@ -258,64 +261,62 @@ def phonons_run(phonon):
                 
                 # fill equivalent displacements from spacegroup
                 _phonons_run_symforce(phonon, atoms_N, \
-                    atoms_N.positions[offset + a], output, pos)
+                    disp, output, a)
                 
                 # Return to initial positions
                 atoms_N.positions[offset + a, i] = pos[a, i]
                 
 # ------------------------------------------------------------------------------
-def _phonons_run_symforce(phonon, atoms, disp, force, pos):
+def _phonons_run_symforce(phonon, atoms, disp, force, a):
     """From a given force set, we derive the forces for equivalent displacements
     by applying the corresponding symmetry operators."""
     
     # check if a spacegroup is defined
     if 'spacegroup' not in atoms.info or atoms.info["spacegroup"] is None:
         return
-    
-    pos0 = pos.copy() # store the current equilibrium positions
-    
+
     # get the equivalent displacements for the current move
-    # the 'sites' are wrapped, and normalized.
-    disp,kinds,rot,trans = equivalent_sites(atoms.info["spacegroup"], \
+    # the first row is: rot=I and trans=0
+    disps,kinds,rot,trans = equivalent_sites(atoms.info["spacegroup"], \
                 disp, onduplicates='keep')
-    
+
     # Loop over all planned displacements (past and future)
     # and search for such a move that matches one of the equivalent 'disp'
-    for a in phonon.indices:
-        for i in range(3):
-            for sign in [-1, 1]:
+
+    for i in range(3):
+        for sign in [-1, 1]:
+            
+            # compute the 'planned' displacements (atom, xyz, sign)
+            new_disp    = [0,0,0]
+            new_disp[i] = sign * phonon.delta
+            new_disp    = numpy.mod(new_disp, 1.)
+            
+            # does this move belongs to the equivalent displacements ?
+            if new_disp in disps:
+                # if found in sites, we apply rotation to forces
+                # get the index of the matching site for rot and trans
+                index = numpy.where((disps == new_disp).all(axis=1))
+                try:
+                    index=index[0][0]
+                except IndexError:
+                    continue  # no symmetry operator found
+                    
                 # skip if the pickle already exists
                 filename = '%s.%d%s%s.pckl' % \
                        (phonon.name, a, 'xyz'[i], ' +-'[sign])
                 fd = opencew(filename)
                 if fd is None:
-                    # Skip if already done
+                    # Skip if already done. Also the case for initial 'disp'
                     continue
-                
-                # compute the 'planned' displacements (atom, xyz, sign)
-                pos = pos0.copy()
-                pos[a, i] = pos[a, i] + sign * phonon.delta
-                # wrap this move, so that we can compare
-                pos = equivalent_sites(atoms.info["spacegroup"], pos[a], \
-                    onduplicates='keep')[0]
-                pos = pos[0]  # one single displaced atom
-                
-                # does this move belongs to the equivalent displacements ?
-                if pos in disp:
-                    # if found in sites, we apply rot/trans to forces
-                    # get the index of the matching site for rot and trans
-                    index = numpy.where((disp == pos).all(axis=1))
-                    try:
-                        index=index[0][0]
-                    except IndexError:
-                        raise IndexError('Failed to apply symmetry operators. File %s is left empty.' % filename)
-                    # apply rotation/translation on forces
-                    nforce = force.copy()
-                    for j in range(len(nforce)):
-                        nforce[j] = numpy.dot(rot[index], nforce[j]) + trans[index]
-                    # write the pickle
-                    if rank == 0:
-                        pickle.dump(nforce, fd)
-                        sys.stdout.write('Writing %s (from spacegroup "%s" symmetry)\n' % (filename, atoms.info["spacegroup"].symbol))
-                        fd.close()
-                
+
+                # apply rotation on forces
+                nforce = force.copy()
+                for j in range(len(nforce)):
+                    nforce[j] = numpy.dot(rot[index], nforce[j])
+
+                # write the pickle
+                if rank == 0:
+                    pickle.dump(nforce, fd)
+                    sys.stdout.write('Writing %s (from spacegroup "%s" symmetry)\n' % (filename, atoms.info["spacegroup"].symbol))
+                    fd.close()
+            
