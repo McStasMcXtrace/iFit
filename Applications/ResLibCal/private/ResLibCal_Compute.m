@@ -26,7 +26,7 @@ function out = ResLibCal_Compute(EXP)
     out = EXP;
     EXP = out.EXP;
   end
-  
+
   out.EXP    = EXP; p = [];
   try
     [p, labels]= ResLibCal_EXP2RescalPar(out.EXP); % get ResCal vector and fields
