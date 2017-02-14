@@ -23,6 +23,7 @@ options.gui        = nan;
 options.htmlreport = 0;
 options.dos        = 0;
 options.optimizer  = '';
+options.accuracy   = 'fast';
 
 % read input arguments
 for index=1:numel(varargin)
@@ -70,6 +71,10 @@ for index=1:numel(varargin)
       options.gui = 'init';
     elseif strcmpi(varargin{index},'optimize') || strcmpi(varargin{index},'minimize')
       options.optimizer = 'BFGS';
+    elseif strcmpi(varargin{index},'fast') || strcmpi(varargin{index},'low')
+      options.accuracy = 'fast';
+    elseif strcmpi(varargin{index},'accurate') || strcmpi(varargin{index},'high')
+      options.accuracy = 'accurate';
     end
   end
   if isstruct(varargin{index})
