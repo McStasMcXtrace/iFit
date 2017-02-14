@@ -86,7 +86,8 @@ disp([ compiled cmd ]);
 
 % read results
 if ~isdir(d)
-  error('%s: Failed running McStas TAS model %s\n', mfilename, compiled);
+  fprintf(1, '%s: Failed running McStas TAS model %s\n', mfilename, compiled);
+  return
 end
 
 if ~isempty(dir(fullfile(d,'resolution.dat')))
