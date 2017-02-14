@@ -308,8 +308,8 @@ def _phonons_run_symforce(phonon, atoms, disp, force, a):
                 if fd is None:
                     # Skip if already done. Also the case for initial 'disp'
                     continue
-
-                # apply rotation on forces
+                    
+                # apply rotation (symop) on forces, per row
                 nforce = force.copy()
                 for j in range(len(nforce)):
                     nforce[j] = numpy.dot(rot[index], nforce[j])
@@ -319,4 +319,4 @@ def _phonons_run_symforce(phonon, atoms, disp, force, a):
                     pickle.dump(nforce, fd)
                     sys.stdout.write('Writing %s (from spacegroup "%s" symmetry)\n' % (filename, atoms.info["spacegroup"].symbol))
                     fd.close()
-            
+
