@@ -37,6 +37,7 @@ cellstring = {};
 % split the string into seperate lines if they contain <EOL> characters
 for index=1:numel(string)
   this = string{index};
+  if isempty(this), continue; end
   split = textscan(this,'%s','Delimiter',sprintf('\n\r\f;'));
   for j=1:numel(split)
     this_split=split{j};

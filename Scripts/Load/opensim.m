@@ -173,7 +173,24 @@ elseif ~isempty(strfind(a.Format,'1D monitor'))
     setalias(a,'x',xax,xlab);
     setaxis(a,1,'x');
   end
-  
+elseif ~isempty(strfind(a,'array_1d')) && size(a,2) == 4
+  % recover a wrongly imported McCode 1D, using header, and set default columns
+  sig = getalias(a,'Signal');
+  setalias(a,'Axis_1', [ sig '(:,1)' ]);
+  setalias(a,'Signal', [ sig '(:,2)' ]);
+  setalias(a,'Error',  [ sig '(:,3)' ]);
+  setalias(a,'Events', [ sig '(:,4)' ]);
+  setaxis(a,1,'Axis_1');
+  header = findfield(a,'Attributes','char');
+  if ~isempty(header)
+    if iscell(header), header = get(a, header{1});
+    else               header = get(a, header); end
+    header = str2struct(strsplit(header,'#'));
+    setalias(a, 'Header', header);
+    a.Format = 'McCode 1D monitor';
+    a = opensim(a); % this will now make a better job
+    return
+  end
 elseif ~isempty(strfind(a.Format,'2D monitor'))
   % Get sizes of x- and y- axes:
   i = findfield(a, 'variables', 'numeric exact cache');
