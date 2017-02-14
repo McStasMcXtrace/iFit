@@ -50,7 +50,8 @@ res =  { 'No resolution could be computed' };
 
 if isstruct(resolution)
   H   = resolution.HKLE(1); K=resolution.HKLE(2); L=resolution.HKLE(3); W=resolution.HKLE(4);
-  angles = resolution.angles;
+  if isfield(resolution, 'angles'), angles = resolution.angles;
+  else angles = zeros(1,6); end
   QM = resolution.QM;
 else
   H = EXP.QH; K=EXP.QK; L=EXP.QL; W=EXP.W;
