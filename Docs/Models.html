@@ -114,6 +114,8 @@
 
 
 
+
+
         </a>fits(iData)</span>, <a href="iFunc.html">iFunc</a><br>
     </div>
     <br>
@@ -981,7 +983,7 @@
           </td>
           <td valign="top">Energy and location of 'gap', slopes,
             directions of slopes, DHO width, temperature, background</td>
-        </tr><tr><td valign="top">sqw_acoustopt<br></td><td valign="top">A phenomenological dispersion which can
+        </tr><tr><td valign="top"><b><a href="#mozTocId897311">sqw_acoustopt</a></b><br></td><td valign="top">A phenomenological dispersion which can
             describe e.g. a pure acoustic or optical mode, with quadratic expansion around a minimum. </td><td valign="top"><font color="#33cc00">4D (HKLw)</font><img alt="sqw_acoustopt" title="sqw_acoustopt" src="images/Models_sqw_acoustopt.png" width="100" height="75"><br></td><td valign="top">Energy and location of 'gap', slopes,
             directions of slopes, DHO width, temperature, background</td></tr>
       </tbody>
@@ -1107,11 +1109,7 @@
       <li>
         <meta http-equiv="content-type" content="text/html; charset=windows-1252">
         <meta http-equiv="content-type" content="text/html; charset=windows-1252">
-        Ingo Breßler, Joachim Kohlbrecher and Andreas F. Thünemann,<i> </i><i>Journal
-
-
-
-
+        Ingo Bressler, Joachim Kohlbrecher and Andreas F. Thunemann,<i> </i><i>Journal
 
 
           of Applied Crystallography</i>, 2015, <b>48</b> (5),
@@ -3220,7 +3218,7 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
     dispersion (with a given slope/velocity), which has a given energy E0 at a given HKL0 location,
     use:<br>
     <ul>
-      <li>s=<font color="#3366ff">sqw_linquad</font>([H0 K0 L0 E0]);</li></ul>The HKLE0 location is typically the centre of a measurement scan.<br><br>The <b><a href="file:///home/farhi/dev/iFit/Docs/Models.html#mozTocId897311"><b>sqw_acoustopt</b></a></b> model (below) is somewhat similar, but specifies the <i>minimum</i> of the dispersion instead of a specific location from which the expansion is linear/quadratic.<br><ul>
+      <li>s=<font color="#3366ff">sqw_linquad</font>([H0 K0 L0 E0]);</li></ul>The HKLE0 location is typically the centre of a measurement scan.<br><br>The <b><a href="Models.html#mozTocId897311"><b>sqw_acoustopt</b></a></b> model (below) is somewhat similar, but specifies the <i>minimum</i> of the dispersion instead of a specific location from which the expansion is linear/quadratic.<br><ul>
     </ul>
     
     <br>
@@ -3260,7 +3258,7 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
       </tbody>
     </table>
     <br>
-    The model parameters are the following:<a href="/home/farhi/dev/iFit/Docs/images/Models_sqw_linquad_parameters.svg"><img src="images/Models_sqw_linquad_parameters.svg" title="sqw_linquad_parameters" alt="sqw_linquad_parameters" width="300" height="211" align="right" border="0"></a><br>
+    The model parameters are the following:<a href="images/Models_sqw_linquad_parameters.svg"><img src="images/Models_sqw_linquad_parameters.svg" title="sqw_linquad_parameters" alt="sqw_linquad_parameters" width="300" height="211" align="right" border="0"></a><br>
     <blockquote>&nbsp; p(&nbsp;
       1)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
       <b>DC_Hdir1</b>&nbsp;&nbsp; Slope1 dispersion direction, <b>linear,</b> H [rlu]<br>
@@ -3355,7 +3353,7 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
     Such a model can be used to model an <b>acoustic/linear</b>
     dispersion (with a given slope/velocity), which has a given energy minimum E0 at a given HKL0 location,
     use:<br>
-    <ul><li>s=<font color="#3366ff">sqw_acoustopt</font>([H0 K0 L0 E0]);</li></ul>To model an <i><b>acoustic</b></i> mode, use e.g. <i>H0=K0=L0=E0</i>=0 and adjust the <i>Slope</i> parameters. <br>To model an <i><b>optical</b></i> mode, use e.g. <i>H0=K0=L0=0</i> but set <i>E0</i> to a finite energy (e.g. zone centre energy).<br>To model something else, use other parameters... ;-) <br><br>The <b><a href="file:///home/farhi/dev/iFit/Docs/Models.html#mozTocId774280"><b>sqw_linquad</b></a></b>
+    <ul><li>s=<font color="#3366ff">sqw_acoustopt</font>([H0 K0 L0 E0]);</li></ul>To model an <i><b>acoustic</b></i> mode, use e.g. <i>H0=K0=L0=E0</i>=0 and adjust the <i>Slope</i> parameters. <br>To model an <i><b>optical</b></i> mode, use e.g. <i>H0=K0=L0=0</i> but set <i>E0</i> to a finite energy (e.g. zone centre energy).<br>To model something else, use other parameters... ;-) <br><br>The <b><a href="Models.html#mozTocId774280"><b>sqw_linquad</b></a></b>
  model (above) is somewhat similar, but specifies a <i>specific</i> HKLE location instead of the minimum of the 
 dispersion from which the expansion is quadratic.<br>
     
@@ -3693,25 +3691,21 @@ dispersion from which the expansion is quadratic.<br>
             [2n(</i><i>&#969;<sub>0</sub>)+1]</i> <i>/</i> 4&#969;<sub>0</sub><br>
           <br>
         </div>
-        The form factor evolves roughly as e<sup>-1/2 &lt;u</sup><sup>
-          <meta http-equiv="content-type" content="text/html; charset=windows-1252">
-          <span style="color: rgb(0, 0, 0); font-family: 'Times New
+        The form factor evolves roughly as e<sup>-1/2 &lt;u^</sup><sup><span style="color: rgb(0, 0, 0); font-family: 'Times New
             Roman'; font-size: 13.3333px; font-style: normal;
             font-variant: normal; font-weight: normal; letter-spacing:
             normal; line-height: normal; orphans: auto; text-align:
             -webkit-left; text-indent: 0px; text-transform: none;
             white-space: normal; widows: 1; word-spacing: 0px;
             -webkit-text-stroke-width: 0px; display: inline !important;
-            float: none;">²</span>&gt;Q</sup><sup>
-          <meta http-equiv="content-type" content="text/html; charset=windows-1252">
-          <span style="color: rgb(0, 0, 0); font-family: 'Times New
+            float: none;">2</span>&gt;Q</sup><sup>^<span style="color: rgb(0, 0, 0); font-family: 'Times New
             Roman'; font-size: 13.3333px; font-style: normal;
             font-variant: normal; font-weight: normal; letter-spacing:
             normal; line-height: normal; orphans: auto; text-align:
             -webkit-left; text-indent: 0px; text-transform: none;
             white-space: normal; widows: 1; word-spacing: 0px;
             -webkit-text-stroke-width: 0px; display: inline !important;
-            float: none;">²</span></sup>
+            float: none;">2</span></sup>
         <meta http-equiv="content-type" content="text/html; charset=windows-1252">
         |Q|<sup>2</sup> which&nbsp; indicates that at low and large Q,
         the phonon modes are not intense. In the first Brillouin zone
@@ -4384,8 +4378,7 @@ dispersion from which the expansion is quadratic.<br>
           Structure optimization page</a>. If the input configuration is
         not close to its equilibrium state, it is worth setting this
         option. We recommend to set it to BFGS or MDMin (which are fast)
-        in all cases.<br>
-      </li>
+        in all cases.</li><li><b>accuracy:</b> the <font color="#cc33cc">'fast'</font> (default) choice uses the symmetry operators to lower the number of atom displacements. This lowers the accuracy of the calculation, especially when the system is not exactly at the equilibrium position. The <font color="#cc33cc">'accurate'</font> choice is longer to execute (e.g. 3-6 times slower), but retains full forces. This option is only for the ASE calculators (e.g. not PHON/QE)<br></li>
     </ul>
     and specific DFT related options<br>
     <ul>
@@ -4437,8 +4430,7 @@ dispersion from which the expansion is quadratic.<br>
         assuming a Fermi Dirac distribution. The unit is eV.</li>
       <li><b> kpoints</b>: The size of the <i>Monkhorst-Pack grid</i>
         can be set using e.g. <font color="#cc33cc">'kpoints=3'</font>
-        or <font color="#cc33cc">'kpoints=[3 4 3]'</font>. For
-        gamma-point (liquids) use kpoints=0. In order to compute
+        or <font color="#cc33cc">'kpoints=[3 4 3]'</font>. In order to compute
         realistic phonon dispersions, the k-points value should be at
         least 3. Values lower should only be used for testing. The high
         accuracy value for <b>kpoints</b><sup><b>3</b></sup><b>*supercell</b><b><sup>3</sup></b>
@@ -4662,7 +4654,7 @@ dispersion from which the expansion is quadratic.<br>
 
 
 
-                  library</a> pseudo</font>.</i><br>
+                  library</a> pseudo</font>. This calculator can not compute the mode intensity/polarisation vectors.</i><br>
           </td>
           <td valign="top"><b><font color="#33cc00">319</font></b><br>
           </td>
@@ -4673,8 +4665,8 @@ dispersion from which the expansion is quadratic.<br>
           <td valign="top"><b><img alt="qe" title="qe" src="images/logo_qe.jpg" width="80" height="34" align="middle"><a href="http://www.quantum-espresso.org/">QuantumEspresso_ASE</a></b></td>
           <td valign="top"><i>Same as abov</i><i>e</i>, but using the <a href="https://wiki.fysik.dtu.dk/ase">ASE</a> interface
             instead of <a href="http://chianti.geol.ucl.ac.uk/%7Edario">PHON</a>.
-            The computation is about 2-3 times slower as when using <a href="http://chianti.geol.ucl.ac.uk/%7Edario">PHON</a>, as
-            it often uses more atom displacements.<br>
+            The computation is about 3-6 times slower as when using <a href="http://chianti.geol.ucl.ac.uk/%7Edario">PHON</a>, as
+            it often uses more atom displacements (with accurate setting).<br>
           </td>
           <td valign="top"><font color="#33cc00">957</font><br>
           </td>
@@ -4836,7 +4828,7 @@ dispersion from which the expansion is quadratic.<br>
     <div align="center"><i>The available calculators in </i><i><b>sqw_phonons</b></i><i>.
         We recommend QuantumEspresso, ABINIT, GPAW and Elk</i><i>.</i><i>
         The computation time is given for </i><i>(Al a=5.6) with 8
-        cores (2.8GHz), kpoints=3, supercell=3, ecut=340 eV. These times
+        cores (2.8GHz), kpoints=3, supercell=3, ecut=340 eV, and accurate setting. These times
         depend on the pseudo potential used, and are only given as
         estimates.<br>
       </i></div>
@@ -4844,7 +4836,7 @@ dispersion from which the expansion is quadratic.<br>
     Benchmarks indicate that, for phonon dispersions:<br>
     <ul>
       <li><a href="http://www.quantum-espresso.org/">Quantum Espresso</a>
-        is the fastest, with excellent parallelization and accuracy.</li>
+(PHON)        is the fastest, with excellent parallelization and accuracy.</li>
       <li><a href="http://www.abinit.org/">ABINIT</a>, <a href="https://www.vasp.at/">VASP</a> and <a href="http://wiki.fysik.dtu.dk/gpaw">GPAW</a> are also very
         efficient codes.</li>
       <li>The all-electrons <a href="Elk">ELK</a> code is about 10
@@ -5423,47 +5415,6 @@ dispersion from which the expansion is quadratic.<br>
       <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
           - iFit/fit models - </span><span style="font-style: italic;">
           $Date$ $Revision$ </span><span style="font-style: italic;"> </span>-
         back to <a href="index.html">Main iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France
@@ -5472,5 +5423,6 @@ Farhi
             solid ; width: 53px; height: 50px;" align="right"></a> </div>
     </div>
   
+
 
 </body></html>
