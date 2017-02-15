@@ -55,24 +55,25 @@ if status.quantumespresso_ase
 else
   calc = 'None';  % used in ph.run(), so not needed
 end
+
 % * ph=Phonons(atoms, supercell=(n,n,n)); 
-sprintf('ph = Phonons(atoms, calc, supercell=(%i, %i, %i), delta=0.05)
+% sprintf('ph = Phonons(atoms, calc, supercell=(%i, %i, %i), delta=0.05)
 % * compute what is missing from the read FORCES
-    'C_N = FORCES; '
-    '# Store force constants and dynamical matrix'
-    'ph.C_N = C_N'
-    'ph.D_N = C_N.copy()'
-    '# Add mass prefactor'
-    'm_a = ph.atoms.get_masses()'
-    'ph.m_inv_x = np.repeat(m_a[ph.indices]**-0.5, 3)'
-    'M_inv = np.outer(ph.m_inv_x, ph.m_inv_x)'
-    'for D in ph.D_N:'
-    '  D *= M_inv'
+%    'C_N = FORCES; '
+%    '# Store force constants and dynamical matrix'
+%    'ph.C_N = C_N'
+%    'ph.D_N = C_N.copy()'
+%    '# Add mass prefactor'
+%    'm_a = ph.atoms.get_masses()'
+%    'ph.m_inv_x = np.repeat(m_a[ph.indices]**-0.5, 3)'
+%    'M_inv = np.outer(ph.m_inv_x, ph.m_inv_x)'
+%    'for D in ph.D_N:'
+%    '  D *= M_inv'
 % * save it into phonon.pkl'
-    'fid = open("' fullfile(target, 'phonon.pkl') '","wb")\n' , ...
-    'calc = ph.calc\n', ...
-    sav, ...
-    'pickle.dump(ph, fid)\n', ...
-    'fid.close()\n', ...
+%    'fid = open("' fullfile(target, 'phonon.pkl') '","wb")\n' , ...
+%    'calc = ph.calc\n', ...
+%    sav, ...
+%    'pickle.dump(ph, fid)\n', ...
+%    'fid.close()\n', ...
 % * the python eval script calls, Phonons.band_structure and Phonons.dos
 % * requies ph.D_N, ph.N_c = supercell, 
