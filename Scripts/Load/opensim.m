@@ -185,7 +185,8 @@ elseif ~isempty(strfind(a,'array_1d')) && size(a,2) == 4
   if ~isempty(header)
     if iscell(header), header = get(a, header{1});
     else               header = get(a, header); end
-    header = str2struct(strsplit(header,'#'));
+    header = textscan(header, '%s','Delimiter','#');
+    header = str2struct(header{1});
     setalias(a, 'Header', header);
     a.Format = 'McCode 1D monitor';
     a = opensim(a); % this will now make a better job
