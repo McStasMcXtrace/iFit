@@ -32,6 +32,10 @@ IFIT_STRING="$IFIT_NAME $IFIT_VERSION - $MONTH. $DAY, $YEAR"
 
 MATLAB=/opt/MATLAB/R2010a/bin/matlab
 
+# alternative: this solves the readline crash with accent-characters at prompt.
+# but requires the v90 MCR, which is 1.6 Gb, instead of 460 Mb with 2010a !
+#MATLAB=/opt/MATLAB/R2015b/bin/matlab
+
 # Create temporary workdir:
 PW=`pwd`
 TMPDIR=$PWD/..
@@ -93,7 +97,7 @@ else
 fi
 
 # create techdoc with m2html
-$MATLAB -nojvm -nosplash -r "addpath(genpath('$TMPDIR/$IFIT_TARNAME-$IFIT_VERSION')); m2html('mFiles',{'Libraries','Objects/@iData','Objects/@iFunc','Objects/@Process','Scripts','Applications/McStas','Applications/Python','Applications/ResLibCal'},'htmldir','Docs/techdoc','recursive','on','source','off','ignoredDir','private','graph','off'); exit"
+$MATLAB -nodesktop -nosplash -r "addpath(genpath('$TMPDIR/$IFIT_TARNAME-$IFIT_VERSION')); m2html('mFiles',{'Libraries','Objects/@iData','Objects/@iFunc','Objects/@Process','Scripts','Applications/McStas','Applications/Python','Applications/ResLibCal'},'htmldir','Docs/techdoc','recursive','on','source','off','ignoredDir','private','graph','off'); exit"
 
 cd $TMPDIR
 
@@ -104,7 +108,7 @@ zip -r $PW/../$IFIT_TARNAME-$IFIT_VERSION-src.zip $IFIT_TARNAME-$IFIT_VERSION
 if [ -x `which mcc` ]
 then
   echo create the standalone version into $TMPDIR/$IFIT_TARNAME-$IFIT_VERSION-$ARCH
-  $MATLAB -nojvm -nosplash -r "addpath(genpath('$TMPDIR/$IFIT_TARNAME-$IFIT_VERSION')); ifitdeploy('$TMPDIR/$IFIT_TARNAME-$IFIT_VERSION-$ARCH'); exit"
+  $MATLAB -nodesktop -nosplash -r "addpath(genpath('$TMPDIR/$IFIT_TARNAME-$IFIT_VERSION')); ifitdeploy('$TMPDIR/$IFIT_TARNAME-$IFIT_VERSION-$ARCH'); exit"
   cd $TMPDIR
   zip -r $IFIT_TARNAME-$IFIT_VERSION-$ARCH.zip $IFIT_TARNAME-$IFIT_VERSION-$ARCH
 fi
