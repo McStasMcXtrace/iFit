@@ -23,9 +23,9 @@ uimenu(hMA,'Label','Quit','Callback','delete(gcbf)');
 
 % Menu Edit
 hME=uimenu(hF,'Label','Edit');
+uimenu(hME,'Label','Cut','Callback',@textedit_cut);
 uimenu(hME,'Label','Copy','Callback',@textedit_copy);
 uimenu(hME,'Label','Paste','Callback',@textedit_paste);
-uimenu(hME,'Label','Cut','Callback',@textedit_cut);
 uimenu(hME,'Label','Change Font Color...','Callback',@textedit_fontcolor, 'Separator','on');
 uimenu(hME,'Label','Change Font...','Callback',@textedit_font);
 h_AT=uimenu(hME,'Label','Align');
@@ -53,7 +53,7 @@ hTxt=uicontrol('style','edit','String','',...
     'Max',1000,'FontSize',10,'FontName','Arial');
 
 % protect figure from over-plotting
-set(hF,'HandleVisibility','callback');
+set(hF,'HandleVisibility','callback','UserData',hTxt);
 
 if nargin && ischar(filename)
   textedit_load(filename);
@@ -101,6 +101,7 @@ end
 
 % Copy into the clipboard
     function textedit_copy(~,~)
+      try
         % Use java.awt.Robot to simulate the Ctrl-C/V keys
         import java.awt.Robot;
         import java.awt.event.KeyEvent;
@@ -110,10 +111,15 @@ end
         rb.keyRelease(KeyEvent.VK_CONTROL);
         rb.keyRelease(KeyEvent.VK_C);
         clear('rb');
+      catch
+        hTxt = get(gcbf,'UserData');
+        clipboard('copy', get(hTxt,'String'));
+      end
     end
 
 % Paste from the clipboard
     function textedit_paste(~,~)
+      try
         % Use java.awt.Robot to simulate the Ctrl-C/V keys
         import java.awt.Robot;
         import java.awt.event.KeyEvent;
@@ -123,9 +129,15 @@ end
         rb.keyRelease(KeyEvent.VK_CONTROL);
         rb.keyRelease(KeyEvent.VK_V);
         clear('rb');
+      catch
+        hTxt = get(gcbf,'UserData');
+        str1 = get(hTxt,'String');
+        str2 = clipboard('paste');
+        set(hTxt,'String',strvcat(str1, str2));
+      end
     end
 
-%  Borra todo el contenido
+%  Copy and remove the whole content
     function textedit_cut(~,~)
         str = get(hTxt,'String');
         clipboard('copy', str);
