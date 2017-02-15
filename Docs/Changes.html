@@ -33,6 +33,8 @@
               not be found from Matlab/iFit</a></li>
           <li><a href="#mozTocId309480">iFit standalone can not be
               launched (libmwmclmcrrt.so) </a></li>
+          <li><a href="#mozTocId829705">iFit crashes when typing special
+              characters (accents, ...)</a></li>
           <li><a href="#mozTocId267093">iFit fails with a message such
               as 'version `GFORTRAN_1.4' not found' or 'version
               `GCC_4.3.0' not found' </a></li>
@@ -71,6 +73,8 @@
       </li>
       <li><small><b>1.8</b>: read <a
 href="https://www.ill.eu/instruments-support/instruments-groups/instruments/cyclops/description/instrument-layout/">ILL
+
+
 
 
 
@@ -146,6 +150,8 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
 
 
 
+
+
           method. Added predefined TAS configurations in <a
             href="../Applications/ResLibCal/doc/ResLibCal.html">ResLibCal</a>
           and cross-checked computation methods. Fix TAS angles in 3D
@@ -180,6 +186,8 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
           NetCDF/CDF/NeXus/HDF support, import/export of <a
             href="http://www.mantidproject.org">Mantid</a> workspaces
           (HDF/NeXus), import of <a href="http://www.wavemetrics.com/">Igor
+
+
 
 
 
@@ -305,6 +313,8 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
 
 
 
+
+
             Computing Toolbox</a> (when available), improved
           interpolation, added <span style="font-style: italic;">meshgrid</span>,
           <span style="font-style: italic;">rotate, </span>radial
@@ -312,6 +322,8 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
               style="font-style: italic;">cart2sph</span></a>), better
           support for event files, save of iFunc models to m-files.
           Added simple models for <a href="Models.html#mozTocId285330">small
+
+
 
 
 
@@ -402,6 +414,8 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
 
 
 
+
+
           fix of the <a href="Optimizers.html">Levenberg-Marquardt
             optimizer</a>, improved Error propagation for unary
           operators, support for <a href="Loaders.html">import</a> of
@@ -411,6 +425,8 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
           &gt;= 2010, added many <a href="Models.html">fit models</a>
           including 2D functions <span style="font-style: italic;">signal=f(x,y)</span>.
           Improved speed by e.g. +25% <span style="font-style: italic;">(Feb
+
+
 
 
 
@@ -491,6 +507,8 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
 
 
 
+
+
             6th, 2011</span>). Added correlation function method, plus a
           number of minor improvements (esp. in plot contextual menus),
           and bug fix for McStas 1D data set import <span
@@ -498,6 +516,8 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
         <span style="font-weight: bold;"></span></li>
       <li><small><span style="font-weight: bold;">1.0</span>: First
           official iFit release <span style="font-style: italic;">(August
+
+
 
 
 
@@ -589,6 +609,8 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
     inaccurate results. One solution is to re-sample the signals with
     more points. For <a href="iData.html">iData</a> objects, this can
     be achieved with e.g. the <span style="font-style: italic;">interp(object,
+
+
 
 
 
@@ -807,7 +829,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
     <h4><a class="mozTocH4" name="mozTocId309480"></a>iFit standalone
       can not be launched (libmwmclmcrrt.so)<br>
     </h4>
-    <p>When starting iFit standalone, you get a message such as:<br>
+    <p>When starting <a href="iFit.html">iFit</a> standalone, you get a message such as:<br>
     </p>
     <pre>./run_ifit: error while loading shared libraries: libmwmclmcrrt.so: cannot open shared object file: No such file or directory</pre>
     <p>This message indicates that the Matlab Runtime Library has not
@@ -817,7 +839,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
       under <i>bash</i> (Linux/Mac OSX):<br>
     </p>
     <ul>
-      <li>export MCRROOT="/opt/MATLAB/MATLAB_Compiler_Runtime/v713"</li>
+      <li>export MCRROOT="/opt/MATLAB/MATLAB_Compiler_Runtime/v713"</li></ul><h4><a name="mozTocId829705" class="mozTocH4"></a>iFit crashes when typing special characters (accents, ...)</h4><p>The <a href="iFit.html">iFit</a> standalone (compiled version) can be used from the prompt/command line, within a terminal. However, the Matlab <i>readline</i> library can not handle properly localised characters (e.g. with accents, for specific languages). <br></p><p>You thus have to be cautious when typing, to avoid e.g. à, ä, ø, ñ and so on, or an immediate crash will occur, without saving your work, and save your work regularly. US keyboard characters are all fully supported.<br></p><ul>
     </ul>
     <h4><a class="mozTocH4" name="mozTocId267093"></a>iFit fails with a
       message such as '<font color="#800000">version</font><font color="#800000"> `GFORTRAN_1.4' not found'<font color="#000000">
