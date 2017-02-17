@@ -206,24 +206,6 @@ def phonons_run(phonon):
     # Set calculator if provided
     assert phonon.calc is not None, "Provide calculator in __init__ method"
     atoms_N.set_calculator(phonon.calc)
-    
-    # Do calculation on equilibrium structure
-    filename = phonon.name + '.eq.pckl'
-
-    fd = opencew(filename)
-    if fd is not None:
-        # Call derived class implementation of __call__
-        output = phonon.__call__(atoms_N)
-        # Write output to file
-        if rank == 0:
-            pickle.dump(output, fd)
-            sys.stdout.write('Writing %s\n' % filename)
-            fd.close()
-        sys.stdout.flush()
-        # test if the equilibrium is good
-        is_equilibrated = numpy.max(output) < 1e-10
-        if not is_equilibrated:
-            warnings.warn('WARNING: The lattice is not equilibrated ! The force estimate may be wrong. Max Force=%g' % numpy.max(output) )
 
     # Positions of atoms to be displaced in the reference cell
     natoms = len(phonon.atoms)
