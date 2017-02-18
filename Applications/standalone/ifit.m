@@ -409,8 +409,12 @@ function inline_error(err)
   disp(err)
   disp(lasterr)
   disp('Trace (last is where the error is detected):')
-  for stack=getfield(lasterror,'stack') 
-    fprintf('%s at line %i\n',stack.name,stack.line); 
+  for stack=getfield(lasterror,'stack')
+    if ischar(stack.name)
+      fprintf('%s at line %i\n',stack.name,stack.line); 
+    else
+      disp(stack)
+    end
   end
 
 function varargin = inline_cat_strings(varargin)
