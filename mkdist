@@ -42,9 +42,9 @@ TMPDIR=$PWD/..
 DIST=$TMPDIR/$IFIT_TARNAME-$IFIT_VERSION
 echo "Creating the temporary $DIST"
 
-# Copy current PW checkout to DIST
+# Copy current PW checkout to DIST, and replace links with their targets
 rm -rf $DIST
-cp -rp $PW $DIST
+cp -rpL $PW $DIST
 
 # Go in DIST, clean up CVS/SVN information
 cd $DIST
