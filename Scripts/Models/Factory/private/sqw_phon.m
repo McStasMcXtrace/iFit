@@ -534,6 +534,10 @@ if isempty(strfind(lower(geom1.comment),'supercell'))
   fprintf(fid, 'LSUPER =.TRUE.\n');
   fprintf(fid, 'NDIM   = %i %i %i\n', options.supercell);
   fprintf(fid, 'NTYPES = %i\n', numel(geom1.atomcount));
+  
+  if isfield(options,'accuracy') && strcmp(options.accuracy,'fast')
+    % fprintf(fid, 'LCENTRAL = .F.\n'); % twice less displacements, but it seems broken
+  end
 
   if isfield(options,'disp')
     if sum(abs(options.disp)) >= 1
@@ -949,7 +953,7 @@ next_line_disp = 0; disp_index=0; next_line_force=0; force_index=0;
 for index=3:numel(lines)
   nb = str2num(lines{index}); % current line
   
-  if next_line_force  % when reading the fores after a displacement vector
+  if next_line_force  % when reading the forces after a displacement vector
     force_cat(next_line_force, :) = nb;
     next_line_force = next_line_force +1;
     if next_line_force==natoms,
