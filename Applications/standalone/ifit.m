@@ -278,6 +278,11 @@ if ischar(ifit_options.save)
 end
 
 close all
+% close miFit and ResLibCal
+try
+  mifit File_Exit
+  ResLibCal exit
+end
 disp([ '** Ending iFit on ' datestr(now) ])
 disp(  '** Thanks for using iFit <ifit.mccode.org> **')
 
@@ -313,6 +318,9 @@ function inline_display_banner
   if ispc
     disp('WARNING: Windows: file names containing spaces, such as "My Documents" ')
     disp('         are not well supported. Rename files or move directories.')
+  end
+  if verLessThan('matlab', '7.11') 
+    disp('WARNING: do NOT use accent characters at the prompt. This will CRASH.');
   end
   disp(' ')
 

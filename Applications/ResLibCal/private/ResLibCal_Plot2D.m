@@ -153,7 +153,11 @@ function h=ResLibCal_Proj_plot2D(isub, ix,iy,NP, Labels, FrameStr, Units, panel_
     hold on
   end
   % plot the ellipse on top.
-  [h, XX] = Ellipse_plot(NP, centre([ix iy]));
+  try
+    [h, XX] = Ellipse_plot(NP, centre([ix iy]));
+  catch
+    Labels = '';
+  end
   set(h,'DisplayName',panel_name);
   if ~isempty(Labels)
   
