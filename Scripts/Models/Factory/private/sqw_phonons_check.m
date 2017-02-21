@@ -162,6 +162,20 @@ if isempty(dir(fullfile(target, 'ifit.py')))
   copyfile(fullfile(fileparts(which(mfilename)),'ifit.py'), target);
 end
 
+% default to available core (read from Java)
+if ~isfield(options,'mpi') && usejava('jvm')
+  r=java.lang.Runtime.getRuntime;
+  % mem_avail   = r.freeMemory;
+  options.mpi = r.availableProcessors;
+end
+
+if isfield(options,'mpi') && ~isempty(options.mpi) && options.mpi > 1
+  options.mpirun = [ status.mpirun ' -np ' num2str(options.mpi) ];
+  if isfield(options, 'machinefile')
+    options.mpirun = [ options.mpirun ' -machinefile ' options.machinefile ];
+  end
+end
+
 % display message at start
 disp(' ')
 disp([ mfilename ': starting phonons computation [' datestr(now) ']' ])
@@ -171,7 +185,11 @@ else
   disp([ '  directory  = ' target ]);
 end
 disp(sprintf([ '  material   = ' configuration ]));
-disp(sprintf([ '  calculator = ' options.calculator ]));
+if isfield(options,'mpi') && ~isempty(options.mpi) && options.mpi > 1
+  disp([ '  calculator = ' options.calculator ' using ' num2str(options.mpi) ' cores' ]);
+else
+  disp([ '  calculator = ' options.calculator ]);
+end
 % copy the configuration into the target
 if ~isempty(dir(configuration))
   try
@@ -197,29 +215,38 @@ end
 if ~isempty(fullfile(target, 'properties.mat')) && ...
     (any(options.supercell <= 0) || any(options.kpoints <= 0))
   properties = load(fullfile(target, 'properties.mat'));
-  % get the nb of atoms in the model
-  nb_at = numel(properties.atomic_numbers);
-  % auto mesh should be 1000/nb_at = k^3*supercell^3 (6750/nb_at for high accuracy)
-  if all(options.kpoints > 0)
-    supercell = floor((1000/nb_at./prod(options.kpoints))^(1/3));
-  else
-    supercell = floor((1000/nb_at)^(1/6));
+  if isfield(properties, 'atomic_numbers')
+    % get the nb of atoms in the model
+    nb_at = numel(properties.atomic_numbers);
+    % auto mesh should be 1000/nb_at = k^3*supercell^3 (6750/nb_at for high accuracy)
+    if all(options.kpoints > 0)
+      supercell = floor((1000/nb_at./prod(options.kpoints))^(1/3));
+    else
+      supercell = floor((1000/nb_at)^(1/6));
+    end
+    if any(options.supercell <= 0)
+      options.supercell=[ supercell supercell supercell ];
+      disp([ '  auto: supercell=' num2str(supercell) ])
+    end
+    kpoints   = ceil((1000/nb_at./prod(options.supercell))^(1/3));
+    if any(options.kpoints <= 0)
+      options.kpoints = [ kpoints kpoints kpoints ];
+      disp([ '  auto: kpoints=  ' num2str(kpoints) ])
+    end
   end
-  if any(options.supercell <= 0)
-    options.supercell=[ supercell supercell supercell ];
-    disp([ '  auto: supercell=' num2str(supercell) ])
-  end
-  kpoints   = ceil((1000/nb_at./prod(options.supercell))^(1/3));
-  if any(options.kpoints <= 0)
-    options.kpoints = [ kpoints kpoints kpoints ];
-    disp([ '  auto: kpoints=  ' num2str(kpoints) ])
-  end
-  % compute the K-points density
-  kpts_density = nb_at.*prod(options.supercell).*prod(options.kpoints);
-  disp([ '  kpoints_density=  ' num2str(kpts_density) ])
-  if kpts_density < 500
-    disp('WARNING: The Monkhorst-Pack grid k-points density is small. Expect low computational accuracy.');
-    disp('         Be cautious with results (may show unstable modes/negative/imaginary frequencies.');
+end
+
+% compute the K-points density
+if ~isempty(fullfile(target, 'properties.mat'))
+  properties = load(fullfile(target, 'properties.mat'));
+  if isfield(properties, 'atomic_numbers')
+    nb_at = numel(properties.atomic_numbers);
+    kpts_density = nb_at.*prod(options.supercell).*prod(options.kpoints);
+    disp([ '  kpoints_density=  ' num2str(kpts_density) ])
+    if kpts_density < 500
+      disp('WARNING: The Monkhorst-Pack grid k-points density is small. Expect low computational accuracy.');
+      disp('         Be cautious with results (may show unstable modes/negative/imaginary frequencies.');
+    end
   end
 end
 
