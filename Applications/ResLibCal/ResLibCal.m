@@ -227,6 +227,7 @@ while ~isempty(varargin)
       saveas(fig, filename);
       disp([ '% Exported ' ResLibCal_version ' window to file ' filename ]);
     case {'file_exit','exit','quit'}
+      if isempty(ResLibCal_fig), return; end
       if ~strcmp(action, 'quit')
         % save configuration so that it is re-opened at next re-start
         ResLibCal_Save;

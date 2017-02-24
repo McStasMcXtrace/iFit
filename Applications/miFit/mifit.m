@@ -53,6 +53,8 @@ function varargout = mifit(varargin)
     
     % look if the main window is opened
     fig = mifit_fig();
+    if isempty(fig) && nargin == 1 && strcmp(varargin{1},'File_Exit'), return; end
+    
     if isempty(fig) || ~ishandle(fig)
       fig = feval([ mfilename '_OpeningFcn' ]);
     else set(fig, 'NextPlot','new','HandleVisibility','callback');

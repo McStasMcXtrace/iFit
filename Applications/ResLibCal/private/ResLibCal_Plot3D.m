@@ -117,7 +117,11 @@ function h=ResLibCal_Proj_plot3D(index, NP, Labels, FrameStr, Units, cloud, cent
   end
   
   % plot the ellipse on top.
-  [h, XX,YY,ZZ] = Ellipse_plot(NP, centre(index),10);
+  try
+    [h, XX,YY,ZZ] = Ellipse_plot(NP, centre(index),10);
+  catch
+    Labels = ''; 
+  end
   if ~isempty(Labels)
     set(h,'DisplayName',[ Labels{index} ],'Tag','ResLibCal_View3_Volume');
     

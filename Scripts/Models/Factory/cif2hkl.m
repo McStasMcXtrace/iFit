@@ -166,7 +166,7 @@ function compiled=cif2hkl_check_compile(compile)
     if ~ispc
       disp([ mfilename ': ERROR: FORTRAN compiler is not available from PATH:' ])
       disp(getenv('PATH'))
-      disp([ mfilename ': You may have to extend the PATH with e.g.' ])
+      disp([ mfilename ': Try again after extending the PATH with e.g.' ])
       disp('setenv(''PATH'', [getenv(''PATH'') '':/usr/local/bin'' '':/usr/bin'' '':/usr/share/bin'' ]);');
     end
     error('%s: Can''t find a valid Fortran compiler. Install any of: gfortran, g95, pgfc, ifort\n', ...
@@ -177,10 +177,11 @@ function compiled=cif2hkl_check_compile(compile)
   if isempty(dir(fullfile(this_path,mfilename))) % no executable available
     fprintf(1, '%s: compiling binary...\n', mfilename);
     cmd = {fc, '-o', target, ...
-       fullfile(this_path,'cif2hkl.F90'), '-lm'}; 
+       fullfile(this_path,'cif2hkl.F90'), '-lm', '-ffree-line-length-0'}; 
     disp([ sprintf('%s ', cmd{:}) ]);
     [status, result] = system([ precmd sprintf('%s ', cmd{:}) ]);
     if status ~= 0 % not OK, compilation failed
+      disp(result)
       warning('%s: Can''t compile cif2hkl.F90 as binary\n       in %s\n', ...
         mfilename, fullfile(this_path));
     else

@@ -430,20 +430,6 @@ sqw_phonons_htmlreport('', 'create_atoms', options);
 %                               BUILD MODEL (get calculator)
 % ==============================================================================
 
-% default to available core (read from Java)
-if ~isfield(options,'mpi') && usejava('jvm')
-  r=java.lang.Runtime.getRuntime;
-  % mem_avail   = r.freeMemory;
-  options.mpi = r.availableProcessors;
-end
-
-if isfield(options,'mpi') && ~isempty(options.mpi) && options.mpi > 1
-  options.mpirun = [ status.mpirun ' -np ' num2str(options.mpi) ];
-  if isfield(options, 'machinefile')
-    options.mpirun = [ options.mpirun ' -machinefile ' options.machinefile ];
-  end
-end
-
 % get the calculator
 % for QE, this triggers computation with sqw_phon()
 [decl, calc, signal] = sqw_phonons_calc(options, status, options.calculator, read);
@@ -507,6 +493,10 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO') || strcmpi(options.calculator
   % get 'atoms' back from python
   if ~isempty(fullfile(target, 'properties.mat'))
     properties = load(fullfile(target, 'properties.mat'));
+    if isfield(properties, 'chemical_symbols')
+      b_coh = sqw_phonons_b_coh(properties.chemical_symbols);
+      properties.b_coh = b_coh;
+    end
   else
     properties = [];
   end

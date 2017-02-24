@@ -53,11 +53,14 @@ if isempty(b_coh)
   end
 end
 
-if isempty(b_coh) && ~isempty(positions)
-  disp([ 'WARNING: Unspecified coherent neutron scattering length specification for the material ' ...
-    UD.properties.chemical_formula '. Using b_coh=1 [fm] for all atoms (sigma_coh=0.126 barns). ' ...
+if (isempty(b_coh) || any(isnan(b_coh) | b_coh == 0)) && ~isempty(positions)
+  disp([ 'WARNING: Unspecified/invalid coherent neutron scattering length specification for the material ' ...
+    UD.properties.chemical_formula '. Using b_coh=1 [fm] for atoms (sigma_coh=0.126 barns). ' ...
     'Specify model.UserData.properties.b_coh as a vector with ' num2str(size(positions,1)) ' value(s) in ' this.Name ]);
-  b_coh = ones(1, size(positions,1));
+  for index=1:size(positions,1)
+    if index > numel(b_coh), b_coh(end+1) = nan; end
+    if isnan(b_coh(index)) || b_coh == 0, b_coh = 1; end
+  end
 end
 
 if isscalar(b_coh) && size(positions,1) > 1
