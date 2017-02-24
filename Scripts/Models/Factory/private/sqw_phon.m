@@ -239,6 +239,12 @@ else precmd=''; end
 % get code to read xyzt and build HKL list and convolve DHO line shapes
 [script_hkl, script_dho] = sqw_phonons_templates;
 
+if strcmp(options.accuracy,'fast')
+  lcentral = 'fprintf(fid, ''  LCENTRAL = .F.\n'');';
+else
+  lcentral = '';
+end
+
 signal.Expression     = { ...
   '% check if FORCES and supercell POSCAR are here', ...
 [ 'pw = pwd; target = this.UserData.dir;' ], ...
@@ -263,6 +269,7 @@ signal.Expression     = { ...
   'fprintf(fid, ''#   D. Alfe, Computer Physics Communications 180,2622-2633 (2009)\n'');', ...
   'fprintf(fid, ''  LSYMM=.TRUE.\n'');', ...
   'fprintf(fid, ''  LSUPER=.F.\n'');', ...
+  lcentral, ...
   'fprintf(fid, ''  LEIGEN=.T.\n'');', ...
 [ 'fprintf(fid, ''# NDIM  = ' num2str(options.supercell) '\n'');' ], ...
   'fprintf(fid, ''# LFREE=.T.\n'');', ...
@@ -534,9 +541,10 @@ if isempty(strfind(lower(geom1.comment),'supercell'))
   fprintf(fid, 'LSUPER =.TRUE.\n');
   fprintf(fid, 'NDIM   = %i %i %i\n', options.supercell);
   fprintf(fid, 'NTYPES = %i\n', numel(geom1.atomcount));
-  
+  fprintf(fid, 'IPRINT = 3\n');
+
   if isfield(options,'accuracy') && strcmp(options.accuracy,'fast')
-    % fprintf(fid, 'LCENTRAL = .F.\n'); % twice less displacements, but it seems broken
+    fprintf(fid, 'LCENTRAL = .F.\n');
   end
 
   if isfield(options,'disp')
@@ -825,7 +833,7 @@ function force = sqw_phon_forces_pwscf(displaced, options)
   cd(p);
 
   if isfield(options, 'mpi') && ~isempty(options.mpi) && options.mpi > 1
-    [status, result] = system([ precmd options.mpirun ' -np ' num2str(options.mpi) ' ' options.command ' < pw.d > pw.out' ]);
+    [status, result] = system([ precmd options.mpirun ' ' options.command ' < pw.d > pw.out' ]);
   else
     [status, result] = system([ precmd options.command ' < pw.d > pw.out' ]);
   end

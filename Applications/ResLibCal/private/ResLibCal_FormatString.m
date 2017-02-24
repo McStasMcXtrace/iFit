@@ -52,11 +52,13 @@ if isstruct(resolution)
   H   = resolution.HKLE(1); K=resolution.HKLE(2); L=resolution.HKLE(3); W=resolution.HKLE(4);
   if isfield(resolution, 'angles'), angles = resolution.angles;
   else angles = zeros(1,6); end
-  QM = resolution.QM;
+  if isfield(resolution, 'QM'), QM = resolution.QM;
+  else                          QM = nan; end
+    
 else
   H = EXP.QH; K=EXP.QK; L=EXP.QL; W=EXP.W;
   angles = nan*ones(1,6);
-  QM = nan;
+  QM     = nan;
 end
 
 inst = { ...
