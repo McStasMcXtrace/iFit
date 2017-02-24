@@ -493,6 +493,10 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO') || strcmpi(options.calculator
   % get 'atoms' back from python
   if ~isempty(fullfile(target, 'properties.mat'))
     properties = load(fullfile(target, 'properties.mat'));
+    if isfield(properties, 'chemical_symbols')
+      b_coh = sqw_phonons_b_coh(properties.chemical_symbols);
+      properties.b_coh = b_coh;
+    end
   else
     properties = [];
   end
