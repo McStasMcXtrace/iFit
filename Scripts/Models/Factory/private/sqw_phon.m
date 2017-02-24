@@ -541,7 +541,7 @@ if isempty(strfind(lower(geom1.comment),'supercell'))
   fprintf(fid, 'LSUPER =.TRUE.\n');
   fprintf(fid, 'NDIM   = %i %i %i\n', options.supercell);
   fprintf(fid, 'NTYPES = %i\n', numel(geom1.atomcount));
-  fprintf(fid, 'IPRINT = 2\n');
+  fprintf(fid, 'IPRINT = 3\n');
   if strcmp(options.accuracy,'fast')
     fprintf(fid, 'LCENTRAL = .F.\n');
   end
