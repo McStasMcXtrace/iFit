@@ -59,7 +59,7 @@ def get_spacegroup(atoms, symprec=1e-5):
     # a Space group is the collection of all symmetry operations which let the 
     # unit cell invariant.
     found    = None
-    positions  = atoms.get_scaled_positions(wrap=True)
+    positions  = atoms.get_scaled_positions(wrap=True)  # in the lattice frame
     positions -= positions[0] # make sure we are insensitive to translation
     
     # search space groups from the highest symmetry to the lowest
@@ -226,7 +226,7 @@ def phonons_run(phonon):
                     # Skip if already done
                     continue
 
-                # Update atomic positions
+                # Update atomic positions. Shift is applied to Cartesian coordinates.
                 disp    = [0,0,0]
                 disp[i] = sign * phonon.delta
                 atoms_N.positions[offset + a, i] = \
@@ -256,28 +256,57 @@ def _phonons_run_symforce(phonon, atoms, disp, force, a):
     # check if a spacegroup is defined
     if 'spacegroup' not in atoms.info or atoms.info["spacegroup"] is None:
         return
+        
+    L    = atoms.get_cell()     # lattice cell            = at
+    invL = numpy.linalg.inv(L)  # no 2*pi multiplier here = inv(at) = bg'
 
     # get the equivalent displacements for the current move
     # the first row is: rot=I and trans=0
-    disps,kinds,rot,trans = equivalent_sites(atoms.info["spacegroup"], \
-                disp, onduplicates='keep')
+    
+    # equivalent_sites uses the scaled positions, so we must convert the 'disp'
+    # from Cartesian to lattice frame
+    disp_lat = numpy.dot(invL, disp)
+    
+    disps_lat,kinds,rot,trans = equivalent_sites(atoms.info["spacegroup"], \
+                disp_lat, onduplicates='keep')
+    
+    # **** Coordinate frames ***************************************************
+    # fractional/lattice coordinate use the [a,b,c] frame, and coordinates are 
+    #   fractions in the cell. The cell frame may not be ortho-normal. This frame
+    #   is also labeled as 'Direct'.
+    #   atoms.scaled_positions is using the Direct/lattice frame
+    # Cartesian coordinates use an ortho-normal frame.
+    #   atoms.positions is using the cartesian frame
+    #   displacements in ASE are in the cartesian frame
+    
+    # **** Transformations *****************************************************
+    # rot[index] applied on disp gives new_disp equivalent site, when given
+    # in lattice frame => rot[index] is then the 'lattice' rotation matrix.
+    # Then we conclude on rotation operators:
+    #   lattice:   rot[index]         e.g. a simple matrix
+    #   cartesian: R= numpy.dot(L, numpy.dot(rot[index], invL))
+    # displacements:
+    #   cartesian: cart   = L*direct, e.g. [-.01 0 0] a 'nice' vector xyz in ASE
+    #   direct:    direct = invL*cart e.g. a mixed vector
 
     # Loop over all planned displacements (past and future)
     # and search for such a move that matches one of the equivalent 'disp'
-
     for i in range(3):
         for sign in [-1, 1]:
             
             # compute the 'planned' displacements (atom, xyz, sign)
             new_disp    = [0,0,0]
             new_disp[i] = sign * phonon.delta
-            new_disp    = numpy.mod(new_disp, 1.)
+            # convert this displacement from cartesian to lattice frame
+            new_disp_lat= numpy.dot(invL, new_disp)
+            # modulo in the cell, Direct
+            new_disp_lat= numpy.mod(new_disp_lat, 1.)
             
             # does this move belongs to the equivalent displacements ?
-            if new_disp in disps:
+            if new_disp_lat in disps_lat:
                 # if found in sites, we apply rotation to forces
                 # get the index of the matching site for rot and trans
-                index = numpy.where((disps == new_disp).all(axis=1))
+                index = numpy.where((disps_lat == new_disp_lat).all(axis=1))
                 try:
                     index=index[0][0]
                 except IndexError:
@@ -290,11 +319,15 @@ def _phonons_run_symforce(phonon, atoms, disp, force, a):
                 if fd is None:
                     # Skip if already done. Also the case for initial 'disp'
                     continue
-                    
-                # apply rotation (symop) on forces, per row
+
                 nforce = force.copy()
-                for j in range(len(nforce)):
-                    nforce[j] = numpy.dot(rot[index], nforce[j])
+
+                # convert rotation operator from lattice to cartesian frame
+                # L x R x L^-1 as in phononpy.similarity_transformation
+                R      = numpy.dot(L, numpy.dot(rot[index], invL))
+                
+                # apply rotation operator in cartesian frame on forces
+                nforce = numpy.dot(R, nforce.T).T
 
                 # write the pickle
                 if rank == 0:

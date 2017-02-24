@@ -1,12 +1,14 @@
 function b_coh = sqw_phonons_b_coh(chemical_elements)
 
-b_coh = zeros(1,size(chemical_elements,1));
+chemical_elements = cellstr(chemical_elements);
+b_coh = zeros(size(chemical_elements));
 
+% get all scattering lengths
 [elements,b_cohs] = sqw_phonons_b_cohs;
 
-for index=1:size(chemical_elements,1)
-  this_element  = deblank(chemical_elements(index,:));
-  index_element = find(strcmpi(this_element, elements));
+% search for the elements from the formula
+for index=1:numel(chemical_elements)
+  index_element = find(strcmpi(chemical_elements{index}, elements));
   if numel(index_element) == 1
     b_coh(index) = b_cohs(index_element);
   end
