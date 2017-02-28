@@ -29,6 +29,7 @@ import sys
 import pickle
 import numpy
 import warnings
+import os
 
 from ase.atoms import Atoms
 from ase.utils import opencew
@@ -48,13 +49,14 @@ except ImportError:
         pass
 
 # ------------------------------------------------------------------------------
-def get_spacegroup(atoms, symprec=1e-5):
+def get_spacegroup(atoms, symprec=1e-5, centre=None):
     """Determine the spacegroup to which belongs the Atoms object.
     
     Parameters:
     atoms:    an Atoms object
     symprec:  Symmetry tolerance, i.e. distance tolerance in Cartesian 
               coordinates to find crystal symmetry.
+    centre:   None, or the index of the atoms to use as centre
               
     The Spacegroup object is returned, and stored in atoms.info['spacegroup'] 
     when this key does not exist (avoids overwrite). To force overwrite of the 
@@ -86,7 +88,11 @@ def get_spacegroup(atoms, symprec=1e-5):
     # make sure we are insensitive to translation. this choice is arbitrary and 
     # could lead to a 'slightly' wrong guess for the Space group, e.g. do not  
     # guess centro-symmetry.
-    positions -= positions[0] 
+    if centre:
+        try:
+            positions -= positions[centre]
+        except IndexError:
+            pass
     
     # search space groups from the highest symmetry to the lowest
     # retain the first match
@@ -238,12 +244,32 @@ def phonons_run(phonon):
     # Positions of atoms to be displaced in the reference cell
     natoms = len(phonon.atoms)
     offset = natoms * phonon.offset
-    pos = atoms_N.positions[offset: offset + natoms].copy()
+    pos    = atoms_N.positions[offset: offset + natoms].copy()
     
     # Loop over all displacements
     for a in phonon.indices:
         for i in range(3):
             for sign in [-1, 1]:
+                # Update atomic positions. Shift is applied to Cartesian coordinates.
+                disp    = [0,0,0]
+                disp[i] = sign * phonon.delta # in Angs, cartesian
+                
+                # we determine the point group, i.e. we center the atom 'a'
+                atoms0 = phonon.atoms.copy()                   # initial lattice, not displaced
+                atoms0.positions      -= atoms0.positions[a] # centre on 'a'
+                
+                sg = get_spacegroup(atoms0)
+                
+                # we get the scaled positions for the atoms
+                atoms0.positions[a,i] += disp[i]
+                scaled = atoms0.get_scaled_positions()
+                
+                # skip this move if it is equivalent to an existing one using the
+                # space group rotations
+                filename, rotation = _phonon_run_equiv(sg, phonon, atoms0.get_cell(), scaled[a])
+                if filename:
+                    continue
+                
                 # Filename for atomic displacement
                 filename = '%s.%d%s%s.pckl' % \
                            (phonon.name, a, 'xyz'[i], ' +-'[sign])
@@ -253,10 +279,10 @@ def phonons_run(phonon):
                 if fd is None:
                     # Skip if already done
                     continue
-
-                # Update atomic positions. Shift is applied to Cartesian coordinates.
-                disp    = [0,0,0]
-                disp[i] = sign * phonon.delta # in Angs, cartesian
+                
+                # positions is in Cartesian coordinates, but this is e.g. 
+                # converted to fractional coordinates when calling the calculator
+                # in ase.calculator: FileIOCalculator.calculate -> write_input
                 atoms_N.positions[offset + a, i] = \
                     pos[a, i] + disp[i]
                 
@@ -270,11 +296,162 @@ def phonons_run(phonon):
                 sys.stdout.flush()
                 
                 # fill equivalent displacements from spacegroup
-                _phonons_run_symforce(phonon, atoms_N, \
-                    disp, output, a)
+                #_phonons_run_symforce(phonon, atoms_N, \
+                #   disp, output, a)
                 
                 # Return to initial positions
                 atoms_N.positions[offset + a, i] = pos[a, i]
+
+# ------------------------------------------------------------------------------       
+def _phonon_run_equiv(sg, phonon, cell, move):
+    """Check if the displacement 'disp' matches an existing move when applying
+       the space group.
+       
+       Parameters:
+       
+       sg:    space group 
+       cell:  atoms.get_cell
+       disp:  scaled (fractional) displacement in 'atoms'
+       
+       Returns:
+       
+       filename: the filename pickle that holds the equivalent move
+       rotation: the rotation matrix to convert filename/forces into 'disp'
+    """
+    
+    sites, kinds, rotations, translations = equivalent_sites(sg, move)
+    
+    L    = cell                 # lattice cell            = at
+    invL = numpy.linalg.inv(L)  # no 2*pi multiplier here = inv(at) = bg'
+    
+    # now scan all planned displacements
+    for a in phonon.indices:
+        for i in range(3):
+            for sign in [-1, 1]:
+            
+                # the 'planned' displacement
+                disp    = [0,0,0]
+                disp[i] = sign * phonon.delta # in Angs, cartesian
+                
+                # convert from Cartesian to scaled positions
+                scaled = numpy.mod(numpy.dot(invL, disp), 1.)
+                
+                # check if the corresponding file exists
+                # Filename for atomic displacement
+                filename = '%s.%d%s%s.pckl' % \
+                           (phonon.name, a, 'xyz'[i], ' +-'[sign])
+                
+                # is it in the equivalent 'sites' and filename exists ?
+                if scaled in sites and os.path.isfile(filename):
+                    # get the index of the matching equivalent move
+                    index = numpy.where(numpy.isclose(sites,scaled).all(axis=1))
+                    if len(index):
+                        index = index[0]
+                    if len(index) > 1:
+                        print "WARNING: ifit._phonon_run_equiv: multiple equivalent sites ! Using first out of ", index
+                    if len(index):                    
+                        index=index[0]
+                    else:
+                        continue  # no symmetry operator found
+    
+                    return filename, rotations[index]
+    return None, None
+    
+# ------------------------------------------------------------------------------
+def phonon_read(phonon, method='Frederiksen', symmetrize=3, acoustic=True,
+         cutoff=None, born=False, **kwargs):
+    """Read forces from pickle files and calculate force constants.
+
+    Extra keyword arguments will be passed to ``read_born_charges``.
+    
+    Parameters
+    ----------
+    method: str
+        Specify method for evaluating the atomic forces.
+    symmetrize: int
+        Symmetrize force constants (see doc string at top) when
+        ``symmetrize != 0`` (default: 3). Since restoring the acoustic sum
+        rule breaks the symmetry, the symmetrization must be repeated a few
+        times until the changes a insignificant. The integer gives the
+        number of iterations that will be carried out.
+    acoustic: bool
+        Restore the acoustic sum rule on the force constants.
+    cutoff: None or float
+        Zero elements in the dynamical matrix between atoms with an
+        interatomic distance larger than the cutoff.
+    born: bool
+        Read in Born effective charge tensor and high-frequency static
+        dielelctric tensor from file.
+        
+    """
+
+    method = method.lower()
+    assert method in ['standard', 'frederiksen']
+    if cutoff is not None:
+        cutoff = float(cutoff)
+        
+    # Read Born effective charges and optical dielectric tensor
+    if born:
+        phonon.read_born_charges(**kwargs)
+    
+    # Number of atoms
+    natoms = len(phonon.indices)
+    # Number of unit cells
+    N = np.prod(phonon.N_c)
+    # Matrix of force constants as a function of unit cell index in units
+    # of eV / Ang**2
+    C_xNav = np.empty((natoms * 3, N, natoms, 3), dtype=float)
+
+    # Loop over all atomic displacements and calculate force constants
+    for i, a in enumerate(phonon.indices):
+        for j, v in enumerate('xyz'):
+            # Atomic forces for a displacement of atom a in direction v
+            basename = '%s.%d%s' % (phonon.name, a, v)
+            
+            fminus_av = pickle.load(open(basename + '-.pckl'))
+            fplus_av = pickle.load(open(basename + '+.pckl'))
+            
+            if method == 'frederiksen':
+                fminus_av[a] -= fminus_av.sum(0)
+                fplus_av[a]  -= fplus_av.sum(0)
+                
+            # Finite difference derivative
+            C_av = fminus_av - fplus_av
+            C_av /= 2 * phonon.delta
+
+            # Slice out included atoms
+            C_Nav = C_av.reshape((N, len(phonon.atoms), 3))[:, phonon.indices]
+            index = 3*i + j
+            C_xNav[index] = C_Nav
+
+    # Make unitcell index the first and reshape
+    C_N = C_xNav.swapaxes(0 ,1).reshape((N,) + (3 * natoms, 3 * natoms))
+
+    # Cut off before symmetry and acoustic sum rule are imposed
+    if cutoff is not None:
+        phonon.apply_cutoff(C_N, cutoff)
+        
+    # Symmetrize force constants
+    if symmetrize:
+        for i in range(symmetrize):
+            # Symmetrize
+            C_N = phonon.symmetrize(C_N)
+            # Restore acoustic sum-rule
+            if acoustic:
+                phonon.acoustic(C_N)
+            else:
+                break
+         
+    # Store force constants and dynamical matrix
+    phonon.C_N = C_N
+    phonon.D_N = C_N.copy()
+    
+    # Add mass prefactor
+    m_a = phonon.atoms.get_masses()
+    phonon.m_inv_x = np.repeat(m_a[phonon.indices]**-0.5, 3)
+    M_inv = np.outer(phonon.m_inv_x, phonon.m_inv_x)
+    for D in phonon.D_N:
+        D *= M_inv
                 
 # ------------------------------------------------------------------------------
 def _phonons_run_symforce(phonon, atoms, disp, force, a):
