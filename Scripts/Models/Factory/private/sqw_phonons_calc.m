@@ -476,6 +476,10 @@ case {'QUANTUM','QE','ESPRESSO','QUANTUMESPRESSO','QUANTUM-ESPRESSO','PHON'}
   % get 'atoms' back from python
   if ~isempty(dir(fullfile(options.target, 'properties.mat')))
     signal.UserData.properties = load(fullfile(options.target, 'properties.mat'));
+    if isfield(signal.UserData.properties, 'chemical_symbols')
+      b_coh = sqw_phonons_b_coh(signal.UserData.properties.chemical_symbols);
+      signal.UserData.properties.b_coh = b_coh;
+    end
   else
     signal.UserData.properties = [];
   end
