@@ -11,7 +11,7 @@ options.xc         = 'PBE';
 options.mode       = 'pw';            % GPAW
 options.potentials = '';
 options.diagonalization = 'rmm-diis'; % GPAW would prefer rmm-diis
-options.occupations= '';
+options.occupations= '';              % could be metal, semiconductor
 options.ecut       = 0;
 options.nbands     = 0;
 options.nsteps     = 0;
@@ -23,7 +23,8 @@ options.gui        = nan;
 options.htmlreport = 0;
 options.dos        = 0;
 options.optimizer  = '';
-options.accuracy   = 'fast';
+options.accuracy   = 'fast';  % can also be 'accurate' (much slower)
+options.disp       = 0.01;    % displacement of atoms in Angs
 
 % read input arguments
 for index=1:numel(varargin)

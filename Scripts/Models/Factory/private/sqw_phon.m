@@ -407,7 +407,7 @@ function [poscar, options]=sqw_phon_argin(poscar, options)
   % random displacement
   if isfield(options,'disp') && strcmp(options.disp,'random')
     % the DISP initial vector is set with a random set of [-1 0 1]
-    options.disp = round(randn(1,3));
+    options.disp = round(2*rand(1,3)-1);
     options.disp(abs(options.disp) > 3) = sign(options.disp(abs(options.disp) > 3));
     this = find(~options.disp); if numel(this) == 2, options.disp=sign(randn); end
   end
@@ -548,17 +548,17 @@ if isempty(strfind(lower(geom1.comment),'supercell'))
     fprintf(fid, 'LCENTRAL = .F.\n');
   end
 
-  if isfield(options,'disp')
-    if sum(abs(options.disp)) >= 1
-      fprintf(fid, 'DISP   = %i\n', round(6*sum(abs(options.disp))));
-    else
-      fprintf(fid, 'DISP   = %i\n', 6);  
+  if isfield(options,'disp')    
+    if numel(options.disp) == 3 % given as a direction vector
+      fprintf(fid, 'DXSTART= %f %f %f\n', int16(options.disp));
+      disp([ mfilename ': using initial displacement [ ' num2str(int16(options.disp(:)')) ' ]' ]);
+      options.disp = 0.01*norm(options.disp);
     end
-    
-    if numel(options.disp) == 3
-      fprintf(fid, 'DXSTART= %f %f %f\n', options.disp);
-      disp([ mfilename ': using initial displacement [ ' num2str(options.disp(:)') ' ]' ]);
-      options.disp = options.disp/norm(options.disp);
+    if isscalar(options.disp)
+      % convert from Angs to PHON value: 25 -> 0.04 Angs
+      options.disp = max(1/options.disp, 1);
+
+      fprintf(fid, 'DISP   = %i\n', round(options.disp));
     end
   end
   fclose(fid);
@@ -669,7 +669,7 @@ if isempty(dir(fullfile(p,'FORCES')))
       forces{move} = [];
     end
     if isempty(forces{move})
-      disp([ mfilename ': aborting FORCES computation.' ]);
+      disp([ mfilename ': aborting FORCES computation in ' p ]);
       forces = [];
       return
     elseif move < size(displacements,1)
