@@ -218,7 +218,7 @@ def equivalent_sites(sg, scaled_positions, onduplicates='keep',
         return numpy.array(sites), kinds, rots, transs
         
 # ------------------------------------------------------------------------------
-def phonons_run(phonon):
+def phonons_run(phonon, single=True, usesymmetry=False):
     """Run the calculations for the required displacements.
     This function uses the Spacegroup in order to speed-up the calculation.
     Every iteration is checked against symmetry operators. In case other moves 
@@ -230,6 +230,14 @@ def phonons_run(phonon):
     started. Be aware that an interrupted calculation may produce an empty
     file (ending with .pckl), which must be deleted before restarting the
     job. Otherwise the calculation for that displacement will not be done.
+    
+    input:
+    
+      phonon object with Atoms and Calculator
+    
+    output:
+    
+      True when a calculation step was performed, false otherwise
 
     """
 
@@ -247,9 +255,13 @@ def phonons_run(phonon):
     pos    = atoms_N.positions[offset: offset + natoms].copy()
     
     # Loop over all displacements
+    if usesymmetry:
+        signs = [1]
+    else:
+        signs = [-1,1]
     for a in phonon.indices:
         for i in range(3):
-            for sign in [-1, 1]:
+            for sign in signs:
                 # Update atomic positions. Shift is applied to Cartesian coordinates.
                 disp    = [0,0,0]
                 disp[i] = sign * phonon.delta # in Angs, cartesian
@@ -262,13 +274,13 @@ def phonons_run(phonon):
                 
                 # we get the scaled positions for the atoms
                 atoms0.positions[a,i] += disp[i]
-                scaled = atoms0.get_scaled_positions()
+                scaled = atoms0.get_scaled_positions() # this is used by the Calculator
                 
                 # skip this move if it is equivalent to an existing one using the
                 # space group rotations
-                filename, rotation = _phonon_run_equiv(sg, phonon, atoms0.get_cell(), scaled[a])
-                if filename:
-                    continue
+                # filename, rotation = _phonon_run_equiv(sg, phonon, atoms0.get_cell(), scaled[a])
+                # if filename:
+                #    continue
                 
                 # Filename for atomic displacement
                 filename = '%s.%d%s%s.pckl' % \
@@ -285,6 +297,10 @@ def phonons_run(phonon):
                 # in ase.calculator: FileIOCalculator.calculate -> write_input
                 atoms_N.positions[offset + a, i] = \
                     pos[a, i] + disp[i]
+                    
+                scaled = atoms_N.get_scaled_positions()
+                print "Moving atom #%i %s by " % (a, atoms_N.get_chemical_symbols()[a]), disp, " (Angs)\n"
+                print "Fractional coordinates ", scaled[a],"\n"
                 
                 # Call derived class implementation of __call__
                 output = phonon.__call__(atoms_N)
@@ -296,11 +312,17 @@ def phonons_run(phonon):
                 sys.stdout.flush()
                 
                 # fill equivalent displacements from spacegroup
-                #_phonons_run_symforce(phonon, atoms_N, \
-                #   disp, output, a)
+                if usesymmetry and False:
+                    _phonons_run_symforce(phonon, atoms_N, \
+                       disp, output, a)
                 
                 # Return to initial positions
                 atoms_N.positions[offset + a, i] = pos[a, i]
+                
+                if single:
+                    return True # and some more iterations may be required
+
+    return False  # nothing left to do
 
 # ------------------------------------------------------------------------------       
 def _phonon_run_equiv(sg, phonon, cell, move):
@@ -397,10 +419,10 @@ def phonon_read(phonon, method='Frederiksen', symmetrize=3, acoustic=True,
     # Number of atoms
     natoms = len(phonon.indices)
     # Number of unit cells
-    N = np.prod(phonon.N_c)
+    N = numpy.prod(phonon.N_c)
     # Matrix of force constants as a function of unit cell index in units
     # of eV / Ang**2
-    C_xNav = np.empty((natoms * 3, N, natoms, 3), dtype=float)
+    C_xNav = numpy.empty((natoms * 3, N, natoms, 3), dtype=float)
 
     # Loop over all atomic displacements and calculate force constants
     for i, a in enumerate(phonon.indices):
@@ -408,16 +430,32 @@ def phonon_read(phonon, method='Frederiksen', symmetrize=3, acoustic=True,
             # Atomic forces for a displacement of atom a in direction v
             basename = '%s.%d%s' % (phonon.name, a, v)
             
-            fminus_av = pickle.load(open(basename + '-.pckl'))
-            fplus_av = pickle.load(open(basename + '+.pckl'))
+            if os.path.isfile(basename + '-.pckl'):
+                fminus_av = pickle.load(open(basename + '-.pckl'))
+            else:
+                fminus_av = None
+            if os.path.isfile(basename + '+.pckl'):
+                fplus_av = pickle.load(open(basename + '+.pckl'))
+            else:
+                fplus_av = None
             
             if method == 'frederiksen':
-                fminus_av[a] -= fminus_av.sum(0)
-                fplus_av[a]  -= fplus_av.sum(0)
-                
-            # Finite difference derivative
-            C_av = fminus_av - fplus_av
-            C_av /= 2 * phonon.delta
+                if fminus_av is not None:
+                    fminus_av[a] -= fminus_av.sum(0)
+                if fplus_av is not None:
+                    fplus_av[a]  -= fplus_av.sum(0)
+            
+            if fminus_av is not None and fplus_av is not None:
+                # Finite difference derivative
+                C_av = (fminus_av - fplus_av)/2
+            elif fminus_av is not None:
+                # only the - side is available
+                C_av =  fminus_av
+            elif fplus_av is not None:
+                # only the + side is available
+                C_av = -fplus_av
+
+            C_av /= phonon.delta  # gradient
 
             # Slice out included atoms
             C_Nav = C_av.reshape((N, len(phonon.atoms), 3))[:, phonon.indices]
@@ -448,8 +486,8 @@ def phonon_read(phonon, method='Frederiksen', symmetrize=3, acoustic=True,
     
     # Add mass prefactor
     m_a = phonon.atoms.get_masses()
-    phonon.m_inv_x = np.repeat(m_a[phonon.indices]**-0.5, 3)
-    M_inv = np.outer(phonon.m_inv_x, phonon.m_inv_x)
+    phonon.m_inv_x = numpy.repeat(m_a[phonon.indices]**-0.5, 3)
+    M_inv = numpy.outer(phonon.m_inv_x, phonon.m_inv_x)
     for D in phonon.D_N:
         D *= M_inv
                 
