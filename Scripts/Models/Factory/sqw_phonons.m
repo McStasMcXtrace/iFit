@@ -105,7 +105,9 @@ function signal=sqw_phonons(configuration, varargin)
 %     the 'fast' choice uses the symmetry operators to lower the number of atom 
 %     displacements. This lowers the accuracy of the calculation, especially when
 %     the system is not exactly at the equilibrium position. The 'accurate' choice
-%     is longer to execute (e.g. 3-6 times slower), but retains full forces.
+%     is longer to execute (e.g. 3-6 times slower), but retains full forces. The
+%     'fast' mode also skips the IR and Raman mode calculation.
+%   options.disp=value                     the atom displacement in Angs. Default is 0.01.
 %
 % DFT specific options
 %   options.kpoints=scalar or [nx ny nz]   Monkhorst-Pack grid. Default is 0 (auto mode).
