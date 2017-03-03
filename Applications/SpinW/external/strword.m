@@ -46,3 +46,7 @@ for ii = 1:numel(idx)
 end
 
 end
+
+function strsplit(s)
+  s = textscan(s, '%s', 'Delimiter', sprintf('\n')); s = s{1};
+end

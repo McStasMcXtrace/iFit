@@ -2885,6 +2885,8 @@ function dataFields = updateObjTooltip(obj, uiObject)
 
 %% Check for existence of a newer version
 function checkVersion()
+    return  % the urlread below requires a valid connection, and can stall
+            % so we just unactivate it.
     try
         % If the user has not indicated NOT to be informed
         if ~ispref(mfilename,'dontCheckNewerVersion')
@@ -2989,6 +2991,9 @@ function dispError
         disp(msg);
         return;  % debug point
 %end  % dispError
+
+function strsplit(s)
+  s = textscan(s, '%s', 'Delimiter', sprintf('\n')); s = s{1};
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%% TODO %%%%%%%%%%%%%%%%%%%%%%%%%
