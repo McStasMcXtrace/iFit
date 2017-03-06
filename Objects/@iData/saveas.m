@@ -5,10 +5,11 @@ function [filename,format] = saveas(a, filename, format, options)
 %     This function saves the content of iData objects. The default format is 'm'.
 %   saveas(iData,'formats')
 %     prints a list of supported export formats.
-%   saveas(iData,'file.ext')            determine file format from the extension
-%   saveas(iData,'file','format')       set file format explicitly
-%   saveas(iData,'file','format clean') set file format explicitly and remove NaN and Inf.
-%   saveas(iData,'file','format data')  save only the 'Data' part of the object. 
+%   saveas(s,'file.ext')            determine file format from the extension
+%   saveas(s,'file','format')       set file format explicitly
+%   saveas(s,'file','format clean') set file format explicitly and remove NaN and Inf.
+%   saveas(s,'file','format data')  save only the 'Data' part of the object. 
+%   saveas(s, get(s,'Source'), 'format')  save with the same base filename(s)
 %
 %     To load back an object from a m-file, type its file name at the prompt.
 %     To load back an object from a mat-file, type 'load filename.mat' at the prompt.
