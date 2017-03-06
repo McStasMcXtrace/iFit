@@ -227,19 +227,21 @@ case 'mantid'
 end
 
 % handle extensions
-[Path, name, ext] = fileparts(filename);
-if isempty(ext) && ~isempty(format), 
-  ext = [ '.' strtok(format, ' ;*') ]; 
-  filename = [ filename ext ];
-elseif isempty(format) && ~isempty(ext)
-  format = ext(2:end);
-elseif isempty(format) && isempty(ext) 
-  format='mat'; filename = [ filename '.mat' ];
-end
+if ischar(filename)
+  [Path, name, ext] = fileparts(filename);
+  if isempty(ext) && ~isempty(format), 
+    ext = [ '.' strtok(format, ' ;*') ]; 
+    filename = [ filename ext ];
+  elseif isempty(format) && ~isempty(ext)
+    format = ext(2:end);
+  elseif isempty(format) && isempty(ext) 
+    format='mat'; filename = [ filename '.mat' ];
+  end
 
-if isempty(filename) || isempty(name), 
-  filename = [ 'iFit_' a(1).Tag '.' strtok(format, ' ;*') ]; 
-  name = filename; 
+  if isempty(filename) || isempty(name), 
+    filename = [ 'iFit_' a(1).Tag '.' strtok(format, ' ;*') ]; 
+    name = filename; 
+  end
 end
 
 formatShort = strtok(format, ' ;*.');
@@ -247,21 +249,28 @@ formatShort = strtok(format, ' ;*.');
 % multiple entries: HTML MAT
 if numel(a) > 1
   filename_base = filename;
-  if strcmp(filename_base, 'gui'), filename_base=''; end
-  if isempty(filename_base),       filename_base='iFit_'; end
-  filename = cell(size(a));
-  for index=1:numel(a)
-    if ~strcmpi(formatShort, 'html') && ~strcmpi(formatShort, 'mat')
-      [Path, name, ext] = fileparts(filename_base);
-      this_filename = [ Path name '_' num2str(index,'%04d') ext ];
-    else
-      if index == 1 && ~isempty(dir(filename_base))
-        delete(filename_base);
-      end
-      this_filename = filename_base;
-      format = [ format ' ' root ];
+  if iscellstr(filename) && numel(filename) == numel(a)
+    for index=1:numel(a)
+      [Path, name, ext] = fileparts(filename{index});
+      [filename{index}, format] = saveas(a(index), [name '.' strtok(format)], format, options);
     end
-    [filename{index}, format] = saveas(a(index), this_filename, format, options);
+  else
+    if strcmp(filename_base, 'gui'), filename_base=''; end
+    if isempty(filename_base),       filename_base='iFit_'; end
+    filename = cell(size(a));
+    for index=1:numel(a)
+      if ~strcmpi(formatShort, 'html') && ~strcmpi(formatShort, 'mat')
+        [Path, name, ext] = fileparts(filename_base);
+        this_filename = [ Path name '_' num2str(index,'%04d') ext ];
+      else
+        if index == 1 && ~isempty(dir(filename_base))
+          delete(filename_base);
+        end
+        this_filename = filename_base;
+        format = [ format ' ' root ];
+      end
+      [filename{index}, format] = saveas(a(index), this_filename, format, options);
+    end
   end
   return
 end
