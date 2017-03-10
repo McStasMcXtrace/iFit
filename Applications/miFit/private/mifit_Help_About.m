@@ -4,7 +4,7 @@ function h=mifit_Help_About(fig)
   icon = fullfile(ifitpath,'Docs','images','ILL-web-jpeg.jpg');
   
   % Display About dialog
-  t = [ sprintf('Welcome to miFit, a GUI to iFit.\n ') version(iData,2) sprintf('.\n Visit <http://ifit.mccode.org>') ];
+  t = [ sprintf('Welcome to miFit, a GUI to iFit.\n ') version(iData,2) ];
   if isempty(dir(icon))
     h = msgbox(t,'miFit: About','help');
   else
@@ -16,3 +16,4 @@ function h=mifit_Help_About(fig)
   if ~isempty(fig)
     setappdata(fig, 'handle_About', h);
   end
+  disp(char(textwrap({t},80)))
