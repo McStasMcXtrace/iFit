@@ -31,9 +31,10 @@ import numpy
 import warnings
 import os
 
-from ase.atoms import Atoms
-from ase.utils import opencew
-from ase.parallel import rank, barrier
+from ase.atoms     import Atoms
+from ase.utils     import opencew
+from ase.parallel  import rank, barrier
+from scipy.spatial import Voronoi
 
 # check if we have access to get_spacegroup from spglib
 # https://atztogo.github.io/spglib/
@@ -49,14 +50,14 @@ except ImportError:
         pass
 
 # ------------------------------------------------------------------------------
-def get_spacegroup(atoms, symprec=1e-5, centre=None):
+def get_spacegroup(atoms, symprec=1e-5):
     """Determine the spacegroup to which belongs the Atoms object.
     
     Parameters:
     atoms:    an Atoms object
     symprec:  Symmetry tolerance, i.e. distance tolerance in Cartesian 
               coordinates to find crystal symmetry.
-    centre:   None, or the index of the atoms to use as centre
+    center:   None, or the index of the atoms to use as center
               
     The Spacegroup object is returned, and stored in atoms.info['spacegroup'] 
     when this key does not exist (avoids overwrite). To force overwrite of the 
@@ -68,8 +69,8 @@ def get_spacegroup(atoms, symprec=1e-5, centre=None):
     >>> from ase.lattice import bulk
     >>> atoms = bulk("Cu", "fcc", a=3.6, cubic=True)
     >>> sg = get_spacegroup.get_spacegroup(atoms)
-    """ 
-    
+    """
+
     # use spglib when it is available (and return)
     if has_spglib:
         sg    = spglib.get_spacegroup(atoms)
@@ -78,19 +79,38 @@ def get_spacegroup(atoms, symprec=1e-5, centre=None):
         return atoms.info["spacegroup"]
     
     # no spglib, we use our own spacegroup finder. Not as robust as spglib.
+    # we center the Atoms positions on each atom in the cell, and find the 
+    # spacegroup of highest symmetry
+    found = None
+    for kind, pos in enumerate(atoms.get_scaled_positions()):
+        sg = _get_spacegroup(atoms, symprec=1e-5, center=kind)
+        if found is None or sg.no > found.no:
+            found = sg
+    
+    # return None when no space group is found (would be surprising)
+    if found is not None and 'spacegroup' not in atoms.info:
+          atoms.info["spacegroup"] = found
+
+    return found
+            
+# ------------------------------------------------------------------------------
+def _get_spacegroup(atoms, symprec=1e-5, center=None):
+    """Our own 'private' implementation of get_spacegroup. This one is less secure
+       that the spglib one.
+    """ 
     
     # we try all available spacegroups from 1 to 230, backwards
     # a Space group is the collection of all symmetry operations which lets the 
     # unit cell invariant.
-    found    = None
+    found      = None
     positions  = atoms.get_scaled_positions(wrap=True)  # in the lattice frame
     
     # make sure we are insensitive to translation. this choice is arbitrary and 
     # could lead to a 'slightly' wrong guess for the Space group, e.g. do not  
     # guess centro-symmetry.
-    if centre:
+    if center:
         try:
-            positions -= positions[centre]
+            positions -= positions[center]
         except IndexError:
             pass
     
@@ -109,11 +129,7 @@ def get_spacegroup(atoms, symprec=1e-5, centre=None):
             # store the space group into the list
             found = sg
             break
-    #
-    # return None when no space group is found (would be surprising)
-    if found is not None and 'spacegroup' not in atoms.info:
-          atoms.info["spacegroup"] = found
-    #   
+
     return found
 
 # ------------------------------------------------------------------------------
@@ -189,8 +205,7 @@ def equivalent_sites(sg, scaled_positions, onduplicates='keep',
                     transs.append(trans)
                     continue
                 t = site - sites
-                mask = numpy.all((abs(t) < symprec) |
-                              (abs(abs(t) - 1.0) < symprec), axis=1)
+                mask = numpy.linalg.norm(t - numpy.rint(t) < symprec)
                 if numpy.any(mask):
                     ind = numpy.argwhere(mask)[0][0]
                     if kinds[ind] == kind:
@@ -218,7 +233,7 @@ def equivalent_sites(sg, scaled_positions, onduplicates='keep',
         return numpy.array(sites), kinds, rots, transs
         
 # ------------------------------------------------------------------------------
-def phonons_run(phonon, single=True, usesymmetry=False):
+def phonons_run(phonon, single=True, usesymmetry=False, difference='central'):
     """Run the calculations for the required displacements.
     This function uses the Spacegroup in order to speed-up the calculation.
     Every iteration is checked against symmetry operators. In case other moves 
@@ -233,13 +248,36 @@ def phonons_run(phonon, single=True, usesymmetry=False):
     
     input:
     
-      phonon object with Atoms and Calculator
+      phonon: ASE Phonon object with Atoms and Calculator
+      single: when True, the forces are computed only for a single step, and then
+              exit. This allows to split the loop in independent iterations. When
+              calling again the 'run' method, already computed steps are ignored,
+              missing steps are completed, until no more are needed. When set to
+              False, all steps are done in a row.
+      usesymmetry: when True, the symmetry operators are used to minimize the
+              amount of force calculations needed.
+      difference: the method to use for the force difference (gradient) computation.
+              can be 'central','forward','backward'. The central difference is 
+              more accurate but requires twice as many force calculations.
     
     output:
     
-      True when a calculation step was performed, false otherwise
+      True when a calculation step was performed, False otherwise or no more is needed.
 
     """
+    
+    # prepare to use symmetry operations
+    if usesymmetry:
+        # check if a spacegroup is defined, else find it
+        if 'spacegroup' not in phonon.atoms.info or phonon.atoms.info["spacegroup"] is None:
+            sg    = get_spacegroup(phonon.atoms)
+
+    if difference == 'backward':
+        signs = [ 1]     # only compute one side, backward difference
+    if difference == 'forward':
+        signs = [-1]     # only compute one side, forward difference
+    else:
+        signs = [-1,1]   # use central difference
 
     # Atoms in the supercell -- repeated in the lattice vector directions
     # beginning with the last
@@ -254,33 +292,21 @@ def phonons_run(phonon, single=True, usesymmetry=False):
     offset = natoms * phonon.offset
     pos    = atoms_N.positions[offset: offset + natoms].copy()
     
-    # Loop over all displacements
-    if usesymmetry:
-        signs = [1]
-    else:
-        signs = [-1,1]
-    for a in phonon.indices:
-        for i in range(3):
-            for sign in signs:
+    # Loop over all displacements  
+    for a in phonon.indices:    # atom index to move in cell
+    
+        if usesymmetry:
+            # we determine the Wigner-Seitz cell around atom 'a' (Cartesian)
+            ws = _get_wigner_seitz(atoms_N, a, max(phonon.N_c)) # max(phonon.N_c)
+        else:
+            ws = None
+            
+        # loop to move atom 'a' in xyz direction and +- side
+        for i in range(3):      # xyz
+            for sign in signs:  # +-
                 # Update atomic positions. Shift is applied to Cartesian coordinates.
-                disp    = [0,0,0]
-                disp[i] = sign * phonon.delta # in Angs, cartesian
-                
-                # we determine the point group, i.e. we center the atom 'a'
-                atoms0 = phonon.atoms.copy()                   # initial lattice, not displaced
-                atoms0.positions      -= atoms0.positions[a] # centre on 'a'
-                
-                sg = get_spacegroup(atoms0)
-                
-                # we get the scaled positions for the atoms
-                atoms0.positions[a,i] += disp[i]
-                scaled = atoms0.get_scaled_positions() # this is used by the Calculator
-                
-                # skip this move if it is equivalent to an existing one using the
-                # space group rotations
-                # filename, rotation = _phonon_run_equiv(sg, phonon, atoms0.get_cell(), scaled[a])
-                # if filename:
-                #    continue
+                disp     = pos[a].copy()
+                disp[i] += sign * phonon.delta # in Angs, Cartesian
                 
                 # Filename for atomic displacement
                 filename = '%s.%d%s%s.pckl' % \
@@ -292,15 +318,16 @@ def phonons_run(phonon, single=True, usesymmetry=False):
                     # Skip if already done
                     continue
                 
-                # positions is in Cartesian coordinates, but this is e.g. 
+                # 'positions' are in Cartesian coordinates, but they are e.g. 
                 # converted to fractional coordinates when calling the calculator
                 # in ase.calculator: FileIOCalculator.calculate -> write_input
-                atoms_N.positions[offset + a, i] = \
-                    pos[a, i] + disp[i]
+                atoms_N.positions[offset + a, i] = disp[i]
                     
-                scaled = atoms_N.get_scaled_positions()
-                print "Moving atom #%i %s by " % (a, atoms_N.get_chemical_symbols()[a]), disp, " (Angs)\n"
-                print "Fractional coordinates ", scaled[a],"\n"
+                print "Moving atom #%i %s at   " % (offset + a, atoms_N.get_chemical_symbols()[a]), disp, " (Angs)"
+                
+                # scaled = atoms_N.get_scaled_positions() 
+                #        = numpy.mod(numpy.dot(invL.T, disp),1.) with L=atoms_N.get_cell()
+                # cart   = numpy.dot(atoms_N.get_cell().T, scaled)
                 
                 # Call derived class implementation of __call__
                 output = phonon.__call__(atoms_N)
@@ -312,9 +339,8 @@ def phonons_run(phonon, single=True, usesymmetry=False):
                 sys.stdout.flush()
                 
                 # fill equivalent displacements from spacegroup
-                if usesymmetry and False:
-                    _phonons_run_symforce(phonon, atoms_N, \
-                       disp, output, a)
+                if usesymmetry and ws is not None:
+                    _phonons_run_symforce(phonon, atoms_N, disp, output, pos, ws, signs)
                 
                 # Return to initial positions
                 atoms_N.positions[offset + a, i] = pos[a, i]
@@ -324,61 +350,173 @@ def phonons_run(phonon, single=True, usesymmetry=False):
 
     return False  # nothing left to do
 
-# ------------------------------------------------------------------------------       
-def _phonon_run_equiv(sg, phonon, cell, move):
-    """Check if the displacement 'disp' matches an existing move when applying
-       the space group.
+# ------------------------------------------------------------------------------
+def _get_wigner_seitz(atoms, move=0, wrap=1, symprec=1e-6):
+    """Compute the Wigner-Seitz cell.
+       this routine is rather slow, but it allows to limit the number of moves
        
-       Parameters:
+       code outrageously copied from PHON/src/get_wig by D. Alfe
        
-       sg:    space group 
-       cell:  atoms.get_cell
-       disp:  scaled (fractional) displacement in 'atoms'
+       This is equivalent to a Voronoi cell, but centered on atom 'move'
+       An alternative is to use scipy.spatial.Voronoi, but it does not properly
+       center the cell. Slow but secure...
        
-       Returns:
+       input:
+          atoms: an ASE Atoms object, supercell
+          move:  the index  of the atom in the cell to be used as center
+          wrap:  the extent of the supercell
+       output:
+          ws:    atom positions in the Wigner-Seitz cell, Cartesian coordinates
+    """
+    # get the cell definition
+    L     = atoms.get_cell()
+    # get fractional coordinates in the cell/supercell
+    xtmp  = atoms.get_scaled_positions().copy()
+    # set the origin on the 'moving' atom
+    xtmp -= xtmp[move]
+
+    # construct the WS cell (defined as the closest vectors to the origin)
+    print "Computing Wigner-Seitz cell..."
+    r = range(-wrap,wrap+1)
+    for na in range(len(xtmp)):
+        # convert from fractional to Cartesian
+        xtmp[na] = numpy.dot(L.T, xtmp[na])
+        temp1 = xtmp[na]
+        for i in r:
+            for j in r:
+                for k in r:
+                    temp = xtmp[na] + i*L[0] + j*L[1] + k*L[2]
+                    if numpy.all(abs(numpy.linalg.norm(temp) < numpy.linalg.norm(temp1))):
+                        temp1 = temp
+        xtmp[na] = temp1
+    
+    return xtmp
+    
+# ------------------------------------------------------------------------------
+def _phonons_run_symforce(phonon, atoms, disp, force, pos, ws, signs, symprec=1e-6):
+    """From a given force set, we derive the forces for equivalent displacements
+       by applying the corresponding symmetry operators.
        
-       filename: the filename pickle that holds the equivalent move
-       rotation: the rotation matrix to convert filename/forces into 'disp'
+       code outrageously adapted from PHON/src/set_forces by D. Alfe
+       
+       input:
+          phonon: ASE Phonon object with Atoms and Calculator
+          atoms:  ASE Atoms object for the supercell
+          disp:   displacement vector, in Cartesian coordinates
+          scaled: displacement vector, in fractional coordinates
+          force:  the forces determined for 'disp'
+          pos:    the equilibrium  positions, supercell (Cartesian)
+          ws:     the Wigner-Seitz positions, supercell (Cartesian)
+          
+       output:
+          True when a new force was generated from symmetry, False otherwise
+    
     """
     
-    sites, kinds, rotations, translations = equivalent_sites(sg, move)
+    # check if a spacegroup is defined
+    if 'spacegroup' not in atoms.info or atoms.info["spacegroup"] is None:
+        return
     
-    L    = cell                 # lattice cell            = at
-    invL = numpy.linalg.inv(L)  # no 2*pi multiplier here = inv(at) = bg'
+    sg   = atoms.info["spacegroup"] # spacegroup for e.g. spglib
+    L    = atoms.get_cell()      # lattice cell            = at
+    invL = numpy.linalg.inv(L)          # no 2*pi multiplier here = inv(at) = bg.T
     
-    # now scan all planned displacements
-    for a in phonon.indices:
-        for i in range(3):
-            for sign in [-1, 1]:
-            
-                # the 'planned' displacement
-                disp    = [0,0,0]
-                disp[i] = sign * phonon.delta # in Angs, cartesian
-                
-                # convert from Cartesian to scaled positions
-                scaled = numpy.mod(numpy.dot(invL, disp), 1.)
-                
-                # check if the corresponding file exists
-                # Filename for atomic displacement
-                filename = '%s.%d%s%s.pckl' % \
+    scaled = numpy.mod(numpy.dot(invL.T, disp),1.)      # in fractional coordinates
+    
+    # scaled = atoms_N.get_scaled_positions() 
+    #        = numpy.mod(numpy.dot(invL.T, disp),1.)
+    # cart   = numpy.dot(L.T, scaled)
+    
+    # now we search for a new displacement, and will apply rotations to force
+    
+    # we try all symmetry operations in the spacegroup
+    for rot, trans in sg.get_symop():
+    
+        # find the equivalent displacement from initial displacement (fractional) and rotation
+        dx = numpy.mod(numpy.dot(rot, scaled),1.)     # in fractional: dx = rot * disp
+
+        # the new displacement 'dx' must be one of the planned ones, else continue
+        found    = False
+        filename = None
+        for a in phonon.indices:    # atom index to move in cell
+            for i in range(3):      # xyz
+                for sign in signs: # +-
+                    # check if we already found a rotated displacement
+                    if found:
+                        break
+                        
+                    # skip if the pickle already exists
+                    filename = '%s.%d%s%s.pckl' % \
                            (phonon.name, a, 'xyz'[i], ' +-'[sign])
+                    if os.path.isfile(filename):
+                        # Skip if already done. Also the case for initial 'disp/dx'
+                        continue
+                    
+                    # compute the 'planned' displacement (atom, xyz, sign)
+                    new_disp     = pos[a].copy()
+                    new_disp[i] += sign * phonon.delta # in Angs, Cartesian
+                    # convert this displacement from Cartesian to lattice frame
+                    new_disp     = numpy.mod(numpy.dot(invL.T, new_disp),1.)
+                    delta        = new_disp - dx
+                    
+                    # compare fractional coordinates: we need the rotated disp ?
+                    if numpy.linalg.norm(delta - numpy.rint(delta)) < symprec: 
+                        found = True  # and filename holds the missing step
+        
+        # try an other symmetry operation when this one did not work out
+        if not found:
+            continue   
+    
+        # print out new displacement and rotation matrix
+        print 'Found imaged displacement dx=', numpy.dot(L.T, dx - numpy.rint(dx)), ' (A)'
+        # print 'Rotation matrix           R =', rot
+        
+        # we will now apply the rotation to the force array
+        nforce = force.copy()
+    
+        # scan all atoms to compute the rotated force matrix
+        # F_na ( S*u ) = S * F_{S^-1*na} ( u )
+        for a in range(len(ws)):    # atom index to move in cell
+            # compute equivalent atom location from inverse rotation in WS cell 
+            # temp = S^-1 * a
+            
+            temp = ws[a]                                  # WS coordinate (Cartesian)    
+            temp = numpy.mod(numpy.dot(invL.T, temp),1.)  # to fractional      
+            temp = numpy.dot(rot.T, temp)                 # apply inverse rotation
+            
+            # find nb so that b = S^-1 * a: only on the equivalent atoms 'rot'
+            for b in range(len(ws)):
+                found1 = False
+                tmp1  = numpy.mod(numpy.dot(invL.T, ws[b]), 1.) # to fractional
+                # check that the fractional part is the same
+                delta = temp - tmp1
+                if numpy.linalg.norm(delta - numpy.rint(delta)) < symprec:
+                    #          ws[b] = rot^-1 * ws[a] : 'b' is equivalent to 'a' by 'rot'
+                    #    rot * ws[b] =          ws[a]
+                    #           F[b] = rot^-1 * F[a] 
+                    #    rot *  F[b] = F[a] 
+                    found1 = True
+                    tmp2   = numpy.dot(invL.T, force[b])  # to fractional  
+                    tmp2   = numpy.dot(rot, tmp2)         # apply rotation
+                    tmp2   = numpy.dot(L.T, tmp2)         # back to Cartesian
+                    nforce[a] = tmp2
+                    break # for b
+        
+            if not found1:
+                print "Warning: could not apply symmetry to force [_phonons_run_symforce] for ", filename
+        # end for a
                 
-                # is it in the equivalent 'sites' and filename exists ?
-                if scaled in sites and os.path.isfile(filename):
-                    # get the index of the matching equivalent move
-                    index = numpy.where(numpy.isclose(sites,scaled).all(axis=1))
-                    if len(index):
-                        index = index[0]
-                    if len(index) > 1:
-                        print "WARNING: ifit._phonon_run_equiv: multiple equivalent sites ! Using first out of ", index
-                    if len(index):                    
-                        index=index[0]
-                    else:
-                        continue  # no symmetry operator found
-    
-                    return filename, rotations[index]
-    return None, None
-    
+        # write the pickle for the current 'rot'
+        fd = opencew(filename)
+        if rank == 0:
+            pickle.dump(nforce, fd)
+            sys.stdout.write('Writing %s (from spacegroup "%s" symmetry)\n' % (filename, sg.symbol))
+            fd.close()
+        # and loop to the next symmetry operator
+
+    # end for symop
+    return found
+
 # ------------------------------------------------------------------------------
 def phonon_read(phonon, method='Frederiksen', symmetrize=3, acoustic=True,
          cutoff=None, born=False, **kwargs):
@@ -446,13 +584,13 @@ def phonon_read(phonon, method='Frederiksen', symmetrize=3, acoustic=True,
                     fplus_av[a]  -= fplus_av.sum(0)
             
             if fminus_av is not None and fplus_av is not None:
-                # Finite difference derivative
+                # Finite central difference derivative
                 C_av = (fminus_av - fplus_av)/2
             elif fminus_av is not None:
-                # only the - side is available
+                # only the - side is available: forward difference
                 C_av =  fminus_av
             elif fplus_av is not None:
-                # only the + side is available
+                # only the + side is available: backward difference
                 C_av = -fplus_av
 
             C_av /= phonon.delta  # gradient
@@ -491,99 +629,3 @@ def phonon_read(phonon, method='Frederiksen', symmetrize=3, acoustic=True,
     for D in phonon.D_N:
         D *= M_inv
                 
-# ------------------------------------------------------------------------------
-def _phonons_run_symforce(phonon, atoms, disp, force, a):
-    """From a given force set, we derive the forces for equivalent displacements
-    by applying the corresponding symmetry operators."""
-    
-    # check if a spacegroup is defined
-    if 'spacegroup' not in atoms.info or atoms.info["spacegroup"] is None:
-        return
-        
-    L    = atoms.get_cell()     # lattice cell            = at
-    invL = numpy.linalg.inv(L)  # no 2*pi multiplier here = inv(at) = bg'
-
-    # get the equivalent displacements for the current move
-    # the first row is: rot=I and trans=0
-    
-    # equivalent_sites uses the scaled positions, so we must convert the 'disp'
-    # from Cartesian to lattice frame
-    disp_lat = numpy.dot(invL, disp)
-    disp_lat = numpy.mod(disp_lat, 1.)
-    
-    # search for all [disp_lat*rot+trans] equivalents
-    disps_lat,kinds,rot,trans = equivalent_sites(atoms.info["spacegroup"], \
-                disp_lat, onduplicates='keep')
-    
-    # **** Coordinate frames ***************************************************
-    # fractional/lattice coordinate use the [a,b,c] frame, and coordinates are 
-    #   fractions in the cell. The cell frame may not be ortho-normal. This frame
-    #   is also labeled as 'Direct'.
-    #   atoms.scaled_positions is using the Direct/lattice frame
-    #       fractional = np.linalg.solve(self.cell.T, self.positions.T).T
-    #                  = inv(self.cell) * positions
-    # Cartesian coordinates use an ortho-normal frame.
-    #   atoms.positions is using the cartesian frame
-    #       positions = np.dot(scaled_positions, self._cell)
-    #   displacements in ASE are in the cartesian frame
-    
-    # **** Transformations *****************************************************
-    # rot[index] applied on disp gives new_disp equivalent site, when given
-    # in lattice frame => rot[index] is then the 'lattice' rotation matrix.
-    # Then we conclude on rotation operators:
-    #   lattice:   rot[index]         e.g. a simple matrix
-    #   cartesian: R= numpy.dot(L, numpy.dot(rot[index], invL))
-    # displacements:
-    #   cartesian: cart   = L*direct, e.g. [-.01 0 0] a 'nice' vector xyz in ASE
-    #   direct:    direct = invL*cart e.g. a mixed vector
-
-    # Loop over all planned displacements (past and future)
-    # and search for such a move that matches one of the equivalent 'disp'
-    for i in range(3):
-        for sign in [-1, 1]:
-            
-            # compute the 'planned' displacements (atom, xyz, sign)
-            new_disp    = [0,0,0]
-            new_disp[i] = sign * phonon.delta # in Angs, cartesian
-            # convert this displacement from cartesian to lattice frame
-            new_disp_lat= numpy.dot(invL, new_disp)
-            # modulo in the cell, Direct/scaled/lattice/fractional
-            new_disp_lat= numpy.mod(new_disp_lat, 1.)
-            
-            # does this move belongs to the equivalent displacements ?
-            if new_disp_lat in disps_lat:
-                # if found in sites, we apply rotation to forces
-                # get the index of the matching site for rot and trans
-                index = numpy.where(numpy.isclose(disps_lat,new_disp_lat).all(axis=1))
-                if len(index):
-                    index = index[0]
-                if len(index) > 1:
-                    print "WARNING: ifit:phonons:run_symforce: multiple equivalent sites ! Using first out of ", index
-                if len(index):                    
-                    index=index[0]
-                else:
-                    continue  # no symmetry operator found
-                    
-                # skip if the pickle already exists
-                filename = '%s.%d%s%s.pckl' % \
-                       (phonon.name, a, 'xyz'[i], ' +-'[sign])
-                fd = opencew(filename)
-                if fd is None:
-                    # Skip if already done. Also the case for initial 'disp'
-                    continue
-
-                nforce = force.copy()
-
-                # convert rotation operator from lattice to cartesian frame
-                # L x R x L^-1 as in phononpy.similarity_transformation
-                R      = numpy.dot(L, numpy.dot(rot[index], invL))
-                
-                # apply rotation operator in cartesian frame on forces
-                nforce = numpy.dot(R, nforce.T).T
-
-                # write the pickle
-                if rank == 0:
-                    pickle.dump(nforce, fd)
-                    sys.stdout.write('Writing %s (from spacegroup "%s" symmetry)\n' % (filename, atoms.info["spacegroup"].symbol))
-                    fd.close()
-
