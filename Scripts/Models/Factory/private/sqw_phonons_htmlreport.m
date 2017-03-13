@@ -334,7 +334,7 @@ function Phonon_Model = sqw_phonons_htmlreport_model(fid, options)
     fprintf(fid, '<table style="text-align: left; width: 50%%;" border="1" cellpadding="2" cellspacing="2">\n');
     for index=1:numel(toadd)
       this = Phonon_Model.UserData.properties.(toadd{index});
-      if isnumeric(this)
+      if isnumeric(this) && ndims(this) <= 2
         fprintf(fid, '  <tr><td><b>%s</b></td><td>%s</td></tr>\n', toadd{index}, mat2str(this));
       elseif ischar(this)
         fprintf(fid, '  <tr><td><b>%s</b></td><td>%s</td></tr>\n', toadd{index}, this');
