@@ -340,7 +340,7 @@ try
   case 'csv'  % Spreadsheet comma separated values file format
     csvwrite(filename, double(a));
   case {'gif','bmp','pbm','pcx','pgm','pnm','ppm','ras','xwd','hdf4','tiff','png','art'}  % bitmap images
-    if ndims(a) == 2 && (any(regexp(options, '\<hide_axes\>')))
+    if ndims(a) == 2
       b=getaxis(a,0); % Signal/Monitor
       b=round((b-min(b(:)))/(max(b(:))-min(b(:)))*256);
     else
@@ -354,13 +354,20 @@ try
     if ~isempty(b)
       switch formatShort
       case {'png'}
-        imwrite(b, jet(256), filename, formatShort, 'Comment',char(a),'Mode','lossless');
+        imwrite(b, jet(256), filename, formatShort, 'Comment',char(a),'Mode','lossless', ...
+            'Source',a.Source, 'Software', version(iData), 'CreationTime', a.Date);
+      case {'gif'}
+        imwrite(b, filename, formatShort, 'Comment',char(a));
       case 'tiff'
         imwrite(b, jet(256), filename, formatShort, 'Description',char(a));
       case 'art'
         textart(b, filename); % in private
       otherwise
-        imwrite(b, jet(256), filename, formatShort);
+        try
+          imwrite(b, jet(256), filename, formatShort);
+        catch
+          imwrite(b, filename, formatShort);
+        end
       end
     else
       % rendering with getframe/imwrite failed. Fall back to saveas.
