@@ -2992,7 +2992,7 @@ function dispError
         return;  % debug point
 %end  % dispError
 
-function strsplit(s)
+function s = strsplit(s)
   s = textscan(s, '%s', 'Delimiter', sprintf('\n')); s = s{1};
 
 

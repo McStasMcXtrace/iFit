@@ -813,7 +813,6 @@ signal = fread(file, (fsize - offset) / 8, 'double', 'l');
 
 end
 
-function strsplit(s)
+function s = strsplit(s)
   s = textscan(s, '%s', 'Delimiter', sprintf('\n')); s = s{1};
-  
 end

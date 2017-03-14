@@ -3446,7 +3446,7 @@ function jControl = findTooltipIn(jContainer)
     end
 end
 
-function strsplit(s)
+function s = strsplit(s)
   s = textscan(s, '%s', 'Delimiter', sprintf('\n')); s = s{1};
 end
 
