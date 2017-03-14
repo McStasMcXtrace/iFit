@@ -10,7 +10,7 @@ status = [];
 if ismac,  precmd = 'DYLD_LIBRARY_PATH= ;';
 elseif isunix, precmd = 'LD_LIBRARY_PATH= ; '; 
 else precmd=''; end
-[status.ase, result] = system([ precmd 'python -c "import ase.version; print ase.version.version"' ]);
+[status.ase, result] = system([ precmd 'python -c "import ase"' ]);
 if status.ase ~= 0
   disp([ mfilename ': error: requires ASE to be installed.' ])
   disp('  Get it at <https://wiki.fysik.dtu.dk/ase>.');
