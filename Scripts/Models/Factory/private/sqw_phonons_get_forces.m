@@ -24,9 +24,9 @@ function [options, sav] = sqw_phonons_get_forces(options, decl, calc)
   
   % handle accuracy requirement (use symmetry operators or not to speed up forces)
   if isfield(options, 'accuracy') && strcmpi(options.accuracy,'fast')
-    ph_run = 'ifit.phonons_run(ph, single=True, usesymmetry=True)\n';  % much faster, but less accurate
+    ph_run = 'ifit.phonons_run(ph, single=True, usesymmetry=True, difference="forward")\n';  % much faster, but less accurate
   else
-    ph_run = 'ifit.phonons_run(ph, usesymmetry=False)\n';                   % all moves, slower, more accurate
+    ph_run = 'ifit.phonons_run(ph, usesymmetry=False, difference="central")\n';                   % all moves, slower, more accurate
   end
   
   if isfield(options, 'accuracy') && strcmpi(options.accuracy,'fast')
