@@ -17,8 +17,6 @@
     calculation.
 """
 
-# from ase.lattice import bulk
-
 # we need spacegroup from ASE
 try:
     from ase.spacegroup import Spacegroup         # For ASE version 3.10 or later
@@ -34,7 +32,6 @@ import os
 from ase.atoms     import Atoms
 from ase.utils     import opencew
 from ase.parallel  import rank, barrier
-from scipy.spatial import Voronoi
 
 # check if we have access to get_spacegroup from spglib
 # https://atztogo.github.io/spglib/
@@ -120,7 +117,7 @@ def _get_spacegroup(atoms, symprec=1e-5, center=None):
         sg        = Spacegroup(nb)
         #
         # now we scan all atoms in the cell and look for equivalent sites
-        sites,kinds,rot,trans = equivalent_sites(sg, positions, 
+        sites,kinds = equivalent_sites(sg, positions, 
                 onduplicates='keep', symprec=symprec)
         #    
         # the equivalent sites should match all other atom locations in the cell
@@ -165,16 +162,12 @@ def equivalent_sites(sg, scaled_positions, onduplicates='keep',
         kinds: list
             A list of integer indices specifying which input site is
             equivalent to the corresponding returned site.
-        rots: list
-            A list of rotation operators to apply in order to produce equivalent sites
-        transs: list
-            A list of translation operators to apply in order to produce equivalent sites
 
         Example:
 
         >>> from ase.lattice.spacegroup import Spacegroup
         >>> sg = Spacegroup(225)  # fcc
-        >>> sites, kinds,rot,trans = sg.equivalent_sites([[0, 0, 0], [0.5, 0.0, 0.0]])
+        >>> sites, kinds = sg.equivalent_sites([[0, 0, 0], [0.5, 0.0, 0.0]])
         >>> sites
         array([[ 0. ,  0. ,  0. ],
                [ 0. ,  0.5,  0.5],
@@ -189,8 +182,6 @@ def equivalent_sites(sg, scaled_positions, onduplicates='keep',
         """
         kinds = []
         sites = []
-        rots  = []
-        transs= []
         
         scaled = numpy.array(scaled_positions, ndmin=2)
         for kind, pos in enumerate(scaled):
@@ -201,10 +192,9 @@ def equivalent_sites(sg, scaled_positions, onduplicates='keep',
                 if not sites:
                     sites.append(site)
                     kinds.append(kind)
-                    rots.append(rot)
-                    transs.append(trans)
                     continue
                 t = site - sites
+                # test if this is a new site location, and append it
                 mask = numpy.linalg.norm(t - numpy.rint(t) < symprec)
                 if numpy.any(mask):
                     ind = numpy.argwhere(mask)[0][0]
@@ -228,9 +218,7 @@ def equivalent_sites(sg, scaled_positions, onduplicates='keep',
                 else:
                     sites.append(site)
                     kinds.append(kind)
-                    rots.append(rot)
-                    transs.append(trans)
-        return numpy.array(sites), kinds, rots, transs
+        return numpy.array(sites), kinds
         
 # ------------------------------------------------------------------------------
 def phonons_run(phonon, single=True, usesymmetry=False, difference='central'):
@@ -274,7 +262,7 @@ def phonons_run(phonon, single=True, usesymmetry=False, difference='central'):
 
     if difference == 'backward':
         signs = [ 1]     # only compute one side, backward difference
-    if difference == 'forward':
+    elif difference == 'forward':
         signs = [-1]     # only compute one side, forward difference
     else:
         signs = [-1,1]   # use central difference
@@ -323,7 +311,7 @@ def phonons_run(phonon, single=True, usesymmetry=False, difference='central'):
                 # in ase.calculator: FileIOCalculator.calculate -> write_input
                 atoms_N.positions[offset + a, i] = disp[i]
                     
-                print "Moving atom #%i %s at   " % (offset + a, atoms_N.get_chemical_symbols()[a]), disp, " (Angs)"
+                print "Moving atom #%-3i %-3s    at " % (offset + a, atoms_N.get_chemical_symbols()[a]), disp, " (Angs)"
                 
                 # scaled = atoms_N.get_scaled_positions() 
                 #        = numpy.mod(numpy.dot(invL.T, disp),1.) with L=atoms_N.get_cell()
@@ -368,6 +356,9 @@ def _get_wigner_seitz(atoms, move=0, wrap=1, symprec=1e-6):
        output:
           ws:    atom positions in the Wigner-Seitz cell, Cartesian coordinates
     """
+    
+    # this function is fully equivalent to the PHON/src/get_wig.f
+    
     # get the cell definition
     L     = atoms.get_cell()
     # get fractional coordinates in the cell/supercell
@@ -380,7 +371,7 @@ def _get_wigner_seitz(atoms, move=0, wrap=1, symprec=1e-6):
     r = range(-wrap,wrap+1)
     for na in range(len(xtmp)):
         # convert from fractional to Cartesian
-        xtmp[na] = numpy.dot(L.T, xtmp[na])
+        xtmp[na] = numpy.dot(L.T, xtmp[na].T)
         temp1 = xtmp[na]
         for i in r:
             for j in r:
@@ -418,8 +409,8 @@ def _phonons_run_symforce(phonon, atoms, disp, force, pos, ws, signs, symprec=1e
         return
     
     sg   = atoms.info["spacegroup"] # spacegroup for e.g. spglib
-    L    = atoms.get_cell()      # lattice cell            = at
-    invL = numpy.linalg.inv(L)          # no 2*pi multiplier here = inv(at) = bg.T
+    L    = atoms.get_cell()         # lattice cell            = at
+    invL = numpy.linalg.inv(L)      # no 2*pi multiplier here = inv(at) = bg.T
     
     scaled = numpy.mod(numpy.dot(invL.T, disp),1.)      # in fractional coordinates
     
@@ -427,7 +418,7 @@ def _phonons_run_symforce(phonon, atoms, disp, force, pos, ws, signs, symprec=1e
     #        = numpy.mod(numpy.dot(invL.T, disp),1.)
     # cart   = numpy.dot(L.T, scaled)
     
-    # now we search for a new displacement, and will apply rotations to force
+    # now we search for a new displacement, and will apply rotation to force
     
     # we try all symmetry operations in the spacegroup
     for rot, trans in sg.get_symop():
@@ -467,9 +458,8 @@ def _phonons_run_symforce(phonon, atoms, disp, force, pos, ws, signs, symprec=1e
         if not found:
             continue   
     
-        # print out new displacement and rotation matrix
-        print 'Found imaged displacement dx=', numpy.dot(L.T, dx - numpy.rint(dx)), ' (A)'
-        # print 'Rotation matrix           R =', rot
+        # print out new displacement
+        print 'Equivalent displacement dx=', numpy.dot(L.T, dx - numpy.rint(dx)), ' (Angs)'
         
         # we will now apply the rotation to the force array
         nforce = force.copy()
@@ -480,14 +470,17 @@ def _phonons_run_symforce(phonon, atoms, disp, force, pos, ws, signs, symprec=1e
             # compute equivalent atom location from inverse rotation in WS cell 
             # temp = S^-1 * a
             
-            temp = ws[a]                                  # WS coordinate (Cartesian)    
-            temp = numpy.mod(numpy.dot(invL.T, temp),1.)  # to fractional      
-            temp = numpy.dot(rot.T, temp)                 # apply inverse rotation
+            # temp=numpy.dot(bg.T, numpy.dot(inv(rot),ws[a]))
+            # temp = ws[a]                                  # WS coordinate (Cartesian)    
+            # temp = numpy.mod(numpy.dot(invL.T, temp),1.)  # to fractional      
+            # temp = numpy.dot(rot.T, temp)                 # apply inverse rotation
+            temp = numpy.dot(invL.T, numpy.dot(numpy.linalg.inv(rot),ws[a]))
             
             # find nb so that b = S^-1 * a: only on the equivalent atoms 'rot'
             for b in range(len(ws)):
                 found1 = False
-                tmp1  = numpy.mod(numpy.dot(invL.T, ws[b]), 1.) # to fractional
+                # tmp1  = numpy.mod(numpy.dot(invL.T, ws[b]), 1.) # to fractional
+                tmp1  = numpy.dot(invL.T, ws[b])
                 # check that the fractional part is the same
                 delta = temp - tmp1
                 if numpy.linalg.norm(delta - numpy.rint(delta)) < symprec:
@@ -496,9 +489,12 @@ def _phonons_run_symforce(phonon, atoms, disp, force, pos, ws, signs, symprec=1e
                     #           F[b] = rot^-1 * F[a] 
                     #    rot *  F[b] = F[a] 
                     found1 = True
-                    tmp2   = numpy.dot(invL.T, force[b])  # to fractional  
+                    # surprisingly, the rotation matrix rot is applied as is to
+                    # the force in PHON/set_forces.
+                    tmp2   = force[b]
+                    #tmp2   = numpy.dot(invL.T, force[b])  # to fractional  
                     tmp2   = numpy.dot(rot, tmp2)         # apply rotation
-                    tmp2   = numpy.dot(L.T, tmp2)         # back to Cartesian
+                    #tmp2   = numpy.dot(L.T, tmp2)         # back to Cartesian
                     nforce[a] = tmp2
                     break # for b
         
@@ -512,7 +508,7 @@ def _phonons_run_symforce(phonon, atoms, disp, force, pos, ws, signs, symprec=1e
             pickle.dump(nforce, fd)
             sys.stdout.write('Writing %s (from spacegroup "%s" symmetry)\n' % (filename, sg.symbol))
             fd.close()
-        # and loop to the next symmetry operator
+        # and loop to the next symmetry operator for an other displacement
 
     # end for symop
     return found
