@@ -92,8 +92,7 @@ def get_spacegroup(atoms, symprec=1e-5):
             
 # ------------------------------------------------------------------------------
 def _get_spacegroup(atoms, symprec=1e-5, center=None):
-    """Our own 'private' implementation of get_spacegroup. This one is less secure
-       that the spglib one.
+    """ASE implementation of get_spacegroup.
     """ 
     
     # we try all available spacegroups from 1 to 230, backwards
@@ -311,7 +310,8 @@ def phonons_run(phonon, single=True, usesymmetry=False, difference='central'):
                 # in ase.calculator: FileIOCalculator.calculate -> write_input
                 atoms_N.positions[offset + a, i] = disp[i]
                     
-                print "Moving atom #%-3i %-3s    at " % (offset + a, atoms_N.get_chemical_symbols()[a]), disp, " (Angs)"
+                print "Moving atom #%-3i %-3s    at " % \
+                    (offset + a, atoms_N.get_chemical_symbols()[a]), disp, " (Angs)"
                 
                 # scaled = atoms_N.get_scaled_positions() 
                 #        = numpy.mod(numpy.dot(invL.T, disp),1.) with L=atoms_N.get_cell()
@@ -367,7 +367,6 @@ def _get_wigner_seitz(atoms, move=0, wrap=1, symprec=1e-6):
     xtmp -= xtmp[move]
 
     # construct the WS cell (defined as the closest vectors to the origin)
-    print "Computing Wigner-Seitz cell..."
     r = range(-wrap,wrap+1)
     for na in range(len(xtmp)):
         # convert from fractional to Cartesian
@@ -398,6 +397,7 @@ def _phonons_run_symforce(phonon, atoms, disp, force, pos, ws, signs, symprec=1e
           force:  the forces determined for 'disp'
           pos:    the equilibrium  positions, supercell (Cartesian)
           ws:     the Wigner-Seitz positions, supercell (Cartesian)
+          symprec:the precision for comparing positions
           
        output:
           True when a new force was generated from symmetry, False otherwise
@@ -408,11 +408,11 @@ def _phonons_run_symforce(phonon, atoms, disp, force, pos, ws, signs, symprec=1e
     if 'spacegroup' not in atoms.info or atoms.info["spacegroup"] is None:
         return
     
-    sg   = atoms.info["spacegroup"] # spacegroup for e.g. spglib
-    L    = atoms.get_cell()         # lattice cell            = at
-    invL = numpy.linalg.inv(L)      # no 2*pi multiplier here = inv(at) = bg.T
+    sg   = atoms.info["spacegroup"]   # spacegroup for e.g. spglib
+    L    = atoms.get_cell()           # lattice cell            = at
+    invL = numpy.linalg.inv(L)        # no 2*pi multiplier here = inv(at) = bg.T
     
-    scaled = numpy.mod(numpy.dot(invL.T, disp),1.)      # in fractional coordinates
+    scaled = numpy.dot(invL.T, disp)  # in fractional coordinates
     
     # scaled = atoms_N.get_scaled_positions() 
     #        = numpy.mod(numpy.dot(invL.T, disp),1.)
@@ -421,10 +421,12 @@ def _phonons_run_symforce(phonon, atoms, disp, force, pos, ws, signs, symprec=1e
     # now we search for a new displacement, and will apply rotation to force
     
     # we try all symmetry operations in the spacegroup
+    index = 0
     for rot, trans in sg.get_symop():
     
-        # find the equivalent displacement from initial displacement (fractional) and rotation
-        dx = numpy.mod(numpy.dot(rot, scaled),1.)     # in fractional: dx = rot * disp
+        # find the equivalent displacement from initial displacement (fractional)
+        # and rotation
+        dx = numpy.dot(rot, scaled) # in fractional: dx = rot * disp
 
         # the new displacement 'dx' must be one of the planned ones, else continue
         found    = False
@@ -447,60 +449,24 @@ def _phonons_run_symforce(phonon, atoms, disp, force, pos, ws, signs, symprec=1e
                     new_disp     = pos[a].copy()
                     new_disp[i] += sign * phonon.delta # in Angs, Cartesian
                     # convert this displacement from Cartesian to lattice frame
-                    new_disp     = numpy.mod(numpy.dot(invL.T, new_disp),1.)
+                    new_disp     = numpy.dot(invL.T, new_disp)
                     delta        = new_disp - dx
                     
                     # compare fractional coordinates: we need the rotated disp ?
                     if numpy.linalg.norm(delta - numpy.rint(delta)) < symprec: 
                         found = True  # and filename holds the missing step
-        
+        index += 1
         # try an other symmetry operation when this one did not work out
         if not found:
             continue   
     
         # print out new displacement
         print 'Equivalent displacement dx=', numpy.dot(L.T, dx - numpy.rint(dx)), ' (Angs)'
+        print 'Rotation matrix #', index
+        print rot
         
         # we will now apply the rotation to the force array
-        nforce = force.copy()
-    
-        # scan all atoms to compute the rotated force matrix
-        # F_na ( S*u ) = S * F_{S^-1*na} ( u )
-        for a in range(len(ws)):    # atom index to move in cell
-            # compute equivalent atom location from inverse rotation in WS cell 
-            # temp = S^-1 * a
-            
-            # temp=numpy.dot(bg.T, numpy.dot(inv(rot),ws[a]))
-            # temp = ws[a]                                  # WS coordinate (Cartesian)    
-            # temp = numpy.mod(numpy.dot(invL.T, temp),1.)  # to fractional      
-            # temp = numpy.dot(rot.T, temp)                 # apply inverse rotation
-            temp = numpy.dot(invL.T, numpy.dot(numpy.linalg.inv(rot),ws[a]))
-            
-            # find nb so that b = S^-1 * a: only on the equivalent atoms 'rot'
-            for b in range(len(ws)):
-                found1 = False
-                # tmp1  = numpy.mod(numpy.dot(invL.T, ws[b]), 1.) # to fractional
-                tmp1  = numpy.dot(invL.T, ws[b])
-                # check that the fractional part is the same
-                delta = temp - tmp1
-                if numpy.linalg.norm(delta - numpy.rint(delta)) < symprec:
-                    #          ws[b] = rot^-1 * ws[a] : 'b' is equivalent to 'a' by 'rot'
-                    #    rot * ws[b] =          ws[a]
-                    #           F[b] = rot^-1 * F[a] 
-                    #    rot *  F[b] = F[a] 
-                    found1 = True
-                    # surprisingly, the rotation matrix rot is applied as is to
-                    # the force in PHON/set_forces.
-                    tmp2   = force[b]
-                    #tmp2   = numpy.dot(invL.T, force[b])  # to fractional  
-                    tmp2   = numpy.dot(rot, tmp2)         # apply rotation
-                    #tmp2   = numpy.dot(L.T, tmp2)         # back to Cartesian
-                    nforce[a] = tmp2
-                    break # for b
-        
-            if not found1:
-                print "Warning: could not apply symmetry to force [_phonons_run_symforce] for ", filename
-        # end for a
+        nforce = _phonons_run_symforce_rot(force, ws, invL, rot, filename, symprec)
                 
         # write the pickle for the current 'rot'
         fd = opencew(filename)
@@ -512,6 +478,67 @@ def _phonons_run_symforce(phonon, atoms, disp, force, pos, ws, signs, symprec=1e
 
     # end for symop
     return found
+    
+# ------------------------------------------------------------------------------
+def _phonons_run_symforce_rot(force, ws, invL, rot, filename=None, symprec=1e-6):
+    """From a given force set, we derive a rotated force set 
+       by applying a single corresponding symmetry operator.
+       
+       code outrageously adapted from PHON/src/set_forces by D. Alfe
+       
+       input:
+          force:    an array of Forces
+          ws:       the Wigner-Seitz positions, supercell (Cartesian)
+          invL:     the inverse of the lattice supercell
+          rot:      the rotation matrix
+          symprec:  the precision for comparing positions
+          filename: the target filename (as a label for display)
+   
+       output:
+          nforce:   the rotated forces set
+    """
+    
+    # this routine has been validated and behaves as in PHON/set_forces.f
+    # the force is properly rotated when given the 'rot' matrix.
+    
+    # exit if no WS cell defined
+    if ws is None:
+        return force
+        
+    # we will now apply the rotation to the force array
+    nforce = force.copy()
+
+    # scan all atoms to compute the rotated force matrix
+    # F_na ( S*u ) = S * F_{S^-1*na} ( u )
+    for a in range(len(ws)):    # atom index to move in cell
+        # compute equivalent atom location from inverse rotation in WS cell 
+        # temp = S^-1 * a
+
+        # inverse rotate, then to fractional (the other way does not work...)
+        temp = numpy.dot(invL.T, numpy.dot(numpy.linalg.inv(rot), ws[a]))
+        
+        # find nb so that b = S^-1 * a: only on the equivalent atoms 'rot'
+        for b in range(len(ws)):
+            found1 = False
+            tmp1  = numpy.dot(invL.T, ws[b]) # to fractional
+            # check that the fractional part is the same
+            delta = temp - tmp1
+            if numpy.linalg.norm(delta - numpy.rint(delta)) < symprec:
+                #          ws[b] = rot^-1 * ws[a] : 'b' is equivalent to 'a' by 'rot'
+                #    rot * ws[b] =          ws[a]
+                #           F[b] = rot^-1 * F[a] 
+                #    rot *  F[b] = F[a] 
+                found1 = True
+                # surprisingly, the rotation matrix rot is applied as is to
+                # the force in PHON/set_forces.    
+                nforce[a] = numpy.dot(rot, force[b])  # apply rotation
+                break # for b
+    
+        if not found1:
+            print "Warning: could not apply symmetry to force [_phonons_run_symforce] for ", filename
+        # end for a
+    
+    return nforce
 
 # ------------------------------------------------------------------------------
 def phonon_read(phonon, method='Frederiksen', symmetrize=3, acoustic=True,
