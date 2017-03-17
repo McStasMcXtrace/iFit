@@ -126,7 +126,7 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 
   persistent mcstas_present
   
-  pars=[]; fval= []; exitflag=-1; output=[]; options.instrument = '';
+  pars=[]; fval= []; exitflag=-1; output=[]; 
 
   if ~exist('iData')
     error([ mfilename ' requires iFit/iData. Get it at <ifit.mccode.org>. Install source code with addpath(genpath(''/path/to/iFit'')) or use standalone version.' ] );
@@ -147,6 +147,9 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
     else
       options.mode      = 'simulate';
     end
+  end
+  if ~isfield(options,'instrument')
+      options.instrument = '';
   end
   
   if ~isfield(options,'particle')
