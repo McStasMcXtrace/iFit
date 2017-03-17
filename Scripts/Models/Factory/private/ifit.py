@@ -313,10 +313,6 @@ def phonons_run(phonon, single=True, usesymmetry=False, difference='central'):
                 print "Moving atom #%-3i %-3s    at " % \
                     (offset + a, atoms_N.get_chemical_symbols()[a]), disp, " (Angs)"
                 
-                # scaled = atoms_N.get_scaled_positions() 
-                #        = numpy.mod(numpy.dot(invL.T, disp),1.) with L=atoms_N.get_cell()
-                # cart   = numpy.dot(atoms_N.get_cell().T, scaled)
-                
                 # Call derived class implementation of __call__
                 output = phonon.__call__(atoms_N)
                 # Write output to file
@@ -393,10 +389,10 @@ def _phonons_run_symforce(phonon, atoms, disp, force, pos, ws, signs, symprec=1e
           phonon: ASE Phonon object with Atoms and Calculator
           atoms:  ASE Atoms object for the supercell
           disp:   displacement vector, in Cartesian coordinates
-          scaled: displacement vector, in fractional coordinates
           force:  the forces determined for 'disp'
           pos:    the equilibrium  positions, supercell (Cartesian)
           ws:     the Wigner-Seitz positions, supercell (Cartesian)
+          signs:  the [+-] directions to move (central, forward, backward)
           symprec:the precision for comparing positions
           
        output:
@@ -412,8 +408,6 @@ def _phonons_run_symforce(phonon, atoms, disp, force, pos, ws, signs, symprec=1e
     L    = atoms.get_cell()           # lattice cell            = at
     invL = numpy.linalg.inv(L)        # no 2*pi multiplier here = inv(at) = bg.T
     
-    scaled = numpy.dot(invL.T, disp)  # in fractional coordinates
-    
     # scaled = atoms_N.get_scaled_positions() 
     #        = numpy.mod(numpy.dot(invL.T, disp),1.)
     # cart   = numpy.dot(L.T, scaled)
@@ -424,9 +418,9 @@ def _phonons_run_symforce(phonon, atoms, disp, force, pos, ws, signs, symprec=1e
     index = 0
     for rot, trans in sg.get_symop():
     
-        # find the equivalent displacement from initial displacement (fractional)
+        # find the equivalent displacement from initial displacement
         # and rotation
-        dx = numpy.dot(rot, scaled) # in fractional: dx = rot * disp
+        dx = numpy.dot(rot, disp) # in Cartesian: dx = rot * disp
 
         # the new displacement 'dx' must be one of the planned ones, else continue
         found    = False
@@ -448,23 +442,23 @@ def _phonons_run_symforce(phonon, atoms, disp, force, pos, ws, signs, symprec=1e
                     # compute the 'planned' displacement (atom, xyz, sign)
                     new_disp     = pos[a].copy()
                     new_disp[i] += sign * phonon.delta # in Angs, Cartesian
-                    # convert this displacement from Cartesian to lattice frame
-                    new_disp     = numpy.dot(invL.T, new_disp)
+                    # compare Cartesian coordinates
                     delta        = new_disp - dx
                     
-                    # compare fractional coordinates: we need the rotated disp ?
-                    if numpy.linalg.norm(delta - numpy.rint(delta)) < symprec: 
+                    # compare coordinates: we need the rotated disp ?
+                    if numpy.linalg.norm(delta) < symprec: 
                         found = True  # and filename holds the missing step
-        index += 1
+        
         # try an other symmetry operation when this one did not work out
         if not found:
+            index += 1
             continue   
     
         # print out new displacement
         print 'Equivalent displacement dx=', numpy.dot(L.T, dx - numpy.rint(dx)), ' (Angs)'
         print 'Rotation matrix #', index
         print rot
-        
+        index += 1
         # we will now apply the rotation to the force array
         nforce = _phonons_run_symforce_rot(force, ws, invL, rot, filename, symprec)
                 
