@@ -98,7 +98,7 @@ function signal=sqw_phonons(configuration, varargin)
 %   options.htmlreport=0|1                 when set, automatically generates a full
 %     report on the computation results. Also requests vDOS computation (options.dos=1).
 %   options.optimizer                      when set, performs a geometry optimization
-%     before computing the forces. This option can be set to 
+%     before computing the forces (move atoms in the cell). Can be set to 
 %       'BFGS' or 'LBFGS' (low memory BFGS)
 %       'MDMin' or 'FIRE'
 %   options.accuracy                       can be 'fast' (default) or 'accurate'.
@@ -106,7 +106,9 @@ function signal=sqw_phonons(configuration, varargin)
 %     displacements. This lowers the accuracy of the calculation, especially when
 %     the system is not exactly at the equilibrium position. The 'accurate' choice
 %     is longer to execute (e.g. 3-6 times slower), but retains full forces. The
-%     'fast' mode also skips the IR and Raman mode calculation.
+%     'fast' mode also skips the IR and Raman mode calculation. The 'very fast'
+%     option halves the displacements, but assumes the initial configuration is
+%     fully equilibrated (which can be done with e.g. 'optimizer=BFGS'.
 %   options.disp=value                     the atom displacement in Angs. Default is 0.01.
 %
 % DFT specific options
