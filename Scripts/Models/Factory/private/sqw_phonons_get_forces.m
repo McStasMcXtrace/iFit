@@ -23,8 +23,10 @@ function [options, sav] = sqw_phonons_get_forces(options, decl, calc)
   end
   
   % handle accuracy requirement (use symmetry operators or not to speed up forces)
-  if isfield(options, 'accuracy') && strcmpi(options.accuracy,'fast')
+  if isfield(options, 'accuracy') && strcmpi(options.accuracy,'very fast')
     ph_run = 'ifit.phonons_run(ph, single=True, usesymmetry=True, difference="forward")\n';  % much faster, but less accurate
+  elseif isfield(options, 'accuracy') && strcmpi(options.accuracy,'fast')
+    ph_run = 'ifit.phonons_run(ph, single=True, usesymmetry=True, difference="central")\n';
   else
     ph_run = 'ifit.phonons_run(ph, usesymmetry=False, difference="central")\n';                   % all moves, slower, more accurate
   end
@@ -75,7 +77,6 @@ function [options, sav] = sqw_phonons_get_forces(options, decl, calc)
     'atoms.set_calculator(calc)\n' ...
     '# Phonon calculator\n', ...
     sprintf('ph = Phonons(atoms, calc, supercell=(%i, %i, %i), delta=%f)\n',options.supercell, displ), ...
-    'print "Computing Forces: %%i atoms to move, %%i displacements." %% (len(ph.indices), (6*len(ph.indices)))\n', ...
     'ret = ' ph_run, ...
     'fid = open("phonon.pkl","wb")\n' , ...
     'calc = ph.calc\n', ...
@@ -197,12 +198,21 @@ function [options, sav] = sqw_phonons_get_forces(options, decl, calc)
   % compute the maximum number of steps
   if ~isempty(fullfile(target, 'properties.mat'))
     properties  = load(fullfile(target, 'properties.mat'));
-    nb_of_steps = numel(properties.chemical_symbols)*3;
-    % should use that to determine the ETA as in sqw_phon
+    if isfield(options, 'accuracy') && strcmpi(options.accuracy,'very fast')
+      nb_of_steps = numel(cellstr(properties.chemical_symbols))*3;
+    else
+      nb_of_steps = numel(cellstr(properties.chemical_symbols))*6; % central difference
+    end
+    % use that to determine the ETA as in sqw_phon
+  else
+    nb_of_steps = 0;
   end
   
   result = '';
   st = 0;
+  t0 = clock;           % a vector used to compute elapsed/remaining seconds
+  move = 1;
+  
   while st == 0
     try
       if strcmpi(options.calculator, 'GPAW') && isfield(options,'mpi') ...
@@ -212,6 +222,24 @@ function [options, sav] = sqw_phonons_get_forces(options, decl, calc)
         [st, result] = system([ precmd 'python ' fullfile(target,'sqw_phonons_forces_iterate.py') ]);
       end
       disp(result)
+      if move <= nb_of_steps
+        % display ETA. There are nb_of_steps steps.
+        % up to now we have done 'move' and it took etime(clock, t)
+        % time per iteration is etime(clock, t)/move.
+        % total time of computation is etime(clock, t)/move*nb_of_steps
+        % time remaining is etime(clock, t)/move*(nb_of_steps-move)
+        % final time is     t+etime(clock, t)/move*nb_of_steps
+        remaining = etime(clock, t0)/move*(nb_of_steps-move);
+        hours     = floor(remaining/3600);
+        minutes   = floor((remaining-hours*3600)/60);
+        seconds   = floor(remaining-hours*3600-minutes*60);
+        enddate   = addtodate(now, ceil(remaining), 'second');
+        
+        options.status = [ 'ETA ' sprintf('%i:%02i:%02i', hours, minutes, seconds) ', ending on ' datestr(enddate) '. move ' num2str(move) '/' num2str(nb_of_steps) ];
+        disp([ mfilename ': ' options.status ]);
+        sqw_phonons_htmlreport('', 'status', options);
+      end
+      move = move+1;
     catch
       disp(result)
       sqw_phonons_error([ mfilename ': failed calling ASE with script ' ...
