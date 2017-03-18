@@ -74,6 +74,8 @@ for index=1:numel(varargin)
       options.optimizer = 'BFGS';
     elseif strcmpi(varargin{index},'fast') || strcmpi(varargin{index},'low') || strcmpi(varargin{index},'coarse')
       options.accuracy = 'fast';
+    elseif strcmpi(varargin{index},'very fast')
+      options.accuracy = 'very fast';
     elseif strcmpi(varargin{index},'accurate') || strcmpi(varargin{index},'high') || strcmpi(varargin{index},'slow')
       options.accuracy = 'accurate';
     end
