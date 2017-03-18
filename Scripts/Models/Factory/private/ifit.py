@@ -292,7 +292,7 @@ def phonons_run(phonon, single=True, usesymmetry=False, difference='central'):
         for i in range(3):      # xyz
             for sign in signs:  # +-
                 # Update atomic positions. Shift is applied to Cartesian coordinates.
-                disp     = pos[a].copy()
+                disp     = numpy.asarray([0.0,0,0])
                 disp[i] += sign * phonon.delta # in Angs, Cartesian
                 
                 # Filename for atomic displacement
@@ -308,10 +308,10 @@ def phonons_run(phonon, single=True, usesymmetry=False, difference='central'):
                 # 'positions' are in Cartesian coordinates, but they are e.g. 
                 # converted to fractional coordinates when calling the calculator
                 # in ase.calculator: FileIOCalculator.calculate -> write_input
-                atoms_N.positions[offset + a, i] = disp[i]
+                atoms_N.positions[offset + a, i] = pos[a,i] + disp[i]
                     
                 print "Moving atom #%-3i %-3s    at " % \
-                    (offset + a, atoms_N.get_chemical_symbols()[a]), disp, " (Angs)"
+                    (offset + a, atoms_N.get_chemical_symbols()[a]), pos[a] + disp, " (Angs)"
                 
                 # Call derived class implementation of __call__
                 output = phonon.__call__(atoms_N)
@@ -324,7 +324,7 @@ def phonons_run(phonon, single=True, usesymmetry=False, difference='central'):
                 
                 # fill equivalent displacements from spacegroup
                 if usesymmetry and ws is not None:
-                    _phonons_run_symforce(phonon, atoms_N, disp, output, pos, ws, signs)
+                    _phonons_run_symforce(phonon, atoms_N, disp, output, a, ws, signs)
                 
                 # Return to initial positions
                 atoms_N.positions[offset + a, i] = pos[a, i]
@@ -379,7 +379,7 @@ def _get_wigner_seitz(atoms, move=0, wrap=1, symprec=1e-6):
     return xtmp
     
 # ------------------------------------------------------------------------------
-def _phonons_run_symforce(phonon, atoms, disp, force, pos, ws, signs, symprec=1e-6):
+def _phonons_run_symforce(phonon, atoms, disp, force, a, ws, signs, symprec=1e-6):
     """From a given force set, we derive the forces for equivalent displacements
        by applying the corresponding symmetry operators.
        
@@ -390,8 +390,8 @@ def _phonons_run_symforce(phonon, atoms, disp, force, pos, ws, signs, symprec=1e
           atoms:  ASE Atoms object for the supercell
           disp:   displacement vector, in Cartesian coordinates
           force:  the forces determined for 'disp'
-          pos:    the equilibrium  positions, supercell (Cartesian)
-          ws:     the Wigner-Seitz positions, supercell (Cartesian)
+          a:      the index of the atom being moved
+          ws:     the Wigner-Seitz positions for atom 'a', supercell (Cartesian)
           signs:  the [+-] directions to move (central, forward, backward)
           symprec:the precision for comparing positions
           
@@ -416,7 +416,12 @@ def _phonons_run_symforce(phonon, atoms, disp, force, pos, ws, signs, symprec=1e
     
     # we try all symmetry operations in the spacegroup
     index = 0
+    identity = numpy.asarray([[1.0,0,0],[0,1,0],[0,0,1]])
     for rot, trans in sg.get_symop():
+        # skip when rotation is identity
+        if numpy.linalg.norm(rot - identity) < symprec: 
+             index += 1
+             continue
     
         # find the equivalent displacement from initial displacement
         # and rotation
@@ -425,49 +430,50 @@ def _phonons_run_symforce(phonon, atoms, disp, force, pos, ws, signs, symprec=1e
         # the new displacement 'dx' must be one of the planned ones, else continue
         found    = False
         filename = None
-        for a in phonon.indices:    # atom index to move in cell
-            for i in range(3):      # xyz
-                for sign in signs: # +-
-                    # check if we already found a rotated displacement
-                    if found:
-                        break
-                        
-                    # skip if the pickle already exists
-                    filename = '%s.%d%s%s.pckl' % \
-                           (phonon.name, a, 'xyz'[i], ' +-'[sign])
-                    if os.path.isfile(filename):
-                        # Skip if already done. Also the case for initial 'disp/dx'
-                        continue
+
+        for i in range(3):      # xyz
+            for sign in signs: # +-
+                # check if we already found a rotated displacement
+                if found:
+                    break
                     
-                    # compute the 'planned' displacement (atom, xyz, sign)
-                    new_disp     = pos[a].copy()
-                    new_disp[i] += sign * phonon.delta # in Angs, Cartesian
-                    # compare Cartesian coordinates
-                    delta        = new_disp - dx
-                    
-                    # compare coordinates: we need the rotated disp ?
-                    if numpy.linalg.norm(delta) < symprec: 
-                        found = True  # and filename holds the missing step
+                # skip if the pickle already exists
+                filename = '%s.%d%s%s.pckl' % \
+                       (phonon.name, a, 'xyz'[i], ' +-'[sign])
+                if os.path.isfile(filename):
+                    # Skip if already done. Also the case for initial 'disp/dx'
+                    continue
+                
+                # compute the 'planned' displacement (atom, xyz, sign)
+                new_disp     = numpy.asarray([0.0,0,0])
+                new_disp[i] += sign * phonon.delta # in Angs, Cartesian
+                # compare Cartesian coordinates
+                delta        = new_disp - dx
+                
+                # compare coordinates: we need the rotated disp ?
+                if numpy.linalg.norm(delta) < symprec: 
+                    found = True  # and filename holds the missing step
         
         # try an other symmetry operation when this one did not work out
         if not found:
             index += 1
             continue   
-    
-        # print out new displacement
-        print 'Equivalent displacement dx=', numpy.dot(L.T, dx - numpy.rint(dx)), ' (Angs)'
-        print 'Rotation matrix #', index
-        print rot
+        
         index += 1
         # we will now apply the rotation to the force array
         nforce = _phonons_run_symforce_rot(force, ws, invL, rot, filename, symprec)
-                
-        # write the pickle for the current 'rot'
-        fd = opencew(filename)
-        if rank == 0:
-            pickle.dump(nforce, fd)
-            sys.stdout.write('Writing %s (from spacegroup "%s" symmetry)\n' % (filename, sg.symbol))
-            fd.close()
+        
+        if nforce is not None:
+            # print out new displacement
+            print 'Equivalent displacement dx=', numpy.dot(L.T, dx - numpy.rint(dx)), ' (Angs)'
+            print 'Rotation matrix #', index
+            print rot
+            # write the pickle for the current 'rot'
+            fd = opencew(filename)
+            if rank == 0:
+                pickle.dump(nforce, fd)
+                sys.stdout.write('Writing %s (from spacegroup "%s" symmetry)\n' % (filename, sg.symbol))
+                fd.close()
         # and loop to the next symmetry operator for an other displacement
 
     # end for symop
@@ -497,7 +503,7 @@ def _phonons_run_symforce_rot(force, ws, invL, rot, filename=None, symprec=1e-6)
     
     # exit if no WS cell defined
     if ws is None:
-        return force
+        return None
         
     # we will now apply the rotation to the force array
     nforce = force.copy()
@@ -509,6 +515,7 @@ def _phonons_run_symforce_rot(force, ws, invL, rot, filename=None, symprec=1e-6)
         # temp = S^-1 * a
 
         # inverse rotate, then to fractional (the other way does not work...)
+        # invL * rot * ws[a] == (invL * rot^-1 * L) * (invL * ws[a])
         temp = numpy.dot(invL.T, numpy.dot(numpy.linalg.inv(rot), ws[a]))
         
         # find nb so that b = S^-1 * a: only on the equivalent atoms 'rot'
@@ -523,13 +530,15 @@ def _phonons_run_symforce_rot(force, ws, invL, rot, filename=None, symprec=1e-6)
                 #           F[b] = rot^-1 * F[a] 
                 #    rot *  F[b] = F[a] 
                 found1 = True
-                # surprisingly, the rotation matrix rot is applied as is to
+                # the rotation matrix rot is applied as is to
                 # the force in PHON/set_forces.    
                 nforce[a] = numpy.dot(rot, force[b])  # apply rotation
                 break # for b
     
         if not found1:
-            print "Warning: could not apply symmetry to force [_phonons_run_symforce] for ", filename
+            # print "Warning: could not apply symmetry to force [_phonons_run_symforce] for ", filename
+            nforce = None
+            break # for a
         # end for a
     
     return nforce
