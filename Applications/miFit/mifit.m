@@ -467,16 +467,58 @@ function mifit_Edit_Delete(varargin)
   
 % Data menu ********************************************************************
 
-function mifit_Data_Plot(varargin)
-% Data/Plot
+function mifit_Data_Plot(varargin, style)
+% Data/Sub Plot (Overview)
   if nargin && isa(varargin{1}, 'iData'), d=varargin{1}; 
   else d = mifit_List_Data_pull; end
+  if nargin < 2 || ~ischar(style), style=''; end
   if all(isempty(d)), return; end
   set(mifit_fig,'Pointer','watch');
   f=figure('Visible','off');
-  subplot(d,'light transparent grid tight replace');
+  subplot(d,[ style ' light transparent grid tight replace' ]);
   if f~=gcf, close(f); else set(f,'Visible','on'); end
   set(mifit_fig,'Pointer','arrow');
+  
+function mifit_Data_PlotAs(varargin, style)
+% Data/Plot
+  if nargin && isa(varargin{1}, 'iData'), d=varargin{1}; 
+  else d = mifit_List_Data_pull; end
+  if nargin < 2 || ~ischar(style), style='light transparent grid tight replace'; end
+  if all(isempty(d)), return; end
+  set(mifit_fig,'Pointer','watch');
+  f=figure('Visible','off'); hold on
+  plot(d, style);
+  hold off
+  if f~=gcf, close(f); else set(f,'Visible','on'); end
+  set(mifit_fig,'Pointer','arrow');
+  
+function mifit_Data_PlotAs_Overlay(varargin)
+% Data/Plot: Overlay
+  mifit_Data_PlotAs(varargin, '');
+  
+function mifit_Data_PlotAs_Contour(varargin)
+% Data/Plot: Overlay
+  mifit_Data_PlotAs(varargin, 'contour3 light transparent grid tight replace');
+  
+function mifit_Data_PlotAs_Waterfall(varargin)
+% Data/Plot: Overlay
+  mifit_Data_PlotAs(varargin, 'waterfall light transparent grid tight replace');
+  
+function mifit_Data_PlotAs_Surface(varargin)
+% Data/Plot: Overlay
+  mifit_Data_PlotAs(varargin, 'surfc light transparent grid tight replace');
+  
+function mifit_Data_PlotAs_ScatterPlot(varargin)
+% Data/Plot: Overlay
+  mifit_Data_PlotAs(varargin, 'scatter3 light transparent grid tight replace');
+  
+function mifit_Data_PlotAs_Plot3(varargin)
+% Data/Plot: Overlay
+  mifit_Data_PlotAs(varargin, 'plot3 grid tight replace');
+  
+function mifit_Data_PlotAs_Slice(varargin)
+% Data/Plot: Overlay
+  mifit_Data_PlotAs(varargin, 'slice');
   
 function mifit_Data_Eval_Model(varargin)
 % Data/Evaluate Model
