@@ -41,7 +41,7 @@ if numel(this) > 1
   varg = cell(1, numel(this));
   if numel(varargin) == 1 && numel(varargin{1}) == numel(this) && iscell(varargin{1})
       vargin = varargin{1};
-      parfor index=1:numel(this)
+      for index=1:numel(this)
         try
           varg{index} = get(this(index), vargin{index});
         catch
@@ -49,7 +49,7 @@ if numel(this) > 1
         end
       end
   else
-      parfor index=1:numel(this)
+      for index=1:numel(this)
         try
           varg{index} = get(this(index), varargin{:});
         catch

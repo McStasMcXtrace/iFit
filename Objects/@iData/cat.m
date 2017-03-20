@@ -72,7 +72,7 @@ lab = label(a, 0);
 
 if iscell(lab) && ischar(lab{1}), lab=[ lab{1} '...' ]; end
 s=cell(1,numel(a));
-parfor index=1:numel(a)
+for index=1:numel(a)
   s{index}=get(a(index),'Signal');
   if myisvector(s{index}), ss=s{index}; s{index}=ss(:); end
 end
@@ -120,7 +120,7 @@ if sm == 1  % all Monitors are default, just copy the default
   sm = [];
 else
   % some Monitors are not default: we catenate all of them as values
-  parfor index=1:numel(a)
+  for index=1:numel(a)
     sm = getalias(a(index),'Monitor');
     if ~isnumeric(sm) || ~isscalar(sm)
       sm = get(a(index),'Monitor');
@@ -138,7 +138,7 @@ clear sm
 for d=1:ndims(a(1))
   if ~all(isvector(a) > 1), d=dim; end 
   s=cell(1,numel(a));
-  parfor index=1:numel(a)  % get all axes for a given dimension, in object array
+  for index=1:numel(a)  % get all axes for a given dimension, in object array
     sx=getaxis(a(index),d);
     if isempty(sx), sx=index;
     elseif myisvector(sx), sx=sx(:); end

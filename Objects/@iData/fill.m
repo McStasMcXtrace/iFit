@@ -27,7 +27,7 @@ if isempty(n), n=100; end
 % handle handle array as input
 if numel(a) > 1
   c = zeros(iData, numel(a), 1);
-  parfor index=1:numel(a)
+  for index=1:numel(a)
     c(index) = feval(mfilename, a(index), n);
   end
   return

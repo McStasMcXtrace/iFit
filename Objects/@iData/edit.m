@@ -27,7 +27,7 @@ function h = edit(a, option)
   end
 
   if numel(a) > 1
-    parfor index=1:numel(a)
+    for index=1:numel(a)
       h(index) = edit(a(index), option);
     end
     return

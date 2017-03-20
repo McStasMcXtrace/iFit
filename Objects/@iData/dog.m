@@ -41,7 +41,7 @@ if dim <= 0, dim=1; end
 a=a(:); s = [];
 if numel(a) > 1
   s = zeros(iData, numel(a), 1);
-  parfor index=1:numel(a)
+  for index=1:numel(a)
     s(index) = dog(dim, a(index));
   end
   return
@@ -56,7 +56,7 @@ iData_private_warning('enter', mfilename);
 
 % prepare the cell of indices to be sent to sub2ind
 sub=cell(1,ndims(a));
-parfor index=1:ndims(a)
+for index=1:ndims(a)
   if dim ~= index, sub{index}=1:size(a,index); end
 end
 

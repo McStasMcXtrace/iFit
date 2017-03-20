@@ -26,7 +26,7 @@ function b = meshgrid(a, varargin)
 % handle input iData arrays
 if numel(a) > 1
   b = zeros(iData, numel(a), 1);
-  parfor index=1:numel(a)
+  for index=1:numel(a)
     b(index) = meshgrid(a(index),varargin{:});
   end
   b = reshape(b, size(a));

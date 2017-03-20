@@ -2,7 +2,7 @@ function in = iData_check(in)
 % iData_check: make consistency checks on iData object
 
 if numel(in) > 1
-  parfor index = 1:numel(in)
+  for index = 1:numel(in)
     in(index) = iData_check(in(index));
   end
   return

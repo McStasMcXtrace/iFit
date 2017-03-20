@@ -22,7 +22,7 @@ end
 % handle input iData arrays
 if numel(a) > 1
   b =cell(size(a));
-  parfor index=1:numel(a)
+  for index=1:numel(a)
     b{index} = feval(mfilename,a(index), dim);
   end
   return

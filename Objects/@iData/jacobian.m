@@ -49,7 +49,7 @@ end
 % handle input iData arrays
 if numel(a) > 1
   b =zeros(iData, size(a));
-  parfor index=1:numel(a)
+  for index=1:numel(a)
     b(index) = feval(mfilename,a(index), varargin{:});
   end
   return
@@ -57,7 +57,7 @@ end
 
 % 'from' axes
 i_axes = cell(1,ndims(a)); i_labels=i_axes;
-parfor index=1:ndims(a)
+for index=1:ndims(a)
   [i_axes{index}, i_labels{index}] = getaxis(a, index);  % loads object axes, or 1:end if not defined 
 end
 

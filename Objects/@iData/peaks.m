@@ -24,7 +24,7 @@ function [sigma, position, amplitude, baseline] = peaks(a, dim, m)
   if nargin < 3, m=0; end
   if numel(a) > 1
     sigma = cell(size(a)); position = sigma; amplitude = sigma; baseline = sigma;
-    parfor index=1:numel(a)
+    for index=1:numel(a)
       [si, fi, ai, bi] = peaks(a(index), dim, m);
       sigma{index}     = si;
       position{index}  = fi;

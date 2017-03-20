@@ -35,7 +35,7 @@ end
 if numel(a) > 1
   s = zeros(iData, size(a));
   c = cell(size(a));
-  parfor index=1:numel(a)
+  for index=1:numel(a)
     [ s(index), c{index} ] = feval(mfilename, a(index), k);
   end
   return

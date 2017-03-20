@@ -43,7 +43,7 @@ else
   % handle input iData arrays
   if numel(a) > 1
     s = zeros(iData, numel(a),1);
-    parfor index=1:numel(a)
+    for index=1:numel(a)
       s(index) = feval(mfilename, a(index), dim, center);
     end
     s = reshape(s, size(a));
@@ -55,7 +55,7 @@ else
   if ischar(center) || isempty(center)
     % use 1st moment for each integration axis (automatic)
     center=zeros(1,ndims(a));
-    parfor index=1:ndims(a)
+    for index=1:ndims(a)
       [dummy, center(index)] = std(a, index);
     end
   end

@@ -27,7 +27,7 @@ end
 
 if numel(this) > 1
   link = cell(size(this)); label=link; names=link;
-  parfor index=1:numel(this)
+  for index=1:numel(this)
     [l,b,n] = getalias(this(index), alias);
     link{index} =l;
     label{index}=b;

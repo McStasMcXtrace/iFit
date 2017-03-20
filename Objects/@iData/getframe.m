@@ -20,7 +20,7 @@ if nargin < 2, dim=0; end
 if nargin < 3, options=''; end
 if numel(a) > 1
   frame = cell(size(a));
-  parfor index=1:numel(a)
+  for index=1:numel(a)
     frame{index} = getframe(a(index), dim);
   end
   return

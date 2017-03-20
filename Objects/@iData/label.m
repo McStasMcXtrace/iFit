@@ -19,11 +19,11 @@ function labl = label(this, varargin)
 if numel(this) > 1
   if nargin < 3
     labl=cell(size(this));
-    parfor index=1:numel(this)
+    for index=1:numel(this)
       labl{index} = label(this(index), varargin{:});
     end
   else
-    parfor index=1:numel(this)
+    for index=1:numel(this)
       this(index) = label(this(index), varargin{:});
     end
     labl=this;

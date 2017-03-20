@@ -50,7 +50,7 @@ n = nargin;
 
 % handle array of objects
 if numel(this) > 1
-  parfor index=1:numel(this)
+  for index=1:numel(this)
     if n == 1
       this(index) = iData_checkaxes(this(index));
     elseif n == 3

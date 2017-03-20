@@ -27,7 +27,7 @@ if isempty(dim), dim=0; end
 % handle input iData arrays
 if numel(a) > 1
   b = zeros(iData, numel(a), 1);
-  parfor index=1:numel(a)
+  for index=1:numel(a)
     b(index) = feval(mfilename,a(index), op, dim);
   end
   b = reshape(b, size(a));
@@ -38,7 +38,7 @@ a = interp(a);
 
 % Find smallest power of 2 that is > Ly
 Ly=size(a);
-parfor i=1:length(Ly)         
+for i=1:length(Ly)         
   NFFT(i)=pow2(nextpow2(Ly(i)));
 end
 % compute the FFT

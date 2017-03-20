@@ -66,7 +66,7 @@ if isempty(plotit),plotit=0;         end
 % handle input iData arrays
 if numel(a) > 1
   s = zeros(iData, numel(a),1);
-  parfor index=1:numel(a)
+  for index=1:numel(a)
     s(index) = feval(mfilename, a(index), dim, scales, wname, plotit);
   end
   s = reshape(s, size(a));

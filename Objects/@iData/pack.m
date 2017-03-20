@@ -16,7 +16,7 @@ function b = pack(a)
 
 if numel(a) > 1
   b = zeros(iData, numel(a), 1);
-  parfor index=1:numel(a)
+  for index=1:numel(a)
     b(index) = pack(a(index));
   end
   b = reshape(b, size(a));
@@ -31,7 +31,7 @@ end
 axis_links   = getaxis(a);
 alias_values = cell(size(alias_names));
 alias_ranks  = zeros(size(alias_values));
-parfor index=1:length(alias_names)
+for index=1:length(alias_names)
   % get value if this is not set to default (Error, Monitor)
   if ~isempty(alias_links{index})
     alias_values{index} = get(a, alias_names{index});

@@ -12,7 +12,7 @@ max_ndims=max(ndims(a));
 c_step=cell(max_ndims, 1); c_min=c_step; c_max=c_step; c_len=c_step;
 
 % initiate new axes
-parfor index=1:max_ndims
+for index=1:max_ndims
   c_step{index} =  Inf;
   if strcmp(type,'union') 
     c_min{index}  =  Inf;
@@ -29,7 +29,7 @@ for index=1:numel(a)
   if ndims(a(index)) ~= ndims(a(1))
     iData_private_warning(mfilename, [ 'Object ' type ' requires same dimensionality.\n\tobject ' inputname(1) ' ' a(1).Tag ' is ' num2str(ndims(a(1))) ' but object ' a(index).Tag ' is ' num2str(ndims(a(index))) '. Extending object.' ]);
   end
-  parfor j_ax = 1:max_ndims  % for each dimension
+  for j_ax = 1:max_ndims  % for each dimension
     if j_ax <= ndims(a(index))
       x = getaxis(a(index), j_ax); x=unique(x(:));    % extract axis, and remove duplicates. diff > 0
       y = min(min(diff(x)), c_step{j_ax}); % smallest step

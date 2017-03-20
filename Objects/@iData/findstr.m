@@ -30,7 +30,7 @@ end
 
 if numel(s) > 1
   match = cell(1, numel(s)); field=match;
-  parfor index=1:numel(s)
+  for index=1:numel(s)
     [m,f] = findstr(s(index), str, option);
     match{index}=m;
     field{index}=f;

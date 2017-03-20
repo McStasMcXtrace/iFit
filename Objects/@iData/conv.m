@@ -44,7 +44,7 @@ if nargin < 3, shape = 'same'; end
 % handle array of objects
 if numel(a) > 1
   c = zeros(iData, numel(a),1);
-  parfor index=1:numel(a)
+  for index=1:numel(a)
     c(index) = feval(mfilename, a(index), b, shape);
   end
   c = reshape(c, size(a));

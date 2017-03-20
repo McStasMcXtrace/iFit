@@ -27,7 +27,7 @@ end
 % handle handle array as input
 if length(h) > 1
   c = zeros(size(h));
-  parfor index=1:length(h)
+  for index=1:length(h)
     c(index) = caxis(a, h(index));
   end
   return
@@ -38,7 +38,7 @@ c = findall(h, 'Type', 'surface');
 
 if isempty(c), return; end
 
-parfor index=1:numel(c)
+for index=1:numel(c)
   % for each CData type object, interpolate the iData object onto the handle object axes
   x = get( c(index), 'XData'); % columns
   y = get( c(index), 'YData'); % rows
