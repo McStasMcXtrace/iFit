@@ -20,7 +20,7 @@ end
 % handle input iData arrays
 if numel(a) > 1
   c = cell(numel(a),1);
-  parfor index=1:numel(a)
+  for index=1:numel(a)
     c{index} = feval(mfilename, a(index), b);
   end
   c = reshape(s, size(a));

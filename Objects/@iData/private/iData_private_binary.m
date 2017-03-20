@@ -30,7 +30,7 @@ if (isa(a, 'iData') & numel(a) > 1)
   if isa(b, 'iData') & numel(b) == numel(a)
     % add element to element
     c = zeros(iData, numel(a), 1);
-    parfor index=1:numel(a)
+    for index=1:numel(a)
       c(index) = iData_private_binary(a(index), b(index), op);
     end
   elseif isempty(b)
@@ -48,7 +48,7 @@ if (isa(a, 'iData') & numel(a) > 1)
   else
     % add single element to vector
     c = zeros(iData, numel(a), 1);
-    parfor index=1:numel(a(:))
+    for index=1:numel(a(:))
       c(index) = iData_private_binary(a(index), b, op);
     end
   end
@@ -58,7 +58,7 @@ if (isa(a, 'iData') & numel(a) > 1)
   return
 elseif isa(b, 'iData') & numel(b) > 1
   c = zeros(iData, numel(b), 1);
-  parfor index=1:numel(b)
+  for index=1:numel(b)
     c(index) = iData_private_binary(a, b(index), op);
   end
   return

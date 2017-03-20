@@ -38,7 +38,7 @@ c=[];
 % handle handle array as input
 if numel(a) > 1
   c = zeros(iData, numel(a), 1);
-  parfor index=1:numel(a)
+  for index=1:numel(a)
     c(index) = hist(a(index), varargin{:});
   end
   return
@@ -284,7 +284,7 @@ edges = edges(cellfun('isreal',edges) & ~cellfun('isempty',edges));
 loc = zeros(size(X));
 sz  = zeros(1,nd);
 % Loop in the dimension
-parfor d=1:nd
+for d=1:nd
     ed = edges{d};
     Xd = X(:,d);
     if isempty(ed)

@@ -14,7 +14,7 @@ function a = copyobj(a)
 % handle input iData arrays
 if numel(a) > 1
   b = zeros(iData,numel(a),1);
-  parfor index=1:numel(a)
+  for index=1:numel(a)
     b(index) = copyobj(a(index));
   end
   a = reshape(b, size(a));

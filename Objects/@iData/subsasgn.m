@@ -93,7 +93,7 @@ else
   case '()'
     if numel(b) > 1   % array() -> deal on all elements
     % SYNTAX: array(index) = val: set Data using indexes         
-      parfor j = 1:length(s.subs{:})
+      for j = 1:length(s.subs{:})
         b(j) = subsasgn(b(j), s,val);
       end
     elseif ~isa(val, 'iData') % single object() = Signal (val must be num)
@@ -200,7 +200,7 @@ else
   case '{}'
     if numel(b) > 1   % object array -> deal on all elements
     % SYNTAX: array{ref}=val
-      parfor j = 1:numel(b)
+      for j = 1:numel(b)
         b(j) = subsasgn(b(j),s,val);
       end
     else
@@ -225,7 +225,7 @@ else
   case '.'
   % SYNTAX: object.field = val
     if numel(b) > 1   % object array -> deal on all elements
-      parfor j = 1:length(b)
+      for j = 1:length(b)
         b(j) = subsasgn(b(j),s,val);
       end
     else

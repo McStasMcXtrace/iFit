@@ -23,7 +23,7 @@ if nargin < 2, dim=1; end
 % handle input iData arrays
 if numel(a) > 1
   s = zeros(iData, numel(a), 1);
-  parfor index=1:numel(a)
+  for index=1:numel(a)
     s(index) = unique(a(index), dim);
   end
   s = reshape(s, size(a));
