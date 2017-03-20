@@ -68,7 +68,7 @@ function signal=sqw_phonons(configuration, varargin)
 % 'metal','insulator','semiconductor': indicates the type of occupation for 
 %    electronic states, which sets smearing.
 %
-% 'dos': will compute the vibrational density of states.
+% 'dos': will also compute the vibrational density of states.
 % 'html' or 'report':   generate a full report of the simulation and export data.
 % 'plot' or 'autoplot': plot the results after building the model.
 %
@@ -225,7 +225,7 @@ function signal=sqw_phonons(configuration, varargin)
 % where negative values set b_coh < 0 (e.g. Hydrogen).
 % Setting b_coh=0 unactivates the intensity estimate.
 % This assignement should be done after creating the model, before performing
-% further HKL evaluations. Default is to use b_coh=1 [fm].
+% further HKL evaluations. Default is to use guess b_coh from the formula.
 %
 % Once the model has been created:
 % input:  p: sqw_phonons model parameters (double)
