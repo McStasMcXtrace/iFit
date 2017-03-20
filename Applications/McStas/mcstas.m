@@ -136,6 +136,8 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
   
   if nargin > 2 && ischar(options)
     options= str2struct(options);
+  elseif nargin < 3
+    options = struct();
   end
   
   % define simulation or optimization mode (if not set before)
