@@ -39,7 +39,7 @@ function [pars,fval,exitflag,output] = fmin_private_wrapper(optimizer, fun, pars
 %  PARS is a vector with initial guess parameters. You must input an
 %  initial guess. PARS can also be given as a single-level structure.
 %
-%  OPTIONS is a structure with settings for the simulated annealing, 
+%  OPTIONS is a structure with settings for the optimizer, 
 %  compliant with optimset. Default options may be obtained with
 %     o=fmin_private_wrapper(optimizer,'defaults')
 %  An empty OPTIONS sets the default configuration.
@@ -116,7 +116,7 @@ if strcmp(fun,'defaults') || strcmp(fun,'identify')
   return
 elseif nargin < 2
   error([ 'syntax is: ' optimizer '(optimizer, objective, parameters, ...)' ] );
-elseif nargin == 2 && isstruct(fun)
+elseif nargin >= 2 && isstruct(fun)
   if     isfield(fun, 'x0'),          pars=fun.x0;
   elseif isfield(fun, 'guess'),       pars=fun.guess;
   elseif isfield(fun, 'Guess'),       pars=fun.Guess; end
@@ -126,6 +126,27 @@ elseif nargin == 2 && isstruct(fun)
   elseif isfield(fun, 'model'),       tmp=fun.model; fun=[]; fun=tmp;
   elseif isfield(fun, 'f'),           tmp=fun.f; fun=[]; fun=tmp;
   elseif isfield(fun, 'function'),    tmp=fun.function; fun=[]; fun=tmp; end
+elseif nargin >= 2 && isa(fun, 'iFunc')
+  % we minimize the iFunc: (p)feval(iFunc, p). Must guess some axes to use.
+  
+  if nargin >= 3  % use parameters as given. return axes
+    [signal, fun, ax, name] = feval(fun, pars);
+  else
+    [signal, fun, ax, name] = feval(fun);
+  end
+  % save the objective function (for evaluation)
+  objective = fun;
+  % now get starting parameters
+  pars = fun.ParameterValues;
+  % create the evaluation of the function
+  fun = @(p)feval(objective', p, ax{:});
+  % assume 'pars' is a structure (to keep iFunc names)
+  pars_isstruct = objective.Parameters(:);
+  pars = cell2struct(num2cell(pars(:)), pars_isstruct(:), 1);
+  % carry 'constraints' from the iFunc if not in input
+  if nargin < 5
+    constraints = objective.constraint;
+  end
 elseif nargin < 3
   error([ 'syntax is: ' inline_localChar(optimizer) '(objective, parameters, ...)' ] );
 end
@@ -284,9 +305,13 @@ case 'fmin' % automatic guess
   [optimizer, algorithm] = inline_auto_optimizer(fun, pars, varargin{:});
   options.optimizer = optimizer;
   options.algorithm = algorithm;
-  if ~isa(fun, 'iFunc') % iFunc.feval can not be called this way :-(
-    [pars,fval,exitflag,output] = feval(optimizer, fun, pars, options, constraints, varargin{:});
+  if ~isempty(pars_isstruct)
+    try
+      pars_isstruct = objective.Parameters(:);
+      pars = cell2struct(num2cell(pars(:)), pars_isstruct(:), 1);
+    end
   end
+  [pars,fval,exitflag,output] = feval(optimizer, fun, pars, options, constraints, varargin{:});
   return
 case {'cmaes','fmincmaes'}    
 % Evolution Strategy with Covariance Matrix Adaption ---------------------------

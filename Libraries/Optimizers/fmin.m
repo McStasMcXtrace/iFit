@@ -73,7 +73,7 @@ if nargin == 0 || (nargin == 1 && strcmp(varargin{1},'defaults'))
   options.MaxIter=1000;
   options.MaxFunEvals=10000;
   options.PopulationSize=50;
-  options.algorithm  = [ 'Automatic best optimizer [' mfilename ']' ];
+  options.algorithm  = [ 'Automatic optimizer [' mfilename ']' ];
   options.optimizer = mfilename;
   pars = options;
   return
