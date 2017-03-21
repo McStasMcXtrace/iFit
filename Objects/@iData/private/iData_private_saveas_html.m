@@ -121,7 +121,13 @@ function filename = iData_private_saveas_html(a, filename, format)
   % create output from the figure: png pdf fig
   basename     = fullfile(target, 'img', [ 'iFit_DataSet_' a.Tag ]);
   basename_img = fullfile('img', [ 'iFit_DataSet_' a.Tag ]);
-  saveas(f, basename, 'png');
+  if ndims(a) == 2
+    saveas(a, basename, 'png data');  % just the image for 2D data sets, else getframe
+  elseif ndims(a) == 3
+    saveas(a, basename, 'png', 'tight view3');
+  else
+    saveas(a, basename, 'png', 'tight');
+  end
   
   % only export when not in 'data' mode (flat HTML with minimal content)
   if isempty(strfind(format, 'data')) && isempty(strfind(format, 'flat'))
@@ -132,10 +138,10 @@ function filename = iData_private_saveas_html(a, filename, format)
   
   % export object into a number of usable formats
   % 1D: mat dat/data hdf5/mantid png json      xml      yaml      nc fig pdf svg
-  % 2D: mat dat/data hdf5/mantid png json      xml      yaml      nc fig pdf svg 
+  % 2D: mat dat/data hdf5/mantid png json      xml      yaml      nc fig pdf svg  fits
   % 3D: mat dat/data hdf5/mantid png json/data xml/data yaml/data nc fig pdf vtk mrc nc   
   % nD: mat dat/data hdf5/mantid png json/data xml/data yaml/data nc
-  export       = {'mat','dat data','hdf mantid', 'json','xml','yaml','nc' };
+  export       = {'mat','dat data','hdf mantid', 'json','xml','yaml','nc','tiff' };
   export_label = { ...
   'Matlab binary file. Open with Matlab or <a href="http://ifit.mccode.org">iFit</a>.', ...
   'Flat text file which contains axes and the data set. You will have to reshape the matrix after reading the contents. View with any text editor.', ...
@@ -143,7 +149,8 @@ function filename = iData_private_saveas_html(a, filename, format)
   '<a href="http://en.wikipedia.org/wiki/JSON">JavaScript Object Notation</a>, to be opened with e.g. JSONView Chrome/Firefox plugin and text editors.', ...
   '<a href="http://www.w3.org/XML/">Extensible Markup Language</a> file, to be opened with e.g. Chrome/Firefox and text editors.', ...
   '<a href="http://en.wikipedia.org/wiki/YAML">YAML</a> interchange format, to be viewed with e.g. text editors.', ...
-  '<a href="http://www.unidata.ucar.edu/software/netcdf/">NetCDF</a> binary file, to be viewed with <a href="http://meteora.ucsd.edu/~pierce/ncview_home_page.html">ncview</a> and <a href="http://www.hdfgroup.org/hdf-java-html/hdfview">hdfview</a>.'};
+  '<a href="http://www.unidata.ucar.edu/software/netcdf/">NetCDF</a> binary file, to be viewed with <a href="http://meteora.ucsd.edu/~pierce/ncview_home_page.html">ncview</a> and <a href="http://www.hdfgroup.org/hdf-java-html/hdfview">hdfview</a>.', ...
+  '<a href="https://en.wikipedia.org/wiki/TIFF">TIFF</a> image file, to be viewed with e.g. <a href="http://rsb.info.nih.gov/ij/">ImageJ</a>, <a href="http://www.gimp.org/">GIMP.</a>.'};
   
   % add 'data' keyword when the object memory size is larger than 10 Mb
   w = whos('a');
@@ -164,6 +171,11 @@ function filename = iData_private_saveas_html(a, filename, format)
     export_label = [ export_label ...
       'Extensible Web page with embeded viewer (X3DOM), to be viewed with Chrome/Firefox.', ...
       'X3D Geometry Scene for <a href="http://castle-engine.sourceforge.net/view3dscene.php">view3dscene</a>, <a href="http://www.instantreality.org/">InstantPlayer</a>, <a href="http://freewrl.sourceforge.net/">FreeWRL</a>' ];
+  end
+  if ndims(a) == 2
+    export = [ export 'fits' ];
+    export_label = [ export_label ...
+      'Flexible Image Transport System (<a href="https://fits.gsfc.nasa.gov/fits_home.html">FITS</a>) image, which can be viewed with e.g. <a href="http://rsb.info.nih.gov/ij/">ImageJ</a>, <a href="http://www.gimp.org/">GIMP.</a>.' ];
   end
   if isempty(strfind(format, 'data')) && isempty(strfind(format, 'flat'))
     for index=1:numel(export)
@@ -190,6 +202,9 @@ function filename = iData_private_saveas_html(a, filename, format)
     fprintf(fid, '<div style="text-align: center;"><a href="%s"><img src="%s" align="middle"></a><br>\n<i>Data: %s</i><br></div>\n', ...
       [ basename_img '.png' ], ...
       [ basename_img '.png' ], titl);
+    if ndims(a) == 2
+      fprintf(fid, '(try the <a href="%s">TIFF file</a> in case the axes are not shown)<br>\n', [ basename_img '.tiff' ]);
+    end
     if ~isempty(m)
       fprintf(fid, '<div style="text-align: center;"><i>Model: %s</i><br></div>\n', m.Name);
     end

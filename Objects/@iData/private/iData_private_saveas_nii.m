@@ -5,7 +5,7 @@ function filename=iData_private_saveas_nii(a, filename)
 % Jimmy Shen 23 Oct 2005 (Updated 22 Jan 2014)
 % make_nii, save_nii
 
-
+  a = iData_private_cleannaninf(a);
   nii = make_nii(getaxis(a, 0),[], [], [], char(a));
   % nii.hdr.hist.descrip = char(a);
   save_nii(nii, filename);

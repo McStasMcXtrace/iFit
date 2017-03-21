@@ -327,11 +327,11 @@ try
   case 'hdr'  % Analyze volume
     filename = iData_private_saveas_analyze(a, filename);
   case 'mrc'  % MRC map file
-    WriteMRC(getaxis(a,0),1,filename);  % in private
+    WriteMRC(getaxis(iData_private_cleannaninf(a),0),1,filename);  % in private
   case {'fits','fit','fts'} % FITS image
     if ndims(a) == 2
-      a = double(a);
-      fitswrite(a, filename);
+      b = real(double(iData_private_cleannaninf(a,1))); % Signal/Monitor
+      fitswrite(b', filename);
     else
       disp([ mfilename ': Export into ' format ' is only possible for 2D objects, not for ' num2str(ndims(a)) 'D. Use resize to change dimensionality. Ignoring.' ]) 
     end
@@ -340,9 +340,10 @@ try
   case 'csv'  % Spreadsheet comma separated values file format
     csvwrite(filename, double(a));
   case {'gif','bmp','pbm','pcx','pgm','pnm','ppm','ras','xwd','hdf4','tiff','png','art'}  % bitmap images
-    if ndims(a) == 2
-      b=getaxis(a,0); % Signal/Monitor
-      b=round((b-min(b(:)))/(max(b(:))-min(b(:)))*256);
+    if ndims(a) == 2 && ~isempty(root) % 'data' option
+      b = real(double(iData_private_cleannaninf(a,1)));
+      b = round((b-min(b(:)))/(max(b(:))-min(b(:)))*256);
+      b = flipud(b);
     else
       f = getframe(a,[],options);
       b = f.cdata;
