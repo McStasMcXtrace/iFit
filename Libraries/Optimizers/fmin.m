@@ -3,6 +3,9 @@ function [pars,fval,exitflag,output] = fmin(varargin)
 %
 % This minimization method is determined automatically from the objective function
 % behaviour and number of free parameters.
+%
+% WARNING: as the selected optimizer may change from one call to an other, the
+% solution found may vary as well. To avoid that, rather use a specific optimizer.
 % 
 % Calling:
 %   fmin(fun, pars) asks to minimize the 'fun' objective function with starting
