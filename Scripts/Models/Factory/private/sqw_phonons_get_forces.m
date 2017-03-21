@@ -222,6 +222,11 @@ function [options, sav] = sqw_phonons_get_forces(options, decl, calc)
         [st, result] = system([ precmd 'python ' fullfile(target,'sqw_phonons_forces_iterate.py') ]);
       end
       disp(result)
+      % get how many steps have been computed: name is 'phonon.N[xyz][+-].pckl'
+      move_update = dir(fullfile(target,'phonon.*.pckl'));
+      if numel(move_update) > move
+        move = numel(move_update);
+      end
       if move <= nb_of_steps
         % display ETA. There are nb_of_steps steps.
         % up to now we have done 'move' and it took etime(clock, t)
@@ -235,7 +240,7 @@ function [options, sav] = sqw_phonons_get_forces(options, decl, calc)
         seconds   = floor(remaining-hours*3600-minutes*60);
         enddate   = addtodate(now, ceil(remaining), 'second');
         
-        options.status = [ 'ETA ' sprintf('%i:%02i:%02i', hours, minutes, seconds) ', ending on ' datestr(enddate) '. move ' num2str(move) '/' num2str(nb_of_steps) ];
+        options.status = [ 'ETA ' sprintf('%i:%02i:%02i', hours, minutes, seconds) ', ending on ' datestr(enddate) '. move ' num2str(move) '/' num2str(nb_of_steps) ' [' num2str(round(move*100.0/nb_of_steps)) '%]'];
         disp([ mfilename ': ' options.status ]);
         sqw_phonons_htmlreport('', 'status', options);
       end

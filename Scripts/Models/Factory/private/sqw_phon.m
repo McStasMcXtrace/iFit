@@ -685,7 +685,7 @@ if isempty(dir(fullfile(p,'FORCES')))
       seconds   = floor(remaining-hours*3600-minutes*60);
       enddate   = addtodate(now, ceil(remaining), 'second');
       
-      options.status = [ 'ETA ' sprintf('%i:%02i:%02i', hours, minutes, seconds) ', ending on ' datestr(enddate) ];
+      options.status = [ 'ETA ' sprintf('%i:%02i:%02i', hours, minutes, seconds) ', ending on ' datestr(enddate) ' [' num2str(round(move*100.0/size(displacements,1))) '%]' ];
       disp([ mfilename ': ' options.status ]);
       sqw_phonons_htmlreport('', 'status', options);
     end

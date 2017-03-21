@@ -317,6 +317,7 @@ if isa(configuration, 'iFunc') && configuration.Dimension == 4
     options.duration = 0;
   end
   Phonon_Model = signal;
+  if ~isdir(options.target), mkdir(options.target); end
   builtin('save', fullfile(options.target, 'Phonon_Model.mat'), 'Phonon_Model');
 
   sqw_phonons_htmlreport('', 'create_atoms', options);

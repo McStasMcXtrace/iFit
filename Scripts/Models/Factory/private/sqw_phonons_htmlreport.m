@@ -174,16 +174,20 @@ function sqw_phonons_htmlreport_table(fid, options, name)
   '.vtk Visualization Toolkit (VTK) file which can be viewed with <a href="http://www.paraview.org/">ParaView</a>, <a href="http://code.enthought.com/projects/mayavi/">Mayavi2</a>, <a href="https://wci.llnl.gov/simulation/computer-codes/visit/executables">VisIt</a>, <a href="https://www.slicer.org/">Slicer4</a>' ...
   '.mrc MRC Electron density map, to be visualized with <a href="http://www.pymol.org/">PyMol</a>, <a href="http://www.ks.uiuc.edu/Research/vmd/">VMD</a>, <a href="http://www.cgl.ucsf.edu/chimera/">Chimera</a>, <a href="http://www.yasara.org/">Yasara</a>, <a href="http://mem.ibs.fr/VEDA/">VEDA</a>' ...
   '.xhtml Extensible Web page. You can rotate the object (left mouse button), zoom (right mouse button), and pan (middle mouse button).', ...
+  '.fits Flexible Image Transport System (<a href="https://fits.gsfc.nasa.gov/fits_home.html">FITS</a>) image, which can be viewed with e.g. <a href="http://rsb.info.nih.gov/ij/">ImageJ</a>, <a href="http://www.gimp.org/">GIMP.</a>.', ...
+  '.tiff <a href="https://en.wikipedia.org/wiki/TIFF">TIFF</a> image file, to be viewed with e.g. <a href="http://rsb.info.nih.gov/ij/">ImageJ</a>, <a href="http://www.gimp.org/">GIMP.</a>.' ...
     }
     
     [index1, index2] = strtok([ name index{1} ]);
     if ~isempty(dir(fullfile(options.target,index1)))
       % the file exists
       if strcmp(index1, [ name '.png' ])
-        fprintf(fid, '<div style="text-align:center"><a href="%s"><img src="%s" align="middle" title="%s"></a></div><br>\n', index1, index1, index1);
+        fprintf(fid, '<div style="text-align:center"><a href="%s"><img src="%s" align="middle" title="%s"></a><br>(try the <a href="%s">TIFF file</a> in case the axes are not shown)</div><br>\n', index1, index1, index1, [ name '.tiff' ]);
       elseif strcmp(index1, [ name '.html' ])
+        % embed a frame
         fprintf(fid, '<div style="text-align:center"><iframe src="%s" align="middle" width="480" height="480"></iframe><br>%s<br>(<a href="%s" target=_blank>open in external window</a>)<br></div><br>\n', index1, index2, index1);
       elseif strcmp(index1, [ name '.xhtml' ])
+        % embed an x3dom frame
         fprintf(fid, [ '<div style="text-align:center"><iframe src="%s" align="middle" width="700" height="850"></iframe><br>\n' ...
         '%s<br>(<a href="%s" target=_blank>open in external window</a>)<br>\n' ...
         'The <font color="blue">blue</font> axis is the Energy (meV), the <font color="red">red</font> axis is QK (rlu), the <font color="green">green</font> axis is QL (rlu).<br>\n' ...
@@ -390,7 +394,9 @@ function Phonon_kpath = sqw_phonons_htmlreport_kpath(fid, options, object, maxFr
     fprintf(fid, '<h3><a name="kpath"></a>The dispersion along principal directions</h3>\n');
     fprintf(fid, 'The dispersion curves along the principal axes is shown in log10 scale.<br>\n');
     builtin('save', fullfile(options.target, 'Phonon_kpath.mat'), 'Phonon_kpath');
-    save(Phonon_kpath, fullfile(options.target, 'Phonon_kpath.png'), 'png', 'view2 tight');
+    save(Phonon_kpath, fullfile(options.target, 'Phonon_kpath.png'), 'png data');
+    save(Phonon_kpath, fullfile(options.target, 'Phonon_kpath.fits'), 'fits');
+    save(Phonon_kpath, fullfile(options.target, 'Phonon_kpath.tiff'), 'tiff');
     save(Phonon_kpath, fullfile(options.target, 'Phonon_kpath.dat'), 'dat data');
     save(Phonon_kpath, fullfile(options.target, 'Phonon_kpath.svg'), 'svg', 'view2 tight');
     save(Phonon_kpath, fullfile(options.target, 'Phonon_kpath.pdf'), 'pdf', 'view2 tight');
@@ -471,7 +477,9 @@ function Phonon_powder = sqw_phonons_htmlreport_eval_powder(fid, options, object
   fprintf(fid, 'The powder average S(q,w) is shown below:<br>\n');
     
   builtin('save', fullfile(options.target, 'Phonon_powder.mat'), 'Phonon_powder');
-  saveas(log_Phonon_powder, fullfile(options.target, 'Phonon_powder.png'),'png','tight view2');
+  saveas(log_Phonon_powder, fullfile(options.target, 'Phonon_powder.png'),'png data');
+  saveas(log_Phonon_powder, fullfile(options.target, 'Phonon_powder.fits'),'fits');
+  saveas(log_Phonon_powder, fullfile(options.target, 'Phonon_powder.tiff'),'tiff');
   saveas(log_Phonon_powder, fullfile(options.target, 'Phonon_powder.fig'), 'fig', 'tight');
   saveas(Phonon_powder, fullfile(options.target, 'Phonon_powder.dat'), 'dat data');
   saveas(log_Phonon_powder, fullfile(options.target, 'Phonon_powder.pdf'), 'pdf', 'tight view2');
