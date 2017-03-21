@@ -2,6 +2,7 @@ function filename = iData_private_saveas_stl(a, filename, format)
   if ndims(a) == 1    iData_private_warning(mfilename,[ 'Object ' inputname(1) ' ' a.Tag ' 1D does not seem to be exportatble as a ' format ' file. Ignoring.' ]);
     return
   else
+    a = iData_private_cleannaninf(a);
     if ndims(a) == 2
       [x, xlab] = getaxis(a,2); x=double(x);
       [y, ylab] = getaxis(a,1); y=double(y);

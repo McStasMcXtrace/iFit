@@ -19,6 +19,7 @@ name=fullfile(Path,File);
 dim=size(a);
 siz=zeros(size(dim));
 
+a = iData_private_cleannaninf(a);
 x=getaxis(a,1);
 y=getaxis(a,2);
 z=getaxis(a,3);

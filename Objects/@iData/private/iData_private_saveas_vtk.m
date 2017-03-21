@@ -10,6 +10,7 @@ if ndims(a) ~= 2 & ndims(a) ~= 3
   return
 end
 
+a = iData_private_cleannaninf(a);
 str=char(a);
 
 if ndims(a) <= 2 && isvector(a) % line, 1D or 2D

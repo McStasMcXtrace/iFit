@@ -2,6 +2,7 @@ function filename = iData_private_saveas_x3d(a, filename, format, options)
   % export as a X3D/XHTML file
   % option can contain: axes (display axes), auto to rescale axes in range [0,1]
   % for aspect ratio 1.
+  
   titl = char(a);
   titl(titl=='<')='[';
   titl(titl=='>')=']';
@@ -9,6 +10,7 @@ function filename = iData_private_saveas_x3d(a, filename, format, options)
   desc(desc=='<')='[';
   desc(desc=='>')=']';
   a = reducevolume(a);
+  a = iData_private_cleannaninf(a);
   x1=min(a); x2=max(a);
   if ndims(a) <= 2
     f=figure('visible','off');
