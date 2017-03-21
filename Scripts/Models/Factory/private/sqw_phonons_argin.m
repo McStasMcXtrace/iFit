@@ -23,7 +23,7 @@ options.gui        = nan;
 options.htmlreport = 0;
 options.dos        = 0;
 options.optimizer  = '';
-options.accuracy   = 'accurate';  % can be 'fast' (use symmetry, forward difference) or 'accurate' (much slower)
+options.accuracy   = 'fast';  % can be 'fast' (use symmetry, forward difference) or 'accurate' (much slower)
 options.disp       = 0.01;    % displacement of atoms in Angs
 
 % read input arguments
