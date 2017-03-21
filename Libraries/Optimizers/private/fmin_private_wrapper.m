@@ -139,9 +139,13 @@ elseif nargin >= 2 && isa(fun, 'iFunc')
   % now get starting parameters
   pars = fun.ParameterValues;
   % create the evaluation of the function
-  fun = @(p)feval(objective', p, ax{:});
+  if isempty(ax)
+    fun = @(p)feval(objective', p);
+  else
+    fun = @(p)feval(objective', p, ax{:});
+  end
   % assume 'pars' is a structure (to keep iFunc names)
-  pars_isstruct = objective.Parameters(:);
+  pars_isstruct = objective.Parameters;
   pars = cell2struct(num2cell(pars(:)), pars_isstruct(:), 1);
   % carry 'constraints' from the iFunc if not in input
   if nargin < 5
