@@ -54,6 +54,8 @@ function filename = iData_private_saveas_html(a, filename, format)
       if numel(names) == numel(mp)
         mp = cell2struct(num2cell(mp(:)),strtok(names(:)));
       end
+    elseif isfield(a, 'Parameters')
+      mp = get(a, 'Parameters');
     elseif isa(m, 'iFunc') && ~isempty(m)
       % get the parameter values as a struct
       mp = cell2struct(num2cell(m.ParameterValues(:)),strtok(m.Parameters(:)));
@@ -71,7 +73,17 @@ function filename = iData_private_saveas_html(a, filename, format)
   if ~isempty(a.Label) || ~isempty(a.DisplayName), 
     data.Label  = strtrim([ a.Label ' ' a.DisplayName ]); end
   data.Source = a.Source;
-  data.Date   = [ datestr(a.Date) ', modified ' datestr(a.ModificationDate) ];
+  data.Date = datestr(now);
+  if isnumeric(a.Date)
+    data.Date   = datestr(a.Date);
+  elseif ischar(a.Date)
+    data.Date = a.Date;
+  end
+  if isnumeric(a.ModificationDate)
+    data.Date   = [ data.Date ', modified ' datestr(a.ModificationDate) ];
+  elseif ischar(a.ModificationDate)
+    data.Date   = [ data.Date ', modified ' a.ModificationDate ];
+  end
   desc = evalc('disp(data)');
   fprintf(fid,[ '<pre> ' desc ' </pre>\n' ]);
 
@@ -86,10 +98,10 @@ function filename = iData_private_saveas_html(a, filename, format)
     fprintf(fid, '<p>\n');
     fprintf(fid, m.Description);
     fprintf(fid, '</p>\n');
-    if ~isempty(mp)
-      fprintf(fid, 'Model parameters:<br>\n');
-      fprintf(fid, [ '<pre> ' desc ' </pre>\n' ]);
-    end
+  end
+  if ~isempty(mp)
+    fprintf(fid, 'Model parameters:<br>\n');
+    fprintf(fid, [ '<pre>' desc '</pre>\n' ]);
   end
   
   % Data set (and Model) plot **************************************************

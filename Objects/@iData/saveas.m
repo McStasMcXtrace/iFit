@@ -355,8 +355,13 @@ try
     if ~isempty(b)
       switch formatShort
       case {'png'}
-        imwrite(b, jet(256), filename, formatShort, 'Comment',char(a),'Mode','lossless', ...
+        try
+          imwrite(b, jet(256), filename, formatShort, 'Comment',char(a),'Mode','lossless', ...
             'Source',a.Source, 'Software', version(iData), 'CreationTime', a.Date);
+        catch
+          imwrite(b, jet(256), filename, formatShort, 'Comment',char(a),'Mode','lossless', ...
+            'Source',a.Source, 'Software', version(iData));
+        end
       case {'gif'}
         imwrite(b, filename, formatShort, 'Comment',char(a));
       case 'tiff'
