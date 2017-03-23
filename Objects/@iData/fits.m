@@ -142,31 +142,12 @@ if nargin < 3, pars        = []; end
 if nargin < 4, options     = []; end
 if nargin < 5, constraints = []; end
 
-% handle input iData arrays
-if numel(a) > 1
-  pars_out=cell(1,numel(a)) ; criteria=zeros(1,numel(a)); 
-  message =pars_out; output=pars_out;
-  for index=1:numel(a)
-    this = a(index);  % allows 'assignin' to update the array elements.
-      
-    [pars_out{index}, criteria(index), message{index}, output{index}] = ...
-      fits(this, model, pars, options, constraints, varargin{:});
-
-    a(index) = this;
-  end
-  if ~isempty(inputname(1))  
-    assignin('caller',inputname(1),a); % update in original object
-  end
-  if nargin > 1 && ~isempty(inputname(2))  
-    assignin('caller',inputname(2),model); % update in original object
-  end
-  return
-end
+% handle input iData arrays: done in iFunc.fits
 
 % search for a Model in the object
 if isempty(model)
-  if isfield(a, 'Model')
-    model = get(a, 'Model');
+  if any(isfield(a, 'Model'))
+    model = subsref(a,struct('type','.','subs','Model'));
   elseif ~isempty(findfield(a, 'Model'))
     model = get(a, findfield(a, 'Model', 'cache first'));
   end

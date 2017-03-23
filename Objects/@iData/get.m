@@ -60,7 +60,9 @@ if numel(this) > 1
 
   sz =  cellfun('prodofsize',varg);
   if all(sz == sz(1)) && all(cellfun(@isscalar,varg))
-    varg = cell2mat(varg);
+    try
+      varg = cell2mat(varg);
+    end
   end
 
   varargout{1} = varg;

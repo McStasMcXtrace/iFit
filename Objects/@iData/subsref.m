@@ -204,6 +204,15 @@ for i = 1:length(S)     % can handle multiple index levels
       iData_private_error(mfilename, [ 'do not know how to extract cell index in ' inputname1  ' ' b.Tag '.' ]);
     end
   case '.'  % ======================================================== structure
+    if numel(b) > 1   % iData array
+      c = b;
+      b = [];
+      for index=1:numel(c)
+          b = [ b subsref(c(index),S) ];
+      end
+      b = reshape(b, size(c));
+      return
+    end
     % protect some fields
     fieldname = s.subs;
     if length(fieldname) > 1 && iscell(fieldname)
@@ -232,7 +241,7 @@ for i = 1:length(S)     % can handle multiple index levels
       if isnumeric(b) && any(strcmpi(fieldname, {'Date','ModificationDate'}))
         b = datestr(b);
       end
-    elseif isstruct(b.Alias) && numel(b.Alias) == 1 && iscell(b.Alias.Names) && any(strcmpi(fieldname, b.Alias.Names))
+    elseif numel(b) == 1 && isstruct(b.Alias) && numel(b.Alias) == 1 && iscell(b.Alias.Names) && any(strcmpi(fieldname, b.Alias.Names))
       b = iData_getAliasValue(b,fieldname);
     elseif any(strcmp(fieldname,method)) % b.method = ismethod(b, fieldname)
       if i == length(S)
@@ -251,7 +260,7 @@ for i = 1:length(S)     % can handle multiple index levels
       % check if the fieldname belongs directly to b.Data
       strtk = find(fieldname == '.', 1); strtk = fieldname(1:(strtk-1));
       if isempty(strtk), strtk = fieldname; end
-      if isfield(b,'Data') && isstruct(b.Data) ...
+      if numel(b) == 1 && isfield(b,'Data') && isstruct(b.Data) ...
               && all(~strcmpi(f, strtk)) && isfield(b.Data, strtk)
         fieldname = [ 'Data.' fieldname ];
       end
