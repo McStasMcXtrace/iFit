@@ -20,6 +20,9 @@ function [pars_out,criteria,message,output] = fits(model, a, pars, options, cons
 %     returns the list of all available optimizers and fit functions/models.
 %  [pars,...] = fits(iData_object)
 %     searches for a Model in the data set, and then performs the fit.
+%  [pars,...] = fits(iFunc_array, iData_array, ...)
+%     vectorise the fit. When the two arrays have the same number of elements,
+%     the fit is done per pair (model,data) in arrays.
 %  fits(iFunc)
 %     displays the list of all available optimizers and fit functions.
 %  You may create new fit models with the 'edit(iFunc)' tool, or by arithmetic
@@ -171,8 +174,31 @@ if nargin < 5, constraints = []; end
 if numel(model) > 1
   pars_out={} ; criteria={}; message={}; output={};
   for index=1:numel(model)
+    this_model = model(index);
+    if numel(model) == numel(a) && (isa(a, 'iData') || isstruct(a))
+      this_data = a(index);
+    elseif numel(model) == numel(a) && iscell(a)
+      this_data = a{index};
+    else
+      this_data = a;
+    end
     [pars_out{end+1},criteria{end+1},message{end+1},output{end+1}]= ...
-      fits(model(index), a, pars, options, constraints, varargin{:});
+      fits(this_model, this_data, pars, options, constraints, varargin{:});
+    model(index) = this_model;
+    % update output model/data
+    if numel(model) == numel(a) && (isa(a, 'iData') || isstruct(a))
+      a(index) = this_data;
+    elseif numel(model) == numel(a) && iscell(a)
+      a{index} = this_data;
+    else
+      a = this_data;
+    end
+  end
+  if nargin > 1 && ~isempty(inputname(2))  
+    assignin('caller',inputname(2),a); % update in original object
+  end
+  if ~isempty(inputname(1))  
+    assignin('caller',inputname(1),model); % update in original object
   end
   return
 end
@@ -180,8 +206,11 @@ end
 if (iscellstr(a) || isstruct(a) || isa(a,'iData')) && numel(a) > 1
   pars_out={} ; criteria={}; message={}; output={};
   for index=1:numel(a)
+    if iscell(a), this_data = a{index}; else this_data = a(index); end
     [pars_out{end+1},criteria{end+1},message{end+1},output{end+1}]= ...
-      fits(model, a(index), pars, options, constraints, varargin{:});
+      fits(model, this_data, pars, options, constraints, varargin{:});
+    % update data object
+    if iscell(a), a{index} = this_data; else a(index) = this_data; end
   end
   return
 end

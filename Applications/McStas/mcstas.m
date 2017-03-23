@@ -107,7 +107,10 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
 %          EXITFLAG return state of the optimizer, or 0.
 %          OUTPUT additional information returned as a structure.
 %
-% example: Optimize templateDIFF instrument parameter RV
+% examples:
+% Run a single simulation 
+%   [p,f]=mcstas('templateDIFF', 'RV=1', 'monitors=Banana');
+% Optimize templateDIFF instrument parameter RV
 %   [p,f]=mcstas('templateDIFF', 'RV=[0.5 1 1.5]', struct('TolFun','0.1%','monitors','Banana'));
 % Display result
 %   subplot(f); disp(f.Parameters)
