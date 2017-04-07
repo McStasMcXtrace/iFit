@@ -19,7 +19,8 @@ function data = read_opus(filename)
         else data{index}=this; end
      
         index = index +1;
-    catch
+      catch ME
+        disp(ME)
         break;
     end
   end
@@ -265,7 +266,9 @@ encom = strfind(tmpstr, 'END') + 3;
 for ii = 1:length(fxv)
     tencom = encom(encom<fxv(ii));
     tencom = sort(tencom);
-    stcom(ii) = tencom(end);
+    if ~isempty(tencom)
+      stcom(ii) = tencom(end);
+    end
 end
 ax.Title = SampleName;
 % 1-Interferogram, 2, 3 - FFT
