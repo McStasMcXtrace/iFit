@@ -23,8 +23,9 @@ options.gui        = nan;
 options.htmlreport = 0;
 options.dos        = 0;
 options.optimizer  = '';
-options.accuracy   = 'fast';  % can be 'fast' (use symmetry, forward difference) or 'accurate' (much slower)
+options.accuracy   = 'fast';  % can be 'fast' 'very fast' or 'accurate' (much slower)
 options.disp       = 0.01;    % displacement of atoms in Angs
+options.use_phonopy= 0;
 
 % read input arguments
 for index=1:numel(varargin)
@@ -78,6 +79,8 @@ for index=1:numel(varargin)
       options.accuracy = 'very fast';
     elseif strcmpi(varargin{index},'accurate') || strcmpi(varargin{index},'high') || strcmpi(varargin{index},'slow')
       options.accuracy = 'accurate';
+    elseif strcmpi(varargin{index},'phonopy') 
+      options.use_phonopy = 1;
     end
   end
   if isstruct(varargin{index})

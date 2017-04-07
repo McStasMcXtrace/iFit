@@ -296,6 +296,7 @@ elseif strcmp(configuration, 'identify')
 end
 
 options= sqw_phonons_argin(configuration, varargin{:});
+options.available = status;
 % check if we re-use an existing iFunc Model
 if isa(configuration, 'iFunc') && configuration.Dimension == 4
   signal = configuration;
@@ -395,7 +396,8 @@ if isempty(dir(configuration)) && ~isempty(dir(fullfile(ifitpath,'Data',configur
 end
 
 % ==============================================================================
-%                               BUILD MODEL (read initial structure)
+%                             BUILD MODEL (read initial structure)
+%                                    sqw_phonons_check (.py)
 % ==============================================================================
 
 t = clock();
@@ -433,15 +435,18 @@ sqw_phonons_htmlreport('', 'create_atoms', options);
 
 % ==============================================================================
 %                               BUILD MODEL (get calculator)
+%                                     sqw_phonons_calc
 % ==============================================================================
 
 % get the calculator
 % for QE, this triggers computation with sqw_phon()
 [decl, calc, signal] = sqw_phonons_calc(options, status, options.calculator, read);
+% return directly is the signal=iFunc has been craeted (QE case)
 if isempty(decl) && isempty(signal), return; end
 
 % ==============================================================================
 %                               BUILD MODEL (optimize or pass)
+%                                   sqw_phonons_optimize (.py)
 % ==============================================================================
 
 % handle the optimizer
@@ -451,6 +456,10 @@ if isempty(decl) && isempty(signal), return; end
 
 % ==============================================================================
 %                               COMPUTE MODEL (force computation)
+%                                   sqw_phonons_get_forces
+%                               sqw_phonons_forces_iterate.py
+%                               sqw_phonons_forces_finalize.py
+%                                    not for QE/PHON case
 % ==============================================================================
 
 % the QE case has been done prior to optimize when calling sqw_phonons_calc()

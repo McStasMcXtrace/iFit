@@ -416,7 +416,7 @@ function inline_error(err)
   disp('Error when evaluating expression:')
   disp(err)
   disp(lasterr)
-  disp('Trace (last is where the error is detected):')
+  disp('Trace (first is where the error is detected):')
   for stack=getfield(lasterror,'stack')'
     if ischar(stack.name)
       fprintf('%s at line %i\n',stack.name,stack.line); 
