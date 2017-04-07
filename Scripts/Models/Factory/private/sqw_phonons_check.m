@@ -1,6 +1,7 @@
 function [options, result, read] = sqw_phonons_check(configuration, options, status)
 % sqw_phonons_check: read the initial material structure
 %   requires: nothing except file/directory with material 'POSCAR' or other
+%   output:   generates a script 'sqw_phonons_check.py' to generate ASE atoms.pkl
 
 target = options.target;
 

@@ -22,16 +22,23 @@ function [options, sav] = sqw_phonons_get_forces(options, decl, calc)
     sav = '';
   end
   
-  % handle accuracy requirement (use symmetry operators or not to speed up forces)
-  if isfield(options, 'accuracy') && strcmpi(options.accuracy,'very fast')
-    ph_run = 'ifit.phonons_run(ph, single=True, usesymmetry=True, difference="forward")\n';  % much faster, but less accurate
+  % handle accuracy requirement
+  if isfield(options.available,'phonopy') && ~isempty(options.available.phonopy) ...
+    && options.use_phonopy
+    % use PhonoPy
+    ph_run = 'ifit.phonon_run_phonopy(ph, single=True)\n';
   elseif isfield(options, 'accuracy') && strcmpi(options.accuracy,'fast')
-    ph_run = 'ifit.phonons_run(ph, single=True, usesymmetry=True, difference="central")\n';
+    % fast (use symmetry operators from spacegroup)
+    ph_run = 'ifit.phonons_run(ph, single=True, difference="central")\n'; 
+  elseif isfield(options, 'accuracy') && strcmpi(options.accuracy,'very fast')
+    % even twice faster, but less accurate (assumes initial lattice at equilibrium)
+    ph_run = 'ifit.phonons_run(ph, single=True, difference="forward")\n'; 
   else
-    ph_run = 'ifit.phonons_run(ph, usesymmetry=False, difference="central")\n';                   % all moves, slower, more accurate
+    % the default ASE routine: all moves, slower, more accurate
+    ph_run = 'ph.run()\n';
   end
   
-  if isfield(options, 'accuracy') && strcmpi(options.accuracy,'fast')
+  if isfield(options, 'accuracy') && (strcmpi(options.accuracy,'fast') || strcmpi(options.accuracy,'very fast'))
     ph_vib = '';  % fast mode: do not compute IR/Raman modes.
   else
     ph_vib = [ ...
@@ -117,7 +124,8 @@ function [options, sav] = sqw_phonons_get_forces(options, decl, calc)
     'ph.atoms.calc = calc\n' ...
     '# Read forces and assemble the dynamical matrix\n', ...
     'print "Reading forces..."\n', ...
-    'ifit.phonon_read(ph, acoustic=True, cutoff=None) # cutoff in Angs\n', ...
+    'if ph.C_N is None:\n', ...
+    '    ifit.phonon_read(ph, acoustic=True, cutoff=None) # cutoff in Angs\n', ...
     'fid = open("phonon.pkl","wb")\n' , ...
     'calc = ph.calc\n', ...
     sav, ...

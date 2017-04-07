@@ -1,4 +1,7 @@
 function [decl,calc,signal] = sqw_phonons_calc(options, status, calc_choice, read)
+% sqw_phonons_calc: set python code to initiate the calculator
+%   requires: nothing except options, status(requirements), choice and 
+%   output:   python snippets to setup ASE Calculator, or signal=iFunc (QE case)
 
 calc = ''; decl = ''; signal=[];
 if nargin < 3, calc_choice = ''; end
@@ -6,7 +9,8 @@ if nargin < 4, read = ''; end
 
 if isempty(calc_choice), calc_choice=options.calculator; end
 
-Ha = 27.2; Ry=13.6;
+% unit conversions
+Ha = 27.2; Ry=Ha/2;
 
 switch upper(calc_choice)
 % ==============================================================================

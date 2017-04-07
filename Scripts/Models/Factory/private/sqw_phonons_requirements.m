@@ -35,6 +35,15 @@ else
     end
   end
   
+  % test for PhonoPy
+  [status.phonopy, result] = system([ precmd 'python -c "from phonopy import Phonopy"' ]);
+  if any(st == 0:2)
+    status.phonopy = 'phonopy';
+    disp([ '  PhonoPy         (https://atztogo.github.io) as "' status.phonopy '"' ]);
+  else
+    status.phonopy = '';
+  end
+  
   % test for GPAW
   [st, result] = system([ precmd 'python -c "from gpaw import GPAW"' ]);
   if any(st == 0:2)
