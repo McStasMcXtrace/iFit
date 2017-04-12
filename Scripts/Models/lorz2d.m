@@ -8,6 +8,8 @@ function signal=lorz2d(varargin)
 %     c = sin(theta)^2/2/sx/sx + cos(theta)^2/2/sy/sy;
 %     signal = p(1) ./ (1+ (a*(x-x0).^2+2*b*(x-x0).*(y-y0)+c*(y-y0).^2) ) + p(7);
 %
+%   This expression assumes that the Amplitudes are independent from the Widths.
+%
 % lorz2d([w1 w2])        creates a model with specified widths
 % lorz2d([ parameters ]) creates a model with specified model parameters
 %

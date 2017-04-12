@@ -4,8 +4,12 @@ function y=nlorz(varargin)
 %   iFunc/nlorz multiple Lorentzian fitting function
 %     y = sum p(i)*exp(-0.5*((x-p(i+1))/p(i+2)).^2) + p(end);
 %
+%   This expression assumes that the Amplitudes are independent from the Widths.
+%
 % to initiate n Lorentzian use: nlorz(n)
 % will result in an iFunc model of n Lorentzian functions.
+%
+% Reference: http://en.wikipedia.org/wiki/Lorenztian_function
 %
 % input:  p: multiple Lorentzian model parameters (double)
 %            p = [ Amplitude1 Centre1 HalfWidth1 ... BackGround ]
