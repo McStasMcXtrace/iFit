@@ -4,8 +4,13 @@ function y=ngauss(varargin)
 %   iFunc/ngauss multiple Gaussian fitting function
 %     y = sum p(i)*exp(-0.5*((x-p(i+1))/p(i+2)).^2) + p(end);
 %
-% to initiate n gaussians use: ngauss(n)
+%   The HalfWidth parameters are the Gaussian square root variances (Sigma). 
+%   The 'true' half width are thus 1.177*HalfWidth.
+%
+% To initiate n gaussians use: ngauss(n)
 % will result in an iFunc model of n Gaussian functions.
+%
+% Reference: http://en.wikipedia.org/wiki/Gaussian_function
 %
 % input:  p: multiple Gaussian model parameters (double)
 %            p = [ Amplitude1 Centre1 HalfWidth1 ... BackGround ]

@@ -4,8 +4,12 @@ function y=lorz(varargin)
 %   iFunc/lorz Lorentzian fitting function
 %     y = p(1) ./ (1+ ((x-p(2)).^2/p(3)^2) ) + p(4);
 %
+%   This expression assumes that the Amplitude is independent from the Width.
+%
 % lorz(width)          creates a model with a specified width
 % lorz([ parameters ]) creates a model with specified model parameters
+%
+% Reference: http://en.wikipedia.org/wiki/Lorenztian_function
 %
 % input:  p: Lorentzian model parameters (double)
 %            p = [ Amplitude Centre HalfWidth BackGround ]

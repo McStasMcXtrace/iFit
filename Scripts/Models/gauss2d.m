@@ -8,6 +8,9 @@ function signal=gauss2d(varargin)
 %     c = sin(theta)^2/2/sx/sx + cos(theta)^2/2/sy/sy;
 %     signal = p(1)*exp(-(a*(x-x0).^2+2*b*(x-x0).*(y-y0)+c*(y-y0).^2)) + p(7);
 %
+%   The HalfWidth parameters are the Gaussian square root variances (Sigma). 
+%   The 'true' half widths are thus 1.177*HalfWidth.
+%
 % gauss2d([w1 w2])        creates a model with a specified widths
 % gauss2d([ parameters ]) creates a model with specified model parameters
 %

@@ -4,8 +4,13 @@ function y=gauss(varargin)
 %   iFunc/gauss Gaussian fitting function
 %     y = p(1)*exp(-0.5*((x-p(2))/p(3)).^2) + p(4);
 %
-% gauss(width)          creates a model with a specified width
+%   The HalfWidth parameter is the Gaussian square root variance (Sigma). 
+%   The 'true' half width is thus 1.177*HalfWidth.
+%
+% gauss(width)          creates a model with a specified width(sigma)
 % gauss([ parameters ]) creates a model with specified model parameters
+%
+% Reference: http://en.wikipedia.org/wiki/Gaussian_function
 %
 % input:  p: Gaussian model parameters (double)
 %            p = [ Amplitude Centre HalfWidth BackGround ]
@@ -21,7 +26,7 @@ function y=gauss(varargin)
 
 y.Name      = [ 'Gaussian (1D) [' mfilename ']' ];
 y.Description='1D Gaussian model';
-y.Parameters={'Amplitude','Centre','HalfWidth','Background'};
+y.Parameters={'Amplitude','Centre','HalfWidth half Sigma','Background'};
 y.Expression= @(p,x) p(1)*exp(-0.5*((x-p(2))/p(3)).^2) + p(4);
 
 % moments of distributions
