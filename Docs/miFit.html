@@ -128,6 +128,7 @@
 
 
 
+
         item in the File menu</i>. A file selector will pop-up, and
       allow to select one or more data files (use Ctrl-click to select
       files one-by-one, and Shift-click to select a range). You can
@@ -198,6 +199,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
                     TOF</a>)<br>
                 </small></li>
               <small> </small>
@@ -206,6 +208,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
               <li><small>Xray/neutron diffraction<span
                     class="Apple-converted-space">&nbsp;</span><a
                     href="http://www.esrf.fr/computing/Forum/imgCIF/cbf_definition.html">Crystallographic
+
 
 
 
@@ -222,7 +225,9 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
                     3D volume</a><span class="Apple-converted-space">&nbsp;</span>Analyze
+
 
 
 
@@ -313,6 +318,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
                   (*.stl)</small></li>
               <small> </small>
               <li><small><a
@@ -327,6 +333,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
               <small> </small>
               <li><small><a href="http://www.marresearch.com/">MAR</a><span
                     class="Apple-converted-space">&nbsp;</span>MarResearch
+
 
 
 
@@ -350,6 +357,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
                   Scientific WinView CCD / PI Acton Camera file (*.spe)</small></li>
               <small> </small>
               <li><small><a
@@ -364,6 +372,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
                     class="Apple-converted-space">&nbsp;</span><a
                     href="http://shelx.uni-ac.gwdg.de/SHELX/">INS/RES/SHX</a><span
                     class="Apple-converted-space">&nbsp;</span>Crystallography
+
 
 
 
@@ -423,7 +432,9 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
 
 
 
+
                     Design</a><span class="Apple-converted-space">&nbsp;</span>VMS
+
 
 
 
@@ -443,6 +454,7 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
                     href="https://www.oecd-nea.org/dbdata/data/manual-endf/endf102.pdf">ENDF</a><span
                     class="Apple-converted-space">&nbsp;</span><a
                     href="https://en.wikipedia.org/wiki/Nuclear_data">Evaluated
+
 
 
 
@@ -472,8 +484,8 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
     </ul>
     <p>You can either import Models from the <i>File:Open</i> menu
       item, e.g. as Matlab MAT workspaces containing <a
-        href="iFunc.html">iFunc</a>
-      objects, or using the dedicated <i>Models:Import</i> menu item.<br>
+        href="iFunc.html">iFunc</a> objects, or using the dedicated <i>Models:Import</i>
+      menu item.<br>
     </p>
     <p>Supported formats for Models (stored as <a href="iFunc.html">iFunc</a>
       objects):
@@ -538,9 +550,9 @@ TIFF image (*.tif)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n
 XML file (*.xml)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br>
 <b>YAML interchange format (*.yaml)</b></td></tr></tbody></table><br>You can edit, and re-import these files within miFit with the <i>Models:Import</i> menu item.<br><br><hr width="100%" size="2"><br><h3 align="center"><a class="mozTocH3" name="mozTocId687843"></a>
     Examples / Tutorials<br></h3><br><h4><a class="mozTocH4" name="mozTocId840871"></a>Fitting a simple peak</h4>In this example, we demonstrate how to fit a simple data set with a Gaussian model.<br><ol><li><a href="images/miFit_Data_Plot.png"><img src="images/miFit_Data_Plot.png" title="Example_Phonon_Fit_Data" alt="Example_Phonon_Fit_Data" width="200" height="193" align="right" border="0"></a>Import a TAS data file. This is e.g. a Q or Energy scan. You may for instance get the <a href="../Data/MnFeSi_0099.scn">MnFeSi_0099.scn</a> file as example (drag-and-drop it into miFit, navigate to it with the <i>File:Open</i> selector, or copy-paste its path). Double click it to view the data set.</li><li>Select the <i>Models:1D:Gaussian</i> model. The Parameter window pops-up, no parameter value is set.</li><li>Click on the <i>Data:Evaluate Model</i> or the <b><i>'fx'</i></b> icon in the toolbar. Guessed parameters are then used. To update these in the Parameter window, use Ctrl-click twice on the Data set (de-select and re-select).</li><li>Bound the <i>Amplitude</i> between 0 and 0.002, the <i>Centre</i> in [0.1 and 0.2], the <i>HalfWidth</i> between 0 and .2, the <i>Background</i> in [0 1e-3]. Every time you change some model Parameter setting, the plot is updated.</li><li>Choose the <i>Levenberg-</i><i>Marquardt [fminlm]</i> optimizer.</li><li>Set the <i>Fit_Verbose</i> to 'no' in the <i>File:Preferences</i>.<br></li><li>Finally, click on the <i>Fit</i> icon in the toolbar, or select <i>Data:Fit</i>.</li><li>Double-click the Data Set to plot it and display the fit result.<br></li><li>Use <i>Edit:Undo</i> twice, and re-select the Data Set. The initial model parameters are restored.</li><li>Set the <i>Fit_Verbose</i> to 'yes' in the <i>File:Preferences</i>.</li><li>Click again on the <i>Fit</i> icon. You see that the fit is much slower, as all windows are updated at every iteration. The criteria, plot, and parameter space are all updated during the fit. A STOP button allows to abort the fit.<br></li><li>At the end of the fit, the parameter distributions are displayed.<br></li></ol><h4><a class="mozTocH4" name="mozTocId89596"></a>Fitting a 'phonon' dispersion (neutron_TAS)</h4>
-    We here indicate the usual steps to be used to treat a TAS scan around a dispersion.<a href="images/miFit_Data_Plot.png"><img src="images/miFit_Data_Plot.png" title="Example_Phonon_Fit_Data" alt="Example_Phonon_Fit_Data" width="200" height="193" align="right" border="0"></a><ol><li>Import a TAS data file. This is e.g. a Q or Energy scan. You may for instance get the <a href="../Data/MnFeSi_0099.scn">MnFeSi_0099.scn</a> file as example (drag-and-drop it into miFit, navigate to it with the <i>File:Open</i> selector, or copy-paste its path). Double click it to view the data set.<br></li><li>Install the <i>Neutron Scattering</i> menu with TAS plug-ins but selecting the <i>File:Configurations:neutron_TAS.ini</i></li><li>Select the data file, and convert it to a 4D (QH QK QL EN) scan, using the <i>TAS: Convert/Convolute 4D</i> item in the <i>Neutron Scattering</i> menu. As there is no Model assigned, only the data set in converted to 4D.<br></li><li>Assign a 4D model, e.g. <a href="Models.html#mozTocId774280"><i>sqw_linquad</i></a> which models a local S(q,w) description around e.g. the scan center.</li><li><a href="images/miFit_Example_Phonon_Fit_Parameters.png"><img src="images/miFit_Example_Phonon_Fit_Parameters.png" title="Example_Phonon_Fit_Parameters" alt="Example_Phonon_Fit_Parameters" width="200" height="94" align="right" border="0"></a>Open the <i>View Parameters</i> window by selecting the <i>View Model Parameters</i> item&nbsp; in the <i>Models</i> menu.</li><li>Set initial model parameters (e.g. excitation energy). Make sure to fix e.g. HKL space directions and some other parameters to help the fit to converge. <b>Bound parameters</b> (e.g. excitation energy and Q location...). Adjust Amplitude and <i>Damping</i>.<br></li><li>Optionally, turn <i>Fit_Verbosity</i> to 'yes' in the <i>File:Preferences</i> (recommended), which allows to follow the fit procedure, and stop it any time.<br></li><li>Click on the <i>Fit</i> icon or item in the <i>Data</i> menu. This first fit is an ideal one, without the 4D convolution with the neutron TAS resolution. It will probably not fit the peak width, as most of the effect originates from the spectrometer resolution.<br></li><li>Now, open the <a href="ResLibCal.html">ResLibCal</a> interface from the <i>Neutron Scattering</i> menu.<a href="images/miFit_Example_Phonon_Fit_ResLibCal.png"><img src="images/miFit_Example_Phonon_Fit_ResLibCal.png" title="Example_Phonon_Fit_ResLibCal" alt="Example_Phonon_Fit_ResLibCal" width="200" height="227" align="right" border="0"></a></li><li>Optionally import a data file, previous or predefined instrument configuration in ResLibCal to read the spectrometer configuration. This data file should contain Rescal parameters in free text. You can also check/modify instrument and sample parameters in its main window. If you do not import a TAS configuration, you can still configure the parameters in the ResLibCal interface, or the last saved configuration will be used.<br></li><li>Select the method to compute the resolution from <i>Cooper-Nathans, Popovici</i> or <i>McStas full Monte-Carlo</i>. The resolution uses a Monte-Carlo cloud for the 4D convolution operation which creates a set of points around each TAS measurement location. The resolution
+    We here indicate the usual steps to be used to treat a TAS scan around a dispersion.<a href="images/miFit_Data_Plot.png"><img src="images/miFit_Data_Plot.png" title="Example_Phonon_Fit_Data" alt="Example_Phonon_Fit_Data" width="200" height="193" align="right" border="0"></a><ol><li>Import a TAS data file. This is e.g. a Q or Energy scan. You may for instance get the <a href="../Data/MnFeSi_0099.scn">MnFeSi_0099.scn</a> file as example (drag-and-drop it into miFit, navigate to it with the <i>File:Open</i> selector, or copy-paste its path). Double click it to view the data set. This is a vector data set (signal as a function of QL), so 1D.<br></li><li>Install the <i>Neutron Scattering</i> menu with TAS plug-ins but selecting the <i>File:Configurations:neutron_TAS.ini</i></li><li>Select the data file, and convert it to a 4D (QH QK QL EN) scan, using the <i>TAS: Convert/Convolute 4D</i> item in the <i>Neutron Scattering</i> menu. As there is no Model assigned, only the data set in converted to 4D. A new item appears in the <i>Data sets</i> list.<br></li><li>Assign a 4D model, e.g. <a href="Models.html#mozTocId774280"><i>sqw_linquad</i></a> which models a local S(q,w) description around e.g. the scan center.</li><li><a href="images/miFit_Example_Phonon_Fit_Parameters.png"><img src="images/miFit_Example_Phonon_Fit_Parameters.png" title="Example_Phonon_Fit_Parameters" alt="Example_Phonon_Fit_Parameters" width="200" height="94" align="right" border="0"></a>Open the <i>View Parameters</i> window by selecting the <i>View Model Parameters</i> item in the <i>Models</i> menu.</li><li>Set initial model parameters (e.g. excitation energy). Make sure to fix e.g. HKL space directions and some other parameters to help the fit to converge. <b>Bound parameters</b> (e.g. excitation energy and Q location...). Adjust Amplitude and <i>Damping</i>. For this model, make sure that the linear direction <i>DC_dir1</i> matches the actual TAS scan direction. With the example data file, the scan is along QL, which is a rather 'linear' branch. Then the <i>DC_dir1</i> should be along QL, i.e. [0 0 1]. The quadratic direction should be perpendicular (can be left unchanged).<br></li><li>Optionally, turn <i>Fit_Verbosity</i> to 'yes' in the <i>File:Preferences</i> (recommended), which allows to follow the fit procedure, and stop it any time.<br></li><li>Click on the <i>Fit</i> icon or item in the <i>Data</i> menu. This first fit is an ideal one, without the 4D convolution with the neutron TAS resolution. It will probably not fit the peak width, as most of the effect originates from the spectrometer resolution.<br></li><li>Now, open the <a href="ResLibCal.html">ResLibCal</a> interface from the <i>Neutron Scattering</i> menu.<a href="images/miFit_Example_Phonon_Fit_ResLibCal.png"><img src="images/miFit_Example_Phonon_Fit_ResLibCal.png" title="Example_Phonon_Fit_ResLibCal" alt="Example_Phonon_Fit_ResLibCal" width="200" height="227" align="right" border="0"></a></li><li>Optionally import a data file, previous or predefined instrument configuration in ResLibCal to read the spectrometer configuration. This data file should contain Rescal parameters in free text. You can also check/modify instrument and sample parameters in its main window. If you do not import a TAS configuration, you can still configure the parameters in the ResLibCal interface, or the last saved configuration will be used. In this example, we suggest that you open the <a href="file:///home/farhi/dev/iFit/Data/MnFeSi_0099.scn">MnFeSi_0099.scn</a> filewith ResLibCal to initiate the instrument configuration. Check carefully the instrument parameters. Once done, we also suggest that you save your tuned instrument configuration into a .ini format file (<i>ResLibCal File:Save as</i> menu item) so that you can re-use it later.<br></li><li>Select the method to compute the resolution from <i>Cooper-Nathans, Popovici</i> or <i>McStas full Monte-Carlo</i>. The resolution uses a Monte-Carlo cloud for the 4D convolution operation which creates a set of points around each TAS measurement location. The resolution
  is re-computed at each location. The number of points used in this 
-cloud is defined in the ResLibCal <i>View:Set Monte-Carlo iterations</i> item. We recommend the <i>Popovici</i> method as a start (top left corner of the ResLibCal GUI).<br></li><li>In miFit select the 4D data set (QH QK QL EN), and convolve the model with the 4D TAS resolution function, using (again) the <i>TAS: Convert/Convolute 4D</i> item in the <i>Neutron Scattering</i> menu. This time, the assigned model is affected.</li><li>You can optionally close ResLibCal (which saves the current configuration to be used). This makes the fit procedure slightly faster, using the last saved configuration. We recommend to keep ResLibCal opened, as it is then easy to change the TAS configuration from one fit to an other.<br></li><li><a href="images/miFit_Example_Phonon_Fit_Prompt.png"><img src="images/miFit_Example_Phonon_Fit_Prompt.png" title="Phonon_Fit_Prompt" alt="Phonon_Fit_Prompt" width="200" height="144" align="right" border="0"></a>Optionally: select a specific <i>Optimizer</i> from the same menu in miFit. We recommend the <i>Particle Swarm Optimization [fminpso] </i>which is very robust.<br></li><li><a href="images/miFit_Example_Phonon_Fit_Criteria.png"><img src="images/miFit_Example_Phonon_Fit_Criteria.png" title="Phonon_Fit_Criteria" alt="Phonon_Fit_Criteria" width="200" height="193" align="left" border="0"></a><a href="images/miFit_Example_Phonon_Fit_Data_Model.png"><img src="images/miFit_Example_Phonon_Fit_Data_Model.png" title="Example_Phonon_Fit_Data" alt="Example_Phonon_Fit_Data" width="200" height="193" align="left" border="0"></a>Click on the <i>Fit</i> icon or item in the <i>Data</i> menu.The fit steps are printed into the Matlab/iFit prompt.</li><li>The evolution of the Fit criteria (here least-squares) is displayed during the fit as a function of the number of model evaluations, as well as the space of the three first varying parameter. The Model Parameter window is updated with the on-going values, as well as a plot showing the comparison between the data set, the model, and the best parameter set found so-far.<br></li><li><a href="images/miFit_Example_Phonon_Fit_ParDistributions.png"><img src="images/miFit_Example_Phonon_Fit_ParDistributions.png" title="Phonon_Fit_ParDistributions" alt="Phonon_Fit_ParDistributions" width="200" height="180" align="right" border="0"></a>At the end of the fit, the final parameter values are displayed in the Parameter window, in the command/prompt, with the attached uncertainty. The parameter distribution is also shown, in the style of a Markov chain result. [Red distributions indicate parameters which have been found highly correlated to others (non-independent)]</li><li>You can close most plots, and update the initial Data Set plot (see step 1). The final model parameters and evaluation are stored into the data set. The Parameter distribution (Markov-style) can be opbatined from the Model Paramater window, contextual menu.<br></li></ol><br><br>
+cloud is defined in the ResLibCal <i>View:Set Monte-Carlo iterations</i> item. We recommend the <b><i>Popovici</i></b> method as a start (top left corner of the ResLibCal GUI).<br></li><li>In miFit select the 4D data set (QH QK QL EN), and convolve the model with the 4D TAS resolution function, using (again) the <i>TAS: Convert/Convolute 4D</i> item in the <i>Neutron Scattering</i> menu. This time, the assigned model is affected.</li><li>You can optionally close ResLibCal (which saves the current configuration to be used). This makes the fit procedure slightly faster, using the last saved configuration. We recommend to keep ResLibCal opened, as it is then easy to change the TAS configuration from one fit to an other.<br></li><li><a href="images/miFit_Example_Phonon_Fit_Prompt.png"><img src="images/miFit_Example_Phonon_Fit_Prompt.png" title="Phonon_Fit_Prompt" alt="Phonon_Fit_Prompt" width="200" height="144" align="right" border="0"></a>Optionally: select a specific <i>Optimizer</i> from the same menu in miFit. We recommend the <i>Particle Swarm Optimization [fminpso] </i>which is very robust.<br></li><li><a href="images/miFit_Example_Phonon_Fit_Criteria.png"><img src="images/miFit_Example_Phonon_Fit_Criteria.png" title="Phonon_Fit_Criteria" alt="Phonon_Fit_Criteria" width="200" height="193" align="left" border="0"></a><a href="images/miFit_Example_Phonon_Fit_Data_Model.png"><img src="images/miFit_Example_Phonon_Fit_Data_Model.png" title="Example_Phonon_Fit_Data" alt="Example_Phonon_Fit_Data" width="200" height="193" align="left" border="0"></a>Click on the <i>Fit</i> icon or item in the <i>Data</i> menu.The fit steps are printed into the Matlab/iFit prompt.</li><li>The evolution of the Fit criteria (here least-squares) is displayed during the fit as a function of the number of model evaluations, as well as the space of the three first varying parameter. The Model Parameter window is updated with the on-going values, as well as a plot showing the comparison between the data set, the model, and the best parameter set found so-far.<br></li><li><a href="images/miFit_Example_Phonon_Fit_ParDistributions.png"><img src="images/miFit_Example_Phonon_Fit_ParDistributions.png" title="Phonon_Fit_ParDistributions" alt="Phonon_Fit_ParDistributions" width="200" height="180" align="right" border="0"></a>At the end of the fit, the final parameter values are displayed in the Parameter window, in the command/prompt, with the attached uncertainty. The parameter distribution is also shown, in the style of a Markov chain result. [Red distributions indicate parameters which have been found highly correlated to others (non-independent)]</li><li>You can close most plots, and update the initial Data Set plot (see step 1). The final model parameters and evaluation are stored into the data set. The Parameter distribution (Markov-style) can be obtained from the Model Parameter window, contextual menu.<br></li></ol><br><br>
       
     
     <hr style="width: 100%; height: 2px;">
@@ -553,6 +565,7 @@ Farhi
           Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid
           ; width: 53px; height: 50px;" align="right"></a> </div>
   
+
 
 
 </body></html>
