@@ -183,9 +183,9 @@ function h=iFunc_plot_menu(h, a, name)
 
   properties{end+1} = '[Parameters]';
   for p=1:length(a.Parameters)
-    [name, R] = strtok(a.Parameters{p}); % make sure we only get the first word (not following comments)
+    [pname, R] = strtok(a.Parameters{p}); % make sure we only get the first word (not following comments)
     R = strtrim(R);
-    u = sprintf('  p(%3d)=%20s', p, name);
+    u = sprintf('  p(%3d)=%20s', p, pname);
     val  = [];
     if ~isempty(a.ParameterValues)
     try
@@ -256,5 +256,6 @@ function h=iFunc_plot_menu(h, a, name)
   else
     zlabel(a.Name)
   end
+
   title(name);
 
