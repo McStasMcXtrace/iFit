@@ -868,20 +868,21 @@ def phonon_run_phonopy(phonon, single=True):
     # Phonopy: force_constants size is [N*natoms,N*natoms,3,3]
     # Phi[i,j,a,b] with [i,j = atom in supercell] and [a,b=xyz]
     force_constants = phonpy.get_force_constants()
-    force_constants = numpy.reshape(force_constants, (N,N,3 * natoms, 3 * natoms))
+    # the atoms [i] which are moved are in the first cell of the supercell, i.e.Ni=0
+    # the forces are then stored for all atoms [Nj,j] as [3,3] matrices
+    
     # we compute the sum on all supercells, which all contain n atoms.
     C_N = numpy.zeros((N, 3*natoms, 3*natoms), dtype=complex)
-    for Ni in range(N):
-        for Nj in range(N):
-            for ni in range(natoms):
-                Nni = Ni*natoms + nis
-                for nj in range(natoms):
-                    # compute Nn indices
-                    Nnj = Nj*natoms + nj
-                    # get fc 3x3 matrix
-                    C_N[Nni,(3*ni):(3*ni+3),(3*nj):(3*nj+3)] += force_constants[Nni][Nnj]
+    Ni=0
+    for Nj in range(N):
+        for ni in range(natoms):
+            Nni = ni
+            for nj in range(natoms):
+                # compute Nn indices
+                Nnj = Nj*natoms + nj
+                # get fc 3x3 matrix
+                C_N[Nj,(3*ni):(3*ni+3),(3*nj):(3*nj+3)] += force_constants[Nni][Nnj]
             
-    
     # convert to ASE storage
     # ASE: phonon.C_N size is be [N, 3*natoms, 3*natoms]
     # Phi[i,j] = Phi[j,i]
