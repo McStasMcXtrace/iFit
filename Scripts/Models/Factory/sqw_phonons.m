@@ -533,7 +533,8 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO') || strcmpi(options.calculator
   
   % get code to read xyzt and build HKL list and convolve DHO line shapes
   [script_hkl, script_dho] = sqw_phonons_templates;
-
+  
+  % python scripts for band structure evaluation
   signal.Expression = { ...
     '% check if directory and phonon pickle is here', ...
     'target = this.UserData.dir;', ...
@@ -631,6 +632,9 @@ case {'QUANTUMESPRESSO_ASE','QE_ASE'}
 cite{end+1} = ' * Quantum Espresso: P. Giannozzi, et al J.Phys.:Condens.Matter, 21, 395502 (2009).';
 case 'VASP'
 cite{end+1} = ' * VASP:   G. Kresse and J. Hafner. Phys. Rev. B, 47:558, 1993.';
+end
+if options.use_phonopy
+  cite{end+1} = ' * PhonoPy:   A. Togo and I. Tanaka, Scr. Mater., 108, 1-5 (2015)';
 end
 
 signal.UserData.duration = etime(clock, t);

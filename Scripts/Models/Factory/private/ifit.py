@@ -360,7 +360,7 @@ def phonons_run(phonon, single=True, difference='central'):
                         print "Imaging atom #%-3i %-3s    to " % \
                             (offset + a, supercell.get_chemical_symbols()[a]), pos[a] + disp, \
                             " (Angs) using rotation:"
-                    print rot
+                        print rot
                 if force0 is None or rot is None: # force0 is None or rot is None
                     # move atom 'a' by 'disp'
                     supercell.positions[offset + a] = pos[a] + disp
@@ -379,8 +379,6 @@ def phonons_run(phonon, single=True, difference='central'):
                 # append the forces to the force1 list
                 if output is None:
                     print "Warning: force1 is None !!"
-                    
-                print "ASE/Phonon: forces are: ", output.shape
 
                 force1.append(output)
                 
@@ -729,7 +727,6 @@ def phonon_read(phonon, method='Frederiksen', symmetrize=3, acoustic=True,
             C_xNav[index] = C_Nav
 
     # Make unitcell index the first and reshape
-    print "ASE/Phonon: force constants C_xNav are: ", C_xNav.shape
     C_N = C_xNav.swapaxes(0 ,1).reshape((N,) + (3 * natoms, 3 * natoms))
 
     # Cut off before symmetry and acoustic sum rule are imposed
@@ -750,7 +747,6 @@ def phonon_read(phonon, method='Frederiksen', symmetrize=3, acoustic=True,
     # Store force constants and dynamical matrix
     phonon.C_N = C_N
     phonon.D_N = C_N.copy()
-    print "ASE/Phonon: force constants are: ", C_N.shape
     
     # Add mass prefactor
     m_a = phonon.atoms.get_masses()
@@ -808,10 +804,8 @@ def phonon_run_phonopy(phonon, single=True):
     # generate displacements (minimal set)
     phonpy.generate_displacements(distance=0.01)
     disps = phonpy.get_displacements()
-    for d in disps:
-        print "[ASE/Phonopy]", d[0], d[1:]
     
-    # get displaced supercells
+    # get displaced supercells: api_phonopy._build_supercells_with_displacements()
     supercells = phonpy.get_supercells_with_displacements()
     
     # compute the forces
@@ -825,6 +819,10 @@ def phonon_run_phonopy(phonon, single=True):
             f.close()
         else:
             # proceed with force calculation for current displaced supercell
+            print "[ASE/Phonopy] Computing step %i/%i" % (d, len(supercells))
+            disp = disps[d]
+            print "Moving  atom #%-3i %-3s    to " % \
+                (disp[0], supercell.get_chemical_symbols()[disp[0]]), disp[1:]
             scell = supercells[d]
             cell = Atoms(symbols=scell.get_chemical_symbols(),
                          scaled_positions=scell.get_scaled_positions(),
@@ -832,7 +830,6 @@ def phonon_run_phonopy(phonon, single=True):
                          pbc=True)
             cell.set_calculator(phonon.calc)
             forces = cell.get_forces()
-            print "ASE/PhonoPy: forces are: ", forces.shape
             
             drift_force = forces.sum(axis=0)
             # print "[Phonopy] Drift force:", "%11.5f"*3 % tuple(drift_force)
@@ -855,6 +852,13 @@ def phonon_run_phonopy(phonon, single=True):
     # use symmetry to derive forces in equivalent displacements
     phonpy.produce_force_constants(forces=set_of_forces)
     
+    # save the PhonoPy object
+    fid = open("phonopy.pkl","wb")
+    pickle.dump(phonpy, fid)
+    fid.close()
+    
+    
+    
     # transfer results to the ASE phonon object
     # Number of atoms (primitive cell)
     natoms = len(phonon.indices)
@@ -862,15 +866,26 @@ def phonon_run_phonopy(phonon, single=True):
     N = numpy.prod(phonon.N_c)
     
     # Phonopy: force_constants size is [N*natoms,N*natoms,3,3]
-    # which is Phi(i,j,a,b) with [i,j = atom in supercell] and [a,b=xyz]
+    # Phi[i,j,a,b] with [i,j = atom in supercell] and [a,b=xyz]
     force_constants = phonpy.get_force_constants()
-    print "ASE/PhonoPy: force constants are: ", force_constants.shape, natoms
     force_constants = numpy.reshape(force_constants, (N,N,3 * natoms, 3 * natoms))
-    print "ASE/PhonoPy: force constants are now: ", force_constants.shape, (N,N,3 * natoms, 3 * natoms)
+    # we compute the sum on all supercells, which all contain n atoms.
+    C_N = numpy.zeros((N, 3*natoms, 3*natoms), dtype=complex)
+    for Ni in range(N):
+        for Nj in range(N):
+            for ni in range(natoms):
+                Nni = Ni*natoms + nis
+                for nj in range(natoms):
+                    # compute Nn indices
+                    Nnj = Nj*natoms + nj
+                    # get fc 3x3 matrix
+                    C_N[Nni,(3*ni):(3*ni+3),(3*nj):(3*nj+3)] += force_constants[Nni][Nnj]
+            
     
+    # convert to ASE storage
     # ASE: phonon.C_N size is be [N, 3*natoms, 3*natoms]
-    phonon.C_N = force_constants[0,:,:,:]
-    print "ASE/PhonoPy: C_N is: ", phonon.C_N.shape
+    # Phi[i,j] = Phi[j,i]
+    phonon.C_N = C_N
     
     # fill dynamical matrix (mass prefactor)
     phonon.D_N = phonon.C_N.copy()
@@ -883,3 +898,5 @@ def phonon_run_phonopy(phonon, single=True):
         D *= M_inv
     
     return False  # nothing left to do
+    
+
