@@ -121,6 +121,14 @@ if isscalar(options.kpoints)
 end
 if options.htmlreport == 1, options.dos=1; end
 
+% few more checks for accuracy stuff
+% very fast mode (options.accuracy = 'very fast' or use_phonopy) -> triggers optimize
+if strcmpi(options.accuracy,'very fast') || options.use_phonopy
+  if isempty(options.optimizer)
+    disp([ mfilename ': WARNING: suggest optimizer=BFGS with very fast computation. Currently not set.' ]); 
+  end
+end
+
 % make sure target is a fully qualified path
 if options.target(1) ~= filesep
   options.target = fullfile(pwd, options.target);
