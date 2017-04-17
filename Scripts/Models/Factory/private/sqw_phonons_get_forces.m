@@ -25,17 +25,17 @@ function [options, sav] = sqw_phonons_get_forces(options, decl, calc)
   % handle accuracy requirement
   if isfield(options.available,'phonopy') && ~isempty(options.available.phonopy) ...
     && options.use_phonopy
-    % use PhonoPy
+    % use PhonoPy = very fast (forward difference)
     ph_run = 'ifit.phonon_run_phonopy(ph, single=True)\n';
-  elseif isfield(options, 'accuracy') && strcmpi(options.accuracy,'fast')
+  elseif isfield(options, 'accuracy') && strcmpi(options.accuracy,'very fast')
+    % very fast: twice faster, but less accurate (assumes initial lattice at equilibrium)
+    ph_run = 'ifit.phonons_run(ph, single=True, difference="forward")\n'; 
+  elseif isfield(options, 'accuracy') && strcmpi(options.accuracy,'slow')
+    % slow: the default ASE routine: all moves, slower, more accurate
+    ph_run = 'ph.run()\n';
+  else
     % fast (use symmetry operators from spacegroup)
     ph_run = 'ifit.phonons_run(ph, single=True, difference="central")\n'; 
-  elseif isfield(options, 'accuracy') && strcmpi(options.accuracy,'very fast')
-    % even twice faster, but less accurate (assumes initial lattice at equilibrium)
-    ph_run = 'ifit.phonons_run(ph, single=True, difference="forward")\n'; 
-  else
-    % the default ASE routine: all moves, slower, more accurate
-    ph_run = 'ph.run()\n';
   end
   
   % the section to compute the q=0 vibrations. This is very fast compared with
