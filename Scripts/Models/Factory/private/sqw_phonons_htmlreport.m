@@ -181,8 +181,10 @@ function sqw_phonons_htmlreport_table(fid, options, name)
     [index1, index2] = strtok([ name index{1} ]);
     if ~isempty(dir(fullfile(options.target,index1)))
       % the file exists
-      if strcmp(index1, [ name '.png' ])
+      if strcmp(index1, [ name '.png' ]) && ~isempty(dir(fullfile(options.target,[ name '.tiff' ])))
         fprintf(fid, '<div style="text-align:center"><a href="%s"><img src="%s" align="middle" title="%s"></a><br>(try the <a href="%s">TIFF file</a> in case the axes are not shown)</div><br>\n', index1, index1, index1, [ name '.tiff' ]);
+      elseif strcmp(index1, [ name '.png' ])  % only the PNG, but not the TIFF
+        fprintf(fid, '<div style="text-align:center"><a href="%s"><img src="%s" align="middle" title="%s"></a></div><br>\n', index1, index1, index1);
       elseif strcmp(index1, [ name '.html' ])
         % embed a frame
         fprintf(fid, '<div style="text-align:center"><iframe src="%s" align="middle" width="480" height="480"></iframe><br>%s<br>(<a href="%s" target=_blank>open in external window</a>)<br></div><br>\n', index1, index2, index1);

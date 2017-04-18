@@ -110,7 +110,6 @@ for index=1:size(FREQ,2)  % loop on modes
   ZQ = 1;
   if ~isempty(POLAR) && ~isempty(positions)
     ZQ = 0;
-    this.UserData.DW = {};
     for atom=1:size(positions,1)
       % one-phonon structure/form factor in a Bravais lattice
       if ~isempty(T) && T > 0
@@ -120,7 +119,6 @@ for index=1:size(FREQ,2)  % loop on modes
       DW = abs(sum(Q.*squeeze(POLAR(:,index,atom,:)),2)).^2./FREQ(:,index).*(2*nw0+1)/2; % DW function, Schober (9.103)
       clear nw0
       DW = exp(-DW);  % Debye-Waller factor
-      this.UserData.DW{end+1} = DW;
       % one phonon form factor: H. Schober, (9.203)
       if ~isempty(b_coh) && all(b_coh)
         ZQ = ZQ + b_coh(atom) .* DW .* sum(Q.*squeeze(POLAR(:,index,atom,:)),2) .* exp(-i*Q*positions(atom,:)');

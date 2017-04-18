@@ -30,7 +30,7 @@ function [options, sav] = sqw_phonons_get_forces(options, decl, calc)
   elseif isfield(options, 'accuracy') && strcmpi(options.accuracy,'very fast')
     % very fast: twice faster, but less accurate (assumes initial lattice at equilibrium)
     ph_run = 'ifit.phonons_run(ph, single=True, difference="forward")\n'; 
-  elseif isfield(options, 'accuracy') && strcmpi(options.accuracy,'slow')
+  elseif isfield(options, 'accuracy') && any(strcmpi(options.accuracy,{'slow','accurate'}))
     % slow: the default ASE routine: all moves, slower, more accurate
     ph_run = 'ph.run()\n';
   else
