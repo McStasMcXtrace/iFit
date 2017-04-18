@@ -117,6 +117,7 @@
 
 
 
+
         </a>fits(iData)</span>, <a href="iFunc.html">iFunc</a><br>
     </div>
     <br>
@@ -4348,7 +4349,7 @@ dispersion from which the expansion is quadratic.<br>
       <li><b>calculator</b>: the calculator to use, see below.</li>
       <li><b>dos</b>: indicates if the phonon density of states should
         be computed, which takes more time. Default is NOT to compute
-        it.</li>
+        it. When set, <i><b>thermo-chemistry quantities</b></i> (entropy S, Helmholtz free energy F, internal energy U and the specific heat at constant volume Cv) are also computed and stored into the object UserData field. The syntax <i>sqw_phonons</i>(..., <font color="#cc33cc">'dos'</font>, ...) also works.</li>
       <li><b>potentials</b>: pseudo potential directory to use, e.g. <font color="#cc33cc">'/usr/share/elk-lapw/species'</font>, <font color="#cc33cc">'/usr/share/abinit/psp'</font>, <font color="#cc33cc">'/usr/share/dacapo-psp'</font>,<font color="#cc33cc">'/usr/share/espresso/pseudo'</font>.</li>
       <li><b>diagonalization</b>: <font color="#cc33cc">'david'</font>
         or <font color="#cc33cc">'cg'</font>. or <font color="#cc33cc">'rmm-diis'</font>.
@@ -4371,14 +4372,14 @@ dispersion from which the expansion is quadratic.<br>
         include e.g. "mpirun -np N" when applicable (and options.mpi
         should not be set).</li>
       <li><b>htmlreport:</b> when set to 1, creates a readable report as
-        an HTML document '<i>index.html</i>' in the target directory.</li>
+        an HTML document '<i>sqw_phonons.html</i>' in the target directory. The syntax <i>sqw_phonons</i>(..., <font color="#cc33cc">'report'</font>, ...) also works.<br></li>
       <li><b>optimizer</b>: when set, performs a geometry optimization
         before computing the forces. This option can be set to&nbsp; <font color="#cc33cc"> 'BFGS'</font>, <font color="#cc33cc">'LBFGS'</font>
         (low memory BFGS), <font color="#cc33cc">'MDMin'</font> or <font color="#cc33cc">'FIRE'</font>, as explained in the <a href="https://wiki.fysik.dtu.dk/ase/ase/optimize.html">ASE
           Structure optimization page</a>. If the input configuration is
         not close to its equilibrium state, it is worth setting this
         option. We recommend to set it to BFGS or MDMin (which are fast)
-        in all cases.</li><li><b>accuracy:</b> the <font color="#cc33cc">'fast'</font> (default) choice uses the symmetry operators to lower the number of atom displacements. This lowers the accuracy of the calculation, especially when the system is not exactly at the equilibrium position. The <font color="#cc33cc">'accurate'</font> choice is longer to execute (e.g. 3-6 times slower), but retains full forces. This option is only for the ASE calculators (e.g. not PHON/QE)<br></li>
+        in all cases.</li><li><b>accuracy:</b> the <font color="#cc33cc">'fast'</font> (default) choice uses the symmetry operators to lower the number of atom displacements. The <font color="#cc33cc">'accurate'</font> choice is longer to execute (e.g. 3-6 times slower), but retains full forces. The <font color="#cc33cc">'very fast'</font> choice is even twice faster, but assumes that the initial lattice is given in its equilibrium state. Then the estimate of the force constants is done with a forward difference, instead of a central difference which requires an estimate of the forces with two opposite displacements. It is then recommended to set e.g. <b>optimizer=</b><font color="#cc33cc">'BFGS'</font> option so that a fast minimization is carried out on the structure before starting the force calculations.</li><li><b>use_phonopy</b>: when set to 1, or using directly <i>sqw_phonons</i>(..., <font color="#cc33cc">'phonopy'</font>, ...), the <a href="https://atztogo.github.io/phonopy/">PhonoPy</a> library is used, which results in a <font color="#cc33cc">'very fast'</font> calculation (using forward difference force gradient), and all available symmetry operators. This requires PhonoPy to be available. When not available, the <font color="#cc33cc">'very fast'</font> accuracy choice will be used.<br></li>
     </ul>
     and specific DFT related options<br>
     <ul>
@@ -4908,12 +4909,12 @@ dispersion from which the expansion is quadratic.<br>
     To get a system with acoustic and optical modes:<br>
     <pre>	&gt;&gt; s=<font color="#3366ff">sqw_phonons</font>(<font color="#cc33cc">[ ifitpath 'Data/POSCAR_AlN'</font>],<font color="#cc33cc">'EMT'</font>); 	<i>% create model from given POSCAR</i><br>	&gt;&gt; qh=<font color="#3366ff">linspace</font>(0.01,.5,50);qk=qh; ql=qh; w=<font color="#3366ff">linspace</font>(0.01,50,51);<br> 	&gt;&gt; f=<font color="#3366ff">iData</font>(s,[],qh,qk,ql,w); 		<i>% evaluate model into an iData</i><br>	&gt;&gt; <font color="#3366ff">scatter3</font>(log(f(:,:,1,:)));	<i>	% plot ql=0 plane with acoustic and optical modes</i></pre>
     In addition, the <a href="https://en.wikipedia.org/wiki/Density_of_states">phonon
-      Density of States</a> can be computed, when specifying the <font color="#cc33cc">'dos'</font> options upon model creation. This
-    computation can be rather intensive. It is then computed during the
+      Density of States</a> (aka phonon spectrum) can be computed, when specifying the <font color="#cc33cc">'dos'</font> options upon model creation. This
+    computation can be rather intensive. It is computed during the
     first model evaluation (subsequent evaluations will be faster), and
     stored in the model <i>UserData.DOS</i> so that it can be viewed
     with e.g. :<br>
-    <pre>	&gt;&gt; s=<font color="#3366ff">sqw_phonons</font>(<font color="#cc33cc">[ ifitpath 'Data/POSCAR_Al'</font>],<font color="#cc33cc">'dos=1'</font>,<font color="#cc33cc">'EMT'</font>); 	<i>% create model from given POSCAR</i>, with DOS computation<br>	&gt;&gt; qh=<font color="#3366ff">linspace</font>(0.01,.5,50);qk=qh; ql=qh; w=<font color="#3366ff">linspace</font>(0.01,50,51);<br> 	&gt;&gt; f=<font color="#3366ff">iData</font>(s,[],qh,qk,ql,w); 		<i>% evaluate model into an iData<br></i> 	&gt;&gt; figure; <font color="#3366ff">plot</font>(s.UserData.DOS);</pre>
+    <pre>	&gt;&gt; s=<font color="#3366ff">sqw_phonons</font>(<font color="#cc33cc">[ ifitpath 'Data/POSCAR_Al'</font>],<font color="#cc33cc">'dos=1'</font>,<font color="#cc33cc">'EMT','report</font>); 	<i>% create model from given POSCAR</i>, with DOS computation and report<br>	&gt;&gt; qh=<font color="#3366ff">linspace</font>(0.01,.5,50);qk=qh; ql=qh; w=<font color="#3366ff">linspace</font>(0.01,50,51);<br> 	&gt;&gt; f=<font color="#3366ff">iData</font>(s,[],qh,qk,ql,w); 		<i>% evaluate model into an iData, and DOS, U,S,F, Cv<br></i> 	&gt;&gt; figure; <font color="#3366ff">plot</font>(s.UserData.DOS);<br>	&gt;&gt; figure; <font color="#3366ff">plot</font>(s.UserData.entropy, s.UserData.internal_energy, s.UserData.helmholtz_energy);<br>	&gt;&gt; figure; <font color="#3366ff">plot</font>(s.UserData.heat_capacity);<br></pre>The calculation of the phonon spectrum also provides an estimate of the entropy S, Helmholtz free energy F, internal energy U and the specific heat at constant volume Cv as a function of the temperature. In this example, a URL pointing to the automatically generated report is shown at the end of the procedure (e.g. wait 5 min for completion).<br><br>
     The <b>plot (surf), plot3, scatter3</b>, and <b>slice</b> methods
     for plotting all provide nice looking rendering of volume data. See
     <a href="Plot.html#mozTocId734523">Plot/3D</a> page.<br>
@@ -5125,7 +5126,7 @@ dispersion from which the expansion is quadratic.<br>
           library</a> for which we provide the <a href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/quantum-espresso-sssp_5.0.2-5build3_all.deb">quantum-espresso-sssp</a>
         Debian package.</li>
       <li><a href="https://www.vasp.at/">VASP</a>: G. Kresse and J.
-        Hafner. <i>Phys. Rev. B</i>, <b>47</b>:558, 1993. &lt;<a href="https://www.vasp.at/">https://www.vasp.at/</a>&gt;</li>
+        Hafner. <i>Phys. Rev. B</i>, <b>47</b>:558, 1993. &lt;<a href="https://www.vasp.at/">https://www.vasp.at/</a>&gt;</li><li><a href="https://atztogo.github.io/phonopy/">PhonoPy</a>: A. Togo and I. Tanaka, Scr. Mater., 108, 1-5 (2015) &lt;<a href="https://atztogo.github.io/phonopy/">https://atztogo.github.io/phonopy/</a>&gt;<br></li>
       <li>Phonon intensity estimate: H. Schober, <i>J Neut. Res.</i> <b>17</b>
         (2014) 109. <a href="http://dx.doi.org/10.3233/JNR-140016">DOI
           10.3233/JNR-140016</a><br>
