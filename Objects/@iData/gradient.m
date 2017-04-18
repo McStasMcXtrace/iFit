@@ -61,7 +61,8 @@ for i=1:ndims(s)
   g = copyobj(a);
   g.Command=cmd;
   g = iData_private_history(g, mfilename, a, index);
-  g = setalias(g, 'Error',  ge{index});
+  if iscell(ge), g = setalias(g, 'Error',  ge{index}); 
+  else g = setalias(g, 'Error',0); end
   g = setalias(g, 'Signal', gs{index}, [  mfilename '(' sl ',' num2str(index) ')' ]);
   b = [ b g ];
 end
