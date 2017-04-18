@@ -81,6 +81,7 @@ for index=1:numel(varargin)
       options.accuracy = 'accurate';
     elseif strcmpi(varargin{index},'phonopy') 
       options.use_phonopy = 1;
+      options.accuracy = 'very fast';
     end
   end
   if isstruct(varargin{index})
