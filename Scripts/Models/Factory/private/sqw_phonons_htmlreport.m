@@ -89,7 +89,7 @@ function sqw_phonons_htmlreport_create_atoms(fid, options)
   fprintf(fid, 'Stored in: <a href="%s">%s</a><br>\n', options.target, options.target);
   
   % introduction
-  fprintf(fid, '<p>This page presents the results of the estimate of phonon dispersions in a single crystal, using a DFT code (the "calculator"). From the initial atomic configuration (geometry), each atom in the lattice cell is displaced by a small quantity. The displaced atom then sustains a, so called Hellmann-Feynman, restoring force to come back to the stable structure. The dynamical matrix is obtained from these forces, and its eigen-values are the energies of the vibrational modes in the crystal.</p>\n');
+  fprintf(fid, '<p>This page presents the results of the estimate of phonon dispersions (lattice dynamics) in a single crystal, using a DFT code (the "calculator"). From the initial atomic configuration (geometry), each atom in the lattice cell is displaced by a small quantity. The displaced atom then sustains a, so called Hellmann-Feynman, restoring force to come back to the stable structure. The dynamical matrix is obtained from these forces, and its eigen-values are the energies of the vibrational modes in the crystal.</p>\n');
   fprintf(fid, '<p>This computational resource is provided by <a href="http://ifit.mccode.org">iFit</a>, with the <a href="http://ifit.mccode.org/Models.html#mozTocId990577"<b>sqw_phonon</b> Model</a>, which itself makes use of the <a href="https://wiki.fysik.dtu.dk/ase">Atomic Simulation Environment (ASE)</a>.\n');
   fprintf(fid, '<p>This report summarizes the initial crystal geometry and the calculator configuration. When the simulation ends successfully, the lower part presents the S(hkl,w) dispersion curves as plots and data sets, the model used (as a Matlab object), and the density of states. These results correspond to the coherent inelastic part of the dynamic structure factor S(hkl,w), for vibrational modes in the harmonic approximation.</p>\n');
   fprintf(fid, '<p><b>Limitations:</b> The accuracy of the model depends on the parameters used for the computation, e.g. energy cut-off, k-points grid, smearing, ...</p>\n');
@@ -257,7 +257,7 @@ function [logo, link, op] = sqw_phonons_htmlreport_init(options)
   op.htmlreport= 0;
   for f=fieldnames(op)'
     if isempty(op.(f{1})) ...
-      || (isscalar(op.(f{1})) && (op.(f{1}) == 0 || ~isfinite(op.(f{1})))) ...
+      || (isnumeric(op.(f{1})) && isscalar(op.(f{1})) && (op.(f{1}) == 0 || ~isfinite(op.(f{1})))) ...
       || strncmp(f{1}, 'script',6)
       op = rmfield(op, f{1});
     end
@@ -341,7 +341,13 @@ function Phonon_Model = sqw_phonons_htmlreport_model(fid, options)
     for index=1:numel(toadd)
       this = Phonon_Model.UserData.properties.(toadd{index});
       if isnumeric(this) && ndims(this) <= 2
-        fprintf(fid, '  <tr><td><b>%s</b></td><td>%s</td></tr>\n', toadd{index}, mat2str(this));
+        if numel(this) > 50
+          this1 = this(1:30);
+          this2 = this((end-20):end);
+          fprintf(fid, '  <tr><td><b>%s</b></td><td>%s ... %s</td></tr>\n', toadd{index}, mat2str(this1), mat2str(this2));
+        else
+          fprintf(fid, '  <tr><td><b>%s</b></td><td>%s</td></tr>\n', toadd{index}, mat2str(this));
+        end
       elseif ischar(this)
         fprintf(fid, '  <tr><td><b>%s</b></td><td>%s</td></tr>\n', toadd{index}, this');
       end
@@ -361,17 +367,47 @@ function Phonon_DOS = sqw_phonons_htmlreport_dos(fid, options, object)
   % display the vDOS. Model must have been evaluated once to compute DOS
   if isfield(object.UserData, 'DOS') && ~isempty(object.UserData.DOS)
     Phonon_DOS = object.UserData.DOS;
+    Thermo_S   = object.UserData.entropy;
+    Thermo_U   = object.UserData.internal_energy;
+    Thermo_F   = object.UserData.helmholtz_energy;
+    Thermo_Cv  = object.UserData.heat_capacity;
+    
     fprintf(fid, '<h3><a name="dos"></a>The vibrational density of states (vDOS)</h3>\n');
-    fprintf(fid, '<p>The vibrational density of states is defined as the velocity auto-correlation function (VACF) of the particles.\n');
-    fprintf(fid, 'The phonon spectrum is shown below:</p><br>\n');
-    builtin('save', fullfile(options.target, 'Phonon_DOS.mat'), 'Phonon_DOS');
-    save(Phonon_DOS, fullfile(options.target, 'Phonon_DOS.png'), 'png', 'tight');
-    save(Phonon_DOS, fullfile(options.target, 'Phonon_DOS.dat'), 'dat data');
-    save(Phonon_DOS, fullfile(options.target, 'Phonon_DOS.svg'));
-    save(Phonon_DOS, fullfile(options.target, 'Phonon_DOS.pdf'));
-    save(Phonon_DOS, fullfile(options.target, 'Phonon_DOS.fig'));
-    save(Phonon_DOS, fullfile(options.target, 'Phonon_DOS.h5'), 'mantid');
-    sqw_phonons_htmlreport_table(fid, options, 'Phonon_DOS');
+    fprintf(fid, '<p>The vibrational density of states (aka phonon spectrum) is defined as the velocity auto-correlation function (VACF) of the particles.\n');
+    
+    
+    properties = {'Phonon_DOS','Thermo_S','Thermo_U','Thermo_F','Thermo_Cv'};
+    for index=1:numel(properties)
+        name = properties{index};
+        try
+          val = eval(name);
+          builtin('save', fullfile(options.target,  [ name '.mat']), name);
+          save(val, fullfile(options.target, [ name '.png']), 'png', 'tight');
+          save(val, fullfile(options.target, [ name '.dat']), 'dat data');
+          save(val, fullfile(options.target, [ name '.svg']));
+          save(val, fullfile(options.target, [ name '.pdf']));
+          save(val, fullfile(options.target, [ name '.fig']));
+          save(val, fullfile(options.target, [ name '.h5']), 'mantid');
+        catch
+          disp([ mfilename ': ERROR when exporting ' name ' into HTML ' ])
+          continue
+        end
+        switch name
+        case 'Phonon_DOS'
+          fprintf(fid, 'The phonon spectrum is shown below:</p><br>\n');
+        case 'Thermo_S'
+          fprintf(fid, 'The entropy S=-dF/dT [eV] is shown below:</p><br>\n');
+        case 'Thermo_U'
+          fprintf(fid, 'The internal energy U [eV] is shown below:</p><br>\n');
+        case 'Thermo_F'
+          fprintf(fid, 'The Helmholtz energy F=U-TS=-kT lnZ [eV] is shown below:</p><br>\n');
+        case 'Thermo_Cv'
+          fprintf(fid, 'The specific heat at constant volume Cv=dU/dT [eV/K] is shown below:</p><br>\n');
+        end
+        sqw_phonons_htmlreport_table(fid, options,[ name ]);
+    
+    end
+
   else Phonon_DOS=[];
   end
 
