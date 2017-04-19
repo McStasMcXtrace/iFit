@@ -102,13 +102,14 @@ function signal=sqw_phonons(configuration, varargin)
 %     before computing the forces (move atoms in the cell). Can be set to 
 %       'BFGS' or 'LBFGS' (low memory BFGS)
 %       'MDMin' or 'FIRE'
-%   options.accuracy                       can be 'fast' (default) or 'accurate'.
+%   options.accuracy                       'fast', 'very fast' (default) or 'accurate'.
 %     The 'fast' choice uses the symmetry operators to lower the number of atom 
-%     displacements. This lowers the accuracy of the calculation, especially when
-%     the system is not exactly at the equilibrium position. The 'accurate' choice
-%     is longer to execute (e.g. 3-6 times slower), but retains full forces. 
-%     The 'very fast' option halves the displacements, but assumes the initial 
-%     configuration is fully equilibrated (which can be done with e.g. 'optimizer=BFGS'.
+%     displacements. The force gradient uses central difference.
+%     The 'very fast' option halves the number of displacements. The force gradient
+%     is using forward difference, and assumes the initial configuration is equilibrated 
+%     (which can be done with e.g. 'optimizer=BFGS'). The equilibrium forces are
+%     still used to improve the accuracy of the force gradient (except with PhonoPy).
+%     The 'accurate' choice is longer to execute (e.g. 3-6 times slower), but computes all forces. 
 %   options.use_phonopy=0|1                requests to use PhonoPy when installed.
 %     This choice also sets accuracy='very fast'
 %   options.disp=value                     the atom displacement in Angs. Default is 0.01.
@@ -623,7 +624,7 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO') || strcmpi(options.calculator
     '   DOS   = load(fullfile(target,''DOS.mat''));', ...
     '   if p(5) > 0, DOS.energy=DOS.energy*p(5); end', ...
     '   DOS=iData(DOS.energy,DOS.DOS./sum(DOS.DOS));', ...
-    '   DOS.Title = [ ''DOS '' strtok(this.Name) ]; xlabel(DOS,''DOS Energy [meV]''); ylabel(''DOS'');', ...
+    '   DOS.Title = [ ''DOS '' strtok(this.Name) ]; xlabel(DOS,''DOS Energy [meV]''); ylabel(DOS,''DOS'');', ...
     '   DOS.Error=0; this.UserData.DOS=DOS;', ...
     '   % update properties with Thermo stuff (concatenate structures)', ...
     '   properties = load(fullfile(target,''properties.mat''))', ...

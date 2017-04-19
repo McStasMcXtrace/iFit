@@ -118,6 +118,7 @@
 
 
 
+
         </a>fits(iData)</span>, <a href="iFunc.html">iFunc</a><br>
     </div>
     <br>
@@ -4379,7 +4380,7 @@ dispersion from which the expansion is quadratic.<br>
           Structure optimization page</a>. If the input configuration is
         not close to its equilibrium state, it is worth setting this
         option. We recommend to set it to BFGS or MDMin (which are fast)
-        in all cases.</li><li><b>accuracy:</b> the <font color="#cc33cc">'fast'</font> (default) choice uses the symmetry operators to lower the number of atom displacements. The <font color="#cc33cc">'accurate'</font> choice is longer to execute (e.g. 3-6 times slower), but retains full forces. The <font color="#cc33cc">'very fast'</font> choice is even twice faster, but assumes that the initial lattice is given in its equilibrium state. Then the estimate of the force constants is done with a forward difference, instead of a central difference which requires an estimate of the forces with two opposite displacements. It is then recommended to set e.g. <b>optimizer=</b><font color="#cc33cc">'BFGS'</font> option so that a fast minimization is carried out on the structure before starting the force calculations.</li><li><b>use_phonopy</b>: when set to 1, or using directly <i>sqw_phonons</i>(..., <font color="#cc33cc">'phonopy'</font>, ...), the <a href="https://atztogo.github.io/phonopy/">PhonoPy</a> library is used, which results in a <font color="#cc33cc">'very fast'</font> calculation (using forward difference force gradient), and all available symmetry operators. This requires PhonoPy to be available. When not available, the <font color="#cc33cc">'very fast'</font> accuracy choice will be used.<br></li>
+        in all cases.</li><li><b>accuracy:</b> The <b><font color="#cc33cc">'fast'</font></b> choice uses the symmetry operators to lower the number of atom displacements. The force gradient is using central difference. The <b><font color="#cc33cc">'very fast'</font></b> option (default) halves the number of displacements. The force gradient then uses forward difference, and assumes the initial configuration is equilibrated (which can be done with e.g. <font color="#cc33cc">'optimizer=BFGS'</font>). The equilibrium forces are still used to improve the accuracy of the force gradient (except with PhonoPy). The<b><font color="#cc33cc"> 'accurate' </font></b>choice is longer to execute (e.g. 3-6 times slower), but computes all forces. <br></li><li><b>use_phonopy</b>: when set to 1, or using directly <i>sqw_phonons</i>(..., <font color="#cc33cc">'phonopy'</font>, ...), the <a href="https://atztogo.github.io/phonopy/">PhonoPy</a> library is used, which results in a <font color="#cc33cc">'very fast'</font> calculation (using forward difference force gradient), and all available symmetry operators. This requires PhonoPy to be available. When not available, the <font color="#cc33cc">'very fast'</font> accuracy choice will be used.<br></li>
     </ul>
     and specific DFT related options<br>
     <ul>
