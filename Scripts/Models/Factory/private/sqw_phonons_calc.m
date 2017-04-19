@@ -380,9 +380,9 @@ case {'QE_ASE','QUANTUMESPRESSO_ASE','ESPRESSO_ASE'}
   if isscalar(options.occupations) && options.occupations>=0 % smearing in eV
     calc=[ calc sprintf(', occupations="smearing", smearing="methfessel-paxton", degauss=%g', options.occupations/Ry) ];
   elseif isscalar(options.occupations) && options.occupations < 0
-    calc = [ calc sprintf(', occupations="fixed")') ]
+    calc = [ calc sprintf(', occupations="fixed"') ]
   elseif ischar(options.occupations) && ~isempty(options.occupations)
-    calc = [ calc sprintf(', occupations="%s")', options.occupations) ]
+    calc = [ calc sprintf(', occupations="%s"', options.occupations) ]
   end
   if all(options.kpoints > 0)
     calc = [ calc sprintf(', kpts=(%i,%i,%i)', options.kpoints) ];
