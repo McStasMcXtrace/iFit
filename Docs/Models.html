@@ -119,6 +119,7 @@
 
 
 
+
         </a>fits(iData)</span>, <a href="iFunc.html">iFunc</a><br>
     </div>
     <br>
@@ -4380,7 +4381,7 @@ dispersion from which the expansion is quadratic.<br>
           Structure optimization page</a>. If the input configuration is
         not close to its equilibrium state, it is worth setting this
         option. We recommend to set it to BFGS or MDMin (which are fast)
-        in all cases.</li><li><b>accuracy:</b> The <b><font color="#cc33cc">'fast'</font></b> choice uses the symmetry operators to lower the number of atom displacements. The force gradient is using central difference. The <b><font color="#cc33cc">'very fast'</font></b> option (default) halves the number of displacements. The force gradient then uses forward difference, and assumes the initial configuration is equilibrated (which can be done with e.g. <font color="#cc33cc">'optimizer=BFGS'</font>). The equilibrium forces are still used to improve the accuracy of the force gradient (except with PhonoPy). The<b><font color="#cc33cc"> 'accurate' </font></b>choice is longer to execute (e.g. 3-6 times slower), but computes all forces. <br></li><li><b>use_phonopy</b>: when set to 1, or using directly <i>sqw_phonons</i>(..., <font color="#cc33cc">'phonopy'</font>, ...), the <a href="https://atztogo.github.io/phonopy/">PhonoPy</a> library is used, which results in a <font color="#cc33cc">'very fast'</font> calculation (using forward difference force gradient), and all available symmetry operators. This requires PhonoPy to be available. When not available, the <font color="#cc33cc">'very fast'</font> accuracy choice will be used.<br></li>
+        in all cases.</li><li><b>accuracy:</b> The <b><font color="#cc33cc">'fast'</font></b> choice uses the symmetry operators to lower the number of atom displacements. The force gradient is using central difference. The <b><font color="#cc33cc">'very fast'</font></b> option (default) halves the number of displacements. The force gradient then uses forward difference, and assumes the initial configuration is equilibrated (which can be done with e.g. <font color="#cc33cc">'optimizer=BFGS'</font>). The equilibrium forces are still used to improve the accuracy of the force gradient (except with PhonoPy). The<b><font color="#cc33cc"> 'accurate' </font></b>choice is longer to execute (e.g. 3-6 times slower), but computes all forces. <br></li><li><b>use_phonopy</b>: when set to 1, or using directly <i>sqw_phonons</i>(..., <font color="#cc33cc">'phonopy'</font>, ...), the <a href="https://atztogo.github.io/phonopy/">PhonoPy</a> library is used, which results in a <font color="#cc33cc">'very fast'</font> calculation (using forward difference force gradient), and all available symmetry operators. This requires PhonoPy to be available. When not available, the default <font color="#cc33cc">'very fast'</font> accuracy choice will be used.<br></li>
     </ul>
     and specific DFT related options<br>
     <ul>
@@ -5188,14 +5189,14 @@ dispersion from which the expansion is quadratic.<br>
       <pre>% sudo apt-get install python-ase<br></pre>
     </blockquote>
     External calculators should be installed separately. For Debian
-    systems, we provide most packages at <a href="http://packages.mccode.org/">packages.mccode.org</a>. Type
+    systems, we provide most packages at <a href="http://packages.mccode.org/">packages.mccode.org</a> (currently validated on Ubuntu 14.04). Type
     (Ubuntu/Mint/Debian):
     <blockquote>
       <pre>% sudo apt-add-repository 'deb http://packages.mccode.org/debian stable main'<br>% sudo apt-get update<br>% sudo apt-get install ifit elk-lapw dacapo dacapo-psp gpaw gpaw-setups nwchem nwchem-data python-matplotlib<br>% sudo apt-get install abinit abinit-doc abinit-psp quantum-espresso quantum-espresso-sssp phon libnetcdf-dev libxc1 openmpi-bin <br>% sudo apt-get install abinit-psp-jth abinit-psp-gbrv python-ase-qe-spglib<br></pre>
     </blockquote>
     <blockquote><i><b>Note:</b></i> The <i>gpaw-setups</i> package is
       named <a href="http://packages.ubuntu.com/wily/gpaw-data"><i>gpaw-data</i></a>
-      in Ubuntu distributions &gt;= 15.10.<br>
+      in Ubuntu distributions &gt;= 15.10. Do <i><b>not</b></i> install <i>gpaw-setups</i> then.<br></blockquote>If some of the packages do not install properly, you can skip them (except iFit and ASE). Then, you will still have access to the other calculators.<br>The <a href="https://atztogo.github.io/phonopy/">PhonoPy</a> library can be used (with options.use_phonopy=1). To install it, use:<br><blockquote><pre>% <span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">python</span><span class="o">-</span><span class="n">dev</span> <span class="n">python</span><span class="o">-</span><span class="n">numpy </span><span class="n">python</span><span class="o">-</span><span class="n">matplotlib</span> <span class="n">python</span><span class="o">-</span><span class="n">yaml</span> <span class="n">python</span><span class="o">-</span><span class="n">h5py </span><code class="docutils literal"><span class="pre">python-scipy<br></span></code>% sudo pip install phonopy</pre></blockquote><blockquote>
     </blockquote>
     <i><b>Pseudo potentials:</b></i><br>
     The ABINIT code requires to install an additional library of pseudo
