@@ -315,6 +315,28 @@ def phonons_run(phonon, single=True, difference='central'):
     # Set calculator if provided
     assert phonon.calc is not None, "Provide calculator in Phonon __init__ method"
     supercell.set_calculator(phonon.calc)
+    
+    # when not central difference, we check if the equilibrium forces are small
+    # and will use the '0' forces in gradient
+    if len(signs) == 1: 
+        # Do calculation on equilibrium structure
+        filename = phonon.name + '.eq.pckl'
+
+        fd = opencew(filename)
+        if fd is not None:
+            # Call derived class implementation of __call__
+            output = phonon.__call__(supercell)
+                        
+            # Write output to file
+            if rank == 0:
+                pickle.dump(output, fd)
+                sys.stdout.write('Writing %s\n' % filename)
+                fd.close()
+                # check forces
+                fmax = output.max()
+                fmin = output.min()
+                sys.stdout.write('Equilibrium forces min=%g max=%g\n' % (fmin, fmax))
+            sys.stdout.flush()
 
     # Positions of atoms to be displaced in the reference cell
     natoms = len(phonon.atoms)
@@ -350,7 +372,7 @@ def phonons_run(phonon, single=True, difference='central'):
                 disp = dxlist[index]
                 rot  = rotlist[index]
                 
-                if force0 is not None and rot is not None:
+                if force0 is not None and rot is not None:  # re-use previous forces
                     # we will now apply the rotation to the force array
                     output = _phonons_run_force1_rot(force0, ws, invL, rot, symprec=1e-6)
                     if output is None:
@@ -361,7 +383,8 @@ def phonons_run(phonon, single=True, difference='central'):
                             (offset + a, supercell.get_chemical_symbols()[a]), pos[a] + disp, \
                             " (Angs) using rotation:"
                         print rot
-                if force0 is None or rot is None: # force0 is None or rot is None
+                        
+                if force0 is None or rot is None: # compute forces
                     # move atom 'a' by 'disp'
                     supercell.positions[offset + a] = pos[a] + disp
                     print "Moving  atom #%-3i %-3s    to " % \
@@ -406,7 +429,7 @@ def _phonons_move_is_independent(dxlist, dx, symprec=1e-6):
     """
 
     # test if the rotated displacement is collinear to
-    # a stored one (in list 'dxlist'). test is done on nomalised vectors.
+    # a stored one (in list 'dxlist'). test is done on normalised vectors.
     if dx is None:
         return False
     
@@ -687,6 +710,15 @@ def phonon_read(phonon, method='Frederiksen', symmetrize=3, acoustic=True,
     # Matrix of force constants as a function of unit cell index in units
     # of eV / Ang**2
     C_xNav = numpy.empty((natoms * 3, N, natoms, 3), dtype=float)
+    
+    # get equilibrium forces (if any)
+    filename = phonon.name + '.eq.pckl'
+    feq = 0
+    if os.path.isfile(filename):
+        feq = pickle.load(open(filename))
+        if method == 'frederiksen':
+            for i, a in enumerate(phonon.indices):
+                feq[a] -= feq.sum(0)
 
     # Loop over all atomic displacements and calculate force constants
     for i, a in enumerate(phonon.indices):
@@ -703,7 +735,7 @@ def phonon_read(phonon, method='Frederiksen', symmetrize=3, acoustic=True,
             else:
                 fplus_av = None
             
-            if method == 'frederiksen':
+            if method == 'frederiksen': # translational invariance
                 if fminus_av is not None:
                     fminus_av[a] -= fminus_av.sum(0)
                 if fplus_av is not None:
@@ -714,10 +746,10 @@ def phonon_read(phonon, method='Frederiksen', symmetrize=3, acoustic=True,
                 C_av = (fminus_av - fplus_av)/2
             elif fminus_av is not None:
                 # only the - side is available: forward difference
-                C_av =  fminus_av
+                C_av =  fminus_av - feq
             elif fplus_av is not None:
                 # only the + side is available: backward difference
-                C_av = -fplus_av
+                C_av = -(fplus_av - feq)
 
             C_av /= phonon.delta  # gradient
 
