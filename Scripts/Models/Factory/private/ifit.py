@@ -263,6 +263,41 @@ def _get_wigner_seitz(atoms, move=0, wrap=1, symprec=1e-6):
         xtmp[na] = temp1
     
     return xtmp
+    
+def phonons_run_eq(phonon, supercell):
+    """Run the calculation for the equilibrium lattice
+    
+    input:
+    
+      phonon: ASE Phonon object with Atoms and Calculator
+      supercell: an ASE Atoms object, supercell
+    
+    return:
+      output: forces (ndarray)
+    """
+    # Do calculation on equilibrium structure
+    filename = phonon.name + '.eq.pckl'
+
+    fd = opencew(filename)
+    if fd is not None:
+        # Call derived class implementation of __call__
+        output = phonon.__call__(supercell)
+                    
+        # Write output to file
+        if rank == 0:
+            pickle.dump(output, fd)
+            sys.stdout.write('Writing %s\n' % filename)
+            fd.close()
+            # check forces
+            fmax = output.max()
+            fmin = output.min()
+            sys.stdout.write('Equilibrium forces min=%g max=%g\n' % (fmin, fmax))
+        sys.stdout.flush()
+    else:
+        # read previous data
+        output = pickle.load(open(filename))
+        
+    return output
         
 # ------------------------------------------------------------------------------
 def phonons_run(phonon, single=True, difference='central'):
@@ -320,23 +355,7 @@ def phonons_run(phonon, single=True, difference='central'):
     # and will use the '0' forces in gradient
     if len(signs) == 1: 
         # Do calculation on equilibrium structure
-        filename = phonon.name + '.eq.pckl'
-
-        fd = opencew(filename)
-        if fd is not None:
-            # Call derived class implementation of __call__
-            output = phonon.__call__(supercell)
-                        
-            # Write output to file
-            if rank == 0:
-                pickle.dump(output, fd)
-                sys.stdout.write('Writing %s\n' % filename)
-                fd.close()
-                # check forces
-                fmax = output.max()
-                fmin = output.min()
-                sys.stdout.write('Equilibrium forces min=%g max=%g\n' % (fmin, fmax))
-            sys.stdout.flush()
+        phonons_run_eq(phonon, supercell)
 
     # Positions of atoms to be displaced in the reference cell
     natoms = len(phonon.atoms)
@@ -840,6 +859,12 @@ def phonon_run_phonopy(phonon, single=True):
     # get displaced supercells: api_phonopy._build_supercells_with_displacements()
     supercells = phonpy.get_supercells_with_displacements()
     
+    # Do calculation on equilibrium structure (used to improve gradient accuracy)
+    supercell.set_calculator(phonon.calc)
+    feq = phonons_run_eq(phonon, supercell)
+    for i, a in enumerate(phonon.indices):
+        feq[a] -= feq.sum(0)  # translational invariance
+    
     # compute the forces
     set_of_forces   = []
     for d in range(len(supercells)):
@@ -868,6 +893,9 @@ def phonon_run_phonopy(phonon, single=True):
             # Simple translational invariance
             for force in forces:
                 force -= drift_force / forces.shape[0]
+            
+            if feq is not None:  
+                forces -= feq # forward difference, but assumes equilibrium is not always 0
 
             # save the forces in a pickle
             f = open(filename, 'wb')
@@ -888,9 +916,7 @@ def phonon_run_phonopy(phonon, single=True):
     fid = open("phonopy.pkl","wb")
     pickle.dump(phonpy, fid)
     fid.close()
-    
-    
-    
+
     # transfer results to the ASE phonon object
     # Number of atoms (primitive cell)
     natoms = len(phonon.indices)
