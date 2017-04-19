@@ -23,7 +23,7 @@ options.gui        = nan;
 options.htmlreport = 0;
 options.dos        = 0;
 options.optimizer  = '';
-options.accuracy   = 'fast';  % can be 'fast' 'very fast' or 'accurate' (much slower)
+options.accuracy   = 'very fast';  % can be 'fast' 'very fast' or 'accurate' (much slower)
 options.disp       = 0.01;    % displacement of atoms in Angs
 options.use_phonopy= 0;
 
@@ -124,9 +124,9 @@ if options.htmlreport == 1, options.dos=1; end
 
 % few more checks for accuracy stuff
 % very fast mode (options.accuracy = 'very fast' or use_phonopy) -> triggers optimize
-if strcmpi(options.accuracy,'very fast') || options.use_phonopy
+if strcmpi(options.accuracy,'very fast') && options.use_phonopy
   if isempty(options.optimizer)
-    disp([ mfilename ': WARNING: suggest optimizer=BFGS with very fast computation. Currently not set.' ]); 
+    disp([ mfilename ': WARNING: suggest optimizer=BFGS with "very fast" computation. Currently not set.' ]); 
   end
 end
 
