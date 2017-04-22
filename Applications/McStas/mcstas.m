@@ -752,8 +752,8 @@ function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, in
     
     if isempty(sim)
       % if designated monitor file name import fails, import all simulation content
-      if ~isempty(dir([ directory filesep 'mcstas.sim' ]))
-        directory = [ directory filesep 'mcstas.sim' ];
+      if ~isempty(dir([ directory filesep 'mccode.sim' ]))
+        directory = [ directory filesep 'mccode.sim' ];
       end
       sim = iData(directory); % a vector of monitors (iData objects)
       
