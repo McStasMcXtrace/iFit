@@ -18,7 +18,7 @@ if numel(out) > 1
 end
 
 if numel(out) == 1
-  if ~isempty(findstr(out,'sim file'))
+  if ~isempty(findstr(out,'simulation description file'))
     % this is a McCode file
     
     % Find filename fields in sim struct:

@@ -273,8 +273,10 @@ function structure=mcplot_load_mccode(filename)
     value(find(value == ':')) = ''; value=strtrim(value); field=strtrim(field);
     value=strrep(value,'''','');  % remove quotes
     % keep 'value' as a string for further use before converting to num
-    value_str=value;  
-    num   = str2num(value);
+    value_str=value;
+    if all(ismember(value, sprintf(' 0123456789+-.eEdDi\n\r\t\f')))
+      num   = str2num(value);
+    else num=[]; end
     if ~isempty(num), value = num; end
     if strncmp(field,'Instrument', length('Instrument'))
       field = 'Instrument';

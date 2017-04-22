@@ -61,9 +61,9 @@ end
 % ==============================================================================
 function [name, value] = str2struct_value_pair(this)
   % split token 'this' as name=value
-  [name, line] = strtok(this, '=');
+  [name, line] = strtok(this, ':');
   if isempty(line)
-      [name, line] = strtok(this, sprintf(':'));
+      [name, line] = strtok(this, sprintf('='));
   end
   if isempty(line)
       [name, line] = strtok(this, sprintf(' \t'));
@@ -91,28 +91,32 @@ function [name, value] = str2struct_value_pair(this)
   if nextindex <= length(line) &&  ~isspace(line(nextindex)) && line(nextindex) ~= ']'
     value = line; % then a char
   end
+
   % when value can not be obtained, try with num2str (for expressions)
   if isempty(value), 
     value=comment;
-    tmp  =str2num(value);
+    if all(ismember(value, sprintf(' 0123456789+-.eEdDi\n\r\t\f')))
+      tmp  =str2num(value);
+    else tmp=[]; end
     if ~isempty(tmp) && isnumeric(tmp)
       value=tmp;
     end
-    if ischar(value)
-      % check if the 'value' as char starts/ends with quotes
-      if value(1) == '''' || value(1) == '"'
-        value = value(2:end);
-        if value(end) == '''' || value(end) == '"'
-          value = value(1:(end-1));
-        end
-      else
-        % check again if value contains itself an assignement
-        if ~isempty(find(value == '='))
-          [n,v] =  str2struct_value_pair(value);
-          if ~isempty(n) && ~isempty(v)
-            s.(n) = v;
-            value = s;
-          end
+  end
+  if ischar(value)
+    % check if the 'value' as char starts/ends with quotes
+    if value(1) == '''' || value(1) == '"'
+      value = value(2:end);
+      if value(end) == '''' || value(end) == '"'
+        value = value(1:(end-1));
+      end
+    else
+      % check again if value contains itself an assignement
+      % multiple level structure
+      if ~isempty(find(value == '='))
+        [n,v] =  str2struct_value_pair(value);
+        if ~isempty(n) && ~isempty(v)
+          s.(n) = v;
+          value = s;
         end
       end
     end
@@ -125,6 +129,7 @@ function name = sanitize_name(name)
   if name(1) == '_'
     name = name(find(name ~= '_', 1):end);
   end
+  if isempty(name), return; end
   if isstrprop(name(1),'digit')
     name = [ 'x' name ];
   end
