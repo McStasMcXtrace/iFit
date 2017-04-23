@@ -104,9 +104,7 @@ if ~isempty(p) && ischar(p)
     signal=evalc('disp(model)');
     return
   elseif ~strcmp(p, 'guess')
-    p'
-    disp([ mfilename ': Unknown parameter value in Model ' model.Name '. Using "guess" instead.'])
-    p=[];
+    p=str2struct(p);
   end
 elseif isa(p, 'iFunc')
   p=p.ParameterValues;
@@ -116,13 +114,38 @@ end
 
 % convert a structure of parameters into an array matching model parameter
 % names.
+
 if isstruct(p)
-  new = [];
+  new = nan*ones(1,numel(model.Parameters));
+  flag_p_struct_cell = false;
   for index=1:length(model.Parameters)
-    if isfield(p, model.Parameters{index})
-      new = [ new p.(model.Parameters{index}) ];
+    if ~isfield(p, model.Parameters{index}), continue; end
+    if isfield(p, model.Parameters{index}) && isnumeric(p.(model.Parameters{index}))
+      this_p = p.(model.Parameters{index});
+      if numel(this_p) > 1
+        flag_p_struct_cell = true;
+        this_p = double(this_p);
+      end
+      new(index) = this_p(1);
     end
   end
+  if flag_p_struct_cell
+    new0 = new;
+    signal = {}; ax={}; name={};
+    for index=1:length(model.Parameters)
+      if isfield(p, model.Parameters{index}) && numel(p.(model.Parameters{index})) > 1
+        new = new0;
+        this_p = p.(model.Parameters{index});
+        for i=1:numel(this_p)
+          new(index) = this_p(i);
+          [signal{end+1},model,ax{end+1},name{end+1}] = feval(model, new, varargin{:});      
+        end
+      end
+    end
+    return
+  end
+  
+  % now we test if we have vectors
   if length(new) == length(model.Parameters)
     p = new;
   else
