@@ -6,32 +6,45 @@ function y = mccode(instr, options)
 %
 % MODEL CREATION:
 % ------------------------------------------------------------------------------
-% instrument(description)          creates a model with specified McCode instrument 
+% mccode(description)          creates a model with specified McCode instrument 
 %           The instrument may be given as an '.instr' McCode description, or directly
 %             as an executable.
-% instrument(description, options) also specifies additional McCode options, e.g.
+% mccode(description, options) also specifies additional McCode options, e.g.
 %           options.dir:         directory where to store results, or set automatically (string)
+%                                the last monitor files are stored therein 'sim'.
 %           options.ncount:      number of neutron events per iteration, e.g. 1e6 (double)
 %           options.mpi:         number of processors/cores to use with MPI on localhost (integer) 
 %           options.machines:    filename containing the list of machines/nodes to use (string)
 %           options.seed:        random number seed to use for each iteration (double)
 %           options.gravitation: 0 or 1 to set gravitation handling in neutron propagation (boolean)
-%           options.monitor:    a single monitor name to read, or left empty for thr last (string).
+%           options.monitor:     a single monitor name to read, or left empty for the last (string).
 %           options.mccode:      set the executable path to 'mcrun' (default) or 'mxrun'
+%
+% The instrument parameters of type 'double' are used as moel parameters. Other
+% parameters (e.g. of type string and int) are stored in UserData.Parameters_Constant
+%
+% The options ncount, seed, gravitation, monitor can be changed for the model evaluation.
 %
 % MODEL EVALUATION:
 % ------------------------------------------------------------------------------
-% model(p) evaluates the model with given parameters (vector or structure). Only
-%   scalar parameters of the instrument can be varied. other parameters are kept fixed.
+% model(p) 
+%   evaluates the model with given parameters (vector or structure). Only
+%   scalar/double parameters of the instrument can be varied. Other parameters are kept fixed.
+% model(p, nan) 
+%   evaluates the model and return the raw McCode data set.
+% model(p, x,y,...) 
+%   evaluates the model and interpolates the McCode data set onto given axes.
 %
-% input:  p: Constant parameter (double)
-%            p = [ scalar_instrument_parameters ]
+% input:  p: variable instrument parameters (double)
+%            p = [ double_type_instrument_parameters ]
+%         x,y,...: axes (double)
 %
 % output: y: monitor value
 % ex:     model=instrument('templateDIFF'); signal=feval(model);
 %
 % Version: $Date$
 % See also iFunc, iFunc/fits, iFunc/plot, iFunc/feval, mcstas
+%          <a href="http://www.mcstas.org">McStas</a>, <a href="http://www.mccode.org">McCode</a>
 % (c) E.Farhi, ILL. License: EUPL.
 
 % check for McCode executable
@@ -39,18 +52,30 @@ persistent mccode_present
 
 % get options
 if nargin == 0
-  instr = 'templateDIFF.instr';
+  instr = '';
 end
+if isempty(instr), instr='templateDIFF.instr'; end
 if nargin > 1 && ischar(options)
     options = str2struct(options);
 else
   options = struct();
 end
 options = instrument_parse_options(options);
+% use temporary directory to build/assemble parts.
+if isempty(options.dir), 
+  options.dir = tempname; 
+  mkdir(options.dir);
+end
 
 % get the instrument. If not available, search for one in a McCode installation
 % stop if not found
-options.instrument = mccode_search_instrument(instr);
+options.instrument = mccode_search_instrument(instr, options.dir);
+% copy file locally
+try
+  copyfile(options.instrument, options.dir);
+  [p,f,e] = fileparts(options.instrument);
+  options.instrument = fullfile(options.dir,[f e]);
+end
 
 % check for McCode, only the fisrt time
 if isempty(mccode_present)
@@ -146,9 +171,9 @@ y.Expression = { ...
 '  % handle mpi', ...
 '  if isfield(options,''mpi'') && ~isempty(options.mpi) && ...', ...
 '    isnumeric(options.mpi) && options.mpi > 1', ...
-'    cmd = [ ''mpirun -n '' options.mpi ];', ...
+'    cmd = [ ''mpirun -n '' num2str(options.mpi) '' '' ];', ...
 '    if isfield(options, ''machines'') && ~isempty(options.machines) && ischar(options.machines)', ...
-'      cmd = [ cmd '' -machinefile '' options.machines ];', ...
+'      cmd = [ cmd '' -machinefile '' options.machines '' '' ];', ...
 '    end', ...
 '  else cmd = ''''; end', ...
 '  % assemble command line', ...
@@ -156,6 +181,14 @@ y.Expression = { ...
 '    rmdir(fullfile(options.dir,''sim''),''s''); end', ...
 '  cmd = [ cmd fullfile(options.dir, UD.instrument_exe) '' --ncount='' num2str(options.ncount) ...', ...
 '    '' --dir='' fullfile(options.dir,''sim'') ];', ...
+'  % handle seed gravitation', ...
+'  if isfield(options,''seed'') && ~isempty(options.seed) && isscalar(options.seed)', ...
+'    cmd = [ cmd '' --seed '' options.seed ];', ...
+'  end', ...
+'  if isfield(options,''gravitation'') && ~isempty(options.gravitation) && isscalar(options.gravitation) && options.gravitation', ...
+'    cmd = [ cmd '' --gravitation '' ];', ...
+'  end', ...
+'  % add parameters', ...
 '  f = this.Parameters;', ...
 '  for index=1:numel(f) % variable instrument parameters', ...
 '    cmd = [ cmd '' '' f{index} ''='' num2str(p(index)) ];', ...
@@ -206,13 +239,12 @@ if ~any(isnan((y.Guess)))
     end
     signal=signal(index_position);
   end
-  disp(signal); % this is an iData object
   y.UserData.options.monitor = get(signal,'Component');
   y.Dimension = ndims(signal);
   % handle interpolation onto axes
   ax = ',x,y,z,t';
   y.Expression{end+1} = 'if length(signal) > 1, signal = signal(end); end';
-  y.Expression{end+1} = [ 'if ~isempty(x), signal = interp(signal ' ax(1:(2*y.Dimension)) '); end;' ];
+  y.Expression{end+1} = [ 'if ~isempty(x) && ~(isscalar(x) && isnan(x)), signal = interp(signal ' ax(1:(2*y.Dimension)) '); else x=getaxis(signal,1); y=getaxis(signal,2); z=getaxis(signal,3); t=getaxis(signal,4); end;' ];
   y.Expression{end+1} = 'signal = double(signal);';
   % update model description
   y.Description = [ y.Description ...
@@ -235,6 +267,7 @@ function options = instrument_parse_options(options)
   if ~isfield(options,'dir'),        options.dir        = ''; end
   if ~isfield(options,'monitor'),    options.monitor    = ''; end
   if ~isfield(options,'gravitation'),options.gravitation= 0; end
+  if ~isfield(options,'gravitation'),options.seed       = []; end
   
 % ------------------------------------------------------------------------------
 function present = mccode_check(options)
@@ -261,7 +294,7 @@ function present = mccode_check(options)
   end
 
 % ------------------------------------------------------------------------------
-function instr = mccode_search_instrument(instr)
+function instr = mccode_search_instrument(instr, d)
 
   % get/search instrument
   % check if the instrument exists, else attempt to find it
@@ -275,7 +308,7 @@ function instr = mccode_search_instrument(instr)
   for ext={'','.instr','.out','.exe'}
     out = [ instr ext{1} ];
     % check for instrument in McStas/McXtrace libraries
-    search_dir = { getenv('MCSTAS'), getenv('MCXTRACE'), ...
+    search_dir = { d, getenv('MCSTAS'), getenv('MCXTRACE'), ...
       '/usr/local/lib/mc*', 'C:\mc*', '/usr/share/mcstas/'};
     if isempty(index)
       % search the instrument recursively in all existing directories in this list
@@ -371,10 +404,13 @@ function result = instrument_compile(options)
   % assemble the command line: compile, no particle generated
   cmd = [ options.mccode ' --force-compile ' options.instrument ' --ncount=0' ];  
   if isfield(options,'mpi')
-    cmd = [ cmd ' --mpi=1' ]
+    cmd = [ cmd ' --mpi=1' ];
   end
   disp(cmd)
+  p=pwd;
+  cd(options.dir);
   [status, result] = system([ precmd cmd ]);
+  cd(p)
   % stop if compilation fails...
   if (status ~= 0 && status ~= 255) 
     disp(result);
