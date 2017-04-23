@@ -6,6 +6,21 @@ function [signal, model, ax, name] = feval(model, p, varargin)
 %     a fast notation is to pass arguments directly to the model:
 %       model(p, x,y,z,...)
 %
+%   The parameters can be specified as a single vector, with one value per
+%   model Parameter, a structure with named Parameters, a cell with one entry
+%   per Parameter, a string which can be 
+%     'identify'  returns a string with the Model details
+%     'guess'     guess starting parameters
+%     'current'   use the current (last stored) parameter values, or guess
+%     'plot'      plot the model with default parameters and axes.
+%
+%   Providing an empty parameter argument is similar to 'guess'.
+%   Providing a NaN parameter, or a vector containing NaN values, will guess
+%   missing parameters, using any optional 'signal' for the guess.
+%
+%   The axes are given as vectors/matrices for the model evaluation. When given
+%   as NaN, the axis is not used and left as NaN.
+%
 %   signal = feval(model, 'guess', x,y, ..., signal...)
 %     makes a quick parameter guess. This usually requires to specify the signal
 %     to guess from to be passed after the axes. The parameters are then in model.ParameterValues
@@ -78,19 +93,14 @@ if ischar(model) && isa(p, 'iFunc')
 end
 
 if isa(p, 'iData')
+  pars = NaN;
+  if isfield(p,'ModelParameters')
+    pars = get(a, 'ModelParameters');
+  elseif isfield(p,'Parameters')
+    pars = get(a, 'Parameters');
+  end
   varargin = { p varargin{:} }; % will evaluate on iData axes with guesses pars
-  p = NaN;
-end
-
-if iscell(p) && ~isempty(p) % as parameter cell (iterative function evaluation)
-  signal = {}; ax={}; name={};
-  for index=1:numel(p)
-    [signal{end+1}, model, ax{end+1}, name{end+1}] = feval(model, p{index}, varargin{:});
-  end
-  if numel(signal) == 1, 
-    signal=signal{1}; ax=ax{1}; name=name{1};
-  end
-  return
+  p = pars;
 end
 
 % some usual commands 
@@ -103,12 +113,12 @@ if ~isempty(p) && ischar(p)
   elseif strcmp(p, 'identify')
     signal=evalc('disp(model)');
     return
-  elseif ~strcmp(p, 'guess')
+  elseif ~strcmp(p, 'guess') && numel(strtok(p)) < numel(p)
     p=str2struct(p);
   end
 elseif isa(p, 'iFunc')
   p=p.ParameterValues;
-elseif ~isnumeric(p) && ~isempty(p) && ~isstruct(p)
+elseif ~isnumeric(p) && ~isempty(p) && ~isstruct(p) && ~iscell(p)
   error([ 'iFunc:' mfilename ], [ 'Starting parameters "p" should be given as a vector, structure, character or empty, not ' class(p) ' length ' num2str(numel(p))]);
 end
 
@@ -116,33 +126,11 @@ end
 % names.
 
 if isstruct(p)
-  new = nan*ones(1,numel(model.Parameters));
-  flag_p_struct_cell = false;
+  new = cell(1,numel(model.Parameters)); new(:) = { nan };
   for index=1:length(model.Parameters)
-    if ~isfield(p, model.Parameters{index}), continue; end
-    if isfield(p, model.Parameters{index}) && isnumeric(p.(model.Parameters{index}))
-      this_p = p.(model.Parameters{index});
-      if numel(this_p) > 1
-        flag_p_struct_cell = true;
-        this_p = double(this_p);
-      end
-      new(index) = this_p(1);
+    if isfield(p, model.Parameters{index})
+      new{index} = p.(model.Parameters{index});
     end
-  end
-  if flag_p_struct_cell
-    new0 = new;
-    signal = {}; ax={}; name={};
-    for index=1:length(model.Parameters)
-      if isfield(p, model.Parameters{index}) && numel(p.(model.Parameters{index})) > 1
-        new = new0;
-        this_p = p.(model.Parameters{index});
-        for i=1:numel(this_p)
-          new(index) = this_p(i);
-          [signal{end+1},model,ax{end+1},name{end+1}] = feval(model, new, varargin{:});      
-        end
-      end
-    end
-    return
   end
   
   % now we test if we have vectors
@@ -154,6 +142,28 @@ if isstruct(p)
     model.Parameters
     error([ 'iFunc:' mfilename ], 'Fields of the parameters "p" given as a structure do not match the model Parameters.');
   end
+end
+
+if iscell(p) && ~isempty(p) % as parameter cell (iterative function evaluation)
+  signal = {}; ax={}; name={}; p0 = p;
+  if all(cellfun(@isscalar, p))
+    [signal{end+1}, model, ax{end+1}, name{end+1}] = feval(model, cell2mat(p), varargin{:});
+    if numel(signal) == 1, 
+      signal=signal{1}; ax=ax{1}; name=name{1};
+    end
+    return
+  end
+  for index=1:numel(p)  % we scan Parameters
+    p_index = p0{index};  % a scalar or vector
+    if isnumeric(p_index) && numel(p_index) > 1
+      for i=1:numel(p_index)  % we scan the values of the Parameter      
+        p{index} = p_index(i);
+        [signal{end+1}, model, ax{end+1}, name{end+1}] = feval(model, p, varargin{:});
+      end
+    end
+  end
+  
+  return
 end
 
 if ~ischar(p)
