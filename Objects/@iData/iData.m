@@ -174,7 +174,7 @@ else  % convert input argument into object
       end
       
       % create iData object from signal and axes
-      if (isempty(axes_in) || any(cellfun(@isnan,axes_in))) && ~isempty(ax), axes_in=ax; end
+      if (isempty(axes_in) || any(cellfun(@(c)any(isnan(c)),axes_in))) && ~isempty(ax), axes_in=ax; end
       this_out = iData(axes_in{:}, signal); % make it an iData
 
       % assign axes names
