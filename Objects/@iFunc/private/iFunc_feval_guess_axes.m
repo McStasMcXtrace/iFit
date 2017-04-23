@@ -40,7 +40,7 @@ for index=1:model.Dimension
       end
     end
     if ~isnan(width) && ~isnan(position)
-      if isempty(ax{index}) || all(all(isnan(ax{index})))
+      if isempty(ax{index})
 		    % axis is not set: use default axis from parameter names and values given
 		    if model.Dimension > 2, sz_max = 20; else sz_max = 50; end
 		    ax{index} = linspace(position-3*width,position+3*width, sz_max+index);

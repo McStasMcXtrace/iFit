@@ -86,7 +86,11 @@ if model.Dimension && ...
   % check orientation (axis rank) for vectors. 0 for non vectors
   check_orient = zeros(1,model.Dimension);
   index        = find(check_vector);
-  check_orient(index) = cellfun(@(c)find(size(c)==numel(c)), ax(index));
+  try
+    check_orient(index) = cellfun(@(c)find(size(c)==numel(c)), ax(index));
+  catch
+    check_orient(index) = 0;
+  end
   
   % all vectors, not same orientation and not same length: ndgrid
   if all(check_vector) && any(check_orient ~= check_orient(1)) ...
