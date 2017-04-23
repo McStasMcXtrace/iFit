@@ -379,18 +379,24 @@ try
       % rendering with getframe/imwrite failed. Fall back to saveas.
       f = figure('visible','off');
       b = plot(a, options);
+      set(f,'Renderer','zbuffer')
       saveas(f, filename, formatShort);
       close(f);
     end
   case 'epsc' % color encapsulated postscript file format, with TIFF preview
     f=figure('visible','off');
     plot(a,options);
-    print(f, '-depsc', '-tiff', filename);
+    try
+      print(f, '-depsc', '-tiff', filename);
+    catch
+      print(f, '-depsc', filename);
+    end
     close(f);
   case {'psc','pdf','ill','jpeg'}  % other bitmap and vector graphics formats (PDF, ...)
     f=figure('visible','off');
     plot(a,options);
-    print(f, [ '-d' formatShort ], filename);
+    set(f,'Renderer','zbuffer')
+    saveas(f, filename, formatShort);
     close(f);
   case 'fig'  % Matlab figure format
     f=figure('visible','off');
@@ -400,6 +406,7 @@ try
   case 'svg'  % scalable vector graphics format (private function)
     f=figure('visible','off');
     plot(a,options);
+    set(f,'Renderer','zbuffer')
     try
       saveas(f, filename, 'svg');
     catch
