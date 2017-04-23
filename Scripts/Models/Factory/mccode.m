@@ -28,7 +28,7 @@ function y = mccode(instr, options)
 % MODEL EVALUATION:
 % ------------------------------------------------------------------------------
 % model(p) 
-%   evaluates the model with given parameters (vector or structure). Only
+%   evaluates the model with given parameters (vector, cell, structure). Only
 %   scalar/double parameters of the instrument can be varied. Other parameters are kept fixed.
 % model(p, nan) 
 %   evaluates the model and return the raw McCode data set.
