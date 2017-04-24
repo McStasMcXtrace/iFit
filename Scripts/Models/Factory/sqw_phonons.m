@@ -48,6 +48,13 @@ function signal=sqw_phonons(configuration, varargin)
 %
 % MODEL CREATION ===============================================================
 %
+% sqw_phonons(configuration, calculator, options, ...) 
+%   is the usual syntax, such as sqw_phonons('POSCAR','qe','metal','dos')
+% sqw_phonons('gui')
+%   shows a dialogue to select the phonon calculator configuration.
+% sqw_phonons('defaults')
+%   uses a simple fcc Aluminium as example.
+%
 % The arguments for the model creation should be:
 %
 % input (model creation):
@@ -93,6 +100,7 @@ function signal=sqw_phonons(configuration, varargin)
 %     QuantumEspresso: path to potentials, e.g. /usr/share/espresso/pseudo
 %   options.command='exe'                  Path to calculator executable.
 %   options.mpi=scalar                     use multi-cpu, requires e.g. OpenMPI to be installed.
+%     when available and not specified, MPI is used with all CPU's.
 %   options.machinefile=filename           file containing the list of MPI machines to use
 %   options.autoplot=0|1                   when set, automatically evaluates the Model
 %     and plot results.
