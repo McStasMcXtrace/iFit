@@ -1,24 +1,31 @@
 function y = mccode(instr, options)
-% y = instrument(p) : McCode (McStas/McXtrace) instrument
+% y = mccode(p) : McCode (McStas/McXtrace) instrument
 %
-%   iFunc/instrument a McCode instrument
+%   iFunc/mccode a McCode instrument
 %     y=monitor value for given instrument parameters
 %
 % MODEL CREATION:
 % ------------------------------------------------------------------------------
-% mccode(description)          creates a model with specified McCode instrument 
-%           The instrument may be given as an '.instr' McCode description, or directly
-%             as an executable.
+% mccode(description)
+%       creates a model with specified McCode instrument 
+%       The instrument may be given as an '.instr' McCode description, directly
+%       as an executable, or as an other.
+% mccode('')
+%       requests a McCode file (*.instr,*.out) with a file selector.
+% mccode('gui')
+%       list all available instruments in a list for a selection.
+% mccode('defaults')
+%       uses templateDIFF.instr neutron powder diffractometer as example.
 % mccode(description, options) also specifies additional McCode options, e.g.
-%           options.dir:         directory where to store results, or set automatically (string)
-%                                the last monitor files are stored therein 'sim'.
-%           options.ncount:      number of neutron events per iteration, e.g. 1e6 (double)
-%           options.mpi:         number of processors/cores to use with MPI on localhost (integer) 
-%           options.machines:    filename containing the list of machines/nodes to use (string)
-%           options.seed:        random number seed to use for each iteration (double)
-%           options.gravitation: 0 or 1 to set gravitation handling in neutron propagation (boolean)
-%           options.monitor:     a single monitor name to read, or left empty for the last (string).
-%           options.mccode:      set the executable path to 'mcrun' (default) or 'mxrun'
+%   options.dir:         directory where to store results, or set automatically (string)
+%                          the last simulation files are stored therein 'sim'.
+%   options.ncount:      number of neutron events per iteration, e.g. 1e6 (double)
+%   options.mpi:         number of processors/cores to use with MPI on localhost (integer) 
+%   options.machines:    filename containing the list of machines/nodes to use (string)
+%   options.seed:        random number seed to use for each iteration (double)
+%   options.gravitation: 0 or 1 to set gravitation handling in neutron propagation (boolean)
+%   options.monitor:     a single monitor name to read, or left empty for the last (string).
+%   options.mccode:      set the executable path to 'mcrun' (default) or 'mxrun'
 %
 % The instrument parameters of type 'double' are used as moel parameters. Other
 % parameters (e.g. of type string and int) are stored in UserData.Parameters_Constant
@@ -50,11 +57,12 @@ function y = mccode(instr, options)
 % check for McCode executable
 persistent mccode_present
 
+y = [];
 % get options
 if nargin == 0
   instr = '';
 end
-if isempty(instr), instr='templateDIFF.instr'; end
+
 if nargin > 1 && ischar(options)
     options = str2struct(options);
 else
@@ -69,7 +77,41 @@ end
 
 % get the instrument. If not available, search for one in a McCode installation
 % stop if not found
-options.instrument = mccode_search_instrument(instr, options.dir);
+
+% when nothing given, ask user. a list selector with all found instruments.
+if nargin == 0
+  instr= mccode_search_instrument('.instr', options.dir);
+  [selection] = listdlg('PromptString', ...
+    {'Here are all found instruments on your system.'; ...
+     'Select a McStas/McXtrace instrument to load'},...
+                      'SelectionMode','single',...
+                      'ListString',instr);
+  if isempty(selection),    return; end
+  options.instrument = instr{selection};
+else
+  % empty choice: pop-up a file selector
+  if isempty(instr), 
+    filterspec = {'*.*', 'All files (*.*)' ; ...
+                  '*.instr', 'McCode instrument (*.instr)' ; ...
+                  '*.out;*.exe','McCode compiled instrument executable (*.out, *.exe)' };
+    [filename, pathname] = uigetfile(filterspec,'Select a McStas/McXtrace instrument to load');
+    if isempty(filename),    return; end
+    if isequal(filename, 0), return; end
+    options.instrument = fullfile(pathname, filename); 
+  else
+    if strcmp(instr, 'defaults'), instr='templateDIFF.instr';
+    elseif strcmp(instr, 'identify')
+      y = mccode('defaults');
+      y.Name = [ 'McCode instrument [' mfilename ']' ];
+      return;
+    end
+    options.instrument = mccode_search_instrument(instr, options.dir);
+  end
+end
+
+if iscell(options.instrument), options.instrument = options.instrument{1}; end
+disp([ mfilename ': Using instrument: ' options.instrument ] );        
+        
 % copy file locally
 try
   copyfile(options.instrument, options.dir);
@@ -227,8 +269,11 @@ y = iFunc(y);
 % evaluate the model to get its monitors, and derive the dimensionality
 % all parameters must be defined to get execute with default values
 if ~any(isnan((y.Guess)))
-  disp([ mfilename ': Determining the model dimension... (please be patient)' ]);
+  disp([ mfilename ': Determining the model dimension...' ]);
+  ncount = options.ncount;
+  y.UserData.options.ncount = 1e2;
   signal = feval(y,y.Guess);
+  y.UserData.options.ncount = ncount;
   if numel(signal) > 1
     % get the monitor Positions, and the further away one
     positions = get(signal,findfield(signal, 'position'));
@@ -313,8 +358,12 @@ function instr = mccode_search_instrument(instr, d)
     if isempty(index)
       % search the instrument recursively in all existing directories in this list
       index = getAllFiles(search_dir, out);
+      % check if we have more than one match
       if ~isempty(index)
-        disp([ mfilename ': Using instrument ' index ] );
+        if numel(index) > 1, 
+          disp([ mfilename ': Found instruments:' ] );
+          fprintf(1,'  %s\n', index{:});
+        end
         instr = index;
         return
       end
@@ -331,28 +380,46 @@ function fileList = getAllFiles(dirName, File)
 
   % allow search in many directories
   if iscell(dirName)
+    fileList = {};
     for d=1:length(dirName)
-      fileList=getAllFiles(dirName{d}, File);
-      if ~isempty(fileList)
-        break
+      fileList1=getAllFiles(dirName{d}, File);
+      if ~isempty(fileList1)
+        if ischar(fileList1)
+          fileList{end+1} = fileList1;
+        else
+          fileList = { fileList{:} fileList1{:} };
+        end
       end
     end
     return
   end
   
   dirData = dir(dirName);                 % Get the data for the current directory
-  fileList= [];
+  fileList= {};
   if ~isdir(dirName), dirName = fileparts(dirName); end
   if isempty(dirData), return; end
   dirIndex = [dirData.isdir];             % Find the index for directories
   fileList = {dirData(~dirIndex).name}';  % Get a list of the files
   if ~isempty(fileList)
+    % exact search
     index = find(strcmp(File, fileList));
     if ~isempty(index)
-      fileList = fullfile(dirName,fileList{index(1)});  % get the full path/file name
+      fileList = fileList(index);
+      for i=1:numel(fileList)
+        fileList{i} = fullfile(dirName,fileList{i});  % get the full path/file name
+      end
+      return
+    end
+    % more relaxed search
+    index = find(~cellfun(@isempty,strfind(fileList, File)));
+    if ~isempty(index)  
+      fileList = fileList(index);
+      for i=1:numel(fileList)
+        fileList{i} = fullfile(dirName,fileList{i});  % get the full path/file name
+      end
       return
     else
-      fileList = [];
+      fileList = {};
     end
   end
   subDirs = {dirData(dirIndex).name};          % Get a list of the subdirectories
