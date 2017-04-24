@@ -174,7 +174,7 @@ if ~isfield(options,'mpi') && usejava('jvm')
 end
 
 if isfield(options,'mpi') && ~isempty(options.mpi) && options.mpi > 1
-  options.mpirun = [ status.mpirun ' -np ' num2str(options.mpi) ];
+  options.mpirun = [ status.mpirun ' -n ' num2str(options.mpi) ];
   if isfield(options, 'machinefile')
     options.mpirun = [ options.mpirun ' -machinefile ' options.machinefile ];
   end
