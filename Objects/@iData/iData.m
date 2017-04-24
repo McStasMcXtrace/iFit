@@ -196,7 +196,9 @@ else  % convert input argument into object
       this_out.DisplayName = name;
       setalias(this_out,'Error', 0);
       if ~isempty(this_in.ParameterValues)
-        pars_out = cell2struct(num2cell(this_in.ParameterValues(:)'), strtok(this_in.Parameters(:)'), 2);
+          par_val = this_in.ParameterValues;
+          pars    = this_in.Parameters;
+        pars_out = cell2struct(num2cell(par_val(:)'), strtok(pars(:)'), 2);
         setalias(this_out,'Parameters', pars_out, [ name ' model parameters' ]);
       end
       setalias(this_out,'Model', this_in, this_in.Name);

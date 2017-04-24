@@ -30,7 +30,7 @@ for index=1:numel(s)
   if isa(m, 'iFunc') && ~isempty(m)
     % get the parameter values as a struct
     mp    = m.ParameterValues;
-    names = m.Parameters(:);
+    names = m.Parameters; names = names(:);
     name  = m.Name;
   end
 
