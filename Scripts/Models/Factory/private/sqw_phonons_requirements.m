@@ -31,6 +31,7 @@ else
     if any(st == 0:2)
         status.mpirun=calc{1};
         st = 0;
+        disp([ '  MPI             (http://www.openmpi.org) as "' status.mpirun '"' ]);
         break;
     end
   end
