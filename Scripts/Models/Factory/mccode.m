@@ -47,7 +47,8 @@ function y = mccode(instr, options)
 %         x,y,...: axes (double)
 %
 % output: y: monitor value
-% ex:     model=instrument('templateDIFF'); signal=feval(model);
+% ex:     model =mccode('templateDIFF'); 
+%         signal=iData(model,[],linspace(-10,100,100));
 %
 % Version: $Date$
 % See also iFunc, iFunc/fits, iFunc/plot, iFunc/feval, mcstas
@@ -122,6 +123,19 @@ end
 % check for McCode, only the fisrt time
 if isempty(mccode_present)
   mccode_present = mccode_check(options);
+end
+
+if isempty(options.mpirun)
+  options.mpirun = mccode_present.mpirun;
+end
+if isempty(options.mccode)
+  options.mccode = mccode_present.mccode;
+end
+% MPI: default to all available core (read from Java)
+if ~isempty(options.mpirun) && ~isfield(options,'mpi') && usejava('jvm')
+  r=java.lang.Runtime.getRuntime;
+  % mem_avail   = r.freeMemory;
+  options.mpi = r.availableProcessors;
 end
 
 % test if the given/found instrument is executable. Return empty if source code.
@@ -212,8 +226,8 @@ y.Expression = { ...
 '  end', ...
 '  % handle mpi', ...
 '  if isfield(options,''mpi'') && ~isempty(options.mpi) && ...', ...
-'    isnumeric(options.mpi) && options.mpi > 1', ...
-'    cmd = [ ''mpirun -n '' num2str(options.mpi) '' '' ];', ...
+'    ~isempty(options.mpirun) && isnumeric(options.mpi) && options.mpi > 1', ...
+'    cmd = [ options.mpirun '' -n '' num2str(options.mpi) '' '' ];', ...
 '    if isfield(options, ''machines'') && ~isempty(options.machines) && ischar(options.machines)', ...
 '      cmd = [ cmd '' -machinefile '' options.machines '' '' ];', ...
 '    end', ...
@@ -308,34 +322,52 @@ end
 function options = instrument_parse_options(options)
   if ~isfield(options,'instrument'), options.instrument = ''; end
   if ~isfield(options,'ncount'),     options.ncount     = 1e6; end
-  if ~isfield(options,'mccode'),     options.mccode     = 'mcrun'; end
   if ~isfield(options,'dir'),        options.dir        = ''; end
   if ~isfield(options,'monitor'),    options.monitor    = ''; end
   if ~isfield(options,'gravitation'),options.gravitation= 0; end
-  if ~isfield(options,'gravitation'),options.seed       = []; end
+  if ~isfield(options,'seed'),       options.seed       = []; end
+  if ~isfield(options,'mccode'),     options.mccode     = []; end
+  if ~isfield(options,'mpirun'),     options.mpirun     = 'mpirun'; end
   
 % ------------------------------------------------------------------------------
 function present = mccode_check(options)
 % check if McCode (mcstas or mcxtrace) is present
-  present = '';
+
   if ismac,      precmd = 'DYLD_LIBRARY_PATH= ;';
   elseif isunix, precmd = 'LD_LIBRARY_PATH= ; '; 
   else           precmd = ''; end
   
+  present.mccode = '';
   for totest = { options.mccode, 'mcrun','mxrun' }
+    if ~isempty(present.mccode), break; end
     for ext={'','.pl','.py','.exe','.out'}
       % look for executable and test with various extensions
       [status, result] = system([ precmd totest{1} ext{1} ]);
       if (status == 1 || status == 255) 
-        present = options.mccode;
-        return
+        present.mccode = [ totest{1} ext{1} ];
+        break
       end
     end
   end
   
-  if isempty(present)
+  if isempty(present.mccode)
     disp([ mfilename ': WARNING: ' options.mccode ' McStas/McXtrace executable is not installed. Get it at www.mccode.org' ]);
     disp('  The model can still be created if the instrument is given as an executable.')
+  else
+    disp([ '  McCode          (http://www.mccode.org) as "' present.mccode '"' ]);
+  end
+  
+  % test for mpirun
+  present.mpirun = '';
+  for calc={options.mpirun, 'mpirun', 'mpiexec'}
+    % now test executable
+    [st,result]=system([ precmd 'echo "0" | ' calc{1} ]);
+    if any(st == 0:2)
+        present.mpirun=calc{1};
+        st = 0;
+        disp([ '  MPI             (http://www.openmpi.org) as "' present.mpirun '"' ]);
+        break;
+    end
   end
 
 % ------------------------------------------------------------------------------
