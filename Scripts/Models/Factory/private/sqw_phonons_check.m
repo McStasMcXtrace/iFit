@@ -15,38 +15,56 @@ if ismac,      precmd = 'DYLD_LIBRARY_PATH= ;';
 elseif isunix, precmd = 'LD_LIBRARY_PATH= ; '; 
 else           precmd = ''; end
 
+flag_get_supercell = false;
+config_dir         = [];
 if isdir(configuration)
-  % search for 'known' configurations in the directory from PHON/PhonoPy
-  files = search_files(target, { 'POSCAR*','SPOSCAR' });
-  flag_get_supercell = true;
+  config_dir = configuration;
+  % search for 'known' configurations in the given directory from PHON/PhonoPy
+  files = search_files(configuration, { 'POSCAR*','SPOSCAR' });
   supercell = [];
   if ~isempty(files)
     files = files.name;
+    configuration = fullfile(configuration, files);
+    disp([ mfilename ': Re-using lattice cell from ' configuration ]); 
     if strncmp(files, 'POSCAR',6)
-      configuration = fullfile(target, files);
+      flag_get_supercell =  true;
     elseif strncmp(files, 'SPOSCAR',7)
-      configuration = fullfile(target, files);
       supercell     = [ 1 1 1 ];
-      flag_get_supercell = false;
     end
   end
-else flag_get_supercell=false;
 end
 
+
+% get any previous supercell definition
 if flag_get_supercell
-  files = search_files(target, ...
+  files = search_files(config_dir, ...
     { 'phonon.yaml','INPHON','quasiharmonic_phonon.yaml','band.yaml'});
   if ~isempty(files)
-    files = iLoad(fullfile(target, files));
+    files = iLoad(fullfile(config_dir, files.name));
+  else 
+    files = [];
+    files.Data = [];
   end
   if isfield(files.Data, 'NDIM')
     supercell = files.Data.NDIM;
   elseif isfield(files.Data, 'supercell_matrix')
-    supercell = trace(files.Data.supercell_matrix);
+    supercell = diag(files.Data.supercell_matrix);
   end
-  if ~isempty(supercell), options.supercell = supercell; 
+  if ~isempty(supercell)
+    options.supercell = supercell;
+    disp([ mfilename ': Re-using supercell ' mat2str(options.supercell) ]); 
   elseif any(options.supercell == 0)
     disp([ mfilename ': ERROR: unspecified supercell for previous computation.' ]); 
+  end
+end
+
+for f={'FORCE_SETS','disp.yaml'}
+  % look if there is are previous PhonoPy files, and copy them to the target
+  if ~isempty(config_dir) && exist(fullfile(config_dir, f{1}))
+    try
+      copyfile(fullfile(config_dir, f{1}), target);
+      disp([ mfilename ': Re-using ' f{1} ' from ' config_dir ]); 
+    end
   end
 end
 

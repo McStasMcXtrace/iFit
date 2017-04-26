@@ -25,7 +25,7 @@ options.dos        = 0;
 options.optimizer  = '';
 options.accuracy   = 'very fast';  % can be 'fast' 'very fast' or 'accurate' (much slower)
 options.disp       = 0.01;    % displacement of atoms in Angs
-options.use_phonopy= 0;
+options.use_phonopy= 1;
 
 % read input arguments
 for index=1:numel(varargin)
@@ -75,6 +75,7 @@ for index=1:numel(varargin)
       options.optimizer = 'BFGS';
     elseif strcmpi(varargin{index},'fast') || strcmpi(varargin{index},'low') || strcmpi(varargin{index},'coarse')
       options.accuracy = 'fast';
+      options.use_phonopy = 0;
     elseif strcmpi(varargin{index},'very fast')
       options.accuracy = 'very fast';
     elseif strcmpi(varargin{index},'accurate') || strcmpi(varargin{index},'high') || strcmpi(varargin{index},'slow')
@@ -121,14 +122,6 @@ if isscalar(options.kpoints)
   options.kpoints=[ options.kpoints options.kpoints options.kpoints ]; 
 end
 if options.htmlreport == 1, options.dos=1; end
-
-% few more checks for accuracy stuff
-% very fast mode (options.accuracy = 'very fast' or use_phonopy) -> triggers optimize
-if strcmpi(options.accuracy,'very fast') && options.use_phonopy
-  if isempty(options.optimizer)
-    disp([ mfilename ': WARNING: suggest optimizer=BFGS with "very fast" computation. Currently not set.' ]); 
-  end
-end
 
 % make sure target is a fully qualified path
 if options.target(1) ~= filesep
