@@ -811,7 +811,7 @@ def phonon_read(phonon, method='Frederiksen', symmetrize=3, acoustic=True,
 # compatibility with PhonoPy
 # ------------------------------------------------------------------------------
 
-def phonon_run_phonopy(phonon, single=True):
+def phonon_run_phonopy(phonon, single=True, filename='FORCE_SETS'):
     """Run the phonon calculations, using PhonoPy.
     
     input:
@@ -831,18 +831,18 @@ def phonon_run_phonopy(phonon, single=True):
     """
     from phonopy import Phonopy
     from phonopy.structure.atoms import Atoms as PhonopyAtoms
+    import phonopy.file_IO as file_IO
     
     # we first look if an existing phonon pickle exists. This is the case if we
     # are running with iterative calls while return value is True. The first call
     # will then create the objects, which are subsequently updated until False.
     
-        
+    # Set calculator if provided
+    assert phonon.calc is not None, "Provide calculator in Phonon __init__ method"
+    
     # Atoms in the supercell -- repeated in the lattice vector directions
     # beginning with the last
     supercell = phonon.atoms * phonon.N_c
-    
-    # Set calculator if provided
-    assert phonon.calc is not None, "Provide calculator in Phonon __init__ method"
     
     # create a PhonopyAtoms object
     bulk=PhonopyAtoms(supercell.get_chemical_symbols(), 
@@ -854,63 +854,23 @@ def phonon_run_phonopy(phonon, single=True):
     
     # generate displacements (minimal set)
     phonpy.generate_displacements(distance=0.01)
-    disps = phonpy.get_displacements()
     
-    # get displaced supercells: api_phonopy._build_supercells_with_displacements()
-    supercells = phonpy.get_supercells_with_displacements()
-    
-    # Do calculation on equilibrium structure (used to improve gradient accuracy)
-    supercell.set_calculator(phonon.calc)
-    feq = phonons_run_eq(phonon, supercell)
-    for i, a in enumerate(phonon.indices):
-        feq[a] -= feq.sum(0)  # translational invariance
-    
-    # compute the forces
-    set_of_forces   = []
-    for d in range(len(supercells)):
-        # skip if this step has been done already.
-        filename = '%s.%d.pkl' % (phonon.name, d)
-        if os.path.isfile(filename):
-            f = open(filename, 'rb')
-            forces = pickle.load(f)
-            f.close()
-        else:
-            # proceed with force calculation for current displaced supercell
-            print "[ASE/Phonopy] Computing step %i/%i" % (d, len(supercells))
-            disp = disps[d]
-            print "Moving  atom #%-3i %-3s    to " % \
-                (disp[0], supercell.get_chemical_symbols()[disp[0]]), disp[1:]
-            scell = supercells[d]
-            cell = Atoms(symbols=scell.get_chemical_symbols(),
-                         scaled_positions=scell.get_scaled_positions(),
-                         cell=scell.get_cell(),
-                         pbc=True)
-            cell.set_calculator(phonon.calc)
-            forces = cell.get_forces()
+    # is there an existing PhonoPy calculation ?
+    if os.path.exists('FORCE_SETS'):
+        if os.path.exists('disp.yaml'):
+            new_dataset, cell = file_IO.parse_disp_yaml(filename="disp.yaml", return_cell=True)
+            phonpy.set_displacement_dataset(new_dataset)
+            phonpy._unitcell = cell
+        force_sets = file_IO.parse_FORCE_SETS(filename='FORCE_SETS')
+        phonpy.set_displacement_dataset(force_sets)
+        phonpy.produce_force_constants()
+    else:
+        set_of_forces, flag = phonon_run_phonopy_calculate(phonon, phonpy, supercell, single)
+        if flag is True:
+            return flag # some more work is probably required
             
-            drift_force = forces.sum(axis=0)
-            # print "[Phonopy] Drift force:", "%11.5f"*3 % tuple(drift_force)
-            # Simple translational invariance
-            for force in forces:
-                force -= drift_force / forces.shape[0]
-            
-            if feq is not None:  
-                forces -= feq # forward difference, but assumes equilibrium is not always 0
-
-            # save the forces in a pickle
-            f = open(filename, 'wb')
-            pickle.dump(forces, f)
-            f.close()
-            
-            # in single shot mode, we return when forces were computed
-            if single:
-                return True
-        
-        # store the incremental list of forces
-        set_of_forces.append(forces)
-        
-    # use symmetry to derive forces in equivalent displacements
-    phonpy.produce_force_constants(forces=set_of_forces)
+        # use symmetry to derive forces in equivalent displacements
+        phonpy.produce_force_constants(forces=set_of_forces)
     
     # save the PhonoPy object
     fid = open("phonopy.pkl","wb")
@@ -958,4 +918,64 @@ def phonon_run_phonopy(phonon, single=True):
     
     return False  # nothing left to do
     
+# ------------------------------------------------------------------------------
+def phonon_run_phonopy_calculate(phonon, phonpy, supercell, single):
+    
+    # get the displacements
+    disps = phonpy.get_displacements()
+    
+    # get displaced supercells: api_phonopy._build_supercells_with_displacements()
+    supercells = phonpy.get_supercells_with_displacements()
+        
+    # Do calculation on equilibrium structure (used to improve gradient accuracy)
+    supercell.set_calculator(phonon.calc)
+    feq = phonons_run_eq(phonon, supercell)
+    for i, a in enumerate(phonon.indices):
+        feq[a] -= feq.sum(0)  # translational invariance
+    
+    # compute the forces
+    set_of_forces   = []
+    for d in range(len(supercells)):
+        # skip if this step has been done already.
+        filename = '%s.%d.pkl' % (phonon.name, d)
+        if os.path.isfile(filename):
+            f = open(filename, 'rb')
+            forces = pickle.load(f)
+            f.close()
+        else:
+            # proceed with force calculation for current displaced supercell
+            print "[ASE/Phonopy] Computing step %i/%i" % (d+1, len(supercells))
+            disp = disps[d]
+            print "Moving  atom #%-3i %-3s    to " % \
+                (disp[0], supercell.get_chemical_symbols()[disp[0]]), disp[1:]
+            scell = supercells[d]
+            cell = Atoms(symbols=scell.get_chemical_symbols(),
+                         scaled_positions=scell.get_scaled_positions(),
+                         cell=scell.get_cell(),
+                         pbc=True)
+            cell.set_calculator(phonon.calc)
+            forces = cell.get_forces()
+            
+            drift_force = forces.sum(axis=0)
+            # print "[Phonopy] Drift force:", "%11.5f"*3 % tuple(drift_force)
+            # Simple translational invariance
+            for force in forces:
+                force -= drift_force / forces.shape[0]
+            
+            if feq is not None:  
+                forces -= feq # forward difference, but assumes equilibrium is not always 0
 
+            # save the forces in a pickle
+            f = open(filename, 'wb')
+            pickle.dump(forces, f)
+            f.close()
+            
+            # in single shot mode, we return when forces were computed
+            if single:
+                return set_of_forces, True
+        
+        # store the incremental list of forces
+        set_of_forces.append(forces)
+        
+    return set_of_forces, False
+    

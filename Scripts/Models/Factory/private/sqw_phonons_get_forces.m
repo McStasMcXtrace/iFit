@@ -223,7 +223,7 @@ function [options, sav] = sqw_phonons_get_forces(options, decl, calc)
     try
       if strcmpi(options.calculator, 'GPAW') && isfield(options,'mpi') ...
         && ~isempty(options.mpi) && options.mpi > 1
-        [st, result] = system([ precmd status.mpirun ' -np ' num2str(options.mpi) ' '  status.gpaw ' ' fullfile(target,'sqw_phonons_forces_iterate.py') ]);
+        [st, result] = system([ precmd options.available.mpirun ' -np ' num2str(options.mpi) ' '  options.available.gpaw ' ' fullfile(target,'sqw_phonons_forces_iterate.py') ]);
       else
         [st, result] = system([ precmd 'python ' fullfile(target,'sqw_phonons_forces_iterate.py') ]);
       end
@@ -251,8 +251,9 @@ function [options, sav] = sqw_phonons_get_forces(options, decl, calc)
         sqw_phonons_htmlreport('', 'status', options);
       end
       move = move+1;
-    catch
+    catch ME
       disp(result)
+      disp(getReport(ME))
       sqw_phonons_error([ mfilename ': failed calling ASE with script ' ...
         fullfile(target,'sqw_phonons_iterate.py') ], options);
       options = [];
