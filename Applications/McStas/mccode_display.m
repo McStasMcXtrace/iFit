@@ -167,7 +167,7 @@ function [X,Y,Z] = mcdisplay_get_token(output, token)
   index_token = find(~cellfun(@isempty, strfind(output, [ 'MCDISPLAY: ' token ])));
   X=[]; Y=[]; Z=[];
   if isempty(index_token), return; end
-  for index = index_token
+  for index = index_token(:)'
     % in each multiline, we replace the search token and execute the remaining part in eval
     this_line = output{index};
     this_line = strrep(this_line, 'MCDISPLAY: ','[x,y,z]=');
