@@ -46,7 +46,7 @@ for i = 1:length(S)     % can handle multiple index levels
     index = find(strcmpi(fieldname, f));
     if ~isempty(index) % structure/class def fields: b.field
       b = b.(f{index});
-      if isnumeric(b) && strcmpi(fieldname, 'Date')
+      if all(isnumeric(b)) && all(strcmpi(fieldname, 'Date'))
         b = datestr(b);
       end
     elseif (isa(b,'iFunc') || isfield(b, 'Parameters')) && any(strcmp(fieldname, strtok(b.Parameters))) % b.<parameter name>

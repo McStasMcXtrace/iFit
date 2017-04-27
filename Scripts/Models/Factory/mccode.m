@@ -12,7 +12,7 @@ function y = mccode(instr, options)
 %       as an executable, or as an other.
 % mccode('')
 %       requests a McCode file (*.instr,*.out) with a file selector.
-% mccode('gui')
+% mccode('gui')   and 'mccode'  alone.
 %       list all available instruments in a list for a selection.
 % mccode('defaults')
 %       uses templateDIFF.instr neutron powder diffractometer as example.
@@ -21,16 +21,26 @@ function y = mccode(instr, options)
 %                          the last simulation files are stored therein 'sim'.
 %   options.ncount:      number of neutron events per iteration, e.g. 1e6 (double)
 %   options.mpi:         number of processors/cores to use with MPI on localhost (integer) 
+%                          when MPI is available, and mpi options is not given,
+%                          all cores are then used.
 %   options.machines:    filename containing the list of machines/nodes to use (string)
 %   options.seed:        random number seed to use for each iteration (double)
 %   options.gravitation: 0 or 1 to set gravitation handling in neutron propagation (boolean)
 %   options.monitor:     a single monitor name to read, or left empty for the last (string).
 %   options.mccode:      set the executable path to 'mcrun' (default) or 'mxrun'
+%   options.mpirun:      set the executable path to 'mpirun'
+%   options.compile:     0 or 1 to force re-compilation of the executable.
+%                          try that first if you can not create/use the object (old 
+%                          executable may be used).
+%
+%   options can also be given as a string, e.g. 'ncount=1e6; compile=1'
 %
 % The instrument parameters of type 'double' are used as moel parameters. Other
 % parameters (e.g. of type string and int) are stored in UserData.Parameters_Constant
 %
-% The options ncount, seed, gravitation, monitor can be changed for the model evaluation.
+% The options ncount, seed, gravitation, monitor can be changed for the model 
+% evaluation, with e.g.:
+%   model.UserData.options.gravitation=1;
 %
 % MODEL EVALUATION:
 % ------------------------------------------------------------------------------
@@ -80,13 +90,15 @@ end
 % stop if not found
 
 % when nothing given, ask user. a list selector with all found instruments.
-if nargin == 0
+if nargin == 0 || strcmp(instr, 'gui')
   instr= mccode_search_instrument('.instr', options.dir);
   [selection] = listdlg('PromptString', ...
     {'Here are all found instruments on your system.'; ...
      'Select a McStas/McXtrace instrument to load'},...
-                      'SelectionMode','single',...
-                      'ListString',instr);
+    'Name','McCode: Select a McStas/McXtrace instrument to load', ...
+    'SelectionMode','single',...
+    'ListSize', [500 300], ...
+    'ListString',instr);
   if isempty(selection),    return; end
   options.instrument = instr{selection};
 else
@@ -143,7 +155,7 @@ end
 
 % compile the instrument (when McCode present), possibly with MPI from options
 % if no McCode executable, the user must provide an executable.
-if isempty(info) && ~isempty(options.mccode)
+if (isempty(info) && ~isempty(options.mccode)) || options.compile
   % compile. Stop when fails.
   result = instrument_compile(options);
   % identify and test the executable
@@ -274,8 +286,14 @@ y.Expression = { ...
 '  signal = [];', ...
 '  if ~isempty(options.monitor) && ischar(options.monitor)', ...
 '    signal = iData(fullfile(options.dir,''sim'',[ strtrim(options.monitor) ''*'' ]));', ...
+'    if isempty(signal) % if the monitor name does not match monitor file', ...
+'      signal = iData(fullfile(options.dir,''sim'',''mccode.sim''));', ...
+'      index=strcmp(options.monitor, get(signal,''Component''));', ...
+'      if ~isempty(index) && numel(signal) > 1, signal=signal(index); end', ...
+'    end', ...
 '  end', ...
 '  if isempty(signal), signal = iData(fullfile(options.dir,''sim'',''mccode.sim'')); end', ...
+'  this.UserData.monitors = signal;', ...
 '' ...
 };
 
@@ -286,11 +304,14 @@ y = iFunc(y);
 
 % evaluate the model to get its monitors, and derive the dimensionality
 % all parameters must be defined to get execute with default values
+%
+% at this stage, 'signal' contains all monitors
 if ~any(isnan((y.Guess)))
   disp([ mfilename ': Determining the model dimension...' ]);
   ncount = options.ncount;
-  y.UserData.options.ncount = 1e2;
+  y.UserData.options.ncount = 1e2;  % fast as we only need the size and position
   signal = feval(y,y.Guess);
+  signal = y.UserData.monitors;     % get all monitors
   y.UserData.options.ncount = ncount;
   if numel(signal) > 1
     % get the monitor Positions, and the further away one
@@ -306,12 +327,21 @@ if ~any(isnan((y.Guess)))
   y.Dimension = ndims(signal);
   % handle interpolation onto axes
   ax = ',x,y,z,t';
-  y.Expression{end+1} = 'if length(signal) > 1, signal = signal(end); end';
-  y.Expression{end+1} = [ 'if ~isempty(x) && ~(isscalar(x) && isnan(x)), signal = interp(signal ' ax(1:(2*y.Dimension)) '); else x=getaxis(signal,1); y=getaxis(signal,2); z=getaxis(signal,3); t=getaxis(signal,4); end;' ];
+  y.Expression{end+1} = 'if numel(signal) > 1, signal = signal(end); end';
+  y.Expression{end+1} = 'disp(x)';
+  y.Expression{end+1} = [ 'if ~isempty(x) && ~all(isnan(x)), signal = interp(signal ' ax(1:(2*y.Dimension)) '); else x=getaxis(signal,1); y=getaxis(signal,2); z=getaxis(signal,3); t=getaxis(signal,4); end;' ];
   y.Expression{end+1} = 'signal = double(signal);';
   % update model description
   y.Description = [ y.Description ...
-    sprintf('\n  Using monitor %s', y.UserData.options.monitor) ];
+    sprintf('\n  Using initially monitor %s', y.UserData.options.monitor) ];
+  
+  if numel(y.UserData.monitors) > 1
+    y.Description = [ y.Description sprintf('\n  Available monitors:') ];
+    for index=1:numel(y.UserData.monitors)
+      y.Description = [ y.Description ...
+        sprintf('\n    * %s', get(y.UserData.monitors(index),'Component')) ];
+    end
+  end
   for index=1:y.Dimension
     x = getaxis(signal, index); x=x(:);
     y.Description = [ y.Description ...
@@ -319,7 +349,7 @@ if ~any(isnan((y.Guess)))
   end
 end
 
-
+disp(y.Description);
 
 
 % ==============================================================================
@@ -333,6 +363,7 @@ function options = instrument_parse_options(options)
   if ~isfield(options,'mccode'),     options.mccode     = []; end
   if ~isfield(options,'mpirun'),     options.mpirun     = 'mpirun'; end
   if ~isfield(options,'trace'),      options.trace      = ''; end
+  if ~isfield(options,'compile'),    options.compile    = 0; end
   
 % ------------------------------------------------------------------------------
 function present = mccode_check(options)
