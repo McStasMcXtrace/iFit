@@ -2,6 +2,18 @@ function comps=mccode_display(model)
 % runs the model in --trace mode and capture the output
 % grab all MCDISPLAY lines
 
+  % check if we have an iFunc  McCode object
+  if ischar(model) && ~isempty(dir(model))
+    model = mccode(model);
+  end
+  
+  if ~isa(model, 'iFunc')
+    error([ mfilename ': ERROR: Usage: mccode_display(model) with model=path_to_mccode_instr or mccode(path_to_mccode_instr)' ]);
+  end
+  if ~isfield(model.UserData, 'options') || ~isfield(model.UserData,'instrument_executable')
+    error([ mfilename ': ERROR: Usage: mccode_display(model) with model=mccode(path_to_mccode_instr)' ]);
+  end
+
   % switch to trace mode
   model.UserData.options.trace  = 1;
   model.UserData.options.ncount = 1e3;
@@ -63,7 +75,7 @@ function comps=mccode_display(model)
   clear output
   
   % transform the points and plot them
-  f = figure('Name',[ 'Instrument: ' model.name ]);
+  f = figure('Name',[ 'Instrument: ' model.Name ]);
   colors='bgrcmk';
   for index=1:numel(comps)
     comp = comps(index);
@@ -75,27 +87,48 @@ function comps=mccode_display(model)
     y = R(2,:)+comp.pos(2);
     z = R(3,:)+comp.pos(3);
     c = mod(comp.index, numel(colors)); c=colors(c+1);
-    h = plot3(z,x,y, [ c '-' ]);
+    h = plot3(z,x,y, [ c '-' ], 'DisplayName', comp.name);
     popup=uicontextmenu;
     uimenu(popup,'label', comp.name,'ForeGroundColor',c);
     uimenu(popup,'label', [ 'AT: ' mat2str(comp.pos) ]);
     set(h,'uicontextmenu',popup);
     hold on
   end
+  % plot a red dashed line that follows the centre location of components
+  centers = [ 0 0 0 ];
+  for index=1:numel(comps)
+    comp = comps(index);
+    centers = [ centers ; comp.pos(:)' ];
+  end
+  plot3(centers(:,3), centers(:,1), centers(:,2), 'r:', 'DisplayName', model.Name);
+  
   xlabel('Z [m]');
   ylabel('X [m]');
-  zlabel('Y [m]')
+  zlabel('Y [m]');
+  daspect([1 1 1]);
+  box on;
   
   mp    = model.ParameterValues;
   names = model.Parameters;
   t = [];
   for index=1:numel(mp)
     if numel(mp) < index, val = []; else val = mp(index); end
-    t = [ t names{index} '=' num2str(val) ];
+    t = [ t names{index} '=' num2str(val) ' ' ];
   end
-  title({ [ 'Instrument: ' model.name ] ; t });
+  % add static parameters
+  if ~isempty(model.UserData.Parameters_Constant) && ...
+     ~isempty(fieldnames(model.UserData.Parameters_Constant))
+    for f=fieldnames(model.UserData.Parameters_Constant)
+      name = f{1}; val=model.UserData.Parameters_Constant.(name);
+      t = [ t name '=' num2str(val) ' ' ];
+    end
+  end
+  t = { [ 'Instrument: ' model.Name ] ; t };
+  title(textwrap(t, 80),'Interpreter','None');
+  
+  mccode_display_contextmenu(gca, model.name, textwrap(t, 80))
 
-end % mcdis
+end % mccode_display
 
 
 
@@ -178,3 +211,54 @@ function [X,Y,Z]=circle(plane, x0,y0,z0, radius)
   X=X+x0; Y=Y+y0; Z=Z+z0;
 end
 
+function mccode_display_contextmenu(a, name, pars)
+  % install a context menu on the axis object of the figure
+  
+  % build the contextual menu
+  pars = sprintf('%s ', pars{:});
+  uicm = uicontextmenu('Tag','mccode_display_contextmenu_gca');
+  uimenu(uicm, 'Label', [ 'About ' name '...' ], ...
+           'Callback', [ 'helpdlg(''' pars ''',''' name ''')' ]);
+  uimenu(uicm, 'Separator','on', 'Label', 'Duplicate View...', 'Callback', ...
+         [ 'tmp_cb.g=gca;' ...
+           'tmp_cb.f=figure; tmp_cb.c=copyobj(tmp_cb.g,gcf); ' ...
+           'set(tmp_cb.c,''position'',[ 0.1 0.1 0.85 0.8]);' ...
+           'set(gcf,''Name'',''Copy of McCode display: ' name '''); ' ...
+           'set(gca,''XTickLabelMode'',''auto'',''XTickMode'',''auto'');' ...
+           'set(gca,''YTickLabelMode'',''auto'',''YTickMode'',''auto'');' ...
+           'set(gca,''ZTickLabelMode'',''auto'',''ZTickMode'',''auto'');']);
+           
+  uimenu(uicm, 'Label','Toggle grid', 'Callback','grid');
+  uimenu(uicm, 'Label','Toggle aspect ratio','Callback','if all(daspect == 1) daspect(''auto''); else daspect([ 1 1 1 ]); end');
+  uimenu(uicm, 'Label','Toggle Perspective','Callback', 'if strcmp(get(gca,''Projection''),''orthographic'')  set(gca,''Projection'',''perspective''); else set(gca,''Projection'',''orthographic''); end');
+  uimenu(uicm, 'Label','Toggle legend','Callback','tmp_h=legend(''toggle''); set(tmp_h,''Interpreter'',''None''); if strcmp(get(tmp_h,''Visible''),''off''), legend(gca,''off''); end; clear tmp_h;');
+  uimenu(uicm, 'Label','Reset Flat/3D View', 'Callback', [ ...
+      '[tmp_a,tmp_e]=view; if (tmp_a==0 & tmp_e==90) view(3); else view(2); end;' ...
+      'clear tmp_a tmp_e; lighting none;alpha(1);shading flat;rotate3d off;axis tight;legend off;' ]);
+  
+  uimenu(uicm, 'Separator','on','Label', 'About iFit/iData', 'Callback', ...
+    [ 'msgbox(''' version(iData,2) sprintf('. Visit <http://ifit.mccode.org>') ''',''About iFit'',''help'')' ]);
+    
+  % attch the contextual menu
+  set(gca, 'UIContextMenu', uicm);
+  
+  % ==============================================================================
+  % contextual menu for the figure
+  % add rotate/pan/zoom tools to the figure in case java machine is not started
+  if ~usejava('jvm')
+    if isempty(get(gcf, 'UIContextMenu'))
+      uicmf = uicontextmenu('Tag','iData_plot_contextmenu_fig');
+      uimenu(uicmf, 'Label','Zoom on/off', 'Callback','zoom');
+      uimenu(uicmf, 'Label','Pan on/off',  'Callback','pan');
+      if ndims(a) >= 2
+        uimenu(uicmf, 'Label', 'Rotate on/off', 'Callback','rotate3d');
+      end
+      uimenu(uicmf, 'Label','Legend on/off', 'Callback','legend(gca, ''toggle'',''Location'',''Best'');');
+      uimenu(uicmf, 'Label','Print...', 'Callback','printpreview');
+
+      set(gcf, 'UIContextMenu', uicmf);
+      set(gcf, 'KeyPressFcn', @(src,evnt) eval('if lower(evnt.Character)==''r'', lighting none;alpha(1);shading flat;axis tight;rotate3d off; zoom off; pan off; end') );
+    end
+  end
+    
+  end

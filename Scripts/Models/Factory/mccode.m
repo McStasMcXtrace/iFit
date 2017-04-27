@@ -187,7 +187,7 @@ for index=1:numel(c)
 end
 
 disp([ mfilename ': Assembling McCode model ' options.instrument ' with ' num2str(length(y.Guess)) ' parameters.'  ]);
-if ~isempty(UserData.Parameters_Constant)
+if ~isempty(UserData.Parameters_Constant) && ~isempty(fieldnames(UserData.Parameters_Constant))
   disp('  Additional parameters are stored in UserData.Parameters_Constant:')
   disp(UserData.Parameters_Constant)
 end

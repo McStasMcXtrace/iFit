@@ -186,10 +186,10 @@ function h=ResLibCal_Proj_plot2D(isub, ix,iy,NP, Labels, FrameStr, Units, panel_
            'set(gca,''YTickLabelMode'',''auto'',''YTickMode'',''auto'');' ...
            'set(gca,''ZTickLabelMode'',''auto'',''ZTickMode'',''auto'');']);
       uimenu(uicm, 'Label','Toggle grid', 'Callback','grid');
-      uimenu(uicm, 'Label','Reset View', 'Callback','view(2);alpha(0.5);axis tight;rotate3d off;');
       if isub==1 || panel_name(2) ~= 'e'
-        uimenu(uicm, 'Label','Fix aspect Q ratio to 1', 'Callback','daspect([1 1 1])');
+        uimenu(uicm, 'Label','Toggle aspect ratio','Callback','if all(daspect == 1) daspect(''auto''); else daspect([ 1 1 1 ]); end');
       end
+      uimenu(uicm, 'Label','Reset View', 'Callback','view(2);alpha(0.5);axis tight;rotate3d off;');
       uimenu(uicm, 'Separator','on','Label', 'About ResLibCal...', ...
         'Callback',[ 'msgbox(''' ResLibCal_version ''',''About ResLibCal'',''help'')' ]);
       set(gca, 'UIContextMenu', uicm, 'Tag',[ 'ResLibCal_Proj_Context_' panel_name ]);
