@@ -155,13 +155,15 @@ function h=ResLibCal_Proj_plot3D(index, NP, Labels, FrameStr, Units, cloud, cent
            'set(gca,''YTickLabelMode'',''auto'',''YTickMode'',''auto'');' ...
            'set(gca,''ZTickLabelMode'',''auto'',''ZTickMode'',''auto'');']);
       uimenu(uicm, 'Label','Toggle grid', 'Callback','grid');
+      uimenu(uicm, 'Label','Toggle aspect ratio','Callback','if all(daspect == 1) daspect(''auto''); else daspect([ 1 1 1 ]); end');
+      uimenu(uicm, 'Label','Toggle Perspective','Callback', 'if strcmp(get(gca,''Projection''),''orthographic'')  set(gca,''Projection'',''perspective''); else set(gca,''Projection'',''orthographic''); end');
       uimenu(uicm, 'Label','Reset Flat/3D View', 'Callback', [ ...
           '[tmp_a,tmp_e]=view; if (tmp_a==0 & tmp_e==90) view(3); else view(2); end;' ...
           'clear tmp_a tmp_e; lighting none; shading flat;' ]);
       uimenu(uicm, 'Label','Smooth View','Callback', 'shading interp;');
       uimenu(uicm, 'Label','Add Light','Callback', 'light;lighting phong;');
       uimenu(uicm, 'Label','Add Transparency','Callback', 'alphamap(''decrease''); for tmp_h=get(gca, ''children'')''; try; alpha(tmp_h,0.7*get(tmp_h, ''facealpha'')); end; end;');
-      uimenu(uicm, 'Label','Toggle Perspective','Callback', 'if strcmp(get(gca,''Projection''),''orthographic'')  set(gca,''Projection'',''perspective''); else set(gca,''Projection'',''orthographic''); end');
+      
       uimenu(uicm, 'Separator','on','Label', 'About ResLibCal...', ...
         'Callback',[ 'msgbox(''' ResLibCal_version ''',''About ResLibCal'',''help'')' ]);
       set(gca, 'UIContextMenu', uicm, 'Tag','ResLibCal_View3_Context');
