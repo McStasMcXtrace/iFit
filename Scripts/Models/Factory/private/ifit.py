@@ -830,7 +830,8 @@ def phonon_run_phonopy(phonon, single=True, filename='FORCE_SETS'):
 
     """
     from phonopy import Phonopy
-    from phonopy.structure.atoms import Atoms as PhonopyAtoms
+    from phonopy.structure.atoms import Atoms as PAtoms
+    from phonopy.structure.atoms import PhonopyAtoms
     import phonopy.file_IO as file_IO
     
     # we first look if an existing phonon pickle exists. This is the case if we
@@ -845,26 +846,32 @@ def phonon_run_phonopy(phonon, single=True, filename='FORCE_SETS'):
     supercell = phonon.atoms * phonon.N_c
     
     # create a PhonopyAtoms object
-    bulk=PhonopyAtoms(supercell.get_chemical_symbols(), 
-        positions=supercell.get_positions(), 
-        cell=supercell.get_cell())
+    cell=PhonopyAtoms(phonon.atoms.get_chemical_symbols(), 
+        positions=phonon.atoms.get_positions(), 
+        cell=phonon.atoms.get_cell(), magmoms=None)
 
-    # create a PhonoPy Phonon object. The supercell is already in the 'bulk'
-    phonpy = Phonopy(bulk,[[1,0,0],[0,1,0],[0,0,1]])
-    
-    # generate displacements (minimal set)
-    phonpy.generate_displacements(distance=0.01)
-    
     # is there an existing PhonoPy calculation ?
     if os.path.exists('FORCE_SETS'):
-        if os.path.exists('disp.yaml'):
-            new_dataset, cell = file_IO.parse_disp_yaml(filename="disp.yaml", return_cell=True)
-            phonpy.set_displacement_dataset(new_dataset)
-            phonpy._unitcell = cell
+        phonpy = Phonopy(cell, numpy.diag(phonon.N_c), 
+            is_auto_displacements=False,
+            primitive_matrix= None,
+            factor= 15.6333023002,
+            dynamical_matrix_decimals= None,
+            force_constants_decimals= None,
+            symprec= 1e-05,
+            is_symmetry= True,
+            use_lapack_solver= False,
+            log_level= 1)
         force_sets = file_IO.parse_FORCE_SETS(filename='FORCE_SETS')
         phonpy.set_displacement_dataset(force_sets)
-        phonpy.produce_force_constants()
+        # inactivate magmoms in supercell as some calculators do not provide that
+        phonpy._supercell.magmoms=None
+        phonpy.produce_force_constants(calculate_full_force_constants=False)
     else:
+        # create a PhonoPy Phonon object.
+        phonpy = Phonopy(cell, numpy.diag(phonon.N_c))
+        # generate displacements (minimal set)
+        phonpy.generate_displacements(distance=0.01)
         set_of_forces, flag = phonon_run_phonopy_calculate(phonon, phonpy, supercell, single)
         if flag is True:
             return flag # some more work is probably required
