@@ -15,58 +15,64 @@ if ismac,      precmd = 'DYLD_LIBRARY_PATH= ;';
 elseif isunix, precmd = 'LD_LIBRARY_PATH= ; '; 
 else           precmd = ''; end
 
-flag_get_supercell = false;
 config_dir         = [];
+% handle import of full directory: search POSCAR, forces, past pickles, ...
 if isdir(configuration)
   config_dir = configuration;
   % search for 'known' configurations in the given directory from PHON/PhonoPy
-  files = search_files(configuration, { 'POSCAR*','SPOSCAR' });
-  supercell = [];
-  if ~isempty(files)
-    files = files.name;
-    configuration = fullfile(configuration, files);
-    disp([ mfilename ': Re-using lattice cell from ' configuration ]); 
-    if strncmp(files, 'POSCAR',6)
-      flag_get_supercell =  true;
-    elseif strncmp(files, 'SPOSCAR',7)
-      supercell     = [ 1 1 1 ];
+  file = search_files(configuration, { 'POSCAR*','SPOSCAR*','*_POSCAR' });
+  
+  if ~isempty(file)
+    copyfile(fullfile(config_dir, file.name), target);
+    disp([ mfilename ': Re-using lattice cell ' file.name ' from ' config_dir ]);
+    configuration = fullfile(target, file.name);
+    if strncmp(file, 'SPOSCAR',7)
+      options.supercell     = [ 1 1 1 ];
     end
   end
 end
 
-
-% get any previous supercell definition
-if flag_get_supercell
-  files = search_files(config_dir, ...
+if ~isempty(config_dir)
+  % get any previous supercell definition
+  file = search_files(config_dir, ...
     { 'phonon.yaml','INPHON','quasiharmonic_phonon.yaml','band.yaml'});
-  if ~isempty(files)
-    files = iLoad(fullfile(config_dir, files.name));
-  else 
-    files = [];
-    files.Data = [];
+  if ~isempty(file) && ~options.supercell
+    file = iLoad(fullfile(config_dir, file.name));
+
+    if isfield(file.Data, 'NDIM')
+      supercell = file.Data.NDIM;
+    elseif isfield(file.Data, 'supercell_matrix')
+      supercell = diag(file.Data.supercell_matrix);
+    else supercell = [];
+    end
+    if ~isempty(supercell)
+      options.supercell = supercell;
+      disp([ mfilename ': Re-using supercell ' mat2str(options.supercell) ]); 
+    elseif any(options.supercell == 0)
+      disp([ mfilename ': WARNING: unspecified supercell from previous computation.' ]); 
+    end
   end
-  if isfield(files.Data, 'NDIM')
-    supercell = files.Data.NDIM;
-  elseif isfield(files.Data, 'supercell_matrix')
-    supercell = diag(files.Data.supercell_matrix);
+
+  % get FORCES from previous PhonoPy calculation
+  for f={'FORCE_SETS','disp.yaml'}
+    % look if there is are previous PhonoPy files, and copy them to the target
+    if exist(fullfile(config_dir, f{1}))
+      try
+        copyfile(fullfile(config_dir, f{1}), target);
+        disp([ mfilename ': Re-using ' f{1} ' from ' config_dir ]); 
+      end
+    end
   end
-  if ~isempty(supercell)
-    options.supercell = supercell;
-    disp([ mfilename ': Re-using supercell ' mat2str(options.supercell) ]); 
-  elseif any(options.supercell == 0)
-    disp([ mfilename ': ERROR: unspecified supercell for previous computation.' ]); 
+  
+  % get previous ASE pickle files
+  files = dir(fullfile(config_dir, 'phonon.*.*'));
+  for f=files(:)'
+    copyfile(fullfile(config_dir, f.name), target);
+    disp([ mfilename ': Re-using ' f.name ' from ' config_dir ]); 
   end
 end
 
-for f={'FORCE_SETS','disp.yaml'}
-  % look if there is are previous PhonoPy files, and copy them to the target
-  if ~isempty(config_dir) && exist(fullfile(config_dir, f{1}))
-    try
-      copyfile(fullfile(config_dir, f{1}), target);
-      disp([ mfilename ': Re-using ' f{1} ' from ' config_dir ]); 
-    end
-  end
-end
+
 
 % handle input configuration: read
 if exist(configuration)
