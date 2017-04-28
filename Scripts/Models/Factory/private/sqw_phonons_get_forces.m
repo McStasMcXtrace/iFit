@@ -3,6 +3,7 @@ function [options, sav] = sqw_phonons_get_forces(options, decl, calc)
 %   requires atoms.pkl, supercell and calculator, creates the phonon.pkl
 
   target = options.target;
+  sav    = '';
   
   % determine if the phonon.pkl exists. If so, nothing else to do
   if ~isempty(dir(fullfile(target, 'phonon.pkl')))
@@ -18,8 +19,6 @@ function [options, sav] = sqw_phonons_get_forces(options, decl, calc)
   if strcmpi(options.calculator, 'GPAW')
     % GPAW Bug: gpaw.aseinterface.GPAW does not support pickle export for 'input_parameters'
     sav = sprintf('ph.calc=None\natoms.calc=None\nph.atoms.calc=None\n');
-  else
-    sav = '';
   end
   
   % handle accuracy requirement
