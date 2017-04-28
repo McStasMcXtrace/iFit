@@ -36,7 +36,8 @@ if ~isempty(config_dir)
   % get any previous supercell definition
   file = search_files(config_dir, ...
     { 'phonon.yaml','INPHON','quasiharmonic_phonon.yaml','band.yaml'});
-  if ~isempty(file) && ~options.supercell
+
+  if ~isempty(file) && any(options.supercell == 0)
     file = iLoad(fullfile(config_dir, file.name));
 
     if isfield(file.Data, 'NDIM')
