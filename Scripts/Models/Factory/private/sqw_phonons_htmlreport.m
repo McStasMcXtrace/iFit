@@ -91,7 +91,7 @@ function sqw_phonons_htmlreport_create_atoms(fid, options)
   % introduction
   fprintf(fid, '<p>This page presents the results of the estimate of phonon dispersions (lattice dynamics) in a single crystal, using a DFT code (the "calculator"). From the initial atomic configuration (geometry), each atom in the lattice cell is displaced by a small quantity. The displaced atom then sustains a, so called Hellmann-Feynman, restoring force to come back to the stable structure. The dynamical matrix is obtained from these forces, and its eigen-values are the energies of the vibrational modes in the crystal.</p>\n');
   fprintf(fid, '<p>This computational resource is provided by <a href="http://ifit.mccode.org">iFit</a>, with the <a href="http://ifit.mccode.org/Models.html#mozTocId990577"<b>sqw_phonon</b> Model</a>, which itself makes use of the <a href="https://wiki.fysik.dtu.dk/ase">Atomic Simulation Environment (ASE)</a>.\n');
-  fprintf(fid, '<p>This report summarizes the initial crystal geometry and the calculator configuration. When the simulation ends successfully, the lower part presents the S(hkl,w) dispersion curves as plots and data sets, the model used (as a Matlab object), and the density of states. These results correspond to the coherent inelastic part of the dynamic structure factor S(hkl,w), for vibrational modes in the harmonic approximation.</p>\n');
+  fprintf(fid, '<p>This report summarizes the initial crystal geometry and the calculator configuration. When the simulation ends successfully, the lower part presents the S(hkl,w) dispersion curves as plots and data sets, the model used (as a Matlab object), and the density of states. These results correspond to the coherent inelastic part of the dynamic structure factor S(hkl,w), for vibrational modes in the harmonic approximation. In the following, we use energy unit in meV = 241.8 GHz = 11.604 K = 0.0965 kJ/mol, and momentum is given in reduced lattice units.</p>\n');
   fprintf(fid, '<p><b>Limitations:</b> The accuracy of the model depends on the parameters used for the computation, e.g. energy cut-off, k-points grid, smearing, ...</p>\n');
   
   sqw_phonons_htmlreport_toc(fid, options);
@@ -396,7 +396,7 @@ function Phonon_DOS = sqw_phonons_htmlreport_dos(fid, options, object)
         case 'Phonon_DOS'
           fprintf(fid, 'The phonon spectrum is shown below:</p><br>\n');
         case 'Thermo_S'
-          fprintf(fid, 'The entropy S=-dF/dT [eV] is shown below:</p><br>\n');
+          fprintf(fid, 'The entropy S=-dF/dT [eV/K] is shown below:</p><br>\n');
         case 'Thermo_U'
           fprintf(fid, 'The internal energy U [eV] is shown below:</p><br>\n');
         case 'Thermo_F'

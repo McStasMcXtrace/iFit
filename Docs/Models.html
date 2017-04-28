@@ -120,6 +120,7 @@
 
 
 
+
         </a>fits(iData)</span>, <a href="iFunc.html">iFunc</a><br>
     </div>
     <br>
@@ -3790,10 +3791,9 @@ dispersion from which the expansion is quadratic.<br>
       s = <font color="#3366ff">sqw_phonons</font>(configuration,
       calculator, options, ...);<br>
     </blockquote>
-    The result is a 4D <i>S(hkl,w)</i> phonon dispersion Model (<a href="iFunc.html">iFunc</a> object).<b><i><br>
-        <br>
+    The result is a 4D <i>S(hkl,w)</i> phonon dispersion Model (<a href="iFunc.html">iFunc</a> object).<b><i><br><br></i></b>You may as well re-import a previous calculation from its directory, with:<b><i><br></i></b><blockquote>s = <font color="#3366ff">sqw_phonons</font>(directory);<br></blockquote>Such a directory may contain a POSCAR* file, any previous lattice definition (atoms.pkl as an ASE Atoms object), phonon and vibrational calculation steps, as well as PhonoPy FORCE_SETS and yaml files.<br><br><b><i>
       </i></b>In addition, <b>a web based interface</b> can be set up
-    very easily by installing, on a Debian-type system, the <a href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/ifit-web-services_1.8_all.deb"><b><i>ifit-web-services</i></b></a>
+    very easily by installing, on a Debian-type system, the <a href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/ifit-web-services_1.9_all.deb"><b><i>ifit-web-services</i></b></a>
     package, and then browse to e.g. <i>http://localhost/ifit-web-services</i>.<b><i><br>
         <br>
         Once created</i></b>, we recommend to save the model with:<br>
@@ -4173,7 +4173,7 @@ dispersion from which the expansion is quadratic.<br>
 
 
 
-        using VASP.</li>
+        using VASP.&nbsp; <span name="ISTEXInserted">A. Jain*, S.P. Ong*, et al, APL Materials, 2013, 1(1), 011002. doi:<a href="http://dx.doi.org/10.1063/1.4812323" name="ISTEXVisited">10.1063/1.4812323</a></span></li>
       <li><b>PhononDB</b> &lt;<a href="http://phonondb.mtl.kyoto-u.ac.jp/">http://phonondb.mtl.kyoto-u.ac.jp/</a>&gt;
 
 
@@ -4381,7 +4381,7 @@ dispersion from which the expansion is quadratic.<br>
           Structure optimization page</a>. If the input configuration is
         not close to its equilibrium state, it is worth setting this
         option. We recommend to set it to BFGS or MDMin (which are fast)
-        in all cases.</li><li><b>accuracy:</b> The <b><font color="#cc33cc">'fast'</font></b> choice uses the symmetry operators to lower the number of atom displacements. The force gradient is using central difference. The <b><font color="#cc33cc">'very fast'</font></b> option (default) halves the number of displacements. The force gradient then uses forward difference, and assumes the initial configuration is equilibrated (which can be done with e.g. <font color="#cc33cc">'optimizer=BFGS'</font>). The equilibrium forces are still used to improve the accuracy of the force gradient (except with PhonoPy). The<b><font color="#cc33cc"> 'accurate' </font></b>choice is longer to execute (e.g. 3-6 times slower), but computes all forces. <br></li><li><b>use_phonopy</b>: when set to 1, or using directly <i>sqw_phonons</i>(..., <font color="#cc33cc">'phonopy'</font>, ...), the <a href="https://atztogo.github.io/phonopy/">PhonoPy</a> library is used, which results in a <font color="#cc33cc">'very fast'</font> calculation (using forward difference force gradient), and all available symmetry operators. This requires PhonoPy to be available. When not available, the default <font color="#cc33cc">'very fast'</font> accuracy choice will be used.<br></li>
+        in all cases.</li><li><b>accuracy:</b> The <b><font color="#cc33cc">'fast'</font></b> choice uses the symmetry operators to lower the number of atom displacements. The force gradient is using central difference (2 displacements +/- on each axis). The <b><font color="#cc33cc">'very fast'</font></b> option (default) halves the number of displacements and, when available, uses <a href="https://atztogo.github.io/phonopy/">PhonoPy</a>. The equilibrium forces are used to improve the accuracy of the force gradient. The<b><font color="#cc33cc"> 'accurate' </font></b>choice is longer to execute (e.g. 3-6 times slower), but computes all forces. <br></li><li><b>use_phonopy</b>: when set to 1, or using directly <i>sqw_phonons</i>(..., <font color="#cc33cc">'phonopy'</font>, ...), the <a href="https://atztogo.github.io/phonopy/">PhonoPy</a> library is used, which results in a <font color="#cc33cc">'very fast'</font> calculation (using forward difference force gradient), and all available symmetry operators. This requires PhonoPy to be available. When not available, the default <font color="#cc33cc">'very fast'</font> accuracy choice will be used.<br></li>
     </ul>
     and specific DFT related options<br>
     <ul>
