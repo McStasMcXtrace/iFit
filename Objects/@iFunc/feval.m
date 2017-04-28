@@ -370,10 +370,16 @@ try
   this.Eval = cellstr(this.Eval);
   this.Eval = this.Eval(~strncmp('%', this.Eval, 1)); % remove comment lines
   eval(sprintf('%s\n', this.Eval{:}));
-catch
+catch ME
   disp([ 'Error: Could not evaluate Expression in model ' this.Name ' ' this.Tag ]);
   disp(this)
-  this.Eval
+  t=this.Eval;
+  if numel(t) > 20
+    t(1:20)
+    disp('...')
+  else
+    t
+  end
   lasterr
   save iFunc_feval_error
   error([ 'iFunc:' mfilename ], [ 'Failed model evaluation. Saved state in ' fullfile(pwd,'iFunc_feval_error') ]);
