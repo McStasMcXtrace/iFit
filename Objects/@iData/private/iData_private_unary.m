@@ -72,72 +72,75 @@ else
   new_s = feval(op, s);
 end
 
-switch op
-case 'acos'
-	e = -e./sqrt(1-s.*s);
-case 'acosh'
-  e = e./sqrt(s.*s-1);
-case 'asin'
-	e = e./sqrt(1-s.*s);
-case 'asinh'
-  e = e./sqrt(1+s.*s);
-case 'atan'
-	e = e./(1+s.*s);
-case 'atanh'
-  e = e./(1-s.*s);
-case 'cos'
-	e = -e.*sin(s);
-case 'cosh'
-  e = e.*sinh(s);
-case 'exp'
-	e = e.*exp(s);
-case 'log'
-	e = e./s;
-case 'log10'
-	e = e./(log(10)*s);
-case 'sin'
-	e = e.*cos(s);
-case 'sinh'
-  e = e.*cosh(s);
-case 'sqrt'
-	e = e./(2*sqrt(s));
-  m = m.^0.5;
-case 'tan'
-	c = cos(s);
-	e = e./(c.*c);
-case 'tanh'
-  c = cosh(s);
-  e = e./(c.*c);
-case { 'transpose', 'ctranspose'}; % .' and ' respectively
-	e = feval(op, e);
-	m = feval(op, m);
-case {'sparse','full','flipud','fliplr'}
-  % apply same operator on error and Monitor
-	e = feval(op, e);
-	m = feval(op, m);
-case {'floor','ceil','round'}	
-	% apply same operator on error
-	e = feval(op, e);
-case 'del2'
-  new_s = new_s*2*ndims(a);
-  e = 2*ndims(a)*del2(e);
-case {'sign','isfinite','isnan','isinf'}
-	b = new_s;
-	iData_private_warning('exit',mfilename);
-	return
-case {'isscalar','isvector','issparse','isreal','isfloat','isnumeric','isinteger', ...
-      'islogical','double','single','logical','find','norm'}
-	% result is a single value
-	b = new_s;
-	iData_private_warning('exit',mfilename);
-	return
-case {'uminus','abs','real','imag','uplus','not','conj'}
-	% retain error, do nothing
-case {'permute','reshape','iData_private_resize'}
-  if ~isscalar(e) && ~isempty(e),  e = feval(op, e, varargin{:}); end
-  if ~isscalar(m) && ~isempty(m),  m = feval(op, m, varargin{:}); end
-otherwise
-  iData_private_error('unary',['Can not apply operation ' op ' on object ' a.Tag ]);
+% handle error/monitor stuff
+try
+    switch op
+    case 'acos'
+        e = -e./sqrt(1-s.*s);
+    case 'acosh'
+      e = e./sqrt(s.*s-1);
+    case 'asin'
+        e = e./sqrt(1-s.*s);
+    case 'asinh'
+      e = e./sqrt(1+s.*s);
+    case 'atan'
+        e = e./(1+s.*s);
+    case 'atanh'
+      e = e./(1-s.*s);
+    case 'cos'
+        e = -e.*sin(s);
+    case 'cosh'
+      e = e.*sinh(s);
+    case 'exp'
+        e = e.*exp(s);
+    case 'log'
+        e = e./s;
+    case 'log10'
+        e = e./(log(10)*s);
+    case 'sin'
+        e = e.*cos(s);
+    case 'sinh'
+      e = e.*cosh(s);
+    case 'sqrt'
+        e = e./(2*sqrt(s));
+      m = m.^0.5;
+    case 'tan'
+        c = cos(s);
+        e = e./(c.*c);
+    case 'tanh'
+      c = cosh(s);
+      e = e./(c.*c);
+    case { 'transpose', 'ctranspose'}; % .' and ' respectively
+        e = feval(op, e);
+        m = feval(op, m);
+    case {'sparse','full','flipud','fliplr'}
+      % apply same operator on error and Monitor
+        e = feval(op, e);
+        m = feval(op, m);
+    case {'floor','ceil','round'}	
+        % apply same operator on error
+        e = feval(op, e);
+    case 'del2'
+      new_s = new_s*2*ndims(a);
+      e = 2*ndims(a)*del2(e);
+    case {'sign','isfinite','isnan','isinf'}
+        b = new_s;
+        iData_private_warning('exit',mfilename);
+        return
+    case {'isscalar','isvector','issparse','isreal','isfloat','isnumeric','isinteger', ...
+          'islogical','double','single','logical','find','norm'}
+        % result is a single value
+        b = new_s;
+        iData_private_warning('exit',mfilename);
+        return
+    case {'uminus','abs','real','imag','uplus','not','conj'}
+        % retain error, do nothing
+    case {'permute','reshape','iData_private_resize'}
+      if ~isscalar(e) && ~isempty(e),  e = feval(op, e, varargin{:}); end
+      if ~isscalar(m) && ~isempty(m),  m = feval(op, m, varargin{:}); end
+    otherwise
+      iData_private_error('unary',['Can not apply operation ' op ' on object ' a.Tag ]);
+    end
 end
 clear s
 

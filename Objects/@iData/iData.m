@@ -174,7 +174,19 @@ else  % convert input argument into object
       end
       
       % create iData object from signal and axes
-      if (isempty(axes_in) || any(cellfun(@(c)any(isnan(c)),axes_in))) && ~isempty(ax), axes_in=ax; end
+      % check axes against signal size
+      if isempty(axes_in) && ~isempty(ax), axes_in = ax; end
+      for index=1:numel(axes_in)
+        ax1 = axes_in{index};
+        ax2 = ax{index};
+        if ~isempty(ax2)
+          if isempty(ax1), ax1 = ax2;
+          elseif ~isempty(find(isnan(ax1))), ax1 = ax2;
+          elseif numel(ax2) == size(signal, index), ax1 = ax2;
+          end
+          axes_in{index} = ax1;
+        end
+      end
       this_out = iData(axes_in{:}, signal); % make it an iData
 
       % assign axes names
