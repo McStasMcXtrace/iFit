@@ -112,26 +112,28 @@ for index=1:size(FREQ,2)  % loop on modes
   % polarisation vectors already contain the 1/mass factor: ASE/phonons.py:band_structure
   % ZQ=|F(Q)|^2=|sum_atom[ bcoh(atom). exp(-WQ) .* (Q.*POLAR(HKL,index,atom,:)) .* exp(-i*Q.*pos(atom)) ]|^2
   ZQ = 1;
-  if ~isempty(POLAR) && ~isempty(positions)
-    ZQ = 0;
-    for atom=1:size(positions,1)
-      % one-phonon structure/form factor in a Bravais lattice
-      if ~isempty(T) && T > 0
-        nw0       = 1./(exp(FREQ(:,index)/T)-1);
-        nw0(FREQ(:,index) == 0) = 0;
-      else nw0=0; end
-      DW = abs(sum(Q.*squeeze(POLAR(:,index,atom,:)),2)).^2./FREQ(:,index).*(2*nw0+1)/2; % DW function, Schober (9.103)
-      clear nw0
-      DW = exp(-DW);  % Debye-Waller factor
-      % one phonon form factor: H. Schober, (9.203)
-      if ~isempty(b_coh) && all(b_coh)
-        ZQ = ZQ + b_coh(atom) .* DW .* sum(Q.*squeeze(POLAR(:,index,atom,:)),2) .* exp(-i*Q*positions(atom,:)');
-      else  % when no b_coh, we only show DW*exp(-iQr)
-        ZQ = ZQ + DW .* exp(-i*Q*positions(atom,:)');
+  try
+    if ~isempty(POLAR) && ~isempty(positions)
+      ZQ = 0;
+      for atom=1:size(positions,1)
+        % one-phonon structure/form factor in a Bravais lattice
+        if ~isempty(T) && T > 0
+          nw0       = 1./(exp(FREQ(:,index)/T)-1);
+          nw0(FREQ(:,index) == 0) = 0;
+        else nw0=0; end
+        DW = abs(sum(Q.*squeeze(POLAR(:,index,atom,:)),2)).^2./FREQ(:,index).*(2*nw0+1)/2; % DW function, Schober (9.103)
+        clear nw0
+        DW = exp(-DW);  % Debye-Waller factor
+        % one phonon form factor: H. Schober, (9.203)
+        if ~isempty(b_coh) && all(b_coh)
+          ZQ = ZQ + b_coh(atom) .* DW .* sum(Q.*squeeze(POLAR(:,index,atom,:)),2) .* exp(-i*Q*positions(atom,:)');
+        else  % when no b_coh, we only show DW*exp(-iQr)
+          ZQ = ZQ + DW .* exp(-i*Q*positions(atom,:)');
+        end
       end
+      clear DW
+      ZQ = abs(ZQ).^2;
     end
-    clear DW
-    ZQ = abs(ZQ).^2;
   end
   if ~is_event
     if ~isscalar(ZQ), ZQ = ZQ*ones(1,nt); end

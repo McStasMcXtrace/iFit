@@ -851,11 +851,12 @@ def phonon_run_phonopy(phonon, single=True, filename='FORCE_SETS'):
         cell=phonon.atoms.get_cell(), magmoms=None)
 
     # is there an existing PhonoPy calculation ?
+    # using factor=6.46541380e-2=VaspToeV
     if os.path.exists('FORCE_SETS'):
         phonpy = Phonopy(cell, numpy.diag(phonon.N_c), 
             is_auto_displacements=False,
             primitive_matrix= None,
-            factor= 15.6333023002,
+            factor= 6.46541380e-2,
             dynamical_matrix_decimals= None,
             force_constants_decimals= None,
             symprec= 1e-05,
