@@ -58,7 +58,7 @@ function signal=sqw_phonons(configuration, varargin)
 % The arguments for the model creation should be:
 %
 % input (model creation):
-% configuration: file name to an existing material configuration
+% configuration: file name or directory to an existing material configuration
 %   Any A.S.E supported format can be used (POSCAR, CIF, SHELX, PDB, ...). 
 %     See <https://wiki.fysik.dtu.dk/ase/ase/io.html#module-ase.io>
 %   Alternatively, the 'bulk','molecule', 'crystal', and 'nanotube' ASE constructors can be
@@ -79,7 +79,7 @@ function signal=sqw_phonons(configuration, varargin)
 % 'html' or 'report':   generate a full report of the simulation and export data.
 % 'plot' or 'autoplot': plot the results after building the model.
 %
-% options: an optional structure with optional settings
+% options: an optional structure with optional settings, as follows:
 %
 % General options
 %   options.target =path                   Where to store all files and FORCES
@@ -113,11 +113,9 @@ function signal=sqw_phonons(configuration, varargin)
 %   options.accuracy                       'fast', 'very fast' (default) or 'accurate'.
 %     The 'fast' choice uses the symmetry operators to lower the number of atom 
 %     displacements. The force gradient uses central difference.
-%     The 'very fast' option halves the number of displacements. The force gradient
-%     is using forward difference, and assumes the initial configuration is equilibrated 
-%     (which can be done with e.g. 'optimizer=BFGS'). The equilibrium forces are
-%     still used to improve the accuracy of the force gradient (except with PhonoPy).
-%     The 'accurate' choice is longer to execute (e.g. 3-6 times slower), but computes all forces. 
+%     The 'very fast' option halves the number of displacements. The equilibrium
+%     forces are used to improve the accuracy of the force gradient.
+%     The 'accurate' choice is longer to execute (e.g. 3-6 times slower), but computes all forces.
 %   options.use_phonopy=0|1                requests to use PhonoPy when installed.
 %     This choice also sets accuracy='very fast'
 %   options.disp=value                     the atom displacement in Angs. Default is 0.01.
@@ -431,11 +429,10 @@ elseif strcmp(options.occupations, 'fixed') || strcmp(options.occupations, 'insu
   options.occupations=-1;
 end
 
-options.configuration = configuration;
-
 % BUILD stage: we call ASE to build the model
 target = options.target;
 [options, result, read] = sqw_phonons_check(configuration, options, status);
+configuration = options.configuration; % in case this has been updated in 'check'
 
 % we test if the pickle file could be written. This way even if the export/save 
 % properties fail, we can proceed.
@@ -528,7 +525,7 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO') || strcmpi(options.calculator
     properties = [];
   end
   
-  if ~isempty(dir(configuration))
+  if ~isempty(dir(configuration)) && ~isdir(configuration)
     signal.UserData.configuration = fileread(configuration);
   else
     signal.UserData.configuration = configuration;
@@ -640,7 +637,7 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO') || strcmpi(options.calculator
     '   names = [fieldnames(this.UserData.properties); fieldnames(properties)];', ...
     '   this.UserData.properties = cell2struct([struct2cell(this.UserData.properties); struct2cell(properties)], names, 1);', ...
     '   entropy = iData(this.UserData.properties.temperatures_thermo, this.UserData.properties.entropy);', ...
-    '   entropy.Title=[ ''Entropy S=-dF/dT [eV/cell] '' strtok(this.Name) ]; xlabel(entropy,''Temperature [K]''); ylabel(entropy, ''S [eV/cell]'');', ...
+    '   entropy.Title=[ ''Entropy S=-dF/dT [eV/K/cell] '' strtok(this.Name) ]; xlabel(entropy,''Temperature [K]''); ylabel(entropy, ''S [eV/K/cell]'');', ...
     '   entropy.Error=0; this.UserData.entropy = entropy;', ...
     '   helmholtz_energy = iData(this.UserData.properties.temperatures_thermo, this.UserData.properties.helmholtz_energy);', ...
     '   helmholtz_energy.Title=[ ''Helmholtz free energy F=U-TS=-kT lnZ [eV/cell] '' strtok(this.Name) ]; xlabel(helmholtz_energy,''Temperature [K]''); ylabel(helmholtz_energy,''F [eV/cell]'');', ...
@@ -762,6 +759,4 @@ function [f, signal] = sqw_phonons_plot(signal)
     end
   end
   drawnow
-
-% ------------------------------------------------------------------------------
 

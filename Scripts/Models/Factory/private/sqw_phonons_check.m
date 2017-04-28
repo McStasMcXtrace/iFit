@@ -20,7 +20,7 @@ config_dir         = [];
 if isdir(configuration)
   config_dir = configuration;
   % search for 'known' configurations in the given directory from PHON/PhonoPy
-  file = search_files(configuration, { 'POSCAR*','SPOSCAR*','*_POSCAR' });
+  file = search_files(configuration, { 'atoms.pkl', 'POSCAR*','SPOSCAR*','*_POSCAR'});
   
   if ~isempty(file)
     copyfile(fullfile(config_dir, file.name), target);
@@ -65,8 +65,14 @@ if ~isempty(config_dir)
     end
   end
   
-  % get previous ASE pickle files
+  % get previous ASE phonon pickle files
   files = dir(fullfile(config_dir, 'phonon.*.*'));
+  for f=files(:)'
+    copyfile(fullfile(config_dir, f.name), target);
+    disp([ mfilename ': Re-using ' f.name ' from ' config_dir ]); 
+  end
+  % get previous ASE vibration pickle files
+  files = dir(fullfile(config_dir, 'vib.*.*'));
   for f=files(:)'
     copyfile(fullfile(config_dir, f.name), target);
     disp([ mfilename ': Re-using ' f.name ' from ' config_dir ]); 
@@ -77,8 +83,13 @@ end
 
 % handle input configuration: read
 if exist(configuration)
-  read = sprintf('import ase.io\nconfiguration = "%s"\natoms = ase.io.read(configuration)\n', ...
-    configuration);
+  [~,~,e] = fileparts(configuration);
+  if strcmp(e, '.pkl')
+    read = sprintf('import pickle\nconfiguration = "%s"\natoms = pickle.load(open(configuration,"rb"))\n', configuration);
+  else
+    read = sprintf('import ase.io\nconfiguration = "%s"\natoms = ase.io.read(configuration)\n', ...
+      configuration);
+  end
 elseif ischar(configuration)
   read = configuration;
   % ASE has changed some of the modules hierarchy from 3.9 to 3.10+
@@ -204,6 +215,8 @@ if isfield(options,'mpi') && ~isempty(options.mpi) && options.mpi > 1
     options.mpirun = [ options.mpirun ' -machinefile ' options.machinefile ];
   end
 end
+
+options.configuration = configuration;
 
 % display message at start
 disp(' ')
