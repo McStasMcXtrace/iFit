@@ -33,7 +33,7 @@ clear q_cart qx qy qz HKL
 % check if we have everything needed for the intensity estimate: b_coh, positions
 b_coh = []; positions = [];
 if isfield(UD, 'positions')
-  positions = UD.properties;
+  positions = UD.positions;
 elseif isfield(UD, 'properties') && isfield(UD.properties, 'positions')
   positions = UD.properties.positions;
 end
@@ -44,12 +44,16 @@ elseif isfield(UD, 'properties') && isfield(UD.properties, 'b_coh')
   b_coh = UD.properties.b_coh;
 end
 
-if isempty(b_coh)
+if isempty(b_coh) || any(b_coh == 0 | isnan(b_coh))
   if isfield(UD, 'sigma_coh')
-    b_coh = UD.b_coh;
+    sigma_coh = UD.sigma_coh;
   elseif isfield(UD, 'properties') && isfield(UD.properties, 'sigma_coh')
-    b_coh = sqrt(abs(UD.properties.sigma_coh)*100/4/pi); % in [fm]
-    b_coh = b_coh .* sign(UD.properties.sigma_coh);
+    sigma_coh = UD.properties.sigma_coh;
+  else sigma_coh = [];
+  end
+  if ~isempty(sigma_coh)
+    b_coh = sqrt(abs(sigma_coh)*100/4/pi); % in [fm]
+    b_coh = b_coh .* sign(sigma_coh);
   end
 end
 
@@ -59,8 +63,8 @@ if ~isempty(POLAR)
       UD.properties.chemical_formula '. Using b_coh=1 [fm] for atoms (sigma_coh=0.126 barns). ' ...
       'Specify model.UserData.properties.b_coh as a vector with ' num2str(size(positions,1)) ' value(s) in ' this.Name ]);
     for index=1:size(positions,1)
-      if index > numel(b_coh), b_coh(end+1) = nan; end
-      if isnan(b_coh(index)) || b_coh == 0, b_coh = 1; end
+      if index > numel(b_coh), b_coh(index) = 1; end
+      if isnan(b_coh(index)) || b_coh(index) == 0, b_coh(index) = 1; end
     end
   end
 
