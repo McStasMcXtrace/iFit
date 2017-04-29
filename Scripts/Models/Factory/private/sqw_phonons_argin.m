@@ -25,7 +25,7 @@ options.dos        = 0;
 options.optimizer  = '';
 options.accuracy   = 'very fast';  % can be 'fast' 'very fast' or 'accurate' (much slower)
 options.disp       = 0.01;    % displacement of atoms in Angs
-options.use_phonopy= 1;
+options.use_phonopy= 0;
 
 % read input arguments
 for index=1:numel(varargin)

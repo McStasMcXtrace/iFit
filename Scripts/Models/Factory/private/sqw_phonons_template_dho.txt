@@ -113,7 +113,7 @@ for index=1:size(FREQ,2)  % loop on modes
   % ZQ=|F(Q)|^2=|sum_atom[ bcoh(atom). exp(-WQ) .* (Q.*POLAR(HKL,index,atom,:)) .* exp(-i*Q.*pos(atom)) ]|^2
   ZQ = 1;
   try
-    if ~isempty(POLAR) && ~isempty(positions)
+    if numel(POLAR) > 1 && ~isempty(positions)
       ZQ = 0;
       for atom=1:size(positions,1)
         % one-phonon structure/form factor in a Bravais lattice
@@ -134,6 +134,8 @@ for index=1:size(FREQ,2)  % loop on modes
       clear DW
       ZQ = abs(ZQ).^2;
     end
+  catch
+    ZQ = 1;
   end
   if ~is_event
     if ~isscalar(ZQ), ZQ = ZQ*ones(1,nt); end
