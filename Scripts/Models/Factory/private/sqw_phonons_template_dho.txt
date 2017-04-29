@@ -135,6 +135,7 @@ for index=1:size(FREQ,2)  % loop on modes
       ZQ = abs(ZQ).^2;
     end
   catch
+    disp('Failed intensity estimate (mode polarisation)');
     ZQ = 1;
   end
   if ~is_event
