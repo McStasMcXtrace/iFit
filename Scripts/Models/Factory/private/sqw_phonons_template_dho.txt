@@ -10,6 +10,7 @@ if is_event, w = t(:);
 else         w = ones(size(FREQ,1),1) * t(:)'; end
 signal               = zeros(size(w));
 this.UserData.maxFreq= max(FREQ);
+this.UserData.FREQ   = FREQ;
 nt = numel(t);
 
 % test for unstable modes
@@ -58,6 +59,7 @@ if isempty(b_coh) || any(b_coh == 0 | isnan(b_coh))
 end
 
 if ~isempty(POLAR)
+  this.UserData.POLAR = POLAR;
   if (isempty(b_coh) || any(isnan(b_coh) | b_coh == 0)) && ~isempty(positions)
     disp([ 'WARNING: Unspecified/invalid coherent neutron scattering length specification for the material ' ...
       UD.properties.chemical_formula '. Using b_coh=1 [fm] for atoms (sigma_coh=0.126 barns). ' ...
