@@ -856,7 +856,6 @@ def phonon_run_phonopy(phonon, single=True, filename='FORCE_SETS'):
         phonpy = Phonopy(cell, numpy.diag(phonon.N_c), 
             is_auto_displacements=False,
             primitive_matrix= None,
-            factor= 6.46541380e-2,
             dynamical_matrix_decimals= None,
             force_constants_decimals= None,
             symprec= 1e-05,
@@ -928,6 +927,7 @@ def phonon_run_phonopy(phonon, single=True, filename='FORCE_SETS'):
     
 # ------------------------------------------------------------------------------
 def phonon_run_phonopy_calculate(phonon, phonpy, supercell, single):
+    # calculate forces using PhonoPy: phonopy/example/ase/8Si-phonon.py
     
     # get the displacements
     disps = phonpy.get_displacements()
