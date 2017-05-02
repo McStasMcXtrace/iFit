@@ -988,11 +988,26 @@ def phonopy_run_calculate(phonon, phonpy, supercell, single):
     return set_of_forces, False
     
 # ------------------------------------------------------------------------------
-def phonopy_band_structure(phonpy, path_kc):
+def phonopy_band_structure(phonpy, path_kc, modes=False):
     """
-    Calculate phonon frequencies at q using PhonoPy
-    
-    q: q-vector in reduced coordinates of primitive cell
+    Calculate phonon dispersion along a path in the Brillouin zone, using PhonoPy
+
+        The dynamical matrix at arbitrary q-vectors is obtained by Fourier
+        transforming the real-space force constants. In case of negative
+        eigenvalues (squared frequency), the corresponding negative frequency
+        is returned.
+
+        Eigenvalues and modes are in units of PhonoPy and Ang/sqrt(amu),
+        respectively.
+
+        Parameters
+        ----------
+        path_kc: ndarray
+            List of k-point coordinates (in units of the reciprocal lattice
+            vectors) specifying the path in the Brillouin zone for which the
+            dynamical matrix will be calculated.
+        modes: bool
+            Returns both frequencies and modes when True.
     """
     
     # pre compute masses sqrt(mass * mass)
@@ -1004,10 +1019,11 @@ def phonopy_band_structure(phonpy, path_kc):
     vecs         = phonpy._dynamical_matrix._smallest_vectors
     multiplicity = phonpy._dynamical_matrix._multiplicity
     num_atom     = len(phonpy._dynamical_matrix._p2s_map)
-    omega_kl = numpy.zeros((len(path_kc), 3 * num_atom))
+    omega_kl     = numpy.zeros((len(path_kc), 3 * num_atom))
+    u_kl         = []
 
     for iqc, q_c in enumerate(path_kc):
-        # get the dnamical matrix at q
+        # get the dynamical matrix at q
         dm = numpy.zeros((3 * num_atom, 3 * num_atom), dtype=complex)
         for i, s_i in enumerate(phonpy._dynamical_matrix._p2s_map):
             for j, s_j in enumerate(phonpy._dynamical_matrix._p2s_map):
@@ -1026,8 +1042,17 @@ def phonopy_band_structure(phonpy, path_kc):
     
         # Impose Hermitian condition
         dm = (dm + dm.conj().transpose()) / 2 
-
-        omega2_l = numpy.linalg.eigvalsh(dm, UPLO='U') # dm == D_q
+        
+        if modes:
+            omega2_l, u_xl = numpy.linalg.eigh(dm, UPLO='U')
+            # Sort eigenmodes according to eigenvalues (see below) and
+            # multiply with mass prefactor
+            u_lx = (m_inv_x[:, numpy.newaxis] *
+                    u_xl[:, omega2_l.argsort()]).T.copy()
+            u_kl.append(u_lx.reshape((-1, num_atom, 3)))
+        else:
+            omega2_l = numpy.linalg.eigvalsh(dm, UPLO='U')
+                
         # Sort eigenvalues in increasing order
         omega2_l.sort()
         # Use dtype=complex to handle negative eigenvalues
@@ -1041,4 +1066,8 @@ def phonopy_band_structure(phonpy, path_kc):
 
         omega_kl[iqc]=omega_l.real
         
-    return numpy.asarray(omega_kl) * phonpy._factor
+    if modes:
+        return numpy.asarray(omega_kl) * phonpy._factor, numpy.asarray(u_kl)
+    else:
+        return numpy.asarray(omega_kl) * phonpy._factor
+
