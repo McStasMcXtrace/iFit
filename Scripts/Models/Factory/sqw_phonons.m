@@ -498,14 +498,6 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO') || strcmpi(options.calculator
     signal.UserData.input = configuration;
   end
 
-  if options.use_phonopy
-    signal.Description    = [ 'S(q,w) dispersion(HKL) Phonon/PhonoPy/' options.calculator ' with DHO line shape. ' configuration ];
-    signal.Name           = [ 'Sqw_Phonon_' signal.UserData.input ' PhonoPy/' options.calculator ' DHO [' mfilename ']' ];
-  else
-    signal.Description    = [ 'S(q,w) dispersion(HKL) Phonon/ASE/' options.calculator ' with DHO line shape. ' configuration ];
-    signal.Name           = [ 'Sqw_Phonon_' signal.UserData.input ' ASE/' options.calculator ' DHO [' mfilename ']' ];
-  end
-
   signal.Parameters     = {  ...
     'Amplitude' ...
     'Gamma Damped Harmonic Oscillator width in energy [meV]' ...
@@ -543,6 +535,18 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO') || strcmpi(options.calculator
   signal.UserData.options       = options;
   signal.UserData.calc          = calc;
   signal.UserData.properties    = orderfields(properties);
+  
+  if options.use_phonopy
+    c = [ 'PhonoPy/' options.calculator ];
+  else
+    c = [ 'ASE/' options.calculator ];
+  end
+  if isfield(properties, 'chemical_formula'), m=properties.chemical_formula;
+  else                                        m=signal.UserData.input; end
+  
+  
+  signal.Description    = [ 'S(q,w) ' m ' dispersion(HKL) Phonon/' c ' with DHO line shape. ' configuration ];
+  signal.Name           = [ 'Sqw_Phonon_' m ' ' c ' DHO [' mfilename ']' ];
 
   % EVAL stage: we call ASE to build the model. ASE does not support single HKL location. 
   % For this case we duplicate xyz and then get only the 1st FREQ line
@@ -721,10 +725,11 @@ cite{end+1} = ' * ABINIT: X. Gonze et al, Computer Physics Communications 180, 2
 case 'EMT'
 cite{end+1} = ' * EMT:    K.W. Jacobsen et al, Surf. Sci. 366, 394-402 (1996).';
 case {'QUANTUMESPRESSO','QE'}
-cite{end+1} = ' * PHON:   D. Alfe, Computer Physics Communications 180,2622-2633 (2009).';
 cite{end+1} = ' * Quantum Espresso: P. Giannozzi, et al J.Phys.:Condens.Matter, 21, 395502 (2009).';
+cite{end+1} = ' * PHON:   D. Alfe, Computer Physics Communications 180,2622-2633 (2009).';
 case {'QUANTUMESPRESSO_ASE','QE_ASE'}
 cite{end+1} = ' * Quantum Espresso: P. Giannozzi, et al J.Phys.:Condens.Matter, 21, 395502 (2009).';
+cite{end+1} = ' * QE-util:          Pawel T. Jochym, https://jochym.github.io/qe-doc/ (2015).';
 case 'VASP'
 cite{end+1} = ' * VASP:   G. Kresse and J. Hafner. Phys. Rev. B, 47:558, 1993.';
 end
