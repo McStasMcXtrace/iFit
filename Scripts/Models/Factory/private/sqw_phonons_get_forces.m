@@ -25,7 +25,7 @@ function [options, sav] = sqw_phonons_get_forces(options, decl, calc)
   if isfield(options.available,'phonopy') && ~isempty(options.available.phonopy) ...
     && options.use_phonopy
     % use PhonoPy = very fast (forward difference)
-    ph_run = 'ifit.phonon_run_phonopy(ph, single=True)\n';
+    ph_run = 'ifit.phonopy_run(ph, single=True)\n';
   elseif isfield(options, 'accuracy') && strcmpi(options.accuracy,'very fast')
     % very fast: twice faster, but less accurate (assumes initial lattice at equilibrium)
     options.use_phonopy = 0;
@@ -57,6 +57,9 @@ function [options, sav] = sqw_phonons_get_forces(options, decl, calc)
   if ~isscalar(displ), displ=0.01*norm(options.disp); end
 
   % start python --------------------------  
+  if ~isempty(dir(fullfile(target, 'ifit.py')))
+    options.script_ifitpy = fileread(fullfile(target, 'ifit.py')); % python
+  end
   
   % this scripts should be repeated as long as its return value is null (all is fine)
   options.script_get_forces_iterate = [ ...
@@ -269,7 +272,7 @@ function [options, sav] = sqw_phonons_get_forces(options, decl, calc)
   fclose(fid);
   
   % call python script with calculator
-  disp([ mfilename ': computing Force Matrix, Vibrations and creating Phonon/ASE model.' ]);
+  disp([ mfilename ': computing Force Constants, Vibrations and creating Phonon/ASE model.' ]);
   options.status = 'Ending computation. Script is <a href="sqw_phonons_forces_finalize.py">sqw_phonons_forces_finalize.py</a>';
   sqw_phonons_htmlreport('', 'status', options);
   

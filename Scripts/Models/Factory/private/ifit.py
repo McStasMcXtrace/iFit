@@ -811,7 +811,7 @@ def phonon_read(phonon, method='Frederiksen', symmetrize=3, acoustic=True,
 # compatibility with PhonoPy
 # ------------------------------------------------------------------------------
 
-def phonon_run_phonopy(phonon, single=True, filename='FORCE_SETS'):
+def phonopy_run(phonon, single=True, filename='FORCE_SETS'):
     """Run the phonon calculations, using PhonoPy.
     
     input:
@@ -872,7 +872,7 @@ def phonon_run_phonopy(phonon, single=True, filename='FORCE_SETS'):
         phonpy = Phonopy(cell, numpy.diag(phonon.N_c))
         # generate displacements (minimal set)
         phonpy.generate_displacements(distance=0.01)
-        set_of_forces, flag = phonon_run_phonopy_calculate(phonon, phonpy, supercell, single)
+        set_of_forces, flag = phonopy_run_calculate(phonon, phonpy, supercell, single)
         if flag is True:
             return flag # some more work is probably required
             
@@ -926,7 +926,7 @@ def phonon_run_phonopy(phonon, single=True, filename='FORCE_SETS'):
     return False  # nothing left to do
     
 # ------------------------------------------------------------------------------
-def phonon_run_phonopy_calculate(phonon, phonpy, supercell, single):
+def phonopy_run_calculate(phonon, phonpy, supercell, single):
     # calculate forces using PhonoPy: phonopy/example/ase/8Si-phonon.py
     
     # get the displacements
@@ -987,3 +987,58 @@ def phonon_run_phonopy_calculate(phonon, phonpy, supercell, single):
         
     return set_of_forces, False
     
+# ------------------------------------------------------------------------------
+def phonopy_band_structure(phonpy, path_kc):
+    """
+    Calculate phonon frequencies at q using PhonoPy
+    
+    q: q-vector in reduced coordinates of primitive cell
+    """
+    
+    # pre compute masses sqrt(mass * mass)
+    m_inv_x = numpy.repeat(numpy.sqrt(phonpy._dynamical_matrix._mass), 3)
+    mass    = numpy.outer(m_inv_x, m_inv_x)
+    
+    # phonpy._set_dynamical_matrix() done at: produce_force_constants()
+    fc           = phonpy._dynamical_matrix._force_constants
+    vecs         = phonpy._dynamical_matrix._smallest_vectors
+    multiplicity = phonpy._dynamical_matrix._multiplicity
+    num_atom     = len(phonpy._dynamical_matrix._p2s_map)
+    omega_kl = numpy.zeros((len(path_kc), 3 * num_atom))
+
+    for iqc, q_c in enumerate(path_kc):
+        # get the dnamical matrix at q
+        dm = numpy.zeros((3 * num_atom, 3 * num_atom), dtype=complex)
+        for i, s_i in enumerate(phonpy._dynamical_matrix._p2s_map):
+            for j, s_j in enumerate(phonpy._dynamical_matrix._p2s_map):
+                dm_local = numpy.zeros((3, 3), dtype=complex)
+                # Sum in lattice points    
+                for k in numpy.where(phonpy._dynamical_matrix._s2p_map == s_j)[0]:
+                    multi = multiplicity[k][i]
+                    phase = []
+                    for l in range(multi):
+                        vec = vecs[k][i][l]
+                        phase.append(numpy.vdot(vec, q_c) * 2j * numpy.pi)
+                    phase_factor = numpy.exp(phase).sum()
+                    dm_local += fc[s_i, k] * phase_factor / mass[i,j] / multi
+
+                dm[(i*3):(i*3+3), (j*3):(j*3+3)] += dm_local
+    
+        # Impose Hermitian condition
+        dm = (dm + dm.conj().transpose()) / 2 
+
+        omega2_l = numpy.linalg.eigvalsh(dm, UPLO='U') # dm == D_q
+        # Sort eigenvalues in increasing order
+        omega2_l.sort()
+        # Use dtype=complex to handle negative eigenvalues
+        omega_l = numpy.sqrt(omega2_l.astype(complex))
+
+        # Take care of imaginary frequencies
+        if not numpy.all(omega2_l >= 0.):
+            indices = numpy.where(omega2_l < 0)[0]
+            
+            omega_l[indices] = -1 * numpy.sqrt(numpy.abs(omega2_l[indices].real))
+
+        omega_kl[iqc]=omega_l.real
+        
+    return numpy.asarray(omega_kl) * phonpy._factor
