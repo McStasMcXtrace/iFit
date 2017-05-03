@@ -6,16 +6,34 @@ function status = sqw_phonons_requirements
 % returns a structure with a field for each MD software being 1 when available.
 status = [];
 
-% test for ASE in Python
 if ismac,  precmd = 'DYLD_LIBRARY_PATH= ;';
 elseif isunix, precmd = 'LD_LIBRARY_PATH= ; '; 
 else precmd=''; end
-[status.ase, result] = system([ precmd 'python -c "import ase"' ]);
+
+% test for python
+status.python = '';
+for calc={'python'}
+  % now test executable
+  [st,result]=system([ precmd 'echo "0" | ' calc{1} ]);
+  if any(st == 0:2)
+      status.python=calc{1};
+      st = 0;
+      disp([ '  Python          (http://www.python.org) as "' status.python '"' ]);
+      break;
+  end
+end
+if isempty(status.python)
+  error([ mfilename ': Python not installed. This is required.' ]);
+end
+
+% test for ASE in Python
+
+[status.ase, result] = system([ precmd status.python ' -c "import ase"' ]);
 if status.ase ~= 0
   disp([ mfilename ': error: requires ASE to be installed.' ])
   disp('  Get it at <https://wiki.fysik.dtu.dk/ase>.');
   disp('  Packages exist for Debian/Mint/Ubuntu, RedHat/Fedora/SuSE, MacOSX and Windows.');
-  error([ mfilename ': ASE not installed' ]);
+  error([ mfilename ': ASE not installed. This is required.' ]);
 else
   disp([ mfilename ': using ASE ' result ]);
   disp('Available calculators:');
@@ -37,7 +55,7 @@ else
   end
   
   % test for PhonoPy
-  [status.phonopy, result] = system([ precmd 'python -c "from phonopy import Phonopy"' ]);
+  [status.phonopy, result] = system([ precmd status.python ' -c "from phonopy import Phonopy"' ]);
   if any(st == 0:2)
     status.phonopy = 'phonopy';
     disp([ '  PhonoPy         (https://atztogo.github.io) as "' status.phonopy '"' ]);
@@ -46,7 +64,7 @@ else
   end
   
   % test for GPAW
-  [st, result] = system([ precmd 'python -c "from gpaw import GPAW"' ]);
+  [st, result] = system([ precmd status.python ' -c "from gpaw import GPAW"' ]);
   if any(st == 0:2)
     status.gpaw='gpaw-python';
     disp([ '  GPAW            (http://wiki.fysik.dtu.dk/gpaw) as "' status.gpaw '"' ]);
@@ -55,7 +73,7 @@ else
   end
   
   % test for NWChem
-  [st, result] = system([ precmd 'python -c "from ase.calculators.nwchem import NWChem"' ]);
+  [st, result] = system([ precmd status.python ' -c "from ase.calculators.nwchem import NWChem"' ]);
   status.nwchem='';
   if any(st == 0:2)
     % now test executable
@@ -75,7 +93,7 @@ else
   end
   
   % test for Jacapo
-  [st, result] = system([ precmd 'python -c "from ase.calculators.jacapo import Jacapo"' ]);
+  [st, result] = system([ precmd status.python ' -c "from ase.calculators.jacapo import Jacapo"' ]);
   status.jacapo='';
   if st == 0
     % now test executable: serial
@@ -104,7 +122,7 @@ else
   end
   
   % test for Elk
-  [st, result] = system([ precmd 'python -c "from ase.calculators.elk import ELK"' ]);
+  [st, result] = system([ precmd status.python ' -c "from ase.calculators.elk import ELK"' ]);
   status.elk='';
   if any(st == 0:2)
     % now test executable
@@ -122,7 +140,7 @@ else
   end
   
   % test for ABINIT
-  [st, result] = system([ precmd 'python -c "from ase.calculators.abinit import Abinit"' ]);
+  [st, result] = system([ precmd status.python ' -c "from ase.calculators.abinit import Abinit"' ]);
   status.abinit='';
   if any(st == 0:2)
     for calc={'abinit','abinis','abinip'}
@@ -153,7 +171,7 @@ else
   
   % test for QE/ASE
   status.quantumespresso_ase = '';
-  [st, result] = system([ precmd 'python -c "from qeutil import QuantumEspresso"' ]);
+  [st, result] = system([ precmd status.python ' -c "from qeutil import QuantumEspresso"' ]);
   if any(st == 0:2)
     status.quantumespresso_ase='qeutil';
     disp([ '  QEutil          (https://jochym.github.io/qe-doc/) as "' status.quantumespresso_ase '"' ]);

@@ -72,7 +72,7 @@ if ~isempty(options.optimizer)
     result = '';
     disp([ mfilename ': optimizing material structure.' ]);
     try
-      [st, result] = system([ precmd 'python ' fullfile(target,'sqw_phonons_optimize.py') ]);
+      [st, result] = system([ precmd options.available.python ' ' fullfile(target,'sqw_phonons_optimize.py') ]);
     catch
       st = 127;
     end

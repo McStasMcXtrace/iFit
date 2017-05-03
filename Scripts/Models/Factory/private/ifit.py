@@ -872,17 +872,27 @@ def phonopy_run(phonon, single=True, filename='FORCE_SETS'):
         phonpy = Phonopy(cell, numpy.diag(phonon.N_c))
         # generate displacements (minimal set)
         phonpy.generate_displacements(distance=0.01)
+        # iterative call for all displacements
         set_of_forces, flag = phonopy_run_calculate(phonon, phonpy, supercell, single)
         if flag is True:
             return flag # some more work is probably required
             
         # use symmetry to derive forces in equivalent displacements
         phonpy.produce_force_constants(forces=set_of_forces)
+        
+        # generate disp.yaml and FORCE_SETS (for later use)
+        displacements = phonpy.get_displacements()
+        directions    = phonpy.get_displacement_directions()
+        file_IO.write_disp_yaml(displacements,
+                                phonpy.get_supercell(),
+                                directions=directions)
+        file_IO.write_FORCE_SETS(phonpy.get_displacement_dataset())
     
     # save the PhonoPy object
     fid = open("phonopy.pkl","wb")
     pickle.dump(phonpy, fid)
     fid.close()
+    
 
     # transfer results to the ASE phonon object
     # Number of atoms (primitive cell)
@@ -1009,39 +1019,21 @@ def phonopy_band_structure(phonpy, path_kc, modes=False):
         modes: bool
             Returns both frequencies and modes when True.
     """
+
+    D = phonpy._dynamical_matrix
+    num_atom     = len(D._p2s_map)
+    # pre-allocating arrays brings a speed improvement
+    omega_kl     = numpy.zeros((len(path_kc), 3 * num_atom))
+    u_kl         = numpy.zeros((len(path_kc), 3 * num_atom, num_atom, 3), dtype=complex)
     
     # pre compute masses sqrt(mass * mass)
-    m_inv_x = numpy.repeat(numpy.sqrt(phonpy._dynamical_matrix._mass), 3)
+    m_inv_x = numpy.repeat(numpy.sqrt(D._mass), 3)
     mass    = numpy.outer(m_inv_x, m_inv_x)
     
-    # phonpy._set_dynamical_matrix() done at: produce_force_constants()
-    fc           = phonpy._dynamical_matrix._force_constants
-    vecs         = phonpy._dynamical_matrix._smallest_vectors
-    multiplicity = phonpy._dynamical_matrix._multiplicity
-    num_atom     = len(phonpy._dynamical_matrix._p2s_map)
-    omega_kl     = numpy.zeros((len(path_kc), 3 * num_atom))
-    u_kl         = []
-
     for iqc, q_c in enumerate(path_kc):
-        # get the dynamical matrix at q
-        dm = numpy.zeros((3 * num_atom, 3 * num_atom), dtype=complex)
-        for i, s_i in enumerate(phonpy._dynamical_matrix._p2s_map):
-            for j, s_j in enumerate(phonpy._dynamical_matrix._p2s_map):
-                dm_local = numpy.zeros((3, 3), dtype=complex)
-                # Sum in lattice points    
-                for k in numpy.where(phonpy._dynamical_matrix._s2p_map == s_j)[0]:
-                    multi = multiplicity[k][i]
-                    phase = []
-                    for l in range(multi):
-                        vec = vecs[k][i][l]
-                        phase.append(numpy.vdot(vec, q_c) * 2j * numpy.pi)
-                    phase_factor = numpy.exp(phase).sum()
-                    dm_local += fc[s_i, k] * phase_factor / mass[i,j] / multi
-
-                dm[(i*3):(i*3+3), (j*3):(j*3+3)] += dm_local
     
-        # Impose Hermitian condition
-        dm = (dm + dm.conj().transpose()) / 2 
+        D.set_dynamical_matrix(q_c)
+        dm = D.get_dynamical_matrix()
         
         if modes:
             omega2_l, u_xl = numpy.linalg.eigh(dm, UPLO='U')
@@ -1049,7 +1041,7 @@ def phonopy_band_structure(phonpy, path_kc, modes=False):
             # multiply with mass prefactor
             u_lx = (m_inv_x[:, numpy.newaxis] *
                     u_xl[:, omega2_l.argsort()]).T.copy()
-            u_kl.append(u_lx.reshape((-1, num_atom, 3)))
+            u_kl[iqc] = u_lx.reshape((-1, num_atom, 3))
         else:
             omega2_l = numpy.linalg.eigvalsh(dm, UPLO='U')
                 
@@ -1070,4 +1062,3 @@ def phonopy_band_structure(phonpy, path_kc, modes=False):
         return numpy.asarray(omega_kl) * phonpy._factor, numpy.asarray(u_kl)
     else:
         return numpy.asarray(omega_kl) * phonpy._factor
-
