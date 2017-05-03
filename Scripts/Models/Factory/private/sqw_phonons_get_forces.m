@@ -228,7 +228,7 @@ function [options, sav] = sqw_phonons_get_forces(options, decl, calc)
         && ~isempty(options.mpi) && options.mpi > 1
         [st, result] = system([ precmd options.available.mpirun ' -np ' num2str(options.mpi) ' '  options.available.gpaw ' ' fullfile(target,'sqw_phonons_forces_iterate.py') ]);
       else
-        [st, result] = system([ precmd 'python ' fullfile(target,'sqw_phonons_forces_iterate.py') ]);
+        [st, result] = system([ precmd options.available.python ' ' fullfile(target,'sqw_phonons_forces_iterate.py') ]);
       end
       disp(result)
       % get how many steps have been computed: name is 'phonon.N[xyz][+-].pckl'
@@ -281,7 +281,7 @@ function [options, sav] = sqw_phonons_get_forces(options, decl, calc)
       && ~isempty(options.mpi) && options.mpi > 1
       [st, result] = system([ precmd status.mpirun ' -np ' num2str(options.mpi) ' '  status.gpaw ' ' fullfile(target,'sqw_phonons_forces_finalize.py') ]);
     else
-      [st, result] = system([ precmd 'python ' fullfile(target,'sqw_phonons_forces_finalize.py') ]);
+      [st, result] = system([ precmd options.available.python ' ' fullfile(target,'sqw_phonons_forces_finalize.py') ]);
     end
     disp(result)
   catch
