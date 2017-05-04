@@ -38,7 +38,7 @@ for i = 1:length(S)     % can handle multiple index levels
     b = ax{s.subs{:}};
   case '.'  % ======================================================== structure
     % protect some fields     % iFunc Property
-    fieldname = s.subs;
+    fieldname = strtok(s.subs);
     if length(fieldname) > 1 && iscell(fieldname)
       fieldname = fieldname{1};
     end
