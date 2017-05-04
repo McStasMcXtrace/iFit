@@ -51,7 +51,7 @@ for index=1:length(varargin)
   property = varargin{index}; % get PropertyName
   if isempty(property), continue; end
   if ~ischar(property)
-    error([ mfilename ': PropertyName should be char strings in object ' inputname(1) ' ' this.Tag ' "' this.Title '" and not ' class(property) ]);
+    error([ mfilename ': PropertyName should be char strings in object ' inputname(1) ' ' this.Tag ' "' this.Name '" and not ' class(property) ]);
   end
   % test if this is a unique property, or a composed one
   if isvarname(property)  % extract iFunc field/alias
@@ -65,6 +65,16 @@ for index=1:length(varargin)
       s = struct('type','.','subs', property);      % MAIN TIME SPENT
       varargout{1} = subsref(this, s);              % calls subsref directly (single subsref level)
     end
+  else
+    s = [];
+    split = textscan(property,'%s','Delimiter','.'); split=split{end};
+    split = split(:)';
+    for k=split
+      s(end+1).type='.';
+      s(end).subs=k{1};
+    end
+    % MAIN TIME SPENT   
+    varargout{1} = subsref(this, s);              % calls subsref directly (single subsref level)
   end
 end
 
