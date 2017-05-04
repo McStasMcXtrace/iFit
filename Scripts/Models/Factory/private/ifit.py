@@ -65,7 +65,7 @@ def get_spacegroup(atoms, symprec=1e-5):
     
     >>> from ase.lattice import bulk
     >>> atoms = bulk("Cu", "fcc", a=3.6, cubic=True)
-    >>> sg = get_spacegroup.get_spacegroup(atoms)
+    >>> sg = ifit.get_spacegroup(atoms)
     """
 
     # use spglib when it is available (and return)
@@ -151,7 +151,7 @@ def equivalent_sites(sg, scaled_positions, onduplicates='keep',
                 raises a SpacegroupValueError
                     
         symprec: float
-            Minimum "distance" betweed two sites in scaled coordinates
+            Minimum "distance" between two sites in scaled coordinates
             before they are counted as the same site.
 
         Returns:
@@ -166,7 +166,7 @@ def equivalent_sites(sg, scaled_positions, onduplicates='keep',
 
         >>> from ase.lattice.spacegroup import Spacegroup
         >>> sg = Spacegroup(225)  # fcc
-        >>> sites, kinds = sg.equivalent_sites([[0, 0, 0], [0.5, 0.0, 0.0]])
+        >>> sites, kinds = ifit.equivalent_sites(sg, [[0, 0, 0], [0.5, 0.0, 0.0]])
         >>> sites
         array([[ 0. ,  0. ,  0. ],
                [ 0. ,  0.5,  0.5],
@@ -1008,7 +1008,7 @@ def phonopy_band_structure(phonpy, path_kc, modes=False):
         is returned.
 
         Eigenvalues and modes are in units of PhonoPy and Ang/sqrt(amu),
-        respectively.
+        respectively. The default PhonoPy energy unit is THz.
 
         Parameters
         ----------
@@ -1025,6 +1025,9 @@ def phonopy_band_structure(phonpy, path_kc, modes=False):
     # pre-allocating arrays brings a speed improvement
     omega_kl     = numpy.zeros((len(path_kc), 3 * num_atom))
     u_kl         = numpy.zeros((len(path_kc), 3 * num_atom, num_atom, 3), dtype=complex)
+    # the call to phonopy._set_dynamical_matrix() is expensive. 
+    # It create a  DynamicalMatrix() at each call, but this has been done 
+    # in phonopy.produce_force_constants(). So we avoid it.
     
     # pre compute masses sqrt(mass * mass)
     m_inv_x = numpy.repeat(numpy.sqrt(D._mass), 3)
@@ -1062,3 +1065,4 @@ def phonopy_band_structure(phonpy, path_kc, modes=False):
         return numpy.asarray(omega_kl) * phonpy._factor, numpy.asarray(u_kl)
     else:
         return numpy.asarray(omega_kl) * phonpy._factor
+        

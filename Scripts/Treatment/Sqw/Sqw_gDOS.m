@@ -43,6 +43,14 @@ function [gDOS, g] = Sqw_gDOS(s, method, n)
 
   g = []; gDOS=[];
   if nargin == 0, return; end
+  
+  if (isa(s,'iFunc') || isa(s,'iData')) && ndims(s) == 4
+    disp([ 'Using sqw_phonons_dos for ' class(s) ' ' num2str(ndims(s)) 'D objects.' ]);
+    [s,f] = sqw_phonons_dos(s);
+    gDOS = s.IserData.DOS;
+    return
+  end
+
   if ~isa(s, 'iData'), s=iData(s); end
   
   if nargin < 2, method = 'Carpenter'; end
