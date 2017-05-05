@@ -3,6 +3,9 @@ function [s,f]=sqw_phonons_dos(s, T)
 %
 % compute the vDOS from the evaluation of the 4D sqw_phonons object
 % then compute thermodynamics quantities.
+% The input 4D model should be e.g. a 4D phonon one, with axes qh,qk,ql,energy
+% in [rlu^3,meV]. The evaluation of he model should provide the bare excitation
+% frequencies into the UserData.FREQ, in [meV].
 %
 % input:
 %   s: a 4D sqw_phonons model (iFunc)
@@ -38,9 +41,9 @@ if ~isfield(s.UserData,'maxFreq')
   disp([ mfilename ': maximum phonon energy ' num2str(s.UserData.maxFreq) ' [meV] in ' s.Name ]);
 end 
 
-% re-evaluate the 4D model onto a mesh filling the Brillouin zone
+% re-evaluate the 4D model onto a mesh filling the Brillouin zone [-0.5:0.5]
 s.UserData.maxFreq = max(s.UserData.maxFreq(:));
-qh=linspace(0.01,.5,30);qk=qh; ql=qh; w=linspace(0.01,s.UserData.maxFreq*1.2,51);
+qh=linspace(-0.5,.5,30);qk=qh; ql=qh; w=linspace(0.01,s.UserData.maxFreq*1.2,51);
 f=iData(s,[],qh,qk,ql',w);
 
 % then get back the bare frequencies
@@ -51,22 +54,20 @@ end
 FREQ = s.UserData.FREQ; % in meV
 
 % compute the DOS
-[dos_e,omega_e]=hist(FREQ(:),50);
+index= find(FREQ > 0);
+[dos_e,omega_e]=hist(FREQ(index),50);
 Escaling = findfield(s, 'Energy_scaling', 'first');
 if ~isempty(Escaling), Escaling = get(s, Escaling); end
 if isnumeric(Escaling) && Escaling > 0, omega_e=omega_e*Escaling(1); end
 DOS=iData(omega_e,dos_e./sum(dos_e));
-DOS.Title = [ 'DOS ' strtok(s.Name) ]; 
-xlabel(DOS,'DOS Energy [meV]'); 
-ylabel(DOS,'DOS');
+DOS.Title = [ 'Total DOS ' strtok(s.Name) ]; 
+xlabel(DOS,'Energy [meV]'); 
+ylabel(DOS,'Total DOS');
 UD = s.UserData;
 DOS.Error=0; UD.DOS=DOS;
 
 % clean up the energy axis
 omega_e = omega_e/1000; % eV
-index   = find(omega_e > 0);
-omega_e = omega_e(index);
-dos_e   = dos_e(index);
 
 % get the temperature
 if nargin < 2
@@ -113,6 +114,26 @@ s.UserData = UD;
 if nargout == 0 && ~isempty(inputname(1))
   assignin('caller',inputname(1),s);
 end
+
+function D = get_total_dos(s, npts, delta)
+  % compute the total Phonon Density of States
+  if nargin < 2, npts = []; end
+  if nargin < 3, delta= []; end
+  if isempty(npts), npts=1000; end
+  if isempty(delta), delta = 0.5; end
+
+  omega_kl = s.UserData.FREQ; % in meV
+  omega_e  = linspace(0,max(FREQ(:))*1.2, npts);
+  dos_e    = zeros(size(omega_e));
+  delta    = 0.05; % meV smoothing
+
+  omega_el = repmat(omega_e, [3 1])';
+
+  for index=1:size(omega_kl,1)  % along q values
+    diff_el = ( omega_el - repmat(omega_kl(index,:),[npts 1]) ).^2;
+    dos_el  = 1./ (diff_el + (0.5*delta^2)); 
+    dos_e   = dos_e + sum(dos_el,2)';
+  end
 
 % ------------------------------------------------------------------------------
 function U = get_internal_energy(omega_e, dos_e, T, potential_energy)
