@@ -26,12 +26,14 @@ for i = 1:length(S)     % can handle multiple index levels
   case '()' % ======================================================== array
     if numel(b) > 1           % iFunc array: b(index)
       b = b(s.subs{:});
-    else                      % syntax iFunc(p, axes{:}, varargin) -> evaluate
+    elseif isa(b,'iFunc')     % syntax iFunc(p, axes{:}, varargin) -> evaluate
       [b, model, ax, name] = feval(b, s.subs{:});
       % update object
       if nargout == 0 && ~isempty(inputname(1))
         assignin('caller',inputname(1),model);
       end
+    else
+      b=subsref(b, s); return;
     end
   case '{}' % ======================================================== axes (guessed)
     [~,~,ax] = feval(b);
