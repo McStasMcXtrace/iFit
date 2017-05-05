@@ -90,6 +90,7 @@ for i = 1:length(S)     % can handle multiple index levels
         setalias(b,'Signal', 'ModelValue');
         return
       elseif any(cellfun('isempty',s.subs)), b=iData; return;        % b([])
+      elseif ~isa(b, 'iData') b=subsref(b, s); return;
       end
       if length(s.subs) == 1 && all(s.subs{:} == 1), continue; end  % b(1)
       

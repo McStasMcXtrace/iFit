@@ -16,7 +16,8 @@ function c = help(s)
 
 c={};
 for index=1:numel(s)
-  if numel(s) == 1, a=s; else a=s(index); end
+  if numel(s) > 1, a=s(index); disp(a); 
+  else a=s; end
   % Model stuff ----------------------------------------------------------------
   m = []; mp = []; mv = []; names = []; name = [];
   % get Model,etc... when found in the Dataset
@@ -111,10 +112,10 @@ for index=1:numel(s)
   % axes and Signal stuff
   properties{end+1} = '[Rank]         [Value] [Description]';
   myisvector = @(c)length(c) == numel(c);
-  for index=0:min([ ndims(a) length(getaxis(a)) ])
-    [v, l] = getaxis(a, num2str(index));
+  for index1=0:min([ ndims(a) length(getaxis(a)) ])
+    [v, l] = getaxis(a, num2str(index1));
     if length(l) > 20, l = [l(1:18) '...' ]; end 
-    x      = getaxis(a, index);
+    x      = getaxis(a, index1);
     m      = get(a, 'Monitor');
     if length(x) == 1
       minmaxstd = sprintf('[%g]', full(x));
@@ -124,7 +125,7 @@ for index=1:numel(s)
       x=x(:);
       minmaxstd = sprintf('[%g:%g] size [%s]', full(min(x)), full(max(x)),num2str(size(x)));
     end
-    if index==0
+    if index1==0
       if not(all(m==1 | m==0))
         minmaxstd=[ minmaxstd sprintf(' (per monitor=%g)', mean(m(:))) ];
       end
@@ -132,12 +133,12 @@ for index=1:numel(s)
     end
     if prod(size(a)) < 1e4
       try
-        [s, f] = std(a, -index);
-        minmaxstd=[ minmaxstd sprintf(' <%g +/- %g>', f,s) ];
+        [S, f] = std(a, -index1);
+        minmaxstd=[ minmaxstd sprintf(' <%g +/- %g>', f,S) ];
       end
     end
     if isnumeric(v), v=''; end
-    t = sprintf('%6i %15s  %s %s', index, v, l, minmaxstd);
+    t = sprintf('%6i %15s  %s %s', index1, v, l, minmaxstd);
     tproperties{end+1} = t;
     properties{end+1}  = t;
     clear x m
@@ -177,6 +178,7 @@ for index=1:numel(s)
   if nargout == 0
     h = helpdlg(ud.properties, [ mfilename ': Data ' a.Tag ': ' num2str(ndims(a)) 'D object ' mat2str(size(a)) ]);
     ud.handle = h;
+    get(h)
   end
   
   
