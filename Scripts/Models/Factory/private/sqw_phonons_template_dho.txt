@@ -9,8 +9,7 @@ function [signal, this] = sqw_phonons_template_dho(HKL, t, FREQ, POLAR, is_event
 if is_event, w = t(:);
 else         w = ones(size(FREQ,1),1) * t(:)'; end
 signal               = zeros(size(w));
-this.UserData.maxFreq= max(FREQ);
-this.UserData.FREQ   = FREQ;
+this.UserData.maxFreq= max(FREQ); % for each mode
 nt = numel(t);
 
 % test for unstable modes
@@ -29,7 +28,7 @@ end
 q_cart = B*HKL';
 qx=q_cart(1,:); qy=q_cart(2,:); qz=q_cart(3,:);
 Q=[ qx(:) qy(:) qz(:) ];  % in Angs-1
-clear q_cart qx qy qz HKL
+clear q_cart qx qy qz
 
 % check if we have everything needed for the intensity estimate: b_coh, positions
 b_coh = []; positions = [];
@@ -102,6 +101,10 @@ else n=0; end
 
 if Gamma<=0, Gamma=1e-4; end
 
+% convert negative frequencies into imaginary
+index=find(imag(FREQ) == 0 & FREQ < 0);
+if ~isempty(index), FREQ(index) = i*FREQ(index); end
+
 for index=1:size(FREQ,2)  % loop on modes
   % % size of 'w0' is [ numel(x) numel(t) ]. the energy of the modes (columns) at given x=q (rows)
   % we assume Gamma(w) = Gamma w/w0
@@ -148,6 +151,43 @@ for index=1:size(FREQ,2)  % loop on modes
   % sum-up all contributions to signal: Fak Dorner 1997 Eq (2)
   signal = signal+ (n+1).*ZQ*4.*w.*sqrt(Gamma2)/pi ./ ((w.^2-W02).^2 + 4*w.^2.*Gamma2);
 end % for mode index
+
+% compute the phonon DOS: total and partials. 
+% This requires that the Q range is large enough.
+pos = find(abs(HKL(:,1)) <= .5 & abs(HKL(:,2)) <= .5 & abs(HKL(:,3)) <= .5);
+
+if (~isfield(this.UserData,'DOS') || isempty(this.UserData.DOS)) && ...
+    numel(pos) >=500
+  disp([ strtok(this.Name) ': Computing the phonon DOS on ' num2str(numel(pos)) ' HKL points.' ]);
+  f = FREQ(pos,:);
+  index= find(imag(f) == 0 & f > 0);
+  [dos_e,omega_e]=hist(f(index),100);
+  dos_factor = size(FREQ,2) / trapz(omega_e(:), dos_e(:));
+  dos_e = dos_e * dos_factor ; % 3n modes per unit cell
+  DOS=iData(omega_e,dos_e);
+  DOS.Title = [ 'Total DOS ' this.Name ];
+  DOS.Label = '';
+  xlabel(DOS,'Energy [meV]'); 
+  ylabel(DOS,[ 'Total DOS/unit cell ' strtok(this.Name) ]);
+  DOS.Error=0; this.UserData.DOS=DOS;
+  % partial phonon DOS (per mode)
+  pDOS = [];
+  for mode=1:size(FREQ,2)
+    f = FREQ(pos,mode);
+    index = find(f > 0 & f > 0);
+    dos_e = hist(f(index),omega_e);
+    dos_e = dos_e * dos_factor ; % normalize to the total DOS
+    DOS=iData(omega_e,dos_e);
+    DOS.Title = [ 'Mode [' num2str(mode) '] DOS ' this.Name ]; 
+    DOS.Label = '';
+    xlabel(DOS,'Energy [meV]'); 
+    ylabel(DOS,[ 'Partial DOS[' num2str(mode) ']/unit cell ' strtok(this.Name) ]);
+    DOS.Error = 0;
+    pDOS = [ pDOS DOS ];
+  end
+  this.UserData.DOS_partials=pDOS;
+end
+clear HKL
 
 % Amplitude
 if Amplitude

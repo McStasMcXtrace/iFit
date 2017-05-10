@@ -241,9 +241,9 @@ function [options, sav] = sqw_phonons_get_forces(options, decl, calc)
         % up to now we have done 'move' and it took etime(clock, t)
         % time per iteration is etime(clock, t)/move.
         % total time of computation is etime(clock, t)/move*nb_of_steps
-        % time remaining is etime(clock, t)/move*(nb_of_steps-move)
+        % time remaining is etime(clock, t)/move*(nb_of_steps-move+1)
         % final time is     t+etime(clock, t)/move*nb_of_steps
-        remaining = etime(clock, t0)/move*(nb_of_steps-move);
+        remaining = etime(clock, t0)/move*max(1,nb_of_steps-move+1);
         hours     = floor(remaining/3600);
         minutes   = floor((remaining-hours*3600)/60);
         seconds   = floor(remaining-hours*3600-minutes*60);
