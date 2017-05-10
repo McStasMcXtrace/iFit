@@ -6,7 +6,16 @@ function [pars,fval,exitflag,output] = fmin(varargin)
 %
 % WARNING: as the selected optimizer may change from one call to an other, the
 % solution found may vary as well. To avoid that, rather use a specific optimizer.
-% 
+%
+% Best optimizers are:
+%   fminpso:    Particle Swarm Optimization
+%   fminpowell: Powell with Coggins line search
+%   fminhooke:  Hooke-Jeeves direct search
+%   fminralg:   Shor R-algorithm
+%   fminsimpsa: Simplex/simulated annealing
+%   fminimfil:  Unconstrained Implicit filtering
+% Type <a href="matlab:doc(iData,'Optimizers')">doc(iData,'Optimizers')</a> to access the Optimizers Documentation.
+%
 % Calling:
 %   fmin(fun, pars) asks to minimize the 'fun' objective function with starting
 %     parameters 'pars' (vector)
@@ -64,7 +73,7 @@ function [pars,fval,exitflag,output] = fmin(varargin)
 %          OUTPUT additional information returned as a structure.
 %
 % Version: $Date$
-% See also: fminsearch, optimset
+% See also: fminsearch, optimset, 
 % (c) E.Farhi, ILL. License: EUPL.
 
 % default options for optimset
