@@ -132,6 +132,9 @@ signal.Expression     = { ...
   script_dho{:}, ...
  };
 
+signal.UserData.properties.spacegroup        = 'Cubic (230)';
+signal.UserData.properties.spacegroup_number = 230;
+
 signal=iFunc(signal);
 
 if nargin == 0
