@@ -16,7 +16,7 @@ function S = sqw_kpath(f, qLim, E)
 %   f:    a 4D HKLE model S(q,w) (iFunc)
 %   path: a list of k-locations given as a cell/array of HKL locations (cell or matrix)
 %         can also be 'Cubic','Hexagonal','Trigonal','Tetragonal','Orthorhombic','Monoclinic';
-%                     'Triclinic
+%                     'Triclinic','fcc','bcc'
 %   w:    a vector of energies (4-th axis) for which to evaluate the model (double)
 %
 % output:
@@ -29,14 +29,22 @@ function S = sqw_kpath(f, qLim, E)
 
   S = [];
   if nargin == 0, return; end
+  if nargin < 2, qLim = []; end
+  if nargin < 3, E=[]; end
+  
+  % handle input array
+  if numel(f) > 1
+    for index=1:numel(f)
+      S = [ S sqw_kpath(f(index), qLim, E) ];
+    end
+    return
+  end
   
   if ndims(f) ~= 4 || ~isa(f,'iFunc')
     disp([ mfilename ': Invalid model dimension. Should be iFunc 4D. It is currently ' class(f) ' ' num2str(ndims(f)) 'D' ]);
     return
   end
   
-  if nargin < 2, qLim = []; end
-  if nargin < 3, E=[]; end
   if isempty(E)
     % make a quick evaluation in order to get the maxFreq
     qh=linspace(0.01,1.5,10);qk=qh; ql=qh; w=linspace(0.01,1000,100);
@@ -61,6 +69,9 @@ function S = sqw_kpath(f, qLim, E)
   if isempty(crystalsystem) && isfield(f.UserData,'properties') ...
   && isfield(f.UserData.properties, 'spacegroup')
     spacegroup = regexp(f.UserData.properties.spacegroup,'\(([^:]*)\)','tokens');
+    if isempty(spacegroup) && isfield(f.UserData.properties, 'spacegroup_number')
+      spacegroup = { f.UserData.properties.spacegroup_number };
+    end
     if ~isempty(spacegroup)
       spacegroup = str2double(spacegroup{1});
       if 195 <= spacegroup && spacegroup <= 230
@@ -175,6 +186,9 @@ function S = sqw_kpath(f, qLim, E)
 % ----------------------------------------------------------------------------
 function [qLim,lab]=sqw_kpath_crystalsystem(crystalsystem)
   % set a path depending on the crystal system
+  % may be given from spacegroup, or as a string:
+  %   'Cubic','Hexagonal','Trigonal','Tetragonal','Orthorhombic','Monoclinic';
+  %   'Triclinic','fcc','bcc'
   qLim = {};
   switch lower(crystalsystem)
   case 'cubic'
@@ -183,7 +197,7 @@ function [qLim,lab]=sqw_kpath_crystalsystem(crystalsystem)
     R=    [1 / 2, 1 / 2, 1 / 2];
     M=    [0 / 2, 1 / 2, 1 / 2];
     qLim = {Gamma X M Gamma R M};
-    lab  ='Gamma X M Gamma R M';
+    lab  = 'Gamma X M Gamma R M';
   case 'fcc'
     Gamma=[0,     0,     0    ];
     X=    [1 / 2, 0,     1 / 2];
@@ -192,15 +206,15 @@ function [qLim,lab]=sqw_kpath_crystalsystem(crystalsystem)
     U=    [5 / 8, 1 / 4, 5 / 8];
     L=    [1 / 2, 1 / 2, 1 / 2];
     qLim = { Gamma X W K Gamma L U W };
-    lab  = 'Gamma X W K Gamma L U W';
+    lab  =  'Gamma X W K Gamma L U W';
   case 'bcc'
     Gamma=[0,      0,     0    ];
     H=    [1 / 2, -1 / 2, 1 / 2];
     N=    [0,      0,     1 / 2];
     P=    [1 / 4,  1 / 4, 1 / 4];
     qLim = { Gamma H N Gamma P H };
-    lab  = 'Gamma H N Gamma P H';
-  case 'hexagonal'
+    lab  =  'Gamma H N Gamma P H';
+  case {'hexagonal','trigonal'}
     Gamma= [0,      0,       0   ];
     M=     [0,      1 / 2,   0   ];
     K=     [-1 / 3, 1 / 3,   0   ];
@@ -208,7 +222,7 @@ function [qLim,lab]=sqw_kpath_crystalsystem(crystalsystem)
     L=     [0,     1 / 2,  1 / 2 ];
     H=     [-1 / 3, 1 / 3, 1 / 2 ];
     qLim = { Gamma A L M Gamma K H };
-    lab  = 'Gamma A L M Gamma K H';
+    lab  =  'Gamma A L M Gamma K H';
   case 'tetragonal'
     Gamma= [0,      0,       0   ];
     X=     [1 / 2,  0,       0   ];
@@ -217,8 +231,8 @@ function [qLim,lab]=sqw_kpath_crystalsystem(crystalsystem)
     R=     [1 / 2,  0,     1 / 2 ];
     A=     [1 / 2,  1 / 2, 1 / 2 ];
     qLim = { Gamma X M Gamma Z R A };
-    lab  = 'Gamma X M Gamma Z R A';
-  case 'orthorhombic'
+    lab  =  'Gamma X M Gamma Z R A';
+  otherwise % 'orthorhombic','triclinic','monoclinic'
     Gamma= [0,      0,       0   ];
     R=     [1 / 2,  1 / 2, 1 / 2 ];
     S=     [1 / 2,  1 / 2,   0   ];
@@ -228,6 +242,6 @@ function [qLim,lab]=sqw_kpath_crystalsystem(crystalsystem)
     Y=     [0,      1 / 2,   0   ];
     Z=     [0,      0,     1 / 2 ];
     qLim = { Gamma Y S X Gamma Z T R U };
-    lab  = 'Gamma Y S X Gamma Z T R U';
+    lab  =  'Gamma Y S X Gamma Z T R U';
   end
 
