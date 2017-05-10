@@ -13,7 +13,8 @@ function [pars_out,criteria,message,output] = fits(a, model, pars, options, cons
 %  [pars,...] = fits(a, model, pars, options, fixed)
 %     indicates which parameters are fixed (non zero elements of array).
 %  [pars,...] = fits(a, model, pars, 'optimizer', ...)
-%     uses a specific optimizer and its default options.
+%     uses a specific optimizer and its default options=feval(optimizer,'defaults')
+%     See below for suggested best optimizers.
 %  [pars,...] = fits(a, model, pars, options, constraints, args...)
 %     send additional arguments to the fit model(pars, axes, args...)
 %  [optimizers,functions] = fits(iData)
@@ -48,6 +49,7 @@ function [pars_out,criteria,message,output] = fits(a, model, pars, options, cons
 %   max_likelihood
 %
 %  Type <a href="matlab:doc(iData,'Fit')">doc(iData,'Fit')</a> to access the iFit/Fit Documentation.
+%  Type <a href="matlab:doc(iData,'Optimizers')">doc(iData,'Optimizers')</a> to access the Optimizers Documentation.
 %
 % input:  a: object or array (iData)
 %           when given as an empty iData, the list of optimizers and fit models
@@ -79,6 +81,15 @@ function [pars_out,criteria,message,output] = fits(a, model, pars, options, cons
 %           options.optimizer
 %             Optimization method. Default is 'fminsearch' (char/function handle)
 %             the syntax for calling the optimizer is e.g. optimizer(criteria,pars,options,constraints)
+%
+%               Best optimizers are:
+%                 fminpso:    Particle Swarm Optimization
+%                 fminpowell: Powell with Coggins line search
+%                 fminhooke:  Hooke-Jeeves direct search
+%                 fminralg:   Shor R-algorithm
+%                 fminsimpsa: Simplex/simulated annealing
+%                 fminimfil:  Unconstrained Implicit filtering
+% 
 %           options.criteria
 %             Minimization criteria. Default is 'least_square' (char/function handle)
 %             the syntax for evaluating the criteria is criteria(Signal, Error, Model)
