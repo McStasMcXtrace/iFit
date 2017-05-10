@@ -121,6 +121,8 @@
 
 
 
+
+
         </a>fits(iData)</span>, <a href="iFunc.html">iFunc</a><br>
     </div>
     <br>
@@ -2865,14 +2867,14 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
         the HKL locations is assumed to be a q-path in the BZ, but the E
         (energy) axis can be of different length/orientation to compute
         the Model along (q,E) path, resulting in a 2D object. Typically,
-        the <b>sqw_kpath</b> function does this, to provide the phonon
+        the <b>sqw_kpath(s)</b> function does this, to provide the phonon
         dispersion curve along principal directions.</li>
       <li>When the H K L E axes are given as mixed orientations/length,
         as vectors or matrices, the Model evaluation is done on a HKLE
         cube, which is well suited to visualize the whole dispersion
         surfaces. <b>In the example below</b>, <i>ql</i> has a
         different orientation (it is transposed) as <i>qh</i> and <i>qk</i>,
-        which triggers a 4D HKLE cube evaluation.</li>
+        which triggers a 4D HKLE cube evaluation.</li><li>When the <i>qh,qk,ql</i> axes span over a whole Brillouin zone, e.g. [-0.5 : 0.5], the <b>phonon density of states</b> (DOS) is computed, and stored in <i>s.UserData.DOS</i>, as well as partial DOS in <i>s.UserData.DOS_partials</i> (per mode).</li><li>You may evaluate the <b>powder dispersion</b> using the <b>sqw_powder</b><b>(s)</b> function.<br></li>
     </ul>
     The <b>plot (surf), plot3, scatter3</b>, and <b>slice</b> methods
     for plotting all provide nice looking rendering of volume data. See
@@ -3145,7 +3147,8 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
         cube, which is well suited to visualize the whole dispersion
         surfaces. <b>In the example below</b>, <i>ql</i> has a
         different orientation (it is transposed) as <i>qh</i> and <i>qk</i>,
-        which triggers a 4D HKLE cube evaluation.</li>
+        which triggers a 4D HKLE cube evaluation.</li><li>When the <i>qh,qk,ql</i> axes span over a whole Brillouin zone, e.g. [-0.5 : 0.5], the <b>phonon density of states</b> (DOS) is computed, and stored in <i>s.UserData.DOS</i>, as well as partial DOS in <i>s.UserData.DOS_partials</i> (per mode).</li><li>You may evaluate the <b>powder dispersion</b> using the <b>sqw_powder</b><b>(s)</b> function.<br>
+</li>
     </ul>
     A usage example is:<br>
     <pre>	&gt;&gt; s=<font color="#3366ff">sqw_cubic_monoatomic</font>([ 3 3 ]); 	<i>% create model, with C1/C2=3 E0=3</i><br>	&gt;&gt; qh=<font color="#3366ff">linspace</font>(0,.5,50);qk=qh; ql=<i><b>qh'</b></i>; w=<font color="#3366ff">linspace</font>(0.01,10,51);<br> 	&gt;&gt; f=<font color="#3366ff">iData</font>(s,[],qh,qk,ql,w); 		<i>% evaluate model into an iData</i><br>	&gt;&gt; <font color="#3366ff">plot3</font>(log(f(:,:,1,:)));	<i>	% plot </i><i>ql(1)=0 plane</i><br></pre>
@@ -3332,7 +3335,22 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
       &nbsp; p(
       17)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>Background</b><br>
     </blockquote>
-    <div align="left">The Slope parameters allow to estimate the mode group velocity. Using the definition rlu = 2pi/<i>a</i> where <i>a</i>
+    <div align="left">The axes needed for the evaluation are expressed in <i>rlu</i> for
+    QH,QK,QL and in meV for the energy [1 meV = 241.8 GHz = 11.604 K =
+    0.0965 kJ/mol]. The model can be evaluated by giving axes and model
+    parameters (see examples below). <br>
+    <ul><li>When all axes are given as vectors of same orientation <i>and</i>
+        same length, the HKLE set is assumed to be list of 'events'.</li><li>When the H K L axes are vectors of same length/orientation,
+        the HKL locations is assumed to be a q-path in the BZ, but the E
+        (energy) axis can be of different length/orientation to compute
+        the Model along (q,E) path, resulting in a 2D object. Typically,
+        the <b>sqw_kpath</b> function does this, to provide the phonon
+        dispersion curve along principal directions.</li><li>When the H K L E axes are given as mixed orientations/length,
+        as vectors or matrices, the Model evaluation is done on a HKLE
+        cube, which is well suited to visualize the whole dispersion
+        surfaces. <b>In the example below</b>, <i>ql</i> has a
+        different orientation (it is transposed) as <i>qh</i> and <i>qk</i>,
+        which triggers a 4D HKLE cube evaluation.</li><li>When the <i>qh,qk,ql</i> axes span over a whole Brillouin zone, e.g. [-0.5 : 0.5], the <b>phonon density of states</b> (DOS) is computed, and stored in <i>s.UserData.DOS</i>, as well as partial DOS in <i>s.UserData.DOS_partials</i> (per mode).</li><li>You may evaluate the <b>powder dispersion</b> using the <b>sqw_powder</b><b>(s)</b> function.</li></ul><br>The Slope parameters allow to estimate the mode group velocity. Using the definition rlu = 2pi/<i>a</i> where <i>a</i>
       is the excitation periodicity, we can derive:<br>
       <blockquote>velocity<sub>[m/s]</sub> = Slope<sub>[meV/rlu]</sub>
         *a<sub>[Angs]</sub> /2pi * 151.9<br>
@@ -3359,7 +3377,7 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
     use:<br>
     <ul><li>s=<font color="#3366ff">sqw_acoustopt</font>([H0 K0 L0 E0]);</li></ul>To model an <i><b>acoustic</b></i> mode, use e.g. <i>H0=K0=L0=E0</i>=0 and adjust the <i>Slope</i> parameters. <br>To model an <i><b>optical</b></i> mode, use e.g. <i>H0=K0=L0=0</i> but set <i>E0</i> to a finite energy (e.g. zone centre energy).<br>To model something else, use other parameters... ;-) <br><br>The <b><a href="Models.html#mozTocId774280"><b>sqw_linquad</b></a></b>
  model (above) is somewhat similar, but specifies a <i>specific</i> HKLE location instead of the minimum of the 
-dispersion from which the expansion is quadratic.<br>
+dispersion from which the expension is quadratic.<br>
     
     <br>
     <table style="text-align: left; width: 1016px; height: 59px;" cellspacing="2" cellpadding="2" border="1">
@@ -3467,7 +3485,22 @@ dispersion from which the expansion is quadratic.<br>
       &nbsp; p(
       17)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>Background</b><br>
     </blockquote>
-    The Slope parameters allow to estimate the mode
+    The axes needed for the evaluation are expressed in <i>rlu</i> for
+    QH,QK,QL and in meV for the energy [1 meV = 241.8 GHz = 11.604 K =
+    0.0965 kJ/mol]. The model can be evaluated by giving axes and model
+    parameters (see examples below). <br>
+    <ul><li>When all axes are given as vectors of same orientation <i>and</i>
+        same length, the HKLE set is assumed to be list of 'events'.</li><li>When the H K L axes are vectors of same length/orientation,
+        the HKL locations is assumed to be a q-path in the BZ, but the E
+        (energy) axis can be of different length/orientation to compute
+        the Model along (q,E) path, resulting in a 2D object. Typically,
+        the <b>sqw_kpath</b> function does this, to provide the phonon
+        dispersion curve along principal directions.</li><li>When the H K L E axes are given as mixed orientations/length,
+        as vectors or matrices, the Model evaluation is done on a HKLE
+        cube, which is well suited to visualize the whole dispersion
+        surfaces. <b>In the example below</b>, <i>ql</i> has a
+        different orientation (it is transposed) as <i>qh</i> and <i>qk</i>,
+        which triggers a 4D HKLE cube evaluation.</li><li>When the <i>qh,qk,ql</i> axes span over a whole Brillouin zone, e.g. [-0.5 : 0.5], the <b>phonon density of states</b> (DOS) is computed, and stored in <i>s.UserData.DOS</i>, as well as partial DOS in <i>s.UserData.DOS_partials</i> (per mode).</li><li>You may evaluate the <b>powder dispersion</b> using the <b>sqw_powder</b><b>(s)</b> function.</li></ul>The Slope parameters allow to estimate the mode
       phase velocity for acoustic modes when E0=0. Using the definition rlu = 2pi/<i>a</i> where <i>a</i>
       is the excitation periodicity, we can derive:<br>
       <blockquote>velocity<sub>[m/s]</sub> = Slope<sub>[meV/rlu]</sub>
@@ -3919,8 +3952,8 @@ dispersion from which the expansion is quadratic.<br>
         cube, which is well suited to visualize the whole dispersion
         surfaces. <b>In the example below</b>, <i>ql</i> has a
         different orientation (it is transposed) as <i>qh</i> and <i>qk</i>,
-        which triggers a 4D HKLE cube evaluation.<br>
-      </li>
+        which triggers a 4D HKLE cube evaluation.</li><li>When the <i>qh,qk,ql</i> axes span over a whole Brillouin zone, e.g. [-0.5 : 0.5], the <b>phonon density of states</b> (DOS) is computed, and stored in <i>s.UserData.DOS</i>, as well as partial DOS in <i>s.UserData.DOS_partials</i> (per mode).</li><li>You may evaluate the <b>powder dispersion</b> using the <b>sqw_powder</b><b>(s)</b> function.<br>
+</li>
     </ul>
     The resulting <a href="iData.html"> iData</a> object can then be <a href="Plot.html">plotted</a>, such as in the following example
     (grid max energy 50 meV):<br>
@@ -4349,9 +4382,7 @@ dispersion from which the expansion is quadratic.<br>
         automatically the <i>supercell</i> from the number of atoms in
         the material cell as (1000/N)^(1/6).</li>
       <li><b>calculator</b>: the calculator to use, see below.</li>
-      <li><b>dos</b>: indicates if the phonon density of states should
-        be computed, which takes more time. Default is NOT to compute
-        it. When set, <i><b>thermo-chemistry quantities</b></i> (entropy S, Helmholtz free energy F, internal energy U and the specific heat at constant volume Cv) are also computed and stored into the object UserData field. The syntax <i>sqw_phonons</i>(..., <font color="#cc33cc">'dos'</font>, ...) also works.</li>
+      
       <li><b>potentials</b>: pseudo potential directory to use, e.g. <font color="#cc33cc">'/usr/share/elk-lapw/species'</font>, <font color="#cc33cc">'/usr/share/abinit/psp'</font>, <font color="#cc33cc">'/usr/share/dacapo-psp'</font>,<font color="#cc33cc">'/usr/share/espresso/pseudo'</font>.</li>
       <li><b>diagonalization</b>: <font color="#cc33cc">'david'</font>
         or <font color="#cc33cc">'cg'</font>. or <font color="#cc33cc">'rmm-diis'</font>.
@@ -4693,7 +4724,7 @@ dispersion from which the expansion is quadratic.<br>
               start; text-indent: 0px; text-transform: none;
               white-space: normal; widows: 1; word-spacing: 0px;
               -webkit-text-stroke-width: 0px; display: inline
-              !important; float: none;">pps=JTH:<span class="Apple-converted-space">&nbsp;</span></span><b style="color: rgb(0, 0, 0); font-family: 'Times New
+              !important; float: none;">pps=pawxml (JTH):<span class="Apple-converted-space">&nbsp;</span></span><b style="color: rgb(0, 0, 0); font-family: 'Times New
               Roman'; font-size: medium; font-style: normal;
               font-variant: normal; letter-spacing: normal; line-height:
               normal; orphans: auto; text-align: start; text-indent:
@@ -4712,7 +4743,7 @@ dispersion from which the expansion is quadratic.<br>
               start; text-indent: 0px; text-transform: none;
               white-space: normal; widows: 1; word-spacing: 0px;
               -webkit-text-stroke-width: 0px; display: inline
-              !important; float: none;">pps=GBRV:<span class="Apple-converted-space">&nbsp;</span></span><font style="font-family: 'Times New Roman'; font-size: medium;
+              !important; float: none;">pps=paw (GBRV):<span class="Apple-converted-space">&nbsp;</span></span><font style="font-family: 'Times New Roman'; font-size: medium;
               font-style: normal; font-variant: normal; font-weight:
               normal; letter-spacing: normal; line-height: normal;
               orphans: auto; text-align: start; text-indent: 0px;
@@ -4911,12 +4942,9 @@ dispersion from which the expansion is quadratic.<br>
     To get a system with acoustic and optical modes:<br>
     <pre>	&gt;&gt; s=<font color="#3366ff">sqw_phonons</font>(<font color="#cc33cc">[ ifitpath 'Data/POSCAR_AlN'</font>],<font color="#cc33cc">'EMT'</font>); 	<i>% create model from given POSCAR</i><br>	&gt;&gt; qh=<font color="#3366ff">linspace</font>(0.01,.5,50);qk=qh; ql=qh; w=<font color="#3366ff">linspace</font>(0.01,50,51);<br> 	&gt;&gt; f=<font color="#3366ff">iData</font>(s,[],qh,qk,ql,w); 		<i>% evaluate model into an iData</i><br>	&gt;&gt; <font color="#3366ff">scatter3</font>(log(f(:,:,1,:)));	<i>	% plot ql=0 plane with acoustic and optical modes</i></pre>
     In addition, the <a href="https://en.wikipedia.org/wiki/Density_of_states">phonon
-      Density of States</a> (aka phonon spectrum) can be computed, when specifying the <font color="#cc33cc">'dos'</font> options upon model creation. This
-    computation can be rather intensive. It is computed during the
-    first model evaluation (subsequent evaluations will be faster), and
-    stored in the model <i>UserData.DOS</i> so that it can be viewed
+      Density of States</a> (aka phonon spectrum) is computed, when the model evaluation is requested on the whole Brillouin zone (HKL vary on [-.5 : 0.5]). The results are    stored in the model <i>UserData.DOS</i> and <i>UserData.DOS_partials</i>, so that it can be viewed
     with e.g. :<br>
-    <pre>	&gt;&gt; s=<font color="#3366ff">sqw_phonons</font>(<font color="#cc33cc">[ ifitpath 'Data/POSCAR_Al'</font>],<font color="#cc33cc">'dos=1'</font>,<font color="#cc33cc">'EMT','report</font>); 	<i>% create model from given POSCAR</i>, with DOS computation and report<br>	&gt;&gt; qh=<font color="#3366ff">linspace</font>(0.01,.5,50);qk=qh; ql=qh; w=<font color="#3366ff">linspace</font>(0.01,50,51);<br> 	&gt;&gt; f=<font color="#3366ff">iData</font>(s,[],qh,qk,ql,w); 		<i>% evaluate model into an iData, and DOS, U,S,F, Cv<br></i> 	&gt;&gt; figure; <font color="#3366ff">plot</font>(s.UserData.DOS);<br>	&gt;&gt; figure; <font color="#3366ff">plot</font>(s.UserData.entropy, s.UserData.internal_energy, s.UserData.helmholtz_energy);<br>	&gt;&gt; figure; <font color="#3366ff">plot</font>(s.UserData.heat_capacity);<br></pre>The calculation of the phonon spectrum also provides an estimate of the entropy S, Helmholtz free energy F, internal energy U and the specific heat at constant volume Cv as a function of the temperature. In this example, a URL pointing to the automatically generated report is shown at the end of the procedure (e.g. wait 5 min for completion).<br><br>
+    <pre>	&gt;&gt; s=<font color="#3366ff">sqw_phonons</font>(<font color="#cc33cc">[ ifitpath 'Data/POSCAR_Al'</font>],<font color="#cc33cc">'EMT','report</font>); 	<i>% create model from given POSCAR</i> and report<br>	&gt;&gt; qh=<font color="#3366ff">linspace</font>(-0.5,.5,50);qk=qh; ql=qh; w=<font color="#3366ff">linspace</font>(0.01,50,51);<br> 	&gt;&gt; f=<font color="#3366ff">iData</font>(s,[],qh,qk,ql,w); 		<i>% evaluate model into an iData, and DOS, U,S,F, Cv<br></i> 	&gt;&gt; figure; <font color="#3366ff">plot</font>(s.UserData.DOS);<br></pre>The calculation of the phonon spectrum also provides an estimate of the entropy S, Helmholtz free energy F, internal energy U and the specific heat at constant volume Cv as a function of the temperature. In this example, a URL pointing to the automatically generated report is shown at the end of the procedure (e.g. wait 5 min for completion).<br><br>
     The <b>plot (surf), plot3, scatter3</b>, and <b>slice</b> methods
     for plotting all provide nice looking rendering of volume data. See
     <a href="Plot.html#mozTocId734523">Plot/3D</a> page.<br>
