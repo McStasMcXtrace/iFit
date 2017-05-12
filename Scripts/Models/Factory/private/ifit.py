@@ -964,9 +964,10 @@ def phonopy_run_calculate(phonon, phonpy, supercell, single):
             # proceed with force calculation for current displaced supercell
             print "[ASE/Phonopy] Computing step %i/%i" % (d+1, len(supercells))
             disp = disps[d]
-            print "Moving  atom #%-3i %-3s    to " % \
-                (disp[0], supercell.get_chemical_symbols()[disp[0]]), disp[1:]
             scell = supercells[d]
+            print "Moving  atom #%-3i %-3s    to " % \
+                (disp[0], scell.get_chemical_symbols()[disp[0]]), disp[1:]
+            
             cell = Atoms(symbols=scell.get_chemical_symbols(),
                          scaled_positions=scell.get_scaled_positions(),
                          cell=scell.get_cell(),
