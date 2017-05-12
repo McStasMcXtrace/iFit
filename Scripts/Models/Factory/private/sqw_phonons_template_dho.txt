@@ -11,10 +11,24 @@ else         w = ones(size(FREQ,1),1) * t(:)'; end
 signal               = zeros(size(w));
 this.UserData.maxFreq= max(FREQ); % for each mode
 nt = numel(t);
+% store when not too large
+if numel(HKL) <= 1e4, 
+  this.UserData.FREQ = FREQ; 
+  this.UserData.HKL  = HKL;
+  this.UserData.POLAR = POLAR; 
+else 
+  this.UserData.FREQ = []; 
+  this.UserData.HKL  = [];
+  this.UserData.POLAR = [];
+end
 
 % test for unstable modes
 wrong_w = numel(find(FREQ(:) < 0 | ~isreal(FREQ(:)) | ~isfinite(FREQ(:))));
-if wrong_w, disp([ 'WARNING: found ' num2str(wrong_w) ' negative/imaginary phonon frequencies (' num2str(wrong_w*100/numel(FREQ)) '% of total) in ' this.Name ]); end
+if wrong_w, 
+  disp([ 'WARNING: found ' num2str(wrong_w) ...
+         ' negative/imaginary phonon frequencies (' ...
+         num2str(wrong_w*100/numel(FREQ)) '% of total) in ' this.Name ]); 
+end
 
 % we compute the Q vector in [Angs-1]. Search for the B=rlu2cartesian matrix
 UD = this.UserData; B=[];
@@ -58,7 +72,6 @@ if isempty(b_coh) || any(b_coh == 0 | isnan(b_coh))
 end
 
 if ~isempty(POLAR)
-  this.UserData.POLAR = POLAR;
   if (isempty(b_coh) || any(isnan(b_coh) | b_coh == 0)) && ~isempty(positions)
     disp([ 'WARNING: Unspecified/invalid coherent neutron scattering length specification for the material ' ...
       UD.properties.chemical_formula '. Using b_coh=1 [fm] for atoms (sigma_coh=0.126 barns). ' ...
@@ -101,18 +114,31 @@ else n=0; end
 
 if Gamma<=0, Gamma=1e-4; end
 
+% compute Gamma point modes (IR/Raman) 
+index = find(sum(abs(HKL),2) == 0);
+if ~isempty(index) && (~isfield(this.UserData.properties,'vibrational_energies') ...
+|| isempty(this.UserData.properties.vibrational_energies))
+  disp([ strtok(this.Name) ': Gamma point energies (IR/Raman):' ]);
+  this.UserData.properties.vibrational_energies = FREQ(index(1),:)';
+  f = this.UserData.properties.vibrational_energies(:);
+  disp(' [meV]      [THz]     [cm-1]')
+  disp(num2str([ f f*.2418 f*8.0657 ],'%10.3f'));
+end
+
 % convert negative frequencies into imaginary
-index=find(imag(FREQ) == 0 & FREQ < 0);
-if ~isempty(index), FREQ(index) = i*FREQ(index); end
+index=find(real(FREQ) < 0);
+if ~isempty(index), 
+  FREQ(index) = imag(FREQ(index)) - i*real(FREQ(index));
+end
 
 for index=1:size(FREQ,2)  % loop on modes
   % % size of 'w0' is [ numel(x) numel(t) ]. the energy of the modes (columns) at given x=q (rows)
   % we assume Gamma(w) = Gamma w/w0
   % W0 is the renormalized phonon frequency W0^2 = w0^2+Gamma^2
-  Gamma2 = Gamma^2+imag(FREQ(:,index)).^2; % imaginary frequency goes in the damping
-  W02    = Gamma2 +real(FREQ(:,index)).^2;
+  Gamma2 = Gamma^2 + imag(FREQ(:,index)).^2;  % imaginary frequency goes in the damping
+  W02    = Gamma2  + real(FREQ(:,index)).^2;  % shifts unstable mode energies (soft modes)
   
-  % phonon form factor (intensity) |Q.e|^2
+  % phonon form factor (intensity) |Q.e|^2 for neutron scattering
   % POLAR is a set of [xyz] vectors for each atom in the cell POLAR(HKL,mode,atom,xyz)
   % polarisation vectors already contain the 1/mass factor: ASE/phonons.py:band_structure
   % ZQ=|F(Q)|^2=|sum_atom[ bcoh(atom). exp(-WQ) .* (Q.*POLAR(HKL,index,atom,:)) .* exp(-i*Q.*pos(atom)) ]|^2
@@ -160,7 +186,7 @@ if (~isfield(this.UserData,'DOS') || isempty(this.UserData.DOS)) && ...
     numel(pos) >=500
   disp([ strtok(this.Name) ': Computing the phonon DOS on ' num2str(numel(pos)) ' HKL points.' ]);
   f = FREQ(pos,:);
-  index= find(imag(f) == 0 & f > 0);
+  index= find(imag(f) == 0);
   [dos_e,omega_e]=hist(f(index),100);
   dos_factor = size(FREQ,2) / trapz(omega_e(:), dos_e(:));
   dos_e = dos_e * dos_factor ; % 3n modes per unit cell
@@ -174,7 +200,7 @@ if (~isfield(this.UserData,'DOS') || isempty(this.UserData.DOS)) && ...
   pDOS = [];
   for mode=1:size(FREQ,2)
     f = FREQ(pos,mode);
-    index = find(f > 0 & f > 0);
+    index = find(imag(f) == 0);
     dos_e = hist(f(index),omega_e);
     dos_e = dos_e * dos_factor ; % normalize to the total DOS
     DOS=iData(omega_e,dos_e);
@@ -187,6 +213,7 @@ if (~isfield(this.UserData,'DOS') || isempty(this.UserData.DOS)) && ...
   end
   this.UserData.DOS_partials=pDOS;
 end
+
 clear HKL
 
 % Amplitude
