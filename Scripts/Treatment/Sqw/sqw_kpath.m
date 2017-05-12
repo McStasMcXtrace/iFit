@@ -1,7 +1,7 @@
-function S = sqw_kpath(f, qLim, E)
+function S = sqw_kpath(f, qLim, E, options)
 % sqw_kpath: evaluates a 4D S(q,w) model along specified k-path
 %
-%    sqw_kpath(f, kpath, w)
+%    sqw_kpath(f, kpath, w, options)
 %    The k-path can be given as a cell containing 3-values (HKL) vectors, or
 %      a n x 3 matrix, each row being a HKL location.
 %    The energy range can be entered as a vector, or a [min max] pair.
@@ -9,15 +9,26 @@ function S = sqw_kpath(f, qLim, E)
 %             http://lamp.tu-graz.ac.at/~hadley/ss1/bzones/ to get the standard 
 %    points in the Brillouin zone.
 %
+%    When the command is followed by ';' or options contains 'plot', a plot is 
+%    generated.
+%
 % Example:
 %   S = sqw_kpath(sqw_cubic_monoatomic, '', [0 10]); plot(log10(S));
+%   S = sqw_phonons('POSCAR_Al','emt'); sqw_kpath(S);
 %
 % input:
 %   f:    a 4D HKLE model S(q,w) (iFunc)
 %   path: a list of k-locations given as a cell/array of HKL locations (cell or matrix)
 %         can also be 'Cubic','Hexagonal','Trigonal','Tetragonal','Orthorhombic','Monoclinic';
 %                     'Triclinic','fcc','bcc'
+%         can also be given as a list of BZ points, such as:
+%           {'Gamma' 'K' 'M' 'Gamma' 'A' 'H' 'L' 'A' }
+%         when not given or empty, this is guessed from the crystal spacegroup.
 %   w:    a vector of energies (4-th axis) for which to evaluate the model (double)
+%         can also be given as Emax, or [ Emin Emax ]
+%         when not given or empty, the maximum excitation energy is used.
+%   options: plotting option (string). Can contain 'plot' 'THz','cm-1','meV'.
+%         The 'plot' option also displays the density of states, when available.
 %
 % output:
 %   S:    the dispersion W(HKL) computed along the path (iData)
@@ -31,11 +42,12 @@ function S = sqw_kpath(f, qLim, E)
   if nargin == 0, return; end
   if nargin < 2, qLim = []; end
   if nargin < 3, E=[]; end
+  if nargin < 4, options=[]; end
   
   % handle input array
   if numel(f) > 1
     for index=1:numel(f)
-      S = [ S sqw_kpath(f(index), qLim, E) ];
+      S = [ S sqw_kpath(f(index), qLim, E, options) ];
     end
     return
   end
@@ -70,10 +82,11 @@ function S = sqw_kpath(f, qLim, E)
   && isfield(f.UserData.properties, 'spacegroup')
     spacegroup = regexp(f.UserData.properties.spacegroup,'\(([^:]*)\)','tokens');
     if isempty(spacegroup) && isfield(f.UserData.properties, 'spacegroup_number')
-      spacegroup = { f.UserData.properties.spacegroup_number };
+      spacegroup = f.UserData.properties.spacegroup_number;
     end
     if ~isempty(spacegroup)
-      spacegroup = str2double(spacegroup{1});
+      if iscell(spacegroup), spacegroup = spacegroup{1}; end
+      if ischar(spacegroup), spacegroup = str2double(spacegroup); end
       if 195 <= spacegroup && spacegroup <= 230
         crystalsystem = 'Cubic';
       elseif 168 <= spacegroup && spacegroup <= 194
@@ -91,16 +104,32 @@ function S = sqw_kpath(f, qLim, E)
       end
     end
     if ~isempty(crystalsystem)
-      disp([ mfilename ': Using crystal system ' crystalsystem ', spacegroup ' f.UserData.properties.spacegroup ])
+      disp([ mfilename ': Using crystal system ' crystalsystem ', spacegroup ' f.UserData.properties.spacegroup ' (' num2str(spacegroup) ')' ])
     end
   end
   
+  % define default path and BZ points
+  if isempty(crystalsystem), crystalsystem = 'orthorhombic'; end
+  [qLim0,lab, points]=sqw_kpath_crystalsystem(crystalsystem);
+  
   % set default qLim path according to space group/crystal system
+  xticks=[];
   if isempty(qLim)
     % we use when possible Path: Delta-Sigma-Lambda
-    if isempty(crystalsystem), crystalsystem = 'orthorhombic'; end
-    [qLim,xticks]=sqw_kpath_crystalsystem(crystalsystem);
-  else xticks=[];
+    qLim = qLim0;
+    xticks = lab;
+  elseif iscellstr(qLim) % a list of BZ point names
+    for index=1:numel(qLim)
+      if isfield(points, qLim{index})
+        
+        xticks = [ xticks qLim{index} ' ' ];
+        qLim{index} = points.(qLim{index});
+      else
+        disp([ mfilename ': Invalid BZ point ' qLim{index} ' in specified path. Removing it.' ]);
+        qLim{index}=[];
+      end
+    end
+    qLim = qLim(~cellfun(@isempty, qLim));
   end
   if ~iscell(qLim) && ndims(qLim) == 2 && isnumeric(qLim)
     if size(qLim,1) == 3 && size(qLim,2) ~= 3
@@ -163,10 +192,21 @@ function S = sqw_kpath(f, qLim, E)
   
   % now we generate a 2D iData
   % S = reshape(S, [  numel(ax{1}) numel(E) ]);
-
+  
+  if strfind(lower(options), 'hz')
+    factor = 0.2418;  % meV -> Thz
+    unit = 'THz';
+  elseif strfind(lower(options), 'cm')
+    factor = 8.0657;  % meV -> cm-1
+    unit = 'cm-1';
+  else
+    factor = 1;
+    unit = 'meV';
+  end
+  
   % create an iData
   x = linspace(0, numel(qLim)-1, numel(ax{1}));
-  S = iData(E,x,S);
+  S = iData(E*factor,x,S);
   % set title, labels, ...
   title(S, 'Model value along path');
   S.Title = [ f.Name ' along path. ' crystalsystem ];
@@ -175,16 +215,41 @@ function S = sqw_kpath(f, qLim, E)
   if ~isempty(xticks)
     S=setalias(S, 'XTickLabel', xticks, 'HKL labels');
   end
-  
   xlabel(S,xlab);
-  ylabel(S,'Energy');
+  ylabel(S,[ 'Energy ' unit ]);
+  
+  % plot results when no output
+  if nargout == 0 || strfind(options, 'plot')
+    figure; plot(log10(S),'view2');
+    hold on
+    if isfield(f.UserData,'FREQ')
+      FREQ = f.UserData.FREQ*factor;
+      if ~isempty(FREQ), plot(x, FREQ); end
+    end
+    % evaluate DOS if not done yet
+    if ~isfield(f.UserData,'DOS') || isempty(f.UserData.DOS)
+      qh=linspace(-.5,.5,30);qk=qh; ql=qh; w=linspace(0.01,50,11);
+      F=iData(f,[],qh,qk,ql',w);
+    end
+    if isfield(f.UserData,'DOS') && ~isempty(f.UserData.DOS)
+      DOS = f.UserData.DOS;
+      p = get(gca,'Position'); p(3) = 0.6; set(gca,'Position', p);
+      y = ylim(gca);
+      a = axes('position', [ 0.8 p(2) 0.15 p(4) ]);
+      DOS{1} = DOS{1}*factor;
+      plot(DOS); xlabel(''); ylabel('DOS'); title('');
+      xlim(y);
+      view([90 -90]);
+    end
+    hold off
+  end
   
   if ~isempty(inputname(1))
     assignin('caller',inputname(1),f); % update in original object
   end
   
 % ----------------------------------------------------------------------------
-function [qLim,lab]=sqw_kpath_crystalsystem(crystalsystem)
+function [qLim,lab, points]=sqw_kpath_crystalsystem(crystalsystem)
   % set a path depending on the crystal system
   % may be given from spacegroup, or as a string:
   %   'Cubic','Hexagonal','Trigonal','Tetragonal','Orthorhombic','Monoclinic';
@@ -243,5 +308,10 @@ function [qLim,lab]=sqw_kpath_crystalsystem(crystalsystem)
     Z=     [0,      0,     1 / 2 ];
     qLim = { Gamma Y S X Gamma Z T R U };
     lab  =  'Gamma Y S X Gamma Z T R U';
+  end
+  
+  l    = textscan(lab,'%s','Delimiter', ' '); l = l{1};
+  for f = l'
+    points.(f{1}) = eval(f{1});
   end
 
