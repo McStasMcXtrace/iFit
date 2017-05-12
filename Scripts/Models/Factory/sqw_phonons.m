@@ -672,7 +672,8 @@ end
 signal.UserData.duration = etime(clock, t);
 options.duration = signal.UserData.duration;
 options.cite     = cite;
-signal.UserData.options   = options;
+signal.UserData.options   = orderfields(options);
+signal.UserData  = orderfields(signal.UserData);
 
 % when model is successfully built, display citations
 disp(' ');
