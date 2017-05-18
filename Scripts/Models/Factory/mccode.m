@@ -428,7 +428,14 @@ function instr = mccode_search_instrument(instr, d)
       index = getAllFiles(search_dir, out);
       % check if we have more than one match
       if ~isempty(index)
-        if numel(index) > 1, 
+        if numel(index) > 1
+          % filter with extension
+          found = {};
+          for i=1:numel(index)
+            [p,f,e] = fileparts(index{i});
+            if strcmp(e, '.instr'), found{end+1} = index{i}; end
+          end
+          if ~isempty(found), index=found; end
           disp([ mfilename ': Found instruments:' ] );
           fprintf(1,'  %s\n', index{:});
         end

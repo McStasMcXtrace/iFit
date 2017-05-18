@@ -1,6 +1,17 @@
 function comps=mccode_display(model)
 % runs the model in --trace mode and capture the output
 % grab all MCDISPLAY lines
+%
+% Usage:
+%   model = mccode('instrument_file')
+%   mccode_display(model)
+%     a figure is generated, which shows the instrument geometry.
+%
+% input:
+%   model: instrument simulation as obtained with 'mccode' (iFunc)
+%
+% output:
+%   comps: a list of component specifications (structure array)
 
   % check if we have an iFunc  McCode object
   if ischar(model) && ~isempty(dir(model))
@@ -124,9 +135,16 @@ function comps=mccode_display(model)
     end
   end
   t = { [ 'Instrument: ' model.Name ] ; t };
-  title(textwrap(t, 80),'Interpreter','None');
+  t = textwrap(t, 80);
+  t = sprintf('%s\n', t{:});
+  title(t ,'Interpreter','None');
+  model.UserData.title = t;
   
-  mccode_display_contextmenu(gca, model.name, textwrap(t, 80))
+  mccode_display_contextmenu(gca, model.name, t);
+  
+  if ~isempty(inputname(1))
+    assignin('caller',inputname(1),model); % update in original object
+  end
 
 end % mccode_display
 
@@ -215,7 +233,7 @@ function mccode_display_contextmenu(a, name, pars)
   % install a context menu on the axis object of the figure
   
   % build the contextual menu
-  pars = sprintf('%s ', pars{:});
+  if iscell(pars), pars = sprintf('%s ', pars{:}); end
   uicm = uicontextmenu('Tag','mccode_display_contextmenu_gca');
   uimenu(uicm, 'Label', [ 'About ' name '...' ], ...
            'Callback', [ 'helpdlg(''' pars ''',''' name ''')' ]);
