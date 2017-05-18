@@ -76,6 +76,13 @@ function S = sqw_kpath(f, qLim, E, options)
     E = linspace(min(E),max(E), 100);
   end
   
+  % default options in qLim or E ?
+  if ischar(qLim) && any(~cellfun(@isempty, ...
+     strfind(lower({'plot' 'THz','cm-1','meV','cm','hz'}),lower(qLim))))
+    options = qLim; qLim = '';
+  end
+     
+  
   % look for space group when available
   if ischar(qLim), crystalsystem = qLim; qLim = {}; else crystalsystem = ''; end
   if isempty(crystalsystem) && isfield(f.UserData,'properties') ...
@@ -220,7 +227,9 @@ function S = sqw_kpath(f, qLim, E, options)
   
   % plot results when no output
   if nargout == 0 || strfind(options, 'plot')
-    figure; plot(log10(S),'view2');
+    fig = figure; plot(log10(S/max(S)),'view2');
+    axis tight
+    add_contextmenu(gca)
     hold on
     if isfield(f.UserData,'FREQ')
       FREQ = f.UserData.FREQ*factor;
@@ -230,13 +239,18 @@ function S = sqw_kpath(f, qLim, E, options)
     if ~isfield(f.UserData,'DOS') || isempty(f.UserData.DOS)
       qh=linspace(-.5,.5,30);qk=qh; ql=qh; w=linspace(0.01,50,11);
       F=iData(f,[],qh,qk,ql',w);
+      clear F
     end
     if isfield(f.UserData,'DOS') && ~isempty(f.UserData.DOS)
+      figure(fig);
       DOS = f.UserData.DOS;
+      DOS{1} = DOS{1}*factor;
+      xlabel(DOS,[ 'Energy ' unit ]);
+      % rescale dispersion curves and use same limits for DOS
       p = get(gca,'Position'); p(3) = 0.6; set(gca,'Position', p);
       y = ylim(gca);
       a = axes('position', [ 0.8 p(2) 0.15 p(4) ]);
-      DOS{1} = DOS{1}*factor;
+      % plot and rotate
       plot(DOS); xlabel(''); ylabel('DOS'); title('');
       xlim(y);
       view([90 -90]);
@@ -315,3 +329,34 @@ function [qLim,lab, points]=sqw_kpath_crystalsystem(crystalsystem)
     points.(f{1}) = eval(f{1});
   end
 
+function add_contextmenu(a)
+  
+  uicm = uicontextmenu;
+  % menu Duplicate (axis frame/window)
+  uimenu(uicm, 'Label', 'Duplicate View...', 'Callback', ...
+     [ 'tmp_cb.g=gca;' ...
+       'tmp_cb.f=figure; tmp_cb.c=copyobj(tmp_cb.g,gcf); ' ...
+       'set(tmp_cb.c,''position'',[ 0.1 0.1 0.85 0.8]);' ...
+       'set(gca,''XTickLabelMode'',''auto'',''XTickMode'',''auto'');' ...
+       'set(gca,''YTickLabelMode'',''auto'',''YTickMode'',''auto'');' ...
+       'set(gca,''ZTickLabelMode'',''auto'',''ZTickMode'',''auto'');']);
+       
+  uimenu(uicm, 'Label','Toggle grid', 'Callback','grid');
+
+  uimenu(uicm, 'Label','Reset Flat/3D View', 'Callback', [ ...
+    '[tmp_a,tmp_e]=view; if (tmp_a==0 & tmp_e==90) view(3); else view(2); end;' ...
+    'clear tmp_a tmp_e; lighting none;alpha(1);shading flat;rotate3d off;axis tight;' ]);
+  uimenu(uicm, 'Label','Smooth View','Callback', 'shading interp;');
+  uimenu(uicm, 'Label','Add Light','Callback', 'light;lighting phong;');
+  uimenu(uicm, 'Label','Transparency','Callback', 'alpha(0.7);');
+  uimenu(uicm, 'Label', 'Linear/Log Intensity','Callback', 'if strcmp(get(gca,''zscale''),''linear'')  set(gca,''zscale'',''log''); else set(gca,''zscale'',''linear''); end');
+  uimenu(uicm, 'Label','Linear/Log X axis', ...
+  'Callback', 'if strcmp(get(gca,''xscale''),''linear'')  set(gca,''xscale'',''log''); else set(gca,''xscale'',''linear''); end');
+  uimenu(uicm, 'Label','Linear/Log Y axis', ...
+  'Callback', 'if strcmp(get(gca,''yscale''),''linear'')  set(gca,''yscale'',''log''); else set(gca,''yscale'',''linear''); end');
+  uimenu(uicm, 'Label','Toggle Perspective','Callback', 'if strcmp(get(gca,''Projection''),''orthographic'')  set(gca,''Projection'',''perspective''); else set(gca,''Projection'',''orthographic''); end');
+  
+
+  uimenu(uicm, 'Separator','on','Label', 'About iFit/iData', ...
+    'Callback',[ 'msgbox(''' version(iData,2) sprintf('. Visit <http://ifit.mccode.org>') ''',''About iFit'',''help'')' ]);
+  set(a, 'UIContextMenu', uicm);
