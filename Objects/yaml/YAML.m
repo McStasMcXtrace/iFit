@@ -115,7 +115,7 @@ classdef YAML
                 itr = r.keySet().iterator();
                 while itr.hasNext()
                     key = itr.next();
-                    result.(char(key)) = YAML.load_data(...
+                    result.(genvarname(char(key))) = YAML.load_data(...
                         r.get(java.lang.String(key)));
                 end
             else
