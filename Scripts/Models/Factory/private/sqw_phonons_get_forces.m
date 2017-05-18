@@ -185,6 +185,7 @@ function [options, sav] = sqw_phonons_get_forces(options, decl, calc)
   
   % call python script with calculator
   disp([ mfilename ': computing Hellmann-Feynman forces...' ]);
+  disp(calc)
   options.status = 'Starting computation. Script is <a href="sqw_phonons_forces_iterate.py">sqw_phonons_forces_iterate.py</a>';
   sqw_phonons_htmlreport('', 'status', options);
   

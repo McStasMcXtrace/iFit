@@ -81,7 +81,7 @@ case 'ABINIT'
   if isfield(options,'pawecutdg') && options.pawecutdg > 0
     calc = [ calc sprintf(', pawecutdg=%g', options.pawecutdg/Ha) ];
   end
-  if options.toldfe <= 0, options.toldfe=1e-5; end % in eV, necessary
+  if options.toldfe <= 0, options.toldfe=1e-8; end % in eV, necessary
   if options.toldfe > 0
     calc = [ calc sprintf(', toldfe=%g', options.toldfe/Ha) ];
   end
@@ -402,8 +402,8 @@ case {'QE_ASE','QUANTUMESPRESSO_ASE','ESPRESSO_ASE'}
   if options.nbands > 0
     calc = [ calc sprintf(', nbnd=%i', options.nbands) ];
   end
-  if isfield(options, 'conv_thr') && ~isempty(options.conv_thr)
-    calc = [ calc sprintf(', conv_thr=%f', options.conv_thr) ];
+  if isfield(options, 'toldfe') && ~isempty(options.toldfe)
+    calc = [ calc sprintf(', conv_thr=%f', options.toldfe) ];
   end
   if isfield(options, 'mixing_beta') && ~isempty(options.mixing_beta)
     calc = [ calc sprintf(', mixing_beta=%f', options.mixing_beta) ];
@@ -416,9 +416,6 @@ case {'QE_ASE','QUANTUMESPRESSO_ASE','ESPRESSO_ASE'}
   end
   if options.nsteps>0
     calc = [ calc sprintf(', electron_maxstep=%i', options.nsteps) ];
-  end
-  if isfield(options, 'conv_thr') && ~isempty(options.conv_thr)
-    calc = [ calc sprintf(', conv_thr=%f', options.conv_thr) ];
   end
   if (options.ecut > 0)
     calc = [ calc sprintf(', ecutwfc=%g', options.ecut/Ry) ];
@@ -458,7 +455,7 @@ case {'QUANTUM','QE','ESPRESSO','QUANTUMESPRESSO','QUANTUM-ESPRESSO','PHON'}
 %     improves convergence, especially for ultra-soft PP (use 8-12*ecutwfc).
 %   options.electron_maxstep=scalar        max number of iterations for SCF.
 %     default=100. Larger value improves convergence.
-%   options.conv_thr=scalar                Convergence threshold for 
+%   options.toldfe=scalar                Convergence threshold for 
 %     selfconsistency. default=1e-6.
 %   options.mpi    =scalar                 number of CPUs to use for PWSCF
 %     this option requires MPI to be installed (e.g. openmpi).
@@ -512,17 +509,21 @@ case 'VASP'
   end
 
   decl = 'from ase.calculators.vasp import Vasp';
-  calc = 'calc = Vasp(isym=0, prec="Accurate", lreal="A", ibrion=2, nsw=5 ';
+  calc = [ 'calc = Vasp(prec="Accurate", lreal="F", ibrion=-1, ' ...
+           'nsw=0, lwave = "F", lcharg = "F", ialgo=38 ' ];
   % prec: Low, Normal, Accurate
   % algo: Normal (Davidson) | Fast | Very_Fast (RMM-DIIS)
-  % ibrion
+  % ibrion: -1: no ionic moves, -> nsw=0. 
+  %   IBRION=8 computes full force constants in a single step.
   % ismear: -5 Blochl -4-tet -1-fermi 0-gaus >0 MP
   % setups: pv, sv 
-  if options.ecut <= 0, options.ecut=340; end % no default in VASP (eV)
+  % nsw:  number of ionic steps. Default :	0
+  % isym: switch symmetry stuff ON (1 or 2) or OFF (0)
+  % could use: lepsilon = "T"
   if (options.ecut > 0)
     calc = [ calc sprintf(', encut=%g', options.ecut) ];
   end
-  if options.toldfe <= 0, options.toldfe=1e-5; end % in eV, necessary
+  if options.toldfe <= 0, options.toldfe=1e-8; end % in eV, necessary
   if (options.toldfe > 0)
     calc = [ calc sprintf(', ediff=%g', options.toldfe) ];
   end
@@ -553,6 +554,8 @@ case 'VASP'
   end
   if isscalar(options.occupations) && options.occupations >=0
     calc=[ calc sprintf(', sigma=%g, ismear=0', options.occupations) ];
+  else
+    calc=[ calc sprintf(', ismear=-5', options.occupations) ];
   end
   if ~isempty(options.raw)
     calc = [ calc sprintf(', %s', options.raw) ];

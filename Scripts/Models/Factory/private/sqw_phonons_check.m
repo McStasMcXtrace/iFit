@@ -35,22 +35,24 @@ end
 if ~isempty(config_dir)
   % get any previous supercell definition
   file = search_files(config_dir, ...
-    { 'phonon.yaml','INPHON','quasiharmonic_phonon.yaml','band.yaml'});
+    { 'phonopy.yaml','phonon.yaml','INPHON','quasiharmonic_phonon.yaml','band.yaml'});
 
   if ~isempty(file) && any(options.supercell == 0)
     file = iLoad(fullfile(config_dir, file.name));
-
-    if isfield(file.Data, 'NDIM')
-      supercell = file.Data.NDIM;
-    elseif isfield(file.Data, 'supercell_matrix')
-      supercell = diag(file.Data.supercell_matrix);
-    else supercell = [];
-    end
-    if ~isempty(supercell)
-      options.supercell = supercell;
-      disp([ mfilename ': Re-using supercell ' mat2str(options.supercell) ]); 
-    elseif any(options.supercell == 0)
-      disp([ mfilename ': WARNING: unspecified supercell from previous computation.' ]); 
+    
+    if ~isempty(file)
+        if isfield(file.Data, 'NDIM')
+          supercell = file.Data.NDIM;
+        elseif isfield(file.Data, 'supercell_matrix')
+          supercell = diag(file.Data.supercell_matrix);
+        else supercell = [];
+        end
+        if ~isempty(supercell)
+          options.supercell = supercell;
+          disp([ mfilename ': Re-using supercell ' mat2str(options.supercell) ]); 
+        elseif any(options.supercell == 0)
+          disp([ mfilename ': WARNING: unspecified supercell from previous computation.' ]); 
+        end
     end
   end
 

@@ -65,7 +65,7 @@ function signal=sqw_phon(poscar, options)
 %     wavefunctions. default is 15*natoms in [Ry]. Larger value improves convergence.
 %   options.electron_maxstep=scalar        max number of iterations for SCF.
 %     default=100. Larger value improves convergence.
-%   options.conv_thr=scalar                Convergence threshold for 
+%   options.toldfe=scalar                Convergence threshold for 
 %     selfconsistency. default=1e-6.
 %
 % The options can also be entered as a single string with 'field=value; ...'.
@@ -777,8 +777,8 @@ function force = sqw_phon_forces_pwscf(displaced, options)
   end
   fprintf(fid, '/\n');
   fprintf(fid, '&electrons\n');
-  if isfield(options, 'conv_thr') && ~isempty(options.conv_thr)
-    fprintf(fid, '    conv_thr = %f\n', options.conv_thr);
+  if isfield(options, 'toldfe') && ~isempty(options.toldfe)
+    fprintf(fid, '    conv_thr = %f\n', options.toldfe);
   end
   fprintf(fid, '    mixing_beta = %f\n', mixing_beta);
   fprintf(fid, '    mixing_mode = ''plain''\n');

@@ -150,7 +150,7 @@ function signal=sqw_phonons(configuration, varargin)
 %   options.nsteps=scalar                   Max number of iterations for SCF.
 %     Typical: 30. Large value improves convergence.
 %   options.toldfe=scalar                  Convergence threshold on the energy for 
-%     selfconsistency, e.g. 1e-5 [eV].
+%     selfconsistency, e.g. 1e-8 [eV].
 %
 % Options specific per calculator
 %   options.mode='pw','fd', or 'lcao'      GPAW computation mode as Plane-Wave,
