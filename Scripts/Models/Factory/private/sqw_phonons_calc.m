@@ -87,6 +87,7 @@ case 'ABINIT'
   end
   if ~isfield(options, 'pps') || isempty(options.pps)
     options.iscf=17;
+  else
     calc = [ calc sprintf(', pps="%s"', options.pps) ];
   end
   if isfield(options,'iscf')
