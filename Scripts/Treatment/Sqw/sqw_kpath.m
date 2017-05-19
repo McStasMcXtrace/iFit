@@ -1,13 +1,20 @@
-function S = sqw_kpath(f, qLim, E, options)
-% sqw_kpath: evaluates a 4D S(q,w) model along specified k-path
+function [S, qLim] = sqw_kpath(f, qLim, E, options)
+% sqw_kpath: evaluates a 4D S(q,w) model along specified k-path / bands
 %
 %    sqw_kpath(f, kpath, w, options)
-%    The k-path can be given as a cell containing 3-values (HKL) vectors, or
-%      a n x 3 matrix, each row being a HKL location.
-%    The energy range can be entered as a vector, or a [min max] pair.
-%    Refer to https://en.wikipedia.org/wiki/Brillouin_zone and
+%      The k-path can be given as a cell containing 3-values (HKL) vectors, or
+%        a n x 3 matrix, each row being a HKL location.
+%      The energy range can be entered as a vector, or a [min max] pair.
+%      Refer to https://en.wikipedia.org/wiki/Brillouin_zone and
 %             http://lamp.tu-graz.ac.at/~hadley/ss1/bzones/ to get the standard 
-%    points in the Brillouin zone.
+%      points in the Brillouin zone.
+%
+%    sqw_kpath(f);
+%      plots the dispersion curves following the BZ points for the 
+%      crystal spacegroup, and using the maximum excitation energy.
+%
+%    [S,k] = sqw_kpath(...)
+%      returns the dispersion curves data set (iData), and the k-path used.
 %
 %    When the command is followed by ';' or options contains 'plot', a plot is 
 %    generated.
@@ -24,6 +31,11 @@ function S = sqw_kpath(f, qLim, E, options)
 %         can also be given as a list of BZ points, such as:
 %           {'Gamma' 'K' 'M' 'Gamma' 'A' 'H' 'L' 'A' }
 %         when not given or empty, this is guessed from the crystal spacegroup.
+%         The bands intensity is computed along the path. For neutron scattering,
+%         as all standard points in the Brillouin zone are centered around 0 and
+%         the intensity is proportional to |Q.e|^2, all transverse modes are extinct.
+%         To get the propoer band intensity around a given Bragg peak G, the k-path
+%         should be shifted by G.
 %   w:    a vector of energies (4-th axis) for which to evaluate the model (double)
 %         can also be given as Emax, or [ Emin Emax ]
 %         when not given or empty, the maximum excitation energy is used.
@@ -32,6 +44,7 @@ function S = sqw_kpath(f, qLim, E, options)
 %
 % output:
 %   S:    the dispersion W(HKL) computed along the path (iData)
+%   k:    the k-path used to generate the dispersion curves (matrix)
 %
 % Version: $Date$
 % See also sqw_cubic_monoatomic, sqw_sine3d, sqw_vaks, sqw_spinw
@@ -57,6 +70,15 @@ function S = sqw_kpath(f, qLim, E, options)
     return
   end
   
+  % default options in qLim or E ?
+  if ischar(qLim) && any(~cellfun(@isempty, ...
+     strfind(lower({'plot' 'THz','cm-1','meV','cm','hz'}),lower(qLim))))
+    options = qLim; qLim = '';
+  elseif ischar(E) && any(~cellfun(@isempty, ...
+     strfind(lower({'plot' 'THz','cm-1','meV','cm','hz'}),lower(E))))
+    options = E; E = [];
+  end
+  
   if isempty(E)
     % make a quick evaluation in order to get the maxFreq
     qh=linspace(0.01,1.5,10);qk=qh; ql=qh; w=linspace(0.01,1000,100);
@@ -75,14 +97,7 @@ function S = sqw_kpath(f, qLim, E, options)
   elseif numel(E) == 2
     E = linspace(min(E),max(E), 100);
   end
-  
-  % default options in qLim or E ?
-  if ischar(qLim) && any(~cellfun(@isempty, ...
-     strfind(lower({'plot' 'THz','cm-1','meV','cm','hz'}),lower(qLim))))
-    options = qLim; qLim = '';
-  end
-     
-  
+
   % look for space group when available
   if ischar(qLim), crystalsystem = qLim; qLim = {}; else crystalsystem = ''; end
   if isempty(crystalsystem) && isfield(f.UserData,'properties') ...
@@ -224,6 +239,8 @@ function S = sqw_kpath(f, qLim, E, options)
   end
   xlabel(S,xlab);
   ylabel(S,[ 'Energy ' unit ]);
+  
+  qLim = cell2mat(qLim');
   
   % plot results when no output
   if nargout == 0 || strfind(options, 'plot')
