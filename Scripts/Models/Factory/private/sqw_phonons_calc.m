@@ -87,6 +87,7 @@ case 'ABINIT'
   end
   if ~isfield(options, 'pps') || isempty(options.pps)
     options.iscf=17;
+    calc = [ calc sprintf(', pps="%s"', options.pps) ];
   end
   if isfield(options,'iscf')
     % iscf=7 default (NC), 17 (PAW) 
@@ -109,10 +110,6 @@ case 'ABINIT'
     % nbdblock, npband, AUTOPARAL=1
     % calc = [ calc sprintf(', nbdblock=%i', options.mpi) ];
     calc = [ calc sprintf(', autoparal=1') ];
-  end
-  if isfield(options, 'pps') && ~isempty(options.pps)
-    calc = [ calc sprintf(', pps="%s"', options.pps) ];
-    
   end
   if options.nbands > 0
     calc = [ calc sprintf(', nband=%i', options.nbands) ];
@@ -509,9 +506,10 @@ case 'VASP'
   end
 
   decl = 'from ase.calculators.vasp import Vasp';
-  calc = [ 'calc = Vasp(prec="Accurate", lreal="F", ibrion=-1, ' ...
-           'nsw=0, lwave = "F", lcharg = "F", ialgo=38 ' ];
-  % prec: Low, Normal, Accurate
+  calc = [ 'calc = Vasp(prec="Accurate", lreal=False, ibrion=-1, ' ...
+           'nsw=0, lwave=False, lcharg=False, isym=2, ispin=2' ];
+  
+  % prec: Normal, Medium, Accurate -> predefined settings for encut
   % algo: Normal (Davidson) | Fast | Very_Fast (RMM-DIIS)
   % ibrion: -1: no ionic moves, -> nsw=0. 
   %   IBRION=8 computes full force constants in a single step.
@@ -554,12 +552,13 @@ case 'VASP'
   end
   if isscalar(options.occupations) && options.occupations >=0
     calc=[ calc sprintf(', sigma=%g, ismear=0', options.occupations) ];
-  else
-    calc=[ calc sprintf(', ismear=-5', options.occupations) ];
   end
   if ~isempty(options.raw)
     calc = [ calc sprintf(', %s', options.raw) ];
   end
+  % this works FAST
+  % calc=[ 'calc = Vasp(prec="medium", nsw=0, ediff=1e-6, nelm=60 ' ];
+  
   calc = [ calc ')' ];
 
 

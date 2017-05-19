@@ -449,7 +449,7 @@ sqw_phonons_htmlreport('', 'create_atoms', options);
 % get the calculator
 % for QE, this triggers computation with sqw_phon()
 [decl, calc, signal] = sqw_phonons_calc(options, status, options.calculator, read);
-% return directly is the signal=iFunc has been craeted (QE case)
+% return directly is the signal=iFunc has been created (QE case)
 if isempty(decl) && isempty(signal), return; end
 
 % ==============================================================================
