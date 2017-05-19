@@ -63,7 +63,7 @@ case 'ABINIT'
   end
   % parallelisation: npbands npftt https://www.nsc.liu.se/~pla/blog/2012/04/18/abinitvasp-part2/
   decl = 'from ase.calculators.abinit import Abinit';
-  calc = 'calc = Abinit(chksymbreak=0';
+  calc = 'calc = Abinit(chksymbreak=0, chkprim=0';
   if options.ecut <= 0, 
     options.ecut=1000; 
   end % no default in ABINIT (eV)
@@ -79,11 +79,15 @@ case 'ABINIT'
     options.ixc = 1; % the XC is stored in the PAWXML (libXC)
   end
   if isfield(options,'pawecutdg') && options.pawecutdg > 0
-    calc = [ calc sprintf(', pawecutdg=%g', options.pawecutdg/Ha) ];
+    calc = [ calc sprintf(', usepaw=1, pawecutdg=%g', options.pawecutdg/Ha) ];
   end
-  if options.toldfe <= 0, options.toldfe=1e-8; end % in eV, necessary
-  if options.toldfe > 0
-    calc = [ calc sprintf(', toldfe=%g', options.toldfe/Ha) ];
+  if isfield(options,'tolvrs') && options.tolvrs > 0
+    calc = [ calc sprintf(', tolvrs=%g', options.tolvrs/Ha) ];
+  else
+    if options.toldfe <= 0, options.toldfe=1e-8; end % in eV, necessary
+    if options.toldfe > 0
+      calc = [ calc sprintf(', toldfe=%g', options.toldfe/Ha) ];
+    end
   end
   if ~isfield(options, 'pps') || isempty(options.pps)
     options.iscf=17;
@@ -162,7 +166,7 @@ case 'ELK' % ===================================================================
   end
   
   decl = 'from ase.calculators.elk import ELK';
-  calc = 'calc = ELK(tforce=True, tasks=0, rgkmax=4.0, mixtype=3'; % Pulay mixing
+  calc = 'calc = ELK(tforce=True, tasks=0, mixtype=3'; % Pulay mixing
 
   if strcmp(options.occupations, 'auto')
     % other distribution: MethfesselPaxton
@@ -187,6 +191,9 @@ case 'ELK' % ===================================================================
   end
   if options.ecut > 0
     calc = [ calc sprintf(', emaxrf=%g', options.ecut) ];
+  end
+  if isfield(options,' rgkmax') && options.rgkmax>0
+    calc = [ calc sprintf(', rgkmax=%g', options.rgkmax) ];
   end
   if ~isempty(options.raw)
     calc = [ calc sprintf(', %s', options.raw) ];
