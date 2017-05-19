@@ -220,6 +220,10 @@ end
 
 options.configuration = configuration;
 
+if options.use_phonopy && strcmp(options.calculator,'quantumespresso')
+  options.calculator = 'quantumespresso_ase';
+end
+
 % display message at start
 disp(' ')
 disp([ mfilename ': starting phonons computation [' datestr(now) ']' ])
