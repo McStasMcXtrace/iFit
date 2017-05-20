@@ -63,7 +63,7 @@ case 'ABINIT'
   end
   % parallelisation: npbands npftt https://www.nsc.liu.se/~pla/blog/2012/04/18/abinitvasp-part2/
   decl = 'from ase.calculators.abinit import Abinit';
-  calc = 'calc = Abinit(chksymbreak=0, chkprim=0';
+  calc = 'calc = Abinit(chksymbreak=0, maxnsym=10384';
   if options.ecut <= 0, 
     options.ecut=1000; 
   end % no default in ABINIT (eV)
