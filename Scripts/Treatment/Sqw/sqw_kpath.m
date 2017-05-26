@@ -1,4 +1,4 @@
-function [S, qLim] = sqw_kpath(f, qLim, E, options)
+function [S, qLim, fig] = sqw_kpath(f, qLim, E, options)
 % sqw_kpath: evaluates a 4D S(q,w) model along specified k-path / bands
 %
 %    sqw_kpath(f, kpath, w, options)
@@ -45,6 +45,7 @@ function [S, qLim] = sqw_kpath(f, qLim, E, options)
 % output:
 %   S:    the dispersion W(HKL) computed along the path (iData)
 %   k:    the k-path used to generate the dispersion curves (matrix)
+%   fig:  figure handle generated when options contains 'plot' or no output.
 %
 % Version: $Date$
 % See also sqw_cubic_monoatomic, sqw_sine3d, sqw_vaks, sqw_spinw
@@ -243,7 +244,8 @@ function [S, qLim] = sqw_kpath(f, qLim, E, options)
   qLim = cell2mat(qLim');
   
   % plot results when no output
-  if nargout == 0 || strfind(options, 'plot')
+
+  if nargout == 0 || ~isempty(strfind(options, 'plot'))
     fig = figure; plot(log10(S/max(S)),'view2');
     axis tight
     add_contextmenu(gca)
@@ -273,6 +275,7 @@ function [S, qLim] = sqw_kpath(f, qLim, E, options)
       view([90 -90]);
     end
     hold off
+  else fig = [];
   end
   
   if ~isempty(inputname(1))

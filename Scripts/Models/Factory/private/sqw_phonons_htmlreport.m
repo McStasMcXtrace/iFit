@@ -54,7 +54,10 @@ case 'results'
   [maxFreq, Phonon_Model]= sqw_phonons_htmlreport_max_spectrum(fid, options, Phonon_Model);
   [grid4D,  Phonon_Model]= sqw_phonons_htmlreport_eval_4D(fid, options, Phonon_Model, maxFreq);
   try
-                 sqw_phonons_htmlreport_kpath(fid, options, Phonon_Model, maxFreq);
+                 [~,DOS] = sqw_phonons_htmlreport_kpath(fid, options, Phonon_Model, maxFreq);
+                 if ~isempty(DOS), Phonon_Model.UserData.DOS = DOS; end
+  catch ME
+                 disp(getReport(ME))
   end
                  sqw_phonons_htmlreport_dos(fid, options, Phonon_Model);
                  sqw_phonons_htmlreport_eval_3D(fid, options, grid4D);
@@ -367,16 +370,12 @@ function Phonon_DOS = sqw_phonons_htmlreport_dos(fid, options, object)
   % display the vDOS. Model must have been evaluated once to compute DOS
   if isfield(object.UserData, 'DOS') && ~isempty(object.UserData.DOS)
     Phonon_DOS = object.UserData.DOS;
-    Thermo_S   = object.UserData.entropy;
-    Thermo_U   = object.UserData.internal_energy;
-    Thermo_F   = object.UserData.helmholtz_energy;
-    Thermo_Cv  = object.UserData.heat_capacity;
     
     fprintf(fid, '<h3><a name="dos"></a>The vibrational density of states (vDOS)</h3>\n');
     fprintf(fid, '<p>The vibrational density of states (aka phonon spectrum) is defined as the velocity auto-correlation function (VACF) of the particles.\n');
     
     
-    properties = {'Phonon_DOS','Thermo_S','Thermo_U','Thermo_F','Thermo_Cv'};
+    properties = {'Phonon_DOS'};
     for index=1:numel(properties)
         name = properties{index};
         try
@@ -425,10 +424,15 @@ function [maxFreq, object] = sqw_phonons_htmlreport_max_spectrum(fid, options, o
   maxFreq = max(maxFreq(:));  % in case the max energies are given per mode
  
 % ==============================================================================
-function Phonon_kpath = sqw_phonons_htmlreport_kpath(fid, options, object, maxFreq)
+function [Phonon_kpath, DOS] = sqw_phonons_htmlreport_kpath(fid, options, object, maxFreq)
   % generate dispersion along principal axes
-  Phonon_kpath = log10(sqw_kpath(object, [], [0.01 maxFreq]));
+  object.UserData.DOS=[];
+  [Phonon_kpath,~,fig] = sqw_kpath(object, [], [0.01 maxFreq],'plot');
+  Phonon_kpath = log10(Phonon_kpath);
+  DOS = object.UserData.DOS;
   if ~isempty(Phonon_kpath)
+    saveas(fig, fullfile(options.target, 'Phonon_kpath.fig'),'fig');
+    close(fig);
     fprintf(fid, '<h3><a name="kpath"></a>The dispersion along principal directions</h3>\n');
     fprintf(fid, 'The dispersion curves along the principal axes is shown in log10 scale.<br>\n');
     builtin('save', fullfile(options.target, 'Phonon_kpath.mat'), 'Phonon_kpath');
@@ -438,11 +442,10 @@ function Phonon_kpath = sqw_phonons_htmlreport_kpath(fid, options, object, maxFr
     save(Phonon_kpath, fullfile(options.target, 'Phonon_kpath.dat'), 'dat data');
     save(Phonon_kpath, fullfile(options.target, 'Phonon_kpath.svg'), 'svg', 'view2 tight');
     save(Phonon_kpath, fullfile(options.target, 'Phonon_kpath.pdf'), 'pdf', 'view2 tight');
-    save(Phonon_kpath, fullfile(options.target, 'Phonon_kpath.fig'));
     save(Phonon_kpath, fullfile(options.target, 'Phonon_kpath.h5'), 'mantid');
     save(Phonon_kpath, fullfile(options.target, 'Phonon_kpath.x3d'), 'x3d','tight auto');
     sqw_phonons_htmlreport_table(fid, options, 'Phonon_kpath');
-  end
+  else close(fig); end
 
 % ==============================================================================
 function [Phonon_HKLE, object] = sqw_phonons_htmlreport_eval_4D(fid, options, object, maxFreq)
