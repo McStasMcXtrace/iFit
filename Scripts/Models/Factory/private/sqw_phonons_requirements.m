@@ -36,7 +36,7 @@ if status.ase ~= 0
   error([ mfilename ': ASE not installed. This is required.' ]);
 else
   disp([ mfilename ': using ASE ' result ]);
-  disp('Available calculators:');
+  disp('Available packages:');
   status.emt='ase-run';
   status.ase=sscanf(result,'%d.%d');
   disp('  EMT             only for Al,Cu,Ag,Au,Ni,Pd,Pt,H,C,N,O');
@@ -210,6 +210,17 @@ else
   % must set:
   % VASP_COMMAND=vasp
   % VASP_PP_PATH=/usr/share/vasp/pseudo
+  
+  % test for Octopus
+  [st, result] = system([ precmd 'octopus -v' ]);
+  if any(st == 0:2)
+    status.octopus = 'octopus';
+  else
+    status.octopus = '';
+  end
+  if ~isempty(status.octopus)
+    disp([ '  Octopus         (http://tddft.org/programs/octopus) as "' status.octopus '"' ]);
+  end
   
 end
 % disp('Calculator executables can be specified as ''options.command=exe'' when building a model.');

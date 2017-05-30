@@ -12,15 +12,17 @@ if isempty(calc_choice), calc_choice=options.calculator; end
 % unit conversions
 Ha = 27.2; Ry=Ha/2;
 
+if isempty(status.(lower(options.calculator))) && isempty(options.command)
+  sqw_phonons_error([ mfilename ': ' options.calculator ' not available. Check installation' ], options)
+  return
+end
+
 switch upper(calc_choice)
 % ==============================================================================
 case 'ABINIT'
   % build: ./configure --enable-mpi CC=mpicc CXX=mpicxx FC=mpif90 --enable-optim --with-dft-flavor=libxc
   % ABINIT with pawxml requires ecut=1000 and nsteps > 30 (default)
-  if isempty(status.(lower(options.calculator))) && isempty(options.command)
-    sqw_phonons_error([ mfilename ': ' options.calculator ' not available. Check installation' ], options)
-    return
-  end
+  
   if isempty(strfind(status.(lower(options.calculator)),'abinis')) && isempty(options.command)
     options.command = status.(lower(options.calculator));
   end
@@ -132,10 +134,7 @@ case 'ABINIT'
 
 case 'ELK' % ===================================================================
   % requires custom compilation with elk/src/modmain.f90:289 maxsymcrys=1024
-  if isempty(status.(lower(options.calculator))) && isempty(options.command)
-    sqw_phonons_error([ mfilename ': ' options.calculator ' not available. Check installation' ], options)
-    return
-  end
+
   % location of ELF pseudo-potentials is mandatory
   if isempty(options.potentials) && isempty(getenv('ELK_SPECIES_PATH'))
     if isunix, options.potentials = '/usr/share/elk-lapw/species';
@@ -204,10 +203,6 @@ case 'EMT'
   decl = 'from ase.calculators.emt import EMT';
   calc = 'calc  = EMT()';
 case 'GPAW' % ==================================================================
-  if isempty(status.(lower(options.calculator))) && isempty(options.command)
-    sqw_phonons_error([ mfilename ': ' options.calculator ' not available. Check installation' ], options)
-    return
-  end
   
   decl = 'from gpaw import GPAW, PW, FermiDirac';
   calc = [ 'calc = GPAW(usesymm=False, txt="' fullfile(options.target,'gpaw.log') '"' ]; % because small displacement breaks symmetry
@@ -251,10 +246,6 @@ case 'GPAW' % ==================================================================
   calc = [ calc ')' ];
   
 case 'JACAPO' % ================================================================
-  if isempty(status.(lower(options.calculator))) && isempty(options.command)
-    sqw_phonons_error([ mfilename ': ' options.calculator ' not available. Check installation' ], options)
-    return
-  end
   
   % Requires to define variables under Ubuntu
   if isunix
@@ -312,10 +303,7 @@ case 'JACAPO' % ================================================================
   
 
 case 'NWCHEM' % ================================================================
-  if isempty(status.(lower(options.calculator))) && isempty(options.command)
-    sqw_phonons_error([ mfilename ': ' options.calculator ' not available. Check installation' ], options)
-    return
-  end
+
   if isfield(options,'mpi') && ~isempty(options.mpi) && options.mpi > 1
     if isempty(options.command) options.command=status.(lower(options.calculator)); end
     options.command = [ options.mpirun ' ' options.command ]; 
@@ -370,14 +358,31 @@ case 'NWCHEM' % ================================================================
   end
   calc = [ calc ')' ];
   % to add: diagonalization
+  
+  
+% ==============================================================================
+case 'OCTOPUS'
+  if isfield(options,'mpi') && ~isempty(options.mpi) && options.mpi > 1
+    if isempty(options.command) options.command=status.(lower(options.calculator)); end
+    options.command = [ options.mpirun ' ' options.command ]; 
+  end
+  if isempty(options.command), options.command=status.(lower(options.calculator)); end
+  
+  decl = 'from ase.calculators.octopus import Octopus';
+  calc = 'calc = Octopus(Output="dos + density + potential", OutputFormat="xcrysden"';
+  if all(options.kpoints > 0)
+    calc = [ calc sprintf(', KPointsGrid=[[%i,%i,%i]], KPointsUseSymmetries=True', options.kpoints) ];
+  end
+  
+  if ~isempty(options.raw)
+    calc = [ calc sprintf(', %s', options.raw) ];
+  end
+  calc = [ calc ')' ];
+
 
 % ==============================================================================
 case {'QE_ASE','QUANTUMESPRESSO_ASE','ESPRESSO_ASE'}
   
-  if isempty(status.(lower(options.calculator))) && isempty(options.command)
-    sqw_phonons_error([ mfilename ': ' options.calculator ' not available. Check installation' ], options)
-    return
-  end
   
   decl = 'from qeutil import QuantumEspresso';
   calc = [ 'calc = QuantumEspresso(use_symmetry=False, tstress=False, label=atoms.get_chemical_formula(), wdir="' options.target '"' ]; % because small displacement breaks symmetry
@@ -442,10 +447,7 @@ case {'QE_ASE','QUANTUMESPRESSO_ASE','ESPRESSO_ASE'}
 % ==============================================================================
 case {'QUANTUM','QE','ESPRESSO','QUANTUMESPRESSO','QUANTUM-ESPRESSO','PHON'}
   % best potentials for QE: SSSP http://materialscloud.org/sssp/
-  if isempty(status.(lower(options.calculator))) && isempty(options.command)
-    sqw_phonons_error([ mfilename ': ' options.calculator ' not available. Check installation' ], options)
-    return
-  end
+
   
   poscar = fullfile(options.target, 'configuration_POSCAR');  % this is a POSCAR file
   
@@ -472,7 +474,6 @@ case {'QUANTUM','QE','ESPRESSO','QUANTUMESPRESSO','QUANTUM-ESPRESSO','PHON'}
   if options.nsteps, options.electron_maxstep=options.nsteps; end
   if isscalar(options.occupations), options.occupations=options.occupations/Ry; end
 
-  options.dos = 1;
   decl = [ 'sqw_phon(''' poscar ''', options); % QuantumEspresso/PHON wrapper' ];
   % sqw_phonons_htmlreport(fullfile(options.target, 'sqw_phonons.html'), 'init', options, decl);
   
@@ -494,10 +495,7 @@ case {'QUANTUM','QE','ESPRESSO','QUANTUMESPRESSO','QUANTUM-ESPRESSO','PHON'}
   
 % ==============================================================================
 case 'VASP'
-  if isempty(status.(lower(options.calculator))) && isempty(options.command)
-    sqw_phonons_error([ mfilename ': ' options.calculator ' not available. Check installation' ], options)
-    return
-  end
+
   if isfield(options,'mpi') && ~isempty(options.mpi) && options.mpi > 1
     if isempty(options.command) options.command=status.(lower(options.calculator)); end
     options.command = [ options.mpirun ' ' options.command ]; 
