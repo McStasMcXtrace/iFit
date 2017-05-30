@@ -380,7 +380,7 @@ catch ME
   else
     t
   end
-  lasterr
+  disp(getReport(ME,'basic'))
   save iFunc_feval_error
   error([ 'iFunc:' mfilename ], [ 'Failed model evaluation. Saved state in ' fullfile(pwd,'iFunc_feval_error') ]);
 end
