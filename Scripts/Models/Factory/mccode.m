@@ -35,7 +35,7 @@ function y = mccode(instr, options)
 %
 %   options can also be given as a string, e.g. 'ncount=1e6; compile=1'
 %
-% The instrument parameters of type 'double' are used as moel parameters. Other
+% The instrument parameters of type 'double' are used as model parameters. Other
 % parameters (e.g. of type string and int) are stored in UserData.Parameters_Constant
 %
 % The options ncount, seed, gravitation, monitor can be changed for the model 
