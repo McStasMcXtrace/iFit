@@ -54,7 +54,6 @@ function options = sqw_phonons_gui(configuration, options, status)
     end
   end
   options.autoplot   = 1;
-  options.dos        = 1;
   options.gui        = true;
   if strcmpi(options.calculator,'qe_ase') options.calculator='quantumespresso_ase'; 
   elseif strcmpi(options.calculator,'qe')         options.calculator='quantumespresso'; 
