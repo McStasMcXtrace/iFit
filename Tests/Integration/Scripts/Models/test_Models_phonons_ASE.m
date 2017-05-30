@@ -1,6 +1,6 @@
 function result = test_Models_phonons_ASE
 
-  % spin wave
+  % phonon Al
   s=sqw_phonons('defaults');
   if isempty(s)
     result = [ 'OK     ' mfilename ' SKIPPED: ASE not available'];
@@ -11,7 +11,8 @@ function result = test_Models_phonons_ASE
   fig=figure; plot3(log(f(:,:,1,:)));
   [w1,c1]=std(f(:,:,1,:),3);
   
-  if abs(c1-13) < 3 && abs(w1-9.8) < 0.4
+  if (abs(c1-13) < 3 && abs(w1-9.8) < 0.4) ...
+  || (abs(c1-22) < 3 && abs(w1-8) < 0.4)
     result = [ 'OK     ' mfilename ];
   else
     result = [ 'FAILED ' mfilename ];

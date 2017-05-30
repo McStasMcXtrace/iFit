@@ -116,8 +116,9 @@ if Gamma<=0, Gamma=1e-4; end
 
 % compute Gamma point modes (IR/Raman) 
 index = find(sum(abs(HKL),2) == 0);
-if ~isempty(index) && (~isfield(this.UserData.properties,'vibrational_energies') ...
-|| isempty(this.UserData.properties.vibrational_energies))
+if ~isempty(index) && (~isfield(UD,'properties') ...
+  || ~isfield(UD.properties,'vibrational_energies') ...
+  || isempty(UD.properties.vibrational_energies))
   disp([ strtok(this.Name) ': Gamma point energies (IR/Raman):' ]);
   this.UserData.properties.vibrational_energies = FREQ(index(1),:)';
   f = this.UserData.properties.vibrational_energies(:);
