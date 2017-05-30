@@ -136,9 +136,7 @@ function sqw_phonons_htmlreport_toc(fid, options)
   end
   fprintf(fid, '<li><a href="#results">Results</a><ul>\n');
   fprintf(fid, '  <li><a href="#model">The Phonon Model S(hkl,w)</a></li>\n');
-  if isfield(options, 'dos') && options.dos 
   fprintf(fid, '  <li><a href="#dos">The Phonon spectrum (vDOS)</a></li>\n');
-  end
   fprintf(fid, '  <li><a href="#kpath">The dispersion along principal directions</a></li>\n');
   fprintf(fid, '  <li><a href="#grid4d">The Model evaluated onto a 4D grid</a></li>\n');
   fprintf(fid, '  <li><a href="#grid3d">The Model evaluated onto a 3D grid (QH~0)</a></li>\n');
