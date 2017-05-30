@@ -21,7 +21,6 @@ options.raw        = '';
 options.autoplot   = 0;
 options.gui        = nan;
 options.htmlreport = 0;
-options.dos        = 0;
 options.optimizer  = '';
 options.accuracy   = 'very fast';  % can be 'fast' 'very fast' or 'accurate' (much slower)
 options.disp       = 0.01;    % displacement of atoms in Angs
@@ -45,12 +44,9 @@ for index=1:numel(varargin)
       options.occupations = 'fixed';
     elseif strcmpi(varargin{index},'semiconductor')
       options.occupations = 'semiconductor';
-    elseif strcmpi(varargin{index},'dos')
-      options.dos = 1;
-    elseif strcmpi(varargin{index},'plot') || strcmpi(varargin{index},'autoplot')
-      options.autoplot = 1;
-    elseif strcmpi(varargin{index},'html') || strcmpi(varargin{index},'htmlreport') || strcmpi(varargin{index},'report')
-      options.htmlreport = 1;
+    
+      
+% calculators
     elseif strcmpi(varargin{index},'emt')
       options.calculator = 'EMT';
     elseif strcmpi(varargin{index},'gpaw')
@@ -69,6 +65,13 @@ for index=1:numel(varargin)
       options.calculator = 'quantumespresso_ase';
     elseif strcmpi(varargin{index},'qe') || strcmpi(varargin{index},'espresso') || strcmpi(varargin{index},'quantumespresso')
       options.calculator = 'quantumespresso';
+    elseif strcmpi(varargin{index},'octopus')
+      options.calculator = 'octopus';
+      
+    elseif strcmpi(varargin{index},'plot') || strcmpi(varargin{index},'autoplot')
+      options.autoplot = 1;
+    elseif strcmpi(varargin{index},'html') || strcmpi(varargin{index},'htmlreport') || strcmpi(varargin{index},'report')
+      options.htmlreport = 1;
     elseif strcmpi(varargin{index},'gui')
       options.gui = 'init';
     elseif strcmpi(varargin{index},'optimize') || strcmpi(varargin{index},'minimize')
@@ -113,7 +116,7 @@ if isfield(options, 'plot')
   options.autoplot=options.plot;
 end
 if isfield(options, 'html')
-  options.htmlreport=options.html; options.dos=1;
+  options.htmlreport=options.html;
 end
 if isscalar(options.supercell)
   options.supercell=[ options.supercell options.supercell options.supercell ]; 
@@ -121,7 +124,6 @@ end
 if isscalar(options.kpoints)
   options.kpoints=[ options.kpoints options.kpoints options.kpoints ]; 
 end
-if options.htmlreport == 1, options.dos=1; end
 
 % make sure target is a fully qualified path
 if options.target(1) ~= filesep

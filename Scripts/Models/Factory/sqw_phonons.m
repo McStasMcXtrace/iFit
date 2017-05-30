@@ -662,6 +662,8 @@ cite{end+1} = ' * Quantum Espresso: P. Giannozzi, et al J.Phys.:Condens.Matter, 
 cite{end+1} = ' * QE-util:          Pawel T. Jochym, https://jochym.github.io/qe-doc/ (2015).';
 case 'VASP'
 cite{end+1} = ' * VASP:   G. Kresse and J. Hafner. Phys. Rev. B, 47:558, 1993.';
+case 'OCTOPUS'
+cite{end+1} = ' * OCTOPUS:X. Andrade et al, Phys Chem Chem Phys 17 (2015) 31371.';
 end
 if options.use_phonopy
   cite{end+1} = ' * PhonoPy:   A. Togo and I. Tanaka, Scr. Mater., 108, 1-5 (2015)';
