@@ -362,6 +362,8 @@ case 'NWCHEM' % ================================================================
   
 % ==============================================================================
 case 'OCTOPUS'
+  % experimental: Non-orthogonal cells support not implemented.
+  
   if isfield(options,'mpi') && ~isempty(options.mpi) && options.mpi > 1
     if isempty(options.command) options.command=status.(lower(options.calculator)); end
     options.command = [ options.mpirun ' ' options.command ]; 
@@ -372,6 +374,43 @@ case 'OCTOPUS'
   calc = 'calc = Octopus(Output="dos + density + potential", OutputFormat="xcrysden"';
   if all(options.kpoints > 0)
     calc = [ calc sprintf(', KPointsGrid=[[%i,%i,%i]], KPointsUseSymmetries=True', options.kpoints) ];
+  end
+  % pps: PseudopotentialSet can be:
+  % standard: The standard set of Octopus that provides LDA pseudopotentials in the PSF format for some elements: H, Li, C, N, O, Na, Si, S, Ti, Se, Cd.
+  % sg15: (experimental) The set of Optimized Norm-Conserving Vanderbilt PBE pseudopotentials (M. Schlipf and F. Gygi, Comp. Phys. Commun. doi:10.1016/j.cpc.2015.05.011 (2015)).
+  % hgh_lda: The set of Hartwigsen-Goedecker-Hutter LDA pseudopotentials for elements from H to Rn. For many species a semi-core variant is available, it can be obtained by appending _sc to the element name. Ref: C. Hartwigsen, S. Goedecker, and J. Hutter, Phys. Rev. B 58, 3641 (1998).
+  % hscv_lda: (experimental) The set of Hamann-Schlueter-Chiang-Vanderbilt (HSCV) potentials for LDA exchange and correlation downloaded from
+  % hscv_pbe: (experimental) PBE version of the HSCV pseudopotentials. Check the documentation of the option hscv_lda for details and warnings.
+  if ~isfield(options,'pps') || isempty(options.pps)
+    if strcmpi(options.xc,'PBE') || strcmpi(options.potentials,'PBE')
+      options.pps = 'pbe';
+    elseif strcmpi(options.xc,'LDA') || strcmpi(options.potentials,'LDA')
+      options.pps = 'lda';
+    elseif strcmpi(options.potentials,'NC')
+      options.pps = 'nc';
+    elseif strcmpi(options.potentials,'hgh')
+      options.pps = 'hgh';
+    end
+  end
+  if isfield(options,'pps')
+    if strcmpi(options.pps, 'pbe')
+      options.pps = 'hscv_pbe';
+    elseif strcmpi(options.pps, 'lda')
+      options.pps = 'hscv_lda';
+    elseif strcmpi(options.pps, 'hgh')
+      options.pps = 'hgh_lda';
+    elseif strcmpi(options.pps, 'nc')
+      options.pps = 'sg15'; % ONCV
+    end
+    calc = [ calc sprintf(', ExperimentalFeatures=True, PseudopotentialSet="%s"', options.pps) ];
+  end
+  
+  if isscalar(options.occupations) && options.occupations>=0 % smearing in eV, Gaussian
+    calc=[ calc sprintf(', Smearing=%g, SmearingFunction="spline_smearing"', options.occupations) ];
+  end
+  
+  if options.nsteps > 0
+    calc = [ calc sprintf(', MaximumIter=%i', options.nsteps) ];
   end
   
   if ~isempty(options.raw)
@@ -548,7 +587,22 @@ case 'VASP'
     calc = [ calc sprintf(', xc="%s"', options.xc) ];
   end
   if isfield(options, 'pps') && ~isempty(options.pps)
-    calc = [ calc sprintf(', setups="%s"', options.pps) ];
+    if ischar(options.pps)
+      calc = [ calc sprintf(', setups="%s"', options.pps) ];
+    elseif isstruct(options.pps)
+      calc = [ calc sprintf(', setups={') ];
+      f = fieldnames(options.pps);
+      for index=1:numel(f)
+        if ischar(options.pps.(f{index}))
+          if index==1
+            calc = [ calc sprintf('"%s":"%s"') ];
+          else
+            calc = [ calc sprintf(',"%s":"%s"') ];
+          end
+        end
+      end
+      calc = [ calc sprintf('}') ];
+    end
   end
   if options.nbands > 0
     calc = [ calc sprintf(', nbands=%i', options.nbands) ];
