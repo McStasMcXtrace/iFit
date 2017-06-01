@@ -17,6 +17,8 @@ function [signal, model, ax, name] = feval(model, p, varargin)
 %   Providing an empty parameter argument is similar to 'guess'.
 %   Providing a NaN parameter, or a vector containing NaN values, will guess
 %   missing parameters, using any optional 'signal' for the guess.
+%   Providing parameters as a structure or cell with vector values performs a scan
+%   along the vector values.
 %
 %   The axes are given as vectors/matrices for the model evaluation. When given
 %   as NaN, the axis is not used and left as NaN.
