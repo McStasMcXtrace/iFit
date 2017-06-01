@@ -131,6 +131,12 @@ if iscell(i) && length(i) > 1
   a.Creator=creator; 
 end
 
+i = findfield(a, 'type','char exact cache'); % should have at least the iData.Creator property
+if ~isempty(i)
+  if iscell(i) t=get(a,i{1}); else t=get(a,i); end
+  a.Format = [ a.Format ' ' t];
+end
+
 clear d
 
 % check that guessed Signal is indeed what we look for
@@ -158,7 +164,7 @@ if ~isempty(strfind(a.Format,'0D monitor'))
   a = setalias(a, 'I', 'Signal');
   a = setalias(a, 'E', 'Error');
   a = setalias(a, 'N', 'Data.values(3)');
-elseif ~isempty(strfind(a.Format,'1D monitor'))
+elseif (~isempty(strfind(a.Format,'1D monitor')) || ~isempty(strfind(a,'array_1d')))  && size(a,2) ~= 4
   xlabel(a, xlab);
   title(a, ylab);
   a = setalias(a, 'I', 'Signal');
@@ -192,7 +198,7 @@ elseif ~isempty(strfind(a,'array_1d')) && size(a,2) == 4
     a = opensim(a); % this will now make a better job
     return
   end
-elseif ~isempty(strfind(a.Format,'2D monitor'))
+elseif ~isempty(strfind(a.Format,'2D monitor')) || ~isempty(strfind(a,'array_2d'))
   % Get sizes of x- and y- axes:
   i = findfield(a, 'variables', 'numeric exact cache');
   if iscell(i) && ~isempty(i), i = i{1}; end
