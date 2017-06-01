@@ -164,57 +164,8 @@ else  % convert input argument into object
     for n_in = 1:numel(in)  % handle array of iFunc
       if numel(in) == 1, this_in = in;
       else               this_in = in(n_in); end
-      [signal, this_in, ax, name] = feval(this_in, varargin{2:end});
-      if length(signal) == length(this_in.Parameters)
-        [signal, this_in, ax, name] = feval(this_in, signal, axes_in{:});
-      end
-      if isempty(signal), 
-          iData_private_warning(mfilename, [ ': iFunc evaluation failed (empty value). Check axes and parameters.' ]);
-          return; 
-      end
       
-      % create iData object from signal and axes
-      % check axes against signal size
-      if isempty(axes_in) && ~isempty(ax), axes_in = ax; end
-      for index=1:numel(axes_in)
-        ax1 = axes_in{index};
-        ax2 = ax{index};
-        if ~isempty(ax2)
-          if isempty(ax1), ax1 = ax2;
-          elseif ~isempty(find(isnan(ax1))), ax1 = ax2;
-          elseif numel(ax2) == size(signal, index), ax1 = ax2;
-          end
-          axes_in{index} = ax1;
-        end
-      end
-      this_out = iData(axes_in{:}, signal); % make it an iData
-
-      % assign axes names
-      if nargin > 2 % iData(iFunc,p,axes...)
-        for index=1:numel(ax)
-          if index+2 <= nargin && ~isempty(inputname(index+2))
-            if numel(ax)>= 2 && index==1 && 0
-              this_out=label(this_out,2,inputname(index+2)); 
-            elseif numel(ax)>= 2 && index==2 && 0
-              this_out=label(this_out,1,inputname(index+2));
-            else
-              this_out=label(this_out,index,inputname(index+2)); 
-            end
-          end
-        end
-      end
-      this_out.Title = name;
-      this_out.Label = name;
-      this_out.DisplayName = name;
-      setalias(this_out,'Error', 0);
-      if ~isempty(this_in.ParameterValues)
-          par_val = this_in.ParameterValues;
-          pars    = this_in.Parameters;
-        pars_out = cell2struct(num2cell(par_val(:)'), strtok(pars(:)'), 2);
-        setalias(this_out,'Parameters', pars_out, [ name ' model parameters' ]);
-      end
-      setalias(this_out,'Model', this_in, this_in.Name);
-      clear signal ax
+      [this_out, this_in] = iData_iFunc2iData(this_in, axes_in, varargin{2:end});
       
       if numel(in) == 1, in = this_in; else; in(n_in) = this_in; end
       out = [ out this_out ];
@@ -278,6 +229,79 @@ function b=iData_num2iData(v)
   if numel(v) > 10, v=v(1:10); end
   v = mat2str(double(v)); 
   b.Command= cellstr([ 'iData(' v ')' ]);
+
+% ============================================================================
+% iData_num2iData: converts an iFunc model into an iData
+function [out, this_in]=iData_iFunc2iData(this_in, axes_in, p, varargin)
+  % evaluate the model 'this_in'
+  % when some parameter are given as struct/cell and contain vectors, scans are done
+  out = [];
+  [signals, this_in, axs, names] = feval(this_in, p, varargin{:});
+  
+  if ~iscell(signals)
+    signals = { signals };
+    axs     = { axs };
+    names   = { names };
+  end
+  % convert each of the returned data into an iData
+  for i=1:numel(signals)
+    signal = signals{i};
+    ax     = axs{i};
+    name   = names{i};
+    
+    if length(signal) == length(this_in.Parameters) % this was in fact a parameter guess...
+      [signal, this_in, ax, name] = feval(this_in, signal, axes_in{:});
+    end
+    if isempty(signal), 
+      iData_private_warning(mfilename, [ ': iFunc evaluation failed (empty value). Check axes and parameters.' ]);
+      continue; 
+    end
+    
+    % create iData object from signal and axes
+    % check axes against signal size
+    if numel(axes_in) == 1 && all(isnan(axes_in{1})), axes_in = []; end
+    if isempty(axes_in) && ~isempty(ax), axes_in = ax; end
+    for index=1:numel(axes_in)
+      ax1 = axes_in{index};
+      if index<numel(ax), ax2 = ax{index}; else ax2=[]; end
+      if ~isempty(ax2)
+        if isempty(ax1), ax1 = ax2;
+        elseif ~isempty(find(isnan(ax1))), ax1 = ax2;
+        elseif numel(ax2) == size(signal, index), ax1 = ax2;
+        end
+        axes_in{index} = ax1;
+      end
+    end
+    this_out = iData(axes_in{:}, signal); % make it an iData
+
+    % assign axes names
+    if nargin > 2 % iData(iFunc,p,axes...)
+      for index=1:numel(ax)
+        if index+2 <= nargin && ~isempty(inputname(index+2))
+          if numel(ax)>= 2 && index==1 && 0
+            this_out=label(this_out,2,inputname(index+2)); 
+          elseif numel(ax)>= 2 && index==2 && 0
+            this_out=label(this_out,1,inputname(index+2));
+          else
+            this_out=label(this_out,index,inputname(index+2)); 
+          end
+        end
+      end
+    end
+    this_out.Title = name;
+    this_out.Label = name;
+    this_out.DisplayName = name;
+    setalias(this_out,'Error', 0);
+    if ~isempty(this_in.ParameterValues)
+        par_val = this_in.ParameterValues;
+        pars    = this_in.Parameters;
+      pars_out = cell2struct(num2cell(par_val(:)'), strtok(pars(:)'), 2);
+      setalias(this_out,'Parameters', pars_out, [ name ' model parameters' ]);
+    end
+    setalias(this_out,'Model', this_in, this_in.Name);
+    clear signal ax
+    out = [ out this_out ];
+  end % feval return arguments (can be a parameter scan)
   
 % ============================================================================
 
