@@ -86,7 +86,7 @@ case 'ABINIT'
   if isfield(options,'tolvrs') && options.tolvrs > 0
     calc = [ calc sprintf(', tolvrs=%g', options.tolvrs/Ha) ];
   else
-    if options.toldfe <= 0, options.toldfe=1e-8; end % in eV, necessary
+    % if options.toldfe <= 0, options.toldfe=1e-6; end % in eV, necessary
     if options.toldfe > 0
       calc = [ calc sprintf(', toldfe=%g', options.toldfe/Ha) ];
     end
@@ -121,6 +121,8 @@ case 'ABINIT'
   if options.nbands > 0
     calc = [ calc sprintf(', nband=%i', options.nbands) ];
   end
+  % the default nstep=30 is clearly not enough for ABINIT. Set to 100
+  if options.nsteps <=100, options.nsteps=100; end
   if options.nsteps > 0
     calc = [ calc sprintf(', nstep=%i', options.nsteps) ];
   end

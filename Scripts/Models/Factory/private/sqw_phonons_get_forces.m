@@ -215,8 +215,11 @@ function [options, sav] = sqw_phonons_get_forces(options, decl, calc)
       else
         [st, result] = system([ precmd options.available.python ' ' fullfile(target,'sqw_phonons_forces_iterate.py') ]);
       end
+      % display result
       disp(result)
-      % get how many steps have been computed: name is 'phonon.N[xyz][+-].pckl'
+      options.status = result;
+      sqw_phonons_htmlreport('', 'status', options);
+      % get how many displacements have been computed: name is 'phonon.N[xyz][+-].pckl'
       move_update = dir(fullfile(target,'phonon.*.pckl'));
       if numel(move_update) > move
         move = numel(move_update);
@@ -242,6 +245,8 @@ function [options, sav] = sqw_phonons_get_forces(options, decl, calc)
     catch ME
       disp(result)
       disp(getReport(ME))
+      options.status = result;
+      sqw_phonons_htmlreport('', 'status', options);
       sqw_phonons_error([ mfilename ': failed calling ASE with script ' ...
         fullfile(target,'sqw_phonons_iterate.py') ], options);
       options = [];
@@ -268,7 +273,10 @@ function [options, sav] = sqw_phonons_get_forces(options, decl, calc)
     else
       [st, result] = system([ precmd options.available.python ' ' fullfile(target,'sqw_phonons_forces_finalize.py') ]);
     end
+    % display result
     disp(result)
+    options.status = result;
+    sqw_phonons_htmlreport('', 'status', options);
   catch
     disp(result)
     sqw_phonons_error([ mfilename ': failed calling ASE with script ' ...
