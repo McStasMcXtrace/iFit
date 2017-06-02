@@ -1,17 +1,41 @@
-function comps=mccode_display(model)
-% runs the model in --trace mode and capture the output
-% grab all MCDISPLAY lines
+function [comps, fig, model]=mccode_display(model, p, options)
+% mccode_display: runs the model in --trace mode and capture the output
+% grab all MCDISPLAY lines, and render the TRACE information into a figure.
 %
-% Usage:
+%  mccode_display
+%     alone displays the default mccode model view (diffractometer)
+%  mccode_display(path_to_mccode_instr)
+%     compiles the given mccode instrument and displays it
+%  mccode_display(model)
+%     displays the given McCode model with its defaults/current parameters.
+%  mccode_display(model, parameters)
+%     same as above, but uses the given parameters (vector, structure, cell)
+%  [comps, fig] = mccode_display(...)
+%     returns the list of components, figure used for display and updated model.
+%     
+% Example:
 %   model = mccode('instrument_file')
 %   mccode_display(model)
 %     a figure is generated, which shows the instrument geometry.
 %
 % input:
 %   model: instrument simulation as obtained with 'mccode' (iFunc)
-%
+%          or path to an instrumnt definition to compile.
+%   parameters: parameters to use, as a vector, cell, structure...
+%   options: rendering options. Can contain 'html','x3d','png'
+%   
 % output:
 %   comps: a list of component specifications (structure array)
+%   fig:   figure handle
+%   model: model, updated or created (iFunc)
+%
+% See also: mccode, iFunc, iFunc/feval, http://www.mcstas.org
+
+  if nargin == 0
+    model = mccode('defaults');
+  end
+  if nargin < 2, p=[]; end
+  if nargin < 3, options=''; end
 
   % check if we have an iFunc  McCode object
   if ischar(model) && ~isempty(dir(model))
@@ -24,28 +48,40 @@ function comps=mccode_display(model)
   if ~isfield(model.UserData, 'options') || ~isfield(model.UserData,'instrument_executable')
     error([ mfilename ': ERROR: Usage: mccode_display(model) with model=mccode(path_to_mccode_instr)' ]);
   end
-
+  
+  % read monitors as iData
+  if model.UserData.options.ncount > 1e3
+    monitors       = model.UserData.monitors;
+  else
+    monitors       = [];
+  end
+  
   % switch to trace mode
   model.UserData.options.trace  = 1;
-  model.UserData.options.ncount = 1e3;
-  % execute and get output
-  output = evalc('val=model([],nan);');
-  % check that we have MCDISPLAY words in there.
-  if isempty(strfind(output, 'MCDISPLAY: '))
-    disp([ mfilename ': Can not get MCDISPLAY tokens from the simulation. Something probably went wrong.' ]);
-    return
+  model.UserData.options.ncount = 1e3;  % create a new set of output files with reduced statistics
+  % execute and capture output (TRACE)
+  val = [];
+  disp([ mfilename ': running instrument ' strtok(model.Name) ' in Trace mode...' ])
+  output = evalc('[val,model]=feval(model,[],nan);');
+  model.UserData.options.trace = 0;
+  
+  if isempty(monitors)
+    monitors       = model.UserData.monitors;
   end
-
-  output = textscan(output, '%s','Delimiter','\n\r');
-  output = output{1};
+  monitors_names = get(monitors,'Component');
 
   % first extract the portion 'start':'end'
-  index_start = find(~cellfun(@isempty, strfind(output, 'MCDISPLAY: start')));
-  index_end   = find(~cellfun(@isempty, strfind(output, 'MCDISPLAY: end')));
+  disp([ mfilename ': rendering geometry...' ])
+  index_start = strfind(output, 'MCDISPLAY: start');
+  index_end   = strfind(output, 'MCDISPLAY: end');
   if numel(index_start) ~= 1 || numel(index_end) ~= 1
     disp([ mfilename ': The MCDISPLAY section is invalid (incomplete or multiple). Aborting.' ]);
     return
   end
+
+  output_mcdisplay_init = output(1:index_start);
+  output_mcdisplay_init = textscan(output_mcdisplay_init, '%s','Delimiter','\n\r');
+  output_mcdisplay_init = output_mcdisplay_init{1};
 
   % initiate component structures
   % we build a struct array, with one entry per component, and fields:
@@ -53,13 +89,18 @@ function comps=mccode_display(model)
   %   pos: pos(3)
   %   rot: rot(3,3)
   %   x,y,z: set of points
-  comps = mcdisplay_get_components(output(1:index_start));
+  comps = mcdisplay_get_components(output_mcdisplay_init);
+  clear output_mcdisplay_init
+  
   % restrict output to the MCDISPLAY so that all searches are faster
-  output = output(index_start:index_end); 
+  output_mcdisplay_section = output(index_start:index_end);
+  clear output
+  output_mcdisplay_section = textscan(output_mcdisplay_section, '%s','Delimiter','\n\r');
+  output_mcdisplay_section = output_mcdisplay_section{1};
 
   % get the components in order, and identify the output section/lines
   % which are separated by e.g. MCDISPLAY: component <blah>
-  index_mcdisplay_comp = find(~cellfun(@isempty, strfind(output, 'MCDISPLAY: component ')));
+  index_mcdisplay_comp = find(~cellfun(@isempty, strfind(output_mcdisplay_section, 'MCDISPLAY: component ')));
   if numel(index_mcdisplay_comp) ~= numel(comps)
     disp([ mfilename ...
       ': WARNING: not the same number of declared components (' num2str(numel(comps)) ...
@@ -71,9 +112,9 @@ function comps=mccode_display(model)
     if index < numel(index_mcdisplay_comp), 
       next = index_mcdisplay_comp(index+1);
     else 
-      next = numel(output); end
+      next = numel(output_mcdisplay_section); end
     % get the MCDISPLAY section for a single component
-    section = output(index_mcdisplay_comp(index):next);
+    section = output_mcdisplay_section(index_mcdisplay_comp(index):next);
     % then we get the multiline and circle commands in this section
     for token = {'multiline' ,'circle'}
       [x,y,z] = mcdisplay_get_token(section, token{1});
@@ -82,11 +123,10 @@ function comps=mccode_display(model)
       comps(index).z = [ comps(index).z nan z ];
     end
   end
+  clear output_mcdisplay_section
   
-  clear output
-  
-  % transform the points and plot them
-  f = figure('Name',[ 'Instrument: ' model.Name ]);
+  % PLOTTING: transform the points and plot them
+  fig = figure('Name',[ 'Instrument: ' model.Name ]);
   colors='bgrcmk';
   for index=1:numel(comps)
     comp = comps(index);
@@ -102,6 +142,22 @@ function comps=mccode_display(model)
     popup=uicontextmenu;
     uimenu(popup,'label', comp.name,'ForeGroundColor',c);
     uimenu(popup,'label', [ 'AT: ' mat2str(comp.pos) ]);
+    % attach an option to view a monitor data set when available
+    index_mon = find(strcmp(monitors_names, comp.name));
+    if ~isempty(index_mon)
+      % add 'values' field
+      if numel(monitors) > 1, mon=monitors(index_mon); else mon=monitors; end
+      uimenu(popup,'label', [ '[I err N]: ' mat2str(get(mon(1),'values')) ]);
+      mon = set(mon, 'Title', comp.name);
+      % add uicontextmenu element to plot data set(s) with subplot(UserData)
+      % store UserData so that we can plot it
+      uimenu(popup,'label', 'Plot monitor...', ...
+        'Callback','figure; subplot(get(gcbo,''UserData''),''tight'');', ...
+        'UserData', mon);
+      
+      % outline the monitor components
+      set(h,'LineWidth',4); 
+    end
     set(h,'uicontextmenu',popup);
     hold on
   end
@@ -123,27 +179,70 @@ function comps=mccode_display(model)
   names = model.Parameters;
   t = [];
   for index=1:numel(mp)
-    if numel(mp) < index, val = []; else val = mp(index); end
-    t = [ t names{index} '=' num2str(val) ' ' ];
+    if numel(mp) < index, valp = []; else valp = mp(index); end
+    t = [ t names{index} '=' num2str(valp) ' ' ];
   end
   % add static parameters
   if ~isempty(model.UserData.Parameters_Constant) && ...
      ~isempty(fieldnames(model.UserData.Parameters_Constant))
     for f=fieldnames(model.UserData.Parameters_Constant)
-      name = f{1}; val=model.UserData.Parameters_Constant.(name);
-      t = [ t name '=' num2str(val) ' ' ];
+      name = f{1}; valp=model.UserData.Parameters_Constant.(name);
+      t = [ t name '=' num2str(valp) ' ' ];
     end
   end
-  t = { [ 'Instrument: ' model.Name ] ; t };
+  t = { sprintf([ 'Instrument: ' model.Name ' \n' ]) ; t };
+  
   t = textwrap(t, 80);
   t = sprintf('%s\n', t{:});
   title(t ,'Interpreter','None');
   model.UserData.title = t;
   
-  mccode_display_contextmenu(gca, model.name, t);
+  mccode_display_contextmenu(gca, model.name, t, monitors);
+  [~,filename] = fileparts(strtok(model.Name));
+  if isempty(filename), filename = 'instrument'; end
+  if isdir(model.UserData.options.dir)
+    filename = fullfile(model.UserData.options.dir, filename); 
+  end
   
-  if ~isempty(inputname(1))
-    assignin('caller',inputname(1),model); % update in original object
+  % export options to x3d/xhtml
+  if ~isempty(strfind(options, 'html'))
+    t(t=='<')='[';
+    t(t=='>')=']';
+    figure2xhtml(filename, fig, ...
+      struct('title', model.Name, 'Description',t,'interactive',true));
+    mccode_display_exportmessage([ filename '.xhtml' ])
+    mccode_display_exportmessage([ filename '.x3d' ])
+  end
+  
+  % add the model value in a small insert (statistics will be limited as ncount=1e3)
+  if ~isempty(val)
+    if isvector(val)
+      a=axes('Parent',fig,'position',[.8 .05 .15 .15]);
+      h=plot(a, val); axis tight
+      set(a,'XTick',[]);
+      if ~isempty(model.UserData.options.monitor)
+        title(model.UserData.options.monitor,'Interpreter','none');
+      end
+    elseif ndims(val) == 2
+      a=axes('Parent',fig,'position',[.8 .05 .15 .15]);
+      h=surf(a, val); view(2); axis tight; set(a,'XTick',[], 'YTick',[]);
+      if ~isempty(model.UserData.options.monitor)
+        title(model.UserData.options.monitor,'Interpreter','none');
+      end
+    end
+    clear val
+  end
+  
+  % export to static images
+  for f={'png','pdf','fig','tif','jpg','eps'}
+    if ~isempty(strfind(options, f{1}))
+      try
+        saveas(fig, [ filename '.' f{1} ], f{1});
+        mccode_display_exportmessage([ filename '.' f{1} ])
+      catch ME
+        disp(getReport(ME))
+      end
+    end
   end
 
 end % mccode_display
@@ -229,7 +328,7 @@ function [X,Y,Z]=circle(plane, x0,y0,z0, radius)
   X=X+x0; Y=Y+y0; Z=Z+z0;
 end
 
-function mccode_display_contextmenu(a, name, pars)
+function mccode_display_contextmenu(a, name, pars, monitors)
   % install a context menu on the axis object of the figure
   
   % build the contextual menu
@@ -237,6 +336,12 @@ function mccode_display_contextmenu(a, name, pars)
   uicm = uicontextmenu('Tag','mccode_display_contextmenu_gca');
   uimenu(uicm, 'Label', [ 'About ' name '...' ], ...
            'Callback', [ 'helpdlg(''' pars ''',''' name ''')' ]);
+  if ~isempty(monitors)
+    uimenu(uicm, 'Label', 'Plot monitors...', ...
+      'UserData',monitors, ...
+      'Callback','figure; subplot(get(gcbo,''UserData''),''tight'');');
+  end
+    
   uimenu(uicm, 'Separator','on', 'Label', 'Duplicate View...', 'Callback', ...
          [ 'tmp_cb.g=gca;' ...
            'tmp_cb.f=figure; tmp_cb.c=copyobj(tmp_cb.g,gcf); ' ...
@@ -257,8 +362,8 @@ function mccode_display_contextmenu(a, name, pars)
   uimenu(uicm, 'Separator','on','Label', 'About iFit/iData', 'Callback', ...
     [ 'msgbox(''' version(iData,2) sprintf('. Visit <http://ifit.mccode.org>') ''',''About iFit'',''help'')' ]);
     
-  % attch the contextual menu
-  set(gca, 'UIContextMenu', uicm);
+  % attach the contextual menu
+  set(a, 'UIContextMenu', uicm);
   
   % ==============================================================================
   % contextual menu for the figure
@@ -279,4 +384,12 @@ function mccode_display_contextmenu(a, name, pars)
     end
   end
     
+end
+
+function mccode_display_exportmessage(filename)
+  if ~isdeployed
+    disp([ mfilename ': exported instrument view as: <a href="' filename '">' filename '</a>'])
+  else
+    disp([ mfilename ': exported instrument view as: ' filename ])
   end
+end
