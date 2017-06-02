@@ -37,6 +37,8 @@ if isempty(method), method=methods('iData'); end
 % handle array of objects
 varargout = {};
 
+if ~isa(this,'iData'), return; end
+
 if numel(this) > 1
   varg = cell(1, numel(this));
   if numel(varargin) == 1 && numel(varargin{1}) == numel(this) && iscell(varargin{1})

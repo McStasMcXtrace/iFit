@@ -23,6 +23,8 @@ function this = set(this,varargin)
 
 % calls: setalias
 
+if ~isa(this,'iData'), return; end
+
 if nargin == 1
   disp('iData object properties:');
   disp('Title:      (string)   title of the Data set');
