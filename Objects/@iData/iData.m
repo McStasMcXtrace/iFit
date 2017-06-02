@@ -232,11 +232,11 @@ function b=iData_num2iData(v)
 
 % ============================================================================
 % iData_num2iData: converts an iFunc model into an iData
-function [out, this_in]=iData_iFunc2iData(this_in, axes_in, p, varargin)
+function [out, this_in]=iData_iFunc2iData(this_in, axes_in, varargin)
   % evaluate the model 'this_in'
   % when some parameter are given as struct/cell and contain vectors, scans are done
   out = [];
-  [signals, this_in, axs, names] = feval(this_in, p, varargin{:});
+  [signals, this_in, axs, names] = feval(this_in, varargin{:});
   
   if ~iscell(signals)
     signals = { signals };
