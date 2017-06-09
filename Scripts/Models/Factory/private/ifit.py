@@ -45,7 +45,13 @@ except ImportError:
         has_spglib = True
     except ImportError:
         pass
-
+        
+        
+def dict2h5(d, filename):
+    import h5py
+    h = h5py.File(filename)
+    for k, v in d.items():
+        h.create_dataset(k, data=numpy.array(v))
 # ------------------------------------------------------------------------------
 def get_spacegroup(atoms, symprec=1e-5):
     """Determine the spacegroup to which belongs the Atoms object.
