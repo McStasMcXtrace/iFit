@@ -1,6 +1,12 @@
 function out = opennpy(filename)
 %OPENEDF Open an python Numpy NPY Format file, display it
 %        and set the 'ans' variable to an iData object with its content
+%
+% To generate a NPY file, use python:
+% >>> import numpy as np
+% >>> x = np.arange(10)
+% >>> np.save('outfile.npy', x)
+%
 % (c) E.Farhi, ILL. License: EUPL.
 
 
