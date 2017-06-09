@@ -43,6 +43,7 @@ function [filename,format] = save(a, varargin)
 %           'json' save as JSON JavaScript Object Notation, ascii
 %           'mrc'  save as MRC map file (3/4D)
 %           'nii'  save as NifTi Neuroimaging Informatics Technology Initiative (3/4D)
+%           'npy'  save as Numpy binary array
 %           'ps','pdf','ill','eps' save as an image (with axes)
 %           'ppm','pgm','pbm'
 %           'off'  save as Object File Format (geometry), ascii

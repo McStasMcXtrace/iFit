@@ -6,6 +6,11 @@ function s = read_npy(filename)
 %               'int8','int16','int32','int64'
 %               'single','double', 'logical'
 %
+% To generate a NPY file, use python:
+% >>> import numpy as np
+% >>> x = np.arange(10)
+% >>> np.save('outfile.npy', x)
+%
 % References:
 % format specification: https://docs.scipy.org/doc/numpy/neps/npy-format.html
 % contrib: https://github.com/kwikteam/npy-matlab, C. Rossant 2016
