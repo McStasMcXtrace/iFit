@@ -47,11 +47,22 @@ except ImportError:
         pass
         
         
-def dict2h5(d, filename):
+def dict2h5(d, filename='file.hdf5'):
+    """Save a dictionary into an hdf5 file
+    """
     import h5py
     h = h5py.File(filename)
     for k, v in d.items():
-        h.create_dataset(k, data=numpy.array(v))
+        if v is None:
+            continue
+        elif isinstance(v, list):
+            h.create_dataset(k, data=numpy.array(v), compression="gzip")
+        elif isinstance(v, (numpy.ndarray, numpy.int64, numpy.float64, str, bytes, numpy.float, float, numpy.float32,int)):
+            try:
+                h.create_dataset(k, data=v, compression="gzip")
+            except TypeError:
+                h.create_dataset(k, data=v)
+            
 # ------------------------------------------------------------------------------
 def get_spacegroup(atoms, symprec=1e-5):
     """Determine the spacegroup to which belongs the Atoms object.
