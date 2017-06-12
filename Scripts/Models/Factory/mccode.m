@@ -27,7 +27,7 @@ function y = mccode(instr, options)
 %   options.seed:        random number seed to use for each iteration (double)
 %   options.gravitation: 0 or 1 to set gravitation handling in neutron propagation (boolean)
 %   options.monitor:     a single monitor name to read, or left empty for the last (string).
-%   options.mccode:      set the executable path to 'mcrun' (default) or 'mxrun'
+%   options.mccode:      set the executable path to 'mcrun' (default, neutrons) or 'mxrun' (xrays)
 %   options.mpirun:      set the executable path to 'mpirun'
 %   options.compile:     0 or 1 to force re-compilation of the executable.
 %                          try that first if you can not create/use the object (old 
@@ -52,7 +52,7 @@ function y = mccode(instr, options)
 % model(p, x,y,...) 
 %   evaluates the model and interpolates the McCode data set onto given axes.
 %
-% input:  p: variable instrument parameters (double)
+% input:  p: variable instrument parameters (double, struct, char)
 %            p = [ double_type_instrument_parameters ]
 %         x,y,...: axes (double)
 %
@@ -354,6 +354,11 @@ if ~any(isnan((y.Guess)))
 end
 
 disp(y.Description);
+if ~isdeployed
+  disp([ mfilename ': built model ' y.Name ' in <a href="' y.UserData.options.dir '">' y.UserData.options.dir '</a>' ])
+else
+  disp([ mfilename ': built model ' y.Name ' in ' y.UserData.options.dir ])
+end
 
 
 % ==============================================================================
