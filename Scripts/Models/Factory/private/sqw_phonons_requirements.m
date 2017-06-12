@@ -10,6 +10,8 @@ if ismac,  precmd = 'DYLD_LIBRARY_PATH= ;';
 elseif isunix, precmd = 'LD_LIBRARY_PATH= ; '; 
 else precmd=''; end
 
+disp('Available packages:');
+
 % test for python
 status.python = '';
 for calc={'python'}
@@ -36,7 +38,6 @@ if status.ase ~= 0
   error([ mfilename ': ASE not installed. This is required.' ]);
 else
   disp([ mfilename ': using ASE ' result ]);
-  disp('Available packages:');
   status.emt='ase-run';
   status.ase=sscanf(result,'%d.%d');
   disp('  EMT             only for Al,Cu,Ag,Au,Ni,Pd,Pt,H,C,N,O');
