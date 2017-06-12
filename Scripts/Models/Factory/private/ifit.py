@@ -45,12 +45,19 @@ except ImportError:
         has_spglib = True
     except ImportError:
         pass
-        
+
+# test if PhonoPy is there (which usually includes spglib)
+has_phonopy = False
+try:
+    from phonopy import Phonopy
+    has_phonopy = True
+except ImportError:
+    pass
         
 def dict2h5(d, filename='file.hdf5'):
     """Save a dictionary into an hdf5 file
     """
-    import h5py
+    import h5py # must be installed
     if isinstance(filename, str):
         h = h5py.File(filename,'w') # create or truncate
     elif isinstance(filename, h5py.File) or isinstance(filename, h5py.Group):
@@ -70,7 +77,7 @@ def dict2h5(d, filename='file.hdf5'):
         elif isinstance(v, dict):
             grp = h.create_group(k)
             dict2h5(v, filename=grp)
-            
+
 # ------------------------------------------------------------------------------
 def get_spacegroup(atoms, symprec=1e-5):
     """Determine the spacegroup to which belongs the Atoms object.
