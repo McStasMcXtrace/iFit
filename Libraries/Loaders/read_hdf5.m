@@ -42,12 +42,14 @@ catch
 end
 
 % recursive call
-data = getGroup(filename, data_info);
+data = getGroup(filename, data_info, h5_present);
 
 % return
 
-  % inline function ============================================================
-  function data = getGroup(filename, data_info)
+end
+
+  % ============================================================
+  function data = getGroup(filename, data_info, h5_present)
   % getGroup: recursively traverse the HDF tree
 
     data = [];
@@ -60,7 +62,13 @@ data = getGroup(filename, data_info);
         if h5_present
           val = h5read(filename,[root data_info.Datasets(i).Name]);
         else
-          val = hdf5read(filename,[data_info.Datasets(i).Name]);
+          % hdf5read can stall in R2010a. We use a low-level read
+          % val = hdf5read(filename,[data_info.Datasets(i).Name]);
+          fileID = H5F.open(filename, 'H5F_ACC_RDONLY', 'H5P_DEFAULT');
+          dataID = H5D.open(fileID, [root data_info.Datasets(i).Name]);
+          val    = H5D.read(dataID, 'H5ML_DEFAULT', 'H5S_ALL', 'H5S_ALL', 'H5P_DEFAULT');
+          H5D.close(dataID);
+          H5F.close(fileID);
         end
         if strcmp(class(val), 'hdf5.h5string'), val = char(val.Data); end
         if iscellstr(val) && length(val) == 1,  val = char(val); end
@@ -119,7 +127,8 @@ data = getGroup(filename, data_info);
     % Get each subgroup
     ngroups = length(data_info.Groups);
     for i = 1 : ngroups
-      group = getGroup(filename, data_info.Groups(i));
+      disp(data_info.Groups(i))
+      group = getGroup(filename, data_info.Groups(i), h5_present);
       % assign the name of the group
       name = getName(data_info.Groups(i).Name);
       if ~isempty(name)
@@ -129,7 +138,6 @@ data = getGroup(filename, data_info);
     end
   end
 
-end
 
 % ------------------------------------------------------------------------------
 
