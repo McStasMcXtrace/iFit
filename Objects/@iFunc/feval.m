@@ -115,7 +115,7 @@ if ~isempty(p) && ischar(p)
   elseif strcmp(p, 'identify')
     signal=evalc('disp(model)');
     return
-  elseif ~strcmp(p, 'guess') && numel(strtok(p)) < numel(p)
+  elseif ~strcmp(p, 'guess') && numel(strtok(p,' =:')) < numel(p)
     p=str2struct(p);
   end
 elseif isa(p, 'iFunc')

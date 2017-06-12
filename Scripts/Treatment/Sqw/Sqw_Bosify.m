@@ -11,10 +11,10 @@ function s = Sqw_Bosify(s, T, type, options)
 %        e.g. 2D data set with w as 1st axis (rows, meV), q as 2nd axis (Angs-1).
 %   T: when given, Temperature to use for Bose. When not given, the Temperature
 %      is searched in the object. The temperature is in [K]. 1 meV=11.605 K.
-%   type: 'Schofield' or 'harmonic' (default) or 'standard'
+%   type: 'Schofield' or 'harmonic' or 'standard' (default)
 %
 % conventions:
-% omega = Ei-Ef = energy lost by the neutron
+% omega = Ei-Ef = energy lost by the neutron, given in [meV]
 %    omega > 0, neutron looses energy, can not be higher than Ei (Stokes)
 %    omega < 0, neutron gains energy, anti-Stokes
 % Egelstaff, Eq (9.25) p189

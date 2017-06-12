@@ -181,12 +181,14 @@ end % for mode index
 
 % compute the phonon DOS: total and partials. 
 % This requires that the Q range is large enough.
-pos = find(abs(HKL(:,1)) <= .5 & abs(HKL(:,2)) <= .5 & abs(HKL(:,3)) <= .5);
+Qrange1 = (max(HKL(:,1))-min(HKL(:,1)) >= 1 & ...
+           max(HKL(:,2))-min(HKL(:,2)) >= 1 & ...
+           max(HKL(:,3))-min(HKL(:,3)) >= 1);
 
-if (~isfield(this.UserData,'DOS') || isempty(this.UserData.DOS)) && ...
-    numel(pos) >=500
-  disp([ strtok(this.Name) ': Computing the phonon DOS on ' num2str(numel(pos)) ' HKL points.' ]);
-  f = FREQ(pos,:);
+if Qrange1 && (~isfield(this.UserData,'DOS') || isempty(this.UserData.DOS)) && ...
+    size(HKL,1) >=500
+  disp([ strtok(this.Name) ': Computing the phonon DOS on ' num2str(size(HKL,1)) ' HKL points.' ]);
+  f = FREQ;
   index= find(imag(f) == 0);
   [dos_e,omega_e]=hist(f(index),100);
   dos_factor = size(FREQ,2) / trapz(omega_e(:), dos_e(:));
@@ -200,7 +202,7 @@ if (~isfield(this.UserData,'DOS') || isempty(this.UserData.DOS)) && ...
   % partial phonon DOS (per mode)
   pDOS = [];
   for mode=1:size(FREQ,2)
-    f = FREQ(pos,mode);
+    f = FREQ(:,mode);
     index = find(imag(f) == 0);
     dos_e = hist(f(index),omega_e);
     dos_e = dos_e * dos_factor ; % normalize to the total DOS
