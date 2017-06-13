@@ -53,30 +53,6 @@ try:
     has_phonopy = True
 except ImportError:
     pass
-        
-def dict2h5(d, filename='file.hdf5'):
-    """Save a dictionary into an hdf5 file
-    """
-    import h5py # must be installed
-    if isinstance(filename, str):
-        h = h5py.File(filename,'w') # create or truncate
-    elif isinstance(filename, h5py.File) or isinstance(filename, h5py.Group):
-        h = filename
-    else:
-        raise TypeError
-    for k, v in d.items():
-        if v is None:
-            continue
-        elif isinstance(v, list):
-            h.create_dataset(k, data=numpy.array(v), compression="gzip")
-        elif isinstance(v, (numpy.ndarray, numpy.int64, numpy.float64, str, bytes, numpy.float, float, numpy.float32,int)):
-            try:
-                h.create_dataset(k, data=v, compression="gzip")
-            except TypeError:
-                h.create_dataset(k, data=v)
-        elif isinstance(v, dict):
-            grp = h.create_group(k)
-            dict2h5(v, filename=grp)
 
 # ------------------------------------------------------------------------------
 def get_spacegroup(atoms, symprec=1e-5):
