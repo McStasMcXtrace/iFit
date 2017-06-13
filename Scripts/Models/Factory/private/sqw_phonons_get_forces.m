@@ -237,7 +237,7 @@ function [options, sav] = sqw_phonons_get_forces(options, decl, calc)
         seconds   = floor(remaining-hours*3600-minutes*60);
         enddate   = addtodate(now, ceil(remaining), 'second');
         
-        options.status = [ 'ETA ' sprintf('%i:%02i:%02i', hours, minutes, seconds) ', ending on ' datestr(enddate) '. move ' num2str(move) '/' num2str(nb_of_steps) ' [' num2str(round(move*100.0/nb_of_steps)) '%]'];
+        options.status = [ '[' datestr(now) '] ETA ' sprintf('%i:%02i:%02i', hours, minutes, seconds) ', ending on ' datestr(enddate) '. move ' num2str(move) '/' num2str(nb_of_steps) ' [' num2str(round(move*100.0/nb_of_steps)) '%]'];
         disp([ mfilename ': ' options.status ]);
         sqw_phonons_htmlreport('', 'status', options);
       end
