@@ -47,6 +47,7 @@ function h=plot(a, varargin)
 %                 whole or full (do not reduce large object size for plotting)
 %                 figure (open a new figure window)
 %                 replace (replace existing plots for same objects)
+%                 legend (plot legend for objects)
 %         args: additional arguments passed to the plotting method
 %                 
 % output: h: graphics object handles (cell/array)
@@ -86,6 +87,7 @@ if nargin == 1,
 elseif length(varargin) == 1
   if ischar(varargin{1})
     method=varargin{1};
+    args = method;
   elseif isa(varargin{1},'iData')
     b = varargin{1};
     a = [ a(:) ; b(:) ];
@@ -103,13 +105,14 @@ else % multiple plot/methods to render
       vargs{end+1} = varargin{index};
     end
   end
-  varargin =vargs; % now only contains char/iData/iFunc
+  varargin =vargs; % now only contains char/iData/iFunc. 'args' contains the rest
   % split varargin looking for chars
   index=1;  
   while index <= length(varargin)  % parse input arguments and split with char/methods calls
     if ~isempty(varargin{index})
         if ischar(varargin{index})
           method = varargin{index}; % plot stored iData objects with current method
+          method
           h =[ h iData_plot(a, method, args{:}) ];
           a = []; method='';
           hold on
@@ -128,6 +131,19 @@ else % multiple plot/methods to render
   return
 end
 clear varargin
+
+% handle legend stuff
+if iscell(h)
+  try
+    index = strfind(args, 'legend');
+    if iscell(index), index = find(~cellfun(@isempty, index)); end
+  catch
+    index = [];
+  end
+  if ~isempty(index)
+    legend(cell2mat(h));
+  end
+end
 
 % handle iFunc objects
 if ~isempty(funcs)
