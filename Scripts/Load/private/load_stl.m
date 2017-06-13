@@ -96,7 +96,7 @@ if (isfield(a.Data, 'MetaData') && isfield(a.Data.MetaData, 'OFF')) || strncmpi(
 end  
 
 % store the vertices and faces
-if isempty(vertices) && isempty(a.Data.vertices)
+if isempty(vertices) && (~isfield(a.Data,'vertices') || isempty(a.Data.vertices))
   warning([ mfilename ': The loaded data set ' a.Tag ' from ' a.Source ' is not a STL/SLP/OFF/PLY/CFL/EZD data format.' ]); 
   b = a;
   return
