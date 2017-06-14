@@ -51,7 +51,7 @@ function Answer =inputdlg(Prompt, Title, NumLines, DefAns, Resize)
 %
 %  an example using a non-modal dialogue which displays its status/answer:
 %  options.Resize='on';
-%  options.WindowStyle='normal';
+%  options.WindowStyle='non-modal';
 %  options.Interpreter='tex';
 %  options.CloseRequestFcn='disp(getfield(get(gcbf,''UserData''),''Answer'')); delete(gcbf)';
 %
@@ -154,10 +154,14 @@ InputFig=dialog(                     ...
   'HandleVisibility' ,'callback' , ...
   'Color'            ,FigColor   , ...
   'NextPlot'         ,'add'      , ...
-  'WindowStyle'      ,WindowStyle, ...
   'Resize'           ,Resize       ...
   );
 
+if ~strcmp(WindowStyle,'non-modal')
+  set(InputFig, 'WindowStyle'      ,WindowStyle);
+else
+  set(InputFig, 'WindowStyle'      ,'normal');
+end
 if ~isempty(CloseRequestFcn)
   set(InputFig,  'CloseRequestFcn'  ,CloseRequestFcn);
 end
