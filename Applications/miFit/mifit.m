@@ -198,6 +198,10 @@ function mifit_File_Open(handle)
   d = iData('');  % open file selector, and import files
   % push that data onto the List
   mifit_List_Data_push(d);
+
+function mifit_File_Eval(handle)
+  mifit_disp([ '[File_Eval] Type Matlab code in the TextEdit window, and evaluate it from the File menu. ' ]);
+  TextEdit;
   
 function mifit_File_Save(varargin)
 % File/Save: save Data sets and Model parameters into a mifit.mat file
