@@ -90,7 +90,7 @@ end
 % stop if not found
 
 % when nothing given, ask user. a list selector with all found instruments.
-if nargin == 0 || strcmp(instr, 'gui')
+if ischar(instr) && strcmp(instr, 'gui')
   instr= mccode_search_instrument('.instr', options.dir);
   [selection] = listdlg('PromptString', ...
     {'Here are all found instruments on your system.'; ...
@@ -101,6 +101,12 @@ if nargin == 0 || strcmp(instr, 'gui')
     'ListString',instr);
   if isempty(selection),    return; end
   options.instrument = instr{selection};
+elseif ischar(instr) && strcmp(instr,'identify')
+  y = iFunc;
+  y.Name       = [ 'McCode Monte-Carlo neutron/X-ray instrument [' mfilename ']' ];
+  y.Expression = '[]; % dummy code so that it"s not empty p(1)';
+  y.Dimension  = -2; % typical but can be something else, e.g. 1-3D
+  return
 else
   % empty choice: pop-up a file selector
   if isempty(instr), 
@@ -112,12 +118,12 @@ else
     if isequal(filename, 0), return; end
     options.instrument = fullfile(pathname, filename); 
   else
-    if strcmp(instr, 'defaults'), instr='templateDIFF.instr';
-    elseif strcmp(instr, 'identify')
-      y = mccode('defaults');
-      y.Name = [ 'McCode instrument [' mfilename ']' ];
-      return;
-    end
+    if strcmp(instr, 'defaults'), instr='templateDIFF.instr'; end
+%    elseif strcmp(instr, 'identify')
+%      y = mccode('defaults');
+%      y.Name = [ 'McCode instrument [' mfilename ']' ];
+%      return;
+%    end
     options.instrument = mccode_search_instrument(instr, options.dir);
   end
 end
