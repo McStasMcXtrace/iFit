@@ -168,6 +168,8 @@ function h=iFunc_plot_menu(h, a, name)
                   '''About: Model ' name ''',' ...
                   '''custom'',getfield(getframe(gcf),''cdata''), get(gcf,''Colormap''));' ] );
   uimenu(uicm, 'Label', name) ;
+  uimenu(uicm, 'Label','Show model code...', ...
+    'Callback', [ 'helpwin(getfield(get(get(gco,''UIContextMenu''),''UserData''),''Expression''), ''' a.Name ''')' ]);
 
   % make up title string and Properties dialog content
   properties={ [ 'Model ' a.Tag ': ' num2str(ndims(a)) 'D model' ], ...
@@ -175,7 +177,8 @@ function h=iFunc_plot_menu(h, a, name)
                [ 'Description: ' a.Description ]};
 
   % Expression
-  u=cellstr(a); u = u(~strncmp('%', u, 1)); % remove comment lines 
+  u=cellstr(a); ud.Expression = u;
+  u = u(~strncmp('%', u, 1)); % remove comment lines 
   u=[ u{:} ];
   u(~isstrprop(u,'print'))=''; if ~isvector(u), u=u'; end
   if length(u) > 300, u = [ u(1:297) '...' ]; end
