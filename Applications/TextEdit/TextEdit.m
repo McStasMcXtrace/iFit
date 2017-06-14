@@ -103,7 +103,7 @@ end
     function textedit_eval(~,~)
         txt=get(hTxt,'String');
         try
-          evalin('base', txt);
+          evalin('base', txt');
         catch ME
           disp(ME.message)
         end
