@@ -141,7 +141,7 @@ if iscell(h)
     index = [];
   end
   if ~isempty(index)
-    legend(cell2mat(h));
+    legend([ h{:} ]);
   end
 end
 

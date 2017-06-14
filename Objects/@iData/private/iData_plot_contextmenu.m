@@ -11,6 +11,16 @@ if isempty(h), return; end
 tproperties = ud.tproperties;
 mproperties = ud.mproperties;
 
+% get back any previous axis UserData
+ud0 = get(gca, 'UserData');
+if ~isempty(ud0) && isfield(ud0, 'handles')
+  handles = ud0.handles;
+else handles = [];
+end
+
+if iscell(handles), handles = [ handles{:} ]; end
+handles = [ handles h ];
+
 % treat HG2 hggroup which do not properly transfer UIContextMenu settings
 
 % ==============================================================================
@@ -86,9 +96,12 @@ if all(isempty(index))
   uimenu(uicm, 'Separator','on','Label', 'About iFit/iData', 'Callback', ...
     [ 'msgbox(''' version(iData,2) sprintf('. Visit <http://ifit.mccode.org>') ''',''About iFit'',''help'')' ]);
 
-  set(uicm,'UserData', ud);
-  set(h,   'UIContextMenu', uicm);  % flag the presence of the context menu
   ud.contextmenu_object = uicm;
+  ud.handles = handles;
+  
+  set(uicm,'UserData', ud);
+  set(gca, 'UserData', ud);
+  set(h,   'UIContextMenu', uicm);  % flag the presence of the context menu
   
   % set the menu also inside group objects
   try
@@ -143,6 +156,10 @@ if isempty(get(gca,   'UIContextMenu'))
      ]);
   end
   uimenu(uicm, 'Label','Toggle grid', 'Callback','grid');
+  uimenu(uicm, 'Label','Show legend', 'Callback', ...
+    [ 'tmp_cb.g=gca; tmp_cb.ud=get(gca,''UserData'');' ...
+      'if isfield(tmp_cb.ud,''handles''), legend(tmp_cb.ud.handles,''location'',''best''); end' ] ...
+  );
   if ndims(a) >= 2 && ~isfield(ud,'contextual_2d')
     ud.contextual_2d = 1;
   end
@@ -170,9 +187,9 @@ if isempty(get(gca,   'UIContextMenu'))
   uimenu(uicm, 'Separator','on','Label', 'About iFit/iData', ...
     'Callback',[ 'msgbox(''' version(iData,2) sprintf('. Visit <http://ifit.mccode.org>') ''',''About iFit'',''help'')' ]);
 
+  ud.contextmenu_gca = uicm;
   set(gca, 'UserData',      ud);
   set(gca, 'UIContextMenu', uicm);
-  ud.contextmenu_gca = uicm;
 end
 
 % ==============================================================================
