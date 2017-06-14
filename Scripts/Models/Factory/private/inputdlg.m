@@ -1,4 +1,4 @@
-function Answer=inputdlg(Prompt, Title, NumLines, DefAns, Resize)
+function Answer =inputdlg(Prompt, Title, NumLines, DefAns, Resize)
 %INPUTDLG Input dialog box.
 %  ANSWER = INPUTDLG(PROMPT) creates a modal dialog box that returns user
 %  input for multiple prompts in the cell array ANSWER. PROMPT is a cell
@@ -24,9 +24,21 @@ function Answer=inputdlg(Prompt, Title, NumLines, DefAns, Resize)
 %  additional options. If OPTIONS is the string 'on', the dialog is made
 %  resizable. If OPTIONS is a structure, the fields Resize, WindowStyle, 
 %  Interpreter and FontSize are recognized. Resize can be either 'on' or
-%  'off'. WindowStyle can be either 'normal' or 'modal'. Interpreter can be
+%  'off'. WindowStyle can be either 'normal', 'modal' or 'non-modal'. Interpreter can be
 %  either 'none' or 'tex'. If Interpreter is 'tex', the prompt strings are
 %  rendered using LaTeX.
+%
+%  When in 'modal' mode, the dialogue gets all focus, and other Matlab stuff are halted.
+%  When used in 'normal' mode, the dialogue is not preemptive, but execution waits
+%  for the user choice. Other Matlab windows can be used.
+%  When in 'non-modal' mode, the execution continues while the dialogue is displayed.
+%  It is then desirable to set the 'CloseRequestFcn' to an action to occur when 
+%  closing the dialogue. ANSWER is then set to the dialogue window handle. 
+%  A non-modal dialogue is not deleted when clicked 'OK' so that its content can
+%  be retrieved as:
+%     getfield(get(gcbf, 'UserData'),'Answer')  from the CloseRequestFcn. 
+%  It is then desirable to delete the dialogue with:
+%     delete(gcbf)                              from the CloseRequestFcn. 
 %
 %  Examples:
 %
@@ -37,11 +49,16 @@ function Answer=inputdlg(Prompt, Title, NumLines, DefAns, Resize)
 %
 %  answer=inputdlg(prompt,name,numlines,defaultanswer);
 %
+%  an example using a non-modal dialogue which displays its status/answer:
 %  options.Resize='on';
 %  options.WindowStyle='normal';
 %  options.Interpreter='tex';
+%  options.CloseRequestFcn='disp(getfield(get(gcbf,''UserData''),''Answer'')); delete(gcbf)';
 %
-%  answer=inputdlg(prompt,name,numlines,defaultanswer,options);
+%  [h]=inputdlg(prompt,name,numlines,defaultanswer,options);
+%  (...)
+%  getfield(get(h, 'UserData'),'Answer')
+%  delete(h)
 %
 %  See also DIALOG, ERRORDLG, HELPDLG, LISTDLG, MSGBOX,
 %    QUESTDLG, TEXTWRAP, UIWAIT, WARNDLG .
@@ -89,6 +106,7 @@ end
 WindowStyle='modal';
 Interpreter='none';
 FontSize=get(0,'DefaultUicontrolFontSize');
+CloseRequestFcn=[];
 
 Options = struct([]); %#ok
 if nargin==5 && isstruct(Resize)
@@ -98,6 +116,7 @@ if nargin==5 && isstruct(Resize)
   if isfield(Options,'WindowStyle'), WindowStyle=Options.WindowStyle; end
   if isfield(Options,'Interpreter'), Interpreter=Options.Interpreter; end
   if isfield(Options,'FontSize'),    FontSize=Options.FontSize; end
+  if isfield(Options,'CloseRequestFcn'),    CloseRequestFcn=Options.CloseRequestFcn; end
 end
 
 [rw,cl]=size(NumLines);
@@ -139,6 +158,9 @@ InputFig=dialog(                     ...
   'Resize'           ,Resize       ...
   );
 
+if ~isempty(CloseRequestFcn)
+  set(InputFig,  'CloseRequestFcn'  ,CloseRequestFcn);
+end
 
 %%%%%%%%%%%%%%%%%%%%%
 %%% Set Positions %%%
@@ -341,33 +363,89 @@ if ~isempty(EditHandle)
   uicontrol(EditHandle(1));
 end
 
-if ishghandle(InputFig)
-  % Go into uiwait if the figure handle is still valid.
-  % This is mostly the case during regular use.
-  uiwait(InputFig);
+if ~strcmp(WindowStyle,'non-modal')
+  if ishghandle(InputFig)
+    % Go into uiwait if the figure handle is still valid.
+    % This is mostly the case during regular use.
+    uiwait(InputFig);
+  end
+
+  Answer = getAnswer(InputFig, NumQuest, EditHandle);
+  
+  drawnow; % Update the view to remove the closed figure (g1031998)
+else
+  ud.handle     = InputFig;
+  ud.EditHandle = EditHandle;
+  ud.NumQuest   = NumQuest;
+  ud.status     = '';
+  ud.Prompt     = Prompt;
+  set(InputFig, 'UserData',  ud);
+  Answer = InputFig;
 end
 
-% Check handle validity again since we may be out of uiwait because the
-% figure was deleted.
-if ishghandle(InputFig)
+% ------------------------------------------------------------------------------
+
+function Answer = getAnswer(InputFig, NumQuest, EditHandle)
   Answer={};
-  if strcmp(get(InputFig,'UserData'),'OK'),
-    Answer=cell(NumQuest,1);
-    for lp=1:NumQuest,
-      Answer(lp)=get(EditHandle(lp),{'String'});
+  % Check handle validity again since we may be out of uiwait because the
+  % figure was deleted.
+  if ishghandle(InputFig)
+    ud = get(InputFig,'UserData');
+    if isstruct(ud) && isfield(ud,'status')
+      status = ud.status; % non modal mode
+    else 
+      status = ud; end    % modal mode
+    if strcmp(status,'OK')
+      Answer=cell(NumQuest,1);
+      for lp=1:NumQuest,
+        Answer(lp)=get(EditHandle(lp),{'String'});
+      end
     end
+    if ~isstruct(ud), delete(InputFig); 
+    else set(InputFig,'visible','off'); end
   end
-  delete(InputFig);
-else
-  Answer={};
-end
-drawnow; % Update the view to remove the closed figure (g1031998)
+  
+function status = getStatus(obj)
+  ud = get(obj, 'UserData');
+  if isstruct(ud) && isfield(ud,'status')
+      status = ud.status; % non modal mode
+    else 
+      status = ud; end    % modal mode
+      
+function status = setStatus(obj, status)
+  ud = get(obj,'UserData');
+  if isstruct(ud)
+    % non-modal mode
+    ud.status = status;
+    set(obj,'UserData', ud);
+    if strcmp(status,'OK')
+      % transfer dialogue answer to its UserData
+      ud.Answer = getAnswer(ud.handle, ud.NumQuest, ud.EditHandle);
+      set(obj,'UserData', ud);
+      % execute the CloseRequestFcn
+      CloseRequestFcn = get(obj, 'CloseRequestFcn');
+      if ~isempty(CloseRequestFcn)
+        if isa(CloseRequestFcn, 'function_handle')
+          n = nargin(CloseRequestFcn);
+          args = { obj, ud };
+          feval(CloseRequestFcn, args{1:min(2,n)} );
+        elseif ischar(CloseRequestFcn)
+          eval(CloseRequestFcn);
+        end
+      end
+    end
+    
+  else
+    % modal mode 
+    set(obj,'UserData',status); 
+  end
+  
 
 function doFigureKeyPress(obj, evd) %#ok
 switch(evd.Key)
   case {'return','space'}
-    set(gcbf,'UserData','OK');
-    uiresume(gcbf);
+    setStatus(gcbf, 'OK');
+    try; uiresume(gcbf); end
   case {'escape'}
     delete(gcbf);
 end
@@ -375,9 +453,10 @@ end
 function doControlKeyPress(obj, evd) %#ok
 switch(evd.Key)
   case {'return'}
-    if ~strcmp(get(obj,'UserData'),'Cancel')
-      set(gcbf,'UserData','OK');
-      uiresume(gcbf);
+    status = getStatus(gcbf);
+    if ~strcmp(status,'Cancel')
+      setStatus(gcbf, 'OK');
+      try; uiresume(gcbf); end
     else
       delete(gcbf)
     end
@@ -386,9 +465,10 @@ switch(evd.Key)
 end
 
 function doCallback(obj, evd) %#ok
-if ~strcmp(get(obj,'UserData'),'Cancel')
-  set(gcbf,'UserData','OK');
-  uiresume(gcbf);
+status = getStatus(obj);
+if ~strcmp(status,'Cancel')
+  setStatus(gcbf, 'OK');
+  try; uiresume(gcbf); end
 else
   delete(gcbf)
 end
