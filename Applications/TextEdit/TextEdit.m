@@ -19,7 +19,8 @@ centerfig();
 hMA=uimenu(hF,'Label','File');
 uimenu(hMA,'Label','Open...','Callback',@textedit_open);
 uimenu(hMA,'Label','Save...','Callback',@textedit_save);
-uimenu(hMA,'Label','Quit','Callback','delete(gcbf)');
+uimenu(hMA,'Label','Evaluate','Callback',@textedit_eval);
+uimenu(hMA,'Label','Quit','Callback','delete(gcbf)','Separator','on');
 
 % Menu Edit
 hME=uimenu(hF,'Label','Edit');
@@ -96,6 +97,15 @@ end
                 fprintf(fid,'%s\n',txt(i,:));
             end
             fclose(fid);
+        end
+    end
+% Evaluate whole text
+    function textedit_eval(~,~)
+        txt=get(hTxt,'String');
+        try
+          evalin('base', txt);
+        catch ME
+          disp(ME.message)
         end
     end
 
