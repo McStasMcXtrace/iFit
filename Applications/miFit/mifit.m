@@ -200,7 +200,10 @@ function mifit_File_Open(handle)
   mifit_List_Data_push(d);
 
 function mifit_File_Eval(handle)
-  mifit_disp([ '[File_Eval] Type Matlab code in the TextEdit window, and evaluate it from the File menu. ' ]);
+  mifit_disp([ '[File_Eval] Type Matlab code in the TextEdit window, and ' ...
+      'evaluate it from the File menu. You can use the normal Matlab syntax, ' ...
+      'including tests (if ... else ... end), loops (for ... end), but ' ...
+      'commands should all end with ";". To display some result, use disp(variable).']);
   TextEdit;
   
 function mifit_File_Save(varargin)
