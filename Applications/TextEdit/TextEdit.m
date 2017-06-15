@@ -10,17 +10,18 @@ function hF = TextEdit(filename)
 % http://fr.mathworks.com/matlabcentral/fileexchange/47614-textedit
 % Modified by E. Farhi, 2016 into english
 
-hF=figure('MenuBar','none','NumberTitle','off',...
+hF=figure('MenuBar','none',...
     'Name','TextEdit','Resize','on',...
     'Position',[0 0 600 400],'Color','w');
 centerfig();
 
 % Menu File
 hMA=uimenu(hF,'Label','File');
-uimenu(hMA,'Label','Open...','Callback',@textedit_open);
-uimenu(hMA,'Label','Save...','Callback',@textedit_save);
-uimenu(hMA,'Label','Evaluate','Callback',@textedit_eval);
-uimenu(hMA,'Label','Quit','Callback','delete(gcbf)','Separator','on');
+uimenu(hMA,'Label','New','Callback','TextEdit', 'Accelerator','n');
+uimenu(hMA,'Label','Open...','Callback',@textedit_open, 'Accelerator','o');
+uimenu(hMA,'Label','Save...','Callback',@textedit_save, 'Accelerator','s');
+uimenu(hMA,'Label','Evaluate','Callback',@textedit_eval, 'Accelerator','e');
+uimenu(hMA,'Label','Quit','Callback','delete(gcbf)','Separator','on','Accelerator','q');
 
 % Menu Edit
 hME=uimenu(hF,'Label','Edit');
@@ -44,7 +45,7 @@ uimenu(hMT,'Label','Silver','Callback',@textedit_theme);
 
 % Menu Help
 hMA=uimenu(hF,'Label','Help');
-uimenu(hMA,'Label','About...','Callback',@textedit_about);
+uimenu(hMA,'Label','About...','Callback',@textedit_about, 'Accelerator','h');
 
 % Editor 
 hTxt=uicontrol('style','edit','String','',...
