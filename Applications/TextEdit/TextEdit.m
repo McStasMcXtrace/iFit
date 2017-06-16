@@ -190,15 +190,17 @@ end
 
 % Select font color
     function textedit_fontcolor(~,~)
+      if ~isa(hTxt, 'com.mathworks.widgets.SyntaxTextPane')
         clr=uisetcolor([1 1 1]);
         set(hTxt,'ForegroundColor',clr);
+      end
     end
 
 % Select Font
     function textedit_font(~,~)
-        fmod=uisetfont();
-        if ~isequal(fmod,0)
-          if ishandle(hTxt)
+        if ~isa(hTxt, 'com.mathworks.widgets.SyntaxTextPane')
+          fmod=uisetfont();
+          if ~isequal(fmod,0)
             set(hTxt,'FontName',fmod.FontName,...
                 'FontSize',fmod.FontSize,...
                 'FontWeight',fmod.FontWeight,...
@@ -211,7 +213,7 @@ end
 
 % Align text
     function textedit_align(src,~)
-      if ishandle(hTxt)
+      if ~isa(hTxt, 'com.mathworks.widgets.SyntaxTextPane')
         alin=get(src,'Label');
         set(hTxt,'Horizontal',alin);
       end
@@ -227,7 +229,7 @@ end
             'Silver',[0.6 0.6 0.6],[1 1 1]};
         k=strfind(MTEM(:,1),tipo);
         k=cellfun(@isempty,k);
-        if ishandle(hTxt)
+        if ~isa(hTxt, 'com.mathworks.widgets.SyntaxTextPane')
           set(hTxt,'BackgroundColor',MTEM{find(~k),2});
           set(hTxt,'ForegroundColor',MTEM{find(~k),3});
         end

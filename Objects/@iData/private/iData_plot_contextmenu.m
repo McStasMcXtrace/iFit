@@ -19,7 +19,7 @@ else handles = [];
 end
 
 if iscell(handles), handles = [ handles{:} ]; end
-handles = [ handles h ];
+handles = [ handles(:)' h(:)' ];
 
 % treat HG2 hggroup which do not properly transfer UIContextMenu settings
 
