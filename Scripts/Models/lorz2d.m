@@ -13,7 +13,7 @@ function signal=lorz2d(varargin)
 % lorz2d([w1 w2])        creates a model with specified widths
 % lorz2d([ parameters ]) creates a model with specified model parameters
 %
-% Reference: http://en.wikipedia.org/wiki/Lorenztian_function
+% Reference: http://en.wikipedia.org/wiki/Lorentzian_function
 %
 % input:  p: lorz2d model parameters (double)
 %            p = [  'Amplitude' 'Centre_X' 'Center_Y'

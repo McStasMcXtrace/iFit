@@ -21,7 +21,7 @@ function y=gauss(varargin)
 % ex:     y=gauss([1 0 1 1], -10:10); or plot(gauss)
 %
 % Version: $Date$
-% See also iFunc, iFunc/fits, iFunc/plot
+% See also iFunc, iFunc/fits, iFunc/plot, gauss1, lorz
 % (c) E.Farhi, ILL. License: EUPL.
 
 y.Name      = [ 'Gaussian (1D) [' mfilename ']' ];
