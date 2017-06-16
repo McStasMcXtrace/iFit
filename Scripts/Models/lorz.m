@@ -9,7 +9,7 @@ function y=lorz(varargin)
 % lorz(width)          creates a model with a specified width
 % lorz([ parameters ]) creates a model with specified model parameters
 %
-% Reference: http://en.wikipedia.org/wiki/Lorenztian_function
+% Reference: http://en.wikipedia.org/wiki/Lorentzian_function
 %
 % input:  p: Lorentzian model parameters (double)
 %            p = [ Amplitude Centre HalfWidth BackGround ]
