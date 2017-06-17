@@ -29,11 +29,26 @@ if numel(pid) > 1
 end
 
 pid=refresh(pid);
-if isempty(pid.terminationDate) || ~pid.terminationDate
-  pid.terminationDate=now;
-end
 pid.process.destroy;
 pause(1) % wait a little for process to abort
+
+if isempty(pid.terminationDate) || ~pid.terminationDate
+  pid.terminationDate=now;
+  % execute DeleteFcn when defined
+  if ~isempty(pid.DeleteFcn)
+    if isa(pid.DeleteFcn, 'function_handle')
+      n = nargin(pid.DeleteFcn);
+      if n > 0
+        feval(pid.DeleteFcn, pid);
+      else
+        feval(pid.DeleteFcn);
+      end
+    else
+      eval(pid.DeleteFcn);
+    end
+  end
+end
+
 pid.isActive  = 0;
 pid.exitValue = pid.process.exitValue;
 
