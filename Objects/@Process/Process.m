@@ -61,6 +61,8 @@ if nargin == 0
   pid.exitValue=''; % only valid at end of process
   pid.isActive=0;
   pid.UserData=[];
+  pid.Callback='';  % executed eveytime the refresh function is used
+  pid.DeleteFcn=''; % executed when process ends or is aborted
   pid =  class(pid, 'Process');
 else
   % convert input argument into object
@@ -83,6 +85,9 @@ else
   elseif isa(command, 'Process')
     % process: restart a new one
     pid = Process(pid.command); % relaunch a similar process
+  elseif isinteger(command)
+    % search for a running process and use the Timer to monitor it
+    % TODO
   end
   
   % update object

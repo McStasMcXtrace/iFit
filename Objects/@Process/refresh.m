@@ -34,6 +34,19 @@ try
   pid.exitValue = pid.process.exitValue; % will raise error if process still runs
   if isempty(pid.terminationDate) || ~pid.terminationDate
     pid.terminationDate=now;
+    % execute DeleteFcn when defined
+    if ~isempty(pid.DeleteFcn)
+      if isa(pid.DeleteFcn, 'function_handle')
+        n = nargin(pid.DeleteFcn);
+        if n > 0
+          feval(pid.DeleteFcn, pid);
+        else
+          feval(pid.DeleteFcn);
+        end
+      else
+        eval(pid.DeleteFcn);
+      end
+    end
   end
   pid.isActive  = 0;
 catch
@@ -47,6 +60,21 @@ end
 % then retrieve any stdout/stderr content (possibly in Buffer after end of process)
 pid.stdout = strcat(pid.stdout, process_get_output(pid.stdinStream));
 pid.stderr = strcat(pid.stderr, process_get_output(pid.stderrStream));
+
+% execute Callback when active and defined
+if pid.isActive && ~isempty(pid.Callback)
+  n = 0;
+  if isa(pid.Callback, 'function_handle')
+    n = nargin(pid.Callback);
+    if n > 0
+      feval(pid.Callback, pid);
+    else
+      feval(pid.Callback);
+    end
+  else
+    eval(pid.Callback);
+  end
+end
   
 if isa(pid, 'Process') && nargout == 0 && ~isempty(inputname(1))
   assignin('caller', inputname(1), pid);
