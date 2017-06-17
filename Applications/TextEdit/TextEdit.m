@@ -1,6 +1,12 @@
 function hF = TextEdit(filename)
-% Simpl Text editor
-% 
+% Simple Text editor
+%
+%  TextEdit
+%    Open an empty editor window
+%  TextEdit(filename)
+%    Open the file content inside a new editor window
+% TextEdit(string)
+%    Display the string inside a new Editor window
 %
 % $ Por: Jorge De Los Santos $
 % $ E-mail: delossantosmfq@gmail.com $
@@ -28,20 +34,6 @@ hME=uimenu(hF,'Label','Edit');
 uimenu(hME,'Label','Cut','Callback',@textedit_cut);
 uimenu(hME,'Label','Copy','Callback',@textedit_copy);
 uimenu(hME,'Label','Paste','Callback',@textedit_paste);
-uimenu(hME,'Label','Change Font Color...','Callback',@textedit_fontcolor, 'Separator','on');
-uimenu(hME,'Label','Change Font...','Callback',@textedit_font);
-h_AT=uimenu(hME,'Label','Align');
-uimenu(h_AT,'Label','Left','Callback',@textedit_align);
-uimenu(h_AT,'Label','Right','Callback',@textedit_align);
-uimenu(h_AT,'Label','Center','Callback',@textedit_align);
-
-% Theme selection
-hMT=uimenu(hF,'Label','Layout');
-uimenu(hMT,'Label','Blue','Callback',@textedit_theme);
-uimenu(hMT,'Label','Classic','Callback',@textedit_theme);
-uimenu(hMT,'Label','Cool','Callback',@textedit_theme);
-uimenu(hMT,'Label','Dark','Callback',@textedit_theme);
-uimenu(hMT,'Label','Silver','Callback',@textedit_theme);
 
 % Menu Help
 hMA=uimenu(hF,'Label','Help');
@@ -61,6 +53,9 @@ try
   % set the editor panel to whole figure, normalised.
   set(hContainer,'Units',   'normalized')
   set(hContainer,'Position',[0 0 1 1])
+  
+  % more menu stuff
+  uimenu(hME,'Label','Select All', 'Callback','tmp_hTxt=get(gcbf,''UserData''); tmp_hTxt.selectAll; clear tmp_hTxt;')
 catch
   % fallback Editor 
   hTxt=uicontrol('style','edit','String','',...
@@ -68,13 +63,39 @@ catch
     'BackgroundColor','w','Horizontal','left',...
     'Tag','TextEdit_Text', ...
     'Max',1000,'FontSize',10,'FontName','Arial');
+    
+  % Align menu
+  h_AT=uimenu(hME,'Label','Align');
+  uimenu(h_AT,'Label','Left','Callback',@textedit_align);
+  uimenu(h_AT,'Label','Right','Callback',@textedit_align);
+  uimenu(h_AT,'Label','Center','Callback',@textedit_align);
+
+  % Theme selection
+  hMT=uimenu(hF,'Label','Layout');
+  uimenu(hMT,'Label','Blue','Callback',@textedit_theme);
+  uimenu(hMT,'Label','Classic','Callback',@textedit_theme);
+  uimenu(hMT,'Label','Cool','Callback',@textedit_theme);
+  uimenu(hMT,'Label','Dark','Callback',@textedit_theme);
+  uimenu(hMT,'Label','Silver','Callback',@textedit_theme);
+  
+  % more in Edit menu
+  uimenu(hME,'Label','Change Font Color...','Callback',@textedit_fontcolor, 'Separator','on');
+  uimenu(hME,'Label','Change Font...','Callback',@textedit_font);
 end
 
 % protect figure from over-plotting
 set(hF,'HandleVisibility','callback','UserData',hTxt);
 
+if nargin && iscellstr(filename)
+  filename = char(filename);
+end
+
 if nargin && ischar(filename)
-  textedit_load(filename);
+  if size(filename,1) == 1 && ~isempty(dir(filename))
+    textedit_load(filename);
+  else
+    textedit_setText(char(filename))
+  end
 end
 
 % - - - - - - - - - - - - - Functions - - - - - - - - - - - - - - - - - - 
@@ -106,8 +127,10 @@ end
 % Save content into a text file
     function textedit_save(~,~)
         txt = textedit_getText(hTxt);
-        [filename, pathname] = uiputfile({'*.txt','Text files (*.txt)'; ...
-        '*.*','All files'}, 'TextEdit: Save text as:');
+        [filename, pathname] = uiputfile( ...
+          {'*.txt','Text files (*.txt)'; ...
+           '*.m','Matlab script (*.m)'; ...
+           '*.*','All files'}, 'TextEdit: Save as:');
         if isequal(filename,0) || isequal(pathname,0)
             return;
         else
@@ -121,9 +144,18 @@ end
             fclose(fid);
         end
     end
+    
 % Evaluate whole text
     function textedit_eval(~,~)
-        txt = char(textedit_getText(hTxt));
+        % get Selected text
+        if isa(hTxt,'com.mathworks.widgets.SyntaxTextPane')
+          txt = char(hTxt.getSelectedText);
+        else
+          txt = [];
+        end
+        if isempty(txt)
+          txt = char(textedit_getText(hTxt));
+        end
         disp([ '% ' mfilename ': Evaluating code: ' datestr(now) ])
         disp(txt)
         disp([ '% ' mfilename ': end of code to evaluate.' ])
@@ -261,7 +293,7 @@ end
     end
 end
 
-% set/get etxt from both Java or Matlab-standard uicontrol
+% set/get text from both Java or Matlab-standard uicontrol
 function txt=textedit_getText(hTxt)
   if isa(hTxt,'com.mathworks.widgets.SyntaxTextPane')
     txt=hTxt.getText;
