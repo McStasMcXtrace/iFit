@@ -138,7 +138,7 @@ elseif length(varargin) > 1 % import data to create the object array
     a = [ a iFunc(varargin{index}) ];
   end
   return
-elseif isa(this, 'iData')
+elseif isa(varargin{1}, 'iData')
   % create a model from a fixed data set
   
   % create parameters:

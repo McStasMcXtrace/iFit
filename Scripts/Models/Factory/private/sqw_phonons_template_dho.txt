@@ -6,9 +6,7 @@ function [signal, this] = sqw_phonons_template_dho(HKL, t, FREQ, POLAR, is_event
 %            H. Schober, J Neut. Res. 17 (2014) 109
 
 % size of 'w' is [ numel(x) numel(t) ]. the energy for which we evaluate the model
-if is_event, w = t(:);
-else         w = ones(size(FREQ,1),1) * t(:)'; end
-signal               = zeros(size(w));
+
 this.UserData.maxFreq= max(FREQ); % for each mode
 nt = numel(t);
 % store when not too large
@@ -29,6 +27,7 @@ if wrong_w,
          ' negative/imaginary phonon frequencies (' ...
          num2str(wrong_w*100/numel(FREQ)) '% of total) in ' this.Name ]); 
 end
+clear wrong_w
 
 % we compute the Q vector in [Angs-1]. Search for the B=rlu2cartesian matrix
 UD = this.UserData; B=[];
@@ -105,6 +104,10 @@ if ~isempty(b_coh)
   this.UserData.properties.sigma_coh = 4*pi.*b_coh.*b_coh/100;
 end
 
+if is_event, w = t(:);
+else         w = ones(size(FREQ,1),1) * t(:)'; end
+signal               = zeros(size(w));
+
 % the Bose factor is negative for w<0, positive for w>0
 % (n+1) converges to 0 for w -> -Inf, and to 1 for w-> +Inf. It diverges at w=0
 if ~isempty(T) && T > 0, 
@@ -178,6 +181,7 @@ for index=1:size(FREQ,2)  % loop on modes
   % sum-up all contributions to signal: Fak Dorner 1997 Eq (2)
   signal = signal+ (n+1).*ZQ*4.*w.*sqrt(Gamma2)/pi ./ ((w.^2-W02).^2 + 4*w.^2.*Gamma2);
 end % for mode index
+clear POLAR W02 Gamma2 ZQ n w
 
 % compute the phonon DOS: total and partials. 
 % This requires that the Q range is large enough.
@@ -214,10 +218,12 @@ if Qrange1 && (~isfield(this.UserData,'DOS') || isempty(this.UserData.DOS)) && .
     DOS.Error = 0;
     pDOS = [ pDOS DOS ];
   end
+  clear f index dos_e omega_e dos_factor DOS
   this.UserData.DOS_partials=pDOS;
+  clear pDOS
 end
 
-clear HKL
+clear HKL FREQ Qrange1
 
 % Amplitude
 if Amplitude
