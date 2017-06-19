@@ -339,6 +339,20 @@ while ~isempty(varargin)
       set(ResLibCal_fig('View_ResolutionABC'), 'Checked', 'off');
       set(ResLibCal_fig('View_ResolutionLattice'), 'Checked', 'on');
       ResLibCal_UpdateViews([],'force');
+    case {'view_resolutionhv','hv'}
+      % select the 2nd axis. First is always a* or A (1)
+      % second can be selected here as index 2 or 3 in 2D 3D view.
+      % then the resolutionxyz=Q below should select the other one
+      status = get(ResLibCal_fig('View_ResolutionHV'), 'Checked');
+      if strcmp(status,'on'), 
+        status = 'off'; 
+        set(ResLibCal_fig('View_ResolutionHV'), 'Label','Resolution: horizontal in [Qx,Qy]');
+      else 
+        status = 'on'; 
+        set(ResLibCal_fig('View_ResolutionHV'), 'Label','Resolution: vertical in [Qx,Qz]');
+      end
+      set(ResLibCal_fig('View_ResolutionHV'), 'Checked', status);
+      ResLibCal_UpdateViews([],'force');
     case {'view_resolutionxyz','zw'}
       status = get(ResLibCal_fig('View_ResolutionXYZ'), 'Checked');
       if strcmp(status,'on'), 
@@ -346,7 +360,7 @@ while ~isempty(varargin)
         set(ResLibCal_fig('View_ResolutionXYZ'), 'Label','Resolution: vertical in [E]');
       else 
         status = 'on'; 
-        set(ResLibCal_fig('View_ResolutionXYZ'), 'Label','Resolution: vertical in [Qz]');
+        set(ResLibCal_fig('View_ResolutionXYZ'), 'Label','Resolution: vertical in [Q]');
       end
       set(ResLibCal_fig('View_ResolutionXYZ'), 'Checked', status);
       ResLibCal_UpdateViews([],'force');
@@ -739,10 +753,12 @@ function out = ResLibCal_UpdateResolution2(out)
 	elseif strcmp(abc, 'on') modev='abc';
 	elseif strcmp(lat, 'on') modev='lattice'; end
   qz  = get(ResLibCal_fig('View_ResolutionXYZ'), 'Checked');
+  qyz = get(ResLibCal_fig('View_ResolutionHV'), 'Checked');
   MC  = get(ResLibCal_fig('View_Resolution_Cloud'), 'Checked');
-  if strcmp(qz, 'on'),  qz='qz'; end
+  if strcmp(qz, 'on'),  qz='qz'; else  qz = 'en'; end
+  if strcmp(qyz,'on'), qyz='xz'; else qyz = 'xy'; end
   if strcmp(MC, 'on'),  MC='cloud'; end
-  out = ResLibCal_Plot2D(out, [ modev ' ' qz ' ' MC ]);
+  out = ResLibCal_Plot2D(out, [ modev ' ' qyz ' ' qz ' ' MC ]);
 
 % ==============================================================================
 function out = ResLibCal_UpdateResolution3(out)
@@ -765,10 +781,12 @@ function out = ResLibCal_UpdateResolution3(out)
 	elseif strcmp(lat, 'on') modev='lattice'; end
 	
   qz  = get(ResLibCal_fig('View_ResolutionXYZ'), 'Checked');
+  qyz = get(ResLibCal_fig('View_ResolutionHV'), 'Checked');
   MC  = get(ResLibCal_fig('View_Resolution_Cloud'), 'Checked');
-  if strcmp(qz, 'on'),  qz='qz'; end
+  if strcmp(qz, 'on'),  qz='qz'; else  qz = 'en'; end
+  if strcmp(qyz,'on'), qyz='xz'; else qyz = 'xy'; end
   if strcmp(MC, 'on'),  MC='cloud'; end
-  out = ResLibCal_Plot3D(out, [ modev ' ' qz ' ' MC ]);
+  out = ResLibCal_Plot3D(out, [ modev ' ' qyz ' ' qz ' ' MC ]);
 
 % ==============================================================================
 function ResLibCal_UpdateTauPopup

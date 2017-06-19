@@ -63,37 +63,46 @@ for index=1:numel(resolutions)
   
   if isempty(strfind(modev,'cloud')), cloud=[]; end
   
+  % reduce dimensionality of the resolution matrix. Get axes to keep/remove.
+  if ~isempty(strfind(modev,'qz'))
+    toremove = 4; tokeep=[1 2 3];
+  elseif ~isempty(strfind(modev,'xy'))
+    toremove = 3; tokeep=[1 2 4];
+  else  % xz
+    toremove = 2; tokeep=[1 3 4];
+  end
+  
   % plot the 3 subplots for projections
   % each plot is shown as a gauss2d, contour.
   % add context menus accordingly
   % arguments: Subpanel index, NP(ix,iy), 
   [dummy, NP2] = rc_int(4,1, NP); % this function strips out the row=col=4, and corrects determinant
                                   % using the cofactor rule.
-  [dummy, NP2] = rc_int(3,1, NP2);
+  [dummy, NP2] = rc_int(3,1, NP2);% left with [1 2]
   ResLibCal_Proj_plot2D(1, 1,2, NP2, Labels, FrameStr, Units, 'xy', cloud, centre, max_points);  % xy
   if index == 1, title([ 'ResLibCal ' datestr(now) ]); end
   if index < numel(resolutions), hold on; else hold off; end
   % if numel(resolutions) > 1 && index==1, colorbar('North'); end
   
-  if ~isempty(strfind(modev,'qz'))
+  if ~isempty(strfind(modev,'qz'))  % we remove axis 4 in all cases
     [dummy, NP2] = rc_int(4,1, NP);
-    [dummy, NP2] = rc_int(2,1, NP2);
+    [dummy, NP2] = rc_int(2,1, NP2);  % left with [1 3]
     ResLibCal_Proj_plot2D(2, 1,3, NP2, Labels, FrameStr, Units, 'xz', cloud, centre, max_points);  % xz
     if index == 1, title('Vertical Q_z resolution'); end
     if index < numel(resolutions), hold on; else hold off; end
     
     [dummy, NP2] = rc_int(4,1, NP);
-    [dummy, NP2] = rc_int(1,1, NP2);
+    [dummy, NP2] = rc_int(1,1, NP2);  % left with [2 3]
     ResLibCal_Proj_plot2D(3, 2,3, NP2, Labels, FrameStr, Units, 'yz', cloud, centre, max_points);  % yz
-  else
+  else                              % we remove axis 3 in all cases
     [dummy, NP2] = rc_int(3,1, NP);
-    [dummy, NP2] = rc_int(2,1, NP2);
+    [dummy, NP2] = rc_int(2,1, NP2);  % left with [1 4]
     ResLibCal_Proj_plot2D(2, 1,4, NP2, Labels, FrameStr, Units, 'xe', cloud, centre, max_points);  % xe
     if index == 1, title('Energy resolution'); end
     if index < numel(resolutions), hold on; else hold off; end
     
     [dummy, NP2] = rc_int(3,1, NP);
-    [dummy, NP2] = rc_int(1,1, NP2);
+    [dummy, NP2] = rc_int(1,1, NP2);  % left with [2 4]
     ResLibCal_Proj_plot2D(3, 2,4, NP2, Labels, FrameStr, Units, 'ye', cloud, centre, max_points);  % ye
   end
   if index == 1, title(EXP.method); end
