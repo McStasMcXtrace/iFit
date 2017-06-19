@@ -57,7 +57,7 @@ else
   
   % test for PhonoPy
   [status.phonopy, result] = system([ precmd status.python ' -c "from phonopy import Phonopy"' ]);
-  if any(st == 0:2)
+  if any(st == 0)
     status.phonopy = 'phonopy';
     disp([ '  PhonoPy         (https://atztogo.github.io) as "' status.phonopy '"' ]);
   else
