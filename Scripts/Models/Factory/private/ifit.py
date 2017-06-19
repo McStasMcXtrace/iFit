@@ -838,10 +838,6 @@ def phonopy_run(phonon, single=True, filename='FORCE_SETS'):
 
     """
     
-    # default to pure ASE when PhonoPy is not available
-    if not has_phonopy:
-        return phonons_run(phonon, single=single, difference='forward')
-    
     from phonopy import Phonopy
     from phonopy.structure.atoms import Atoms as PAtoms
     from phonopy.structure.atoms import PhonopyAtoms
@@ -1033,11 +1029,6 @@ def phonopy_band_structure(phonpy, path_kc, modes=False):
         modes: bool
             Returns both frequencies and modes when True.
     """
-    
-    # default to pure ASE when PhonoPy is not available
-    if not has_phonopy:
-        return phonon_read(phonpy, method='Frederiksen', symmetrize=3, acoustic=True,
-         cutoff=None, born=False, **kwargs)
          
     D = phonpy._dynamical_matrix
     num_atom     = len(D._p2s_map)
