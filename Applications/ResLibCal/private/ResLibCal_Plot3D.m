@@ -75,19 +75,19 @@ for index=1:numel(resolutions)
   
   if isempty(strfind(modev,'cloud')), cloud=[]; end
   
-  % reduce dimensionality of the resolution mtrix
+  % reduce dimensionality of the resolution matrix. Get axes to keep/remove.
   if ~isempty(strfind(modev,'qz'))
-    [dummy, NP] = rc_int(4,1, NP); % this function strips out the row=col=4, and corrects determinant
-                                   % using the cofactor rule.
-    ResLibCal_Proj_plot3D([1 2 3], NP, Labels, FrameStr, Units, cloud, centre, max_points);  % xyz
-    if index == 1, title([ 'Resolution in ' Labels{1:3} ' - ' out.EXP.method ]); end
-    if index < numel(resolutions), hold on; else hold off; end
-  else
-    [dummy, NP] = rc_int(3,1, NP);
-    ResLibCal_Proj_plot3D([1 2 4], NP, Labels, FrameStr, Units, cloud, centre, max_points);  % xye
-    if index == 1, title([ 'Resolution in ' Labels{[1 2 4]} ' - ' out.EXP.method ]); end
-    if index < numel(resolutions), hold on; else hold off; end
+    toremove = 4; tokeep=[1 2 3];
+  elseif ~isempty(strfind(modev,'xy'))
+    toremove = 3; tokeep=[1 2 4];
+  else  % xz
+    toremove = 2; tokeep=[1 3 4];
   end
+  
+  [dummy, NP] = rc_int(toremove,1, NP);
+  ResLibCal_Proj_plot3D(tokeep, NP, Labels, FrameStr, Units, cloud, centre, max_points);  % xye
+  if index == 1, title([ 'Resolution in ' Labels{tokeep} ' - ' out.EXP.method ]); end
+  if index < numel(resolutions), hold on; else hold off; end
   
 end % for
 
