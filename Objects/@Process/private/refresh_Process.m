@@ -1,5 +1,5 @@
 function refresh_Process(pid)
-
+  % check if a Process is still running. Collects its stdout/stderr.
   if ~isvalid(pid), return; end
   UserData = get(pid, 'UserData');
   try
@@ -33,6 +33,8 @@ function refresh_Process(pid)
     UserData.stdinStream = [];
     UserData.stdoutStream= [];
   end
+  % compute Duration
+  UserData.Duration = etime(clock, datevec(UserData.creationDate));
 
   status = UserData.isActive;
   

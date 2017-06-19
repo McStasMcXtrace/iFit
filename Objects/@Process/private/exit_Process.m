@@ -1,5 +1,5 @@
 function ex=exit_Process(pid, action)
-  
+  % force to quit a running Process.
   if nargin < 2, action='end'; end
   
   if ~isvalid(pid), ex=nan; return; end
@@ -30,7 +30,7 @@ function ex=exit_Process(pid, action)
   UserData.process = [];
   UserData.isActive  = 0;
   % compute Duration
-  UserData.Duration = etime(datevec(UserData.terminationDate), datevec(UserData.creationDate));
+  UserData.Duration = etime(clock, datevec(UserData.creationDate));
   set(pid, 'UserData',UserData);
   
   refresh_Process(pid); % flush stdout/stderr

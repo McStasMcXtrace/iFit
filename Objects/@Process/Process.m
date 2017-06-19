@@ -10,7 +10,7 @@ classdef Process < timer
     function pid = Process(command, varargin)
       % Process(command): starts a system command
       % 
-      % pid = Process('system command')
+      % pid = Process('command arguments ...')
       %
       % The Process class replaces the 'system' command. but is started asynchronously.
       % Matlab does not wait for the end of the Process to get back to interactive mode.
@@ -31,6 +31,7 @@ classdef Process < timer
       %       in 'kill','timeout','end', or 'refresh'. 
       %     Example @(p,a)disp([ 'Process ' p.Name ': event ' a ])
       %   * the name of a function which takes none to 2 arguments. Same as above.
+      % when a callback has a non-zero return value, it stops the Process.
       %
       % methods:
       %   refresh(pid)  force the pid to be refreshed, i.e check if it is running
@@ -44,6 +45,9 @@ classdef Process < timer
       %   exit(pid)     kill the Process (stop it). same as stop(pid)
       %   delete(pid)   kill the Process and delete it from memory.
       %   waitfor(pid)  wait for the Process to end normally or on TimeOut.
+      %
+      %   Copyright: Licensed under the BSD
+      %              E. Farhi, ILL, France <farhi@ill.fr> Aug 2012, http://ifit.mccode.org
       
       % should add: Display = 1 => show stdout while it comes
       if nargin == 0, command = ''; end

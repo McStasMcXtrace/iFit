@@ -24,7 +24,7 @@ function d = display_Process(s_in, name)
     d = [ d sprintf(' array [%s]',num2str(size(s_in))) ];
   end
   if isdeployed || ~usejava('jvm') || ~usejava('desktop'), id='Process';
-  else           id=[ '<a href="matlab:doc Process">Process</a> (<a href="matlab:methods Process">methods</a>,<a href="matlab:help Process">doc</a>,<a href="matlab:disp(' iname ');">more...</a>)' ];
+  else           id=[ '<a href="matlab:doc Process">Process</a> (<a href="matlab:methods Process">methods</a>,<a href="matlab:help Process">doc</a>,<a href="matlab:stdout(' iname ')">stdout</a>,<a href="matlab:exit(' iname ')">exit</a>,<a href="matlab:disp(' iname ');">more...</a>)' ];
   end
   if length(s_in) == 0
       d = [ d sprintf(' %s: empty\n',id) ];
