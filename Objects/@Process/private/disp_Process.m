@@ -24,7 +24,7 @@ function disp_Process(pid, name)
       assignin('caller', inputname(1), pid);
     end
     if isdeployed || ~usejava('jvm'), id='Process';
-    else           id='<a href="matlab:doc Process">Process</a> (<a href="matlab:methods Process">methods</a>,<a href="matlab:help Process">doc</a>)';
+    else           id=[ '<a href="matlab:doc Process">Process</a> (<a href="matlab:methods Process">methods</a>,<a href="matlab:help Process">doc</a>,<a href="matlab:stdout(' iname ')">stdout</a>,<a href="matlab:exit(' iname ')">exit</a>)' ];
     end
     if ~isvalid(pid), return; end
     UserData = get(pid, 'UserData');
@@ -34,6 +34,7 @@ function disp_Process(pid, name)
     s.Command      = UserData.command;
     s.creationDate = UserData.creationDate;
     s.terminationDate = UserData.terminationDate;
+    s.exitValue    = UserData.exitValue;
     stdout = UserData.stdout;
     stderr = UserData.stderr;
     
@@ -42,9 +43,17 @@ function disp_Process(pid, name)
     fprintf(1, '            process: %s\n', char(UserData.process));
     disp(s);
     % now display stdout/stderr tail
-    fprintf(1, '             stdout: [%s char]\n', num2str(numel(stdout)));
+    if isdeployed || ~usejava('jvm') || ~usejava('desktop')
+      fprintf(1, '             stdout: [%s char]\n', num2str(numel(stdout)));
+    else
+      fprintf(1, ['             <a href="matlab:stdout(' iname ')">stdout</a>: [%s char]\n'], num2str(numel(stdout)));
+    end
     if numel(stdout), fprintf(1, Process_disp_out(stdout)); end
-    fprintf(1, '             stderr: [%s char]\n', num2str(numel(stderr)));
+    if isdeployed || ~usejava('jvm') || ~usejava('desktop')
+      fprintf(1, '             stderr: [%s char]\n', num2str(numel(stderr)));
+    else
+      fprintf(1,[ '             <a href="matlab:stderr(' iname ')">stderr</a>: [%s char]\n'], num2str(numel(stdout)));
+    end
     if numel(stderr), fprintf(1, Process_disp_out(stderr)); end
   end
 end

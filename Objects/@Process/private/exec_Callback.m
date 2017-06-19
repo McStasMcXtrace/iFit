@@ -1,4 +1,5 @@
 function istop = exec_Callback(pid, Callback, action)
+  % ececutes a Callback in a reduced environment.
   istop = 0; % failed ExternalFcns ignored
   if ~isempty(Callback) && (ischar(Callback) || isa(Callback, 'function_handle'))
     if isa(Callback, 'function_handle')
@@ -12,15 +13,26 @@ function istop = exec_Callback(pid, Callback, action)
       vars = { pid, action };
     end
     try
-      if ~isnan(nout) && nout > 0
-        istop = feval(Callback, vars{1:nin});
+      if ~isnan(nout) && nout
+        try
+          istop = feval(Callback, vars{1:nin});
+        catch
+          feval(Callback, vars{1:nin});
+        end
       elseif ~isnan(nout)
         feval(Callback, vars{1:nin});
       else
-        eval(Callback);
+        try
+          istop = eval(Callback);
+        catch
+          eval(Callback);
+        end
       end
     catch ME
       disp(getReport(ME))
+    end
+    if istop
+      exit_Process(pid, 'kill');
     end
   end % Callback
 end
