@@ -2,6 +2,12 @@ function ex=exit_Process(pid, action)
   % force to quit a running Process.
   if nargin < 2, action='end'; end
   
+  if length(pid) > 1
+    ex = nan;
+    % can not kill an array.
+    return
+  end
+  
   if ~isvalid(pid), ex=nan; return; end
   
   UserData = get(pid, 'UserData');
