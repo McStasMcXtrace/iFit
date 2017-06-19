@@ -187,6 +187,7 @@ case {'plus','minus','combine'}
   clear i1 i2
   
 case {'times','rdivide', 'ldivide','mtimes','mrdivide','mldivide','mpower','conv','xcorr','deconv'}
+  % Signal
   if strcmp(op, 'conv') || strcmp(op, 'deconv') || strcmp(op, 'xcorr')
     s3 = fconv(y1, y2, varargin{:});  % pass additional arguments to fconv
     if nargin == 4
@@ -198,6 +199,8 @@ case {'times','rdivide', 'ldivide','mtimes','mrdivide','mldivide','mpower','conv
     s3 = genop(op, y1, y2);
   end
   
+  % Error = s3*sqrt(e1/s1^2+e2/s2^2)
+  % when e.g. s1 is scalar, e1 is 0 then s3=s1*s2, and the e3 error should just be s1*e2
   try
     if all(s1(:)==0) e1s1=0; else e1s1 = genop(@rdivide,e1,s1).^2; e1s1(find(s1 == 0)) = 0; end
     if all(s2(:)==0) e2s2=0; else e2s2 = genop(@rdivide,e2,s2).^2; e2s2(find(s2 == 0)) = 0; end
@@ -206,6 +209,7 @@ case {'times','rdivide', 'ldivide','mtimes','mrdivide','mldivide','mpower','conv
     e3=[];  % set to sqrt(Signal) (default)
   end
   
+  % Monitor
   if     all(m1==0), m3 = m2; 
   elseif all(m2==0), m3 = m1; 
   elseif p1
