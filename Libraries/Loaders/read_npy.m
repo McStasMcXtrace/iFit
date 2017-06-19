@@ -25,6 +25,7 @@ s = [];
 
 % in private dir.
 [s.shape, s.dataType, s.fortranOrder, s.littleEndian, s.totalHeaderLength, s.npyVersion] = readNPYheader(filename);
+if isempty(s.shape), s=[]; return; end
 
 if s.littleEndian
     fid = fopen(filename, 'r', 'l');

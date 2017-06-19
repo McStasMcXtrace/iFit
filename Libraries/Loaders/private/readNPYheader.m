@@ -9,14 +9,15 @@ function [arrayShape, dataType, fortranOrder, littleEndian, totalHeaderLength, n
 %
 % Based on spec at http://docs.scipy.org/doc/numpy-dev/neps/npy-format.html
 
+arrayShape=[]; dataType=[]; fortranOrder=[]; littleEndian=[]; totalHeaderLength=[]; npyVersion=[];
 fid = fopen(filename);
 
 % verify that the file exists
 if (fid == -1)
     if ~isempty(dir(filename))
-        error('Permission denied: %s', filename);
+        fprintf(1,'Permission denied: %s', filename);
     else
-        error('File not found: %s', filename);
+        fprintf(1,'File not found: %s', filename);
     end
 end
 
@@ -28,8 +29,9 @@ try
     
     magicString = fread(fid, [1 6], 'char=>char');
     
-    if ~strcmp(magicString, '“NUMPY')
-        error('readNPY:NotNUMPYFile', 'Error: This file does not appear to be NUMPY format based on the header.');
+    if ~strcmp(magicString, 'ï¿½NUMPY')
+        return
+        % error('readNPY:NotNUMPYFile', 'Error: This file does not appear to be NUMPY format based on the header.');
     end
     
     majorVersion = fread(fid, [1 1], 'uint8=>uint8');
