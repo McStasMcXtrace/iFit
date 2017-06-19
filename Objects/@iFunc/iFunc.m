@@ -138,6 +138,15 @@ elseif length(varargin) > 1 % import data to create the object array
     a = [ a iFunc(varargin{index}) ];
   end
   return
+elseif isa(this, 'iData')
+  % create a model from a fixed data set
+  
+  % create parameters:
+  % Intensity scaling
+  % a Scaling and Offset parameter per axis
+  %
+  % the Expression should interpolate the iData on axes x,y,z,...
+  
 else   % import data to create a single object
   % can be a structure, or an expression, or a function_handle
   this = varargin{1};
@@ -163,7 +172,7 @@ else   % import data to create a single object
         end
       end
     end
-    if isempty(a)
+    if isempty(a) % other: JSON, YAML, XML will generate a structure when read
       a = iFunc(iLoad(this));
     end
   elseif ischar(this) % ----------------------------------------------------------
