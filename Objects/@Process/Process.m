@@ -42,7 +42,7 @@ classdef Process < timer
       %   pid           display short Process information. Same as display(pid).
       %   stdout(pid)   get the stdout stream from the Process (normal output).
       %   stderr(pid)   get the stderr stream from the Process (errors).
-      %   exit(pid)     kill the Process (stop it). same as stop(pid)
+      %   exit(pid)     kill the Process (stop it).
       %   delete(pid)   kill the Process and delete it from memory.
       %   waitfor(pid)  wait for the Process to end normally or on TimeOut.
       %
@@ -61,7 +61,7 @@ classdef Process < timer
       % Default properties
       UserData.process = [];       % Java RunTime object
       UserData.command = '';       % the command associated to the process
-      UserData.creationDate = [];  % Creation date (start)
+      UserData.creationDate = now;  % Creation date (start)
       UserData.terminationDate  = []; % end date
       UserData.stdinStream   ='';
       UserData.stdout=[];          % stores the stdout (yes!) from the process
@@ -146,7 +146,7 @@ classdef Process < timer
     % --------------------------------------------------------------------------
     function ex = exit(pid)
       % Process/exit(pid): end/kill a running Process and/or return its exit value.
-      if isvalid(pid) && strcmp(get(pid,'Running'),'on')
+      if length(pid) == 1 && isvalid(pid) && any(strcmp(get(pid,'Running'),'on'))
         refresh_Process(pid);
       end
   
@@ -159,6 +159,7 @@ classdef Process < timer
       % Process/delete(pid): completely remove the Process from memoty. 
       % The Process is killed. Its stdout/err/value are lost.
       
+      if length(pid) ~= 1, return; end 
       if isvalid(pid) && strcmp(get(pid,'Running'),'on')
         exit(pid);
       end
@@ -209,17 +210,6 @@ classdef Process < timer
       UserData = get(pid, 'UserData');
       UserData.Monitor = 1;
       set(pid, 'UserData',UserData);
-    end
-    
-    function disp(pid)
-      % Process/disp(pid): display the full Process information.
-      disp_Process(pid, inputname(1));
-    end
-    
-    function display(pid)
-      % Process/display(pid): display the short Process information.
-      if ~isvalid(pid), return; end
-      display_Process(pid, inputname(1));
     end
     
     function waitfor(pid)

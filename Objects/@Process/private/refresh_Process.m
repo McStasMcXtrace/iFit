@@ -1,5 +1,10 @@
 function refresh_Process(pid)
   % check if a Process is still running. Collects its stdout/stderr.
+  if length(pid) > 1
+    % can not refresh an array.
+    return
+  end
+  
   if ~isvalid(pid), return; end
   UserData = get(pid, 'UserData');
   try
