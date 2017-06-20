@@ -81,7 +81,7 @@ case 'ABINIT'
     options.ixc = 1; % the XC is stored in the PAWXML (libXC)
   end
   if isfield(options,'pawecutdg') && options.pawecutdg > 0
-    calc = [ calc sprintf(', usepaw=1, pawecutdg=%g', options.pawecutdg/Ha) ];
+    calc = [ calc sprintf(', pawecutdg=%g', options.pawecutdg/Ha) ];
   end
   if isfield(options,'tolvrs') && options.tolvrs > 0
     calc = [ calc sprintf(', tolvrs=%g', options.tolvrs/Ha) ];
@@ -422,7 +422,7 @@ case 'OCTOPUS'
 
 
 % ==============================================================================
-case {'QE_ASE','QUANTUMESPRESSO_ASE','ESPRESSO_ASE'}
+case 'QUANTUMESPRESSO_ASE'
   
   
   decl = 'from qeutil import QuantumEspresso';
@@ -486,7 +486,7 @@ case {'QE_ASE','QUANTUMESPRESSO_ASE','ESPRESSO_ASE'}
   
 
 % ==============================================================================
-case {'QUANTUM','QE','ESPRESSO','QUANTUMESPRESSO','QUANTUM-ESPRESSO','PHON'}
+case {'QUANTUMESPRESSO','QUANTUMESPRESSO_PHON'}
   % best potentials for QE: SSSP http://materialscloud.org/sssp/
 
   

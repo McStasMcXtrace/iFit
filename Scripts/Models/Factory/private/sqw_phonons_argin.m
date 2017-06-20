@@ -61,9 +61,13 @@ for index=1:numel(varargin)
       options.calculator = 'ABINIT';
     elseif strcmpi(varargin{index},'vasp')
       options.calculator = 'VASP';
-    elseif strcmpi(varargin{index},'qe_ase') || strcmpi(varargin{index},'espresso_ase') || strcmpi(varargin{index},'quantumespresso_ase')
+    elseif strcmpi(varargin{index},'qe_ase') || strcmpi(varargin{index},'espresso_ase') ...
+      || strcmpi(varargin{index},'quantumespresso_ase')
       options.calculator = 'quantumespresso_ase';
-    elseif strcmpi(varargin{index},'qe') || strcmpi(varargin{index},'espresso') || strcmpi(varargin{index},'quantumespresso')
+    elseif strcmpi(varargin{index},'qe_phon') || strcmpi(varargin{index},'espresso_phon') ...
+      || strcmpi(varargin{index},'quantumespresso_phon') || strcmpi(varargin{index},'phon') ...
+      || strcmpi(varargin{index},'qe') || strcmpi(varargin{index},'espresso') ...
+      || strcmpi(varargin{index},'quantumespresso')
       options.calculator = 'quantumespresso';
     elseif strcmpi(varargin{index},'octopus')
       options.calculator = 'octopus';
