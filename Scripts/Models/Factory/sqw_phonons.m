@@ -226,9 +226,12 @@ function signal=sqw_phonons(configuration, varargin)
 %
 % The phonon density of states (DOS) is automatically computed when evaluating the 
 % model onto a grid HKL=[-.5 : 0.5]. It is stored in model.UserData.DOS as an 
-% iData object.
+% iData object. Partial density of states (per mode) are stored in UserData.DOS_partials
 %
-% In order to properly evaluate the neutron scattering intensity, it is required
+% The neutron scattering cross sections should be automatically determined from 
+% the chemical formula in order to properly evaluate the neutron scattering 
+% intensity. 
+% In case this would fail, or other cross sections are needed, it is required
 % to set the coherent neutron scattering length (b_coh in [fm]) as a vector in the 
 %   model.UserData.properties.b_coh = [vector / number of atoms in the cell]
 % or alternatively the scattering cross section in [barn]
@@ -236,7 +239,7 @@ function signal=sqw_phonons(configuration, varargin)
 % where negative values set b_coh < 0 (e.g. Hydrogen).
 % Setting b_coh=0 unactivates the intensity estimate.
 % This assignement should be done after creating the model, before performing
-% further HKL evaluations. Default is to use guess b_coh from the formula.
+% further HKL evaluations. Default is to use guessed b_coh from the formula.
 %
 % Once the model has been created:
 % input:  p: sqw_phonons model parameters (double)
@@ -258,6 +261,9 @@ function signal=sqw_phonons(configuration, varargin)
 %   qh=linspace(-.5,.5,50);qk=qh; ql=qh; w=linspace(0.01,50,51);
 %   f=iData(s,[],qh,qk,ql',w); scatter3(log(f(1,:, :,:)),'filled');
 %   figure; plot(s.UserData.DOS); % plot the DOS
+%
+%   sqw_phonons(s, 'report') generates a full report for the given model.
+%   sqw_kpath(s)             plots the dispersion curves and density of states.
 %
 %   s=sqw_phonons('bulk("Si", "diamond", a=5.4, cubic=True)','semiconductor');
 %
@@ -482,6 +488,9 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO') || strcmpi(options.calculator
   if ~isempty(dir(fullfile(target, 'phonon.pkl')))
     signal.UserData.phonons = fileread(fullfile(target, 'phonon.pkl')); % binary
   else
+    if ~isdeployed && usejava('jvm') && usejava('desktop')
+      target = [ '<a href="' target '">' target '</a>' ];
+    end
     sqw_phonons_error(sprintf([ mfilename ': ' options.calculator ...
       ' failed. Temporary files and Log are in ' target ...
       '\n  Try increasing the number of iterations nsteps=' num2str(max(100, options.nsteps*2)) ...
@@ -718,35 +727,11 @@ sqw_phonons_htmlreport('', 'results', options);
 
 % handle autoplot option
 if options.autoplot
-  [f, signal] = sqw_phonons_plot(signal);
+  [S, k, fig] = sqw_kpath(Phonon_Model,'','','plot THz');
   if ishandle(options.gui), delete(options.gui); end
 else
   f = [];
 end
 
 sqw_phonons_htmlreport('', 'download', options);
-
-% ------------------------------------------------------------------------------
-function [f, signal] = sqw_phonons_plot(signal)
-  if isempty(signal) || ~isfield(signal.UserData, 'options') , return; end
-  
-  options = signal.UserData.options;
-  disp([ mfilename ': Model ' options.configuration ' plotting phonons.' ])
-  qh=linspace(0.01,1.5,50);qk=qh; ql=qh; w=linspace(0.01,50,51);
-  f=iData(signal,[],qh,qk,ql',w);
-  g=log(f(1,:, :,:)); 
-  
-  fig1=figure; 
-  plot3(g); axis tight;
-  view([38 26]);
-  slice(g);
-  if isfield(signal.UserData, 'DOS') && ~isempty(signal.UserData.DOS)
-    fig2=figure;
-    try
-      plot(signal.UserData.DOS); % plot the DOS, as indicated during model creation
-    catch
-      close(fig2)
-    end
-  end
-  drawnow
 

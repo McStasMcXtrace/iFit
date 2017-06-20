@@ -221,9 +221,15 @@ end
 
 options.configuration = configuration;
 
-if options.use_phonopy && strcmp(options.calculator,'quantumespresso')
-  options.calculator = 'quantumespresso_ase';
+if options.use_phonopy && ...
+    (strcmp(options.calculator,'quantumespresso') || strcmp(options.calculator,'quantumespresso_phon'))
+  options.calculator = 'quantumespresso_ase'; % PhonoPy can NOT be used with PHON
+elseif isempty(status.phon) && ...
+  (strcmp(options.calculator,'quantumespresso') || strcmp(options.calculator,'quantumespresso_phon')) ...
+  && ~isempty(status.quantumespresso_ase)
+  options.calculator = 'quantumespresso_ase'; % PHON not available -> use QEutil
 end
+
 
 % display message at start
 disp(' ')

@@ -172,12 +172,14 @@ else
   
   % test for QE/ASE
   status.quantumespresso_ase = '';
-  [st, result] = system([ precmd status.python ' -c "from qeutil import QuantumEspresso"' ]);
-  if any(st == 0:2)
-    status.quantumespresso_ase='qeutil';
-    disp([ '  QEutil          (https://jochym.github.io/qe-doc/) as "' status.quantumespresso_ase '"' ]);
-  else
-    status.quantumespresso_ase='';
+  if ~isempty(status.quantumespresso)
+    [st, result] = system([ precmd status.python ' -c "from qeutil import QuantumEspresso"' ]);
+    if any(st == 0:2)
+      status.quantumespresso_ase='qeutil';
+      disp([ '  QEutil          (https://jochym.github.io/qe-doc/) as "' status.quantumespresso_ase '"' ]);
+    else
+      status.quantumespresso_ase='';
+    end
   end
   
   % test for PHON
