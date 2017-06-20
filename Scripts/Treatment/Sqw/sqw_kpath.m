@@ -21,7 +21,7 @@ function [S, qLim, fig] = sqw_kpath(f, qLim, E, options)
 %
 % Example:
 %   S = sqw_kpath(sqw_cubic_monoatomic, '', [0 10]); plot(log10(S));
-%   S = sqw_phonons('POSCAR_Al','emt'); sqw_kpath(S);
+%   S = sqw_phonons('POSCAR_Al','emt','metal'); sqw_kpath(S);
 %
 % input:
 %   f:    a 4D HKLE model S(q,w) (iFunc)
@@ -83,7 +83,10 @@ function [S, qLim, fig] = sqw_kpath(f, qLim, E, options)
   if isempty(E)
     % make a quick evaluation in order to get the maxFreq
     qh=linspace(0.01,1.5,10);qk=qh; ql=qh; w=linspace(0.01,1000,100);
+    % this also computes the DOS when not there yet. In case it was not there before, we remove it.
+    is_dos_there = isfield(f.UserData,'DOS') && ~isempty(f.UserData.DOS);
     [S,f] = feval(f, f.p, qh,qk,ql',w);
+    if ~is_dos_there, f.UserData.DOS=[]; end
     % search for maxFreq if exists
     if isfield(f.UserData, 'maxFreq')
       E = max(f.UserData.maxFreq)*1.2;
