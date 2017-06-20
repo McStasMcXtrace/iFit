@@ -272,8 +272,16 @@ function [S, qLim, fig] = sqw_kpath(f, qLim, E, options)
       p = get(gca,'Position'); p(3) = 0.6; set(gca,'Position', p);
       y = ylim(gca);
       a = axes('position', [ 0.8 p(2) 0.15 p(4) ]);
-      % plot and rotate
-      plot(DOS); xlabel(''); ylabel('DOS'); title('');
+      % plot any partials first
+      if isfield(f.UserData,'DOS_partials') && numel(f.UserData.DOS_partials) > 0
+        h=plot(f.UserData.DOS_partials);
+        if iscell(h), h=cell2mat(h); end
+        set(h,'LineStyle','--');
+        hold on
+      end
+      % plot total DOS and rotate
+      h=plot(DOS); set(h,'LineWidth',2);
+      xlabel(''); ylabel('DOS'); title('');
       xlim(y);
       view([90 -90]);
     end
