@@ -1040,7 +1040,7 @@ def phonopy_band_structure(phonpy, path_kc, modes=False):
     # in phonopy.produce_force_constants(). So we avoid it.
     
     # pre compute masses sqrt(mass * mass)
-    m_inv_x = numpy.repeat(numpy.sqrt(D._mass), 3)
+    m_inv_x = numpy.repeat(numpy.sqrt(D._pcell.get_masses()), 3)
     mass    = numpy.outer(m_inv_x, m_inv_x)
     
     for iqc, q_c in enumerate(path_kc):
