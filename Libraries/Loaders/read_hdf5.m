@@ -42,16 +42,19 @@ catch
 end
 
 % recursive call
-data = getGroup(filename, data_info, h5_present);
+[data, fileID] = getGroup(filename, data_info, h5_present);
+% close the hdf5 file after reading all groups
+if ~isempty(fileID), H5F.close(fileID); end
 
 % return
 
 end
 
   % ============================================================
-  function data = getGroup(filename, data_info, h5_present)
+  function [data, fileID] = getGroup(filename, data_info, h5_present, fileID)
   % getGroup: recursively traverse the HDF tree
 
+    if nargin < 4, fileID = []; end
     data = [];
     root = data_info.Name;
     if ~strcmp(root, '/'), root = [ root  '/' ]; end
@@ -64,17 +67,32 @@ end
         else
           % hdf5read can stall in R2010a. We use a low-level read
           % val = hdf5read(filename,[data_info.Datasets(i).Name]);
-          fileID = H5F.open(filename, 'H5F_ACC_RDONLY', 'H5P_DEFAULT');
-          dataID = H5D.open(fileID, [root data_info.Datasets(i).Name]);
-          val    = H5D.read(dataID, 'H5ML_DEFAULT', 'H5S_ALL', 'H5S_ALL', 'H5P_DEFAULT');
-          H5D.close(dataID);
-          H5F.close(fileID);
+          if isempty(fileID)
+            fileID = H5F.open(filename, 'H5F_ACC_RDONLY', 'H5P_DEFAULT');
+          end
+          dataID = [];
+          try
+            dataID = H5D.open(fileID, [root data_info.Datasets(i).Name]);
+          end
+          try
+            if isempty(dataID), dataID = H5D.open(fileID, [ data_info.Datasets(i).Name]); end
+          end
+          if ~isempty(dataID)
+            val    = H5D.read(dataID, 'H5ML_DEFAULT', 'H5S_ALL', 'H5S_ALL', 'H5P_DEFAULT');
+            H5D.close(dataID);
+          else
+            disp([ mfilename ': ' filename ': ignoring invalid DataSet ' data_info.Datasets(i).Name ]);
+            val = [];
+          end
+          % H5F.close(fileID); done after reading all groups
         end
-        if strcmp(class(val), 'hdf5.h5string'), val = char(val.Data); end
-        if iscellstr(val) && length(val) == 1,  val = char(val); end
-        name        = getName(data_info.Datasets(i).Name);
-        data.(name) = val; clear val;
-        
+        if ~isempty(dataID)
+          if strcmp(class(val), 'hdf5.h5string'), val = char(val.Data); end
+          if iscellstr(val) && length(val) == 1,  val = char(val); end
+          name        = getName(data_info.Datasets(i).Name);
+          data.(name) = val; clear val;
+        end
+          
         % get dataset attributes: group.Attributes.<dataset>.<attribute>
         natts = length(data_info.Datasets(i).Attributes);
         if natts && ~isfield(data,'Attributes'), data.Attributes = []; end
@@ -127,8 +145,7 @@ end
     % Get each subgroup
     ngroups = length(data_info.Groups);
     for i = 1 : ngroups
-      disp(data_info.Groups(i))
-      group = getGroup(filename, data_info.Groups(i), h5_present);
+      [group, fileID] = getGroup(filename, data_info.Groups(i), h5_present, fileID);
       % assign the name of the group
       name = getName(data_info.Groups(i).Name);
       if ~isempty(name)
