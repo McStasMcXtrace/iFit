@@ -155,7 +155,7 @@ classdef YAML
             if isempty(r), result = java.util.ArrayList(); return; end
             if ischar(r)
                 result = java.lang.String(r);
-            elseif ~isscalar(r) && builtin('isnumeric', r)
+            elseif builtin('isnumeric', r) && ~isscalar(r)
                 result = java.util.ArrayList();
                 if size(r,1)==1
                     for i = 1:numel(r)
