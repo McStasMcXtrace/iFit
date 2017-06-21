@@ -56,8 +56,12 @@ function ret=webbrowser(url, method)
   % when fails, we open our own browser
   if ret && usejava('jvm') && feature('ShowFigureWindows')
       % use Java browser
-      if ~isempty(dir(url))
-        url = [ 'file://' url ]; % local file
+      if ~isempty(dir(url)) % local file/dir
+          if isdir(url), P=url; F=''; E='';
+          else [P,F,E] = fileparts(url); end
+          if isempty(P), P=pwd; end
+          url = fullfile(P, [F E]);
+          url = [ 'file://' url ]; % local file
       end
       root       = fileparts(url);
       if strncmp(root, 'file://',7)

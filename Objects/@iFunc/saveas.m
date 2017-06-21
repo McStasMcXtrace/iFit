@@ -124,6 +124,15 @@ format=lower(strtrim(format));
 formatShort = strtok(format, ' ;*.');
 
 % handle extensions
+if ~ischar(filename), filename=char(filename); end
+
+if ~isdir(filename)
+  [Path, name, ext] = fileparts(filename);
+  file_isdir = '';
+else  % isdir
+  name = ''; ext=''; 
+  file_isdir = filename; filename = '';
+end
 [path, name, ext] = fileparts(filename);
 if isempty(ext) & ~isempty(format), 
   ext = [ '.' formatShort ]; 
@@ -137,6 +146,7 @@ formatShort = strtok(format, ' ;*.');
 
 if isempty(filename) || isempty(name), 
   filename = [ 'iFit_' a.Tag '.' formatShort ]; 
+  if ~isempty(file_isdir), filename = fullfile(file_isdir, filename); end
   name = filename; 
 end
 
