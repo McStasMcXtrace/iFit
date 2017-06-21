@@ -64,7 +64,7 @@ else
       end
       Expression = char(s.Expression);
       if ~strcmp(s.Description, Expression) && ~strcmp(s.Name, u)
-        u = s.Description; u(~isstrprop(u,'print'))=''; u=strtrim(u); if ~isvector(u), u=u'; end
+        u = char(s.Description); u(~isstrprop(u,'print'))=''; u=strtrim(u); if ~isvector(u), u=u'; end
         if length(u) > 10, u = [ u(1:9) '.' ]; end % Name/Description/Expression
         t = [ t ' ' u ];
       end

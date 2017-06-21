@@ -4,6 +4,18 @@ function b = subsasgn(a,S,val)
 %   @iFunc/subsasgn: function defines indexed assignement
 %   such as a(1:2,3) = b
 %
+%   a.p(index) = val                sets the value of the indexed parameter
+%   a.p        = val                sets all parameter values
+%   a.Par      = val                sets the value of the parameter named "Par"
+%   a.Par      = 'fix' or 'lock'    lock the value of the Parameter "Par"
+%   a.Par      = 'free' or 'clear'  free/unlock the value of the Parameter "Par"
+%   a.Par      = [min max]          restraint the Par parameter between bounds [min max]
+%   a.Par      = [min val max]      restraint the Par parameter between bounds [min max]
+%                                     and set its value to val
+%   a.p='fix'                       fix/lock all parameter values
+%   a.p='free'                      free/unlock all parameter values
+
+%
 % Version: $Date$
 % See also iFunc, iFunc/subsref
 
@@ -137,6 +149,11 @@ else
             end
             b.Constraint.set{index}   = val;
             b.Constraint.fixed(index) = 1; % this also fixes the value
+          elseif isnumeric(val) && length(val)==3
+            % val=[min max] -> set min(index) and max(index)
+            b.Constraint.min(index) = val(1);
+            b.ParameterValues(index)= val(2);
+            b.Constraint.max(index) = val(3);
           elseif isnumeric(val) && length(val)==2
             % val=[min max] -> set min(index) and max(index)
             b.Constraint.min(index) = val(1);
@@ -150,9 +167,22 @@ else
         % check object when modifying key member
         b = iFunc(b);
       elseif strcmp(fieldname, 'p')
+        if numel(S) > 1
+          index=S(2).subs;
+        else index=1:numel(b.Parameters); end
         if isnumeric(val)
-          b.ParameterValues=val;
-          b.Constraint.fixed(index) = nan;
+          pmin=[]; pmax=[];
+          if numel(val) == 2, pmin=val(1); pmax=val(2); val=[]; 
+          elseif numel(val) == 3, pmin=val(1); pmax=val(3); val=val(2); end
+          if ~isempty(pmin), b.Constraint.min(index) = pmin; end
+          if ~isempty(pmax), b.Constraint.max(index) = pmax; end
+          if ~isempty(val), b.ParameterValues(index) = val; end
+        elseif ischar(val)
+          if any(strncmp(val, {'fix','loc'}, 3))
+            b.Constraint.fixed(index) = 1; val = 'skip';
+          elseif any(strncmp(val, {'cle','unl','fre'}, 3))
+            b.Constraint.fixed(index) = 0; val = 'skip';
+          end
         end
       else
         error([ mfilename ': can not set iFunc object Property ''' fieldname ''' in iFunc model ' b.Tag '.' ]);
