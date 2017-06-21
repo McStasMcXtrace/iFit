@@ -230,22 +230,30 @@ case 'mantid'
 end
 
 % handle extensions
-if ischar(filename)
-  [Path, name, ext] = fileparts(filename);
-  if isempty(ext) && ~isempty(format), 
-    ext = [ '.' strtok(format, ' ;*') ]; 
-    filename = [ filename ext ];
-  elseif isempty(format) && ~isempty(ext)
-    format = ext(2:end);
-  elseif isempty(format) && isempty(ext) 
-    format='mat'; filename = [ filename '.mat' ];
-  end
+if ~ischar(filename), filename=char(filename); end
 
-  if isempty(filename) || isempty(name), 
-    filename = [ 'iFit_' a(1).Tag '.' strtok(format, ' ;*') ]; 
-    name = filename; 
-  end
+if ~isdir(filename)
+  [Path, name, ext] = fileparts(filename);
+  file_isdir = '';
+else  % isdir
+  name = ''; ext=''; 
+  file_isdir = filename; filename = '';
 end
+if isempty(ext) && ~isempty(format), 
+  ext = [ '.' strtok(format, ' ;*') ]; 
+  filename = [ filename ext ];
+elseif isempty(format) && ~isempty(ext)
+  format = ext(2:end);
+elseif isempty(format) && isempty(ext) 
+  format='mat'; filename = [ filename '.mat' ];
+end
+
+if isempty(filename) || isempty(name), 
+  filename = [ 'iFit_' a(1).Tag '.' strtok(format, ' ;*') ]; 
+  if ~isempty(file_isdir), filename = fullfile(file_isdir, filename); end
+  name = filename; 
+end
+
 
 formatShort = strtok(format, ' ;*.');
 % handle array of objects to save iteratively, except for file formats that support
