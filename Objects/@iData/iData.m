@@ -149,6 +149,11 @@ else  % convert input argument into object
   elseif ~all(isempty(varargin{1})) && isnumeric(varargin{1}) && (numel(varargin{1}) > 1 || ~all(ishandle(varargin{1})))
     % iData(x)
     out = iData_num2iData(varargin{1});    % convert single scalar/vector/matrix to iData. No need for check.
+    if ~isempty(inputname(1))
+        out.Label=[ inputname(1) ' (' class(varargin{1}) ')' ];
+        out = label(out, 0, inputname(1));
+        out.Title=inputname(1);
+    end
     return
   elseif ishandle(varargin{1}) % convert single Handle Graphics Object
     % iData(figure handle)
