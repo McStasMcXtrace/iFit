@@ -2,7 +2,7 @@ function [filename,format] = save(a, varargin)
 % f = save(s, filename, format, options) : save iFunc object into various data formats
 %
 %   @iFunc/save function to save models
-%     This function saves the content of iFunc objects. The default format is 'm'.
+%     This function saves the content of iFunc objects. The default format is 'yaml'.
 %   save(iFunc,'formats')
 %     prints a list of supported export formats.
 %   save(iFunc,'file.ext')            determine file format from the extension
@@ -18,9 +18,9 @@ function [filename,format] = save(a, varargin)
 %         format: data format to use (char), or determined from file name extension
 %           'json' save as JSON JavaScript Object Notation, ascii
 %           'm'    save as a flat Matlab .m file (a function which returns an iFunc object or structure)
-%           'mat'  save as a '.mat' binary file (same as 'save', DEFAULT)
-%           'xml'  save as XML file, ascii
-%           'yaml' save as YAML format, ascii
+%           'mat'  save as a '.mat' binary file (same as 'save', RECOMMENDED)
+%           'xml'  save as XML file, ascii.
+%           'yaml' save as YAML format, ascii, RECOMMENDED, DEFAULT
 %         as well as other lossy formats
 %           'fig'  save as a Matlab figure
 %           'gif','bmp','png','tiff','jpeg','ps','pdf','ill','eps' save as an image
@@ -32,7 +32,7 @@ function [filename,format] = save(a, varargin)
 %           default is 'view2 axis tight'.
 %
 % output: f: filename(s) used to save data (char)
-% ex:     b=save(a, 'file', 'm');
+% ex:     b=save(a, 'file', 'yaml'); c=iFunc(b);
 %         b=save(a, 'file', 'gif', 'axis tight');
 %
 % Version: $Date$
