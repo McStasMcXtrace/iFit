@@ -1,4 +1,4 @@
-function hF = TextEdit(filename)
+function hF = TextEdit(filename, name)
 % Simple Text editor
 %
 %  TextEdit
@@ -16,8 +16,9 @@ function hF = TextEdit(filename)
 % http://fr.mathworks.com/matlabcentral/fileexchange/47614-textedit
 % Modified by E. Farhi, 2016 into english
 
+if nargin < 2, name=mfilename; end
 hF=figure('MenuBar','none',...
-    'Name','TextEdit','Resize','on',...
+    'Name',name,'Resize','on',...
     'Position',[0 0 600 400],'Color','w','CloseRequestFcn', @textedit_quit);
 centerfig();
 
@@ -86,15 +87,19 @@ end
 % protect figure from over-plotting
 set(hF,'HandleVisibility','callback','UserData',hTxt);
 
-if nargin && iscellstr(filename)
-  filename = char(filename);
+if nargin 
+  if iscellstr(filename)
+    filename = char(filename);
+  elseif isa(filename, 'function_handle')
+    filename = func2str(filename);
+  end
 end
 
 if nargin && ischar(filename)
   if size(filename,1) == 1 && ~isempty(dir(filename))
     textedit_load(filename);
   else
-    textedit_setText(char(filename))
+    textedit_setText(hTxt, filename)
   end
 end
 
@@ -304,8 +309,17 @@ end
 
 function textedit_setText(hTxt, str)
   if isa(hTxt,'com.mathworks.widgets.SyntaxTextPane')
-    hTxt.setText(txt);
+    
+    if ~iscell(str)
+      if isnumeric(str), str=num2str(str); end
+      str = char(str);
+      if size(str,1) > 1, 
+        str = cellstr(str);
+      end
+    end
+    if iscellstr(str), str=sprintf('%s\n', str{:}); end
+    hTxt.setText(str);
   elseif ishandle(hTxt)
-    set(hTxt, 'String',txt);
+    set(hTxt, 'String',str);
   end
 end
