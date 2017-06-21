@@ -1,4 +1,63 @@
 classdef Process < timer
+  % Process(command): starts a system command
+    % 
+    % pid = Process('command arguments ...')
+    %
+    % The Process class replaces the 'system' command. but is started asynchronously.
+    % Matlab does not wait for the end of the Process to get back to interactive mode.
+    % The stdout and stderr are collected periodically.  
+    %
+    % You can customize the Process with e.g. additional arguments such as:
+    %   Process(..., 'TimeOut', value)  set a TimeOut (to kill Process after)
+    %   Process(..., 'Period', value)   set the refresh rate in seconds (10 s).
+    %   Process(..., 'Monitor', 0 or 1) flag to set the Process in silent/verbose mode
+    %   Process(..., 'TimerFcn', @fcn)  execute periodically on refresh
+    %   Process(..., 'StopFcn', @fcn)   execute when the Process is killed (stop/exit)
+    %   Process(..., 'EndFcn', @fcn)    execute when the Process ends by itself
+    %
+    % The TimerFcn, StopFcn and EndFcn can be given as:
+    %   * simple strings, such as 'disp(''OK'')'
+    %   * a function handle with none to 2 arguments. The Callback will then 
+    %     pass as 1st argument the Process object, and as 2nd the event
+    %       in 'kill','timeout','end', or 'refresh'. 
+    %     Example @(p,a)disp([ 'Process ' p.Name ': event ' a ])
+    %   * the name of a function which takes none to 2 arguments. Same as above.
+    % when a callback has a non-zero return value, it stops the Process.
+    %
+    % methods:
+    %   refresh(pid)  force the pid to be refreshed, i.e check if it is running
+    %                 and get its stdout/stderr.
+    %   silent(pid)   set the process to silent mode (do not print stdout/stderr).
+    %   verbose(pid)  set the process to verbose mode (do not print stdout/stderr).
+    %   disp(pid)     display full Process information.
+    %   pid           display short Process information. Same as display(pid).
+    %   stdout(pid)   get the stdout stream from the Process (normal output).
+    %   stderr(pid)   get the stderr stream from the Process (errors).
+    %   exit(pid)     kill the Process (stop it). Same as stop(pid)
+    %   delete(pid)   kill the Process and delete it from memory.
+    %   waitfor(pid)  wait for the Process to end normally or on TimeOut.
+    %
+    % WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING
+    % This class derives from 'timer'. As such, it remains in memory after the 
+    % Process has stopped. To remove it, use delete(pid), then clear(pid).
+    % The UserData field of the object is used by the external command. In case
+    % you need to store something, do NOT directly allocate obj.UserData, but 
+    % rather store anything with:
+    %    ud=get(pid,'UserData');
+    %    ud.UserData = <your stuff>;
+    %    set(pid, 'UserData', ud);
+    % get your own data with:
+    %    ud=get(pid,'UserData');
+    %    <your stuff> = ud.UserData;
+    %
+    % Example:
+    %   pid=Process('ping 127.0.0.1'); silent(pid);
+    %   pause(5);
+    %   exit(pid);
+    %
+    %   Copyright: Licensed under the BSD
+    %              E. Farhi, ILL, France <farhi@ill.fr> Aug 2012, http://ifit.mccode.org
+    
   properties
     % we store everything in the UserData of the timer object so that it fully
     % remains synchronized at all times, and is unique.
@@ -8,46 +67,7 @@ classdef Process < timer
   methods
     % the Process creator (initializer)
     function pid = Process(command, varargin)
-      % Process(command): starts a system command
-      % 
-      % pid = Process('command arguments ...')
-      %
-      % The Process class replaces the 'system' command. but is started asynchronously.
-      % Matlab does not wait for the end of the Process to get back to interactive mode.
-      % The stdout and stderr are collected periodically.  
-      %
-      % You can customize the Process with e.g. additional arguments such as:
-      %   Process(..., 'TimeOut', value)  set a TimeOut (to kill Process after)
-      %   Process(..., 'Period', value)   set the refresh rate in seconds.
-      %   Process(..., 'Monitor', 0 or 1) flag to set the Process in silent/verbose mode
-      %   Process(..., 'TimerFcn', @fcn)  execute periodically on refresh
-      %   Process(..., 'StopFcn', @fcn)   execute when the Process is killed (stop/exit)
-      %   Process(..., 'EndFcn', @fcn)    execute when the Process ends by itself
-      %
-      % The TimerFcn, StopFcn and EndFcn can be given as:
-      %   * simple strings, such as 'disp(''OK'')'
-      %   * a function handle with none to 2 arguments. The Callback will then 
-      %     pass as 1st argument the Process object, and as 2nd the event
-      %       in 'kill','timeout','end', or 'refresh'. 
-      %     Example @(p,a)disp([ 'Process ' p.Name ': event ' a ])
-      %   * the name of a function which takes none to 2 arguments. Same as above.
-      % when a callback has a non-zero return value, it stops the Process.
-      %
-      % methods:
-      %   refresh(pid)  force the pid to be refreshed, i.e check if it is running
-      %                 and get its stdout/stderr.
-      %   silent(pid)   set the process to silent mode (do not print stdout/stderr).
-      %   verbose(pid)  set the process to verbose mode (do not print stdout/stderr).
-      %   disp(pid)     display full Process information.
-      %   pid           display short Process information. Same as display(pid).
-      %   stdout(pid)   get the stdout stream from the Process (normal output).
-      %   stderr(pid)   get the stderr stream from the Process (errors).
-      %   exit(pid)     kill the Process (stop it).
-      %   delete(pid)   kill the Process and delete it from memory.
-      %   waitfor(pid)  wait for the Process to end normally or on TimeOut.
-      %
-      %   Copyright: Licensed under the BSD
-      %              E. Farhi, ILL, France <farhi@ill.fr> Aug 2012, http://ifit.mccode.org
+      % Process(command): instantiate a process object and start the command
       
       % should add: Display = 1 => show stdout while it comes
       if nargin == 0, command = ''; end
@@ -113,7 +133,7 @@ classdef Process < timer
       set(pid, 'TimerFcn',{@refresh_fcn, 'Refresh'}, ...
           'StopFcn', { @exit_fcn, 'Kill' });
 
-      set(pid, 'UserData',UserData);
+      setUserData(pid, UserData);
           
       if ischar(command) && ~isempty(command)
         % create a timer object
@@ -126,7 +146,7 @@ classdef Process < timer
         UserData.stdinStream   = UserData.process.getInputStream;
         UserData.stderrStream  = UserData.process.getErrorStream;
         
-        set(pid, 'UserData',UserData);
+        setUserData(pid,UserData);
         
         if UserData.Monitor
           disp([ datestr(now) ': Process ' get(pid,'Name') ' is starting.' ])
@@ -146,17 +166,18 @@ classdef Process < timer
     % --------------------------------------------------------------------------
     function ex = exit(pid)
       % Process/exit(pid): end/kill a running Process and/or return its exit value.
+      % stop@timer(pid);
       if length(pid) == 1 && isvalid(pid) && any(strcmp(get(pid,'Running'),'on'))
         refresh_Process(pid);
       end
-  
+      stop(pid);
       ex = exit_Process(pid, 'kill');
       
     end
     
     % --------------------------------------------------------------------------
     function delete(pid)
-      % Process/delete(pid): completely remove the Process from memoty. 
+      % Process/delete(pid): completely remove the Process from memory. 
       % The Process is killed. Its stdout/err/value are lost.
       
       if length(pid) ~= 1, return; end 
@@ -176,7 +197,7 @@ classdef Process < timer
       % Process/stdout(pid): return the standard output stream (stdout)
       if ~isvalid(pid), s=nan; return; end
       refresh(pid);
-      UserData = get(pid, 'UserData');
+      UserData = getUserData(pid);
       s = UserData.stdout;
     end
     
@@ -184,7 +205,7 @@ classdef Process < timer
       % Process/stderr(pid): return the standard error stream (stderr)
       if ~isvalid(pid), s=nan; return; end
       refresh(pid);
-      UserData = get(pid, 'UserData');
+      UserData = getUserData(pid);
       s = UserData.stderr;
     end
     
@@ -192,24 +213,24 @@ classdef Process < timer
       % Process/isreal(pid): return 1 when the process is running, 0 otherwise.
       if ~isvalid(pid), s=0; return; end
       refresh(pid);
-      UserData = get(pid, 'UserData');
+      UserData = getUserData(pid);
       s = UserData.isActive;
     end
     
     function silent(pid)
       % Process/silent(pid): set the Process to silent mode.
       if ~isvalid(pid), return; end
-      UserData = get(pid, 'UserData');
+      UserData = getUserData(pid);
       UserData.Monitor = 0;
-      set(pid, 'UserData',UserData);
+      setUserData(pid, UserData);
     end
     
     function verbose(pid)
       % Process/verbose(pid): set the Process to verbose mode, which displays its stdout.
       if ~isvalid(pid), return; end
-      UserData = get(pid, 'UserData');
+      UserData = getUserData(pid);
       UserData.Monitor = 1;
-      set(pid, 'UserData',UserData);
+      setUserData(pid, UserData);
     end
     
     function waitfor(pid)
@@ -222,6 +243,20 @@ classdef Process < timer
       end
     end
     
+    function stop(pid, action)
+      stop@timer(pid);
+      if nargin < 2, action='kill'; end
+      exit_Process(pid,action);
+    end
+    
+    function ud = getUserData(obj)
+      ud = obj.jobject.UserData;
+    end
+    
+    function setUserData(obj, ud)
+      obj.jobject.UserData=ud;
+    end
+
   end
 
 end
@@ -235,11 +270,11 @@ function refresh_fcn(obj, event, string_arg)
   if ~UserData.isActive
     % Process has ended by itself or aborted externally
     disp([ mfilename ': Process ' get(obj,'Name') ' has ended.' ])
-    exit_Process(obj, 'end');
+    stop(pid, 'end');
     
   elseif ~isempty(UserData.TimeOut) && UserData.TimeOut > 0 ...
     && etime(clock, datevec(UserData.creationDate)) > UserData.TimeOut
-    exit_Process(obj, 'timeout');
+    stop(pid, 'timeout');
   end
 
 end
@@ -250,6 +285,7 @@ function exit_fcn(obj, event, string_arg)
 
   UserData = get(obj, 'UserData');
   if UserData.isActive && strcmp(get(obj,'Running'),'on')
+    stop@timer(pid);
     exit_Process(obj, 'kill');  % kill
   end
 
