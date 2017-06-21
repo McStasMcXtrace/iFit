@@ -62,7 +62,9 @@ end
 
 if strcmp(p, 'guess'),   p = []; end
 if strcmp(p, 'current'), p = a.ParameterValues; end
-if isempty(p), p=NaN; end % force evaluation of function
+if isempty(p) && ~isempty(a.ParameterValues)
+  p=a.ParameterValues;
+else p=NaN; end % force evaluation of function
 
 % evaluate the model value, and axes
 [signal, a, ax, name] = feval(a, p, varargin{:});

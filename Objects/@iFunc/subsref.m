@@ -5,6 +5,9 @@ function b = subsref(a,S)
 %     such as a(1:2) or a.field.
 %             a{n} returns the guessed axis of rank 'n' (similar to iData).
 %
+%   a.p     returns the parameter values, same as a.ParameterValues
+%   a.Par   returns the parameter "Par" value
+%
 % Version: $Date$
 % See also iFunc, iFunc/subsasgn
 

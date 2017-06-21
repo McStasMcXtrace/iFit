@@ -222,6 +222,7 @@ end
 
 name=model.Name;
 guessed = '';
+
 % guess parameters ========================================================
 [p,guessed,signal_in_varargin,ax] = iFunc_feval_guess_p(model, p, signal_in_varargin, varargin{:});
 
@@ -399,7 +400,7 @@ duration = etime(clock, iFunc_t0);
 function p = iFunc_feval_set(this, p, varargin)
 % private function to evaluate a parameter set expression in a reduced environment so that 
 % internal function variables do not affect the result.
-  if isfield(this.Constraint, 'set')
+  if isfield(this.Constraint, 'set') && iscell(this.Constraint.set)
     i = find(~cellfun('isempty', this.Constraint.set)); i=i(:)';
   else i=[]; end
   if ~isempty(i)
