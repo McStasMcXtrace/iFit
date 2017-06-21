@@ -171,7 +171,7 @@ function h=iFunc_plot_menu(h, a, name)
                   '''custom'',getfield(getframe(gcf),''cdata''), get(gcf,''Colormap''));' ] );
   uimenu(uicm, 'Label', name) ;
   uimenu(uicm, 'Label','Show model code...', ...
-    'Callback', [ 'helpwin(getfield(get(get(gco,''UIContextMenu''),''UserData''),''Expression''), ''' a.Name ''')' ]);
+    'Callback', [ 'TextEdit(getfield(get(get(gco,''UIContextMenu''),''UserData''),''Expression''), ''' a.Name ''')' ]);
 
   % make up title string and Properties dialog content
   properties={ [ 'Model ' a.Tag ': ' num2str(ndims(a)) 'D model' ], ...
