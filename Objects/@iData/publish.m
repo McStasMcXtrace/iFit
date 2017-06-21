@@ -10,7 +10,7 @@ function a = publish(a, filename)
 %         filename: a file name or directory where to export. When not given
 %           the exportation takes place in the local directory.
 % output: b: generated filename
-% ex:     b=publish(iData(peaks));
+% ex:     b=publish(iData(peaks)); webbrowser(b, 'system')
 %
 % Version: $Date$
 % See also iData, iData/save
