@@ -54,6 +54,9 @@ function a = iFunc(varargin)
 %   From a file in MAT, M, YAML, JSON, XML format holding a model (iFunc/save)
 %       iFunc('filename_model'). See iFunc/save
 %
+%   From a data set (iData) or data file
+%       iFunc(iData('filename')); parameters allow to scale and shift.
+%
 % Using the object:
 %   Once the object has been created, you can evaluate it with: object(p, x, y, ...)
 %   The usual mathematical operators can be used to manipulate iFunc objects.
@@ -66,7 +69,7 @@ function a = iFunc(varargin)
 %   The Model expression is               object.Expression
 %   The Model parameter names are         object.Parameters
 %   The Model parameter values (when set) object.ParameterValues or object.p
-%   A single parameter can be accessed    object.<ParameterName>
+%   A single parameter can be accessed    object.<ParameterName> or object.p(index)
 %   
 %
 % Type <a href="matlab:doc(iFunc)">doc(iFunc)</a> to access the iFit/iFunc Documentation.
@@ -141,11 +144,7 @@ elseif length(varargin) > 1 % import data to create the object array
 elseif isa(varargin{1}, 'iData')
   % create a model from a fixed data set
   
-  % create parameters:
-  % Intensity scaling
-  % a Scaling and Offset parameter per axis
-  %
-  % the Expression should interpolate the iData on axes x,y,z,...
+  a = iFunc_from_iData(varargin{1});
   
 else   % import data to create a single object
   % can be a structure, or an expression, or a function_handle
