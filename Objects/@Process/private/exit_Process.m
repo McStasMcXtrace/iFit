@@ -1,7 +1,7 @@
 function ex=exit_Process(pid, action)
   % force to quit a running Process.
   if nargin < 2, action='end'; end
-  
+
   if length(pid) > 1
     ex = nan;
     % can not kill an array.
@@ -12,7 +12,8 @@ function ex=exit_Process(pid, action)
   
   UserData = get(pid, 'UserData');
   if UserData.isActive
-    stop(pid); % stop the timer but leaves the object. 
+    % stop the timer but leaves the object. 
+    if strcmp(get(pid,'Running'),'on'); stop(pid); end 
   else ex = UserData.exitValue; return;
   end
   
