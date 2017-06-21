@@ -8,12 +8,16 @@ function hF = TextEdit(filename, name)
 % TextEdit(string)
 %    Display the string inside a new Editor window
 %
-% $ Por: Jorge De Los Santos $
+% $ Initially from: Jorge De Los Santos $
 % $ E-mail: delossantosmfq@gmail.com $
 % $ Blog: http://matlab-typ.blogspot.mx $
 % $ Rev. 0.0.1 $ 02/08/2014 $
 %
-% http://fr.mathworks.com/matlabcentral/fileexchange/47614-textedit
+% Improved with Java component thanks to Yair Altman comments.
+% by E. Farhi <farhi@ill.fr> Institut Laue-Langevin BSD, 2017
+% Rev 1.0
+%
+% Orig: http://fr.mathworks.com/matlabcentral/fileexchange/47614-textedit
 % Modified by E. Farhi, 2016 into english
 
 if nargin < 2, name=mfilename; end
@@ -274,27 +278,14 @@ end
 
 % About
     function textedit_about(~,~)
-        figure('MenuBar','none','NumberTitle','off',...
-            'Name','TextEdit: About','Resize','off',...
-            'Position',[0 0 200 100],'color','w');
-        centerfig();
-        devel='By: Jorge De Los Santos';
-        e_mail='E-mail: delossantosmfq@gmail.com';
-        blog='Blog: http://matlab-typ.blogspot.mx';
-        nvrs='TextEdit 0.0.2';
-        uicontrol('style','text','String',devel,...
-            'Units','Normalized','Position',[0.1 0.80 0.8 0.15],...
-            'FontName','Arial Narrow','FontSize',10,...
-            'ForegroundColor',ones(1,3)*0.2);
-        uicontrol('style','text','String',{e_mail,blog},...
-            'Units','Normalized','Position',[0.1 0.45 0.8 0.3],...
-            'FontName','Arial Narrow','FontSize',9,...
-            'ForegroundColor',ones(1,3)/2);
-        uicontrol('style','text','String',nvrs,...
-            'Units','Normalized','Position',[0.1 0.15 0.8 0.1],...
-            'FontName','Courier','FontSize',10,'FontWeight','b',...
-            'ForegroundColor',[0 0 0.5]);
-        set(findobj('style','text'),'BackgroundColor','w');
+
+        devel='By: Jorge De Los Santos; Improved by E. Farhi, ILL, 2017.';
+        e_mail='E-mail: delossantosmfq@gmail.com; farhi@ill.fr';
+        blog='Blog: http://matlab-typ.blogspot.mx ; http://ifit.mccode.org';
+        nvrs='TextEdit 1.0';
+        
+        str = { devel, e_mail, blog, nvrs };
+        helpdlg(str, nvrs);
     end
 end
 
