@@ -107,6 +107,7 @@ function [S, qLim, fig] = sqw_kpath(f, qLim, E, options)
   if isempty(crystalsystem) && isfield(f.UserData,'properties') ...
   && isfield(f.UserData.properties, 'spacegroup')
     spacegroup = regexp(f.UserData.properties.spacegroup,'\(([^:]*)\)','tokens');
+    if iscell(spacegroup), spacegroup = spacegroup{1}; end
     if isempty(spacegroup) && isfield(f.UserData.properties, 'spacegroup_number')
       spacegroup = f.UserData.properties.spacegroup_number;
     end
