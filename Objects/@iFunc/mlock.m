@@ -13,6 +13,8 @@ function a = mlock(a, varargin)
 %     lock/fix parameters given their index
 %   mlock(model, 'all')
 %     lock/fix all parameters
+%   mlock(model, 'none')
+%     free/unlock all parameters
 %   mlock(model)
 %     display fixed parameters
 %
@@ -65,7 +67,7 @@ if nargin == 1 % display fixed parameters
 end
 
 % handle case where names are obtained from regexp = cell with length=Parameters
-if length(varargin) == 1 && length(varargin{1}) == length(a.Parameters)
+if length(varargin) == 1 && iscell(varargin{1}) && length(varargin{1}) == length(a.Parameters)
   varargin{1} = a.Parameters(find(~cellfun(@isempty, varargin{1})));
 end
 
@@ -82,7 +84,14 @@ end
 % now with a single input argument
 if isempty(name), return; end
 if iscell(name) && numel(name) == 1 && isnumeric(name{1}), name = strtok(a.Parameters(name{1})); end
-if ischar(name) && strcmp(name, 'all'), name = strtok(a.Parameters); end
+if ischar(name) && strcmp(name, 'all'), name = strtok(a.Parameters); 
+elseif ischar(name) && strcmp(name, 'none'), 
+  a=munlock(a,'all'); 
+  if nargout == 0 && ~isempty(inputname(1))
+    assignin('caller',inputname(1),a);
+  end
+  return
+end
 if ~ischar(name) && ~iscellstr(name)
   error([ mfilename ': can not lock model parameters with a Parameter name of class ' class(name) ' in iFunc model ' a.Tag '.' ]);
 end
