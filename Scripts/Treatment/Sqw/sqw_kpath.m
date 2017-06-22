@@ -107,7 +107,7 @@ function [S, qLim, fig] = sqw_kpath(f, qLim, E, options)
   if isempty(crystalsystem) && isfield(f.UserData,'properties') ...
   && isfield(f.UserData.properties, 'spacegroup')
     spacegroup = regexp(f.UserData.properties.spacegroup,'\(([^:]*)\)','tokens');
-    if iscell(spacegroup), spacegroup = spacegroup{1}; end
+    if iscell(spacegroup) && ~isempty(spacegroup), spacegroup = spacegroup{1}; end
     if isempty(spacegroup) && isfield(f.UserData.properties, 'spacegroup_number')
       spacegroup = f.UserData.properties.spacegroup_number;
     end
@@ -250,10 +250,16 @@ function [S, qLim, fig] = sqw_kpath(f, qLim, E, options)
   % plot results when no output
 
   if nargout == 0 || ~isempty(strfind(options, 'plot'))
-    fig = figure; plot(log10(S/max(S)),'view2');
+    fig = figure; 
+    if isfinite(max(S)), plot(log10(S/max(S)),'view2');
+    else plot(log10(S),'view2'); end
     axis tight
     add_contextmenu(gca)
     hold on
+    % enhance low signal on the colormap
+    c = caxis;
+    if c(2) > c(1)+10, c(2)=c(1)+10; end
+    caxis(c);
     if isfield(f.UserData,'FREQ')
       FREQ = f.UserData.FREQ*factor;
       if ~isempty(FREQ), plot(x, FREQ); end
