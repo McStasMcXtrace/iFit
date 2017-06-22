@@ -11,6 +11,10 @@ function a = fix(a, varargin)
 %     lock/fix parameter for further fits
 %   fix(model)
 %     display fixed parameters
+%   fix(model,'all')
+%     fix/lock all parameters
+%   fix(model,'none')
+%     free/unlock all parameters
 %
 % input:  s: object or array (iFunc)
 %         parameters: names or index of parameters to lock/fix (char or scalar)
@@ -22,7 +26,7 @@ function a = fix(a, varargin)
 
 % calls subsasgn with 'fix' for each parameter given
 
-a = mlock(a, varargin);
+a = mlock(a, varargin{:});
 
 if nargout == 0 && ~isempty(inputname(1))
   assignin('caller',inputname(1),a);
