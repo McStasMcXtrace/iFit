@@ -270,7 +270,7 @@ function [options, sav] = sqw_phonons_get_forces(options, decl, calc)
   fclose(fid);
   
   % call python script with calculator
-  disp([ mfilename ': computing Force Constants, creating Phonon/ASE model.' ]);
+  disp([ mfilename ': computing Force Constants, creating Phonon model.' ]);
   options.status = 'Ending computation. Script is <a href="sqw_phonons_forces_finalize.py">sqw_phonons_forces_finalize.py</a>';
   sqw_phonons_htmlreport('', 'status', options);
   
