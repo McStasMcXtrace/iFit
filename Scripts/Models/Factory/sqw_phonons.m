@@ -608,8 +608,8 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO') || strcmpi(options.calculator
   % python scripts for band structure evaluation
   % initially we saved using:
   %   sio.savemat("FREQ.mat", { "FREQ": omega_kn, "POLAR":polar_kn, "HKL":HKL })
-  % but these MAT files are limited to 2Gb. We now use HDF5 in ifit.dict2h5
-  % an other elegant solution is to use hdf5storage.savemat but it includes a dependency
+  % but these MAT files are limited to 2Gb.
+  % We now use hdf5storage.savemat
   signal.Expression = { ...
     '% check if directory and phonon pickle is here', ...
     'target = this.UserData.dir;', ...

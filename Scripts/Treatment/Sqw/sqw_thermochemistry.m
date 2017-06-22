@@ -1,4 +1,4 @@
-function [s,f]=sqw_thermochemistry(s, T)
+function t=sqw_thermochemistry(s, T)
 % sqw_thermochemistry: compute the vDOS and thermodynamic quantities.
 %
 % Compute the phonon (vibrational) density of states (vDOS) from e.g. the evaluation
@@ -10,7 +10,7 @@ function [s,f]=sqw_thermochemistry(s, T)
 %
 % the function returns an array of iData objects:
 %   DOS 
-%   pDOS (one per mode)
+%   pDOS (one per mode) partials
 %   entropy                           S [eV/K/cell]
 %   internal_energy                   U [eV/cell]
 %   helmholtz_energy                  F [eV/cell]
@@ -21,10 +21,9 @@ function [s,f]=sqw_thermochemistry(s, T)
 %   T: temperature range. When not given, T=1:500 [K]
 %
 % output:
-%   s: [DOS, partial_DOS, S U F Cv ]
-%   f: iData holding the 4D evaluation of the model.
+%   t: structure with [DOS, DOS_partials, S U F Cv ]
 
-f = []; 
+t=[];
 % test the input object
 if nargin == 0, return; end
 
@@ -32,8 +31,14 @@ if (isa(s,'iFunc') || isa(s,'iData')) && ndims(s) == 2
   disp([ 'Using Sqw_gDOS for ' class(s) ' ' num2str(ndims(s)) 'D objects.' ]);
   [gDOS, g] = Sqw_gDOS(s);
   UD = s.UserData;
-  UD.DOS = gDOS; f=g;
+  UD.DOS = gDOS;
   s.UserData = UD;
+  t.gDOS = gDOS;
+  t.gqw  = g;
+  t.Sqw  = s;
+  if ~isempty(inputname(1))
+    assignin('caller',inputname(1),s);
+  end
   return
 end
   
@@ -44,12 +49,37 @@ if ndims(s) ~= 4 || ~isa(s,'iFunc')
 end
 
 % first get a quick estimate of the max frequency
-if ~isfield(s.UserData,'maxFreq')
-  qh=linspace(-.5,.5,10);qk=qh; ql=qh; w=linspace(0.01,50,11);
-  f=iData(s,[],qh,qk,ql',w);
-  s.UserData.maxFreq = max(s.UserData.FREQ(:));
+qh=linspace(-.5,.5,10);qk=qh; ql=qh; w=linspace(0.01,50,11);
+f=iData(s,[],qh,qk,ql',w);
+if isfield(s.UserData, 'FREQ') && ~isempty(s.UserData.FREQ)
+  UD = s.UserData;
+  s.UserData.maxFreq = max(UD.FREQ(:));
   disp([ mfilename ': maximum phonon energy ' num2str(s.UserData.maxFreq) ' [meV] in ' s.Name ]);
-end 
+
+  % display IR/Raman Gamma point vibrational energies
+  % compute Gamma point modes (IR/Raman) 
+  index = find(sum(abs(UD.HKL),2) == 0);
+  if ~isempty(index) && (~isfield(UD,'properties') ...
+    || ~isfield(UD.properties,'vibrational_energies') ...
+    || isempty(UD.properties.vibrational_energies))
+    disp([ strtok(this.Name) ': Gamma point energies (IR/Raman):' ]);
+    this.UserData.properties.vibrational_energies = UD.FREQ(index(1),:)';
+    f = this.UserData.properties.vibrational_energies(:);
+    disp(' [meV]      [THz]     [cm-1]')
+    disp(num2str([ f f*.2418 f*8.0657 ],'%10.3f'));
+  end
+end
+
+% get the temperature
+if nargin < 2
+  T = 1:500;  % default
+  try
+    T = Sqw_getT(s);  % a value is defined in the Parameters ?
+    if isscalar(T)
+      disp([ mfilename ': found temperature T=' num2str(T) ' [K] in ' s.Name ]);
+    end
+  end
+end
 
 % evaluate the 4D model onto a mesh filling the Brillouin zone [-0.5:0.5 ]
 s.UserData.DOS     = [];  % make sure we re-evaluate again on a finer grid
@@ -71,14 +101,6 @@ dos_e   = DOS{0};
 % renormalize the dos in eV
 omega_e = omega_e/1000; % meV -> eV
 dos_e   = dos_e*1000;
-
-% get the temperature
-if nargin < 2
-  T = 1:500;  % default
-  try
-    T = Sqw_getT(s);  % a value is defined in the Parameters ?
-  end
-end
 
 % compute the entropy S [eV/K]
 S = get_entropy(omega_e, dos_e, T);
@@ -118,9 +140,15 @@ if ~isempty(inputname(1))
 end
 
 % return all
-s = [s.UserData.DOS s.UserData.pDOS ...
-    s.UserData.entropy s.UserData.internal_energy s.UserData.helmholtz_energy ...
-    s.UserData.heat_capacity ];
+t.README = [ mfilename ' ' s.Name ];
+t.DOS   = DOS;
+t.T     = T;
+t.Sqw   = f;
+t.maxFreq = s.UserData.maxFreq;
+t.entropy=s.UserData.entropy;
+t.internal_energy=s.UserData.internal_energy;
+t.helmholtz_energy=s.UserData.helmholtz_energy
+t.heat_capacity=s.UserData.heat_capacity;
 
 % ------------------------------------------------------------------------------
 function U = get_internal_energy(omega_e, dos_e, T, potential_energy)
