@@ -273,7 +273,7 @@ function [S, qLim, fig] = sqw_kpath(f, qLim, E, options)
     if isfield(f.UserData,'DOS') && ~isempty(f.UserData.DOS)
       figure(fig);
       DOS = f.UserData.DOS;
-      DOS{1} = DOS{1}*factor;
+      DOS{1} = DOS{1}*factor; % change energy unit
       xlabel(DOS,[ 'Energy ' unit ]);
       % rescale dispersion curves and use same limits for DOS
       p = get(gca,'Position'); p(3) = 0.6; set(gca,'Position', p);
@@ -281,7 +281,13 @@ function [S, qLim, fig] = sqw_kpath(f, qLim, E, options)
       a = axes('position', [ 0.8 p(2) 0.15 p(4) ]);
       % plot any partials first
       if isfield(f.UserData,'DOS_partials') && numel(f.UserData.DOS_partials) > 0
-        h=plot(f.UserData.DOS_partials);
+        d=f.UserData.DOS_partials;
+        for index=1:numel(d)
+          this_pDOS=d(index);
+          this_pDOS{1} = this_pDOS{1}*factor;
+          d(index) = this_pDOS;
+        end
+        h=plot(d);
         if iscell(h), h=cell2mat(h); end
         set(h,'LineStyle','--');
         hold on
