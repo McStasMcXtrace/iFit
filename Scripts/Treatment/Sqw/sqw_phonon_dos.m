@@ -225,7 +225,8 @@ function [DOS, DOS_partials, gDOS, s] = sqw_phonon_dos_4D(s)
   end
   
   % first get a quick estimate of the max frequency
-  if isempty(f)
+  if  (~isfield(s.UserData,'DOS')  || isempty(s.UserData.DOS) ...
+    || ~isfield(s.UserData,'gDOS') || isempty(s.UserData.gDOS)) && isa(s, 'iFunc')
     qh=linspace(-.5,.5,10);qk=qh; ql=qh; w=linspace(0.01,50,11);
     f=iData(s,[],qh,qk,ql',w);
     if isfield(s.UserData, 'FREQ') && ~isempty(s.UserData.FREQ)
@@ -276,7 +277,8 @@ function [DOS, DOS_partials, gDOS, s] = sqw_phonon_dos_4D(s)
   end
   
   % compute the gDOS from the the S(q,w) integral. A pre-factor is missing ?
-  if ~isempty(f) && isa(f, 'iData') && ndims(f) == 4
+  if ~isempty(f) && isa(f, 'iData') && ndims(f) == 4 ...
+    && (~isfield(s.UserData,'gDOS') || isempty(s.UserData.gDOS))
     gDOS = camproj(f, 4);
     s.UserData.gDOS = [];
     s.UserData.gDOS = gDOS;
