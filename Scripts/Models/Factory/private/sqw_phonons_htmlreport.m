@@ -54,8 +54,7 @@ case 'results'
   [maxFreq, Phonon_Model]= sqw_phonons_htmlreport_max_spectrum(fid, options, Phonon_Model);
   [grid4D,  Phonon_Model]= sqw_phonons_htmlreport_eval_4D(fid, options, Phonon_Model, maxFreq);
   try
-                 [~,DOS] = sqw_phonons_htmlreport_kpath(fid, options, Phonon_Model, maxFreq);
-                 if ~isempty(DOS), Phonon_Model.UserData.DOS = DOS; end
+                 sqw_phonons_htmlreport_kpath(fid, options, Phonon_Model, maxFreq);
   catch ME
                  disp(getReport(ME))
   end
@@ -94,6 +93,9 @@ function sqw_phonons_htmlreport_create_atoms(fid, options)
   % introduction
   fprintf(fid, '<p>This page presents the results of the estimate of phonon dispersions (lattice dynamics) in a single crystal, using a DFT code (the "calculator"). From the initial atomic configuration (geometry), each atom in the lattice cell is displaced by a small quantity. The displaced atom then sustains a, so called Hellmann-Feynman, restoring force to come back to the stable structure. The dynamical matrix is obtained from these forces, and its eigen-values are the energies of the vibrational modes in the crystal.</p>\n');
   fprintf(fid, '<p>This computational resource is provided by <a href="http://ifit.mccode.org">iFit</a>, with the <a href="http://ifit.mccode.org/Models.html#mozTocId990577"<b>sqw_phonon</b> Model</a>, which itself makes use of the <a href="https://wiki.fysik.dtu.dk/ase">Atomic Simulation Environment (ASE)</a>.\n');
+  if options.use_phonopy
+    fprintf(fid, ' In addition, the <a href="https://atztogo.github.io/phonopy/">PhonoPy</a> package is used to compute force constants (faster, more accurate).\n');
+  end
   fprintf(fid, '<p>This report summarizes the initial crystal geometry and the calculator configuration. When the simulation ends successfully, the lower part presents the S(hkl,w) dispersion curves as plots and data sets, the model used (as a Matlab object), and the density of states. These results correspond to the coherent inelastic part of the dynamic structure factor S(hkl,w), for vibrational modes in the harmonic approximation. In the following, we use energy unit in meV = 241.8 GHz = 11.604 K = 0.0965 kJ/mol, and momentum is given in reduced lattice units.</p>\n');
   fprintf(fid, '<p><b>Limitations:</b> The accuracy of the model depends on the parameters used for the computation, e.g. energy cut-off, k-points grid, smearing, ...</p>\n');
   
@@ -168,7 +170,7 @@ function sqw_phonons_htmlreport_table(fid, options, name)
  [ '.mat Matlab binary file. Load the Model/Data set under <a href="http://ifit.mccode.org">Matlab/iFit</a> with (this also works with the <a href="http://ifit.mccode.org/Install.html">standalone version of iFit</a> which does <b>not</b> require any Matlab license and installs on most systems): load(''<a href="' name '.mat">' name '.mat</a>'') <i></i></li></ul>' ] ...
   '.m Matlab script/function' ...
   '.dat Flat text file. You may have to reshape the data set. View with any text editor (gedit).' ...
-  '.h5 a NeXus/HDF5 data file to be opened with e.g. <a href="http://www.mantidproject.org/Main_Page">Mantid</a> or <a href="http://www.hdfgroup.org/hdf-java-html/hdfview">hdfview</a> or <a href="http://ifit.mccode.org">iFit</a>' ...
+  '.h5 a NeXus/HDF5 data file to be opened with e.g. <a href="http://www.mantidproject.org/Main_Page">Mantid</a>, <a href="http://www.hdfgroup.org/hdf-java-html/hdfview">hdfview</a>, <a href="http://vitables.org/">ViTables</a> or <a href="http://ifit.mccode.org">iFit</a>' ...
   '.fig a Matlab figure for Matlab or <a href="http://ifit.mccode.org">iFit</a>. Use </i>figure(gcf)</i> after loading' ...
   '.pdf an Adobe PDF, to be viewed with <a href="http://get.adobe.com/fr/reader/">Acrobat Reader</a> or <a href="http://projects.gnome.org/evince/">Evince</a>' ...
   '.svg a <a href="https://fr.wikipedia.org/wiki/Scalable_Vector_Graphics">Scalable Vector Graphics</a> image, to be viewed with Chrome/Firefox, <a href="http://inkscape.org/">Inkscape</a>, <a href="http://www.gimp.org/>GIMP.</a>, <a href="http://projects.gnome.org/evince/">Evince</a>' ...
@@ -241,7 +243,7 @@ function [logo, link, op] = sqw_phonons_htmlreport_init(options)
     logo='emt.png';
     link='https://wiki.fysik.dtu.dk/ase/ase/calculators/emt.html';
     copyfile(fullfile(ifitpath,'Docs','images',logo), options.target);
-  case 'QUANTUMESPRESSO'
+  case {'QUANTUMESPRESSO','QUANTUMESPRESSO_ASE'}
     logo='logo_qe.jpg';
     link='http://www.quantum-espresso.org/';
     copyfile(fullfile(ifitpath,'Docs','images',logo), options.target);
@@ -255,6 +257,7 @@ function [logo, link, op] = sqw_phonons_htmlreport_init(options)
     
   % clean 'options' from empty and 0 members
   op           = options;
+  op           = rmfield(op, 'available');
   op.htmlreport= 0;
   for f=fieldnames(op)'
     if isempty(op.(f{1})) ...
@@ -366,14 +369,20 @@ function Phonon_Model = sqw_phonons_htmlreport_model(fid, options)
 % ==============================================================================
 function Phonon_DOS = sqw_phonons_htmlreport_dos(fid, options, object)
   % display the vDOS. Model must have been evaluated once to compute DOS
+  Phonon_DOS = sqw_phonon_dos(object);
+  thermo     = sqw_thermochemistry(object, 1:1000);
   if isfield(object.UserData, 'DOS') && ~isempty(object.UserData.DOS)
     Phonon_DOS = object.UserData.DOS;
+    if isfield(thermo, 'entropy'),          Thermo_S = thermo.entropy; end
+    if isfield(thermo, 'internal_energy'),  Thermo_U = thermo.internal_energy; end
+    if isfield(thermo, 'helmholtz_energy'), Thermo_F = thermo.helmholtz_energy; end
+    if isfield(thermo, 'heat_capacity'),    Thermo_Cv= thermo.heat_capacity; end
     
     fprintf(fid, '<h3><a name="dos"></a>The vibrational density of states (vDOS)</h3>\n');
-    fprintf(fid, '<p>The vibrational density of states (aka phonon spectrum) is defined as the velocity auto-correlation function (VACF) of the particles.\n');
+    fprintf(fid, '<p>The vibrational density of states (aka phonon spectrum) is defined as the velocity auto-correlation function (VACF) of the particles.\n<br>%s<br>\n', object.Name);
     
     
-    properties = {'Phonon_DOS'};
+    properties = {'Phonon_DOS','Thermo_S','Thermo_U','Thermo_F','Thermo_Cv'};
     for index=1:numel(properties)
         name = properties{index};
         try
@@ -393,13 +402,13 @@ function Phonon_DOS = sqw_phonons_htmlreport_dos(fid, options, object)
         case 'Phonon_DOS'
           fprintf(fid, 'The phonon spectrum is shown below:</p><br>\n');
         case 'Thermo_S'
-          fprintf(fid, 'The entropy S=-dF/dT [eV/K] is shown below:</p><br>\n');
+          fprintf(fid, 'The entropy S=-dF/dT [J/K/mol] is shown below:</p><br>\n');
         case 'Thermo_U'
-          fprintf(fid, 'The internal energy U [eV] is shown below:</p><br>\n');
+          fprintf(fid, 'The internal energy U [J/mol] is shown below:</p><br>\n');
         case 'Thermo_F'
-          fprintf(fid, 'The Helmholtz energy F=U-TS=-kT lnZ [eV] is shown below:</p><br>\n');
+          fprintf(fid, 'The Helmholtz free energy F=U-TS=-kT lnZ [J/mol] is shown below:</p><br>\n');
         case 'Thermo_Cv'
-          fprintf(fid, 'The specific heat at constant volume Cv=dU/dT [eV/K] is shown below:</p><br>\n');
+          fprintf(fid, 'The molar specific heat at constant volume Cv=dU/dT [J/K/mol] is shown below:</p><br>\n');
         end
         sqw_phonons_htmlreport_table(fid, options,[ name ]);
     
@@ -422,12 +431,21 @@ function [maxFreq, object] = sqw_phonons_htmlreport_max_spectrum(fid, options, o
   maxFreq = max(maxFreq(:));  % in case the max energies are given per mode
  
 % ==============================================================================
-function [Phonon_kpath, DOS] = sqw_phonons_htmlreport_kpath(fid, options, object, maxFreq)
+function Phonon_kpath = sqw_phonons_htmlreport_kpath(fid, options, object, maxFreq)
   % generate dispersion along principal axes
-  object.UserData.DOS=[];
-  [Phonon_kpath,~,fig] = sqw_kpath(object, [], [0.01 maxFreq],'plot');
-  Phonon_kpath = log10(Phonon_kpath);
-  DOS = object.UserData.DOS;
+
+  [Phonon_kpath,kpath,fig] = sqw_kpath(object, 1, [0.01 maxFreq],'plot');
+  if isfinite(max(Phonon_kpath)) && max(Phonon_kpath)
+    Phonon_kpath = log10(Phonon_kpath/max(Phonon_kpath)); 
+  else Phonon_kpath = log10(Phonon_kpath); end
+  index=~isfinite(Phonon_kpath);
+  Phonon_kpath(index) = nan;
+  cmin = min(min(Phonon_kpath), max(Phonon_kpath));
+  cmax = max(min(Phonon_kpath), max(Phonon_kpath));
+  cmax = min(cmax, cmin+10);
+  index= find(Phonon_kpath > cmax);
+  Phonon_kpath(index) = nan;
+
   if ~isempty(Phonon_kpath)
     saveas(fig, fullfile(options.target, 'Phonon_kpath.fig'),'fig');
     close(fig);

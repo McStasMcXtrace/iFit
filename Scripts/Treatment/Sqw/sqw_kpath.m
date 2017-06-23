@@ -141,7 +141,17 @@ function [S, qLim, fig] = sqw_kpath(f, qLim, E, options)
   
   % set default qLim path according to space group/crystal system
   xticks=[];
-  if isempty(qLim)
+
+  if (numel(qLim) == 1 || numel(qLim) == 3) && isnumeric(qLim)
+    if numel(qLim) == 1
+      qLim = [ qLim qLim qLim ];
+    end
+    for i=1:numel(qLim0); 
+      qLim0{i} = qLim0{i}+qLim; 
+    end
+    qLim = qLim0;
+    xticks = lab;
+  elseif isempty(qLim)
     % we use when possible Path: Delta-Sigma-Lambda
     qLim = qLim0;
     xticks = lab;

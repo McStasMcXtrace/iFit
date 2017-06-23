@@ -104,7 +104,7 @@ t.Temperature     =T;
 t.maxFreq         =s.UserData.maxFreq;
 t.entropy         =s.UserData.entropy;            % S
 t.internal_energy =s.UserData.internal_energy;    % U
-t.helmholtz_energy=s.UserData.helmholtz_energy    % F = U-TS
+t.helmholtz_energy=s.UserData.helmholtz_energy;   % F = U-TS
 t.heat_capacity   =s.UserData.heat_capacity;      % Cv = dU/dT
 
 % ------------------------------------------------------------------------------
