@@ -532,6 +532,16 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO') || strcmpi(options.calculator
       properties.b_coh = sqw_phonons_b_coh(properties.chemical_symbols);
       save(fullfile(target, 'properties.mat'), '-v6', 'properties')
     end
+    if isfield(properties, 'masses')
+      properties.molar_mass = sum(properties.masses);
+    end
+    
+    % compute the density
+    if isfield(properties, 'masses') && isfield(properties, 'volume')
+      mole = 6.022140857e23;
+      properties.density = sum(properties.masses)/properties.volume/mole*1e24;
+    end
+
   else
     properties = [];
   end
