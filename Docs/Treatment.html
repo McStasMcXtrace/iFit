@@ -111,6 +111,7 @@
 
 
 
+
           scattering</a> [5,6].<br>
         <br>
         The dynamic structure factor is defined from the double
@@ -130,6 +131,7 @@
         specialized <a href="Models.html">models</a>. Then you can
         compute the 2D powder average, as shown below.<br>
         <h3><a class="mozTocH3" name="mozTocId301478"></a>Loading/generating
+
 
 
 
@@ -175,6 +177,7 @@ href="https://www.ill.eu/instruments-support/computing-for-science/cs-software/a
             finally <i>sqw_rebin</i>) ;</li>
           <li>you get a S(q,w) data set as a workspace ;</li>
           <li>export it into an HDF/NeXus file or as text (<i>write_lamp,
+
 
 
 
@@ -361,6 +364,7 @@ href="https://www.ill.eu/instruments-support/computing-for-science/cs-software/a
 
 
 
+
                 equally</i> Sqw{1} = - Sqw{1};</li>
           </ul>
         </div>
@@ -372,7 +376,7 @@ href="https://www.ill.eu/instruments-support/computing-for-science/cs-software/a
           1 Angs<sup>-1</sup> = 10 nm<sup>-1</sup><br>
         </div>
         <br>
-        <table border="1" cellpadding="2" cellspacing="2" width="100%">
+        <table width="100%" cellspacing="2" cellpadding="2" border="1">
           <tbody>
             <tr>
               <td valign="top"><i><b>Procedure</b></i><i><b><br>
@@ -408,17 +412,9 @@ href="https://www.ill.eu/instruments-support/computing-for-science/cs-software/a
                   href="images/Treatment_Sqw_symmetrize.png"><img
                     alt="Treatment_Sqw_symmetrize"
                     title="Treatment_Sqw_symmetrize"
-                    src="images/Treatment_Sqw_symmetrize.png"
-                    align="right" border="0" width="67" height="60"></a>Extend
-
-
-
-
-
-
-
-
-                the S*(|q|,w) in both energy sides. The initial data set
+                    src="images/Treatment_Sqw_symmetrize.png" width="67"
+                    height="60" align="right" border="0"></a>Extend the
+                S*(|q|,w) in both energy sides. The initial data set
                 should better be 'classical'.<br>
               </td>
             </tr>
@@ -431,8 +427,8 @@ href="https://www.ill.eu/instruments-support/computing-for-science/cs-software/a
               <td valign="top"><a href="images/Treatment_Sqw_Bosify.png"><img
                     alt="Treatment_Sqw_Bosify.png"
                     title="Treatment_Sqw_Bosify.png"
-                    src="images/Treatment_Sqw_Bosify.png" align="right"
-                    border="0" width="80" height="60"></a>Convert a
+                    src="images/Treatment_Sqw_Bosify.png" width="80"
+                    height="60" align="right" border="0"></a>Convert a
                 symmetric scattering law (aka classical, for instance
                 from Molecular Dynamics) into a 'quantum' scattering law
                 (non symmetric, for instance from neutron and X-ray
@@ -446,6 +442,7 @@ href="https://www.ill.eu/instruments-support/computing-for-science/cs-software/a
               <td valign="top">S(|q|,w) or S*(|q|,w)</td>
               <td valign="top">Check the S(q,w) data set. Possibly
                 convert from experimental data <i>S(&#966;,channel), </i><i>S(&#966;,t)
+
 
 
 
@@ -476,8 +473,8 @@ href="https://www.ill.eu/instruments-support/computing-for-science/cs-software/a
               <td valign="top"><a href="images/Treatment_Sqw_Sq.png"><img
                     alt="Treatment_Sqw_Sq.png"
                     title="Treatment_Sqw_Sq.png"
-                    src="images/Treatment_Sqw_Sq.png" align="right"
-                    border="0" width="80" height="60"></a>Compute the
+                    src="images/Treatment_Sqw_Sq.png" width="80"
+                    height="60" align="right" border="0"></a>Compute the
                 static structure factor. The S(q) is the same when
                 computed from the 'classical' and the 'quantum'
                 scattering law.<br>
@@ -494,17 +491,8 @@ href="https://www.ill.eu/instruments-support/computing-for-science/cs-software/a
                   href="images/Treatment_Sqw_dynrange.png"><img
                     alt="Treatment_Sqw_dynrange.png"
                     title="Treatment_Sqw_dynrange.png"
-                    src="images/Treatment_Sqw_dynrange.png"
-                    align="right" border="0" width="67" height="60"></a>Restrict
-
-
-
-
-
-
-
-
-
+                    src="images/Treatment_Sqw_dynrange.png" width="67"
+                    height="60" align="right" border="0"></a>Restrict
                 the dynamic structure factor to the measurable one for
                 an incoming energy Ei [meV]. The detection angular range
                 can be set as 3rd argument.<br>
@@ -521,8 +509,9 @@ href="https://www.ill.eu/instruments-support/computing-for-science/cs-software/a
                   href="images/Treatment_Sqw_moments.png"><b><img
                       alt="Treatment_Sqw_moments"
                       title="Treatment_Sqw_moments"
-                      src="images/Treatment_Sqw_moments.png"
-                      align="right" border="0" width="80" height="60"></b></a>Compute
+                      src="images/Treatment_Sqw_moments.png" width="80"
+                      height="60" align="right" border="0"></b></a>Compute
+
 
 
 
@@ -545,7 +534,7 @@ href="https://www.ill.eu/instruments-support/computing-for-science/cs-software/a
             </tr>
             <tr>
               <td valign="top"><b><font color="#3366ff"><a
-                      href="#mozTocId154363">Sqw_gDOS</a>(Sqw)</font></b><br>
+                      href="#mozTocId154363">Sqw_<font color="#3366ff">phonon_dos</font></a>(Sqw)</font></b><br>
               </td>
               <td valign="top">S(|q|,w) or S*(|q|,w) </td>
               <td valign="top">g(w)<br>
@@ -554,8 +543,8 @@ href="https://www.ill.eu/instruments-support/computing-for-science/cs-software/a
                 (gDOS)<a href="images/Treatment_Sqw_gDOS.png"><img
                     alt="Treatment_Sqw_gdos.png"
                     title="Treatment_Sqw_gdos.png"
-                    src="images/Treatment_Sqw_gDOS.png" align="right"
-                    border="0" width="80" height="60"></a></td>
+                    src="images/Treatment_Sqw_gDOS.png" width="80"
+                    height="60" align="right" border="0"></a></td>
             </tr>
             <tr>
               <td valign="top"><font color="#3366ff"><a
@@ -569,8 +558,9 @@ href="https://www.ill.eu/instruments-support/computing-for-science/cs-software/a
                       href="images/Treatment_Sqw_XS.png"><img
                         src="images/Treatment_Sqw_XS.png"
                         title="Treatment_Sqw_XS.png"
-                        alt="Treatment_Sqw_XS.png" align="right"
-                        border="0" width="80" height="60"></a></b></font>Compute
+                        alt="Treatment_Sqw_XS.png" width="80"
+                        height="60" align="right" border="0"></a></b></font>Compute
+
 
 
 
@@ -605,8 +595,8 @@ href="https://www.ill.eu/instruments-support/computing-for-science/cs-software/a
               </td>
               <td valign="top"><a href="images/Treatment_Sqw_Sab.png"><img
                     alt="Treatment_Sqw_Sab" title="Treatment_Sqw_Sab"
-                    src="images/Treatment_Sqw_Sab.png" align="right"
-                    border="0" width="87" height="60"></a>Convert a
+                    src="images/Treatment_Sqw_Sab.png" width="87"
+                    height="60" align="right" border="0"></a>Convert a
                 dynamic structure factor to its unit-less representation
                 <i>S(</i><i>&#945;,&#946;)</i> </td>
             </tr>
@@ -621,9 +611,9 @@ href="https://www.ill.eu/instruments-support/computing-for-science/cs-software/a
               <td valign="top"><a href="images/Treatment_Sqw_powder.png"><img
                     alt="Treatment_Sqw_powder.png"
                     title="Treatment_Sqw_powder.png"
-                    src="images/Treatment_Sqw_powder.png" align="right"
-                    border="0" width="80" height="60"></a>Convert a 4D
-                S(hkl,w) model or data set into a powder averaged
+                    src="images/Treatment_Sqw_powder.png" width="80"
+                    height="60" align="right" border="0"></a>Convert a
+                4D S(hkl,w) model or data set into a powder averaged
                 S(|q|,w). This can be used e.g. after calling <a
                   href="Models.html#mozTocId990577">sqw_phonons</a>.<br>
               </td>
@@ -643,6 +633,7 @@ href="https://www.ill.eu/instruments-support/computing-for-science/cs-software/a
         Dynamics (AIMD) with VASP, for 200 Ge atoms (GGA-PW91 potential)
         at T=1350K, from [7]. The data set is part of iFit, as well as <a
 href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/Ge_liq_coh.sqw">in
+
 
 
 
@@ -718,6 +709,7 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
 
 
 
+
           ensemble</a>. The integrator used along the trajectory is the
         <a href="https://en.wikipedia.org/wiki/Verlet_integration">Verlet</a>,
         which is a central difference, energy conserving integrator. As
@@ -729,8 +721,8 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
         real, symmetric in energy. We denote this scattering law S* to
         label it as symmetric.<a href="images/Treatment_Sqw_load.png"><img
             alt="Treatment_Sqw_load" title="Treatment_Sqw_load"
-            src="images/Treatment_Sqw_load.png" align="right" border="0"
-            width="200" height="180"></a> It is often named 'classical'.<br>
+            src="images/Treatment_Sqw_load.png" width="200" height="180"
+            align="right" border="0"></a> It is often named 'classical'.<br>
         <br>
         We plot the scattering law S*:<br>
         <ul>
@@ -750,8 +742,8 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
           href="images/Treatment_Sqw_symmetrize.png"><img
             alt="Treatment_Sqw_symmetrize"
             title="Treatment_Sqw_symmetrize"
-            src="images/Treatment_Sqw_symmetrize.png" align="right"
-            border="0" width="200" height="180"></a><br>
+            src="images/Treatment_Sqw_symmetrize.png" width="200"
+            height="180" align="right" border="0"></a><br>
         <ul>
           <li><font color="#3366ff">plot</font>(log10(Sqw2), <font
               color="#cc33cc">'view3'</font>);</li>
@@ -793,7 +785,7 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
         The semi-classical correction, Q, aka 'quantum' correction
         factor,&nbsp; can be selected as [1,2,34]:<br>
         <br>
-        <table border="1" cellpadding="2" cellspacing="2" width="100%">
+        <table width="100%" cellspacing="2" cellpadding="2" border="1">
           <tbody>
             <tr>
               <td valign="top"><i>Q = exp(hw/kT/2)</i></td>
@@ -808,6 +800,7 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
               <td valign="top"><i>Q = 2./(1+exp(-hw/kT))</i> <br>
               </td>
               <td valign="top">'standard'&nbsp; or 'Frommhold' [3]. <b><i>This
+
 
 
 
@@ -863,10 +856,10 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
         <a href="images/Treatment_Sqw_dynrange.png"><img
             alt="Treatment_Sqw_dynrange.png"
             title="Treatment_Sqw_dynrange.png"
-            src="images/Treatment_Sqw_dynrange.png" align="right"
-            border="0" width="200" height="180"></a>When not given, the
-        temperature will be searched in the Sqw data set. A 3rd argument
-        allows to specify the quantum correction to apply (<i>'standard'</i>
+            src="images/Treatment_Sqw_dynrange.png" width="200"
+            height="180" align="right" border="0"></a>When not given,
+        the temperature will be searched in the Sqw data set. A 3rd
+        argument allows to specify the quantum correction to apply (<i>'standard'</i>
         is default). Of course, in this example, for such a high
         temperature, the up- and down-scattering are about the same (the
         quantum correction remains close to 1). For materials at low
@@ -930,6 +923,7 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
 
 
 
+
             25)</li>
           <li> <font color="#3366ff">plot</font>(log10(Sqw25));</li>
         </ul>
@@ -938,8 +932,8 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
         <br>
         <a href="images/Treatment_Sqw_Sq.png"><img
             alt="Treatment_Sqw_Sq.png" title="Treatment_Sqw_Sq.png"
-            src="images/Treatment_Sqw_Sq.png" align="right" border="0"
-            width="200" height="149"></a>The structure factor S(q) is
+            src="images/Treatment_Sqw_Sq.png" width="200" height="149"
+            align="right" border="0"></a>The structure factor S(q) is
         the integral of S(q,w) over the energy. We use the usual '<font
           color="#3366ff">trapz</font>' integrator, or <font
           color="#3366ff">Sqw_Sq</font> which does the same.<br>
@@ -985,14 +979,16 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
 
 
 
+
             Sqw25]));</li>
         </ul>
         <h5><a class="mozTocH5" name="mozTocId566610"></a> <a
             href="images/Treatment_Sqw_moments.png"><b><img
                 alt="Treatment_Sqw_moments"
                 title="Treatment_Sqw_moments"
-                src="images/Treatment_Sqw_moments.png" align="right"
-                border="0" width="200" height="150"></b></a><b>Characteristic
+                src="images/Treatment_Sqw_moments.png" width="200"
+                height="150" align="right" border="0"></b></a><b>Characteristic
+
 
 
 
@@ -1020,6 +1016,7 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
         scattering units (here 72.64 g/mol for Ge). <br>
         <br>
         Using the 'quantum' scattering law S(q,w), we can define <i>n</i>-th
+
 
 
 
@@ -1075,7 +1072,8 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
         <ul>
         </ul>
         <h5><a class="mozTocH5" name="mozTocId154363"></a> <b>The
-            density of states (aka phonon or frequency spectrum)</b></h5>
+            density of states (aka phonon, vibrational or frequency
+            spectrum)</b></h5>
         The scattering law, from its definition [5,6], is a correlation
         function of the density operator, which itself depends on the <i>position</i>
         of the particles. <br>
@@ -1089,7 +1087,8 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
         of states from e.g. a neutron scattering time-of-flight
         experiment (such as done on IN4, IN5 and IN6 at the ILL). The
         concept of the <i>generalised density of states</i> has been
-        defined as [12,13]:<br>
+        defined as [12,13,15,16]:<br>
+        <br>
         <div align="center">gDOS(q,w) ~ S(q,w) w<sup>2</sup>/q<sup>2</sup><br>
         </div>
         <br>
@@ -1125,28 +1124,29 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
 href="https://raw.githubusercontent.com/McStasMcXtrace/McCode/master/mcstas-comps/data/D2O_liq_290_coh.sqw">https://raw.githubusercontent.com/McStasMcXtrace/McCode/master/mcstas-comps/data/D2O_liq_290_coh.sqw</a></font>'</font>);</li>
         </ul>
         Then we can compute the generalised density of states with the <font
-          color="#3366ff">Sqw_gDOS</font> procedure, from both the raw,
-        and the symmetrized, 'Bosified' (with quantum correction) data
-        set.<br>
+          color="#3366ff">Sqw_phonon_dos</font> procedure, from both the
+        raw, and the symmetrized, 'Bosified' (with quantum correction)
+        data set.<br>
         <ul>
           <li>SqwT = <font color="#3366ff">Sqw_Bosify</font>(<font
               color="#3366ff">Sqw_symmetrize</font>(Sqw), 290);</li>
           <li><font color="#3366ff">plot</font>(log(SqwT))<br>
           </li>
-          <li>g=[ <font color="#3366ff">Sqw_gDOS</font>(Sqw) <font
-              color="#3366ff">Sqw_gDOS</font>(SqwT) ];</li>
+          <li>g=[ <font color="#3366ff">Sqw_phonon_dos</font>(Sqw) <font
+              color="#3366ff">Sqw_</font><font color="#3366ff">phonon_dos</font>(SqwT)
+            ];</li>
           <li><font color="#3366ff">plot</font>(g); xlim([0 Inf]);</li>
         </ul>
         <div align="center"><a href="images/Treatment_Sqw_Bosify.png"><img
               alt="Treatment_Sqw_Bosify.png"
               title="Treatment_Sqw_Bosify.png"
-              src="images/Treatment_Sqw_Bosify.png" align="middle"
-              border="0" width="200" height="151"></a><a
+              src="images/Treatment_Sqw_Bosify.png" width="200"
+              height="151" align="middle" border="0"></a><a
             href="images/Treatment_Sqw_gDOS.png"><img
               alt="Treatment_Sqw_gdos.png"
               title="Treatment_Sqw_gdos.png"
-              src="images/Treatment_Sqw_gDOS.png" align="middle"
-              border="0" width="200" height="180"></a></div>
+              src="images/Treatment_Sqw_gDOS.png" width="200"
+              height="180" align="middle" border="0"></a></div>
         <ul>
         </ul>
         <h5><a class="mozTocH5" name="mozTocId260980"></a><b>The powder
@@ -1154,8 +1154,8 @@ href="https://raw.githubusercontent.com/McStasMcXtrace/McCode/master/mcstas-comp
         <a href="images/Treatment_Sqw_powder.png"><img
             alt="Treatment_Sqw_powder.png"
             title="Treatment_Sqw_powder.png"
-            src="images/Treatment_Sqw_powder.png" align="right"
-            border="0" width="200" height="150"></a>When a 4D S(q,w)
+            src="images/Treatment_Sqw_powder.png" width="200"
+            height="150" align="right" border="0"></a>When a 4D S(q,w)
         model is created, using e.g. the <a
           href="Models.html#mozTocId990577">sqw_phonons</a> and other
         specialized <a href="Models.html">models</a>, one&nbsp; can
@@ -1174,12 +1174,9 @@ href="https://raw.githubusercontent.com/McStasMcXtrace/McCode/master/mcstas-comp
         <br>
         The the average is obtained using e.g. <br>
         <pre>	&gt;&gt; s=<font color="#3366ff">sqw_phonons</font>([ ifitpath <font color="#cc33cc">'Data/POSCAR_Al'</font>],<font color="#cc33cc">'metal','EMT'</font>); <br>	&gt;&gt; pow=<font color="#3366ff">sqw_powder</font>(s); <font color="#3366ff">plot</font>(log(pow));</pre>
-        Here we have generated a 4D data set from the <a
-          href="Models.html#mozTocId990577">sqw_phonons</a> <a
-          href="iFunc.html">iFunc</a> Model, and then reduced it to 2D.
+        Here we have generated a 4D data set from the <a href="Models.html#mozTocId990577">sqw_phonons</a> <a href="iFunc.html">iFunc</a> Model, and then reduced it to 2D.
         <br>
-        The same procedure can be applied on an evaluated <a
-          href="iData.html"><i>iData</i></a> object out of the model.
+        The same procedure can be applied on an evaluated <a href="iData.html"><i>iData</i></a> object out of the model.
         <ul>
         </ul>
         <ul>
@@ -1189,16 +1186,12 @@ href="https://raw.githubusercontent.com/McStasMcXtrace/McCode/master/mcstas-comp
         </h4>
         The symmetrization step is not needed if you import experimental
         S(q,w) as measured on inelastic neutron scattering spectrometers
-        such as <a
-href="https://www.ill.eu/instruments-support/instruments-groups/instruments/in5">IN5@ILL</a>.
+        such as <a href="https://www.ill.eu/instruments-support/instruments-groups/instruments/in5">IN5@ILL</a>.
         This type of data set already 'contains' the Bose factor
         accounting for the population of modes.<br>
         <br>
-        Then the sequence of operations is first to <font
-          color="#3366ff">load</font> the data set, then apply the <font
-          color="#3366ff">Sqw_deBosify</font> procedure, specifying the
-        temperature if it is not defined in the data set. Then <font
-          color="#3366ff">Sqw_symmetrize</font> can be applied to derive
+        Then the sequence of operations is first to <font color="#3366ff">load</font> the data set, then apply the <font color="#3366ff">Sqw_deBosify</font> procedure, specifying the
+        temperature if it is not defined in the data set. Then <font color="#3366ff">Sqw_symmetrize</font> can be applied to derive
         a symmetric data set which extends in both w&gt;0and w&lt;0. The
         data close to the elastic w=0 line, which can be measured in up-
         and down- scattering, is computed as the mean of both sides.<br>
@@ -1215,14 +1208,11 @@ href="https://www.ill.eu/instruments-support/instruments-groups/instruments/in5"
           <li>L. Frommhold. Collision-induced absorption in gases, 1 st
             ed., Cambridge Monographs on Atomic, Molecular, and Chemical
             Physics, Vol. 2, Cambridge Univ. Press: London (1993).</li>
-          <li>B. Hehr, <a
-              href="http://www.lib.ncsu.edu/resolver/1840.16/7422">http://www.lib.ncsu.edu/resolver/1840.16/7422</a>
+          <li>B. Hehr, <a href="http://www.lib.ncsu.edu/resolver/1840.16/7422">http://www.lib.ncsu.edu/resolver/1840.16/7422</a>
             PhD manuscript (2010).</li>
           <li>Helmut Schober, <i>Journal of Neutron Research</i> 17
-            (2014) pp. 109-357&lt;<a
-              href="http://dx.doi.org/10.3233/JNR-140016">http://dx.doi.org/10.3233/JNR-140016</a>&gt;</li>
-          <li>G.L. Squires, <span id="productTitle"
-              class="a-size-large">Introduction to the Theory of Thermal
+            (2014) pp. 109-357&lt;<a href="http://dx.doi.org/10.3233/JNR-140016">http://dx.doi.org/10.3233/JNR-140016</a>&gt;</li>
+          <li>G.L. Squires, <span id="productTitle" class="a-size-large">Introduction to the Theory of Thermal
               Neutron Scattering, </span>Dover Publications Inc.(1997)</li>
           <li>Hugouvieux V, Farhi E, Johnson MR, et al., <i>PRB</i> <b>75</b>
             (2007) 104208</li>
@@ -1233,8 +1223,7 @@ href="https://www.ill.eu/instruments-support/instruments-groups/instruments/in5"
             (2015) 844; DOI: 10.1080/00223131.2014.984002</li>
           <li>J-P.Hansen and I.R.McDonald, Theory of simple liquids
             Academic Press New York 2006.</li>
-          <li>NIST Neutron scattering lengths and cross sections &lt;<a
-              href="https://www.ncnr.nist.gov/resources/n-lengths/">https://www.ncnr.nist.gov/resources/n-lengths/</a>&gt;;
+          <li>NIST Neutron scattering lengths and cross sections &lt;<a href="https://www.ncnr.nist.gov/resources/n-lengths/">https://www.ncnr.nist.gov/resources/n-lengths/</a>&gt;;
 
 
 
@@ -1265,17 +1254,15 @@ href="https://www.ill.eu/instruments-support/instruments-groups/instruments/in5"
             153</li>
           <li>Bellisent-Funel et al, <i>J. Mol. Struct.</i> <b>250</b>
             (1991) 213</li>
-          <li>Sears, <i>Neutron News</i> <b>3</b> (1992) 26 </li>
+          <li>Sears, <i>Neutron News</i> <b>3</b> (1992) 26 </li><li>Suck et al, Journal of Alloys and Compounds 342 (2002) 314</li><li>Bredov et al., Sov. Phys. Solid State 9, 214 (1967)<br></li>
         </ol>
         <h2><a class="mozTocH3" name="mozTocId415079"></a>Neutron
           scattering cross sections for nuclear engineering </h2>
         <h3><a class="mozTocH3" name="mozTocId721503"></a>Reading ENDF
           data sets</h3>
-        <p>iFit can read <a
-            href="https://www.oecd-nea.org/dbdata/data/manual-endf/endf102.pdf">ENDF</a>
+        <p>iFit can read <a href="https://www.oecd-nea.org/dbdata/data/manual-endf/endf102.pdf">ENDF</a>
           Thermal Scattering data sections (MF=7 MT=2 and 4), as well as
-          <a href="https://mcnp.lanl.gov/">ACE</a> files (requires <a
-            href="http://pyne.io/">PyNE</a> 0.5).<br>
+          <a href="https://mcnp.lanl.gov/">ACE</a> files (requires <a href="http://pyne.io/">PyNE</a> 0.5).<br>
         </p>
         <blockquote>
           <pre>&gt;&gt; endf = <font color="#3366ff">iData</font>('<a href="http://t2.lanl.gov/nis/data/data/ENDFB-VII-thermal/HinH2O">http://t2.lanl.gov/nis/data/data/ENDFB-VII-thermal/HinH2O</a>')<br>endf =  array [10   1] iData (methods,doc,plot,plot(log),more...) object:<br><br>Index     [Tag] [Dimension]                                     [Title] [Last command]          [Label/DisplayName]<br>    1   iD72088       [1 1]             'HinH2O.txt ENDF "Data Signal"' iD72088=load(iData,'... HinH2O.txt<br>    2   iD72089   [274 187] 'H(H2O) T=293.6 [K] Thermal ... "S(alp..."' iD72089=load(iData,'... H(H2O) T=293.6 ...<br>    3   iD72090   [274 187] 'H(H2O) T=350 [K] Thermal ne... "S(alp..."' iD72090=load(iData,'... H(H2O) T=350 [K...<br>    4   iD72091   [274 187] 'H(H2O) T=400 [K] Thermal ne... "S(alp..."' iD72091=load(iData,'... H(H2O) T=400 [K...<br>    5   iD72092   [274 187] 'H(H2O) T=450 [K] Thermal ne... "S(alp..."' iD72092=load(iData,'... H(H2O) T=450 [K...<br>    6   iD72093   [274 187] 'H(H2O) T=500 [K] Thermal ne... "S(alp..."' iD72093=load(iData,'... H(H2O) T=500 [K...<br>    7   iD72094   [274 187] 'H(H2O) T=550 [K] Thermal ne... "S(alp..."' iD72094=load(iData,'... H(H2O) T=550 [K...<br>    8   iD72095   [274 187] 'H(H2O) T=600 [K] Thermal ne... "S(alp..."' iD72095=load(iData,'... H(H2O) T=600 [K...<br>    9   iD72096   [274 187] 'H(H2O) T=650 [K] Thermal ne... "S(alp..."' iD72096=load(iData,'... H(H2O) T=650 [K...<br>   10   iD72097   [274 187] 'H(H2O) T=800 [K] Thermal ne... "S(alp..."' iD72097=load(iData,'... H(H2O) T=800 [K...<br>&gt;&gt; <font color="#3366ff">subplot</font>(log(endf(2:end)),<font color="#cc33cc">'view2 tight'</font>)<br></pre>
@@ -1285,8 +1272,7 @@ href="https://www.ill.eu/instruments-support/instruments-groups/instruments/in5"
         S(alpha,beta) data sets.<br>
         <br>
         We recommend to make use of <a href="http://pyne.io/">PyNE</a>
-        in order to read <a
-          href="https://www.oecd-nea.org/dbdata/data/manual-endf/endf102.pdf">ENDF</a>
+        in order to read <a href="https://www.oecd-nea.org/dbdata/data/manual-endf/endf102.pdf">ENDF</a>
         and <a href="https://mcnp.lanl.gov/">ACE</a> files.<br>
         PyNE can be installed under Ubuntu with commands:<br>
         <blockquote>
@@ -1311,10 +1297,7 @@ href="https://www.ill.eu/instruments-support/instruments-groups/instruments/in5"
           <br>
           &#963;(Ei) = &#963;<sub>b</sub>&#8747;&#8747;S(q,w)q dq dw /2ki<sup>2</sup> </div>
         <br>
-        <a href="images/Treatment_Sqw_XS.png"><img
-            alt="Treatment_Sqw_XS.png" title="Treatment_Sqw_XS.png"
-            src="images/Treatment_Sqw_XS.png" align="right" border="0"
-            width="200" height="180"></a>where &#963;<sub>b</sub> is the
+        <a href="images/Treatment_Sqw_XS.png"><img alt="Treatment_Sqw_XS.png" title="Treatment_Sqw_XS.png" src="images/Treatment_Sqw_XS.png" width="200" height="180" align="right" border="0"></a>where &#963;<sub>b</sub> is the
         tabulated bound neutron cross section [Sears, <i>Neutron News</i>
         <b>3</b> (1992) 26] for thermal energies. The integral can be
         computed with the <font color="#3366ff">Sqw_scatt_xs</font>
@@ -1323,14 +1306,10 @@ href="https://www.ill.eu/instruments-support/instruments-groups/instruments/in5"
         <br>
         In the following example, we compute the coherent scattering
         cross section, with the bound cross section such as 15.4 barns
-        for the coherent scattering in D2O [10] (data <a
-href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O_liq_290_coh.sqw">here</a>):<br>
+        for the coherent scattering in D2O [10] (data <a href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O_liq_290_coh.sqw">here</a>):<br>
         <ul>
-          <li>Sqw=<font color="#3366ff">iData</font>(<font
-              color="#cc33cc">'<a
-href="https://raw.githubusercontent.com/McStasMcXtrace/McCode/master/mcstas-comps/data/D2O_liq_290_coh.sqw">https://raw.githubusercontent.com/McStasMcXtrace/McCode/master/mcstas-comps/data/D2O_liq_290_coh.sqw</a>'</font>);</li>
-          <li>SqwT = <font color="#3366ff">Sqw_Bosify</font>(<font
-              color="#3366ff">Sqw_symmetrize</font>(Sqw), 290);</li>
+          <li>Sqw=<font color="#3366ff">iData</font>(<font color="#cc33cc">'<a href="https://raw.githubusercontent.com/McStasMcXtrace/McCode/master/mcstas-comps/data/D2O_liq_290_coh.sqw">https://raw.githubusercontent.com/McStasMcXtrace/McCode/master/mcstas-comps/data/D2O_liq_290_coh.sqw</a>'</font>);</li>
+          <li>SqwT = <font color="#3366ff">Sqw_Bosify</font>(<font color="#3366ff">Sqw_symmetrize</font>(Sqw), 290);</li>
           <li>Ei = <font color="#3366ff">logspace</font>(-3,3,50);%
             from Ei=10<sup>-3</sup> to 10<sup>2</sup> meV.<br>
           </li>
@@ -1340,11 +1319,8 @@ href="https://raw.githubusercontent.com/McStasMcXtrace/McCode/master/mcstas-comp
         This quantity is mostly used to estimate the scattering power of
         any material, considered as an incoherent scatterer, such as in
         the neutron transport codes <a href="https://mcnp.lanl.gov/">MCNP</a>,
-        <a href="https://geant4.web.cern.ch/geant4/">GEANT4</a>, <a
-          href="https://www.oecd-nea.org/tools/abstract/detail/nea-1716">TRIPOLI</a>,
-        <a href="http://www.fluka.org">FLUKA</a>, <a
-          href="https://mit-crpg.github.io/openmc/">OpenMC</a>, <a
-          href="http://www.oecd-nea.org/tools/abstract/detail/ccc-0638">TART</a>,
+        <a href="https://geant4.web.cern.ch/geant4/">GEANT4</a>, <a href="https://www.oecd-nea.org/tools/abstract/detail/nea-1716">TRIPOLI</a>,
+        <a href="http://www.fluka.org">FLUKA</a>, <a href="https://mit-crpg.github.io/openmc/">OpenMC</a>, <a href="http://www.oecd-nea.org/tools/abstract/detail/ccc-0638">TART</a>,
         ...<br>
         <br>
         The above equation asymptotically converges to &#963;<sub>b</sub>.
@@ -1371,8 +1347,7 @@ href="https://raw.githubusercontent.com/McStasMcXtrace/McCode/master/mcstas-comp
         <br>
         As most S(q,w) scattering law models in nuclear engineering
         include an e<sup>-WEi </sup>decaying factor (a kind of very
-        weak/slow Debye-Waller damping, see NJOY/<a
-          href="http://t2.lanl.gov/nis/publications/thermal.pdf">LEAPR</a>),
+        weak/slow Debye-Waller damping, see NJOY/<a href="http://t2.lanl.gov/nis/publications/thermal.pdf">LEAPR</a>),
 
 
 
@@ -1397,8 +1372,7 @@ href="https://raw.githubusercontent.com/McStasMcXtrace/McCode/master/mcstas-comp
           <font color="#ff0000">Warning</font>: this factor is NOT the
           Debye-Waller factor exp(-&lt;u2&gt;Q2) !<br>
           <br>
-          The scatterer mass can be input as 3rd argument to <font
-            color="#3366ff">Sqw_scatt_xs</font>. For a poly-atomic
+          The scatterer mass can be input as 3rd argument to <font color="#3366ff">Sqw_scatt_xs</font>. For a poly-atomic
           material, the effective mass is obtained by weighting the
           bound cross sections with the A<sup>2</sup>/(A+1)<sup>2</sup>
           factors, e.g.:<br>
@@ -1476,10 +1450,7 @@ href="https://raw.githubusercontent.com/McStasMcXtrace/McCode/master/mcstas-comp
           / (2Ki.Kf)<br>
         </div>
         <br>
-        <a href="images/Treatment_Sqw_Sab.png"><img
-            alt="Treatment_Sqw_Sab" title="Treatment_Sqw_Sab"
-            src="images/Treatment_Sqw_Sab.png" align="right" border="0"
-            width="200" height="138"></a>The variable change (q,w) &#8594;
+        <a href="images/Treatment_Sqw_Sab.png"><img alt="Treatment_Sqw_Sab" title="Treatment_Sqw_Sab" src="images/Treatment_Sqw_Sab.png" width="200" height="138" align="right" border="0"></a>The variable change (q,w) &#8594;
         (alpha,beta) is done with the <font color="#3366ff">Sqw_Sab</font>
         procedure, which takes as input the mass of the scatterer A and
         the Temperature. When not given, these quantities are searched
@@ -1488,12 +1459,8 @@ href="https://raw.githubusercontent.com/McStasMcXtrace/McCode/master/mcstas-comp
         (may have to symmetrize it), or from an experiment after <i>
           deBosify</i> and <i>symmetrization</i>:<br>
         <ul>
-          <li>Sqw=<font color="#3366ff">iData</font>(<font
-              color="#cc33cc">'</font><font color="#cc33cc"><font
-                color="#cc33cc"><a
-href="https://raw.githubusercontent.com/McStasMcXtrace/McCode/master/mcstas-comps/data/D2O_liq_290_coh.sqw">https://raw.githubusercontent.com/McStasMcXtrace/McCode/master/mcstas-comps/data/D2O_liq_290_coh.sqw</a></font>'</font>);</li>
-          <li>Sab = <font color="#3366ff">Sqw_Sab</font>(<font
-              color="#3366ff">Sqw_symmetrize</font>(Sqw), 20);</li>
+          <li>Sqw=<font color="#3366ff">iData</font>(<font color="#cc33cc">'</font><font color="#cc33cc"><font color="#cc33cc"><a href="https://raw.githubusercontent.com/McStasMcXtrace/McCode/master/mcstas-comps/data/D2O_liq_290_coh.sqw">https://raw.githubusercontent.com/McStasMcXtrace/McCode/master/mcstas-comps/data/D2O_liq_290_coh.sqw</a></font>'</font>);</li>
+          <li>Sab = <font color="#3366ff">Sqw_Sab</font>(<font color="#3366ff">Sqw_symmetrize</font>(Sqw), 20);</li>
           <li><font color="#3366ff">plot</font>(log(Sab))<br>
           </li>
         </ul>
@@ -1503,11 +1470,9 @@ href="https://raw.githubusercontent.com/McStasMcXtrace/McCode/master/mcstas-comp
         <br>
         <b>References: </b><br>
         <ul>
-          <li>M. Mattes and J. Keinert, IAEA INDC(NDS)-0470, 2005. [<a
-              href="https://www-nds.iaea.org/publications/indc/indc-nds-0470/">link</a>]<br>
+          <li>M. Mattes and J. Keinert, IAEA INDC(NDS)-0470, 2005. [<a href="https://www-nds.iaea.org/publications/indc/indc-nds-0470/">link</a>]<br>
           </li>
-          <li>R. E. MacFarlane, LA-12639-MS (ENDF-356), 1994. [<a
-href="http://www.iaea.org/inis/collection/NCLCollectionStore/_Public/26/027/26027423.pdf">link</a>]<br>
+          <li>R. E. MacFarlane, LA-12639-MS (ENDF-356), 1994. [<a href="http://www.iaea.org/inis/collection/NCLCollectionStore/_Public/26/027/26027423.pdf">link</a>]<br>
           </li>
         </ul>
         <h3><a class="mozTocH3" name="mozTocId600198"></a>Double
@@ -1523,22 +1488,15 @@ href="http://www.iaea.org/inis/collection/NCLCollectionStore/_Public/26/027/2602
         procedure for the selected angle. A scaling factor may be
         needed, depending on how the S(q,w) data set is normalised.<br>
         <br>
-        <a href="images/Treatment_Sqw_DDCS.png"><img
-            alt="Treatment_Sqw_DDCS" title="Treatment_Sqw_DDCS"
-            src="images/Treatment_Sqw_DDCS.png" align="right" border="0"
-            width="200" height="150"></a>In the following example, we
+        <a href="images/Treatment_Sqw_DDCS.png"><img alt="Treatment_Sqw_DDCS" title="Treatment_Sqw_DDCS" src="images/Treatment_Sqw_DDCS.png" width="200" height="150" align="right" border="0"></a>In the following example, we
         use Molecular Dynamics data, symmetrize it, then apply the
         detailed balance to go from the 'classical' to the 'quantum'
         S(q,w). Finally, we extract the S(q,w) for a given incident
         energy Ei=154 meV and around 10 deg detector angle. And we plot
         the integral along momentum (axis 1) to show a spectrum.<br>
         <ul>
-          <li>Sqw=<font color="#3366ff">iData</font>(<font
-              color="#cc33cc">'</font><font color="#cc33cc"><font
-                color="#cc33cc"><a
-href="https://raw.githubusercontent.com/McStasMcXtrace/McCode/master/mcstas-comps/data/D2O_liq_290_coh.sqw">https://raw.githubusercontent.com/McStasMcXtrace/McCode/master/mcstas-comps/data/D2O_liq_290_coh.sqw</a></font>'</font>);</li>
-          <li>SqwT = <font color="#3366ff">Sqw_Bosify</font>(<font
-              color="#3366ff">Sqw_symmetrize</font>(Sqw), 290);</li>
+          <li>Sqw=<font color="#3366ff">iData</font>(<font color="#cc33cc">'</font><font color="#cc33cc"><font color="#cc33cc"><a href="https://raw.githubusercontent.com/McStasMcXtrace/McCode/master/mcstas-comps/data/D2O_liq_290_coh.sqw">https://raw.githubusercontent.com/McStasMcXtrace/McCode/master/mcstas-comps/data/D2O_liq_290_coh.sqw</a></font>'</font>);</li>
+          <li>SqwT = <font color="#3366ff">Sqw_Bosify</font>(<font color="#3366ff">Sqw_symmetrize</font>(Sqw), 290);</li>
           <li>DDCS = <font color="#3366ff">Sqw_dynamic_range</font>(SqwT,
 
 
@@ -1568,19 +1526,16 @@ href="https://raw.githubusercontent.com/McStasMcXtrace/McCode/master/mcstas-comp
             Dynamics of Heavy Water”,<br>
             <i>Nucl. Sci. Eng.</i>, 3<b>3</b>, 41 (1968). Provides heavy
             water data at Beta=1.5, Ei=38.6, meV T=299 K, and Ei=101 meV
-            theta=60 deg. [<a
-              href="http://www.ans.org/pubs/journals/nse/a_20916">link</a>]<br>
+            theta=60 deg. [<a href="http://www.ans.org/pubs/journals/nse/a_20916">link</a>]<br>
           </li>
           <li>F.G. Bischoff, M.L. Yeater, W.E. Moore, <i>Nucl. Sci.
               Eng.</i> <b>48</b> (1972) 266. Provides heavy water ToF
-            data Ei=233 meV at &#952;=25 deg. [<a
-              href="http://www.ans.org/pubs/journals/nse/a_22485">link</a>]<br>
+            data Ei=233 meV at &#952;=25 deg. [<a href="http://www.ans.org/pubs/journals/nse/a_22485">link</a>]<br>
           </li>
           <li>F.G. Bischoff et al., “Low Energy Neutron Inelastic
             Scattering”, RPI-328-87 (1967). Provides light water data
             Ei=154, 231, 631 meV at &#952;=60 deg.</li>
-          <li>R. E. MacFarlane, LA-12639-MS (ENDF-356), 1994. [<a
-href="http://www.iaea.org/inis/collection/NCLCollectionStore/_Public/26/027/26027423.pdf">link</a>].
+          <li>R. E. MacFarlane, LA-12639-MS (ENDF-356), 1994. [<a href="http://www.iaea.org/inis/collection/NCLCollectionStore/_Public/26/027/26027423.pdf">link</a>].
 
 
 
@@ -1598,8 +1553,7 @@ href="http://www.iaea.org/inis/collection/NCLCollectionStore/_Public/26/027/2602
 
             Indicates light water rotational vibrations at 205 and 408
             meV</li>
-          <li>E. Liu (RPI) &lt;<a
-href="http://homepages.rpi.edu/%7Edanony/Papers/RND2011/ND_Sym_Liu_4_27_11.pdf">http://homepages.rpi.edu/~danony/Papers/RND2011/ND_Sym_Liu_4_27_11.pdf</a>&gt;
+          <li>E. Liu (RPI) &lt;<a href="http://homepages.rpi.edu/%7Edanony/Papers/RND2011/ND_Sym_Liu_4_27_11.pdf">http://homepages.rpi.edu/~danony/Papers/RND2011/ND_Sym_Liu_4_27_11.pdf</a>&gt;
 
 
 
@@ -1618,14 +1572,12 @@ href="http://homepages.rpi.edu/%7Edanony/Papers/RND2011/ND_Sym_Liu_4_27_11.pdf">
             presents light water data at Ei=600 and Ei=154 meV, and
             compares to older data from Bischoff and Esch.</li>
           <li>J. I. Márquez Damian et al, <i>Annals of Nuclear Energy</i>
-            <b>65</b> (2014) 280–289. [<a
-href="http://www.sciencedirect.com/science/article/pii/S0306454913005987">link</a>]
+            <b>65</b> (2014) 280–289. [<a href="http://www.sciencedirect.com/science/article/pii/S0306454913005987">link</a>]
             Gathers most of this data.<br>
           </li>
           <li>Esch et al, <i>Nuclear Science and Engineering</i>: <b>46</b>,
             223-235, 1971. Provides light water data Ei=632 meV and 154
-            meV theta=10 14 25 40 60 150 deg. [<a
-              href="http://www.ans.org/pubs/journals/nse/a_22356">link</a>]<br>
+            meV theta=10 14 25 40 60 150 deg. [<a href="http://www.ans.org/pubs/journals/nse/a_22356">link</a>]<br>
           </li>
         </ul>
         <br>
@@ -1653,5 +1605,6 @@ Farhi
           &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL,
           Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid
           ; width: 53px; height: 50px;" align="right"></a> </div>
-  </body>
-</html>
+  
+
+</body></html>

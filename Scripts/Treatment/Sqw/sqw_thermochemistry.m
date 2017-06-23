@@ -41,34 +41,14 @@ if (isa(s,'iFunc') || isa(s,'iData')) && ndims(s) == 2
   end
   return
 end
-  
-  
+
+% must be 2D or 4D iFunc/iData.
 if ndims(s) ~= 4 || ~isa(s,'iFunc')
   disp([ mfilename ': Invalid model dimension. Should be iFunc 4D. It is currently ' class(s) ' ' num2str(ndims(s)) 'D' ]);
   return
 end
 
-% first get a quick estimate of the max frequency
-qh=linspace(-.5,.5,10);qk=qh; ql=qh; w=linspace(0.01,50,11);
-f=iData(s,[],qh,qk,ql',w);
-if isfield(s.UserData, 'FREQ') && ~isempty(s.UserData.FREQ)
-  UD = s.UserData;
-  s.UserData.maxFreq = max(UD.FREQ(:));
-  disp([ mfilename ': maximum phonon energy ' num2str(s.UserData.maxFreq) ' [meV] in ' s.Name ]);
 
-  % display IR/Raman Gamma point vibrational energies
-  % compute Gamma point modes (IR/Raman) 
-  index = find(sum(abs(UD.HKL),2) == 0);
-  if ~isempty(index) && (~isfield(UD,'properties') ...
-    || ~isfield(UD.properties,'vibrational_energies') ...
-    || isempty(UD.properties.vibrational_energies))
-    disp([ strtok(this.Name) ': Gamma point energies (IR/Raman):' ]);
-    this.UserData.properties.vibrational_energies = UD.FREQ(index(1),:)';
-    f = this.UserData.properties.vibrational_energies(:);
-    disp(' [meV]      [THz]     [cm-1]')
-    disp(num2str([ f f*.2418 f*8.0657 ],'%10.3f'));
-  end
-end
 
 % get the temperature
 if nargin < 2
@@ -81,20 +61,7 @@ if nargin < 2
   end
 end
 
-% evaluate the 4D model onto a mesh filling the Brillouin zone [-0.5:0.5 ]
-s.UserData.DOS     = [];  % make sure we re-evaluate again on a finer grid
-s.UserData.maxFreq = max(s.UserData.maxFreq(:));
-qh=linspace(-0.5,.5,30);qk=qh; ql=qh; w=linspace(0.01,s.UserData.maxFreq*1.2,51);
-f=iData(s,[],qh,qk,ql',w);
-
-% then get back the bare frequencies
-if ~isfield(s.UserData,'DOS')
-  disp([ mfilename ': The object has no density of states available. Can not compute thermo-chemistry.' ]);
-  return
-end
-
-% get the DOS
-DOS     = s.UserData.DOS;
+DOS     = sqw_phonon_dos(s);
 omega_e = DOS{1};
 dos_e   = DOS{0};
 
@@ -114,7 +81,7 @@ if isfield(s.UserData,'properties') && isfield(s.UserData.properties,'potential_
   potential_energy = s.UserData.properties.potential_energy;
 else potential_energy = 0; end
 
-U = get_internal_energy(omega_e/1000, dos_e, T, potential_energy);
+U = get_internal_energy(omega_e/1000, dos_e, T, potential_energy/1000);
 internal_energy = iData(T, U);
 internal_energy.Title=[ 'Internal energy U [eV/cell] ' strtok(s.Name) ]; 
 xlabel(internal_energy,'Temperature [K]'); ylabel(internal_energy,'U [eV/cell]');
@@ -144,11 +111,11 @@ t.README = [ mfilename ' ' s.Name ];
 t.DOS   = DOS;
 t.T     = T;
 t.Sqw   = f;
-t.maxFreq = s.UserData.maxFreq;
-t.entropy=s.UserData.entropy;
-t.internal_energy=s.UserData.internal_energy;
-t.helmholtz_energy=s.UserData.helmholtz_energy
-t.heat_capacity=s.UserData.heat_capacity;
+t.maxFreq         =s.UserData.maxFreq;
+t.entropy         =s.UserData.entropy;            % S
+t.internal_energy =s.UserData.internal_energy;    % U
+t.helmholtz_energy=s.UserData.helmholtz_energy    % F = U-TS
+t.heat_capacity   =s.UserData.heat_capacity;      % Cv = dU/dT
 
 % ------------------------------------------------------------------------------
 function U = get_internal_energy(omega_e, dos_e, T, potential_energy)
@@ -207,4 +174,5 @@ function S = get_entropy(omega_e, dos_e, T)
   S_vib = (omega_e ./ (T * (exp(hw_kT) - 1.)) - kB * log(1. - exp(-hw_kT)));
                  
   S = trapz(omega_e, S_vib .* dos_e);
+  
 
