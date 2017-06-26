@@ -4,6 +4,7 @@ Architecture: arch
 Installed-Size: 48100
 Depends: bash
 Recommends: mcrinstaller, libxmu6, libxp6
+Suggests: mcstas-suite, libopenmpi-dev
 Section: Science
 Priority: optional
 Homepage: http://ifit.mccode.org
