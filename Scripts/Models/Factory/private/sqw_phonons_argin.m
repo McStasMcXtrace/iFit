@@ -78,7 +78,7 @@ for index=1:numel(varargin)
       options.htmlreport = 1;
     elseif strcmpi(varargin{index},'gui')
       options.gui = 'init';
-    elseif strcmpi(varargin{index},'optimize') || strcmpi(varargin{index},'minimize')
+    elseif strcmpi(varargin{index},'optimize') || strcmpi(varargin{index},'optimise') || strcmpi(varargin{index},'minimize')
       options.optimizer = 'BFGS';
     elseif strcmpi(varargin{index},'fast') || strcmpi(varargin{index},'low') || strcmpi(varargin{index},'coarse')
       options.accuracy = 'fast';
