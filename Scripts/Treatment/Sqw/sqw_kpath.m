@@ -32,10 +32,12 @@ function [S, qLim, fig] = sqw_kpath(f, qLim, E, options)
 %           {'Gamma' 'K' 'M' 'Gamma' 'A' 'H' 'L' 'A' }
 %         when not given or empty, this is guessed from the crystal spacegroup.
 %         The bands intensity is computed along the path. For neutron scattering,
-%         as all standard points in the Brillouin zone are centered around 0 and
-%         the intensity is proportional to |Q.e|^2, all transverse modes are extinct.
+%           as all standard points in the Brillouin zone are centered around 0 and
+%           the intensity is proportional to |Q.e|^2, all transverse modes are extinct.
 %         To get the propoer band intensity around a given Bragg peak G, the k-path
 %         should be shifted by G.
+%         The path can also be given as a Bragg peak location, e.g. [0 0 1] to compute
+%           the dispersion around that location.
 %   w:    a vector of energies (4-th axis) for which to evaluate the model (double)
 %         can also be given as Emax, or [ Emin Emax ]
 %         when not given or empty, the maximum excitation energy is used.
@@ -73,10 +75,10 @@ function [S, qLim, fig] = sqw_kpath(f, qLim, E, options)
   
   % default options in qLim or E ?
   if ischar(qLim) && any(~cellfun(@isempty, ...
-     strfind(lower({'plot' 'THz','cm-1','meV','cm','hz'}),lower(qLim))))
+     strfind(lower({'plot' 'THz','cm-1','meV','cm','hz'}),strtok(lower(qLim)))))
     options = qLim; qLim = '';
   elseif ischar(E) && any(~cellfun(@isempty, ...
-     strfind(lower({'plot' 'THz','cm-1','meV','cm','hz'}),lower(E))))
+     strfind(lower({'plot' 'THz','cm-1','meV','cm','hz'}), strtok(lower(E)))))
     options = E; E = [];
   end
   
