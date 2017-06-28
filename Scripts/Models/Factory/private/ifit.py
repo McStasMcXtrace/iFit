@@ -818,6 +818,28 @@ def phonon_read(phonon, method='Frederiksen', symmetrize=3, acoustic=True,
 # ------------------------------------------------------------------------------
 # compatibility with PhonoPy
 # ------------------------------------------------------------------------------
+def find_primitive(cell, symprec=1e-5):
+    """
+    A primitive cell is searched in the input cell. When a primitive
+    cell is found, an object of Atoms class of the primitive cell is
+    returned. When not, None is returned.
+    
+    From phonopy/structure/symmetry.py
+    """
+    
+    # return as is when spglib is not installed
+    if not has_spglib:
+        return cell
+        
+    lattice, positions, numbers = spglib.find_primitive(cell, symprec)
+    if lattice is None:
+        return cell
+    else:
+        return Atoms(numbers=numbers,
+                     scaled_positions=positions,
+                     cell=lattice,
+                     pbc=True)
+
 
 def phonopy_run(phonon, single=True, filename='FORCE_SETS'):
     """Run the phonon calculations, using PhonoPy.
