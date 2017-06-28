@@ -87,6 +87,7 @@ for index=1:numel(varargin)
       options.accuracy = 'very fast';
     elseif strcmpi(varargin{index},'accurate') || strcmpi(varargin{index},'high') || strcmpi(varargin{index},'slow')
       options.accuracy = 'accurate';
+      options.use_phonopy = 0;
     elseif strcmpi(varargin{index},'phonopy') 
       options.use_phonopy = 1;
       options.accuracy = 'very fast';

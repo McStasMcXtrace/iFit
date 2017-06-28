@@ -117,7 +117,13 @@ function [S, qLim, fig] = sqw_kpath(f, qLim, E, options)
       if iscell(spacegroup), spacegroup = spacegroup{1}; end
       if ischar(spacegroup), spacegroup = str2double(spacegroup); end
       if 195 <= spacegroup && spacegroup <= 230
-        crystalsystem = 'Cubic';
+        if lower(f.UserData.properties.spacegroup(1)) == 'f'
+          crystalsystem = 'fcc';
+        elseif lower(f.UserData.properties.spacegroup(1)) == 'i'
+          crystalsystem = 'bcc';
+        else
+          crystalsystem = 'Cubic';
+        end
       elseif 168 <= spacegroup && spacegroup <= 194
         crystalsystem = 'Hexagonal';
       elseif 143 <= spacegroup && spacegroup <= 167
