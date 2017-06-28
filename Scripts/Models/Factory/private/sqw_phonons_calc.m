@@ -207,7 +207,7 @@ case 'EMT'
 case 'GPAW' % ==================================================================
   
   decl = 'from gpaw import GPAW, PW, FermiDirac';
-  calc = [ 'calc = GPAW(usesymm=False, txt="' fullfile(options.target,'gpaw.log') '"' ]; % because small displacement breaks symmetry
+  calc = [ 'calc = GPAW(symmetry={"point_group": False}, txt="' fullfile(options.target,'gpaw.log') '"' ]; % because small displacement breaks symmetry
 
   if isscalar(options.occupations) && options.occupations>=0 % smearing in eV
     calc=[ calc sprintf(', occupations=FermiDirac(%g)', options.occupations) ];
@@ -426,7 +426,7 @@ case 'QUANTUMESPRESSO_ASE'
   
   
   decl = 'from qeutil import QuantumEspresso';
-  calc = [ 'calc = QuantumEspresso(use_symmetry=False, nspin=2, label=atoms.get_chemical_formula(), wdir="' options.target '"' ]; % because small displacement breaks symmetry
+  calc = [ 'calc = QuantumEspresso(use_symmetry=False, tstress=True, label=atoms.get_chemical_formula(), wdir="' options.target '"' ]; % because small displacement breaks symmetry
 
   if isscalar(options.occupations) && options.occupations>=0 % smearing in eV
     calc=[ calc sprintf(', occupations="smearing", smearing="methfessel-paxton", degauss=%g', options.occupations/Ry) ];
