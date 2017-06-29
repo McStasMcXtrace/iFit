@@ -221,12 +221,15 @@ end
 options.configuration = configuration;
 
 if options.use_phonopy && ...
-    (strcmp(options.calculator,'quantumespresso') || strcmp(options.calculator,'quantumespresso_phon'))
+    (strcmpi(options.calculator,'quantumespresso') || strcmpi(options.calculator,'quantumespresso_phon'))
   options.calculator = 'quantumespresso_ase'; % PhonoPy can NOT be used with PHON
 elseif isempty(status.phon) && ...
-  (strcmp(options.calculator,'quantumespresso') || strcmp(options.calculator,'quantumespresso_phon')) ...
+  (strcmpi(options.calculator,'quantumespresso') || strcmpi(options.calculator,'quantumespresso_phon')) ...
   && ~isempty(status.quantumespresso_ase)
   options.calculator = 'quantumespresso_ase'; % PHON not available -> use QEutil
+elseif options.use_phonopy && strcmpi(options.calculator,'gpaw')
+  % GPAW can not be used with PhonoPy (issue with write/read PhonoPy pickle)
+  options.use_phonopy = 0;
 end
 
 
