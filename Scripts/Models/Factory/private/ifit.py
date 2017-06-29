@@ -920,9 +920,10 @@ def phonopy_run(phonon, single=True, filename='FORCE_SETS'):
         file_IO.write_FORCE_SETS(phonpy.get_displacement_dataset())
     
     # save the PhonoPy object
-    fid = open("phonopy.pkl","wb")
-    pickle.dump(phonpy, fid)
-    fid.close()
+    fid = opencew("phonopy.pkl")
+    if fid is not None and rank == 0:
+        pickle.dump(phonpy, fid)
+        fid.close()
     
 
     # transfer results to the ASE phonon object
@@ -1016,9 +1017,10 @@ def phonopy_run_calculate(phonon, phonpy, supercell, single):
                 forces -= feq # forward difference, but assumes equilibrium is not always 0
 
             # save the forces in a pickle
-            f = open(filename, 'wb')
-            pickle.dump(forces, f)
-            f.close()
+            f = opencew(filename)
+            if f is not None and rank == 0:
+                pickle.dump(forces, f)
+                f.close()
             
             # in single shot mode, we return when forces were computed
             if single:

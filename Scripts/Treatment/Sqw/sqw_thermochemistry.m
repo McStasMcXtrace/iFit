@@ -37,16 +37,8 @@ if (~isa(s,'iFunc') && ~isa(s,'iData')) || ~any(ndims(s) == [2 4])
   return
 end
 
-% get the temperature
 if isempty(T)
-
-  T = Sqw_getT(s);  % a value is defined in the Parameters ?
-  if isempty(T), 
-    T = 1:500;  % default
-  elseif isscalar(T)
-    disp([ mfilename ': found temperature T=' num2str(T) ' [K] in ' s.Name ]);
-  end
-  
+  T = 1:500;  % default
 end
 
 DOS     = sqw_phonon_dos(s);
