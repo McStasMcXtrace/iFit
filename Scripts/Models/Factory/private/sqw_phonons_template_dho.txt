@@ -44,11 +44,23 @@ Q=[ qx(:) qy(:) qz(:) ];  % in Angs-1
 clear q_cart qx qy qz
 
 % check if we have everything needed for the intensity estimate: b_coh, positions
-b_coh = []; positions = [];
+b_coh = []; positions = []; masses=1;
 if isfield(UD, 'positions')
   positions = UD.positions;
 elseif isfield(UD, 'properties') && isfield(UD.properties, 'positions')
   positions = UD.properties.positions;
+end
+
+if isfield(UD, 'masses')
+  masses = UD.positions;
+elseif isfield(UD, 'masses') && isfield(UD.properties, 'masses')
+  masses = UD.properties.masses;
+end
+if isscalar(masses) && size(positions,1) > 1
+  for index=1:size(positions,1)
+    if index > numel(masses), masses(index) = 1; end
+    if isnan(masses(index)) || masses(index) <= 0, masses(index) = 1; end
+  end
 end
 
 if isfield(UD, 'b_coh')
@@ -161,7 +173,7 @@ for index=1:size(FREQ,2)  % loop on modes
         DW = exp(-DW);  % Debye-Waller factor
         % one phonon form factor: H. Schober, (9.203)
         if ~isempty(b_coh) && all(b_coh)
-          ZQ = ZQ + b_coh(atom) .* DW .* sum(Q.*squeeze(POLAR(:,index,atom,:)),2) .* exp(-i*Q*positions(atom,:)');
+          ZQ = ZQ + b_coh(atom) / sqrt(masses(atom)) .* DW .* sum(Q.*squeeze(POLAR(:,index,atom,:)),2) .* exp(-i*Q*positions(atom,:)');
         else  % when no b_coh, we only show DW*exp(-iQr)
           ZQ = ZQ + DW .* exp(-i*Q*positions(atom,:)');
         end

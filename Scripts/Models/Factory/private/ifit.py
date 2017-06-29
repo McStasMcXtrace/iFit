@@ -293,7 +293,7 @@ def phonons_run_eq(phonon, supercell):
                     
         # Write output to file
         if rank == 0:
-            pickle.dump(output, fd)
+            pickle.dump(output, fd, protocol=2)
             sys.stdout.write('Writing %s\n' % filename)
             fd.close()
             # check forces
@@ -405,7 +405,7 @@ def phonons_run(phonon, single=True, difference='central'):
                     if output is None:
                         # failed using symmetry to derive force. Trigger full computation.
                         force0 = None
-                    else:
+                    elif rank == 0:
                         print "Imaging atom #%-3i %-3s    to " % \
                             (offset + a, supercell.get_chemical_symbols()[a]), pos[a] + disp, \
                             " (Angs) using rotation:"
@@ -414,8 +414,9 @@ def phonons_run(phonon, single=True, difference='central'):
                 if force0 is None or rot is None: # compute forces
                     # move atom 'a' by 'disp'
                     supercell.positions[offset + a] = pos[a] + disp
-                    print "Moving  atom #%-3i %-3s    to " % \
-                        (offset + a, supercell.get_chemical_symbols()[a]), pos[a] + disp, " (Angs)"
+                    if rank == 0:
+                        print "Moving  atom #%-3i %-3s    to " % \
+                            (offset + a, supercell.get_chemical_symbols()[a]), pos[a] + disp, " (Angs)"
                         
                     # Call derived class implementation of __call__
                     output = phonon.__call__(supercell)
@@ -435,6 +436,8 @@ def phonons_run(phonon, single=True, difference='central'):
             # when exiting the for 'i' loop, we have 3 independent 'force1' array
             # derive a Cartesian basis, and write pickle files
             force2 = _phonons_run_force2(phonon, dxlist, force1, a, sign, symprec=1e-6)
+            
+            barrier()
             
             # then we derive the Cartesian basis 'force2' array and write files
             if single:
@@ -680,7 +683,7 @@ def _phonons_run_force2(phonon, dxlist, force1, a, sign, symprec=1e-6):
         # write the pickle for the current Cartesian axis
         fd = opencew(filename)
         if rank == 0:
-            pickle.dump(force2[i], fd)
+            pickle.dump(force2[i], fd, protocol=2)
             sys.stdout.write('Writing %s\n' % filename)
             fd.close()
             sys.stdout.flush()
@@ -694,7 +697,7 @@ def _phonons_run_force2(phonon, dxlist, force1, a, sign, symprec=1e-6):
     return force2
     
 # ------------------------------------------------------------------------------
-def phonon_read(phonon, method='Frederiksen', symmetrize=3, acoustic=True,
+def phonons_read(phonon, method='Frederiksen', symmetrize=3, acoustic=True,
          cutoff=None, born=False, **kwargs):
     """Read forces from pickle files and calculate force constants.
 
@@ -721,6 +724,7 @@ def phonon_read(phonon, method='Frederiksen', symmetrize=3, acoustic=True,
         
     """
 
+    # proceed with pure ASE 'Phonon' object.
     method = method.lower()
     assert method in ['standard', 'frederiksen']
     if cutoff is not None:
@@ -813,7 +817,6 @@ def phonon_read(phonon, method='Frederiksen', symmetrize=3, acoustic=True,
     M_inv = numpy.outer(phonon.m_inv_x, phonon.m_inv_x)
     for D in phonon.D_N:
         D *= M_inv
-                
 
 # ------------------------------------------------------------------------------
 # compatibility with PhonoPy
@@ -905,9 +908,12 @@ def phonopy_run(phonon, single=True, filename='FORCE_SETS'):
         phonpy.generate_displacements(distance=0.01)
         # iterative call for all displacements
         set_of_forces, flag = phonopy_run_calculate(phonon, phonpy, supercell, single)
+        barrier()
+        
         if flag is True:
             return flag # some more work is probably required
             
+        sys.stdout.write('[ASE/Phonopy] Computing force constants\n')
         # use symmetry to derive forces in equivalent displacements
         phonpy.produce_force_constants(forces=set_of_forces)
         
@@ -919,10 +925,14 @@ def phonopy_run(phonon, single=True, filename='FORCE_SETS'):
                                 directions=directions)
         file_IO.write_FORCE_SETS(phonpy.get_displacement_dataset())
     
+    # store as additional data in atoms 'info'
+    phonon.atoms.info["phonopy"] = phonpy
+    
     # save the PhonoPy object
     fid = opencew("phonopy.pkl")
     if fid is not None and rank == 0:
-        pickle.dump(phonpy, fid)
+        print "[ASE/Phonopy] Writing %s" % "phonopy.pkl"
+        pickle.dump(phonpy, fid, protocol=2)
         fid.close()
     
 
@@ -994,11 +1004,12 @@ def phonopy_run_calculate(phonon, phonpy, supercell, single):
             f.close()
         else:
             # proceed with force calculation for current displaced supercell
-            print "[ASE/Phonopy] Computing step %i/%i" % (d+1, len(supercells))
             disp = disps[d]
             scell = supercells[d]
-            print "Moving  atom #%-3i %-3s    to " % \
-                (disp[0], scell.get_chemical_symbols()[disp[0]]), disp[1:]
+            if rank == 0:
+                print "[ASE/Phonopy] Computing step %i/%i" % (d+1, len(supercells))
+                print "Moving  atom #%-3i %-3s    to " % \
+                    (disp[0], scell.get_chemical_symbols()[disp[0]]), disp[1:]
             
             cell = Atoms(symbols=scell.get_chemical_symbols(),
                          scaled_positions=scell.get_scaled_positions(),
@@ -1019,7 +1030,8 @@ def phonopy_run_calculate(phonon, phonpy, supercell, single):
             # save the forces in a pickle
             f = opencew(filename)
             if f is not None and rank == 0:
-                pickle.dump(forces, f)
+                sys.stdout.write('Writing %s\n' % filename)
+                pickle.dump(forces, f, protocol=2)
                 f.close()
             
             # in single shot mode, we return when forces were computed
