@@ -172,7 +172,7 @@ if ~isempty(field)
 end
 
 % ============================================================================
-% private function iData_getfields, returns field, class, numel 
+% private function iFunc_getfields, returns field, class, numel 
 function [f, t, n] = iFunc_getfields(structure, parent)
 
 f=[]; t=[]; n=[];

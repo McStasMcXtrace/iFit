@@ -26,7 +26,12 @@ function  T = Sqw_getT(s)
 
   if isempty(T)
     f = findfield(s,{'Temperature','T'},'numeric cache');
-    if ~isempty(f), T = s.(f{1}); end
+    for index=1:numel(f)
+        try
+            T = s.(f{index});
+            break
+        end
+    end
   end
   
   if isvector(T), T = mean(T(:)); else T=[]; end
