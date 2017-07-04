@@ -422,15 +422,16 @@ class MlabWrap(object):
            ``mlab._dont_proxy["cell"] = True``."""
         if 'matlab' in self._session.matlab_process_path:
           # addpath to iFit location if using Matlab and distribution is not standalone
-          self._eval('isd=double(isdeployed);')
-          isdeployed = self._get('isd')
+          # self._eval('isd=double(isdeployed);')
+          # isdeployed = self._get('isd')
+          isdeployed = 1
           # when not deployed, call 'addpath'
           if isdeployed == 0:
             print "Installing iFit"
             location = os.path.abspath(
                   os.path.realpath(os.path.dirname(__file__))+os.sep+'..'+os.sep+'..' )
             self._eval("addpath(genpath('"+location+"'));", print_expression=True)
-          print self._eval('disp(version(iData));')
+          # print self._eval('disp(version(iData));')
         print "To learn how to use Python iFit, type: mlab.doc(mlab.iData())\n";
     def __del__(self):
         try:
@@ -675,7 +676,10 @@ class MlabWrap(object):
                     "Couldn't ascertain number of output args"
                     "for '%s', assuming 1." % name)
                 nout = 1
-        doc = self._do("help('%s')" % name)
+        try:
+            doc = self._do("help('%s')" % name)
+        except:
+            doc = None
         # play it safe only return 1st if nout >= 1
         # XXX are all ``nout>1``s also useable as ``nout==1``s?
         nout = nout and 1

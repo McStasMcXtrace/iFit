@@ -22,20 +22,24 @@ except:
   class settings:
     MATLAB_PATH = 'guess'
 
-def open(arg):
+def open(matlab_path=None):
+  if matlab_path is None:
+    # check if we can find Matlab
+    if os.getenv('MLABRAW_CMD_STR'):
+      matlab_path = os.getenv('MLABRAW_CMD_STR')
+    else:
+      matlab_path = settings.MATLAB_PATH
+    if matlab_path != 'guess' and os.path.isfile(matlab_path + '/bin/matlab'):
+      matlab_path = matlab_path + '/bin/matlab'
   if is_win:
     ret = MatlabConnection()
     ret.open()
   else:
-    if settings.MATLAB_PATH != 'guess':
-      matlab_path = settings.MATLAB_PATH + '/bin/matlab'
-    else:
-      matlab_path = 'guess'
-    try:
-      ret = MatlabConnection(matlab_path)
-      ret.open()
-    except:
-      print 'Could not open matlab, is it in %s?' % matlab_path
+    ret = MatlabConnection(matlab_process_path=matlab_path)
+    ret.open()
+    #except:
+    #  print 'Could not open matlab, is it in %s?' % matlab_path
+    # ret = None
   return ret
   
 def close(matlab):
