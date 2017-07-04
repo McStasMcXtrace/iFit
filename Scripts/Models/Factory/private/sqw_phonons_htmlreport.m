@@ -434,16 +434,11 @@ function [maxFreq, object] = sqw_phonons_htmlreport_max_spectrum(fid, options, o
 function Phonon_kpath = sqw_phonons_htmlreport_kpath(fid, options, object, maxFreq)
   % generate dispersion along principal axes
 
-  [Phonon_kpath,kpath,fig] = sqw_kpath(object, 1, [0.01 maxFreq],'plot');
+  [Phonon_kpath,kpath,fig] = sqw_kpath(object, 0, [0.01 maxFreq],'plot');
   if isfinite(max(Phonon_kpath)) && max(Phonon_kpath)
     Phonon_kpath = log10(Phonon_kpath/max(Phonon_kpath)); 
   else Phonon_kpath = log10(Phonon_kpath); end
   index=~isfinite(Phonon_kpath);
-  Phonon_kpath(index) = nan;
-  cmin = min(min(Phonon_kpath), max(Phonon_kpath));
-  cmax = max(min(Phonon_kpath), max(Phonon_kpath));
-  cmax = min(cmax, cmin+10);
-  index= find(Phonon_kpath > cmax);
   Phonon_kpath(index) = nan;
 
   if ~isempty(Phonon_kpath)
