@@ -131,12 +131,12 @@ class MatlabPipe(object):
     #  print 'Invalid version code %s, defaulting to 2010a' % matlab_version
       matlab_version = '2010a'
     if not os.path.exists(matlab_process_path):
-      raise ValueError('Matlab process path %s does not exist' % matlab_process_path)
+      print 'WARNING: Matlab process path %s is not a fully qualified path' % matlab_process_path
     self.matlab_version = (int(matlab_version[:4]), matlab_version[4])
     self.matlab_process_path = matlab_process_path
     self.process             = None
     self.command_end_string  ='___MATLAB_PIPE_COMMAND_ENDED___'
-    self.expected_output_end = '%s\n>>' % self.command_end_string
+    self.expected_output_end = '%s' % self.command_end_string
     self.stdout_to_read      = ''
     if use_pipe == None:
       if sys.platform.startswith('win'):
@@ -157,6 +157,7 @@ class MatlabPipe(object):
       raise MatlabConnectionError('Matlab(TM) process is still active.'
         'Use MatlabPipe.close to close it.')
     # remove '-nojvm' from Popen arguments to allow better Java widgets
+    print "Opening: %s" % self.matlab_process_path
     if 'matlab' in self.matlab_process_path:
       self.process = subprocess.Popen(
         [self.matlab_process_path, '-nodesktop','-nosplash'],
@@ -164,15 +165,15 @@ class MatlabPipe(object):
     elif 'ifit' in self.matlab_process_path:
       """currently broken as the pipe does not seem functional with ifit"""
       self.process = subprocess.Popen(
-        [self.matlab_process_path],
+        [self.matlab_process_path, '-nodesktop'],
         stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     flags = fcntl.fcntl(self.process.stdout, fcntl.F_GETFL)
     fcntl.fcntl(self.process.stdout, fcntl.F_SETFL, flags| os.O_NONBLOCK)
-    
-    if print_matlab_welcome:
-      self._sync_output()
-    else:
-      self._sync_output(None)
+    print "Sync: %i" % print_matlab_welcome
+    #if print_matlab_welcome:
+      # self._sync_output()
+    #else:
+    #  self._sync_output(None)
     # end open
 
   def close(self):
@@ -411,7 +412,7 @@ class MatlabPipe(object):
 
   def _sync_output(self, on_new_output=sys.stdout.write):
     """Read pipe until the ___MATLAB_PIPE_COMMAND_ENDED___ message appears
-    Then searches foe the prompt >>
+    Then searches for the prompt >>
     """
     self.process.stdin.write('disp(\'%s\');\n' % self.command_end_string)
     ret = self._read_until(self.expected_output_end, on_new_output)

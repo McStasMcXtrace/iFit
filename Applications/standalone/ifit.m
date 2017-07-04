@@ -79,7 +79,9 @@ while ~strcmp(ifit_options.line, 'exit') && ~strcmp(ifit_options.line, 'return')
   elseif strncmp(ifit_options.line,'clear ', 5)% 'clear' must retain ifit_options and this
     ifit_options.line = [ 'clearvars ' ifit_options.line(6:end) ];
   end
-  if strncmp(ifit_options.line,'clearvars ', 10)
+  if strncmp(ifit_options.line,'clearvars ', 10) ...
+    && isempty(find(ifit_options.line == '(')) ...
+    && isempty(find(ifit_options.line == ';'))
     ifit_options.line = [ ifit_options.line ' -except ifit_options this' ];
   end
 
