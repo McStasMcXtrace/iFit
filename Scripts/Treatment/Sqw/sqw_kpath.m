@@ -269,7 +269,7 @@ function [S, qLim, fig] = sqw_kpath(f, qLim, E, options)
 
   if nargout == 0 || ~isempty(strfind(options, 'plot'))
     fig = figure; 
-    if isfinite(max(S)), plot(log10(S/max(S)),'view2');
+    if isfinite(max(S)) && max(S), plot(log10(S/max(S)),'view2');
     else plot(log10(S),'view2'); end
     axis tight
     add_contextmenu(gca)
