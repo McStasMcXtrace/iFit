@@ -42,7 +42,7 @@ for index=1:numel(varargin)
       options.occupations = 'smearing';
     elseif strcmpi(varargin{index},'fixed') || strcmpi(varargin{index},'insulator')
       options.occupations = 'fixed';
-    elseif strcmpi(varargin{index},'semiconductor')
+    elseif strcmpi(varargin{index},'semiconductor') || strcmpi(varargin{index},'semi')
       options.occupations = 'semiconductor';
     
       
@@ -71,7 +71,8 @@ for index=1:numel(varargin)
       options.calculator = 'quantumespresso';
     elseif strcmpi(varargin{index},'octopus')
       options.calculator = 'octopus';
-      
+    
+    % other options
     elseif strcmpi(varargin{index},'plot') || strcmpi(varargin{index},'autoplot')
       options.autoplot = 1;
     elseif strcmpi(varargin{index},'html') || strcmpi(varargin{index},'htmlreport') || strcmpi(varargin{index},'report')

@@ -6,7 +6,7 @@
         from ase.lattice import bulk
         import get_spacegroup
         atoms = bulk("Cu", "fcc", a=3.6, cubic=True)
-        sg = get_spacegroup.get_spacegroup(atoms)
+        sg = ifit.get_spacegroup(atoms)
         sg
             Spacegroup(225, setting=1)
         atoms.info
@@ -55,14 +55,14 @@ except ImportError:
     pass
 
 # ------------------------------------------------------------------------------
-def get_spacegroup(atoms, symprec=1e-5):
+def get_spacegroup(atoms, symprec=1e-5, method='phonopy'):
     """Determine the spacegroup to which belongs the Atoms object.
     
     Parameters:
     atoms:    an Atoms object
     symprec:  Symmetry tolerance, i.e. distance tolerance in Cartesian 
               coordinates to find crystal symmetry.
-    center:   None, or the index of the atoms to use as center
+    method:   'phonopy' when available, or 'ase'
               
     The Spacegroup object is returned, and stored in atoms.info['spacegroup'] 
     when this key does not exist (avoids overwrite). To force overwrite of the 
@@ -77,7 +77,7 @@ def get_spacegroup(atoms, symprec=1e-5):
     """
 
     # use spglib when it is available (and return)
-    if has_spglib:
+    if has_spglib and method is 'phonopy':
         sg    = spglib.get_spacegroup(atoms)
         sg_no = int(sg[sg.find("(")+1:sg.find(")")])
         atoms.info["spacegroup"] = Spacegroup(sg_no)
@@ -124,7 +124,7 @@ def _get_spacegroup(atoms, symprec=1e-5, center=None):
         sg        = Spacegroup(nb)
         #
         # now we scan all atoms in the cell and look for equivalent sites
-        sites,kinds = equivalent_sites(sg, positions, 
+        sites,kinds = sg.equivalent_sites(positions, 
                 onduplicates='keep', symprec=symprec)
         #    
         # the equivalent sites should match all other atom locations in the cell
@@ -135,98 +135,6 @@ def _get_spacegroup(atoms, symprec=1e-5, center=None):
             break
 
     return found
-
-# ------------------------------------------------------------------------------
-def equivalent_sites(sg, scaled_positions, onduplicates='keep',
-                         symprec=1e-3):
-        """Returns the scaled positions and all their equivalent sites.
-
-        Parameters:
-
-        scaled_positions: list | array
-            List of non-equivalent sites given in unit cell coordinates.
-        onduplicates : 'keep' | 'replace' | 'warn' | 'error'
-            Action if `scaled_positions` contain symmetry-equivalent
-            positions:
-            
-            'keep'
-               ignore additional symmetry-equivalent positions
-            'replace'
-                replace
-            'warn'
-                like 'keep', but issue an UserWarning
-            'error'
-                raises a SpacegroupValueError
-                    
-        symprec: float
-            Minimum "distance" between two sites in scaled coordinates
-            before they are counted as the same site.
-
-        Returns:
-
-        sites: array
-            A NumPy array of equivalent sites.
-        kinds: list
-            A list of integer indices specifying which input site is
-            equivalent to the corresponding returned site.
-
-        Example:
-
-        >>> from ase.lattice.spacegroup import Spacegroup
-        >>> sg = Spacegroup(225)  # fcc
-        >>> sites, kinds = ifit.equivalent_sites(sg, [[0, 0, 0], [0.5, 0.0, 0.0]])
-        >>> sites
-        array([[ 0. ,  0. ,  0. ],
-               [ 0. ,  0.5,  0.5],
-               [ 0.5,  0. ,  0.5],
-               [ 0.5,  0.5,  0. ],
-               [ 0.5,  0. ,  0. ],
-               [ 0. ,  0.5,  0. ],
-               [ 0. ,  0. ,  0.5],
-               [ 0.5,  0.5,  0.5]])
-        >>> kinds
-        [0, 0, 0, 0, 1, 1, 1, 1]
-        """
-        kinds = []
-        sites = []
-        
-        scaled = numpy.array(scaled_positions, ndmin=2)
-        for kind, pos in enumerate(scaled):
-            for rot, trans in sg.get_symop():
-                # check if R.x + T = x' is in the atoms list (equivalent site)
-                # x is expressed in fractional/scaled/direct/lattice coordinates
-                
-                site = numpy.mod(numpy.dot(rot, pos) + trans, 1.)
-                if not sites:
-                    sites.append(site)
-                    kinds.append(kind)
-                    continue
-                t = site - sites
-                # test if this is a new site location, and append it
-                mask = numpy.linalg.norm(t - numpy.rint(t) < symprec)
-                if numpy.any(mask):
-                    ind = numpy.argwhere(mask)[0][0]
-                    if kinds[ind] == kind:
-                        pass
-                    elif onduplicates == 'keep':
-                        pass
-                    elif onduplicates == 'replace':
-                        kinds[ind] = kind
-                    elif onduplicates == 'warn':
-                        warnings.warn('scaled_positions %d and %d '
-                                      'are equivalent'%(kinds[ind], kind))
-                    elif onduplicates == 'error':
-                        raise SpacegroupValueError(
-                            'scaled_positions %d and %d are equivalent'%(
-                                kinds[ind], kind))
-                    else:
-                        raise SpacegroupValueError(
-                            'Argument "onduplicates" must be one of: '
-                            '"keep", "replace", "warn" or "error".')
-                else:
-                    sites.append(site)
-                    kinds.append(kind)
-        return numpy.array(sites), kinds
         
 # ------------------------------------------------------------------------------
 def _get_wigner_seitz(atoms, move=0, wrap=1, symprec=1e-6):
@@ -272,6 +180,7 @@ def _get_wigner_seitz(atoms, move=0, wrap=1, symprec=1e-6):
     
     return xtmp
     
+# ------------------------------------------------------------------------------
 def phonons_run_eq(phonon, supercell):
     """Run the calculation for the equilibrium lattice
     
@@ -299,7 +208,7 @@ def phonons_run_eq(phonon, supercell):
             # check forces
             fmax = output.max()
             fmin = output.min()
-            sys.stdout.write('Equilibrium forces min=%g max=%g\n' % (fmin, fmax))
+            sys.stdout.write('[ASE] Equilibrium forces min=%g max=%g\n' % (fmin, fmax))
         sys.stdout.flush()
     else:
         # read previous data
@@ -320,6 +229,11 @@ def phonons_run(phonon, single=True, difference='central'):
     started. Be aware that an interrupted calculation may produce an empty
     file (ending with .pckl), which must be deleted before restarting the
     job. Otherwise the calculation for that displacement will not be done.
+    
+    This implementation is the same as ASE, but allows to select the type of
+    force gradient to use (difference). Also, it does make use of the spacegroup 
+    to lower the number of displacements, using the strategy adopted in PHON 
+    (D. Alfe). It is not as good as PhonoPy, but remains much simpler.
     
     input:
     
@@ -361,9 +275,13 @@ def phonons_run(phonon, single=True, difference='central'):
     
     # when not central difference, we check if the equilibrium forces are small
     # and will use the '0' forces in gradient
-    if len(signs) == 1: 
+    if len(signs) == 1 and not os.path.isfile(phonon.name + '.eq.pckl'): 
         # Do calculation on equilibrium structure
+        if rank == 0:
+            print "[ASE] Computing equilibrium"
         phonons_run_eq(phonon, supercell)
+        if single:
+            return True # and some more iterations may be required
 
     # Positions of atoms to be displaced in the reference cell
     natoms = len(phonon.atoms)
@@ -406,7 +324,7 @@ def phonons_run(phonon, single=True, difference='central'):
                         # failed using symmetry to derive force. Trigger full computation.
                         force0 = None
                     elif rank == 0:
-                        print "Imaging atom #%-3i %-3s    to " % \
+                        print "[ASE] Imaging atom #%-3i %-3s    to " % \
                             (offset + a, supercell.get_chemical_symbols()[a]), pos[a] + disp, \
                             " (Angs) using rotation:"
                         print rot
@@ -415,7 +333,7 @@ def phonons_run(phonon, single=True, difference='central'):
                     # move atom 'a' by 'disp'
                     supercell.positions[offset + a] = pos[a] + disp
                     if rank == 0:
-                        print "Moving  atom #%-3i %-3s    to " % \
+                        print "[ASE] Moving  atom #%-3i %-3s    to " % \
                             (offset + a, supercell.get_chemical_symbols()[a]), pos[a] + disp, " (Angs)"
                         
                     # Call derived class implementation of __call__
@@ -429,15 +347,13 @@ def phonons_run(phonon, single=True, difference='central'):
                 
                 # append the forces to the force1 list
                 if output is None:
-                    print "Warning: force1 is None !!"
+                    print "[ASE] Warning: force1 is None !!"
 
                 force1.append(output)
                 
             # when exiting the for 'i' loop, we have 3 independent 'force1' array
             # derive a Cartesian basis, and write pickle files
             force2 = _phonons_run_force2(phonon, dxlist, force1, a, sign, symprec=1e-6)
-            
-            barrier()
             
             # then we derive the Cartesian basis 'force2' array and write files
             if single:
@@ -448,7 +364,7 @@ def phonons_run(phonon, single=True, difference='central'):
 # ------------------------------------------------------------------------------
 def _phonons_move_is_independent(dxlist, dx, symprec=1e-6):
     """Test if a vector is independent compared to those in a list.
-       The test is for colinearity, and singularity of the formed basis
+       The test is for collinearity, and singularity of the formed basis
        
        input:
            dxlist:  a list of vectors
@@ -690,7 +606,7 @@ def _phonons_run_force2(phonon, dxlist, force1, a, sign, symprec=1e-6):
         found += 1
     
     if found > 0 and False:
-        print 'Displacements, and inverse:'
+        print '[ASE] Displacements, and inverse:'
         print dxlist
         print invdx
         print 'force2 [xyz]:', force2
@@ -702,6 +618,14 @@ def phonons_read(phonon, method='Frederiksen', symmetrize=3, acoustic=True,
     """Read forces from pickle files and calculate force constants.
 
     Extra keyword arguments will be passed to ``read_born_charges``.
+    
+    This implementation is similar to the ASE one, but can make use of different
+    gradient estimates, depending on what is available on disk (pickles).
+    Can use:
+      displacement .[xyz]+
+      displacement .[xyz]-
+      equilibrium  .qe
+      
     
     Parameters
     ----------
@@ -908,7 +832,6 @@ def phonopy_run(phonon, single=True, filename='FORCE_SETS'):
         phonpy.generate_displacements(distance=0.01)
         # iterative call for all displacements
         set_of_forces, flag = phonopy_run_calculate(phonon, phonpy, supercell, single)
-        barrier()
         
         if flag is True:
             return flag # some more work is probably required
@@ -989,6 +912,8 @@ def phonopy_run_calculate(phonon, phonpy, supercell, single):
         
     # Do calculation on equilibrium structure (used to improve gradient accuracy)
     supercell.set_calculator(phonon.calc)
+    if rank == 0:
+        print "[ASE/Phonopy] Computing equilibrium"
     feq = phonons_run_eq(phonon, supercell)
     for i, a in enumerate(phonon.indices):
         feq[a] -= feq.sum(0)  # translational invariance
@@ -1055,6 +980,8 @@ def phonopy_band_structure(phonpy, path_kc, modes=False):
 
         Eigenvalues and modes are in units of PhonoPy and Ang/sqrt(amu),
         respectively. The default PhonoPy energy unit is THz.
+        
+        This implementation provides better eigenvector estimates that the ASE one.
 
         Parameters
         ----------
