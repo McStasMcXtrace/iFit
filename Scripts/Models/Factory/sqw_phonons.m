@@ -521,7 +521,9 @@ if ~strcmpi(options.calculator, 'QUANTUMESPRESSO') || strcmpi(options.calculator
 
   signal.Guess = [ 1 .1 0 10 1 ];
   
-  if ~isempty(fullfile(target, 'FORCES.mat'))
+  if ~isempty(dir(fullfile(target, 'FORCE_SETS')))  % always prefer to get PhonoPy when exists
+    signal.UserData.FORCES = fileread(fullfile(target, 'FORCE_SETS'));
+  elseif ~isempty(dir(fullfile(target, 'FORCES.mat')))
     signal.UserData.FORCES = load(fullfile(target, 'FORCES.mat'));
   end
   
