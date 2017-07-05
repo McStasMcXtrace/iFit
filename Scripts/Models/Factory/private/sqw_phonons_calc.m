@@ -426,7 +426,7 @@ case 'QUANTUMESPRESSO_ASE'
   
   
   decl = 'from qeutil import QuantumEspresso';
-  calc = [ 'calc = QuantumEspresso(use_symmetry=False, tstress=True, label=atoms.get_chemical_formula(), wdir="' options.target '"' ]; % because small displacement breaks symmetry
+  calc = [ 'calc = QuantumEspresso(use_symmetry=False, tstress=True, nspin=2,  label=atoms.get_chemical_formula(), wdir="' options.target '"' ]; % because small displacement breaks symmetry
 
   if isscalar(options.occupations) && options.occupations>=0 % smearing in eV
     calc=[ calc sprintf(', occupations="smearing", smearing="methfessel-paxton", degauss=%g', options.occupations/Ry) ];
