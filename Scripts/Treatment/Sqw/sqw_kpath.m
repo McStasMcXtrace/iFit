@@ -274,10 +274,6 @@ function [S, qLim, fig] = sqw_kpath(f, qLim, E, options)
     axis tight
     add_contextmenu(gca)
     hold on
-    % enhance low signal on the colormap
-    c = caxis;
-    if c(2) > c(1)+10, c(2)=c(1)+10; end
-    caxis(c);
     if isfield(f.UserData,'FREQ')
       FREQ = f.UserData.FREQ*factor;
       if ~isempty(FREQ), plot(x, FREQ); end
