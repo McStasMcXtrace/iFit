@@ -161,7 +161,7 @@ function h=iFunc_plot_menu(h, a, name)
 % internal functions must be avoided as it uses LOTS of memory
 
   % return when a Contextual Menu already exists
-  if ~isempty(get(h,   'UIContextMenu')), return; end
+  % if ~isempty(get(h,   'UIContextMenu')), return; end
   
   uicm = uicontextmenu; 
   % menu About
