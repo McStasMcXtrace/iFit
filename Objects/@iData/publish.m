@@ -19,3 +19,6 @@ if nargin < 2, filename = ''; end
 
 a = saveas(a, filename, 'html');
 
+if nargout == 0
+  web(a)
+end

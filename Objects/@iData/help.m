@@ -178,7 +178,6 @@ for index=1:numel(s)
   if nargout == 0
     h = helpdlg(ud.properties, [ mfilename ': Data ' a.Tag ': ' num2str(ndims(a)) 'D object ' mat2str(size(a)) ]);
     ud.handle = h;
-    get(h)
   end
   
   
