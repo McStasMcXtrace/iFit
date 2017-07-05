@@ -157,7 +157,7 @@ function signal=sqw_phonons(configuration, varargin)
 %     Finite Difference, or LCAO (linear combination of atomic orbitals). Default is 'pw'.
 %   options.iscf='NC','PAW'                Type of SCF cycles (ABINIT) 
 %   options.pps = 'fhi' 'hgh' 'hgh.sc' 'hgh.k' 'tm' 'paw' 'pawxml' Type of database (ABINIT)
-%                 'defaults','optimal', a structure such as struct('Ca','_pv') ... (VASP)
+%                 a structure such as struct('Ca','_pv') ... (VASP)
 %   options.mixing_beta=scalar             mixing factor for self-consistency
 %     default=0.7. use 0.3 to improve convergence (QuantumEspresso)
 %   options.mixing_ndim=scalar             number of iterations used in mixing
