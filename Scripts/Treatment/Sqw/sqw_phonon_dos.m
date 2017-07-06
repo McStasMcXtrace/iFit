@@ -9,6 +9,11 @@ function DOS = sqw_phonon_dos(s, method, n)
 %    DOS = sqw_phonon_dos(s)    returns the vibrational density of states (vDOS)
 %      the vDOS and the partials per mode are also stored in the UserData.
 %    DOS = sqw_phonon_dos(s, n) does the same with n-bins on the vDOS (n=100)
+%    when the DOS has already been computed, it is used as is. To force a
+%    recomputation, set:
+%      s.UserData.DOS=[];
+%    to smooth the resulting distribution, use:
+%      sDOS = smooth(DOS); plot(sDOS);
 %  
 %  ================================ 2D case ====================================
 %  The gDOS is an approximation of the vibrational spectra (DOS).
@@ -72,6 +77,27 @@ function DOS = sqw_phonon_dos(s, method, n)
     [DOS, DOS_partials, gDOS, s] = sqw_phonon_dos_4D(s, method);
     if ~isempty(inputname(1))
       assignin('caller',inputname(1),s);
+    end
+    if nargout == 0 % plot
+      fig=figure;
+      DOS = s.UserData.DOS;
+      DOS{1} = DOS{1}; % change energy unit
+      xlabel(DOS,[ 'Energy [meV]' ]);
+      % plot any partials first
+      if isfield(s.UserData,'DOS_partials') && numel(s.UserData.DOS_partials) > 0
+        d=s.UserData.DOS_partials;
+        for index=1:numel(d)
+          this_pDOS=d(index);
+          this_pDOS{1} = this_pDOS{1};
+          d(index) = this_pDOS;
+        end
+        h=plot(d);
+        if iscell(h), h=cell2mat(h); end
+        set(h,'LineStyle','--');
+        hold on
+      end
+      % plot total DOS and rotate
+      h=plot(DOS); set(h,'LineWidth',2);
     end
     return
   end
@@ -263,7 +289,9 @@ function [DOS, DOS_partials, gDOS, s] = sqw_phonon_dos_4D(s, n)
   if (~isfield(s.UserData,'DOS') || ~isempty(s.UserData.DOS)) ...
     && isfield(s.UserData,'FREQ') && ~isempty(s.UserData.FREQ)
     index= find(imag(s.UserData.FREQ) == 0);
-    [dos_e,omega_e]=hist(s.UserData.FREQ(index),n);
+    dos_e = s.UserData.FREQ(index);
+    omega_e = linspace(0,max(dos_e(:))*1.2, n);
+    [dos_e,omega_e]=hist(dos_e,omega_e);
     dos_factor = size(s.UserData.FREQ,2) / trapz(omega_e(:), dos_e(:));
     dos_e = dos_e * dos_factor ; % 3n modes per unit cell
     DOS=iData(omega_e,dos_e);
