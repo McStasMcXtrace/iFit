@@ -83,6 +83,7 @@ end
 
 % now with a single input argument
 if isempty(name), return; end
+if isnumeric(name), all_names = strtok(a.Parameters); name=all_names(name); end
 if iscell(name) && numel(name) == 1 && isnumeric(name{1}), name = strtok(a.Parameters(name{1})); end
 if ischar(name) && strcmp(name, 'all'), name = strtok(a.Parameters); 
 elseif ischar(name) && strcmp(name, 'none'), 
