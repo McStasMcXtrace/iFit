@@ -1,5 +1,16 @@
 function DOS = sqw_phonon_dos(s, method, n)
-% sqw_phonon_dos: compute the generalised density of states (gDOS)
+% sqw_phonon_dos: compute the density of states (gDOS or vDOS)
+%
+%  The routine can be used for 2D and 4D models and data sets.
+%    when used on 4D data sets and models S(HKL,w), the vDOS is computed.
+%    when used on 2D data sets and models S(|q|,w), the gDOS is computed.
+%
+%  ================================ 4D case ====================================
+%    DOS = sqw_phonon_dos(s)    returns the vibrational density of states (vDOS)
+%      the vDOS and the partials per mode are also stored in the UserData.
+%    DOS = sqw_phonon_dos(s, n) does the same with n-bins on the vDOS (n=100)
+%  
+%  ================================ 2D case ====================================
 %  The gDOS is an approximation of the vibrational spectra (DOS).
 %  This routine should be applied on an incoherent dynamic S(q,w) data set.
 %  The S(q,w) is a dynamic structure factor aka scattering function.
@@ -43,9 +54,8 @@ function DOS = sqw_phonon_dos(s, method, n)
   DOS=[];
   if nargin == 0, return; end
   
-  if nargin < 2, method = 'Carpenter'; end
+  if nargin < 2, method = []; end
   if nargin < 3, n=[]; end
-  if isempty(n) || n <= 0, n=10; end
   
   % handle array of objects
   if numel(s) > 1
@@ -59,12 +69,15 @@ function DOS = sqw_phonon_dos(s, method, n)
   end
   
   if (isa(s,'iFunc') || isa(s,'iData')) && ndims(s) == 4
-    [DOS, DOS_partials, gDOS, s] = sqw_phonon_dos_4D(s);
+    [DOS, DOS_partials, gDOS, s] = sqw_phonon_dos_4D(s, method);
     if ~isempty(inputname(1))
       assignin('caller',inputname(1),s);
     end
     return
   end
+  
+  if isempty(method), method = 'Carpenter'; end
+  if isempty(n) || n <= 0, n=10; end
 
   if ~isa(s, 'iData'), s=iData(s); end
 
@@ -198,7 +211,7 @@ function g = sqw_phonon_dos_Bredov(s)
   
 % ------------------------------------------------------------------------------
 
-function [DOS, DOS_partials, gDOS, s] = sqw_phonon_dos_4D(s)
+function [DOS, DOS_partials, gDOS, s] = sqw_phonon_dos_4D(s, n)
   % sqw_phonon_dos_4D: compute the phonon/vibrational density of states (vDOS)
   %
   % input:
@@ -223,6 +236,8 @@ function [DOS, DOS_partials, gDOS, s] = sqw_phonon_dos_4D(s)
   if isa(s, 'iData')
     f = s;
   end
+  if nargin < 2, n=[]; end
+  if isempty(n) || n <= 0, n=100; end
   
   % first get a quick estimate of the max frequency
   if  (~isfield(s.UserData,'DOS')  || isempty(s.UserData.DOS) ...
@@ -248,7 +263,7 @@ function [DOS, DOS_partials, gDOS, s] = sqw_phonon_dos_4D(s)
   if (~isfield(s.UserData,'DOS') || ~isempty(s.UserData.DOS)) ...
     && isfield(s.UserData,'FREQ') && ~isempty(s.UserData.FREQ)
     index= find(imag(s.UserData.FREQ) == 0);
-    [dos_e,omega_e]=hist(s.UserData.FREQ(index),100);
+    [dos_e,omega_e]=hist(s.UserData.FREQ(index),n);
     dos_factor = size(s.UserData.FREQ,2) / trapz(omega_e(:), dos_e(:));
     dos_e = dos_e * dos_factor ; % 3n modes per unit cell
     DOS=iData(omega_e,dos_e);
@@ -262,7 +277,7 @@ function [DOS, DOS_partials, gDOS, s] = sqw_phonon_dos_4D(s)
     for mode=1:size(s.UserData.FREQ,2)
       f1 = s.UserData.FREQ(:,mode);
       index = find(imag(f1) == 0);
-      dos_e = hist(f1(index),omega_e);
+      dos_e = hist(f1(index),omega_e, n);
       dos_e = dos_e * dos_factor ; % normalize to the total DOS
       DOS=iData(omega_e,dos_e);
       DOS.Title = [ 'Mode [' num2str(mode) '] DOS ' s.Name ]; 
