@@ -9,6 +9,12 @@ function [S, qLim, fig] = sqw_kpath(f, qLim, E, options)
 %             http://lamp.tu-graz.ac.at/~hadley/ss1/bzones/ to get the standard 
 %      points in the Brillouin zone.
 %
+%      The bands intensity is computed along the path. For neutron scattering,
+%        as all standard points in the Brillouin zone are centered around 0 and
+%        the intensity is proportional to |Q.e|^2, all transverse modes are extinct.
+%      To get the proper band intensity around a given Bragg peak G, the k-path
+%        should be shifted by G.
+%
 %    sqw_kpath(f);
 %      plots the dispersion curves following the BZ points for the 
 %      crystal spacegroup, and using the maximum excitation energy.
@@ -26,18 +32,18 @@ function [S, qLim, fig] = sqw_kpath(f, qLim, E, options)
 % input:
 %   f:    a 4D HKLE model S(q,w) (iFunc)
 %   path: a list of k-locations given as a cell/array of HKL locations (cell or matrix)
-%         can also be 'Cubic','Hexagonal','Trigonal','Tetragonal','Orthorhombic','Monoclinic';
-%                     'Triclinic','fcc','bcc'
+%         can also be 'Cubic','Hexagonal','Trigonal','Tetragonal','Orthorhombic',
+%                     'Monoclinic','Triclinic','fcc','bcc'
 %         can also be given as a list of BZ points, such as:
 %           {'Gamma' 'K' 'M' 'Gamma' 'A' 'H' 'L' 'A' }
-%         when not given or empty, this is guessed from the crystal spacegroup.
-%         The bands intensity is computed along the path. For neutron scattering,
-%           as all standard points in the Brillouin zone are centered around 0 and
-%           the intensity is proportional to |Q.e|^2, all transverse modes are extinct.
-%         To get the propoer band intensity around a given Bragg peak G, the k-path
-%         should be shifted by G.
+%           which are then defined according to the space group, e.g:
+%             f.UserData.properties.spacegroup_number
+%         can be given as a list of HKL locations, such as {[0,0,0],[1,1,1],[1,1,0]}
+%           or as an array e.g. [0 0 0 ; 1 1 1 ; 1 1 0 ; 0 0 0 ; 0 0 1]
 %         The path can also be given as a Bragg peak location, e.g. [0 0 1] to compute
-%           the dispersion around that location.
+%           the dispersion around that location using the default K-path in the BZ.
+%         when not given or empty, this is guessed from the crystal spacegroup.
+%
 %   w:    a vector of energies (4-th axis) for which to evaluate the model (double)
 %         can also be given as Emax, or [ Emin Emax ]
 %         when not given or empty, the maximum excitation energy is used.

@@ -87,7 +87,7 @@ else
     end
     delete([ f '.*' ])
     [p,f] = fileparts(f);
-    delete([ f '.db' ])
+    if ~isempty(dir([ f '.db' ])), delete([ f '.db' ]) end
   end
   if ~isempty(status.nwchem)
     disp(['  NWChem          (http://www.nwchem-sw.org/) as "' status.nwchem '"' ]);
