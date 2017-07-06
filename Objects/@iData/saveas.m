@@ -398,11 +398,7 @@ try
   case 'epsc' % color encapsulated postscript file format, with TIFF preview
     f=figure('visible','off');
     plot(a,options);
-    try
-      print(f, '-depsc', '-tiff', filename);
-    catch
-      print(f, '-depsc', filename);
-    end
+    print(f, '-depsc', filename); % tiff preview may be broken on some GPU
     close(f);
   case {'psc','pdf','ill','jpeg'}  % other bitmap and vector graphics formats (PDF, ...)
     f=figure('visible','off');
