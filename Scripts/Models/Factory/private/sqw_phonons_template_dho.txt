@@ -10,11 +10,11 @@ function [signal, this] = sqw_phonons_template_dho(HKL, t, FREQ, POLAR, is_event
 this.UserData.maxFreq= max(FREQ); % for each mode
 nt = numel(t);
 % store when not too large
-if numel(HKL) <= 1e4, 
+if numel(HKL) <= 1e6, 
   this.UserData.FREQ = FREQ; 
   this.UserData.HKL  = HKL;
   this.UserData.POLAR = POLAR; 
-else 
+else
   this.UserData.FREQ = []; 
   this.UserData.HKL  = [];
   this.UserData.POLAR = [];
