@@ -67,7 +67,6 @@ catch
   inputname1 = '';
 end
 
-
 if isa(model, 'iFunc') && numel(model) > 1
   signal = {}; ax={}; name={};
   for index=1:numel(model)

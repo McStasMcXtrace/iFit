@@ -308,7 +308,10 @@ function [S, qLim, fig] = sqw_kpath(f, qLim, E, options)
           d(index) = this_pDOS;
         end
         h=plot(d);
-        if iscell(h), h=cell2mat(h); end
+        if iscell(h)
+            if isnumeric(h{1}), h=cell2mat(h); 
+            else h = [ h{:} ]; end
+        end
         set(h,'LineStyle','--');
         hold on
       end
