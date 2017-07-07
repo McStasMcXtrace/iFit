@@ -54,6 +54,7 @@ function [filename,format] = saveas(a, filename, format, options)
 %           'vtk'  save as VTK ascii (<1e5 elements) or binary (3/4D)
 %           'wrl'  save as Virtual Reality VRML 2.0 file
 %           'x3d'  save as X3D (geometry) file, ascii
+%           'avi'  save as an AVI movie
 %           'xhtml' save as embedded HTML/X3D file (using Flash plugin for rendering)
 %           'xls'  save as an Excel sheet (requires Excel to be installed)
 %           'xml'  save as an XML file, ascii
@@ -305,6 +306,8 @@ end
 % handle specific format actions
 try
   switch formatShort
+  case 'avi'
+    filename = iData_private_saveas_avi(a, filename, options);
   case 'm'  % single m-file Matlab output (text), with the full object description
     filename = iData_private_saveas_m(a, filename, name, options);
   case 'dat'  % flat text file with commented blocks, in the style of McStas/PGPLOT
