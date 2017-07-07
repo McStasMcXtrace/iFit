@@ -33,6 +33,7 @@ function [filename,format] = save(a, varargin)
 %           'art'  save as ASCII art
 %           'avi'  save as an AVI movie
 %           'csv'  save as a comma separated value file
+%           'dae'  save as Collada model
 %           'dat'  save as Flat text file with comments
 %           'edf'  EDF ESRF format for 1D and 2D data sets
 %           'fig'  save as a Matlab figure
@@ -42,6 +43,7 @@ function [filename,format] = save(a, varargin)
 %           'hdr'  save as HDR/IMG Analyze MRI volume (3D/4D)
 %           'html' save as Hypertext Markup Language document, appended to any existing document.
 %           'json' save as JSON JavaScript Object Notation, ascii
+%           'kml'  save as KML GoogleEarth model
 %           'mrc'  save as MRC map file (3/4D)
 %           'nii'  save as NifTi Neuroimaging Informatics Technology Initiative (3/4D)
 %           'npy'  save as Numpy binary array

@@ -33,6 +33,7 @@ function [filename,format] = saveas(a, filename, format, options)
 %           'art'  save as ASCII art
 %           'avi'  save as an AVI movie
 %           'csv'  save as a comma separated value file
+%           'dae'  save as Collada model
 %           'dat'  save as Flat text file with comments
 %           'edf'  EDF ESRF format for 1D and 2D data sets
 %           'fig'  save as a Matlab figure
@@ -42,6 +43,7 @@ function [filename,format] = saveas(a, filename, format, options)
 %           'hdr'  save as HDR/IMG Analyze MRI volume (3D/4D)
 %           'html' save as Hypertext Markup Language document, appended to any existing document.
 %           'json' save as JSON JavaScript Object Notation, ascii
+%           'kml'  save as KML GoogleEarth model
 %           'mrc'  save as MRC map file (3/4D)
 %           'nii'  save as NifTi Neuroimaging Informatics Technology Initiative (3/4D)
 %           'npy'  save as Numpy binary array
@@ -86,6 +88,7 @@ function [filename,format] = saveas(a, filename, format, options)
 %   mat2json
 %   exportToPPTX
 %   writeNPY
+%   mesh2kml
 %
 %   iData_private_saveas_hdfnc
 
@@ -105,6 +108,7 @@ if isempty(options) && any(ndims(a) >= 2), options='view2 axis tight'; end
 filterspec = { ...
       '*.avi', 'Audio Video Interleave (AVI) movie (*.avi)'; ...
       '*.csv', 'Comma Separated Values (suitable for Excel, *.csv)'; ...
+      '*.dae', 'Collada model (*.dae)'; ...
       '*.dat', 'Flat text file with comments (*.dat)'; ...
       '*.edf', 'EDF ESRF format for 1D and 2D data sets (*.edf)' ; 
       '*.eps', 'Encapsulated PostScript (color, *.eps)'; ...
@@ -116,6 +120,7 @@ filterspec = { ...
       '*.html;*.htm','Hypertext Markup Language document (*.html)'; ...
       '*.jpg;*.jpeg', 'JPEG image (*.jpg)'; ...
       '*.json', 'JSON JavaScript Object Notation (*.json)'; ...
+      '*.kml', 'GoogleEarth model (*.kml)'; ...
       '*.m',   'Matlab script/function (*.m)'; ...
       '*.mat', 'Matlab binary file (*.mat, serialized)'; ...
       '*.mrc', 'MRC map file (*.mrc)'; ...
@@ -325,6 +330,22 @@ try
     exportToPPTX('addnote',char(a));
     exportToPPTX('save',filename);
     exportToPPTX('close');
+  case 'kml'
+    if ndims(a) == 2
+      x = getaxis(a,1);
+      y = getaxis(a,2);
+      z = getaxis(a,0);
+      mesh2kml(x,y,z,filename, ...
+        'color','red','position',[-33.85622 151.21535 10],'alpha',0.7);
+    end
+  case 'dae'
+    if ndims(a) == 2
+      x = getaxis(a,1);
+      y = getaxis(a,2);
+      z = getaxis(a,0);
+      mesh2kml(x,y,z,filename, ...
+        'color','red','alpha',0.7);
+    end
   case 'm'  % single m-file Matlab output (text), with the full object description
     filename = iData_private_saveas_m(a, filename, name, options);
   case 'dat'  % flat text file with commented blocks, in the style of McStas/PGPLOT
