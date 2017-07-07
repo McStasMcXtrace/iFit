@@ -319,7 +319,7 @@ if ~any(isnan((y.Guess)))
   disp([ mfilename ': Determining the model dimension...' ]);
   ncount = options.ncount;
   y.UserData.options.ncount = 1e2;  % fast as we only need the size and position
-  signal = feval(y,y.Guess);
+  [signal,y] = feval(y,y.Guess);
   signal = y.UserData.monitors;     % get all monitors
   y.UserData.options.ncount = ncount;
   if numel(signal) > 1
