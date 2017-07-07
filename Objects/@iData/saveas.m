@@ -22,7 +22,6 @@ function [filename,format] = saveas(a, filename, format, options)
 %                   If given as filename='gui', a file selector pops-up
 %                   If the filename is empty, the object Tag is used.
 %         format: data format to use (char), or determined from file name extension
-%           'art'  save as ASCII art
 %           'cdf'  save as CDF (not recommended)
 %           'hdf5' save as an HDF5 data set ('nxs','n5','h5' also work)
 %           'lamp' save as LAMP Processed Workspace, i.e. 'nxs lamp data' (HDF5)
@@ -31,6 +30,8 @@ function [filename,format] = saveas(a, filename, format, options)
 %           'mat'  save as a serialized '.mat' binary file (fast 'save', DEFAULT)
 %           'nc'   save as NetCDF
 %         as well as other lossy formats
+%           'art'  save as ASCII art
+%           'avi'  save as an AVI movie
 %           'csv'  save as a comma separated value file
 %           'dat'  save as Flat text file with comments
 %           'edf'  EDF ESRF format for 1D and 2D data sets
@@ -83,6 +84,8 @@ function [filename,format] = saveas(a, filename, format, options)
 %   struct2xml
 %   yaml (in Objects)
 %   mat2json
+%   exportToPPTX
+%   writeNPY
 %
 %   iData_private_saveas_hdfnc
 
@@ -100,6 +103,7 @@ if isempty(options) && any(ndims(a) >= 2), options='view2 axis tight'; end
 
 % supported format list
 filterspec = { ...
+      '*.avi', 'Audio Video Interleave (AVI) movie (*.avi)'; ...
       '*.csv', 'Comma Separated Values (suitable for Excel, *.csv)'; ...
       '*.dat', 'Flat text file with comments (*.dat)'; ...
       '*.edf', 'EDF ESRF format for 1D and 2D data sets (*.edf)' ; 
@@ -308,6 +312,19 @@ try
   switch formatShort
   case 'avi'
     filename = iData_private_saveas_avi(a, filename, options);
+  case {'ppt','pptx'}
+    
+    f = figure('visible','off');
+    b = plot(a, options);
+    exportToPPTX('new');
+    exportToPPTX('addslide');
+    exportToPPTX('addtext', char(a));
+    exportToPPTX('addslide');
+    exportToPPTX('addpicture',f,'Scale','maxfixed');
+    close(f);
+    exportToPPTX('addnote',char(a));
+    exportToPPTX('save',filename);
+    exportToPPTX('close');
   case 'm'  % single m-file Matlab output (text), with the full object description
     filename = iData_private_saveas_m(a, filename, name, options);
   case 'dat'  % flat text file with commented blocks, in the style of McStas/PGPLOT
