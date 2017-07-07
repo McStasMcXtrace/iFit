@@ -1,4 +1,4 @@
-function DOS = sqw_phonon_dos(s, method, n)
+function [DOS, DOS_partials] = sqw_phonon_dos(s, method, n)
 % sqw_phonon_dos: compute the density of states (gDOS or vDOS)
 %
 %  The routine can be used for 2D and 4D models and data sets.
@@ -56,7 +56,7 @@ function DOS = sqw_phonon_dos(s, method, n)
 % Example: Sqw=iData('SQW_coh_lGe.nc'); g = sqw_phonon_dos(Sqw_Bosify(Sqw_symmetrize(Sqw))); plot(g);
 % (c) E.Farhi, ILL. License: EUPL.
 
-  DOS=[];
+  DOS=[]; DOS_partials=[];
   if nargin == 0, return; end
   
   if nargin < 2, method = []; end

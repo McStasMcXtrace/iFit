@@ -11,7 +11,7 @@ function t=sqw_thermochemistry(s, T, options)
 %
 % the function returns an array of iData objects:
 %   DOS                                 [modes/energy unit/unit cell]
-%   pDOS (one per mode) partials
+%   DOS_partials                    DOS partials (one per mode)
 %   entropy                           S [eV/K/cell]
 %   internal_energy                   U [eV/cell]
 %   helmholtz_energy                  F [eV/cell]
@@ -41,7 +41,7 @@ if isempty(T)
   T = 1:500;  % default
 end
 
-DOS     = sqw_phonon_dos(s);
+[DOS,DOS_partials] = sqw_phonon_dos(s);
 omega_e = DOS{1};
 dos_e   = DOS{0};
 
@@ -95,7 +95,8 @@ end
 
 % return all
 t.README = [ mfilename ' ' s.Name ];
-t.DOS   = DOS;
+t.DOS             =DOS;
+t.DOS_partials    =DOS_partials;
 t.Temperature     =T;
 t.maxFreq         =s.UserData.maxFreq;
 t.entropy         =s.UserData.entropy;            % S
@@ -160,6 +161,7 @@ function U = get_internal_energy(omega_e, dos_e, T, potential_energy)
     
   U         = U + zpe;
   E_vib     = omega_e ./ (exp(omega_e * B) - 1);
+  E_vib(~isfinite(E_vib)) = 0;
   E_phonon  = trapz(omega_e, E_vib .* dos_e);
   U         = U + E_phonon;
 
@@ -185,6 +187,7 @@ function S = get_entropy(omega_e, dos_e, T)
   B         = 1/(kB*T);       % beta=1/kB.T
   
   S_vib = omega_e ./ (T * (exp(omega_e * B) - 1)) - kB * log(1 - exp(-omega_e * B));
+  S_vib(~isfinite(S_vib)) = 0;
                  
   S = trapz(omega_e, S_vib .* dos_e);
   
