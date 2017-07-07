@@ -22,7 +22,6 @@ function [filename,format] = save(a, varargin)
 %                   If given as filename='gui', a file selector pops-up
 %                   If the filename is empty, the object Tag is used.
 %         format: data format to use (char), or determined from file name extension
-%           'art'  save as ASCII art
 %           'cdf'  save as CDF (not recommended)
 %           'hdf5' save as an HDF5 data set ('nxs','n5','h5' also work)
 %           'lamp' save as LAMP Processed Workspace, i.e. 'nxs lamp data' (HDF5)
@@ -31,6 +30,8 @@ function [filename,format] = save(a, varargin)
 %           'mat'  save as a serialized '.mat' binary file (fast 'save', DEFAULT)
 %           'nc'   save as NetCDF
 %         as well as other lossy formats
+%           'art'  save as ASCII art
+%           'avi'  save as an AVI movie
 %           'csv'  save as a comma separated value file
 %           'dat'  save as Flat text file with comments
 %           'edf'  EDF ESRF format for 1D and 2D data sets
