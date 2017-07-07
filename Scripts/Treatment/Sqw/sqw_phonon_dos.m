@@ -263,7 +263,6 @@ function [DOS, DOS_partials, gDOS, s] = sqw_phonon_dos_4D(s, n)
     f = s;
   end
   if nargin < 2, n=[]; end
-  if isempty(n) || n <= 0, n=100; end
   
   % first get a quick estimate of the max frequency
   if  (~isfield(s.UserData,'DOS')  || isempty(s.UserData.DOS) ...
@@ -282,12 +281,16 @@ function [DOS, DOS_partials, gDOS, s] = sqw_phonon_dos_4D(s, n)
     % evaluate the 4D model onto a mesh filling the Brillouin zone [-0.5:0.5 ]
     s.UserData.DOS     = [];  % make sure we re-evaluate again on a finer grid
     s.UserData.maxFreq = max(s.UserData.maxFreq(:));
-    qh=linspace(-0.5,.5,30);qk=qh; ql=qh; w=linspace(0.01,s.UserData.maxFreq*1.2,51);
+    qh=linspace(-0.5,.5,50);qk=qh; ql=qh; w=linspace(0.01,s.UserData.maxFreq*1.2,51);
     f=iData(s,[],qh,qk,ql',w);
   end
   
-  if (~isfield(s.UserData,'DOS') || ~isempty(s.UserData.DOS)) ...
+  if (~isfield(s.UserData,'DOS') || isempty(s.UserData.DOS)) ...
     && isfield(s.UserData,'FREQ') && ~isempty(s.UserData.FREQ)
+    nmodes = size(s.UserData.FREQ,2);
+    if isempty(n)
+      n = max(nmodes*10, 100);
+    end
     index= find(imag(s.UserData.FREQ) == 0);
     dos_e = s.UserData.FREQ(index);
     omega_e = linspace(0,max(dos_e(:))*1.2, n);
@@ -302,7 +305,7 @@ function [DOS, DOS_partials, gDOS, s] = sqw_phonon_dos_4D(s, n)
     DOS.Error=0; s.UserData.DOS=DOS;
     % partial phonon DOS (per mode) when possible
     pDOS = [];
-    for mode=1:size(s.UserData.FREQ,2)
+    for mode=1:nmodes
       f1 = s.UserData.FREQ(:,mode);
       index = find(imag(f1) == 0);
       dos_e = hist(f1(index),omega_e, n);
