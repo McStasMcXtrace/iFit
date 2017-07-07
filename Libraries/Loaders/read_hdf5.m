@@ -64,6 +64,7 @@ end
     for i = 1: nvars
         if h5_present
           val = h5read(filename,[root data_info.Datasets(i).Name]);
+          dataID = [root data_info.Datasets(i).Name];
         else
           % hdf5read can stall in R2010a. We use a low-level read
           % val = hdf5read(filename,[data_info.Datasets(i).Name]);
