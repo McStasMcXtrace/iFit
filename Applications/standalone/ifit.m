@@ -41,19 +41,24 @@ function ifit(varargin)
 % mcc -m ifit -a /home/farhi/svn/Matlab/iFit/trunk
 % buildmcr('.')
 
-if ~isdeployed, return; end
+persistent ifit_options
+
+if ~isdeployed,
+  disp([ mfilename ': you do not need the iFit Terminal.' ])
+  return; 
+end
+if ~isempty(ifit_options), return; end
 
 inline_display_banner; % see inline below
 
-ifit_options.line     ='';     % the current line to execute
-ifit_options.index    =1;      % the index of the input
-this                  ={};     % the buffer from the command line
-ifit_options.save     =0;
-ifit_options.varargin =varargin;
-ifit_options.nodesktop=0;
-ifit_options.starting =1;
+ifit_options=inline_ifit_options(varargin{:});
 
-while ~strcmp(ifit_options.line, 'exit') && ~strcmp(ifit_options.line, 'return')
+while ~exist('ifit_options') || ~isstruct(ifit_options) || ...
+  (~strcmp(ifit_options.line, 'exit') && ~strcmp(ifit_options.line, 'return'))
+  % restore internal ifit options if this was cleared
+  if ~exist('ifit_options') || ~isstruct(ifit_options)
+    ifit_options = inline_ifit_options;
+  end
   ifit_options.line = strtrim(ifit_options.line);
   % handle specific commands (to override limitations from stand-alone)
   if strcmp(strtok(ifit_options.line,' '), 'doc')
@@ -106,9 +111,13 @@ while ~strcmp(ifit_options.line, 'exit') && ~strcmp(ifit_options.line, 'return')
   
   % now do the work (evaluate what to do) --------------------------------------
   if ischar(ifit_options.line) && ~isempty(ifit_options.line), 
+    if ifit_options.verbose
+      disp(ifit_options.line)
+    end
     try
       eval(ifit_options.line); 
-    catch
+    catch ME
+      disp(ME.message);
       if length(ifit_options.line) > 250
         ifit_options.line = [ ifit_options.line(1:250) ' ...' ];
       end
@@ -287,6 +296,7 @@ try
 end
 disp([ '** Ending iFit on ' datestr(now) ])
 disp(  '** Thanks for using iFit <ifit.mccode.org> **')
+ifit_options = '';
 
 % ------------------------------------------------------------------------------
 %                             inline private functions
@@ -461,3 +471,13 @@ function inline_sendtomifit(this)
   else
     mifit(this);
   end
+  
+function ifit_options=inline_ifit_options(varargin)
+  ifit_options.verbose  = 1;
+  ifit_options.line     ='';     % the current line to execute
+  ifit_options.index    =1;      % the index of the input
+  this                  ={};     % the buffer from the command line
+  ifit_options.save     =0;
+  ifit_options.varargin =varargin;
+  ifit_options.nodesktop=0;
+  ifit_options.starting =1;

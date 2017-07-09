@@ -54,7 +54,7 @@ function ret=webbrowser(url, method)
   end
   
   % when fails, we open our own browser
-  if ret && usejava('jvm') && feature('ShowFigureWindows')
+  if ret && usejava('jvm') && usejava('swing') && feature('ShowFigureWindows')
       % use Java browser
       if ~isempty(dir(url)) % local file/dir
           if isdir(url), P=url; F=''; E='';
@@ -107,6 +107,7 @@ function ret=webbrowser(url, method)
       je.setEditable(false);
       ret=setPage(url);
       set(je, 'HyperlinkUpdateCallback',@action_follow_link);
+      set(handles(1), 'UserData', je);
   end
   if ret % could not open browser
     disp(url)
