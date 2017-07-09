@@ -73,7 +73,7 @@ for i = 1:length(S)     % can handle multiple index levels
         end
         pars = model.ParameterValues; % either initial or guessed parameters
         dm=iData_getAliasValue(b,'Monitor');
-        if not(all(dm == 1 | dm == 0)) % fit(signal/monitor) 
+        if not(all(dm(:) == 0)) && not(all(dm(:) == 1)) % fit(signal/monitor) 
           modelValue    = bsxfun(@times,modelValue(:), dm(:));
           if ~isscalar(dm) && numel(dm) == numel(modelValue) && length(dm) == numel(dm)
             modelValue = reshape(modelValue, size(dm));
@@ -386,7 +386,7 @@ function val = iData_getAliasValue(this,fieldname)
     elseif all(val(:) == val(end))
       val = val(end);
     end
-    if val == 0, val=1; end
+    % if val == 0, val=1; end
     if ~isempty(val) && length(val) ~= 1 && (ndims(val) ~= length(size(this)) || numel(val) ~= prod(size(this)))
       iData_private_warning(mfilename,[ 'The Monitor [' num2str(size(val)) ...
         '] has not the same size as the Signal [' num2str(size(this)) ...
