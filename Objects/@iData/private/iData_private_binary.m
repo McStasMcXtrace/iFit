@@ -130,6 +130,7 @@ else
   e2 = subsref(b,struct('type','.','subs','Error'));
   m2 = subsref(b,struct('type','.','subs','Monitor'));
 end
+
 if numel(e1) > 1 && all(e1(:) == e1(1)), e1=e1(1); end
 if numel(m1) > 1 && all(m1(:) == m1(1)), m1=m1(1); end
 if numel(e2) > 1 && all(e2(:) == e2(1)), e2=e2(1); end
@@ -145,10 +146,10 @@ if all(m1(:)==0) && all(m2(:)==0), m1=0; m2=0; end
 
 % 'y'=normalized signal, 'd'=normalized error, 'p1' set to true when normalization
 % to the Monitor is required (i.e. all operations except combine).
-if not(all(m1(:) == 0 | m1(:) == 1)) & p1, 
+if not(all(m1(:) == 0)) && not(all(m1(:) == 1)) && p1, 
   y1 = genop(@rdivide, s1, m1); d1 = genop(@rdivide,e1,m1); 
 else y1=s1; d1=e1; end
-if not(all(m2(:) == 0 | m2(:) == 1)) & p1, 
+if not(all(m2(:) == 0)) && not(all(m2(:) == 1)) && p1, 
   y2 = genop(@rdivide,s2,m2); d2 = genop(@rdivide,e2,m2); 
 else y2=s2; d2=e2; end
 
