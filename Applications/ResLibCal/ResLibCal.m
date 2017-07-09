@@ -220,12 +220,15 @@ while ~isempty(varargin)
           '*.tif',  'TIFF image, compressed (*.tif)'; ...
           '*.bmp',  'Windows bitmap (*.bmp)'; ...
           '*.*',  'All Files (*.*)'}, ...
-          'Export configuration window as...');
+          'ResLibCal: Export configuration window as...');
       if isempty(filename) || all(filename == 0), return; end
       filename = fullfile(pathname, filename);
       fig = ResLibCal_fig;
       saveas(fig, filename);
       disp([ '% Exported ' ResLibCal_version ' window to file ' filename ]);
+    case {'publish','html','report'}
+      % create an HTML report
+      ResLibCal_GenerateReport;
     case {'file_exit','exit','quit'}
       if isempty(ResLibCal_fig), return; end
       if ~strcmp(action, 'quit')
@@ -247,7 +250,7 @@ while ~isempty(varargin)
       out = ResLibCal_UpdateViews(out, 'force');
     case {'view_resolution3','view3'}
       if length(varargin) > 1, v=varargin{2}; varargin(2) = []; else v=[]; end
-      out = ResLibCal_ViewResolution(v,3);  % open/raise View Res2
+      out = ResLibCal_ViewResolution(v,3);  % open/raise View Res3
       out = ResLibCal_UpdateViews(out, 'force');
     case {'view_tas','geometry','tas'}
       if length(varargin) > 1, v=varargin{2}; varargin(2) = []; else v=[]; end
@@ -703,7 +706,7 @@ function out = ResLibCal_UpdateViews(out, modev)
   end
 
 % ==============================================================================
-function out = ResLibCal_ViewResolution(out, dim)
+function [out, h] = ResLibCal_ViewResolution(out, dim)
 % ResLibCal_ViewResolution: open the Resolution 2D/3D plot view
 %
   if nargin == 0, out = ''; end
@@ -841,7 +844,76 @@ function ResLibCal_MethodEnableControls(out)
     set(ResLibCal_fig('EXP_sample_vmosaic'), 'Enable','on');
   end
   
-  % ==============================================================================
+% ==============================================================================
+function ResLibCal_GenerateReport
+  %  look for not-opened views
+    toclose=[];
+    for dim=1:3
+      if isempty(findobj(0, 'Tag',[ 'ResLibCal_View' num2str(dim)]))
+        toclose=[ toclose dim ];
+      end
+    end
+    %  list parameters
+    %  show view2, view3 and geometry
+    [out,f1] = ResLibCal_ViewResolution('',1);
+    [out,f2] = ResLibCal_ViewResolution('',2);
+    [out,f3] = ResLibCal_ViewResolution('',3);
+    views = [f1 f2 f3];
+    out = ResLibCal_UpdateViews(out, 'force');
+    % dump figures
+    tmpd = tempname;
+    if ~isdir(tmpd), mkdir(tmpd); end
+    print(f1, fullfile(tmpd,'geometry'),'-dpng');
+    print(f2, fullfile(tmpd,'resolution2'),'-dpng');
+    print(f3, fullfile(tmpd,'resolution3'),'-dpng');
+    % close the views that were not there
+    close(views(toclose));
+    % create the document
+    filename = fullfile(tmpd, 'rescal.html');
+    fid = fopen(filename, 'w+');  % create or append to file
+    titl = [ 'ResLibCal ' datestr(now) ];
+    fprintf(fid, '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">\n');
+    fprintf(fid, '<html>\n<head>\n<title>%s</title>\n</head>\n', ...
+        titl);
+    fprintf(fid, '<body>\n');
+    fprintf(fid, '<h2>ResCal TAS resolution computation</h2>n');
+    
+    % list parameters
+		rlu = get(ResLibCal_fig('View_ResolutionRLU'), 'Checked');    % [a* b*  c* ]
+		spec= get(ResLibCal_fig('View_ResolutionSPEC'),'Checked');    % [Ql Qt  Qv ]
+		abc = get(ResLibCal_fig('View_ResolutionABC'), 'Checked');    % [A  B   C  ]
+		lat = get(ResLibCal_fig('View_ResolutionLattice'), 'Checked');% [a* b'* c'*]
+		modev='abc'; % default
+		if     strcmp(rlu, 'on') modev='rlu'; 
+		elseif strcmp(spec,'on') modev='spec'; 
+		elseif strcmp(abc, 'on') modev='abc';
+		elseif strcmp(lat, 'on') modev='lattice'; end
+		[res, inst] = ResLibCal_FormatString(out, modev);
+		fprintf(fid, 'Instrument parameters:<br>\n<pre>\n');
+		fprintf(fid, '%s\n', inst{:});
+		fprintf(fid,'</pre><br>\n');
+		fprintf(fid, 'RESCAL conventional parameters:<br>\n<pre>\n');
+		fprintf(fid, '%s\n', res{:});
+    fprintf(fid,'</pre><br>\n');
+    
+    % add images
+    for name={'geometry','resolution2','resolution3'}
+      fprintf(fid, '<div style="text-align: center;"><a href="%s"><img src="%s" align="middle"></a><br>\n<i>View: %s</i><br></div>\n', ...
+      [ name{1} '.png' ], ...
+      [ name{1} '.png' ], name{1});
+    end
+    
+    % display a 'footer' below the object description
+    fprintf(fid,[ '<b>' datestr(now) '</b> - ' version(iData) '<br>\n' ]);
+    
+    fprintf(fid,[ '<a href="http://ifit.mccode.org">Powered by iFit ' ...
+      '<img src="http://ifit.mccode.org/images/iFit-logo.png" width=35 height=32></a> \n' ...
+      '<a href="http://www.ill.eu">(c) ILL ' ...
+      '<img title="ILL, Grenoble, France www.ill.eu" src="http://ifit.mccode.org/images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France www.ill.eu" style="width: 33px; height: 32px;"></a><hr>\n' ]);
+    fprintf(fid, '</body>');
+    web(filename);
+
+% ==============================================================================
   
 function Res = mergestruct(A,B)
 %% Recursively merges fields and subfields of structures A and B to result structure Res

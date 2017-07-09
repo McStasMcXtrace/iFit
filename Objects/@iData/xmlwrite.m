@@ -1,4 +1,4 @@
-function xmlwrite(a, filename)
+function f=xmlwrite(a, filename)
 % f = xmlwrite(s, filename) : save iData object into an XML file
 %
 %   @iData/xmlwrite function to save data sets as a XML

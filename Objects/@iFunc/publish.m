@@ -1,7 +1,7 @@
 function a = publish(a, filename)
 % b = publish(s) : export the Model object as an HTML document.
 %
-%   @iData/publish function to export an object into a readable document.
+%   @iFunc/publish function to export an object into a readable document.
 %
 %   publish(a, file)  export to given file name
 %   publish(a, dir)   export to given directory
@@ -13,7 +13,7 @@ function a = publish(a, filename)
 % ex:     b=publish(gauss); webbrowser(b, 'system')
 %
 % Version: $Date$
-% See also iData, iData/save
+% See also iFunc, iFunc/save
 
 if nargin < 2, filename = ''; end
 
