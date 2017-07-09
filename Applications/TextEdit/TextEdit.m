@@ -1,12 +1,20 @@
-function hF = TextEdit(filename, name)
+function hF = TextEdit(filename, options)
 % Simple Text editor
 %
 %  TextEdit
 %    Open an empty editor window
 %  TextEdit(filename)
 %    Open the file content inside a new editor window
-% TextEdit(string)
+%  TextEdit(string)
 %    Display the string inside a new Editor window
+%  TextEdit(..., name)
+%    Give the TextEdit a name
+%  TextEdit(filename|string, options)
+%    with options as a structure:
+%      name:    the name of the TextEdit
+%      command: when 1, displays a command line, in which case the main pane is not
+%               editable. Commands entered in this area are echoed in the main 
+%               pane and executed.
 %
 % $ Initially from: Jorge De Los Santos $
 % $ E-mail: delossantosmfq@gmail.com $
@@ -20,9 +28,20 @@ function hF = TextEdit(filename, name)
 % Orig: http://fr.mathworks.com/matlabcentral/fileexchange/47614-textedit
 % Modified by E. Farhi, 2016 into english
 
-if nargin < 2, name=mfilename; end
+% build the 'options'
+if nargin < 2, options.name=[]; end
+if ischar(options) name = options; options=''; options.name = name; end
+
+if ~isstruct(options) || ~isfield(options, 'name') || isempty(options.name), 
+  options.name    = mfilename;
+end
+if ~isfield(options, 'command') || isempty(options.command)
+  options.command = 0;
+end
+
+% build the main window
 hF=figure('MenuBar','none',...
-    'Name',name,'Resize','on',...
+    'Name',options.name,'Resize','on',...
     'Position',[0 0 600 400],'Color','w','CloseRequestFcn', @textedit_quit);
 centerfig();
 
@@ -44,24 +63,51 @@ uimenu(hME,'Label','Paste','Callback',@textedit_paste);
 hMA=uimenu(hF,'Label','Help');
 uimenu(hMA,'Label','About...','Callback',@textedit_about, 'Accelerator','h');
     
+use_fallback = 1;
 % we use the nice Java SyntaxTextPane
 try
-  jCodePane = com.mathworks.widgets.SyntaxTextPane;
-  codeType = jCodePane.M_MIME_TYPE;  % jCodePane.contentType='text/m-MATLAB'
-  jCodePane.setContentType(codeType)
-  str = ['% enter Matlab code here\n' ];
-  str = sprintf(strrep(str,'%','%%'));
-  jCodePane.setText(str)
-  jScrollPane = com.mathworks.mwswing.MJScrollPane(jCodePane);
-  [jhPanel,hContainer] = javacomponent(jScrollPane,[10,10,300,100],hF);
-  hTxt = jCodePane;
-  % set the editor panel to whole figure, normalised.
-  set(hContainer,'Units',   'normalized')
-  set(hContainer,'Position',[0 0 1 1])
-  
-  % more menu stuff
-  uimenu(hME,'Label','Select All', 'Callback','tmp_hTxt=get(gcbf,''UserData''); tmp_hTxt.selectAll; clear tmp_hTxt;')
+  if usejava('jvm') && usejava('swing') && feature('ShowFigureWindows')
+    jCodePane = com.mathworks.widgets.SyntaxTextPane;
+    codeType = jCodePane.M_MIME_TYPE;  % jCodePane.contentType='text/m-MATLAB'
+    jCodePane.setContentType(codeType)
+    jCodePane.setText('')
+    jScrollPane = com.mathworks.mwswing.MJScrollPane(jCodePane);
+    [jhPanel,hContainer] = javacomponent(jScrollPane,[10,10,300,100],hF);
+    hTxt = jCodePane;
+    % set the editor panel to whole figure, normalised.
+    set(hContainer,'Units',   'normalized')
+ 
+    if options.command
+      set(hContainer,'Position',[0 0.1 1 0.9])
+      % we create an other ScrollPane with highlight syntax and a 'Run' button
+      jCodePane2 = com.mathworks.widgets.SyntaxTextPane;
+      codeType = jCodePane2.M_MIME_TYPE;  % jCodePane.contentType='text/m-MATLAB'
+      jCodePane2.setContentType(codeType)
+      str = ['% enter Matlab commands here\n' ];
+      str = sprintf(strrep(str,'%','%%'));
+      jCodePane2.setText(str)
+      jScrollPane2 = com.mathworks.mwswing.MJScrollPane(jCodePane2);
+      [jhPanel2,hContainer2] = javacomponent(jScrollPane2,[10,10,300,100],hF);
+      set(hContainer2,'Units',   'normalized')
+      set(hContainer2,'Position',[0 0 1 0.1]);
+      options.command_pane_java = jCodePane2;
+      options.command_pane_uicontrol = hContainer2;
+    else
+      set(hContainer,'Position',[0 0 1 1])
+      options.command_pane = [];
+      options.command_pane_uicontrol = [];
+    end
+    options.display_pane = jCodePane;
+    options.display_pane_uicontrol = hContainer;
+    
+    % more menu stuff
+    uimenu(hME,'Label','Select All', 'Callback','tmp_hTxt=get(gcbf,''UserData''); tmp_hTxt.display_pane.selectAll; clear tmp_hTxt;')
+    use_fallback = 0;
+  end
 catch
+  use_fallback = 1;
+end
+if use_fallback
   % fallback Editor 
   hTxt=uicontrol('style','edit','String','',...
     'Units','Normalized','Position',[0 0 1 1],...
@@ -86,10 +132,12 @@ catch
   % more in Edit menu
   uimenu(hME,'Label','Change Font Color...','Callback',@textedit_fontcolor, 'Separator','on');
   uimenu(hME,'Label','Change Font...','Callback',@textedit_font);
+  options.display_pane = hTxt;
+  options.command = 0;
 end
 
 % protect figure from over-plotting
-set(hF,'HandleVisibility','callback','UserData',hTxt);
+set(hF,'HandleVisibility','callback','UserData',options);
 
 if nargin 
   if iscellstr(filename)
@@ -103,7 +151,7 @@ if nargin && ischar(filename)
   if size(filename,1) == 1 && ~isempty(dir(filename))
     textedit_load(filename);
   else
-    textedit_setText(hTxt, filename)
+    textedit_setText(options.display_pane, filename)
   end
 end
 
@@ -122,12 +170,12 @@ end
     
     function textedit_load(filename)
         txt=fileread(filename);
-        textedit_setText(hTxt, txt);
-        if isa(hTxt, 'com.mathworks.widgets.SyntaxTextPane')
-          hTxt.setToolTipText(sprintf('File: %s\nSize: %i', ...
+        textedit_setText(options.display_pane, txt);
+        if isa(options.display_pane, 'com.mathworks.widgets.SyntaxTextPane')
+          options.display_pane.setToolTipText(sprintf('File: %s\nSize: %i', ...
             filename, numel(txt)));
-        elseif ishandle(hTxt)
-          set(hTxt, 'ToolTip', sprintf('File: %s\nSize: %i', ...
+        elseif ishandle(options.display_pane)
+          set(options.display_pane, 'ToolTip', sprintf('File: %s\nSize: %i', ...
             filename, numel(txt)));
         end
         set(hF,'Name', [ 'TextEdit: ' filename ]);
@@ -135,7 +183,7 @@ end
 
 % Save content into a text file
     function textedit_save(~,~)
-        txt = textedit_getText(hTxt);
+        txt = textedit_getText(options.display_pane);
         [filename, pathname] = uiputfile( ...
           {'*.txt','Text files (*.txt)'; ...
            '*.m','Matlab script (*.m)'; ...
@@ -157,13 +205,13 @@ end
 % Evaluate whole text
     function textedit_eval(~,~)
         % get Selected text
-        if isa(hTxt,'com.mathworks.widgets.SyntaxTextPane')
-          txt = char(hTxt.getSelectedText);
+        if isa(options.display_pane,'com.mathworks.widgets.SyntaxTextPane')
+          txt = char(options.display_pane.getSelectedText);
         else
           txt = [];
         end
         if isempty(txt)
-          txt = char(textedit_getText(hTxt));
+          txt = char(textedit_getText(options.display_pane));
         end
         disp([ '% ' mfilename ': Evaluating code: ' datestr(now) ])
         disp(txt)
@@ -177,9 +225,9 @@ end
     end
     
     function textedit_quit(~,~)
-      hTxt = get(hF,'UserData');
+      options = get(hF,'UserData');
       try
-        delete(hTxt);
+        delete(options.display_pane);
       end
       delete(hF);
     end
@@ -197,8 +245,8 @@ end
         rb.keyRelease(KeyEvent.VK_C);
         clear('rb');
       catch
-        hTxt = get(gcbf,'UserData');
-        clipboard('copy', textedit_getText(hTxt));
+        options = get(gcbf,'UserData');
+        clipboard('copy', textedit_getText(options.display_pane));
       end
     end
 
@@ -215,34 +263,35 @@ end
         rb.keyRelease(KeyEvent.VK_V);
         clear('rb');
       catch
-        hTxt = get(gcbf,'UserData');
-        str1 = textedit_getText(hTxt);
+        options = get(gcbf,'UserData');
+        str1 = textedit_getText(options.display_pane);
         str2 = clipboard('paste');
-        textedit_setText(hTxt, strvcat(str1, str2));
+        textedit_setText(options.display_pane, strvcat(str1, str2));
       end
     end
 
 %  Copy and remove the whole content
     function textedit_cut(~,~)
-        str = textedit_getText(hTxt);
+        options = get(gcbf,'UserData');
+        str = textedit_getText(options.display_pane);
         clipboard('copy', str);
-        textedit_setText(hTxt, '');
+        textedit_setText(options.display_pane, '');
     end
 
 % Select font color
     function textedit_fontcolor(~,~)
-      if ~isa(hTxt, 'com.mathworks.widgets.SyntaxTextPane')
+      if ~isa(options.display_pane, 'com.mathworks.widgets.SyntaxTextPane')
         clr=uisetcolor([1 1 1]);
-        set(hTxt,'ForegroundColor',clr);
+        set(options.display_pane,'ForegroundColor',clr);
       end
     end
 
 % Select Font
     function textedit_font(~,~)
-        if ~isa(hTxt, 'com.mathworks.widgets.SyntaxTextPane')
+        if ~isa(options.display_pane, 'com.mathworks.widgets.SyntaxTextPane')
           fmod=uisetfont();
           if ~isequal(fmod,0)
-            set(hTxt,'FontName',fmod.FontName,...
+            set(options.display_pane,'FontName',fmod.FontName,...
                 'FontSize',fmod.FontSize,...
                 'FontWeight',fmod.FontWeight,...
                 'FontAngle',fmod.FontAngle);
@@ -254,9 +303,9 @@ end
 
 % Align text
     function textedit_align(src,~)
-      if ~isa(hTxt, 'com.mathworks.widgets.SyntaxTextPane')
+      if ~isa(options.display_pane, 'com.mathworks.widgets.SyntaxTextPane')
         alin=get(src,'Label');
-        set(hTxt,'Horizontal',alin);
+        set(options.display_pane,'Horizontal',alin);
       end
     end
 
@@ -270,9 +319,9 @@ end
             'Silver',[0.6 0.6 0.6],[1 1 1]};
         k=strfind(MTEM(:,1),tipo);
         k=cellfun(@isempty,k);
-        if ~isa(hTxt, 'com.mathworks.widgets.SyntaxTextPane')
-          set(hTxt,'BackgroundColor',MTEM{find(~k),2});
-          set(hTxt,'ForegroundColor',MTEM{find(~k),3});
+        if ~isa(options.display_pane, 'com.mathworks.widgets.SyntaxTextPane')
+          set(options.display_pane,'BackgroundColor',MTEM{find(~k),2});
+          set(options.display_pane,'ForegroundColor',MTEM{find(~k),3});
         end
     end
 
