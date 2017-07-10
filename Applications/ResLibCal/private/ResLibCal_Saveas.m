@@ -25,6 +25,7 @@ function filename = ResLibCal_Saveas(filename, EXP, flag)
           '*.cfg','ResCal5 Popovici configuration (with comments, *.cfg)' ; ...
           '*.res','ResTrax Cooper-Nathans+Popovici named list (*.res)' ; ...
           '*.rtx','ResTrax legacy (*.rtx)' ; ...
+          '*.html','Full report in Hypertext Markup Language document (*.html)'; ...
           '*.*',  'All Files (*.*)'}, ...
           'Save ResLibCal configuration as ...');
     if isempty(filename) || all(filename == 0), return; end
@@ -123,6 +124,8 @@ function filename = ResLibCal_Saveas(filename, EXP, flag)
 		  str = sprintf('%s\n', str{:});
 			description = 'ResTrax legacy';
 			disp('WARNING: the generated ResTrax file does not contain the full configuration.');
+	  elseif any(strcmp(e,'.html'))
+	    filename = ResLibCal_GenerateReport;
     else % INI configuration file
       % first clean the 'handles'
       EXP = rmfield(EXP,'handle');
