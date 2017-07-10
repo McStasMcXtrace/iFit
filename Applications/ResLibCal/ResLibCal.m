@@ -115,14 +115,13 @@ function out = ResLibCal(varargin)
 % filename    = ResLibCal_Saveas(filename, EXP)
 % ResLibCal_UpdateDTau(handle)
 % ResLibCal_UpdateEKLfixed(handle)
-%
-% Private (inline) functions:
 % filename = ResLibCal_Save
 % out      = ResLibCal_UpdateViews(out)
 % out      = ResLibCal_ViewResolution(out, dim)
 % out      = ResLibCal_UpdateResolution2(out)
 % out      = ResLibCal_UpdateResolution3(out)
 % ResLibCal_UpdateTauPopup(handle, EXP)
+% ResLibCal_GenerateReport(filename)
 
 out = [];
 silent_mode = 0;
@@ -240,7 +239,7 @@ while ~isempty(varargin)
       if isempty(ResLibCal_fig), return; end
       if ~strcmp(action, 'quit')
         % save configuration so that it is re-opened at next re-start
-        ResLibCal_Save;
+        filename = ResLibCal_Saveas(fullfile(prefdir, 'ResLibCal.ini'));
       end
       % close windows
       hObjects={'ResLibCal',...
