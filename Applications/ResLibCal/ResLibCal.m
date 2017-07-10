@@ -18,7 +18,7 @@ function out = ResLibCal(varargin)
 %   export  dump the main ResLibCal window into a file
 %   exit    close all active views, and save current configuration
 %   reset   re-load the default configuration
-%   print   print the main ResLibCal window
+%   print   generate an HTML document to be printed
 %   create  open the main GUI (start interface), and read last saved configuration
 %   compute only compute the matrix (no plotting/printing)
 %   update  compute, and then update open views, or send result to the console
@@ -202,14 +202,15 @@ while ~isempty(varargin)
       end
     case {'file_save','save'}
       % save configuration so that it is re-opened at next re-start
-      ResLibCal_Save; % (filename=prefdir)
+      filename = ResLibCal_Saveas(fullfile(prefdir, 'ResLibCal.ini'));
     case {'file_saveas','saveas'}
       % save configuration
       ResLibCal_Saveas(out); % (filename, EXP)
       return;
     case {'file_print','print'}
-      fig = ResLibCal_fig;
-      printdlg(fig);
+      %fig = ResLibCal_fig;
+      %printdlg(fig);
+      ResLibCal_GenerateReport;
       return;
     case {'file_export','export'}
       [filename, pathname] = uiputfile( ...
@@ -219,13 +220,19 @@ while ~isempty(varargin)
           '*.jpg',  'JPEG image (*.jpg)'; ...
           '*.tif',  'TIFF image, compressed (*.tif)'; ...
           '*.bmp',  'Windows bitmap (*.bmp)'; ...
+          '*.html', 'Full report in Hypertext Markup Language document (*.html)'; ...
           '*.*',  'All Files (*.*)'}, ...
           'ResLibCal: Export configuration window as...');
       if isempty(filename) || all(filename == 0), return; end
       filename = fullfile(pathname, filename);
-      fig = ResLibCal_fig;
-      saveas(fig, filename);
-      disp([ '% Exported ' ResLibCal_version ' window to file ' filename ]);
+      [~,~,e] = fileparts(filename);
+      if strcmp(e, '.html')
+        ResLibCal_GenerateReport(filename);
+      else
+        fig = ResLibCal_fig;
+        saveas(fig, filename);
+        disp([ '% Exported ' ResLibCal_version ' main window to file ' filename ]);
+      end
     case {'publish','html','report'}
       % create an HTML report
       ResLibCal_GenerateReport;
@@ -656,142 +663,6 @@ end % end while nargin > 0
 % end ResLibCal main
 
 % ==============================================================================
-% most functions in 'private'
-%
-
-% ==============================================================================
-function filename = ResLibCal_Save
-  filename = ResLibCal_Saveas(fullfile(prefdir, 'ResLibCal.ini'));
-
-% ==============================================================================
-function out = ResLibCal_UpdateViews(out, modev)
-% ResLibCal_UpdateViews: update all views (only when already visible)
-% modev can be: 'force' (update all views) or 'stdout'
-%
-  if nargin == 0, out = ''; end
-  if nargin < 2, modev=''; end
-  if ~isstruct(out), out = ResLibCal_Compute; end
-  fig = ResLibCal_fig;
-  if ~isempty(fig) || strcmp(modev, 'force')
-    if strcmp(get(ResLibCal_fig('View_AutoUpdate'), 'Checked'), 'on') || strcmp(modev, 'force')
-      t=clock;
-      out = ResLibCal_UpdateResolution1(out); % TAS geometry
-      out = ResLibCal_UpdateResolution2(out); % 2D, also shows matrix
-      out = ResLibCal_UpdateResolution3(out); % 3D
-      if ~strcmp(modev, 'force') && etime(clock, t) > 5
-        disp([ mfilename ': the time required to update all plots gets long.' ])
-        disp('INFO          Setting View/AutoUpdate to off.')
-        set(ResLibCal_fig('View_AutoUpdate'), 'Checked', 'off');
-      end
-    end
-    ResLibCal_MethodEnableControls(out);    % enable/disable widgtes depending on the chosen method
-  end
-  % if no view exists, send result to the console 
-  % here unactivated in case we use it as a model for e.g. fitting
-  if isempty(fig) || strcmp(modev, 'stdout') ...
-  || isempty([ findobj(0, 'Tag','ResLibCal_View2') findobj(0, 'Tag','ResLibCal_View3') ])
-		% display result in the console
-		rlu = get(ResLibCal_fig('View_ResolutionRLU'), 'Checked');    % [a* b*  c* ]
-		spec= get(ResLibCal_fig('View_ResolutionSPEC'),'Checked');    % [Ql Qt  Qv ]
-		abc = get(ResLibCal_fig('View_ResolutionABC'), 'Checked');    % [A  B   C  ]
-		lat = get(ResLibCal_fig('View_ResolutionLattice'), 'Checked');% [a* b'* c'*]
-		modev='abc'; % default
-		if     strcmp(rlu, 'on') modev='rlu'; 
-		elseif strcmp(spec,'on') modev='spec'; 
-		elseif strcmp(abc, 'on') modev='abc';
-		elseif strcmp(lat, 'on') modev='lattice'; end
-		[res, inst] = ResLibCal_FormatString(out, modev);
-		disp(char(res));
-		disp(char(inst));
-  end
-
-% ==============================================================================
-function [out, h] = ResLibCal_ViewResolution(out, dim)
-% ResLibCal_ViewResolution: open the Resolution 2D/3D plot view
-%
-  if nargin == 0, out = ''; end
-  if ~isstruct(out), out = ResLibCal_Compute; end
-  h = findobj(0, 'Tag',[ 'ResLibCal_View' num2str(dim)]);
-  if isempty(h)
-    if dim~=1, name=sprintf('(%iD)', dim); else name='Matrix'; end
-    h = figure('Name',[ 'ResLibCal: View Resolution ' name ], ...
-               'Tag', [ 'ResLibCal_View' num2str(dim)], 'ToolBar','figure');
-    p = get(h, 'Position'); p(3:4) = [ 640 480 ]; set(h, 'Position',p);
-  else
-    figure(h);
-  end
-
-% ==============================================================================
-function out = ResLibCal_UpdateResolution1(out)
-% ResLibCal_UpdateResolution1: update the TAS geometry view
-%
-  if nargin == 0, out = ''; end
-  if ~isstruct(out), out = ResLibCal_Compute; end
-  h = findobj(0, 'Tag','ResLibCal_View1');
-  if isempty(h), return; end
-  set(0,'CurrentFigure', h);
-  set(h, 'Name','ResLibCal: View TAS geometry');
-
-  % update/show the TAS geometry
-  out = ResLibCal_TASview(out);
-
-% ==============================================================================
-function out = ResLibCal_UpdateResolution2(out)
-% ResLibCal_UpdateResolution2: update the 2D view
-%
-  if nargin == 0, out = ''; end
-  if ~isstruct(out), out = ResLibCal_Compute; end
-  h = findobj(0, 'Tag','ResLibCal_View2');
-  if isempty(h), return; end
-  set(0,'CurrentFigure', h);
-
-  % update/show the resolution projections
-  rlu = get(ResLibCal_fig('View_ResolutionRLU'), 'Checked');    % [a* b*  c* ]
-	spec= get(ResLibCal_fig('View_ResolutionSPEC'),'Checked');    % [Ql Qt  Qv ]
-	abc = get(ResLibCal_fig('View_ResolutionABC'), 'Checked');    % [A  B   C  ]
-	lat = get(ResLibCal_fig('View_ResolutionLattice'), 'Checked');% [a* b'* c'*]
-	modev='abc'; % default
-	if     strcmp(rlu, 'on') modev='rlu'; 
-	elseif strcmp(spec,'on') modev='spec'; 
-	elseif strcmp(abc, 'on') modev='abc';
-	elseif strcmp(lat, 'on') modev='lattice'; end
-  qz  = get(ResLibCal_fig('View_ResolutionXYZ'), 'Checked');
-  qyz = get(ResLibCal_fig('View_ResolutionHV'), 'Checked');
-  MC  = get(ResLibCal_fig('View_Resolution_Cloud'), 'Checked');
-  if strcmp(qz, 'on'),  qz='qz'; else  qz = 'en'; end
-  if strcmp(qyz,'on'), qyz='xz'; else qyz = 'xy'; end
-  if strcmp(MC, 'on'),  MC='cloud'; end
-  out = ResLibCal_Plot2D(out, [ modev ' ' qyz ' ' qz ' ' MC ]);
-
-% ==============================================================================
-function out = ResLibCal_UpdateResolution3(out)
-% ResLibCal_UpdateResolution3: update the 3D view
-%
-  if nargin == 0, out = ''; end
-  if ~isstruct(out), out = ResLibCal_Compute; end
-  h = findobj(0, 'Tag','ResLibCal_View3');
-  if isempty(h), return; end
-  set(0,'CurrentFigure', h);
-
-  % update/show the resolution projections
-  rlu = get(ResLibCal_fig('View_ResolutionRLU'), 'Checked');    % [a* b*  c* ]
-	spec= get(ResLibCal_fig('View_ResolutionSPEC'),'Checked');    % [Ql Qt  Qv ]
-	abc = get(ResLibCal_fig('View_ResolutionABC'), 'Checked');    % [A  B   C  ]
-	lat = get(ResLibCal_fig('View_ResolutionLattice'), 'Checked');% [a* b'* c'*]
-	if     strcmp(rlu, 'on') modev='rlu'; 
-	elseif strcmp(spec,'on') modev='spec'; 
-	elseif strcmp(abc, 'on') modev='abc';
-	elseif strcmp(lat, 'on') modev='lattice'; end
-	
-  qz  = get(ResLibCal_fig('View_ResolutionXYZ'), 'Checked');
-  qyz = get(ResLibCal_fig('View_ResolutionHV'), 'Checked');
-  MC  = get(ResLibCal_fig('View_Resolution_Cloud'), 'Checked');
-  if strcmp(qz, 'on'),  qz='qz'; else  qz = 'en'; end
-  if strcmp(qyz,'on'), qyz='xz'; else qyz = 'xy'; end
-  if strcmp(MC, 'on'),  MC='cloud'; end
-  out = ResLibCal_Plot3D(out, [ modev ' ' qyz ' ' qz ' ' MC ]);
-
-% ==============================================================================
 function ResLibCal_UpdateTauPopup
 % update the popup menu from the editable mono/ana value when d is close
 %
@@ -808,152 +679,5 @@ function ResLibCal_UpdateTauPopup
   if ~isempty(index) && ~isempty(label), set(popup, 'value', index(1)); end
 
 % ==============================================================================
-function ResLibCal_MethodEnableControls(out)
-% ResLibCal_MethodEnableControls: activates/disactivates controls from CN to Popovici
-%
-  fig = ResLibCal_fig;
-  if isempty(fig), return; end
-  
-  Popovici = {'EXP_beam_width', 'EXP_beam_height', ...
-  'EXP_detector_width', 'EXP_detector_height', ...
-  'EXP_mono_width', 'EXP_mono_height', 'EXP_mono_depth', ...
-  'EXP_ana_width', 'EXP_ana_height', 'EXP_ana_depth', ...
-  'EXP_sample_width',  'EXP_sample_depth', 'EXP_sample_height', ...
-  'EXP_mono_rv', 'EXP_mono_rh', 'EXP_ana_rv', 'EXP_ana_rh'};
-  for tag=Popovici
-    hObject = ResLibCal_fig(tag{1});
-    if ~isempty(hObject)
-      if ~isempty(strfind(lower(out.EXP.method), 'popovici')) || ...
-         ~isempty(strfind(lower(out.EXP.method), 'mcstas'))
-       % this is Popovici or Mcstas method
-        set(hObject, 'Enable','on');
-      else
-        set(hObject, 'Enable','off');
-      end
-    end
-  end
-  % special case for Cooper-Nathans legacy without vertical mosaic components
-  if ~isempty(strfind(lower(out.EXP.method), 'cooper')) && ...
-    (~isempty(strfind(lower(out.EXP.method), 'afill')) || ~isempty(strfind(lower(out.EXP.method), 'rescal5')))
-    set(ResLibCal_fig('EXP_mono_vmosaic'), 'Enable','off');
-    set(ResLibCal_fig('EXP_ana_vmosaic'), 'Enable','off');
-    set(ResLibCal_fig('EXP_sample_vmosaic'), 'Enable','off');
-  else
-    set(ResLibCal_fig('EXP_mono_vmosaic'), 'Enable','on');
-    set(ResLibCal_fig('EXP_ana_vmosaic'), 'Enable','on');
-    set(ResLibCal_fig('EXP_sample_vmosaic'), 'Enable','on');
-  end
-  
-% ==============================================================================
-function ResLibCal_GenerateReport
-  %  look for not-opened views
-    toclose=[];
-    for dim=1:3
-      if isempty(findobj(0, 'Tag',[ 'ResLibCal_View' num2str(dim)]))
-        toclose=[ toclose dim ];
-      end
-    end
-    %  list parameters
-    %  show view2, view3 and geometry
-    [out,f1] = ResLibCal_ViewResolution('',1);
-    [out,f2] = ResLibCal_ViewResolution('',2);
-    [out,f3] = ResLibCal_ViewResolution('',3);
-    views = [f1 f2 f3];
-    out = ResLibCal_UpdateViews(out, 'force');
-    % dump figures
-    tmpd = tempname;
-    if ~isdir(tmpd), mkdir(tmpd); end
-    print(f1, fullfile(tmpd,'geometry'),'-dpng');
-    print(f2, fullfile(tmpd,'resolution2'),'-dpng');
-    print(f3, fullfile(tmpd,'resolution3'),'-dpng');
-    % close the views that were not there
-    close(views(toclose));
-    % create the document
-    filename = fullfile(tmpd, 'rescal.html');
-    fid = fopen(filename, 'w+');  % create or append to file
-    titl = [ 'ResLibCal ' datestr(now) ];
-    fprintf(fid, '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">\n');
-    fprintf(fid, '<html>\n<head>\n<title>%s</title>\n</head>\n', ...
-        titl);
-    fprintf(fid, '<body>\n');
-    fprintf(fid, '<h2>ResCal TAS resolution computation</h2>n');
-    
-    % list parameters
-		rlu = get(ResLibCal_fig('View_ResolutionRLU'), 'Checked');    % [a* b*  c* ]
-		spec= get(ResLibCal_fig('View_ResolutionSPEC'),'Checked');    % [Ql Qt  Qv ]
-		abc = get(ResLibCal_fig('View_ResolutionABC'), 'Checked');    % [A  B   C  ]
-		lat = get(ResLibCal_fig('View_ResolutionLattice'), 'Checked');% [a* b'* c'*]
-		modev='abc'; % default
-		if     strcmp(rlu, 'on') modev='rlu'; 
-		elseif strcmp(spec,'on') modev='spec'; 
-		elseif strcmp(abc, 'on') modev='abc';
-		elseif strcmp(lat, 'on') modev='lattice'; end
-		[res, inst] = ResLibCal_FormatString(out, modev);
-		fprintf(fid, 'Instrument parameters:<br>\n<pre>\n');
-		fprintf(fid, '%s\n', inst{:});
-		fprintf(fid,'</pre><br>\n');
-		fprintf(fid, 'RESCAL conventional parameters:<br>\n<pre>\n');
-		fprintf(fid, '%s\n', res{:});
-    fprintf(fid,'</pre><br>\n');
-    
-    % add images
-    for name={'geometry','resolution2','resolution3'}
-      fprintf(fid, '<div style="text-align: center;"><a href="%s"><img src="%s" align="middle"></a><br>\n<i>View: %s</i><br></div>\n', ...
-      [ name{1} '.png' ], ...
-      [ name{1} '.png' ], name{1});
-    end
-    
-    % display a 'footer' below the object description
-    fprintf(fid,[ '<b>' datestr(now) '</b> - ' version(iData) '<br>\n' ]);
-    
-    fprintf(fid,[ '<a href="http://ifit.mccode.org">Powered by iFit ' ...
-      '<img src="http://ifit.mccode.org/images/iFit-logo.png" width=35 height=32></a> \n' ...
-      '<a href="http://www.ill.eu">(c) ILL ' ...
-      '<img title="ILL, Grenoble, France www.ill.eu" src="http://ifit.mccode.org/images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France www.ill.eu" style="width: 33px; height: 32px;"></a><hr>\n' ]);
-    fprintf(fid, '</body>');
-    web(filename);
 
-% ==============================================================================
   
-function Res = mergestruct(A,B)
-%% Recursively merges fields and subfields of structures A and B to result structure Res
-% Simple recursive algorithm merges fields and subfields of two structures
-%   Example:
-%   A.field1=1;
-%   A.field2.subfield1=1;
-%   A.field2.subfield2=2;
-% 
-%   B.field1=1;
-%   B.field2.subfield1=10;
-%   B.field2.subfield3=30;
-%   B.field3.subfield1=1;
-% 
-%   C=mergestruct(A,B);
-%
-%  by Igor Kaufman, 02 Dec 2011, BSD
-% <http://www.mathworks.com/matlabcentral/fileexchange/34054-merge-structures>
-
-Res=[];
-if nargin>0
-    Res=A;
-end;
-if nargin==1 || isstruct(B)==0
-    return;
-end;    
-  fnb=fieldnames(B);
-  
-  for i=1:length(fnb)
-     s=char(fnb(i));
-     oldfield=[];
-     if (isfield(A,s))
-         oldfield=getfield(A,s);
-     end    
-     newfield=getfield(B,s);
-     if isempty(oldfield) || isstruct(newfield)==0
-       Res=setfield(Res,s,newfield);     
-     else
-       Res=setfield(Res,s,mergestruct(oldfield, newfield));  
-     end    
-  end    
-
-
