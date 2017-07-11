@@ -17,7 +17,15 @@ function a = publish(a, filename)
 
 if nargin < 2, filename = ''; end
 
-a = saveas(a, filename, 'html');
+if ndims(a) == 4 && strncmp(a.Name, 'Sqw_Phonon', numel('Sqw_Phonon'))
+  a = sqw_phonons(a, 'report');
+  if isfield(a.UserData,'dir') && isdir(a.UserData.dir) ...
+    && ~isempty(dir(fullfile(a.UserData.dir, 'sqw_phonons.html')))
+    a = fullfile(a.UserData.dir, 'sqw_phonons.html');
+  end
+else
+  a = saveas(a, filename, 'html');
+end
 
 if nargout == 0
   web(a)
