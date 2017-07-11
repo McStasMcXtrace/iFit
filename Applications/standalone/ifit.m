@@ -44,7 +44,7 @@ function ifit(varargin)
 persistent ifit_options
 
 if ~isdeployed,
-  disp([ mfilename ': you do not need the iFit Terminal.' ])
+  disp([ mfilename ': you do not need the iFit Terminal. Just use Matlab as usual.' ])
   return; 
 end
 if ~isempty(ifit_options), return; end
@@ -239,7 +239,7 @@ while ~exist('ifit_options') || ~isstruct(ifit_options) || ...
         % open miFit and send imported objects there
         inline_sendtomifit(this);
       end
-      if ~isempty(this) % last argument has just been processed
+      if exist('this') && ~isempty(this) % last argument has just been processed
       
         % last file imported. Plot all imported data sets / functions
         if  isempty(ifit_options.line) % no command was given as last argument
