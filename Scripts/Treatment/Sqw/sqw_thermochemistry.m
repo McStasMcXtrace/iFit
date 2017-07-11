@@ -1,4 +1,4 @@
-function t=sqw_thermochemistry(s, T, options)
+function [t, fig]=sqw_thermochemistry(s, T, options)
 % sqw_thermochemistry: compute thermodynamic quantities.
 %
 % compute thermodynamics quantities.
@@ -25,7 +25,7 @@ function t=sqw_thermochemistry(s, T, options)
 % output:
 %   t: structure with [DOS, DOS_partials, S U F Cv ]
 
-t=[];
+t=[]; fig=[];
 % test the input object
 if nargin == 0, return; end
 if nargin < 2, T=[]; end
@@ -55,12 +55,21 @@ UD = s.UserData;
 mole = 6.022140857e23;
 e    = 1.60217733e-19;         % elementary charge,  C
 factor = e*mole;               % [J/mol]
+titl   = strtok(s.Name);
+if isfield(s.UserData,'properties') && isfield(s.UserData.properties,'chemical_formula')
+  chem = [ ' ' s.UserData.properties.chemical_formula ];
+  titl = [ titl chem ];
+else chem = ''; end
+if isfield(s.UserData,'properties') && isfield(s.UserData.properties,'molar_mass')
+  mass = sprintf('/%.1f [g]', s.UserData.properties.molar_mass);
+  titl = [ titl mass ];
+else mass = ''; end
 
 % compute the entropy S [eV/K]
 S = get_entropy(omega_e, dos_e, T)*factor;
 entropy = iData(T, S);
-entropy.Title=[ 'Entropy S=-dF/dT [J/K/mol] ' strtok(s.Name) ]; 
-xlabel(entropy,'Temperature [K]'); ylabel(entropy, 'S [J/K/mol]');
+entropy.Title=[ 'Entropy S=-dF/dT [J/K/mol] ' titl ]; 
+xlabel(entropy,'Temperature [K]'); ylabel(entropy, [ 'S [J/K/mol]' chem mass ]);
 entropy.Error=0; UD.entropy = entropy;
 
 % compute the internal energy U [eV]
@@ -70,21 +79,21 @@ else potential_energy = 0; end
 
 U = get_internal_energy(omega_e, dos_e, T, potential_energy)*factor;
 internal_energy = iData(T, U);
-internal_energy.Title=[ 'Internal energy U [J/mol] ' strtok(s.Name) ]; 
-xlabel(internal_energy,'Temperature [K]'); ylabel(internal_energy,'U [J/moll]');
+internal_energy.Title=[ 'Internal energy U [J/mol] ' titl ]; 
+xlabel(internal_energy,'Temperature [K]'); ylabel(internal_energy,[ 'U [J/moll]' chem mass ]);
 internal_energy.Error=0; UD.internal_energy = internal_energy;
 
 % compute the Helmotlz free energy F [eV]
 F = U - T .* S;
 helmholtz_energy = iData(T, F);
-helmholtz_energy.Title=[ 'Helmholtz free energy F=U-TS=-kT lnZ [J/mol] ' strtok(s.Name) ]; 
-xlabel(helmholtz_energy,'Temperature [K]'); ylabel(helmholtz_energy,'F [J/mol]');
+helmholtz_energy.Title=[ 'Helmholtz free energy F=U-TS=-kT lnZ [J/mol] ' titl ]; 
+xlabel(helmholtz_energy,'Temperature [K]'); ylabel(helmholtz_energy,[ 'F [J/mol]' chem mass ]);
 helmholtz_energy.Error=0; UD.helmholtz_energy = helmholtz_energy;
 
 % compute the Cv
 Cv = diff(internal_energy);
-Cv.Title=[ 'Specific heat at constant volume Cv=dU/dT [J/K/mol] ' strtok(s.Name) ]; 
-xlabel(Cv,'Temperature [K]'); ylabel(Cv, 'Cv [J/K/mol]');
+Cv.Title=[ 'Specific heat at constant volume Cv=dU/dT [J/K/mol] ' titl ]; 
+xlabel(Cv,'Temperature [K]'); ylabel(Cv, [ 'Cv [J/K/mol]' chem mass ]);
 Cv.Error=0; UD.heat_capacity = Cv;
 
 s.UserData = UD;

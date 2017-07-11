@@ -60,7 +60,7 @@ function [S, qLim, fig] = sqw_kpath(f, qLim, E, options)
 %   sqw_powder, <a href="matlab:doc(iFunc,'Models')">iFunc:Models</a>
 % (c) E.Farhi, ILL. License: EUPL.
 
-  S = [];
+  S = []; fig = [];
   if nargin == 0, return; end
   if nargin < 2, qLim = []; end
   if nargin < 3, E=[]; end
@@ -111,6 +111,7 @@ function [S, qLim, fig] = sqw_kpath(f, qLim, E, options)
   end
 
   % look for space group when available
+  spacegroup = '';
   if ischar(qLim), crystalsystem = qLim; qLim = {}; else crystalsystem = ''; end
   if isempty(crystalsystem) && isfield(f.UserData,'properties') ...
   && isfield(f.UserData.properties, 'spacegroup')
@@ -228,6 +229,10 @@ function [S, qLim, fig] = sqw_kpath(f, qLim, E, options)
     f.UserData.properties.b_coh = b_coh;
   end
   
+  if isfield(f.UserData,'properties') && isfield(f.UserData.properties,'chemical_formula')
+    chem = [ ' ' f.UserData.properties.chemical_formula ];
+  else chem = ''; end
+  
   % retain only HKL locations (get rid of optional n)
   if isscalar(qLim{end}), 
     n = qLim{end}; 
@@ -259,8 +264,11 @@ function [S, qLim, fig] = sqw_kpath(f, qLim, E, options)
   x = linspace(0, numel(qLim)-1, numel(ax{1}));
   S = iData(E*factor,x,S);
   % set title, labels, ...
-  title(S, 'Model value along path');
-  S.Title = [ f.Name ' along path. ' crystalsystem ];
+  if ~isempty(spacegroup)
+    spacegroup = sprintf(' (sg %i)', spacegroup);
+  end
+  title(S, [ 'Model value along path' chem spacegroup ]);
+  S.Title = [ f.Name ' along path. ' crystalsystem chem spacegroup ];
   S=setalias(S, 'HKL',     qOut, 'HKL locations along path');
   S=setalias(S, 'kpoints', cell2mat(qLim'), 'set of HKL locations which form path');
   if ~isempty(xticks)
@@ -275,7 +283,7 @@ function [S, qLim, fig] = sqw_kpath(f, qLim, E, options)
 
   if nargout == 0 || ~isempty(strfind(options, 'plot'))
     fig = figure; 
-    if isfinite(max(S)) && max(S), plot(log10(S/max(S)),'view2');
+    if isfinite(max(S)) && max(S), plot(log10(S/max(S)),'view2'); 
     else plot(log10(S),'view2'); end
     axis tight
     add_contextmenu(gca)
