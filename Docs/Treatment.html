@@ -112,6 +112,8 @@
 
 
 
+
+
           scattering</a> [5,6].<br>
         <br>
         The dynamic structure factor is defined from the double
@@ -131,6 +133,8 @@
         specialized <a href="Models.html">models</a>. Then you can
         compute the 2D powder average, as shown below.<br>
         <h3><a class="mozTocH3" name="mozTocId301478"></a>Loading/generating
+
+
 
 
 
@@ -177,6 +181,8 @@ href="https://www.ill.eu/instruments-support/computing-for-science/cs-software/a
             finally <i>sqw_rebin</i>) ;</li>
           <li>you get a S(q,w) data set as a workspace ;</li>
           <li>export it into an HDF/NeXus file or as text (<i>write_lamp,
+
+
 
 
 
@@ -365,6 +371,8 @@ href="https://www.ill.eu/instruments-support/computing-for-science/cs-software/a
 
 
 
+
+
                 equally</i> Sqw{1} = - Sqw{1};</li>
           </ul>
         </div>
@@ -442,6 +450,8 @@ href="https://www.ill.eu/instruments-support/computing-for-science/cs-software/a
               <td valign="top">S(|q|,w) or S*(|q|,w)</td>
               <td valign="top">Check the S(q,w) data set. Possibly
                 convert from experimental data <i>S(&#966;,channel), </i><i>S(&#966;,t)
+
+
 
 
 
@@ -527,6 +537,8 @@ href="https://www.ill.eu/instruments-support/computing-for-science/cs-software/a
 
 
 
+
+
                 the energy moments, and provide some of the
                 characteristic frequencies (recoil, isothermal,
                 longitudinal/harmonic, mean energy transfer)<br>
@@ -536,11 +548,12 @@ href="https://www.ill.eu/instruments-support/computing-for-science/cs-software/a
               <td valign="top"><b><font color="#3366ff"><a
                       href="#mozTocId154363">Sqw_<font color="#3366ff">phonon_dos</font></a>(Sqw)</font></b><br>
               </td>
-              <td valign="top">S(|q|,w) or S*(|q|,w) </td>
+              <td valign="top">S(|q|,w) or S*(|q|,w)or S(q,w)<br>
+              </td>
               <td valign="top">g(w)<br>
               </td>
-              <td valign="top">Compute the generalized density of states
-                (gDOS)<a href="images/Treatment_Sqw_gDOS.png"><img
+              <td valign="top">Compute the vibrational density of states
+                (DOS)<a href="images/Treatment_Sqw_gDOS.png"><img
                     alt="Treatment_Sqw_gdos.png"
                     title="Treatment_Sqw_gdos.png"
                     src="images/Treatment_Sqw_gDOS.png" width="80"
@@ -560,6 +573,8 @@ href="https://www.ill.eu/instruments-support/computing-for-science/cs-software/a
                         title="Treatment_Sqw_XS.png"
                         alt="Treatment_Sqw_XS.png" width="80"
                         height="60" align="right" border="0"></a></b></font>Compute
+
+
 
 
 
@@ -618,6 +633,26 @@ href="https://www.ill.eu/instruments-support/computing-for-science/cs-software/a
                   href="Models.html#mozTocId990577">sqw_phonons</a>.<br>
               </td>
             </tr>
+            <tr>
+              <td valign="top"><b><font color="#3366ff">sqw_kpath(Sqw)</font></b><br>
+              </td>
+              <td valign="top">S(hkl,w) 4D</td>
+              <td valign="top">dispersion curves<br>
+              </td>
+              <td valign="top">Compute the dispersion curves and neutron
+                intensity along the main crystal axes.<br>
+              </td>
+            </tr>
+            <tr>
+              <td valign="top"><b><font color="#3366ff">sqw_thermochemistry(Sqw)</font></b><br>
+              </td>
+              <td valign="top">S(hkl,w) 4D</td>
+              <td valign="top">U,F,S,Cv<br>
+              </td>
+              <td valign="top">Compute the energy, entropy, heat
+                capacity, and also returns the DOS.<br>
+              </td>
+            </tr>
           </tbody>
         </table>
         <br>
@@ -666,6 +701,8 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/Ge_
 
 
 
+
+
           McStas</a>. You can also try liquid Rubidium from <a
 href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/Rb_liq_coh.sqw">here</a>
         [8] and heavy water from <a
@@ -677,6 +714,8 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
         </ul>
         Molecular Dynamics trajectories are usually computed in the NVE
         <a href="https://en.wikipedia.org/wiki/Microcanonical_ensemble">micro-canonical
+
+
 
 
 
@@ -826,6 +865,8 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
 
 
 
+
+
                     is the default.</i></b></td>
             </tr>
           </tbody>
@@ -924,6 +965,8 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
 
 
 
+
+
             25)</li>
           <li> <font color="#3366ff">plot</font>(log10(Sqw25));</li>
         </ul>
@@ -980,6 +1023,8 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
 
 
 
+
+
             Sqw25]));</li>
         </ul>
         <h5><a class="mozTocH5" name="mozTocId566610"></a> <a
@@ -1009,6 +1054,8 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
 
 
 
+
+
             frequencies</b></h5>
         From the dynamic structure factor, one can compute the energy
         moments, which provide some of the characteristic frequencies
@@ -1016,6 +1063,8 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
         scattering units (here 72.64 g/mol for Ge). <br>
         <br>
         Using the 'quantum' scattering law S(q,w), we can define <i>n</i>-th
+
+
 
 
 
@@ -1134,6 +1183,8 @@ href="https://raw.githubusercontent.com/McStasMcXtrace/McCode/master/mcstas-comp
           </li>
           <li>g=[ <font color="#3366ff">Sqw_phonon_dos</font>(Sqw) <font
               color="#3366ff">Sqw_</font><font color="#3366ff">phonon_dos</font>(SqwT)
+
+
             ];</li>
           <li><font color="#3366ff">plot</font>(g); xlim([0 Inf]);</li>
         </ul>
