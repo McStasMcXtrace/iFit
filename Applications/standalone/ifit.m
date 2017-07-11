@@ -346,6 +346,8 @@ function inline_display_help
   disp('        switch/case...) when they span on one line, or in scripts.');
   disp('Keys: Arrow-Up/Down  Navigate in command history.');
   disp('      Ctrl-C         Exit (same as ''exit'' or ''return'' commands)');
+  disp('      Ctrl-u Ctrl-k  Delete to start/end of line');
+  disp('      Ctrl-a Ctrl-e  Move cursor to start/end of line');
   disp('Help: Type ''doc(iData,''iFit'')'' to open local web pages');
   disp('      or see <ifit.mccode.org> and contact <ifit-users@mccode.org>.');
   disp('      Type ''help <ifit topic/method>'' to display specific help.')

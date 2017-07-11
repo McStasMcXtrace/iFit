@@ -284,6 +284,7 @@ class MlabObjectProxy(object):
 
     def __repr__(self):
         output = []
+        print 'disp(%s)' % self._name
         mlab._do('disp(%s)' % self._name, nout=0, handle_out=output.append)
         rep = "".join(output)
         klass = self._mlabwrap._do("class(%s)" % self._name)
@@ -666,6 +667,7 @@ class MlabWrap(object):
         if attr[-1] == "_": name = attr[:-1]
         else             : name = attr
         try:
+            print "nargout('%s')" % name
             nout = self._do("nargout('%s')" % name)
         except mlabraw.error, msg:
             typ = numpy.ravel(self._do("exist('%s')" % name))[0]
