@@ -329,11 +329,9 @@ function Phonon_Model = sqw_phonons_htmlreport_model(fid, options)
     
   fprintf(fid, '<p><a name="model"></a>The Phonon model object is available in the following formats.</p>\n');
   % generate the Model into additional formats
-  save(Phonon_Model, fullfile(options.target,name), 'xml');
-  save(Phonon_Model, fullfile(options.target,name), 'json');
-  try
-  save(Phonon_Model, fullfile(options.target,name), 'yaml');
-  end
+  try; save(Phonon_Model, fullfile(options.target,name), 'xml');  end
+  try; save(Phonon_Model, fullfile(options.target,name), 'json'); end
+  try; save(Phonon_Model, fullfile(options.target,name), 'yaml'); end
   save(Phonon_Model, fullfile(options.target,name), 'm');
   sqw_phonons_htmlreport_table(fid, options, 'Phonon_Model');
   
@@ -370,7 +368,7 @@ function Phonon_Model = sqw_phonons_htmlreport_model(fid, options)
 function Phonon_DOS = sqw_phonons_htmlreport_dos(fid, options, object)
   % display the vDOS. Model must have been evaluated once to compute DOS
   Phonon_DOS = sqw_phonon_dos(object);
-  thermo     = sqw_thermochemistry(object, 1:1000);
+  [thermo, fig] = sqw_thermochemistry(object, 1:1000, 'plot');
   if isfield(object.UserData, 'DOS') && ~isempty(object.UserData.DOS)
     Phonon_DOS = object.UserData.DOS;
     if isfield(thermo, 'entropy'),          Thermo_S = thermo.entropy; end
@@ -381,6 +379,14 @@ function Phonon_DOS = sqw_phonons_htmlreport_dos(fid, options, object)
     fprintf(fid, '<h3><a name="dos"></a>The vibrational density of states (vDOS)</h3>\n');
     fprintf(fid, '<p>The vibrational density of states (aka phonon spectrum) is defined as the velocity auto-correlation function (VACF) of the particles.\n<br>%s<br>\n', object.Name);
     
+    if ~isempty(fig)
+      plot2svg(fullfile(options.target,     'Phonon_ThermoChem.svg'), fig);
+      print(fig,  fullfile(options.target,  'Phonon_ThermoChem.png'),'-dpng');
+      print(fig,  fullfile(options.target,  'Phonon_ThermoChem.pdf'),'-dpdf');
+      saveas(fig, fullfile(options.target,  'Phonon_ThermoChem.fig'),  'fig');
+      close(fig);
+      sqw_phonons_htmlreport_table(fid, options,'Phonon_ThermoChem');
+    end
     
     properties = {'Phonon_DOS','Thermo_S','Thermo_U','Thermo_F','Thermo_Cv'};
     for index=1:numel(properties)
@@ -388,11 +394,7 @@ function Phonon_DOS = sqw_phonons_htmlreport_dos(fid, options, object)
         try
           val = eval(name);
           builtin('save', fullfile(options.target,  [ name '.mat']), name);
-          save(val, fullfile(options.target, [ name '.png']), 'png', 'tight');
           save(val, fullfile(options.target, [ name '.dat']), 'dat data');
-          save(val, fullfile(options.target, [ name '.svg']));
-          save(val, fullfile(options.target, [ name '.pdf']));
-          save(val, fullfile(options.target, [ name '.fig']));
           save(val, fullfile(options.target, [ name '.h5']), 'mantid');
         catch
           disp([ mfilename ': ERROR when exporting ' name ' into HTML ' ])
@@ -400,15 +402,15 @@ function Phonon_DOS = sqw_phonons_htmlreport_dos(fid, options, object)
         end
         switch name
         case 'Phonon_DOS'
-          fprintf(fid, 'The phonon spectrum is shown below:</p><br>\n');
+          fprintf(fid, 'The phonon spectrum is available below:</p><br>\n');
         case 'Thermo_S'
-          fprintf(fid, 'The entropy S=-dF/dT [J/K/mol] is shown below:</p><br>\n');
+          fprintf(fid, 'The entropy S=-dF/dT [J/K/mol] is available below:</p><br>\n');
         case 'Thermo_U'
-          fprintf(fid, 'The internal energy U [J/mol] is shown below:</p><br>\n');
+          fprintf(fid, 'The internal energy U [J/mol] is available below:</p><br>\n');
         case 'Thermo_F'
-          fprintf(fid, 'The Helmholtz free energy F=U-TS=-kT lnZ [J/mol] is shown below:</p><br>\n');
+          fprintf(fid, 'The Helmholtz free energy F=U-TS=-kT lnZ [J/mol] is available below:</p><br>\n');
         case 'Thermo_Cv'
-          fprintf(fid, 'The molar specific heat at constant volume Cv=dU/dT [J/K/mol] is shown below:</p><br>\n');
+          fprintf(fid, 'The molar specific heat at constant volume Cv=dU/dT [J/K/mol] is available below:</p><br>\n');
         end
         sqw_phonons_htmlreport_table(fid, options,[ name ]);
     
@@ -433,7 +435,7 @@ function [maxFreq, object] = sqw_phonons_htmlreport_max_spectrum(fid, options, o
 % ==============================================================================
 function Phonon_kpath = sqw_phonons_htmlreport_kpath(fid, options, object, maxFreq)
   % generate dispersion along principal axes
-
+  object.UserData.DOS = [];
   [Phonon_kpath,kpath,fig] = sqw_kpath(object, 0, [0.01 maxFreq],'plot');
   if isfinite(max(Phonon_kpath)) && max(Phonon_kpath)
     Phonon_kpath = log10(Phonon_kpath/max(Phonon_kpath)); 
@@ -443,20 +445,34 @@ function Phonon_kpath = sqw_phonons_htmlreport_kpath(fid, options, object, maxFr
 
   if ~isempty(Phonon_kpath)
     saveas(fig, fullfile(options.target, 'Phonon_kpath.fig'),'fig');
+    plot2svg(fullfile(options.target, 'Phonon_kpath.svg'), fig);
+    print(fig, '-dpdf',  fullfile(options.target, 'Phonon_kpath.pdf'));
+    print(fig, '-dtiff', fullfile(options.target, 'Phonon_kpath.tiff'));
     close(fig);
     fprintf(fid, '<h3><a name="kpath"></a>The dispersion along principal directions</h3>\n');
     fprintf(fid, 'The dispersion curves along the principal axes is shown in log10 scale.<br>\n');
     builtin('save', fullfile(options.target, 'Phonon_kpath.mat'), 'Phonon_kpath');
     save(Phonon_kpath, fullfile(options.target, 'Phonon_kpath.png'), 'png data');
     save(Phonon_kpath, fullfile(options.target, 'Phonon_kpath.fits'), 'fits');
-    save(Phonon_kpath, fullfile(options.target, 'Phonon_kpath.tiff'), 'tiff');
     save(Phonon_kpath, fullfile(options.target, 'Phonon_kpath.dat'), 'dat data');
-    save(Phonon_kpath, fullfile(options.target, 'Phonon_kpath.svg'), 'svg', 'view2 tight');
-    save(Phonon_kpath, fullfile(options.target, 'Phonon_kpath.pdf'), 'pdf', 'view2 tight');
     save(Phonon_kpath, fullfile(options.target, 'Phonon_kpath.h5'), 'mantid');
     save(Phonon_kpath, fullfile(options.target, 'Phonon_kpath.x3d'), 'x3d','tight auto');
     sqw_phonons_htmlreport_table(fid, options, 'Phonon_kpath');
   else close(fig); end
+  
+  if isfield(object.UserData,'FREQ') && isfield(object.UserData,'HKL')
+    fprintf(fid, 'The HKL and Frequencies along the principal axes is available as:<br>\n');
+    for f={'HKL','FREQ'}
+      if isfield(object.UserData,f{1})
+        s=object.UserData.(f{1}); 
+        save(fullfile(options.target, [ 'Phonon_kpath_' f{1} '.dat' ]),  '-ascii', 's');
+        fprintf(fid, '<a href="%s">%s</a><br>\n', ...
+          fullfile(options.target, [ 'Phonon_kpath_' f{1} '.dat' ]), ...
+          [ 'Phonon_kpath_' f{1} '.dat' ]);
+      end
+    end
+    
+  end
 
 % ==============================================================================
 function [Phonon_HKLE, object] = sqw_phonons_htmlreport_eval_4D(fid, options, object, maxFreq)
