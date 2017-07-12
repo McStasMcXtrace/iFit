@@ -50,7 +50,7 @@ hMA=uimenu(hF,'Label','File');
 uimenu(hMA,'Label','New','Callback','TextEdit', 'Accelerator','n');
 uimenu(hMA,'Label','Open...','Callback',@textedit_open, 'Accelerator','o');
 uimenu(hMA,'Label','Save...','Callback',@textedit_save, 'Accelerator','s');
-uimenu(hMA,'Label','Evaluate','Callback',@textedit_eval, 'Accelerator','e');
+uimenu(hMA,'Label','Evaluate selection','Callback',@textedit_eval, 'Accelerator','e');
 uimenu(hMA,'Label','Quit','Callback',@textedit_quit,'Separator','on','Accelerator','q');
 
 % Menu Edit
@@ -71,6 +71,10 @@ try
     codeType = jCodePane.M_MIME_TYPE;  % jCodePane.contentType='text/m-MATLAB'
     jCodePane.setContentType(codeType)
     jCodePane.setText('')
+    jCodePane.setDragEnabled(true)
+    jCodePane.setRightMarginWidth(50,true)
+    jCodePane.setShowLineNumbers(true,true)
+    jCodePane.setTextDragAndDropEnabled(true)
     jScrollPane = com.mathworks.mwswing.MJScrollPane(jCodePane);
     [jhPanel,hContainer] = javacomponent(jScrollPane,[10,10,300,100],hF);
     hTxt = jCodePane;
@@ -104,7 +108,8 @@ try
     uimenu(hME,'Label','Select All', 'Callback','tmp_hTxt=get(gcbf,''UserData''); tmp_hTxt.display_pane.selectAll; clear tmp_hTxt;')
     use_fallback = 0;
   end
-catch
+catch ME
+  disp(getReport(ME))
   use_fallback = 1;
 end
 if use_fallback
