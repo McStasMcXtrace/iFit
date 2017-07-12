@@ -52,6 +52,7 @@ if ~isempty(ifit_options), return; end
 inline_display_banner; % see inline below
 
 ifit_options=inline_ifit_options(varargin{:});
+this = {};
 
 while ~exist('ifit_options') || ~isstruct(ifit_options) || ...
   (~strcmp(ifit_options.line, 'exit') && ~strcmp(ifit_options.line, 'return'))
@@ -82,17 +83,10 @@ while ~exist('ifit_options') || ~isstruct(ifit_options) || ...
     try
       ifit_options.line = inline_runscript(ifit_options.line);
     end
-  elseif strncmp(ifit_options.line,'clear ', 5)% 'clear' must retain ifit_options and this
-    ifit_options.line = [ 'clearvars ' ifit_options.line(6:end) ];
   elseif strncmp(ifit_options.line,'echo on', 7)  || strncmp(ifit_options.line,'verbose', 7)
     ifit_options.verbose = 1;
-  elseif strncmp(ifit_options.line,'echo off', 7) || strncmp(ifit_options.line,'silent', 6)
+  elseif strncmp(ifit_options.line,'echo off', 8) || strncmp(ifit_options.line,'silent', 6)
     ifit_options.verbose = 0;
-  end
-  if strncmp(ifit_options.line,'clearvars ', 10) ...
-    && isempty(find(ifit_options.line == '(')) ...
-    && isempty(find(ifit_options.line == ';'))
-    ifit_options.line = [ ifit_options.line ' -except ifit_options this' ];
   end
 
   % argument is a file name/URL ?
@@ -280,6 +274,7 @@ while ~exist('ifit_options') || ~isstruct(ifit_options) || ...
         disp(this);
         assignin('base', 'this', this);
         clear varargin
+        this = {};
       end
       
     end
