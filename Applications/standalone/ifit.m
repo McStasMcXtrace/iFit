@@ -334,7 +334,7 @@ function inline_display_banner
   disp('   Type ''exit'' or Ctrl-C to exit.');
   disp('** Applications (User Interfaces):');
   disp('   mifit (main GUI), rescal (neutron TAS), sqw_phonons (Phonons/DFT), ');
-  disp('   sqw_spinw (SpinW, sw)');
+  disp('   sqw_spinw (SpinW, sw), TextEdit (editor/commands)');
   disp([ '** Example data files: ' fullfile(ifitpath ,'Data') ]);
   if ispc
     disp('WARNING: Windows: file names containing spaces, such as "My Documents" ')
