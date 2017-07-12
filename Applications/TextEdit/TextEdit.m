@@ -61,7 +61,19 @@ uimenu(hME,'Label','Paste','Callback',@textedit_paste);
 
 % Menu Help
 hMA=uimenu(hF,'Label','Help');
-uimenu(hMA,'Label','About...','Callback',@textedit_about, 'Accelerator','h');
+if isdeployed
+  uimenu(hMA,'Label','iFit Terminal','Callback','doc(iData,''iFit'')');
+end
+uimenu(hMA,'Label','Data set object (iData)','Callback','doc(iData,''iData'')');
+uimenu(hMA,'Label','Data set methods (iData)','Callback','doc(iData,''Methods'')');
+uimenu(hMA,'Label','Data set Math','Callback','doc(iData,''Math'')');
+uimenu(hMA,'Label','Model object (iFunc)','Callback','doc(iData,''iFunc'')');
+uimenu(hMA,'Label','Predefined Models (iFunc)','Callback','doc(iData,''Models'')');
+uimenu(hMA,'Label','Importing data','Callback','doc(iData,''Load'')');
+uimenu(hMA,'Label','Exporting data','Callback','doc(iData,''Save'')');
+uimenu(hMA,'Label','Plotting data','Callback','doc(iData,''Plot'')');
+uimenu(hMA,'Label','Fitting data/model','Callback','doc(iData,''Fit'')');
+uimenu(hMA,'Label','About...','Callback',@textedit_about, 'Accelerator','h','separator','on');
     
 use_fallback = 1;
 % we use the nice Java SyntaxTextPane
@@ -216,24 +228,17 @@ end
         if isempty(txt)
           txt = char(textedit_getText(options.display_pane));
         end
-        disp([ '% ' mfilename ': Evaluating code: ' datestr(now) ])
+        disp([ '% ' mfilename ': Evaluating code: ' datestr(now) ' from Figure ' num2str(get(hF,'Name')) ])
         disp(txt)
         disp([ '% ' mfilename ': end of code to evaluate.' ])
         disp(' ')
+        set(hF, 'Pointer', 'watch')
         try
           evalin('base', txt');
         catch ME
           disp(ME.message)
         end
-    end
-    
-    function textedit_quit(~,~)
-      delete(hF)
-      options = get(hF,'UserData');
-      try
-        delete(options.display_pane);
-        delete(hF);
-      end
+        set(hF, 'Pointer', 'arrow')
     end
 
 % Copy into the clipboard
