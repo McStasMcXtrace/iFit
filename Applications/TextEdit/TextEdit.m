@@ -42,7 +42,7 @@ end
 % build the main window
 hF=figure('MenuBar','none',...
     'Name',options.name,'Resize','on',...
-    'Position',[0 0 600 400],'Color','w','CloseRequestFcn', @textedit_quit);
+    'Position',[0 0 600 400],'Color','w','CloseRequestFcn', 'delete(gcbf)');
 centerfig();
 
 % Menu File
@@ -51,7 +51,7 @@ uimenu(hMA,'Label','New','Callback','TextEdit', 'Accelerator','n');
 uimenu(hMA,'Label','Open...','Callback',@textedit_open, 'Accelerator','o');
 uimenu(hMA,'Label','Save...','Callback',@textedit_save, 'Accelerator','s');
 uimenu(hMA,'Label','Evaluate selection','Callback',@textedit_eval, 'Accelerator','e');
-uimenu(hMA,'Label','Quit','Callback',@textedit_quit,'Separator','on','Accelerator','q');
+uimenu(hMA,'Label','Quit','Callback','delete(gcbf)','Separator','on','Accelerator','q');
 
 % Menu Edit
 hME=uimenu(hF,'Label','Edit');
@@ -72,8 +72,6 @@ try
     jCodePane.setContentType(codeType)
     jCodePane.setText('')
     jCodePane.setDragEnabled(true)
-    jCodePane.setRightMarginWidth(50,true)
-    jCodePane.setShowLineNumbers(true,true)
     jCodePane.setTextDragAndDropEnabled(true)
     jScrollPane = com.mathworks.mwswing.MJScrollPane(jCodePane);
     [jhPanel,hContainer] = javacomponent(jScrollPane,[10,10,300,100],hF);
@@ -230,11 +228,12 @@ end
     end
     
     function textedit_quit(~,~)
+      delete(hF)
       options = get(hF,'UserData');
       try
         delete(options.display_pane);
+        delete(hF);
       end
-      delete(hF);
     end
 
 % Copy into the clipboard
