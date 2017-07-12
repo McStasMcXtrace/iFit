@@ -248,7 +248,7 @@ case 'GPAW' % ==================================================================
   calc = [ calc ')' ];
   
 case 'JACAPO' % ================================================================
-  
+  % fails with ASE 3.14
   % Requires to define variables under Ubuntu
   if isunix
     if isempty(options.potentials), options.potentials='/usr/share/dacapo-psp'; end
@@ -300,7 +300,8 @@ case 'JACAPO' % ================================================================
   calc = [ calc ')' ];  
   % other options
   if options.toldfe > 0
-    calc = [ calc sprintf('; calc.SetConvergenceParameters(%g) ', options.toldfe) ];
+    % this fails in ASE 3.14
+    % calc = [ calc sprintf('; calc.SetConvergenceParameters(%g) ', options.toldfe) ];
   end
   
 
@@ -325,7 +326,7 @@ case 'NWCHEM' % ================================================================
     options.xc);
   % check if we use KPTS
   if all(options.kpoints > 0)
-    calc = [ calc sprintf(', raw="nwpw\\n  monkhorst-pack %i %i %i\\nend"', options.kpoints) ];
+    calc = [ calc sprintf(', raw="""nwpw\\n  monkhorst-pack %i %i %i\\nend"""', options.kpoints) ];
   end
   if ~isempty(options.potentials)
     calc = [ calc sprintf(', basis="%s"', options.potentials) ];
