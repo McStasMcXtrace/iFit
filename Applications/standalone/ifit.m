@@ -60,6 +60,7 @@ while ~exist('ifit_options') || ~isstruct(ifit_options) || ...
     ifit_options = inline_ifit_options;
   end
   ifit_options.line = strtrim(ifit_options.line);
+  
   % handle specific commands (to override limitations from stand-alone)
   if strcmp(strtok(ifit_options.line,' '), 'doc')
     ifit_options.line = [ 'help' ifit_options.line(4:end) ];
@@ -83,6 +84,10 @@ while ~exist('ifit_options') || ~isstruct(ifit_options) || ...
     end
   elseif strncmp(ifit_options.line,'clear ', 5)% 'clear' must retain ifit_options and this
     ifit_options.line = [ 'clearvars ' ifit_options.line(6:end) ];
+  elseif strncmp(ifit_options.line,'echo on', 7)  || strncmp(ifit_options.line,'verbose', 7)
+    ifit_options.verbose = 1;
+  elseif strncmp(ifit_options.line,'echo off', 7) || strncmp(ifit_options.line,'silent', 6)
+    ifit_options.verbose = 0;
   end
   if strncmp(ifit_options.line,'clearvars ', 10) ...
     && isempty(find(ifit_options.line == '(')) ...
@@ -115,7 +120,7 @@ while ~exist('ifit_options') || ~isstruct(ifit_options) || ...
       disp(ifit_options.line)
     end
     try
-      eval(ifit_options.line); 
+      evalin('base',ifit_options.line); 
     catch ME
       disp(ME.message);
       if length(ifit_options.line) > 250
@@ -151,12 +156,12 @@ while ~exist('ifit_options') || ~isstruct(ifit_options) || ...
       % an 'expression' explicitly indicated as such
       ifit_options.line = ifit_options.line(2:(end-1));
       try
-        ifit_options.line = eval(ifit_options.line); % try to evaluate with a return argument
+        [ifit_options.line] = evalin('base', ifit_options.line); % try to evaluate with a return argument
         this{end+1} = ifit_options.line;
         ans = this{end};
       catch
         try
-          eval(ifit_options.line) % evaluate without return argument
+          evalin('base', ifit_options.line) % evaluate without return argument
         catch ME
           disp('Error when evaluating expression argument:')
           disp(ifit_options.line)
@@ -170,6 +175,9 @@ while ~exist('ifit_options') || ~isstruct(ifit_options) || ...
     elseif strcmp(ifit_options.line, '-nodesktop') || strcmp(ifit_options.line, '-nosplash')
       ifit_options.line = ''; % ignore these which are Matlab-desktop specific
       ifit_options.nodesktop=1;
+    elseif strcmp(ifit_options.line, '-desktop')
+      ifit_options.line = ''; % ignore these which are Matlab-desktop specific
+      ifit_options.nodesktop=0;
     elseif strcmp(ifit_options.line, '--save') || strcmp(ifit_options.line, '-s')
       ifit_options.save='ifit.mat'; ifit_options.line = '';
     elseif strncmp(ifit_options.line, '--save=', 7)
@@ -220,7 +228,7 @@ while ~exist('ifit_options') || ~isstruct(ifit_options) || ...
       % from it and evaluate
       ifit_options.line = launcher_read(ifit_options.line);
       try
-        this{end+1} = eval(ifit_options.line); 
+        this{end+1} = evalin('base', ifit_options.line); 
       catch
         this{end+1} = ifit_options.line;
       end
@@ -270,6 +278,7 @@ while ~exist('ifit_options') || ~isstruct(ifit_options) || ...
         end
         disp('''this'' is:')
         disp(this);
+        assignin('base', 'this', this);
         clear varargin
       end
       
