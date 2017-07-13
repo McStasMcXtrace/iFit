@@ -5667,9 +5667,9 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
     QE, ABINIT, VASP, ...) should be installed separately. <br>
     <br>
     For Debian systems, we provide most packages at <a href="http://packages.mccode.org/">packages.mccode.org</a>
-    (currently validated on Ubuntu 14.04 and 16.04). To install all in
+    (currently validated on Ubuntu 14.04/Debian 8 and 16.04). To install all in
     one go, type (Ubuntu/Mint/Debian, replace <i>'xenial'</i> by <i>'trusty'</i>
-    for older systems):<br>
+    for 14.04 and Debian 8 systems):<br>
     <blockquote>
       <pre>% sudo apt-add-repository 'deb http://packages.mccode.org/debian stable main'<br>% sudo apt-add-repository 'deb http://packages.mccode.org/debian xenial main'
 % sudo apt-get update<br>% sudo apt-get install ifit-phonons<br></pre>
@@ -5690,7 +5690,7 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
     library can be used when installed. To install it,
     use:<br>
     <blockquote>
-      <pre>% <span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">python</span><span class="o">-</span><span class="n">dev</span> <span class="n">python</span><span class="o">-</span><span class="n">numpy </span><span class="n">python</span><span class="o">-</span><span class="n">matplotlib</span> <span class="n">python</span><span class="o">-</span><span class="n">yaml</span> <span class="n">python</span><span class="o">-</span><span class="n">h5py </span><code class="docutils literal"><span class="pre">python-scipy</span></code><br></pre>or<br><pre>% sudo apt-get install python-phonopy (when using our <a href="http://packages.mccode.org/">packages.mccode.org</a> repository)</pre>or<br><pre><code class="docutils literal"><span class="pre"></span></code>% sudo pip install phonopy</pre>
+      <pre>% <span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">python</span><span class="o">-</span><span class="n">dev</span> <span class="n">python</span><span class="o">-</span><span class="n">numpy </span><span class="n">python</span><span class="o">-</span><span class="n">matplotlib</span> <span class="n">python</span><span class="o">-</span><span class="n">yaml</span> <span class="n">python</span><span class="o">-</span><span class="n">h5py </span><code class="docutils literal"><span class="pre">python-scipy<br></span></code><br>% sudo pip install phonopy</pre>or<br><pre>% sudo apt-get install python-phonopy (when using our <a href="http://packages.mccode.org/">packages.mccode.org</a> repository)</pre>
     </blockquote>
     <blockquote> </blockquote>
     <i><b>Pseudo potentials:</b></i><br>
@@ -5751,7 +5751,7 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
     The QuantumEspresso code requires to install an additional library
     of pseudo potentials. We recommend the <a href="http://materialscloud.org/">SSSP library</a> for which we
     provide the <a href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/quantum-espresso-sssp_5.0.2-5build3_all.deb">quantum-espresso-sssp</a>
-    Debian package.<br>
+    Debian package. <font color="#ff0000">WARNING:</font> the quantum-espresso-data Debian package conflicts with the quantum-espresso-sssp one. You should remove the 'data' pckage as it only provides a minimal pseudo-potential list, and is generally less accurate.<br>
     <br>
     <b>A web based interface</b> can be set up very easily by
     installing, on a Debian-type system, the <a href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/ifit-web-services_1.8_all.deb"><b><i>ifit-web-services</i></b></a>
