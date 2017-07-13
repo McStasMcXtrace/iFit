@@ -55,12 +55,13 @@
 
 
 
+
     You can get iFit there, as well as extensive documentation.<br>
     <br>
     If you do not know about Matlab, refer to the quick tutorial <a
       href="#mozTocId711798">below</a>.<br>
     <br>
-    The object of these tools is to<br>
+    The object of these tools is to:<br>
     <ul>
       <li>import transparently data files, whatever be their format [<a
           href="Load.html">Load</a>], with commands such as <span
@@ -123,11 +124,11 @@
         only one data file/directory is imported, it is automatically
         plotted.<br>
         <br>
-        <img alt="miFit" title="miFit" src="images/miFit.png" width="150" height="121" align="left">When starting, the <a href="miFit.html">miFit</a> graphical user interface will be
+        <img alt="miFit" title="miFit" src="images/miFit.png" width="150" height="121" align="left">When starting, the <b><a href="miFit.html">miFit</a></b> graphical user interface will be
         displayed, allowing a mouse-driven data treatment and fitting.
         The <i>-nodesktop</i> option when starting suppresses this
-        behavior to only provide the command prompt.<br>
-        <h3>Applications with User Interface<br>
+        behavior to only provide the command prompt.<br><br>The miFit interface provides, in its <i>miFit:File/Evaluate code</i> menu item, access to the <b>TextEdit</b> application, which allows to write scripts and commands, and execute them (<i>TextEdit:File/Evaluate</i>). The advantage is that you can keep track of all your commands as a script, with highlight syntaxing, and it is not sensitive to the localised character crash  [<a href="http://www.mathworks.com/support/bugreports/624817">bug 624817</a>].<br><br><h3>Working with iFit</h3>The iFit prompt behaves just like a normal Matlab session, in a Terminal. You can type any Matlab command, as well as iFit features. To interrupt a running computation, press <i>Ctrl-C</i> once. A second key press will exit iFit. To copy-paste text, rather use the Terminal menus to avoid accidental Ctrl-C. You can use full Matlab syntax, but all your input is executed line by line, so that any control statements (if, for, while, ...) must remain on a single line.<br><blockquote><pre>iFit &gt;&gt; <font color="#3366ff">for</font> index=1:10; disp(index); end&nbsp;&nbsp;&nbsp; <b><font color="#009900">% this works</font></b></pre></blockquote>but the following will <b><font color="#ff0000">fail</font></b><b>:</b><br><blockquote><pre>iFit &gt;&gt; <font color="#3366ff">for</font> index=1:10<br>iFit &gt;&gt;   disp(index);
+iFit &gt;&gt; end</pre></blockquote>A way to be able to access the full Matlab control statement syntax (multi-line) and keep track of your work, is to start the <b>TextEdit</b> window:<br><blockquote><pre>&gt;&gt; <font color="#3366ff">TextEdit</font></pre></blockquote>You can type Matlab/iFit commands in there, and then use the <i>File/Evaluate</i> menu item to evaluate either all the content, or a selection. The result is sent into the iFit Terminal. Any variable used in the TextEdit window appears in the iFit Terminal, and <i>vice-versa</i>. You can open as many TextEdit windows as you wish, load/save files (e.g. .m), copy/paste filenames and raw text.<br><br>The TextEdit and miFit windows both have a Help menu which links to the main iFit functionalities.<br><h3>Applications with User Interface<br>
         </h3>
         <p>iFit is a very general infrastructure, which is mostly used
           through commands and scripts. However, there exist a few
@@ -144,7 +145,7 @@
             <tr>
               <td valign="top"><a href="Models.html#mozTocId990577">Sqw_Phonons</a><a href="../Applications/ResLibCal/doc/ResLibCal.html"><img alt="Sqw_Phonons" title="Sqw_Phonons" src="images/Models_sqw_ph_ase.png" width="67" height="50" align="middle" border="0"></a></td>
               <td valign="top">Phonon dispersion computations using DFT
-                and dynamical matrix<br>
+                and dynamical matrix. Read the dedicated <a href="Models_Phonons.html">Phonons documentation</a>.<br>
               </td>
             </tr>
             <tr>
@@ -153,7 +154,7 @@
               <td valign="top">a simple yet powerful User Interface.
                 This one is automatically started with iFit.<br>
               </td>
-            </tr>
+            </tr><tr><td valign="top">TextEdit<a href="images/iFit_TextEdit.png"><img src="images/iFit_TextEdit.png" title="iFit_TextEdit" alt="iFit_TextEdit" width="64" height="49" align="middle" border="0"></a><br></td><td valign="top">an editor which allows to evaluate code</td></tr>
           </tbody>
         </table>
         <p>When using the Debian installer, these Applications can be

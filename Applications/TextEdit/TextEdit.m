@@ -55,6 +55,7 @@ hMA=uimenu(hF,'Label','Help');
 if isdeployed
   uimenu(hMA,'Label','iFit Terminal','Callback','doc(iData,''iFit'')');
 end
+uimenu(hMA,'Label','Main iFit help','Callback','doc(iData,''index'')');
 uimenu(hMA,'Label','Data set object (iData)','Callback','doc(iData,''iData'')');
 uimenu(hMA,'Label','Data set methods (iData)','Callback','doc(iData,''Methods'')');
 uimenu(hMA,'Label','Data set Math','Callback','doc(iData,''Math'')');
@@ -65,6 +66,29 @@ uimenu(hMA,'Label','Exporting data','Callback','doc(iData,''Save'')');
 uimenu(hMA,'Label','Plotting data','Callback','doc(iData,''Plot'')');
 uimenu(hMA,'Label','Fitting data/model','Callback','doc(iData,''Fit'')');
 uimenu(hMA,'Label','About...','Callback',@textedit_about, 'Accelerator','h','separator','on');
+
+% add a toolbar
+iconsroot = fullfile(matlabroot,'toolbox','matlab','icons');
+tools = { ...
+  'New',  'file_new.png', 'TextEdit'; ...
+  'Open', 'file_open.png', @textedit_open; ...
+  'Save', 'file_save.png', @textedit_save; ...
+  'Run',  'greenarrowicon.gif', @textedit_eval; ...
+  'Help', 'helpicon.gif',  'doc(iData,''index'')' };
+ht=uitoolbar(hF);
+for index=1:size(tools,1)
+  [X map] = imread(fullfile(iconsroot, [ tools{index,2} ]));
+  if ~isempty(map)
+    icon = ind2rgb(X,map);
+  elseif ndims(X) == 3 && size(X,3) == 3
+    maxX = double(max(X(:)));
+    icon = double(X)/maxX;
+  end
+  icon(icon == 0) = nan;
+  uipushtool(ht,'CData', icon, ...
+                 'TooltipString',tools{index,1},...
+                 'ClickedCallback',tools{index,3});
+end
     
 use_fallback = 1;
 % we use the nice Java SyntaxTextPane
@@ -170,6 +194,7 @@ end
                 fprintf(fid,'%s\n',txt(i,:));
             end
             fclose(fid);
+            set(hF,'Name', [ 'TextEdit: ' fullfile(pathname,filename) ]);
         end
     end
     
@@ -184,6 +209,7 @@ end
         if isempty(txt)
           txt = char(textedit_getText(options.display_pane));
         end
+        if isempty(txt), return; end
         disp([ '% ' mfilename ': Evaluating code: ' datestr(now) ' from Figure ' num2str(get(hF,'Name')) ])
         disp(txt)
         disp([ '% ' mfilename ': end of code to evaluate.' ])
@@ -262,7 +288,7 @@ end
 % About
     function textedit_about(~,~)
 
-        devel='By: Jorge De Los Santos; Improved by E. Farhi, ILL, 2017.';
+        devel='Initial design by By: Jorge De Los Santos; Improved by E. Farhi, ILL, 2017.';
         e_mail='E-mail: delossantosmfq@gmail.com; farhi@ill.fr';
         blog='Blog: http://matlab-typ.blogspot.mx ; http://ifit.mccode.org';
         nvrs='TextEdit 2.0';
