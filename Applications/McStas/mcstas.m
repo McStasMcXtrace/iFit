@@ -191,14 +191,24 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
     prefix = 'mc';
   end
   
-  if ~isfield(options,'mcrun')
-    options.mcrun = [ prefix 'run' ext ];
+  if isempty(mcstas_present)
+    op = options;
+    op.mcrun = [ prefix 'run' ];
+    mcstas_present = mcstas_check(op);
+    if isempty(mcstas_present)
+      error([ mfilename ': ERROR: ' options.mcrun ' McStas/McXtrace executable is not installed. Get it at www.mcstas.org' ]);
+    else 
+      disp([ mfilename ': Using ' mcstas_present ]);
+    end
+  end
+  
+  if ~isfield(options,'mcrun') || isempty(options.mcrun)
+    options.mcrun = mcstas_present;
   end
   if ~isfield(options,'mcdisplay')
     options.mcdisplay = [ prefix 'display' ext ];
   end
-  
-  
+
   % force compile before going further ?
   if  isfield(options,'compile') & (options.compile | strcmp(options.compile,'yes'))
     ncount         = options.ncount;
@@ -209,13 +219,6 @@ function [pars,fval,exitflag,output] = mcstas(instrument, parameters, options)
   end
   if isfield(options,'info') && options.info
     options.mode = 'info';
-  end
-  
-  if isempty(mcstas_present)
-    mcstas_present = mcstas_check(options);
-    if isempty(mcstas_present)
-      error([ mfilename ': ERROR: ' options.mcrun ' McStas/McXtrace executable is not installed. Get it at www.mcstas.org' ]);
-    end
   end
   
   if nargin == 0
@@ -522,7 +525,7 @@ end % system_wait
 
 function [criteria, sim, ind] = mcstas_criteria(pars, options, criteria, sim, ind)
 % inline function to compute a single simulation, or a vector of simulations (recursive calls)
-  
+
   % launch simulation with mcrun/mxrun or mcdisplay/mxdisplay
   if any(strcmpi(options.mode,{'optimize','simulate','info'}))
     cmd = [ options.mcrun ' ' options.instrument ];
@@ -932,18 +935,31 @@ end % mcstas_eval
 function present = mcstas_check(options)
 
   present = '';
-  if ismac,  precmd = 'DYLD_LIBRARY_PATH= ;';
+  if ismac,      precmd = 'DYLD_LIBRARY_PATH= ;';
   elseif isunix, precmd = 'LD_LIBRARY_PATH= ; '; 
   else precmd=''; end
   
-  % binary external
-  if ispc, ext='.exe'; else ext=''; end
+  [p,f,e] = fileparts(options.mcrun);
   
-  % look for executable, global and local
-  % try in order: global(system), local, local_arch
+  % look for executable
   [status, result] = system([ precmd options.mcrun ]);
   if (status == 0 || status == 255) 
     present = options.mcrun; 
+    return
+  end
+  % try the Python version
+  options.mcrun = fullfile(p,[ f '.py' ]);
+  [status, result] = system([ precmd options.mcrun ]);
+  if (status == 0 || status == 255) 
+    present = options.mcrun; 
+    return
+  end
+  % try the Perl version
+  options.mcrun = fullfile(p,[ f '.pl' ]);
+  [status, result] = system([ precmd options.mcrun ]);
+  if (status == 0 || status == 255) 
+    present = options.mcrun; 
+    return
   end
 end
   
