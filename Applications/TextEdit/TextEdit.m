@@ -42,7 +42,6 @@ uimenu(hMA,'Label','New','Callback','TextEdit', 'Accelerator','n');
 uimenu(hMA,'Label','Open...','Callback',@textedit_open, 'Accelerator','o');
 uimenu(hMA,'Label','Save...','Callback',@textedit_save, 'Accelerator','s');
 uimenu(hMA,'Label','Evaluate selection','Callback',@textedit_eval, 'Accelerator','e');
-uimenu(hMA,'Label','Quit','Callback','delete(gcbf)','Separator','on','Accelerator','q');
 
 % Menu Edit
 hME=uimenu(hF,'Label','Edit');
@@ -51,21 +50,21 @@ uimenu(hME,'Label','Copy','Callback',@textedit_copy);
 uimenu(hME,'Label','Paste','Callback',@textedit_paste);
 
 % Menu Help
-hMA=uimenu(hF,'Label','Help');
+hMH=uimenu(hF,'Label','Help');
 if isdeployed
-  uimenu(hMA,'Label','iFit Terminal','Callback','doc(iData,''iFit'')');
+  uimenu(hMH,'Label','iFit Terminal','Callback','doc(iData,''iFit'')');
 end
-uimenu(hMA,'Label','Main iFit help','Callback','doc(iData,''index'')');
-uimenu(hMA,'Label','Data set object (iData)','Callback','doc(iData,''iData'')');
-uimenu(hMA,'Label','Data set methods (iData)','Callback','doc(iData,''Methods'')');
-uimenu(hMA,'Label','Data set Math','Callback','doc(iData,''Math'')');
-uimenu(hMA,'Label','Model object (iFunc)','Callback','doc(iData,''iFunc'')');
-uimenu(hMA,'Label','Predefined Models (iFunc)','Callback','doc(iData,''Models'')');
-uimenu(hMA,'Label','Importing data','Callback','doc(iData,''Load'')');
-uimenu(hMA,'Label','Exporting data','Callback','doc(iData,''Save'')');
-uimenu(hMA,'Label','Plotting data','Callback','doc(iData,''Plot'')');
-uimenu(hMA,'Label','Fitting data/model','Callback','doc(iData,''Fit'')');
-uimenu(hMA,'Label','About...','Callback',@textedit_about, 'Accelerator','h','separator','on');
+uimenu(hMH,'Label','Main iFit help','Callback','doc(iData,''index'')');
+uimenu(hMH,'Label','Data set object (iData)','Callback','doc(iData,''iData'')');
+uimenu(hMH,'Label','Data set methods (iData)','Callback','doc(iData,''Methods'')');
+uimenu(hMH,'Label','Data set Math','Callback','doc(iData,''Math'')');
+uimenu(hMH,'Label','Model object (iFunc)','Callback','doc(iData,''iFunc'')');
+uimenu(hMH,'Label','Predefined Models (iFunc)','Callback','doc(iData,''Models'')');
+uimenu(hMH,'Label','Importing data','Callback','doc(iData,''Load'')');
+uimenu(hMH,'Label','Exporting data','Callback','doc(iData,''Save'')');
+uimenu(hMH,'Label','Plotting data','Callback','doc(iData,''Plot'')');
+uimenu(hMH,'Label','Fitting data/model','Callback','doc(iData,''Fit'')');
+uimenu(hMH,'Label','About...','Callback',@textedit_about, 'Accelerator','h','separator','on');
 
 % add a toolbar
 iconsroot = fullfile(matlabroot,'toolbox','matlab','icons');
@@ -111,7 +110,12 @@ try
     options.display_pane_uicontrol = hContainer;
     
     % more menu stuff
-    uimenu(hME,'Label','Select All', 'Callback','tmp_hTxt=get(gcbf,''UserData''); tmp_hTxt.display_pane.selectAll; clear tmp_hTxt;')
+    uimenu(hME,'Label','Select All', 'Callback', ...
+      'tmp_hTxt=get(gcbf,''UserData''); tmp_hTxt.display_pane.selectAll; clear tmp_hTxt;')
+    % print is broken: blocks the jCodePane
+    % uimenu(hMA,'Label','Print','Callback', ...
+    %  'tmp_hTxt=get(gcbf,''UserData''); tmp_hTxt.display_pane.print; clear tmp_hTxt;', ...
+    %  'Separator','on','Accelerator','p');
     use_fallback = 0;
   end
 catch ME
@@ -130,6 +134,9 @@ if use_fallback
   uimenu(hME,'Label','Change Font...','Callback',@textedit_font);
   options.display_pane = hTxt;
 end
+
+% add Quit
+uimenu(hMA,'Label','Quit','Callback','delete(gcbf)','Separator','on','Accelerator','q');
 
 % protect figure from over-plotting
 set(hF,'HandleVisibility','callback','UserData',options);
@@ -191,7 +198,7 @@ end
               error([ mfilename ': Could not open file ' fullfile(pathname,filename) ]);
             end
             for i=1:size(txt,1)
-                fprintf(fid,'%s\n',txt(i,:));
+                fprintf(fid,'%s\n',char(txt(i,:)));
             end
             fclose(fid);
             set(hF,'Name', [ 'TextEdit: ' fullfile(pathname,filename) ]);
