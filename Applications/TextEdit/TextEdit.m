@@ -5,7 +5,7 @@ function hF = TextEdit(filename, options)
 %    Open an empty editor window
 %  TextEdit(filename)
 %    Open the file content inside a new editor window
-%  TextEdit(string)
+%  TextEdit(string or cellstr)
 %    Display the string inside a new Editor window
 %  TextEdit(..., name)
 %    Give the TextEdit a name
@@ -32,6 +32,7 @@ end
 
 % build the main window
 hF=figure('MenuBar','none',...
+    'Tag','TextEdit', ...
     'Name',options.name,'Resize','on',...
     'Position',[0 0 600 400],'Color','w','CloseRequestFcn', 'delete(gcbf)');
 centerfig();
