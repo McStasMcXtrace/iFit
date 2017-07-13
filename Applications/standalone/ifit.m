@@ -29,7 +29,9 @@ function ifit(varargin)
 %  --run=SCRIPT or -r=SCRIPT
 %      executes the SCRIPT when starting.
 %  -nodesktop
-%      do not start the miFit GUI (prompt only)
+%      do not start the miFit GUI (prompt only) nor the TextEdit command window.
+%  -desktop
+%      make sure miFit and TextEdit command windows are opened
 %
 %  Examples:
 %    ifit --save file1.*  subplot 
@@ -129,6 +131,9 @@ while ~exist('ifit_options') || ~isstruct(ifit_options) || ...
   if isempty(ifit_options.varargin) && ~ifit_options.nodesktop && ...
       feature('ShowFigureWindows') && ifit_options.starting
     mifit;  % open mifit when no argin and desktop/java on
+    TextEdit({'% enter iFit/Matlab commands here', ...
+      '% then use File/Evaluate', ...
+      '% or the Run button'},'iFit commands')
   end
   if exist('varargin') == 1 && ~isempty(varargin) % from command line ----------
     % we clear the argument from the command line after reading it
@@ -297,6 +302,7 @@ close all
 try
   mifit File_Exit
   ResLibCal exit
+  delete(findall(0,'Tag','TextEdit'))
 end
 disp([ '** Ending iFit on ' datestr(now) ])
 disp(  '** Thanks for using iFit <ifit.mccode.org> **')
@@ -394,8 +400,10 @@ function inline_display_usage
   disp('      saves all variables when commands have been executed.')
   disp('  --run=SCRIPT or -r=SCRIPT')
   disp('      executes the SCRIPT when starting.')
-  disp('  --nodesktop')
+  disp('  -nodesktop')
   disp('      does not start the miFit user interface')
+  disp('  -desktop')
+  disp('      make sure miFit and TextEdit command windows are opened')
   disp(' ')
   disp('  Examples:')
   disp('    ifit --save file1.*  subplot ')
