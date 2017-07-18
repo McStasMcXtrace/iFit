@@ -10,6 +10,11 @@ end
 
 if iscell(in), in = in{1}; end
 
+if ~isa(in, 'iData')
+  disp(in)
+  whos in
+  in=[]; return; 
+end
 % update ModifDate
 in.ModificationDate = clock;
 % check type of fields

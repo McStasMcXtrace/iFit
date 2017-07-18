@@ -31,7 +31,7 @@ function ifit(varargin)
 %  -nodesktop
 %      do not start the miFit GUI (prompt only) nor the TextEdit command window.
 %  -desktop
-%      make sure miFit and TextEdit command windows are opened
+%      start miFit and TextEdit command windows are opened
 %
 %  Examples:
 %    ifit --save file1.*  subplot 
@@ -128,13 +128,6 @@ while ~exist('ifit_options') || ~isstruct(ifit_options) || ...
   end
   
   % collect next command to execute: from input arguments, or prompt
-  if isempty(ifit_options.varargin) && ~ifit_options.nodesktop && ...
-      feature('ShowFigureWindows') && ifit_options.starting
-    mifit;  % open mifit when no argin and desktop/java on
-    TextEdit({'% enter iFit/Matlab commands here', ...
-      '% then use File/Evaluate', ...
-      '% or the Run button'},'iFit commands')
-  end
   if exist('varargin') == 1 && ~isempty(varargin) % from command line ----------
     % we clear the argument from the command line after reading it
     varargin = inline_cat_strings(varargin{:});
@@ -177,6 +170,11 @@ while ~exist('ifit_options') || ~isstruct(ifit_options) || ...
     elseif strcmp(ifit_options.line, '-desktop')
       ifit_options.line = ''; % ignore these which are Matlab-desktop specific
       ifit_options.nodesktop=0;
+      if feature('ShowFigureWindows')
+        TextEdit({'% enter iFit/Matlab commands here', ...
+          '% then use File/Evaluate', ...
+          '% or the Run button'},'iFit commands');
+        mifit;  % open mifit when no argin left and desktop/java on
     elseif strcmp(ifit_options.line, '--save') || strcmp(ifit_options.line, '-s')
       ifit_options.save='ifit.mat'; ifit_options.line = '';
     elseif strncmp(ifit_options.line, '--save=', 7)
@@ -238,13 +236,17 @@ while ~exist('ifit_options') || ~isstruct(ifit_options) || ...
       ifit_options.line = '';
       ans = this{end}
     end
+    
+  end
 
     ifit_options.index=ifit_options.index+1;
     
     if isempty(varargin) 
       if ~ifit_options.nodesktop && feature('ShowFigureWindows') && ifit_options.starting
         % open miFit and send imported objects there
-        inline_sendtomifit(this);
+        if numel(this) > 0
+          inline_sendtomifit(this);
+        end
       end
       if exist('this') && ~isempty(this) % last argument has just been processed
       

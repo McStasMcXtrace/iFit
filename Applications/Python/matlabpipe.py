@@ -121,12 +121,12 @@ class MatlabPipe(object):
                            When pipes fail, the temporary file method is used.
                            When set to None, pipe is preferred under Linux/MaxOSX
     """
-    if matlab_process_path == 'guess':
+    if matlab_process_path == 'guess' or matlab_process_path is None or matlab_process_path is "":
       matlab_process_path = find_matlab_process()
     if matlab_version == 'guess':
       matlab_version = find_matlab_version(matlab_process_path)
-    #print 'Matlab version %s' % matlab_version
-    print 'Matlab path    %s' % matlab_process_path
+    # print 'Matlab version %s' % matlab_version
+    print 'Matlab path    "%s"' % matlab_process_path
     if not is_valid_version_code(matlab_version):
     #  print 'Invalid version code %s, defaulting to 2010a' % matlab_version
       matlab_version = '2010a'
