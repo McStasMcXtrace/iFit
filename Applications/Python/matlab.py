@@ -9,10 +9,11 @@ import numpy
 
 try:
     import hdf5storage  # to exchange temporary files with matlab
+    has_hdf5storage = True
 except ImportError:
-    pass
+    has_hdf5storage = False
+    import scipy.io     # fallback solution when hdf5storage fails
     
-import scipy.io as sio  # fallback solution when hdf5storage fails
 import tempfile     # to create temporary .mat files
 import atexit       # to close Matlab when exiting python
 import subprocess   # for communication
@@ -115,9 +116,7 @@ class Matlab(object):
                             args=(self.proc.stdout, self.queue))
         self.thread.daemon = True # thread dies with the program
         self.thread.start()
-        print('Opened session ', 
-            ' '.join([executable,'-nodesktop','-nosplash']), 
-            'as PID ', self.proc.pid)
+        print 'Opened session ', ' '.join([executable,'-nodesktop','-nosplash']), 'as PID ', self.proc.pid
         
         # make sure we close the pipe in all cases
         atexit.register(lambda handle=self: handle.close())
@@ -125,21 +124,21 @@ class Matlab(object):
         # print start message reading stdout
         self.eval(waitidle=True) # check initial state
         self.busy = False
+        # end open
 
     def close(self):
         """Close the Matlab session"""
-        
-          
-        # when Idle, we just do a terminate, else we kill.
+
         print 'Closing session ', self.executable
         
         # force stop
-        self.eval("exit",waitidle=False)
+        self.eval("exit",waitidle=False)  # from Matlab, gently
         time.sleep(1)
-        self.proc.terminate()
+        self.proc.terminate()             # from outside, gently
         time.sleep(1)
-        self.proc.kill()
+        self.proc.kill()                  # force
         self.eval() # force to poll the process and finalize close
+        # end close
             
 # ==============================================================================
     def eval(self, expr=None, waitidle=True):
@@ -184,24 +183,25 @@ class Matlab(object):
             self.waitidle()     # flush until Idle
         else:
             busy = self.flush() # flush once
+        # end eval
   
     def set(self, varname, value):
         """Set a variable name and assign it to the given value in Matlab"""
 
-        # create a scipy.io.savemat with the variable to send to matlab
+        # create a .mat file with the variable to send to matlab
         f = tempfile.NamedTemporaryFile()
         m = f.name+'.mat'
         
-        # hdf5storage requires unicode dict members.
-        # https://github.com/frejanordsiek/hdf5storage/issues/17
-        if isinstance(value ,dict):
-            value = dict([(k.decode(), v) for k, v in value.items()])
+        if has_hdf5storage:
+            # hdf5storage requires unicode dict members.
+            # https://github.com/frejanordsiek/hdf5storage/issues/17
+            if isinstance(value ,dict):
+                value = dict([(k.decode(), v) for k, v in value.items()])
         
-        try:
             hdf5storage.savemat(m, { varname: value }, 
                 format='7.3', oned_as='column', store_python_metadata=True)
-        except (IOError,NameError):
-            sio.savemat(m, { varname: value })
+        else:
+            scipy.io.savemat(m, { varname: value })
         
         # wait for file to be written
         time.sleep(.5)
@@ -211,6 +211,7 @@ class Matlab(object):
         # then call eval to read that variable within Matlab
         self.eval("load('"+m+"'); delete('"+m+"');", waitidle=True)
         f.close()
+        # end set
   
     def get(self, varname):
         """
@@ -223,7 +224,12 @@ class Matlab(object):
         # use eval to ask Matlab to save a variable into a .mat file
         f = tempfile.NamedTemporaryFile()
         m = f.name+'.mat'
-        self.eval("tmp_class = class("+varname+"); if isobject("+varname+"), tmp_var=struct("+varname+"); tmp_var.class = tmp_class; else tmp_var="+varname+"; end; save('"+m+"', 'tmp_var','tmp_class', '-v7'); clear tmp_var tmp_class;",
+        if has_hdf5storage:
+            format='-v7.3'
+        else:
+            format='-v7'
+            
+        self.eval("tmp_class = class("+varname+"); if isobject("+varname+"), tmp_var=struct("+varname+"); tmp_var.class = tmp_class; else tmp_var="+varname+"; end; save('"+m+"', 'tmp_var','tmp_class','"+format+"'); clear tmp_var tmp_class;",
             waitidle=True)
             
         # wait for file to be written
@@ -232,16 +238,17 @@ class Matlab(object):
             time.sleep(.5)
     
         # then get that variable
-        try:
-            value = hdf5storage.loadmat(m, variable_names='tmp_var')
-        except (IOError,NameError):
-            value = sio.loadmat(m, variable_names='tmp_var',
+        if has_hdf5storage:
+            value = hdf5storage.loadmat(m)
+        else:
+            value = scipy.io.loadmat(m,
                 matlab_compatible=True, squeeze_me=True)
-            value = value['tmp_var']
+        value = value['tmp_var']
             
         os.remove(m)
         f.close()
         return value
+        # end get
         
     def waitidle(self, timeout=60):
         """
@@ -291,4 +298,6 @@ class Matlab(object):
                 sys.stdout.flush()
 
         return self.busy
-
+        # end flush
+        
+# end Matlab class
