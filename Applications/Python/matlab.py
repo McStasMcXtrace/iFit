@@ -92,11 +92,16 @@ class Matlab(object):
         """
         
         self.executable = executable
-        print 'Opening session ', ' '.join([executable,'-nodesktop','-nosplash'])
+        
         
         # we shall use stdout and stdin. Stderr is left untouched.
+        # The os.setsid() is passed in the argument preexec_fn so
+        # it's run after the fork() and before  exec() to run the shell.
+        
+        os.setpgrp() # create new process group, become its leader
+        
         self.proc = subprocess.Popen([executable,'-nosplash','-nodesktop'], 
-            shell=True,
+            preexec_fn=os.setsid,
             stdout=subprocess.PIPE, stdin=subprocess.PIPE)
             
         # create an independent stdout reader sending data in a queue
@@ -105,6 +110,9 @@ class Matlab(object):
                             args=(self.proc.stdout, self.queue))
         self.thread.daemon = True # thread dies with the program
         self.thread.start()
+        print('Opened session ', 
+            ' '.join([executable,'-nodesktop','-nosplash']), 
+            'as PID ', self.proc.pid)
         
         # make sure we close the pipe in all cases
         atexit.register(lambda handle=self.proc: handle.kill())
@@ -120,12 +128,15 @@ class Matlab(object):
         # when Idle, we just do a terminate, else we kill.
         print 'Closing session ', self.executable
         
-        # check process, get its stdout and busy state
-        if self.busy:
-            self.proc.kill()
-        else:
-            self.proc.terminate()
-  
+        # force stop
+        self.eval("exit",waitidle=False)
+        time.sleep(1)
+        self.proc.terminate()
+        time.sleep(1)
+        self.proc.kill()
+        self.eval() # force to poll the process and finalize close
+            
+# ==============================================================================
     def eval(self, expr=None, waitidle=True):
         """Evaluate an expression
         
@@ -149,7 +160,7 @@ class Matlab(object):
         
         # if no return code (still runs), we get its stdout
         if self.proc.returncode is not None:
-            print 'Matlab process has died. Return code=', self.proc.returncode
+            print 'Matlab process is not active. Return code=', self.proc.returncode
             return False
         
         if self.busy:
