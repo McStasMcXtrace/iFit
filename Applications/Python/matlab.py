@@ -6,7 +6,12 @@ __author__    = "E. Farhi <farhi@ill.fr>"
 
 # all dependencies
 import numpy
-import hdf5storage  # to exchange temporary files with matlab
+
+try:
+    import hdf5storage  # to exchange temporary files with matlab
+except ImportError:
+    pass
+    
 import scipy.io as sio  # fallback solution when hdf5storage fails
 import tempfile     # to create temporary .mat files
 import atexit       # to close Matlab when exiting python
@@ -115,7 +120,7 @@ class Matlab(object):
             'as PID ', self.proc.pid)
         
         # make sure we close the pipe in all cases
-        atexit.register(lambda handle=self.proc: handle.kill())
+        atexit.register(lambda handle=self: handle.close())
         
         # print start message reading stdout
         self.eval(waitidle=True) # check initial state
