@@ -1,7 +1,4 @@
-# comments
-"""
-docstrings"""
-
+# a class to communicate with Matlab from a Python session.
 
 __docformat__ = "restructuredtext en"
 __version__   = '1.0'
@@ -54,21 +51,26 @@ class Matlab(object):
     and directly evaluate any Matlab commands, including with control statements
     
     >>> m.eval("a=1; disp('Now assigned variable a'); disp(a);")
-    >>> m.eval("if a, disp('a is true')\nelse disp('a is false'); end")
+    >>> m.eval("if a, disp('a is true'); else disp('a is false'); end")
     
-    or even use multi-line strings.
+    or even use multi-line strings and control statements (if, for, while, ...). 
     
-    Once you have finished your work with Matlab, you can save the session, e.g.
+    By default, Python will wait for the commands to complete before returning 
+    to the prompt. 
+    To force an asynchronous execution use:
     
-    >>> m.eval("save")
+    >>> m.eval('commands',waitidle=False) 
     
-    and close the Matlab program.
+    especially for commands which are long to execute. In this case, use:
+    
+    >>> m.waitidle()
+    
+    to wait for Matlab Idle state. You can stop this waiting with a keyboard
+    interrupt, leaving Matlab execution in asynchronous mode. 
+    
+    Once you have finished your work with Matlab, you can close Matlab with:
     
     >>> m.close()
-    
-    To lad back the matlab session again, use:
-    
-    >>> m.eval("load")
     
     """
     
@@ -107,9 +109,9 @@ class Matlab(object):
         # make sure we close the pipe in all cases
         atexit.register(lambda handle=self.proc: handle.kill())
         
-        # print start message
-        time.sleep(1)
-        self.isbusy()  # check initial state
+        # print start message reading stdout
+        self.eval(waitidle=True) # check initial state
+        self.busy = False
 
     def close(self):
         """Close the Matlab session"""
@@ -119,27 +121,53 @@ class Matlab(object):
         print 'Closing session ', self.executable
         
         # check process, get its stdout and busy state
-        if self.isbusy():
+        if self.busy:
             self.proc.kill()
         else:
             self.proc.terminate()
   
-    def eval(self, expr=None, waitidle=False):
+    def eval(self, expr=None, waitidle=True):
         """Evaluate an expression
         
         input:
             expr:     Matlab expression to evaluate
-            waitidle: flag to wait for Matlab to become idle. Default is False.
-            
+            waitidle: When True (default), execution is synchronous and Python
+                      waits for the command to complete. When False, the Python
+                      interpreter does not wait for Matlab and execution is
+                      asynchronous. Use Matlab.waitidle() to wait.
         """
         
-        # check process, get its stdout and busy state
-        if self.isbusy():
-            print 'eval: Matlab is busy.'
-        elif expr is not None:
-            self.proc.stdin.write(expr+"\n")
-            if waitidle:
-                self.waitidle()
+        # in this routine, at every eval call, we request to display the 
+        # 'prompt' so that we can monitor when Matlab is ready.
+        
+        # check if the proc still exists
+        if not self.proc:
+            print 'Matlab process is not started. Use Matlab.open()'
+            return False
+            
+        self.proc.poll()
+        
+        # if no return code (still runs), we get its stdout
+        if self.proc.returncode is not None:
+            print 'Matlab process has died. Return code=', self.proc.returncode
+            return False
+        
+        if self.busy:
+            print 'eval: Matlab is busy. Use Matlab.waitidle() to wait for Idle state.'
+            return
+            
+        if expr is not None and expr != '':
+            # send the command
+            self.proc.stdin.write(expr+"\n")            
+        
+        # request to display the prompt so that we can monitor the idle state
+        self.proc.stdin.write("disp('"+self.prompt+"');\n")
+        self.busy = True
+        # check for idle state or timeout
+        if waitidle:
+            self.waitidle()     # flush until Idle
+        else:
+            busy = self.flush() # flush once
   
     def set(self, varname, value):
         """Set a variable name and assign it to the given value in Matlab"""
@@ -156,16 +184,15 @@ class Matlab(object):
         try:
             hdf5storage.savemat(m, { varname: value }, 
                 format='7.3', oned_as='column', store_python_metadata=True)
-        except:
-            hdf5storage.savemat(m, { varname: value }, 
-                format='5', oned_as='column', store_python_metadata=True)
+        except (IOError,NameError):
+            sio.savemat(m, { varname: value })
         
         # wait for file to be written
         time.sleep(.5)
         while not os.path.getsize(m):
             time.sleep(.5)
     
-        # then call eval to read that variable
+        # then call eval to read that variable within Matlab
         self.eval("load('"+m+"'); delete('"+m+"');", waitidle=True)
         f.close()
   
@@ -182,7 +209,7 @@ class Matlab(object):
         m = f.name+'.mat'
         self.eval("tmp_class = class("+varname+"); if isobject("+varname+"), tmp_var=struct("+varname+"); tmp_var.class = tmp_class; else tmp_var="+varname+"; end; save('"+m+"', 'tmp_var','tmp_class', '-v7'); clear tmp_var tmp_class;",
             waitidle=True)
-        
+            
         # wait for file to be written
         time.sleep(.5)
         while not os.path.getsize(m):
@@ -191,10 +218,11 @@ class Matlab(object):
         # then get that variable
         try:
             value = hdf5storage.loadmat(m, variable_names='tmp_var')
-        except IOError:
+        except (IOError,NameError):
             value = sio.loadmat(m, variable_names='tmp_var',
                 matlab_compatible=True, squeeze_me=True)
             value = value['tmp_var']
+            
         os.remove(m)
         f.close()
         return value
@@ -209,17 +237,23 @@ class Matlab(object):
         
         start_time = time.time()
         
-        while self.isbusy():
+        # loop as long as in Busy state or timeout
+        while self.flush():
             if timeout and time.time() - start_time > timeout:
                 break
                 
     def flush(self):
         """
-        Flush the Matlab stdout stream and return the last line.
+        Flush the Matlab stdout stream and return the busy state.
+        
+        return:
+            busy: False when Matlab is Idle, True when Busy.
         """
         
-        # read all available lines, and store the last one
-        lastline = ''
+        # we flush all available stdout lines and wait for the prompt
+        # the prompt is sent to Matlab stdin when calling eval.
+        
+        # read all available lines
         while True:
             try:
                 line = self.queue.get_nowait()
@@ -227,56 +261,18 @@ class Matlab(object):
                 # no more lines to read
                 line = None
                 break
-            else: # got line.
-                if line != '':
-                    self.stdout += line
-                    sys.stdout.write(line)
-                    sys.stdout.flush()
-                    lastline = line
-        return lastline
+            # got valid line.
+            if line != '':
+                # analyse the line, and search for the prompt (e.g. >>)
+                rline = line.rsplit()
+                if len(rline) > 0 and rline[-1] == self.prompt:
+                    self.busy = False
+                    
+                # store and display output
+                line = line.replace(self.prompt,'')  # remove any prompt text for display
+                self.stdout += line
+                sys.stdout.write(line)
+                sys.stdout.flush()
 
-    def isbusy(self, waitidle=False):
-        """
-        Read the Matlab output and return the busy state.
-        
-        input:
-            waitidle: flag to wait for Matlab to become idle. Default is False.
-        """
-        
-        # a stdout asynchronous reader must be done inside a separate Thread
-        # which only gets lines when they come. Then the main Thread (here)
-        # will just poll if lines are available without blocking.
-        #  see https://stackoverflow.com/questions/375427/non-blocking-read-on-a-subprocess-pipe-in-python
-        
-        
-        # check if the proc still exists
-        self.proc.poll()
-        
-        # if no return code (still runs), we get its stdout
-        if self.proc.returncode is not None:
-            print 'Matlab process has died. Return code=', self.proc.returncode
-            return False
-            
-        # send the prompt to check if Matlab responds
-        self.proc.stdin.write("disp('"+self.prompt+"');\n")
-        
-        flag = True
-        
-        while flag:
-            # read all available lines, and store the last one
-            lastline = self.flush()
-            
-            # check the last line
-            rlastline = lastline.rsplit()
-            if len(rlastline) > 0 and lastline.rsplit()[-1] == self.prompt:
-                busy     = False
-                flag     = False
-            else:
-                busy = True
-            self.busy = busy
-            if not waitidle:
-                break
-
-        # store state and return it
         return self.busy
-   
+
