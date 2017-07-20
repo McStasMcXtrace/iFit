@@ -1,4 +1,9 @@
-# a class to communicate with Matlab from a Python session.
+"""
+A class to communicate with Matlab from a Python session.
+
+Use Matlab? to get more help about how to use this module.
+"""
+from __future__ import print_function
 
 __docformat__ = "restructuredtext en"
 __version__   = '1.0'
@@ -32,6 +37,10 @@ def enqueue_output(out, queue):
     for line in iter(out.readline, b''):
         queue.put(line)
     out.close()
+    
+class MatlabError(Exception):
+    """Raised when a Matlab evaluation results in an error inside Matlab."""
+    pass
 
 # ==============================================================================
 class Matlab(object):
@@ -87,8 +96,12 @@ class Matlab(object):
         self.busy   = False # indicates when Matlab is ready/idle
         self.stdout = ''    # the stdout from Matlab
         self.executable = ''
-        self.prompt = '>>'; # this is sent after every command to make sure we
-                            # detect the Idle state
+        
+        # prompt: this is sent after every command to make sure we
+        # detect the Idle state
+        self.prompt = '>>'; 
+        # error: displayed by Matlab when printing an error message
+        self.error  = '???'
 
     def open(self, executable='matlab'):
         """
@@ -116,7 +129,7 @@ class Matlab(object):
                             args=(self.proc.stdout, self.queue))
         self.thread.daemon = True # thread dies with the program
         self.thread.start()
-        print 'Opened session ', ' '.join([executable,'-nodesktop','-nosplash']), 'as PID ', self.proc.pid
+        print('Opened session', ' '.join([executable,'-nodesktop','-nosplash']), 'as PID', self.proc.pid)
         
         # make sure we close the pipe in all cases
         atexit.register(lambda handle=self: handle.close())
@@ -129,13 +142,15 @@ class Matlab(object):
     def close(self):
         """Close the Matlab session"""
 
-        print 'Closing session ', self.executable
+        print('Closing session', self.executable)
         
         # force stop
         self.eval("exit",waitidle=False)  # from Matlab, gently
-        time.sleep(1)
+        time.sleep(.5)
+        self.proc.stdin.close()           # emulates a Ctrl-D
+        time.sleep(.5)
         self.proc.terminate()             # from outside, gently
-        time.sleep(1)
+        time.sleep(.5)
         self.proc.kill()                  # force
         self.eval() # force to poll the process and finalize close
         # end close
@@ -157,18 +172,18 @@ class Matlab(object):
         
         # check if the proc still exists
         if not self.proc:
-            print 'Matlab process is not started. Use Matlab.open()'
+            print('Matlab process is not started. Use Matlab.open()')
             return False
             
         self.proc.poll()
         
         # if no return code (still runs), we get its stdout
         if self.proc.returncode is not None:
-            print 'Matlab process is not active. Return code=', self.proc.returncode
+            print('Matlab process is not active. Return code=', self.proc.returncode)
             return False
         
         if self.busy:
-            print 'eval: Matlab is busy. Use Matlab.waitidle() to wait for Idle state.'
+            print('eval: Matlab is busy. Use Matlab.waitidle() to wait for Idle state.')
             return
             
         if expr is not None and expr != '':
@@ -288,8 +303,12 @@ class Matlab(object):
             if line != '':
                 # analyse the line, and search for the prompt (e.g. >>)
                 rline = line.rsplit()
-                if len(rline) > 0 and rline[-1] == self.prompt:
-                    self.busy = False
+                if len(rline) > 0:
+                    if rline[-1] == self.prompt:
+                        self.busy = False
+                    if rline[0] == self.error:
+                        self.busy = False
+                        raise MatlabError(line)
                     
                 # store and display output
                 line = line.replace(self.prompt,'')  # remove any prompt text for display
