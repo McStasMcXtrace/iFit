@@ -11,8 +11,7 @@
     </h1>
     <ol id="mozToc">
       <!--mozToc h3 1 h4 2-->
-      <li><a href="#mozTocId780492">Requirements: Python/NumPy
-        </a></li>
+      <li><a href="#mozTocId780492">Requirements: Python/NumPy </a></li>
       <li><a href="#mozTocId638108">Usage</a></li>
     </ol>
     <hr style="width: 100%; height: 2px;">
@@ -21,36 +20,47 @@
         experimental.</span><br>
     </div>
     <h3><a class="mozTocH3" name="mozTocId780492"></a>Requirements:
-      Python/NumPy
-    </h3>
+      Python/NumPy </h3>
     <blockquote>Install <a href="https://code.google.com/p/pythonxy/">Python(x,y)</a>
-      for Windows, or <a
+      for Windows, Anaconda or <a
         href="https://www.enthought.com/products/canopy">Entought Canopy</a>
       for Windows and MacOSX. Linux flavors provide numpy as e.g. RPM
       and Debian packages.The <a href="http://ipython.org/">IPython</a>
       package is also recommended.<br>
       <br>
-      This interface is using MLabWrap from <a
-        href="http://mlabwrap.sourceforge.net/">http://mlabwrap.sourceforge.net/</a>
-      but does not require its installation as it is shipped with iFit.<br>
+      The required packages are:<br>
+      <ul>
+        <li>python</li>
+        <li>numpy</li>
+        <li>scipy</li>
+        <li>hdf5storage</li>
+      </ul>
+      which can all be installed on Ubuntu/Debian systems using our <a
+        href="http://packages.mccode.org">http://packages.mccode.org</a>
+      repository with:<br>
+      <ul>
+        <li>sudo apt-get install <a
+href="http://packages.mccode.org/debian/dists/trusty/main/binary-all/python-hdf5storage_0.1.13-1_all.deb">python-hdf5storage</a></li>
+      </ul>
     </blockquote>
     <h3><a class="mozTocH3" name="mozTocId638108"></a>Usage</h3>
     <p>Navigate to the iFit/Applications/Python directory and launch
-      IPython or Python.<br>
+      IPython or Python. You may even use IPython notebook.<br>
       Then issue the command:<br>
     </p>
     <blockquote>
-      <pre>&gt;&gt;&gt; from mlabwrap import mlab</pre>
+      <pre>&gt;&gt;&gt; from matlab import Matlab<br>&gt;&gt;&gt; mlab = Matlab()<br>&gt;&gt;&gt; mlab.open()<br></pre>
+      or, when using the standalone version:<br>
+      <pre>&gt;&gt;&gt; mlab.open('ifit')<br></pre>
     </blockquote>
     <p>From there on, any iFit and Matlab expression can be executed
       from Python.<br>
     </p>
     <blockquote>
-      <pre>&gt;&gt;&gt; a = mlab.iData('filename')<br>&gt;&gt;&gt; mlab.plot(a)<br>&gt;&gt;&gt; b = mlab.rdivide(a,2)
-</pre>
+      <pre>&gt;&gt;&gt; a = mlab.eval("a=iData('filename')")<br>&gt;&gt;&gt; mlab.eval("plot(a)")<br>&gt;&gt;&gt; mlab.eval("b = a/2")<br>&gt;&gt;&gt; b=mlab.get('b') <br></pre>
     </blockquote>
     The main idea is that any call to iFit/Matlab should be prepended by
-    '<b>mlab.</b>'. <br>
+    '<b>mlab.</b>' and use the set/get/eval methods.<br>
     <br>
     iFit objects are stored as Python NumPy arrays. Refer to the <a
       href="Methods.html">Methods</a> page to learn about all methods
@@ -59,14 +69,14 @@
     <br>
     In addition, there are specialized methods to communicate with
     iFit/Matlab:<br>
-    <b>mlab._set('name' value) </b><br>
+    <b>mlab.set('name', value) </b><br>
     <blockquote>assigns name=value in the iFit/Matlab workspace.<br>
     </blockquote>
-    <b>mlab._get('name') </b><br>
+    <b>mlab.get('name') </b><br>
     <blockquote>retrieves the named variable from the iFit/Matlab
       workspace.<br>
     </blockquote>
-    <b>mlab._eval('expression') </b><br>
+    <b>mlab.eval("expression") </b><br>
     <blockquote>evaluates the expression/code in the iFit/Matlab
       workspace.<br>
     </blockquote>
@@ -74,17 +84,13 @@
     <hr style="width: 100%; height: 2px;">
     <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
+
         - iFit Python - </span><span style="font-style: italic;">
-        $Date$
-        $Revision$
-      </span><span style="font-style: italic;"> </span>-
-      back to <a href="index.html">Main
-        iFit
-        Page </a><a href="http://www.ill.eu/"><img title="ILL,
-          Grenoble, France &lt;www.ill.eu&gt;"
-          src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France
-          &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px;
-          height: 50px;" align="right"></a>
-    </div>
+        $Date$ $Revision$ </span><span style="font-style: italic;"> </span>-
+      back to <a href="index.html">Main iFit Page </a><a
+        href="http://www.ill.eu/"><img title="ILL, Grenoble, France
+          &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL,
+          Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid
+          ; width: 53px; height: 50px;" align="right"></a> </div>
   </body>
 </html>
