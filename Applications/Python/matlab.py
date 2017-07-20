@@ -149,9 +149,13 @@ class Matlab(object):
         time.sleep(.5)
         self.proc.stdin.close()           # emulates a Ctrl-D
         time.sleep(.5)
-        self.proc.terminate()             # from outside, gently
-        time.sleep(.5)
-        self.proc.kill()                  # force
+        try:
+            self.proc.terminate()             # from outside, gently
+            time.sleep(.5)
+            self.proc.kill()                  # force
+        except OSError:
+            # the process was closed indeed. No need to force.
+            pass
         self.eval() # force to poll the process and finalize close
         # end close
             
