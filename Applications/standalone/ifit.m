@@ -155,7 +155,7 @@ while ~exist('ifit_options') || ~isstruct(ifit_options) || ...
         try
           evalin('base', ifit_options.line) % evaluate without return argument
         catch ME
-          disp('Error when evaluating expression argument:')
+          disp('??? Error when evaluating expression argument:')
           disp(ifit_options.line)
           disp(ME.message)
           ifit_options.line = '';
@@ -212,7 +212,7 @@ while ~exist('ifit_options') || ~isstruct(ifit_options) || ...
           ifit_options.line = builtin('feval',ifit_options.line, this{:});
         end
       catch
-        disp('Error when evaluating method:')
+        disp('??? Error when evaluating method:')
         disp(ifit_options.line)
         if ~isempty(this), disp(this); end
         disp(lasterr)
@@ -438,12 +438,12 @@ function line = inline_runscript(line)
     disp([ 'Reading file ' line ]);
     line=fileread(line);
   else
-    disp([ 'Error: iFit: Can not open script ' line ]);
+    disp([ '??? Can not open script ' line ]);
   end
   
 function inline_error(err)
   % display error trace
-  disp('Error when evaluating expression:')
+  disp('??? Error when evaluating expression:')
   disp(err)
   disp(lasterr)
   disp('Trace (first is where the error is detected):')
