@@ -10,8 +10,8 @@
       dynamics<br>
     </h1>
     <h1 style="text-align: center;"><img
-        src="/home/farhi/dev/iFit/Docs/images/Models_sqw_phon.png"
-        title="Sqw Phonons" alt="Sqw Phonons" width="128" height="95"></h1>
+        src="images/Models_sqw_phon.png"
+        title="Sqw Phonons" alt="Sqw Phonons" height="95" width="128"></h1>
     <ol id="mozToc">
       <!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6-->
       <li><a href="#mozTocId406805">Installation</a></li>
@@ -90,6 +90,7 @@
 
 
 
+
               <br>
             </li>
             <li>Optional: any <b>DFT code</b> out of <a
@@ -123,6 +124,7 @@
           Then you can either build a bootable USB key using e.g. <a
             href="https://unetbootin.github.io/">Unetbootin</a> (or
           simply a command in the style "<i>dd if=iso of=usbkey bs=1m</i>"),
+
 
 
 
@@ -174,6 +176,7 @@
 
 
 
+
           if available, to install some of e.g. <br>
           <blockquote>python-ase, quantum-espresso, elk-lapw, gpaw,
             nwchem, dacapo, abinit.<br>
@@ -184,7 +187,62 @@
           into e.g. /usr/local/ifit. Also install the <b>MCRInstaller</b>
           in /opt/MATLAB. Create a link to the ifit exeutable with e.g.:<br>
           <blockquote>
-            <pre>sudo ln -s /usr/local/ifit/ifit /usr/local/bin/ifit<br></pre></blockquote><div align="left">You may try to install the ifit-web-services package from <a href="https://github.com/McStasMcXtrace/iFit-Web">https://github.com/McStasMcXtrace/iFit-Web</a>.<br></div></blockquote><ul><li><b>Other systems</b></li></ul><blockquote>Install the standalone executable of <b>ifit</b> (standalone, zip archive) from e.g. <a href="http://ifit.mccode.org/Install.html">http://ifit.mccode.org/Install.html</a> <br>You need Python, Numpy, SciPy and MatPlotLib to be installed. For this, we recommend that you install the <a href="https://docs.continuum.io/anaconda/">Anaconda</a> distribution.<br>Install ASE, PhonoPy and QE-util using conda or pip, e.g.:<br><blockquote><pre>conda install phonopy</pre><pre>conda install -c jochym qeutil</pre><pre>pip install ase</pre></blockquote>Finally, install the DFT codes referring to their documentation (see 'requirements' above). Some of the packages may not be easily installable on MacOSX or Windows systems.<br></blockquote><h3><a name="mozTocId846642" class="mozTocH3"></a>Getting initial atomic configurations<br></h3>The iFit-Phonon infrastructure requires to input a minimal information on the atomic system you wish to simulate. This atomic configuration describes e.g. a crystal lattice, i.e. the composition and location of atoms in the lattice space. <br><br>A number of possibilities are suggested below. <br><ul><li><b>Supported input configuration files</b></li></ul><blockquote>It is possible to input a wide set of file formats, including CIF, PDB, POSCAR (VASP), Material Studio (XSD, MDL), CASTEP, ABINIT, DL_POLY, Dmol, Espresso, ETSF,&nbsp; ShelX, Wien2k, Siesta, Yaml, Json, ...<br><br>You should refer to the table in <a href="https://wiki.fysik.dtu.dk/ase/ase/io/io.html#module-ase.io">ASE/File input IO</a> module for a full list of supported input formats.<br><br>When using such a structure, a number of DFT computations will be used to determine the force constants in the crystal.<br></blockquote><ul><li><b>MaterialsProject</b>&lt;<a href="https://www.materialsproject.org/">https://www.materialsproject.org/</a>&gt;
+            <pre>sudo ln -s /usr/local/ifit/ifit /usr/local/bin/ifit<br></pre>
+          </blockquote>
+          <div align="left">You may try to install the ifit-web-services
+            package from <a
+              href="https://github.com/McStasMcXtrace/iFit-Web">https://github.com/McStasMcXtrace/iFit-Web</a>.<br>
+          </div>
+        </blockquote>
+        <ul>
+          <li><b>Other systems</b></li>
+        </ul>
+        <blockquote>Install the standalone executable of <b>ifit</b>
+          (standalone, zip archive) from e.g. <a
+            href="http://ifit.mccode.org/Install.html">http://ifit.mccode.org/Install.html</a>
+          <br>
+          You need Python, Numpy, SciPy and MatPlotLib to be installed.
+          For this, we recommend that you install the <a
+            href="https://docs.continuum.io/anaconda/">Anaconda</a>
+          distribution.<br>
+          Install ASE, PhonoPy and QE-util using conda or pip, e.g.:<br>
+          <blockquote>
+            <pre>conda install phonopy</pre>
+            <pre>conda install -c jochym qeutil</pre>
+            <pre>pip install ase</pre>
+          </blockquote>
+          Finally, install the DFT codes referring to their
+          documentation (see 'requirements' above). Some of the packages
+          may not be easily installable on MacOSX or Windows systems.<br>
+        </blockquote>
+        <h3><a name="mozTocId846642" class="mozTocH3"></a>Getting
+          initial atomic configurations<br>
+        </h3>
+        The iFit-Phonon infrastructure requires to input a minimal
+        information on the atomic system you wish to simulate. This
+        atomic configuration describes e.g. a crystal lattice, i.e. the
+        composition and location of atoms in the lattice space. <br>
+        <br>
+        A number of possibilities are suggested below. <br>
+        <ul>
+          <li><b>Supported input configuration files</b></li>
+        </ul>
+        <blockquote>It is possible to input a wide set of file formats,
+          including CIF, PDB, POSCAR (VASP), Material Studio (XSD, MDL),
+          CASTEP, ABINIT, DL_POLY, Dmol, Espresso, ETSF,&nbsp; ShelX,
+          Wien2k, Siesta, Yaml, Json, ...<br>
+          <br>
+          You should refer to the table in <a
+            href="https://wiki.fysik.dtu.dk/ase/ase/io/io.html#module-ase.io">ASE/File
+            input IO</a> module for a full list of supported input
+          formats.<br>
+          <br>
+          When using such a structure, a number of DFT computations will
+          be used to determine the force constants in the crystal.<br>
+        </blockquote>
+        <ul>
+          <li><b>MaterialsProject</b>&lt;<a
+              href="https://www.materialsproject.org/">https://www.materialsproject.org/</a>&gt;
 
 
 
@@ -217,9 +275,21 @@
 
 
 
-        using VASP.&nbsp; <span name="ISTEXInserted">A. Jain*, S.P.
-          Ong*, et al, APL Materials, 2013, 1(1), 011002. doi:<a href="http://dx.doi.org/10.1063/1.4812323">10.1063/1.4812323</a></span></li></ul><span name="ISTEXInserted"></span><blockquote>This extensive data base of materials provides optimised (i.e. energetically minimized&nbsp; structures) configurations, which can be obtained as CIF and VASP POSCAR files. In addition, when registered, you can submit your own structures or optimisation.<br></blockquote><ul><li><b>PhononDB</b> &lt;<a href="http://phonondb.mtl.kyoto-u.ac.jp/">http://phonondb.mtl.kyoto-u.ac.jp/</a>&gt;
 
+            using VASP.&nbsp; <span name="ISTEXInserted">A. Jain*, S.P.
+              Ong*, et al, APL Materials, 2013, 1(1), 011002. doi:<a
+                href="http://dx.doi.org/10.1063/1.4812323">10.1063/1.4812323</a></span></li>
+        </ul>
+        <span name="ISTEXInserted"></span>
+        <blockquote>This extensive data base of materials provides
+          optimised (i.e. energetically minimized&nbsp; structures)
+          configurations, which can be obtained as CIF and VASP POSCAR
+          files. In addition, when registered, you can submit your own
+          structures or optimisation.<br>
+        </blockquote>
+        <ul>
+          <li><b>PhononDB</b> &lt;<a
+              href="http://phonondb.mtl.kyoto-u.ac.jp/">http://phonondb.mtl.kyoto-u.ac.jp/</a>&gt;
 
 
 
@@ -251,9 +321,25 @@
 
 
 
-        using PhonoPy and VASP. <br></li></ul><blockquote>This resource makes use of some MaterialsProject materials, and the force constants have been pre-computed. You should search for your material in the list, and if you're lucky, you should get the LZMA archive. Extract it and identify one of the 'phonon-XX' or 'gruneisen-XX' directories, usually one in the middle of the scanned range (which are lattice volume variations). You will use that directory as input to iFit-Phonon. The force constants do not need to be calculated, which saves a lot of time. Only the final DFT steps will be computed (to get e.g. the stress tensor, moments, and other physical quantities). </blockquote><ul><li><b>NoMaD</b> repository &lt;<a href="http://nomad-repository.eu/cms/">http://nomad-repository.eu/cms/</a>&gt;
 
 
+            using PhonoPy and VASP. <br>
+          </li>
+        </ul>
+        <blockquote>This resource makes use of some MaterialsProject
+          materials, and the force constants have been pre-computed. You
+          should search for your material in the list, and if you're
+          lucky, you should get the LZMA archive. Extract it and
+          identify one of the 'phonon-XX' or 'gruneisen-XX' directories,
+          usually one in the middle of the scanned range (which are
+          lattice volume variations). You will use that directory as
+          input to iFit-Phonon. The force constants do not need to be
+          calculated, which saves a lot of time. Only the final DFT
+          steps will be computed (to get e.g. the stress tensor,
+          moments, and other physical quantities). </blockquote>
+        <ul>
+          <li><b>NoMaD</b> repository &lt;<a
+              href="http://nomad-repository.eu/cms/">http://nomad-repository.eu/cms/</a>&gt;
 
 
 
@@ -284,285 +370,903 @@
 
 
 
-        can store any computational result from e.g. ABINIT,
-        QuantumEspresso, VASP, and others.</li><li><b>ICSD</b> Inorganic Crystal Structure Database &lt;<a href="http://icsd.ill.fr">http://icsd.ill.fr</a>&gt; with
-        plenty of CIFs.</li><li><b>AflowLib</b> &lt;<a href="http://aflowlib.org/">http://aflowlib.org/</a>&gt;
 
 
 
+            can store any computational result from e.g. ABINIT,
+            QuantumEspresso, VASP, and others.</li>
+          <li><b>ICSD</b> Inorganic Crystal Structure Database &lt;<a
+              href="http://icsd.ill.fr">http://icsd.ill.fr</a>&gt; with
+            plenty of CIFs.</li>
+          <li><b>AflowLib</b> &lt;<a href="http://aflowlib.org/">http://aflowlib.org/</a>&gt;
 
 
 
-        a calculation service using ICSD materials.</li></ul><blockquote>These resources are mostly storage areas, which contain many materials. Search for the materials you are interested in. Get 
-the initial/optimised configuration files.<br></blockquote><h3><a name="mozTocId503533" class="mozTocH3"></a>Starting iFit/Phonons</h3>You may use the iFit-Phonon infrastructure in three different ways.<br><ul><li><b>command line</b></li></ul><blockquote>If you are using Matlab, use:<br><blockquote><pre>&gt;&gt; <font color="#3366ff">addpath</font>(<font color="#3366ff">genpath</font>(<font color="#cc33cc">'/path/to/ifit'</font>))</pre></blockquote>which will make iFit fully available from Matlab.<br><br><a href="images/iFit_standalone.png"><img alt="iFit standalone            window (no Matlab license required)" title="iFit standalone            window (no Matlab license required)" src="images/iFit_standalone.png" style="border: 0px solid;
-            border: 0px solid; width: 300px; height: 198px;" width="747" height="492" align="right" border="0"></a>If you do not have a Matlab license, start the iFit standalone by either clicking on its icon, or start a Terminal and type <br><blockquote><pre>ifit -nodesktop</pre></blockquote>Then, the main command to use for the phonon computation is:<br><blockquote><pre>&gt;&gt; <font color="#3366ff"><font color="#3366ff"><font color="#000000">s=</font></font>sqw_phonons</font>(<font color="#cc33cc">'file'</font>, ...)<br></pre></blockquote><div align="left">Once done, you get the result in the form of a variable (here 's').<br><br></div><font color="#ff0000"><b>WARNING for iFit standalone<br></b></font><ol><li><font color="#ff0000">do not use accent characters at the Terminal iFit prompt. This will probably crash iFit </font><font color="#ff0000">[<a href="http://www.mathworks.com/support/bugreports/624817">bug 624817</a>].</font></li><li><font color="#ff0000">Ctrl-C is use for stopping a current computation, or exit iFit. Rather use the menu for Copy/Paste actions.</font></li></ol></blockquote><ul><li><b>dialogue window</b></li></ul><blockquote>To use a very basic user interface, use the procedure above and type in the ifit/Matlab prompt:<a href="images/Models_sqw_ph_ase_gui.png"><img alt="sqw_ph_ase_gui" title="sqw_ph_ase_gui" src="images/Models_sqw_ph_ase_gui.png" width="200" height="168" align="right" border="0"></a><blockquote><pre>&gt;&gt; <font color="#3366ff"><font color="#000000">s=</font>sqw_phonons</font>(<font color="#cc33cc">'gui'</font>)<br></pre></blockquote><div align="left">A dialogue window pops-up, and allow to enter (as text) a filename, directory, or python code to describe the atomic configuration, as well as the calculator and other options. This dialogue window is less fragile than the Terminal concerning accent characters, and should be preferred for non-expert users.<br><br>Once done, you get the result in the form of a variable (here 's').<br></div>
-</blockquote><ul><li><b>TextEdit: an editor which allows to evaluate code</b><br></li></ul><blockquote>You can open a TextEdit window by typing:<a href="images/iFit_TextEdit.png"><img src="images/iFit_TextEdit.png" title="iFit_TextEdit" alt="iFit_TextEdit" width="250" height="190" align="right" border="0"></a><blockquote><pre>&gt;&gt; <font color="#3366ff">TextEdit</font></pre></blockquote>
-at the iFit/Matlab prompt. This is highly recommended when using the iFit standalone distribution (without Matlab license). If you are using a Matlab license, then the Matlab command window is more convenient.<br><br>You can type Matlab/iFit commands in there, and then use the <i>File/Evaluate</i>
- menu item to evaluate either all the content, or a selection. The 
-result is sent into the iFit Terminal. Any variable used in the TextEdit
- window appears (when evaluating) in the iFit Terminal, and <i>vice-versa</i>. You can open as many TextEdit windows as you wish, load/save files (e.g. .m), copy/paste filenames and raw text.<br>
-<br>
-The TextEdit window have a <i>Help</i> menu which links to the main iFit functionalities.<br></blockquote><ul><li><b>web server</b></li></ul><blockquote>This options requires to install the <b>ifit-web-services</b> package (see above).<br><br>Accessing the iFit-Phonon infrastructure from a web browser completely hides the complexity of the command line. You only see a web page where you can configure most of the calculation options. Also, you do not need to keep a terminal opened during the computation, which is carried out in the background. <br><br>Also, you can launch a calculation remotely, as long as the computer is accessible. Novice users can launch calculations without any prior knowledge on the iFit infrastructure.<br><br>Once launched, note down the URL of the running computation, and do not switch off the computer. You can monitor the calculation report any time.<br></blockquote><h3><a name="mozTocId333190" class="mozTocH3"></a>Phonon computation syntax: sqw_phonons</h3><blockquote>The main command to use for the phonon computation is:<br>
-<blockquote>
-  <pre>&gt;&gt; <font color="#3366ff"><font color="#3366ff"><font color="#000000">s=</font></font>sqw_phonons</font>(<font color="#cc33cc">'file'</font>, ...)<br></pre></blockquote>where <font color="#cc33cc">'file'</font> is an atomic configuration file (POSCAR, CIF, PDB, Yaml, ...) or directory containing such information. Once done, you get the result in the form of a variable (here 's'). This model object S(q,w) is of class 'iFunc' 4-dimensional with axes QH,QK,QL,E in [rlu^3, meV]. It holds the coherent inelastic contribution to the dynamical structure factor, in the harmonic approximation.<br><br>If you forget to put <i>'s='</i> before '<i>sqw_phonon</i>s', the returned model is assigned to the <i>'ans' </i>variable. Simply type <br><blockquote><pre>&gt;&gt; s=ans;</pre></blockquote>to transfer the volatile answer into a named variable of your choice. <br>See <a href="#mozTocId362621">below</a> on how to save these variables and secure your work.<br><br>When using the dialogue window, a similar variable is returned, but the input data is entered in the editable text fields. <br>When using the web interface, the object is created and all results, including the model object, are saved into a directory.<br><br></blockquote><h3><a name="mozTocId280436" class="mozTocH3"></a>Getting help</h3><ul><li><b>help pages</b>: sqw_phonons, models, data sets</li></ul><blockquote>To get more help on the sqw_phonons command, access the <a href="Models.html#mozTocId990577">iFit/Models</a> page, or type:<br><blockquote><pre>&gt;&gt; <font color="#3366ff">help sqw_phonons</font> (displayed a raw text)</pre></blockquote>or<br><blockquote><pre>&gt;&gt; <font color="#3366ff">doc sqw_phonons</font> (displayed in a web browser)</pre></blockquote>at the iFit/Matlab prompt. <br>You may also read the main <a href="Models.html">Models</a> page, which lists all pre-defined models in iFit.<br><br>To get help on the model object of class <a href="iFunc.html">iFunc</a>, use:<br><br><blockquote><pre>&gt;&gt; <font color="#3366ff">disp</font>(s)		% displays details about the object<br>&gt;&gt; <font color="#3366ff">methods</font>(s)		% lists all methods that can be used with iData objects
-&gt;&gt; <font color="#3366ff">help iFun</font>c		% help about the class definition<br>&gt;&gt; <font color="#3366ff">doc</font>(iFunc)		% main web help about the class<br>&gt;&gt; <font color="#3366ff">help</font> iFunc/&lt;method&gt;	% explains how to use a given method<br></pre></blockquote>The evaluation of the model provides a data set of class <a href="iData.html">iData</a>. To get help about these objects, use:<br><blockquote><pre>&gt;&gt; <font color="#3366ff">disp</font>(d)		% displays details about the object
+
+
+
+
+            a calculation service using ICSD materials.</li>
+        </ul>
+        <blockquote>These resources are mostly storage areas, which
+          contain many materials. Search for the materials you are
+          interested in. Get the initial/optimised configuration files.<br>
+        </blockquote>
+        <h3><a name="mozTocId503533" class="mozTocH3"></a>Starting
+          iFit/Phonons</h3>
+        You may use the iFit-Phonon infrastructure in three different
+        ways.<br>
+        <ul>
+          <li><b>command line</b></li>
+        </ul>
+        <blockquote>If you are using Matlab, use:<br>
+          <blockquote>
+            <pre>&gt;&gt; <font color="#3366ff">addpath</font>(<font color="#3366ff">genpath</font>(<font color="#cc33cc">'/path/to/ifit'</font>))</pre>
+          </blockquote>
+          which will make iFit fully available from Matlab.<br>
+          <br>
+          <a href="images/iFit_standalone.png"><img alt="iFit standalone
+              window (no Matlab license required)" title="iFit
+              standalone window (no Matlab license required)"
+              src="images/iFit_standalone.png" style="border: 0px solid;
+              border: 0px solid; width: 300px; height: 198px;"
+              height="492" width="747" border="0" align="right"></a>If
+          you do not have a Matlab license, start the iFit standalone by
+          either clicking on its icon, or start a Terminal and type <br>
+          <blockquote>
+            <pre>ifit -nodesktop</pre>
+          </blockquote>
+          Then, the main command to use for the phonon computation is:<br>
+          <blockquote>
+            <pre>&gt;&gt; <font color="#3366ff"><font color="#3366ff"><font color="#000000">s=</font></font>sqw_phonons</font>(<font color="#cc33cc">'file'</font>, ...)<br></pre>
+          </blockquote>
+          <div align="left">Once done, you get the result in the form of
+            a variable (here 's').<br>
+            <br>
+          </div>
+          <font color="#ff0000"><b>WARNING for iFit standalone<br>
+            </b></font>
+          <ol>
+            <li><font color="#ff0000">do not use accent characters at
+                the Terminal iFit prompt. This will probably crash iFit
+              </font><font color="#ff0000">[<a
+                  href="http://www.mathworks.com/support/bugreports/624817">bug
+                  624817</a>].</font></li>
+            <li><font color="#ff0000">Ctrl-C is use for stopping a
+                current computation, or exit iFit. Rather use the menu
+                for Copy/Paste actions.</font></li>
+          </ol>
+        </blockquote>
+        <ul>
+          <li><b>dialogue window</b></li>
+        </ul>
+        <blockquote>To use a very basic user interface, use the
+          procedure above and type in the ifit/Matlab prompt:<a
+            href="images/Models_sqw_ph_ase_gui.png"><img
+              alt="sqw_ph_ase_gui" title="sqw_ph_ase_gui"
+              src="images/Models_sqw_ph_ase_gui.png" height="168"
+              width="200" border="0" align="right"></a>
+          <blockquote>
+            <pre>&gt;&gt; <font color="#3366ff"><font color="#000000">s=</font>sqw_phonons</font>(<font color="#cc33cc">'gui'</font>)<br></pre>
+          </blockquote>
+          <div align="left">A dialogue window pops-up, and allow to
+            enter (as text) a filename, directory, or python code to
+            describe the atomic configuration, as well as the calculator
+            and other options. This dialogue window is less fragile than
+            the Terminal concerning accent characters, and should be
+            preferred for non-expert users.<br>
+            <br>
+            Once done, you get the result in the form of a variable
+            (here 's').<br>
+          </div>
+        </blockquote>
+        <ul>
+          <li><b>TextEdit: an editor which allows to evaluate code</b><br>
+          </li>
+        </ul>
+        <blockquote>You can open a TextEdit window by typing:<a
+            href="images/iFit_TextEdit.png"><img
+              src="images/iFit_TextEdit.png" title="iFit_TextEdit"
+              alt="iFit_TextEdit" height="190" width="250" border="0"
+              align="right"></a>
+          <blockquote>
+            <pre>&gt;&gt; <font color="#3366ff">TextEdit</font></pre>
+          </blockquote>
+          at the iFit/Matlab prompt. This is highly recommended when
+          using the iFit standalone distribution (without Matlab
+          license). If you are using a Matlab license, then the Matlab
+          command window is more convenient.<br>
+          <br>
+          You can type Matlab/iFit commands in there, and then use the <i>File/Evaluate</i>
+          menu item to evaluate either all the content, or a selection.
+          The result is sent into the iFit Terminal. Any variable used
+          in the TextEdit window appears (when evaluating) in the iFit
+          Terminal, and <i>vice-versa</i>. You can open as many
+          TextEdit windows as you wish, load/save files (e.g. .m),
+          copy/paste filenames and raw text.<br>
+          <br>
+          The TextEdit window have a <i>Help</i> menu which links to
+          the main iFit functionalities.<br>
+        </blockquote>
+        <ul>
+          <li><b>web server</b></li>
+        </ul>
+        <blockquote>This options requires to install the <b>ifit-web-services</b>
+          package (see above).<br>
+          <br>
+          Accessing the iFit-Phonon infrastructure from a web browser
+          completely hides the complexity of the command line. You only
+          see a web page where you can configure most of the calculation
+          options. Also, you do not need to keep a terminal opened
+          during the computation, which is carried out in the
+          background. <br>
+          <br>
+          Also, you can launch a calculation remotely, as long as the
+          computer is accessible. Novice users can launch calculations
+          without any prior knowledge on the iFit infrastructure.<br>
+          <br>
+          Once launched, note down the URL of the running computation,
+          and do not switch off the computer. You can monitor the
+          calculation report any time.<br>
+        </blockquote>
+        <h3><a name="mozTocId333190" class="mozTocH3"></a>Phonon
+          computation syntax: sqw_phonons</h3>
+        <blockquote>The main command to use for the phonon computation
+          is:<br>
+          <blockquote>
+            <pre>&gt;&gt; <font color="#3366ff"><font color="#3366ff"><font color="#000000">s=</font></font>sqw_phonons</font>(<font color="#cc33cc">'file'</font>, ...)<br></pre>
+          </blockquote>
+          where <font color="#cc33cc">'file'</font> is an atomic
+          configuration file (POSCAR, CIF, PDB, Yaml, ...) or directory
+          containing such information. Once done, you get the result in
+          the form of a variable (here 's'). This model object S(q,w) is
+          of class 'iFunc' 4-dimensional with axes QH,QK,QL,E in [rlu^3,
+          meV]. It holds the coherent inelastic contribution to the
+          dynamical structure factor, in the harmonic approximation.<br>
+          <br>
+          If you forget to put <i>'s='</i> before '<i>sqw_phonon</i>s',
+          the returned model is assigned to the <i>'ans' </i>variable.
+          Simply type <br>
+          <blockquote>
+            <pre>&gt;&gt; s=ans;</pre>
+          </blockquote>
+          to transfer the volatile answer into a named variable of your
+          choice. <br>
+          See <a href="#mozTocId362621">below</a> on how to save these
+          variables and secure your work.<br>
+          <br>
+          When using the dialogue window, a similar variable is
+          returned, but the input data is entered in the editable text
+          fields. <br>
+          When using the web interface, the object is created and all
+          results, including the model object, are saved into a
+          directory.<br>
+          <br>
+        </blockquote>
+        <h3><a name="mozTocId280436" class="mozTocH3"></a>Getting help</h3>
+        <ul>
+          <li><b>help pages</b>: sqw_phonons, models, data sets</li>
+        </ul>
+        <blockquote>To get more help on the sqw_phonons command, access
+          the <a href="Models.html#mozTocId990577">iFit/Models</a>
+          page, or type:<br>
+          <blockquote>
+            <pre>&gt;&gt; <font color="#3366ff">help sqw_phonons</font> (displayed a raw text)</pre>
+          </blockquote>
+          or<br>
+          <blockquote>
+            <pre>&gt;&gt; <font color="#3366ff">doc sqw_phonons</font> (displayed in a web browser)</pre>
+          </blockquote>
+          at the iFit/Matlab prompt. <br>
+          You may also read the main <a href="Models.html">Models</a>
+          page, which lists all pre-defined models in iFit.<br>
+          <br>
+          To get help on the model object of class <a href="iFunc.html">iFunc</a>,
+          use:<br>
+          <br>
+          <blockquote>
+            <pre>&gt;&gt; <font color="#3366ff">disp</font>(s)		% displays details about the object<br>&gt;&gt; <font color="#3366ff">methods</font>(s)		% lists all methods that can be used with iData objects
+&gt;&gt; <font color="#3366ff">help iFun</font>c		% help about the class definition<br>&gt;&gt; <font color="#3366ff">doc</font>(iFunc)		% main web help about the class<br>&gt;&gt; <font color="#3366ff">help</font> iFunc/&lt;method&gt;	% explains how to use a given method<br></pre>
+          </blockquote>
+          The evaluation of the model provides a data set of class <a
+            href="iData.html">iData</a>. To get help about these
+          objects, use:<br>
+          <blockquote>
+            <pre>&gt;&gt; <font color="#3366ff">disp</font>(d)		% displays details about the object
 &gt;&gt; <font color="#3366ff">methods</font>(d)		% lists all methods that can be used with iData objects
 &gt;&gt; <font color="#3366ff">help iData</font>		% help about the class definition
 &gt;&gt; <font color="#3366ff">doc</font>(iData)		% main web help about the class
-&gt;&gt; <font color="#3366ff">doc</font>(iData,<font color="#cc33cc">'Math'</font>)	% help about mathematical operators<br>&gt;&gt; <font color="#3366ff">help</font> iData/&lt;method&gt;	% explains how to use a given method<br></pre></blockquote>Finally, the whole Matlab documentation is available <a href="http://www.mathworks.com/help/techdoc/">on-line</a> for free, especially to complement the standalone limited help system.<br></blockquote><ul><li><b>github, contributing, email list</b><br></li></ul><blockquote>Last, you can access the iFit source code at <a href="https://github.com/McStasMcXtrace/iFit">https://github.com/McStasMcXtrace/iFit</a>, follow the changes and get the cutting-edge version. The 'Issues' tab lists all current bugs and enhancement requests (so called 'tickets'). <br><br>You can declare a new ticket by first registering at github. Once registered, if you ever <i>find a bug</i> and wish to correct it, do so by editing the relevant iFit source code from the github page, and commit it. A 'pull request', that is a request for a modification, will be created. After discussion via the merge request tracking and email, your modification will be approved and included in the iFit 'master' code.<br><br>Last, if you are lost, do not hesitate to register at to the <a href="http://mail.mccode.org/cgi-bin/mailman/listinfo/ifit-users" style="font-family: &quot;Times New Roman&quot;; font-size: medium; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;">ifit-users</a> list and send an email at<meta http-equiv="content-type" content="text/html; charset=windows-1252">&nbsp;<a href="mailto:ifit-users@mccode.org" style="font-family: &quot;Times New Roman&quot;; font-size: medium; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px;">ifit-users@mccode.org</a>.</blockquote><h3><a name="mozTocId182819" class="mozTocH3"></a>Calculator options</h3><ul><li>Choosing the DFT calculator, DeltaCodesDFT<br></li><li>Smearing</li><li>Supercell/k-mesh</li><li>XC/PPS</li><li>Tolerance criteria and max number of iterations for SCF convergence</li><li>Initial optimisation</li><li>Report generation during the calculation<br></li></ul><h3><a name="mozTocId438325" class="mozTocH3"></a>Plotting results</h3><ul><li>plot</li><li>plot3</li><li>slice<br></li><li>sqw_phonon_dos<br></li><li>sqw_kpath and its options (Bragg, k-list, BZ points)<br></li><li>sqw_thermochemistry</li></ul><h3><a name="mozTocId362621" class="mozTocH3"></a>Loading/saving your work</h3><ul><li>loading an initial structure (file)</li><li>loading a previous iFit computation (directory/mat)</li><li>loading a previous PhonoPy computation (directory)</li><li>generating a report (during / after)<br></li><li>saving the model: MAT, YAML, JSON, XML<br></li></ul><h3><a name="mozTocId131712" class="mozTocH3"></a>Phonons in Al</h3>The automatic configuration uses:<br><ul><li>supercell=3</li><li>kpoints=4</li><li>kpoints_density= 1728</li><li>equilibrium and 1 displacement (Al) computations</li></ul><br>Results with different DFT codes<br><table width="1102" height="541" cellspacing="2" cellpadding="2" border="1"><tbody><tr><td valign="top" bgcolor="#ffffcc"><b>Code</b><br></td><td valign="top" bgcolor="#ffffcc"><b>computation time <br>(24 cores, 2.7 GHz)</b><br><br></td><td valign="top" bgcolor="#ffffcc"><b>sqw_kpath(s)</b></td><td valign="top" bgcolor="#ffffcc"><b>sqw_thermochemistry(s)</b><b><br></b></td><td valign="top" bgcolor="#ffffcc"><b>plot3(log10(f(1,:,:,:)) </b>with <i>qh=0.01:0.5:50;qk=qh; ql=qh; w=0.01:0.5:51;</i><i><br></i><i>f=s([], qh,qk,ql',w);</i></td><td valign="top" bgcolor="#ffffcc"><b>command:<br>s=</b><font color="#3366ff">sqw_phonons</font>(<font color="#cc33cc">'POSCAR_Al',</font></td></tr><tr><td valign="top" bgcolor="#ffcccc"><b>QuantumEspresso</b><b> / SSSP</b></td><td valign="top">87<br></td><td valign="top"><br></td><td valign="top"><br></td><td valign="top"><br></td><td valign="top"><font color="#cc33cc">'qe','metal'</font>)</td></tr><tr><td valign="top" bgcolor="#ffcccc"><b>VASP (4.6)</b><b> / PAW PBE</b></td><td valign="top">525<br></td><td valign="top"><br></td><td valign="top"><br></td><td valign="top"><br></td><td valign="top"><font color="#cc33cc">'vasp','metal'</font>)</td></tr><tr><td valign="top" bgcolor="#ffcccc"><b>ABINIT&nbsp; / GGA FHI</b><b><br></b></td><td valign="top">78<br></td><td valign="top"><br></td><td valign="top"><br></td><td valign="top"><br></td><td valign="top"><font color="#cc33cc">'abinit','metal'</font>) <i><br>pps=fhi is the default</i><br></td></tr><tr><td valign="top" bgcolor="#ffcccc"><b>Elk</b><b><br></b></td><td valign="top">9820<br></td><td valign="top"><br></td><td valign="top"><br></td><td valign="top"><br></td><td valign="top"><font color="#cc33cc">'elk','metal'</font>)</td></tr><tr><td valign="top" bgcolor="#ffcccc"><b>GPAW</b><b><br></b></td><td valign="top"><br></td><td valign="top"><br></td><td valign="top"><br></td><td valign="top"><br></td><td valign="top"><br></td></tr><tr><td valign="top" bgcolor="#ffcccc"><b>EMT</b><b><br></b></td><td valign="top"><br></td><td valign="top"><br></td><td valign="top"><br></td><td valign="top"><br></td><td valign="top"><br></td></tr><tr><td valign="top" bgcolor="#ffcccc"><b>NWChem</b><b><br></b></td><td valign="top"><br></td><td valign="top"><br></td><td valign="top"><br></td><td valign="top"><br></td><td valign="top"><br></td></tr><tr><td valign="top" bgcolor="#ffcccc"><b>Dacapo</b><b><br></b></td><td valign="top">3455<br></td><td valign="top"><br></td><td valign="top"><br></td><td valign="top"><br></td><td valign="top"><br></td></tr><tr><td valign="top" bgcolor="#ffcccc">ABINIT / PAW (GBRV)<br></td><td valign="top">87<br></td><td valign="top"><br></td><td valign="top"><br></td><td valign="top"><br></td><td valign="top"><font color="#cc33cc">'abinit','metal','pps=paw'</font>)</td></tr><tr><td valign="top" bgcolor="#ffcccc">ABINIT / PAWXML (JTH)<br></td><td valign="top">84<br></td><td valign="top"><br></td><td valign="top"><br></td><td valign="top"><br></td><td valign="top"><font color="#cc33cc">'abinit','metal','pps=pawxml'</font>)</td></tr><tr><td valign="top" bgcolor="#ffcccc">ABINIT / HGH<br></td><td valign="top">64<br></td><td valign="top"><br></td><td valign="top"><br></td><td valign="top"><br></td><td valign="top"><font color="#cc33cc">'abinit','metal','pps=hgh'</font>)</td></tr><tr><td valign="top" bgcolor="#ffcccc">ABINIT / TM<br></td><td valign="top">73<br></td><td valign="top"><br></td><td valign="top"><br></td><td valign="top"><br></td><td valign="top"><font color="#cc33cc">'abinit','metal','pps=tm'</font>)</td></tr></tbody></table><br><h3><a name="mozTocId526943" class="mozTocH3"></a>Phonons in MgO</h3><p>The automatic configuration uses:<br>
-</p><ul><li>supercell=2</li><li>kpoints=4</li><li>kpoints_density= 1024</li><li>equilibrium and 2 displacements (Mg, O) computations</li></ul>
-<table width="1102" height="541" cellspacing="2" cellpadding="2" border="1"><tbody>
-  
-    <tr>
-      <td valign="top" bgcolor="#ffffcc"><b>Code</b><br>
-      </td>
-      <td valign="top" bgcolor="#ffffcc"><b>computation time <br>(24 cores, 2.7 GHz)</b><br>
+&gt;&gt; <font color="#3366ff">doc</font>(iData,<font color="#cc33cc">'Math'</font>)	% help about mathematical operators<br>&gt;&gt; <font color="#3366ff">help</font> iData/&lt;method&gt;	% explains how to use a given method<br></pre>
+          </blockquote>
+          Finally, the whole Matlab documentation is available <a
+            href="http://www.mathworks.com/help/techdoc/">on-line</a>
+          for free, especially to complement the standalone limited help
+          system.<br>
+        </blockquote>
+        <ul>
+          <li><b>github, contributing, email list</b><br>
+          </li>
+        </ul>
+        <blockquote>Last, you can access the iFit source code at <a
+            href="https://github.com/McStasMcXtrace/iFit">https://github.com/McStasMcXtrace/iFit</a>,
+          follow the changes and get the cutting-edge version. The
+          'Issues' tab lists all current bugs and enhancement requests
+          (so called 'tickets'). <br>
+          <br>
+          You can declare a new ticket by first registering at github.
+          Once registered, if you ever <i>find a bug</i> and wish to
+          correct it, do so by editing the relevant iFit source code
+          from the github page, and commit it. A 'pull request', that is
+          a request for a modification, will be created. After
+          discussion via the merge request tracking and email, your
+          modification will be approved and included in the iFit
+          'master' code.<br>
+          <br>
+          Last, if you are lost, do not hesitate to register at to the <a
+href="http://mail.mccode.org/cgi-bin/mailman/listinfo/ifit-users"
+            style="font-family: &quot;Times New Roman&quot;; font-size:
+            medium; font-style: normal; font-variant-ligatures: normal;
+            font-variant-caps: normal; font-weight: normal;
+            letter-spacing: normal; orphans: 2; text-align: start;
+            text-indent: 0px; text-transform: none; white-space: normal;
+            widows: 2; word-spacing: 0px; -webkit-text-stroke-width:
+            0px;">ifit-users</a> list and send an email at
+          <meta http-equiv="content-type" content="text/html;
+            charset=windows-1252">
+          &nbsp;<a href="mailto:ifit-users@mccode.org"
+            style="font-family: &quot;Times New Roman&quot;; font-size:
+            medium; font-style: normal; font-variant-ligatures: normal;
+            font-variant-caps: normal; font-weight: normal;
+            letter-spacing: normal; orphans: 2; text-align: start;
+            text-indent: 0px; text-transform: none; white-space: normal;
+            widows: 2; word-spacing: 0px; -webkit-text-stroke-width:
+            0px;">ifit-users@mccode.org</a>.</blockquote>
+        <h3><a name="mozTocId182819" class="mozTocH3"></a>Calculator
+          options</h3>
+        <ul>
+          <li>Choosing the DFT calculator, DeltaCodesDFT<br>
+          </li>
+          <li>Smearing</li>
+          <li>Supercell/k-mesh</li>
+          <li>XC/PPS</li>
+          <li>Tolerance criteria and max number of iterations for SCF
+            convergence</li>
+          <li>Initial optimisation</li>
+          <li>Report generation during the calculation<br>
+          </li>
+        </ul>
+        <h3><a name="mozTocId438325" class="mozTocH3"></a>Plotting
+          results</h3>
+        <ul>
+          <li>plot</li>
+          <li>plot3</li>
+          <li>slice<br>
+          </li>
+          <li>sqw_phonon_dos<br>
+          </li>
+          <li>sqw_kpath and its options (Bragg, k-list, BZ points)<br>
+          </li>
+          <li>sqw_thermochemistry</li>
+        </ul>
+        <h3><a name="mozTocId362621" class="mozTocH3"></a>Loading/saving
+          your work</h3>
+        <ul>
+          <li>loading an initial structure (file)</li>
+          <li>loading a previous iFit computation (directory/mat)</li>
+          <li>loading a previous PhonoPy computation (directory)</li>
+          <li>generating a report (during / after)<br>
+          </li>
+          <li>saving the model: MAT, YAML, JSON, XML<br>
+          </li>
+        </ul>
+        <h3><a name="mozTocId131712" class="mozTocH3"></a>Phonons in Al</h3>
+        The atom confiiguration '<a href="../Data/POSCAR_Al">POSCAR_Al'</a>
+        is given within iFit Data directory. It is thus not required to
+        specify its full path, and sqw_phonons will find it.<br>
+        The automatic configuration uses:<br>
+        <ul>
+          <li>supercell=3</li>
+          <li>kpoints=4</li>
+          <li>kpoints_density= 1728</li>
+          <li>equilibrium and 1 displacement (Al) computations</li>
+        </ul>
         <br>
-      </td>
-      <td valign="top" bgcolor="#ffffcc"><b>sqw_kpath(s)</b></td>
-      <td valign="top" bgcolor="#ffffcc"><b>sqw_thermochemistry(s)</b><b><br></b></td>
-      <td valign="top" bgcolor="#ffffcc"><b>plot3(log10(f(1,:,:,:)) </b>with <i>qh=0.01:0.5:50;qk=qh; ql=qh; w=0.01:0.5:51;</i><i><br>
-        </i><i>f=s([], qh,qk,ql',w);</i></td>
-      <td valign="top" bgcolor="#ffffcc"><b>command:<br>s=</b><font color="#3366ff">sqw_phonons</font>(<font color="#cc33cc">'POSCAR_MgO',</font></td>
-    </tr>
-    <tr>
-      <td valign="top" bgcolor="#ffcccc"><b>QuantumEspresso</b><b> / SSSP</b></td>
-      <td valign="top"><br>
-      </td>
-      <td valign="top"><br>
-      </td>
-      <td valign="top"><br>
-      </td>
-      <td valign="top"><br>
-      </td>
-      <td valign="top"><font color="#cc33cc">'qe'</font>)</td>
-    </tr>
-    <tr>
-      <td valign="top" bgcolor="#ffcccc"><b>VASP (4.6)</b><b> / PAW PBE</b></td>
-      <td valign="top">636<br>
-      </td>
-      <td valign="top"><br>
-      </td>
-      <td valign="top"><br>
-      </td>
-      <td valign="top"><br>
-      </td>
-      <td valign="top"><font color="#cc33cc">'vasp'</font>)</td>
-    </tr>
-    <tr>
-      <td valign="top" bgcolor="#ffcccc"><b>ABINIT&nbsp; / GGA FHI</b><b><br></b></td>
-      <td valign="top">78<br>
-      </td>
-      <td valign="top"><br>
-      </td>
-      <td valign="top"><br>
-      </td>
-      <td valign="top"><br>
-      </td>
-      <td valign="top"><font color="#cc33cc">'abinit'</font>) <i><br>
-pps=fhi is the default</i><br>
-      </td>
-    </tr>
-    <tr>
-      <td valign="top" bgcolor="#ffcccc"><b>Elk</b><b><br></b></td>
-      <td valign="top">2480<br>
-      </td>
-      <td valign="top"><br>
-      </td>
-      <td valign="top"><br>
-      </td>
-      <td valign="top"><br>
-      </td>
-      <td valign="top"><font color="#cc33cc">'elk'</font>)</td>
-    </tr>
-    <tr>
-      <td valign="top" bgcolor="#ffcccc"><b>GPAW</b><b><br></b></td>
-      <td valign="top"><br>
-      </td>
-      <td valign="top"><br>
-      </td>
-      <td valign="top"><br>
-      </td>
-      <td valign="top"><br>
-      </td>
-      <td valign="top"><br>
-      </td>
-    </tr>
-    <tr>
-      <td valign="top" bgcolor="#ffcccc"><b>EMT</b><b><br></b></td>
-      <td valign="top"><br>
-      </td>
-      <td valign="top"><br>
-      </td>
-      <td valign="top"><br>
-      </td>
-      <td valign="top"><br>
-      </td>
-      <td valign="top"><br>
-      </td>
-    </tr>
-    <tr>
-      <td valign="top" bgcolor="#ffcccc"><b>NWChem</b><b><br></b></td>
-      <td valign="top"><br>
-      </td>
-      <td valign="top"><br>
-      </td>
-      <td valign="top"><br>
-      </td>
-      <td valign="top"><br>
-      </td>
-      <td valign="top"><br>
-      </td>
-    </tr>
-    <tr>
-      <td valign="top" bgcolor="#ffcccc"><b>Dacapo</b><b><br></b></td>
-      <td valign="top"><br>
-      </td>
-      <td valign="top"><br>
-      </td>
-      <td valign="top"><br>
-      </td>
-      <td valign="top"><br>
-      </td>
-      <td valign="top"><br>
-      </td>
-    </tr>
-    <tr>
-      <td valign="top" bgcolor="#ffcccc">ABINIT / PAW (GBRV)<br>
-      </td>
-      <td valign="top"><br>
-      </td>
-      <td valign="top"><br>
-      </td>
-      <td valign="top"><br>
-      </td>
-      <td valign="top"><br>
-      </td>
-      <td valign="top"><font color="#cc33cc">'abinit','pps=paw'</font>)</td>
-    </tr>
-    <tr>
-      <td valign="top" bgcolor="#ffcccc">ABINIT / PAWXML (JTH)<br>
-      </td>
-      <td valign="top"><br>
-      </td>
-      <td valign="top"><br>
-      </td>
-      <td valign="top"><br>
-      </td>
-      <td valign="top"><br>
-      </td>
-      <td valign="top"><font color="#cc33cc">'abinit'','pps=pawxml'</font>)</td>
-    </tr>
-    <tr>
-      <td valign="top" bgcolor="#ffcccc">ABINIT / HGH<br>
-      </td>
-      <td valign="top"><br>
-      </td>
-      <td valign="top"><br>
-      </td>
-      <td valign="top"><br>
-      </td>
-      <td valign="top"><br>
-      </td>
-      <td valign="top"><font color="#cc33cc">'abinit','pps=hgh'</font>)</td>
-    </tr>
-    <tr>
-      <td valign="top" bgcolor="#ffcccc">ABINIT / TM<br>
-      </td>
-      <td valign="top"><br>
-      </td>
-      <td valign="top"><br>
-      </td>
-      <td valign="top"><br>
-      </td>
-      <td valign="top"><br>
-      </td>
-      <td valign="top"><font color="#cc33cc">'abinit','pps=tm'</font>)</td>
-    </tr>
-  
-
-</tbody></table><h3><a name="mozTocId339109" class="mozTocH3"></a>Phonons in SrTiO3</h3><table width="1102" height="541" cellspacing="2" cellpadding="2" border="1"><tbody>
-<tr><td valign="top" bgcolor="#ffffcc"><b>Code</b><br>
-      </td><td valign="top" bgcolor="#ffffcc"><b>computation time <br>(24 cores, 2.7 GHz)</b><br>
+        Results with different DFT codes<br>
+        <table height="541" width="1102" border="1" cellpadding="2"
+          cellspacing="2">
+          <tbody>
+            <tr>
+              <td valign="top" bgcolor="#ffffcc"><b>Code</b><br>
+              </td>
+              <td valign="top" bgcolor="#ffffcc"><b>computation time <br>
+                  (24 cores, 2.7 GHz)</b><br>
+                <br>
+              </td>
+              <td valign="top" bgcolor="#ffffcc"><b>sqw_kpath(s)</b></td>
+              <td valign="top" bgcolor="#ffffcc"><b>sqw_thermochemistry(s)</b><b><br>
+                </b></td>
+              <td valign="top" bgcolor="#ffffcc"><b>plot3(log10(f(1,:,:,:))
+                </b>with <i>qh=0.01:0.5:50;qk=qh; ql=qh; w=0.01:0.5:51;</i><i><br>
+                </i><i>f=s([], qh,qk,ql',w);</i></td>
+              <td valign="top" bgcolor="#ffffcc"><b>command:<br>
+                  s=</b><font color="#3366ff">sqw_phonons</font>(<font
+                  color="#cc33cc">'POSCAR_Al',</font></td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#ffcccc"><b>QuantumEspresso</b><b>
+                  / SSSP</b></td>
+              <td valign="top">87<br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><font color="#cc33cc">'qe','metal'</font>)</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#ffcccc"><b>VASP (4.6)</b><b> /
+                  PAW PBE</b></td>
+              <td valign="top">525<br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><font color="#cc33cc">'vasp','metal'</font>)</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#ffcccc"><b>ABINIT&nbsp; / GGA
+                  FHI</b><b><br>
+                </b></td>
+              <td valign="top">78<br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><font color="#cc33cc">'abinit','metal'</font>)
+                <i><br>
+                  pps=fhi is the default</i><br>
+              </td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#ffcccc"><b>Elk</b><b><br>
+                </b></td>
+              <td valign="top">9820<br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><font color="#cc33cc">'elk','metal'</font>)</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#ffcccc"><b>GPAW</b><b><br>
+                </b></td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#ffcccc"><b>EMT</b><b><br>
+                </b></td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#ffcccc"><b>NWChem</b><b><br>
+                </b></td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#ffcccc"><b>Dacapo</b><b><br>
+                </b></td>
+              <td valign="top">3455<br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#ffcccc">ABINIT / PAW (GBRV)<br>
+              </td>
+              <td valign="top">87<br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><font color="#cc33cc">'abinit','metal','pps=paw'</font>)</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#ffcccc">ABINIT / PAWXML (JTH)<br>
+              </td>
+              <td valign="top">84<br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><font color="#cc33cc">'abinit','metal','pps=pawxml'</font>)</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#ffcccc">ABINIT / HGH<br>
+              </td>
+              <td valign="top">64<br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><font color="#cc33cc">'abinit','metal','pps=hgh'</font>)</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#ffcccc">ABINIT / TM<br>
+              </td>
+              <td valign="top">73<br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><font color="#cc33cc">'abinit','metal','pps=tm'</font>)</td>
+            </tr>
+          </tbody>
+        </table>
         <br>
-      </td><td valign="top" bgcolor="#ffffcc"><b>sqw_kpath(s)</b></td><td valign="top" bgcolor="#ffffcc"><b>sqw_thermochemistry(s)</b><b><br></b></td><td valign="top" bgcolor="#ffffcc"><b>plot3(log10(f(1,:,:,:)) </b>with <i>qh=0.01:0.5:50;qk=qh; ql=qh; w=0.01:0.5:51;</i><i><br>
-        </i><i>f=s([], qh,qk,ql',w);</i></td><td valign="top" bgcolor="#ffffcc"><b>command:<br>s=</b><font color="#3366ff">sqw_phonons</font>(<font color="#cc33cc">'POSCAR_SrTiO3',</font></td></tr><tr><td valign="top" bgcolor="#ffcccc"><b>QuantumEspresso</b><b> / SSSP</b></td><td valign="top"><br>
-      </td><td valign="top"><br>
-      </td><td valign="top"><br>
-      </td><td valign="top"><br>
-      </td><td valign="top"><font color="#cc33cc">'qe'</font>)</td></tr><tr><td valign="top" bgcolor="#ffcccc"><b>VASP (4.6)</b><b> / PAW PBE</b></td><td valign="top"><br>
-      </td><td valign="top"><br>
-      </td><td valign="top"><br>
-      </td><td valign="top"><br>
-      </td><td valign="top"><font color="#cc33cc">'vasp'</font>)</td></tr><tr><td valign="top" bgcolor="#ffcccc"><b>ABINIT&nbsp; / GGA FHI</b><b><br></b></td><td valign="top"><br>
-      </td><td valign="top"><br>
-      </td><td valign="top"><br>
-      </td><td valign="top"><br>
-      </td><td valign="top"><font color="#cc33cc">'abinit'</font>) <i><br>
-pps=fhi is the default</i><br>
-      </td></tr><tr><td valign="top" bgcolor="#ffcccc"><b>Elk</b><b><br></b></td><td valign="top"><br>
-      </td><td valign="top"><br>
-      </td><td valign="top"><br>
-      </td><td valign="top"><br>
-      </td><td valign="top"><font color="#cc33cc">'elk'</font>)</td></tr><tr><td valign="top" bgcolor="#ffcccc"><b>GPAW</b><b><br></b></td><td valign="top"><br>
-      </td><td valign="top"><br>
-      </td><td valign="top"><br>
-      </td><td valign="top"><br>
-      </td><td valign="top"><br>
-      </td></tr><tr><td valign="top" bgcolor="#ffcccc"><b>EMT</b><b><br></b></td><td valign="top"><br>
-      </td><td valign="top"><br>
-      </td><td valign="top"><br>
-      </td><td valign="top"><br>
-      </td><td valign="top"><br>
-      </td></tr><tr><td valign="top" bgcolor="#ffcccc"><b>NWChem</b><b><br></b></td><td valign="top"><br>
-      </td><td valign="top"><br>
-      </td><td valign="top"><br>
-      </td><td valign="top"><br>
-      </td><td valign="top"><br>
-      </td></tr><tr><td valign="top" bgcolor="#ffcccc"><b>Dacapo</b><b><br></b></td><td valign="top"><br>
-      </td><td valign="top"><br>
-      </td><td valign="top"><br>
-      </td><td valign="top"><br>
-      </td><td valign="top"><br>
-      </td></tr><tr><td valign="top" bgcolor="#ffcccc">ABINIT / PAW (GBRV)<br>
-      </td><td valign="top"><br>
-      </td><td valign="top"><br>
-      </td><td valign="top"><br>
-      </td><td valign="top"><br>
-      </td><td valign="top"><font color="#cc33cc">'abinit','pps=paw'</font>)</td></tr><tr><td valign="top" bgcolor="#ffcccc">ABINIT / PAWXML (JTH)<br>
-      </td><td valign="top"><br>
-      </td><td valign="top"><br>
-      </td><td valign="top"><br>
-      </td><td valign="top"><br>
-      </td><td valign="top"><font color="#cc33cc">'abinit'','pps=pawxml'</font>)</td></tr><tr><td valign="top" bgcolor="#ffcccc">ABINIT / HGH<br>
-      </td><td valign="top"><br>
-      </td><td valign="top"><br>
-      </td><td valign="top"><br>
-      </td><td valign="top"><br>
-      </td><td valign="top"><font color="#cc33cc">'abinit','pps=hgh'</font>)</td></tr><tr><td valign="top" bgcolor="#ffcccc">ABINIT / TM<br>
-      </td><td valign="top"><br>
-      </td><td valign="top"><br>
-      </td><td valign="top"><br>
-      </td><td valign="top"><br>
-      </td><td valign="top"><font color="#cc33cc">'abinit','pps=tm'</font>)</td></tr>
-
-</tbody></table><h3><a name="mozTocId884775" class="mozTocH3"></a>Phonons in Tb2SeO2 (mp-755340)</h3><br><h3><a name="mozTocId894568" class="mozTocH3"></a>Creating more complex models</h3><br><br>
-    <hr style="width: 100%; height: 2px;">
-    
-      <span style="font-style: italic;">E.
-Farhi
-
-
-
-
-          - iFit/Phonon model - </span><span style="font-style: italic;">
-          $Date$ $Revision$ </span><span style="font-style: italic;"> </span>-
-        back to <a href="file:///home/farhi/dev/iFit/Docs/index.html">Main iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France
-            &lt;www.ill.eu&gt;" src="file:///home/farhi/dev/iFit/Docs/images/ILL-web-jpeg.jpg" alt="ILL,
-            Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px
-            solid ; width: 53px; height: 50px;" align="right"></a><br><br></div>
+        <h3><a name="mozTocId526943" class="mozTocH3"></a>Phonons in MgO</h3>
+        <p>The atom confiiguration '<a href="../Data/POSCAR_MgO">POSCAR_MgO</a>'
+          is given within iFit Data directory. It is thus not required
+          to specify its full path, and sqw_phonons will find it.<br>
+          The automatic configuration uses:<br>
+        </p>
+        <ul>
+          <li>supercell=2</li>
+          <li>kpoints=4</li>
+          <li>kpoints_density= 1024</li>
+          <li>equilibrium and 2 displacements (Mg, O) computations</li>
+        </ul>
+        <table height="541" width="1102" border="1" cellpadding="2"
+          cellspacing="2">
+          <tbody>
+            <tr>
+              <td valign="top" bgcolor="#ffffcc"><b>Code</b><br>
+              </td>
+              <td valign="top" bgcolor="#ffffcc"><b>computation time <br>
+                  (24 cores, 2.7 GHz)</b><br>
+                <br>
+              </td>
+              <td valign="top" bgcolor="#ffffcc"><b>sqw_kpath(s)</b></td>
+              <td valign="top" bgcolor="#ffffcc"><b>sqw_thermochemistry(s)</b><b><br>
+                </b></td>
+              <td valign="top" bgcolor="#ffffcc"><b>plot3(log10(f(1,:,:,:))
+                </b>with <i>qh=0.01:0.5:50;qk=qh; ql=qh; w=0.01:0.5:51;</i><i><br>
+                </i><i>f=s([], qh,qk,ql',w);</i></td>
+              <td valign="top" bgcolor="#ffffcc"><b>command:<br>
+                  s=</b><font color="#3366ff">sqw_phonons</font>(<font
+                  color="#cc33cc">'POSCAR_MgO',</font></td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#ffcccc"><b>QuantumEspresso</b><b>
+                  / SSSP</b></td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><font color="#cc33cc">'qe'</font>)</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#ffcccc"><b>VASP (4.6)</b><b> /
+                  PAW PBE</b></td>
+              <td valign="top">636<br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><font color="#cc33cc">'vasp'</font>)</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#ffcccc"><b>ABINIT&nbsp; / GGA
+                  FHI</b><b><br>
+                </b></td>
+              <td valign="top">78<br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><font color="#cc33cc">'abinit'</font>) <i><br>
+                  pps=fhi is the default</i><br>
+              </td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#ffcccc"><b>Elk</b><b><br>
+                </b></td>
+              <td valign="top">2480<br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><font color="#cc33cc">'elk'</font>)</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#ffcccc"><b>GPAW</b><b><br>
+                </b></td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#ffcccc"><b>EMT</b><b><br>
+                </b></td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#ffcccc"><b>NWChem</b><b><br>
+                </b></td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#ffcccc"><b>Dacapo</b><b><br>
+                </b></td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#ffcccc">ABINIT / PAW (GBRV)<br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><font color="#cc33cc">'abinit','pps=paw'</font>)</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#ffcccc">ABINIT / PAWXML (JTH)<br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><font color="#cc33cc">'abinit'','pps=pawxml'</font>)</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#ffcccc">ABINIT / HGH<br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><font color="#cc33cc">'abinit','pps=hgh'</font>)</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#ffcccc">ABINIT / TM<br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><font color="#cc33cc">'abinit','pps=tm'</font>)</td>
+            </tr>
+          </tbody>
+        </table>
+        <h3><a name="mozTocId339109" class="mozTocH3"></a>Phonons in
+          SrTiO3</h3>
+        <p>The atom confiiguration '<a href="../Data/POSCAR_SrTiO3">POSCAR_SrTiO3</a>'
+          is given within iFit Data directory. It is thus not required
+          to specify its full path, and sqw_phonons will find it.</p>
+        <table height="541" width="1102" border="1" cellpadding="2"
+          cellspacing="2">
+          <tbody>
+            <tr>
+              <td valign="top" bgcolor="#ffffcc"><b>Code</b><br>
+              </td>
+              <td valign="top" bgcolor="#ffffcc"><b>computation time <br>
+                  (24 cores, 2.7 GHz)</b><br>
+                <br>
+              </td>
+              <td valign="top" bgcolor="#ffffcc"><b>sqw_kpath(s)</b></td>
+              <td valign="top" bgcolor="#ffffcc"><b>sqw_thermochemistry(s)</b><b><br>
+                </b></td>
+              <td valign="top" bgcolor="#ffffcc"><b>plot3(log10(f(1,:,:,:))
+                </b>with <i>qh=0.01:0.5:50;qk=qh; ql=qh; w=0.01:0.5:51;</i><i><br>
+                </i><i>f=s([], qh,qk,ql',w);</i></td>
+              <td valign="top" bgcolor="#ffffcc"><b>command:<br>
+                  s=</b><font color="#3366ff">sqw_phonons</font>(<font
+                  color="#cc33cc">'POSCAR_SrTiO3',</font></td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#ffcccc"><b>QuantumEspresso</b><b>
+                  / SSSP</b></td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><font color="#cc33cc">'qe'</font>)</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#ffcccc"><b>VASP (4.6)</b><b> /
+                  PAW PBE</b></td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><font color="#cc33cc">'vasp'</font>)</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#ffcccc"><b>ABINIT&nbsp; / GGA
+                  FHI</b><b><br>
+                </b></td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><font color="#cc33cc">'abinit'</font>) <i><br>
+                  pps=fhi is the default</i><br>
+              </td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#ffcccc"><b>Elk</b><b><br>
+                </b></td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><font color="#cc33cc">'elk'</font>)</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#ffcccc"><b>GPAW</b><b><br>
+                </b></td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#ffcccc"><b>EMT</b><b><br>
+                </b></td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#ffcccc"><b>NWChem</b><b><br>
+                </b></td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#ffcccc"><b>Dacapo</b><b><br>
+                </b></td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#ffcccc">ABINIT / PAW (GBRV)<br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><font color="#cc33cc">'abinit','pps=paw'</font>)</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#ffcccc">ABINIT / PAWXML (JTH)<br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><font color="#cc33cc">'abinit'','pps=pawxml'</font>)</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#ffcccc">ABINIT / HGH<br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><font color="#cc33cc">'abinit','pps=hgh'</font>)</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#ffcccc">ABINIT / TM<br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><font color="#cc33cc">'abinit','pps=tm'</font>)</td>
+            </tr>
+          </tbody>
+        </table>
+        <h3><a name="mozTocId884775" class="mozTocH3"></a>Phonons in
+          Tb2SeO2 (mp-755340)</h3>
+        <br>
+        <h3><a name="mozTocId894568" class="mozTocH3"></a>Creating more
+          complex models</h3>
+        <br>
+        <br>
+        <hr style="width: 100%; height: 2px;"> <span style="font-style:
+          italic;">E.
+          Farhi - iFit/Phonon model - </span><span style="font-style:
+          italic;"> $Date$ $Revision$ </span><span style="font-style:
+          italic;"> </span>- back to <a
+          href="index.html">Main iFit
+          Page </a><a href="http://www.ill.eu/"><img title="ILL,
+            Grenoble, France &lt;www.ill.eu&gt;"
+            src="fimages/ILL-web-jpeg.jpg"
+            alt="ILL, Grenoble, France &lt;www.ill.eu&gt;"
+            style="border: 0px solid ; width: 53px; height: 50px;"
+            align="right"></a><br>
+        <br>
+      </div>
     </div>
-    
-
-
-</body></html>
+  </body>
+</html>
