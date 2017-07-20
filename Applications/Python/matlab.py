@@ -1,7 +1,7 @@
 """
 A class to communicate with Matlab from a Python session.
 
-Use Matlab? to get more help about how to use this module.
+Use matlab.Matlab? to get more help about how to use this module.
 """
 from __future__ import print_function
 
@@ -11,20 +11,17 @@ __author__    = "E. Farhi <farhi@ill.fr>"
 
 # all dependencies
 import numpy
-
-try:
-    import hdf5storage  # to exchange temporary files with matlab
-    has_hdf5storage = True
-except ImportError:
-    has_hdf5storage = False
-    import scipy.io     # fallback solution when hdf5storage fails
-    
+import scipy.io     # for MAT files I/O
 import tempfile     # to create temporary .mat files
 import atexit       # to close Matlab when exiting python
 import subprocess   # for communication
 import time         # for sleep at open
 import sys
 import os
+
+# we use a Thread and a Queue to communicate asynchronously with matlab.
+# indeed, the stdio may come any time. A separate thread then collects lines
+# as they come, and make these available to the Matlab object when requested.
 from threading  import Thread
 try:
     from Queue import Queue, Empty
@@ -96,6 +93,7 @@ class Matlab(object):
         self.busy   = False # indicates when Matlab is ready/idle
         self.stdout = ''    # the stdout from Matlab
         self.executable = ''
+        self.format = 'mat'
         
         # prompt: this is sent after every command to make sure we
         # detect the Idle state
@@ -137,12 +135,14 @@ class Matlab(object):
         # print start message reading stdout
         self.eval(waitidle=True) # check initial state
         self.busy = False
+        
+        return self
         # end open
 
     def close(self):
         """Close the Matlab session"""
 
-        print('Closing session', self.executable)
+        print('Closing session', self.executable, 'as PID', self.proc.pid)
         
         # force stop
         self.eval("exit",waitidle=False)  # from Matlab, gently
@@ -155,7 +155,7 @@ class Matlab(object):
         self.eval() # force to poll the process and finalize close
         # end close
             
-# ==============================================================================
+    # ==========================================================================
     def eval(self, expr=None, waitidle=True):
         """Evaluate an expression
         
@@ -206,17 +206,7 @@ class Matlab(object):
         # create a .mat file with the variable to send to matlab
         f = tempfile.NamedTemporaryFile()
         m = f.name+'.mat'
-        
-        if has_hdf5storage:
-            # hdf5storage requires unicode dict members.
-            # https://github.com/frejanordsiek/hdf5storage/issues/17
-            if isinstance(value ,dict):
-                value = dict([(k.decode(), v) for k, v in value.items()])
-        
-            hdf5storage.savemat(m, { varname: value }, 
-                format='7.3', oned_as='column', store_python_metadata=True)
-        else:
-            scipy.io.savemat(m, { varname: value })
+        scipy.io.savemat(m, { varname: value }, oned_as='row')
         
         # wait for file to be written
         time.sleep(.5)
@@ -224,7 +214,8 @@ class Matlab(object):
             time.sleep(.5)
     
         # then call eval to read that variable within Matlab
-        self.eval("load('"+m+"'); delete('"+m+"');", waitidle=True)
+        self.eval("load('"+m+"'); delete('"+m+"'); if isstruct("+varname+") && isfield("+varname+",'class'), try; "+varname+"=feval("+varname+".class, "+varname+"); end; end",
+            waitidle=True)
         f.close()
         # end set
   
@@ -239,12 +230,8 @@ class Matlab(object):
         # use eval to ask Matlab to save a variable into a .mat file
         f = tempfile.NamedTemporaryFile()
         m = f.name+'.mat'
-        if has_hdf5storage:
-            format='-v7.3'
-        else:
-            format='-v7'
             
-        self.eval("tmp_class = class("+varname+"); if isobject("+varname+"), tmp_var=struct("+varname+"); tmp_var.class = tmp_class; else tmp_var="+varname+"; end; save('"+m+"', 'tmp_var','tmp_class','"+format+"'); clear tmp_var tmp_class;",
+        self.eval("tmp_class = class("+varname+"); if isobject("+varname+"), tmp_var=struct("+varname+"); tmp_var.class = tmp_class; else tmp_var="+varname+"; end; save('"+m+"', 'tmp_var','tmp_class','-v7'); clear tmp_var tmp_class;",
             waitidle=True)
             
         # wait for file to be written
@@ -253,18 +240,23 @@ class Matlab(object):
             time.sleep(.5)
     
         # then get that variable
-        if has_hdf5storage:
-            value = hdf5storage.loadmat(m)
-        else:
-            value = scipy.io.loadmat(m,
-                matlab_compatible=True, squeeze_me=True)
-        value = value['tmp_var']
+        value = scipy.io.loadmat(m, squeeze_me=True, chars_as_strings=True)
             
         os.remove(m)
         f.close()
+        
+        # simplify object when loaded as multi-dimensional
+        for key in value.iterkeys():
+            if isinstance(value[key], numpy.ndarray):
+                while value[key].shape and value[key].shape[-1] == 1:
+                    value[key] = value[key][0]
+        
+        value = value['tmp_var']
         return value
         # end get
         
+        
+    # ==========================================================================
     def waitidle(self, timeout=60):
         """
         Wait for the Matlab interpreter to become idle
