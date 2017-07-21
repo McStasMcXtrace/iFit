@@ -105,7 +105,7 @@ if nargin == 0 || (nargin == 1 && strcmp(varargin{1},'defaults'))
 end
 
 if nargin >= 1 && isa(varargin{1}, 'iFunc')
-  fun = varargin{1};
+  fun = varargin{1};  % name it so that we can propagate back its value to caller
   [pars,fval,exitflag,output] = fmin_private_wrapper(mfilename, fun, varargin{2:end});
   if ~isempty(inputname(1))
     assignin('caller', inputname(1), fun);
