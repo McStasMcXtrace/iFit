@@ -98,6 +98,7 @@ function [pars,fval,exitflag,output] = fmin_private_wrapper(optimizer, fun, pars
 
 if nargin < 1,         optimizer =''; end
 if nargin < 2,         fun       = ''; end
+if nargin < 3,         pars      = []; end
 if isempty(optimizer), optimizer = 'fmin'; end
 if isempty(fun),       fun       = 'defaults'; end
 
@@ -110,7 +111,7 @@ end
 if nargin < 6
   varargin = {};
 end
-
+objective = fun;
 if strcmp(fun,'defaults') || strcmp(fun,'identify')
   pars = feval(optimizer, 'defaults');
   return
@@ -318,7 +319,7 @@ case 'fmin' % automatic guess
       pars = cell2struct(num2cell(pars(:)), pars_isstruct(:), 1);
     end
   end
-  [pars,fval,exitflag,output] = feval(optimizer, fun, pars, options, constraints, varargin{:});
+  [pars,fval,exitflag,output] = feval(optimizer, objective, pars, options, constraints, varargin{:});
   return
 case {'cmaes','fmincmaes'}    
 % Evolution Strategy with Covariance Matrix Adaption ---------------------------

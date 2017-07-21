@@ -68,12 +68,18 @@ function y = mccode(instr, options)
 % To optimise instrument parameters, you should first fix the non-varying
 % parameters, and possibly bound the others. Then the optimiser is launched with
 % any optimiser. To maximise the model, use '-model' as argument, as in the example:
-%   model = mccode('templateDIFF');
+%   model = -mccode('templateDIFF');  % maximize
 %   fix(model, 'all'); model.RV='free';
-%   model.RV=1;             % starting value
-%   model.RV=[0 2];         % bounds
-%   p = fmin( -model , [])  % return the optimal parameters
+%   model.RV=1;            % starting value
+%   model.RV=[0 2];        % bounds
+%   p = fmin( model , [])  % return the optimal parameters
 %
+% In order to use the raw monitors, and avoid the iFunc to guess its axes, rather
+% use the syntax:
+%   p = fmin( @(p)feval(model, p, nan), model.p)
+%
+%
+% PARAMETERS:
 % input:  p: variable instrument parameters (double, struct, char)
 %            p = [ double_type_instrument_parameters ]
 %         x,y,...: axes (double)
