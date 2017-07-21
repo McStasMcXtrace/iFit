@@ -260,7 +260,9 @@ p = iFunc_feval_set(model, p, varargin{:});
 model.ParameterValues = p;
 
 if ~isempty(inputname1)
-  assignin('caller',inputname1,model); % update in original object
+  try
+    assignin('caller',inputname1,model); % update in original object
+  end
   if numel(ax) == model.Dimension+1
     signal = ax{end};
     ax(end) = [];
@@ -313,7 +315,9 @@ p    = sprintf('%g ', p(:)'); if length(p) > 20, p=[ p(1:20) '...' ]; end
 name = [ model.Name '(' p ') ' ];
 
 if ~isempty(inputname1)
-  assignin('caller',inputname1,model); % update in original object
+  try
+    assignin('caller',inputname1,model); % update in original object
+  end
 end
 
 
