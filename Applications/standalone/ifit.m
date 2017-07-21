@@ -18,6 +18,14 @@ function ifit(varargin)
 %    variable (cell array) for further use, and the program enters in interactive
 %    mode except when the --exit argument is specified.
 %  In interactive mode, any Matlab command can be entered if it spans on a single line.
+%  In addition:
+%    'verbose' and 'silent' commands toggle the echo of commands in the terminal.
+%    'doc'     and 'help'   open the documentation
+%    'run <script>'         executes a script, supporting multi-line
+%    'propedit'             open the object browser GUI
+%    'TextEdit'             open the script editor GUI, supporting multi-line
+%    'mifit'                open the workspace GUI
+%    
 %  To execute multiple lines and control statements (if/while/for...), write them
 %    in a script and type 'run <script>'.
 %
@@ -344,7 +352,7 @@ function inline_display_banner
     disp('         are not well supported. Rename files or move directories.')
   end
   if verLessThan('matlab', '7.11') 
-    disp('WARNING: do NOT use accent characters at the prompt. This will CRASH.');
+    disp('WARNING: do NOT use accent characters at the prompt. This will CRASH. Use the TextEdit command to use a safe editor.');
   end
   disp(' ')
 
@@ -363,10 +371,17 @@ function inline_display_help
   disp('Help: Type ''doc(iData,''iFit'')'' to open local web pages');
   disp('      or see <ifit.mccode.org> and contact <ifit-users@mccode.org>.');
   disp('      Type ''help <ifit topic/method>'' to display specific help.')
-  disp('To import some data, use e.g. d=iData(''filename'');');
-  disp('To create a model,   use e.g. m=iFunc(''expression''); ');
-  disp('  or type fits(iFunc) to get a list of available models.');
-  disp('To fit a model to data, use e.g. fits(m,d)');
+  disp('In addition, you can use the commands:')
+  disp('      verbose and silent    toggle the echo of commands in the terminal.')
+  disp('      doc     and help      open the documentation')
+  disp('      run <script.m>        executes a script, supporting multi-line')
+  disp('      propedit              open the object browser GUI')
+  disp('      TextEdit              open the script editor GUI, supporting multi-line')
+  disp('      mifit                 open the workspace GUI')
+  disp('      d=iData(''filename'') import a file')
+  disp('      m=iFunc(''expr'');    create a model from an expression');
+  disp('      fits(iFunc)           list of available models');
+  disp('      fits(m,d)             fit a model to data');
   disp('Data and Models can be manipulated (+-/*...) using the Matlab syntax.');
   disp('Source code for this software is available at <ifit.mccode.org>.')
   disp('Matlab is a registered trademark of The Mathworks Inc.');
@@ -489,7 +504,7 @@ function inline_sendtomifit(this)
   end
   
 function ifit_options=inline_ifit_options(varargin)
-  ifit_options.verbose  = 1;
+  ifit_options.verbose  =0;
   ifit_options.line     ='';     % the current line to execute
   ifit_options.index    =1;      % the index of the input
   this                  ={};     % the buffer from the command line
