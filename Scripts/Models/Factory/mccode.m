@@ -48,9 +48,31 @@ function y = mccode(instr, options)
 %   evaluates the model with given parameters (vector, cell, structure). Only
 %   scalar/double parameters of the instrument can be varied. Other parameters are kept fixed.
 % model(p, nan) 
-%   evaluates the model and return the raw McCode data set.
+%   evaluates the model and return the raw McCode data set (monitor).
 % model(p, x,y,...) 
 %   evaluates the model and interpolates the McCode data set onto given axes.
+%
+% MODEL PARAMETER SCAN
+% ------------------------------------------------------------------------------
+% It is possible to scan model parameters when using vectors as value for the
+% parameters. To achieve that, the parameter values must be given as a named 
+% structure.
+% For instance, to scan the RV parameter in the templateDIF instrument, use:
+%   model = mccode('templateDIFF');
+%   p.RV= [ 0:.25:2 ];      % from 0 to 2 by steps of .25
+%   v=iData(model, p, nan); % we want the raw monitors as iData sets.
+%   subplot(v);
+%
+% MODEL OPTIMISATION
+% ------------------------------------------------------------------------------
+% To optimise instrument parameters, you should first fix the non-varying
+% parameters, and possibly bound the others. Then the optimiser is launched with
+% any optimiser. To maximise the model, use '-model' as argument, as in the example:
+%   model = mccode('templateDIFF');
+%   fix(model, 'all'); model.RV='free';
+%   model.RV=1;             % starting value
+%   model.RV=[0 2];         % bounds
+%   p = fmin( -model , [])  % return the optimal parameters
 %
 % input:  p: variable instrument parameters (double, struct, char)
 %            p = [ double_type_instrument_parameters ]
@@ -59,6 +81,7 @@ function y = mccode(instr, options)
 % output: y: monitor value
 % ex:     model =mccode('templateDIFF'); 
 %         signal=iData(model,[],linspace(-10,100,100));
+%         signal=iData(model, [], nan); % to get the raw monitor
 %
 % Version: $Date$
 % See also iFunc, iFunc/fits, iFunc/plot, iFunc/feval, mcstas
