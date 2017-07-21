@@ -150,6 +150,7 @@ elseif nargin >= 2 && isa(fun, 'iFunc')
   % carry 'constraints' from the iFunc if not in input
   if nargin < 5
     constraints = objective.constraint;
+    objective.constraint=[];  % we have transfered the restraints.
   end
 elseif nargin < 3
   error([ 'syntax is: ' inline_localChar(optimizer) '(objective, parameters, ...)' ] );
@@ -240,7 +241,9 @@ if isfield(constraints, 'Expression') && ~isfield(constraints, 'eval')
   constraints.eval = constraints.Expression;
 end
 
-options.optimizer = optimizer;
+if ~isfield(options,'optimizer') || isempty(options.optimizer)
+  options.optimizer = optimizer;
+end
 if ~isfield(options,'Display') options.Display=''; end
 
 options=inline_private_check(options, feval(options.optimizer,'defaults'));
@@ -726,6 +729,12 @@ if strcmp(options.Display,'final') || strcmp(options.Display,'iter') ...
   end
 end
 
+if nargin >= 2 && isa(objective, 'iFunc') && ~isempty(inputname(2))
+  objective.ParameterValues = pars(:);
+  objective.constraint = constraints; % restore initial constraints
+  assignin('caller', inputname(2), objective);
+end
+
 % restore initial parameters as a structure (when given as such)
 if ~isempty(pars_isstruct)
   try
@@ -734,6 +743,11 @@ if ~isempty(pars_isstruct)
 end
 
 return  % actual end of optimization
+
+
+
+
+
 
 % ==============================================================================
 % Use nested functions as the criteria wrapper, to access 'constraints' and 'options'
