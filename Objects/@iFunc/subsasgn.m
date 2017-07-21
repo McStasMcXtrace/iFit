@@ -106,6 +106,8 @@ else
             b.Constraint.fixed = val*ones(length(b.Parameters),1);
           elseif isnumeric(val) && length(val) == length(b.Parameters)
             b.Constraint.fixed = val(:);
+          elseif isempty(val)
+            b.Constraint = [];
           else
             error(['iFunc:' mfilename ], [mfilename ': the model Constraint should be a char or cellstr, function_handle, struct, scalar or Parameter-length vector, but not a ' ...
         class(val) '.' ]);

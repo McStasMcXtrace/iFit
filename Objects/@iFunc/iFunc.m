@@ -299,7 +299,7 @@ function a = iFunc_private_check(a)
         const.fixed = a.Constraint(:);
       elseif length(a.Constraint) == 1                % iFunc.Constraint = scalar (0 or 1)
         const.fixed = const.fixed*a.Constraint;
-      else
+      elseif ~isempty(a.Constraint)
         error(['iFunc:' mfilename ], [mfilename ': the model Constraint should be scalar or vector of length ' ...
           num2str(length(a.Parameters)) ' (Parameters).' ]);
       end
@@ -547,7 +547,8 @@ function a = iFunc_private_check(a)
   if ~isempty(val)
     if numel(pars) ~= numel(val)
       fprintf(1,'%s: model %s "%s": the number of model parameter values %d does not match the number of parameter names %d.\n', mfilename, a.Tag, a.Name, numel(val), length(pars));
-      val = zeros(size(pars));
+      val = [ val(:) ; zeros(size(pars(:))) ];
+      val = val(1:numel(pars));
     end
     a.ParameterValues = val;
   end
