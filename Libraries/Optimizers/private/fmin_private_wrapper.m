@@ -45,10 +45,10 @@ function [pars,fval,exitflag,output] = fmin_private_wrapper(optimizer, fun, pars
 %  An empty OPTIONS sets the default configuration.
 %
 %  constraints may be specified as a structure
-%   constraints.min=   vector of minimal values for parameters
-%   constraints.max=   vector of maximal values for parameters
-%   constraints.fixed= vector having 0 where parameters are free, 1 otherwise
-%   constraints.step=  vector of maximal parameter changes per iteration
+%     constraints.min=   vector of minimal values for parameters
+%     constraints.max=   vector of maximal values for parameters
+%     constraints.fixed= vector having 0 where parameters are free, 1 otherwise
+%     constraints.step=  vector of maximal parameter changes per iteration
 %  An empty CONSTRAINTS sets no constraints.
 %
 %  Additional arguments are sent to the objective function.
@@ -145,7 +145,7 @@ elseif nargin >= 2 && isa(fun, 'iFunc')
     fun = @(p)feval(objective', p, ax{:});
   end
   % assume 'pars' is a structure (to keep iFunc names)
-  pars_isstruct = objective.Parameters;
+  pars_isstruct = strtok(objective.Parameters);
   pars = cell2struct(num2cell(pars(:)), pars_isstruct(:), 1);
   % carry 'constraints' from the iFunc if not in input
   if nargin < 5
