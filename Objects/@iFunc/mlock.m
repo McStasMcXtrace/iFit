@@ -104,7 +104,7 @@ for index=1:length(name)
   a = subsasgn(a, s, 'fix');
 end
 
-if nargout == 0 && ~isempty(inputname(1))
+if nargout == 0 && ~isempty(inputname(1)) && isa(a,'iFunc')
   assignin('caller',inputname(1),a);
 end
 

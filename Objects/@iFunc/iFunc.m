@@ -30,6 +30,7 @@ function a = iFunc(varargin)
 %                         by the corresponing p(n)
 %
 % Creating the object:
+% ------------------------------------------------------------------------------
 %   From a character string
 %     the Expression should make use of x,y,z,t,u,v,w to denote axes of rank 1-7,
 %     and the model Parameters are specified using 'p(n)' vector elements.
@@ -58,6 +59,7 @@ function a = iFunc(varargin)
 %       iFunc(iData('filename')); parameters allow to scale and shift.
 %
 % Using the object:
+% ------------------------------------------------------------------------------
 %   Once the object has been created, you can evaluate it with: object(p, x, y, ...)
 %   The usual mathematical operators can be used to manipulate iFunc objects.
 %   You can use guessed Model parameters with syntax: object('guess', x,y, ...)
@@ -70,7 +72,28 @@ function a = iFunc(varargin)
 %   The Model parameter names are         object.Parameters
 %   The Model parameter values (when set) object.ParameterValues or object.p
 %   A single parameter can be accessed    object.<ParameterName> or object.p(index)
-%   
+%
+% Scan model parameters:
+% ------------------------------------------------------------------------------
+% It is possible to scan model parameters when using vectors as value for the
+% parameters. To achieve that, the parameter values must be given as a named 
+% structure.
+% For instance, to scan the RV parameter in the templateDIF instrument, use:
+%   model = gauss;
+%   p.Amplitude= [ .5:.25:2 ];      % from 0.5 to 2 by steps of .25
+%   v=iData(model, p);              % evaluate as iData sets.
+%   subplot(v);                     % plot the scan
+%
+% Optimise model parameters:
+% ------------------------------------------------------------------------------
+% To optimise model parameters, you should first fix the non-varying
+% parameters, and possibly bound the others. Then the optimisation is launched with
+% any optimiser. To maximise the model, use '-model' as argument, as in the example:
+%   model = gauss;
+%   fix(model, 'all'); model.Amplitude='free';
+%   model.Amplitude=[0 1 2];    % bounds
+%   model.Amplitude=1;          % starting value
+%   p = fmin(-model, [])        % return the optimal parameters to maximise the model
 %
 % Type <a href="matlab:doc(iFunc)">doc(iFunc)</a> to access the iFit/iFunc Documentation.
 % iFunc is part of iFit http://ifit.mccode.org 
