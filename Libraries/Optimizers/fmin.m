@@ -36,6 +36,17 @@ function [pars,fval,exitflag,output] = fmin(varargin)
 %     sends additional arguments to the objective function
 %       criteria = FUN(pars, args, ...)
 %
+% The options structure may contain the following members, in agreement with 'optimset':
+%    options.Display: Level of display [ off | iter | notify | final ]. Default is 'off'
+%    options.MaxFunEvals: Maximum number of function evaluations allowed, sometimes referred as the 'cost' or 'budget'.
+%    options.MaxIter: Maximum number of iterations allowed
+%    options.TolFun: Termination tolerance on the function value (absolute value or change). Use 'x%' to specify a relative function change.
+%    options.TolX: Termination tolerance on parameter change. Use 'x%' to specify a relative parameter change.
+%    options.OutputFcn: Name of an output function. When set, it is called at each iteration step. You may use 'fminplot', which is provided in Optimizers. Refer to the Fit page for more information about fminplot. A simpler/faster alternative is the 'fminstop' option.
+%    options.PlotFcns: same as OutputFcn, but can be a set of function in a cell array.
+%    options.FunValCheck: Check for invalid values, such as NaN or complex
+%    options.MinFunEvals: when set, waits for a given number of iterations before testing for convergence
+%
 % Example:
 %   banana = @(x)100*(x(2)-x(1)^2)^2+(1-x(1))^2;
 %   [x,fval] = fmin(banana,[-1.2, 1])
