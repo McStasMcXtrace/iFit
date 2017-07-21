@@ -2,7 +2,8 @@ function [pars,fval,exitflag,output] = fmin(varargin)
 % [MINIMUM,FVAL,EXITFLAG,OUTPUT] = FMIN(FUN,PARS,[OPTIONS],[CONSTRAINTS], ...) Best optimizer
 %
 % This minimization method is determined automatically from the objective function
-% behaviour and number of free parameters.
+% behaviour and number of free parameters. You can however force a specific 
+% optimizer by setting e.g. options.optimizer='fminpso'
 %
 % WARNING: as the selected optimizer may change from one call to an other, the
 % solution found may vary as well. To avoid that, rather use a specific optimizer.
@@ -46,6 +47,7 @@ function [pars,fval,exitflag,output] = fmin(varargin)
 %    options.PlotFcns: same as OutputFcn, but can be a set of function in a cell array.
 %    options.FunValCheck: Check for invalid values, such as NaN or complex
 %    options.MinFunEvals: when set, waits for a given number of iterations before testing for convergence
+%    options.optimizer: the optimizer to use
 %
 % Example:
 %   banana = @(x)100*(x(2)-x(1)^2)^2+(1-x(1))^2;
@@ -102,5 +104,13 @@ if nargin == 0 || (nargin == 1 && strcmp(varargin{1},'defaults'))
   return
 end
 
-[pars,fval,exitflag,output] = fmin_private_wrapper(mfilename, varargin{:});
+if nargin >= 1 && isa(varargin{1}, 'iFunc')
+  fun = varargin{1};
+  [pars,fval,exitflag,output] = fmin_private_wrapper(mfilename, fun, varargin{2:end});
+  if ~isempty(inputname(1))
+    assignin('caller', inputname(1), fun);
+  end
+else
+  [pars,fval,exitflag,output] = fmin_private_wrapper(mfilename, varargin{:});
+end
 
