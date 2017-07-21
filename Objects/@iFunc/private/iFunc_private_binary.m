@@ -331,6 +331,7 @@ if isFa && isFb
   end
 
 elseif isFa && ischar(b)  % syntax: iFunc+'string'
+  c.Expression = cellstr(c.Expression);
   if strcmp(op, 'plus') && ~isempty(find(b == '=' | b == ';'))
     c.Expression{end+1} = sprintf('\n%s%s;', b, v) ;
   else
@@ -338,6 +339,7 @@ elseif isFa && ischar(b)  % syntax: iFunc+'string'
   end
   c.Name       = sprintf('%s(%s,%s)', op, c.Name, b(1:min(10,length(b))));
 elseif isFb && ischar(a)  % syntax: 'string'+iFunc
+  c.Expression = cellstr(c.Expression);
   if strcmp(op, 'plus') && ~isempty(find(a == '=' | a == ';'))
     c.Expression = { sprintf('%s%s;\n', a, v), c.Expression{:} } ;
   else
@@ -345,6 +347,7 @@ elseif isFb && ischar(a)  % syntax: 'string'+iFunc
   end
   c.Name       = sprintf('%s(%s,%s)', op, a(1:min(10,length(a))), c.Name);
 elseif isFa && isnumeric(b) % syntax: iFunc+array
+  c.Expression = cellstr(c.Expression);
   % special case for mpower iFunc^n -> dimension extension
   if strcmp(op, 'mpower') && b == floor(b) && b>1
     for index=1:(b-1)
@@ -357,6 +360,7 @@ elseif isFa && isnumeric(b) % syntax: iFunc+array
   end
   c.Name       = sprintf('%s(%s,%g)', op, c.Name, b);
 elseif isFb && isnumeric(a) % syntax: array+iFunc
+  c.Expression = cellstr(c.Expression);
   a = mat2str(double(a));
   c.Expression{end+1} = sprintf('\nsignal=%s(%s,signal%s);', op, a, v);
   if length(a) > 13, a=[ a(1:10) '...' ]; end
