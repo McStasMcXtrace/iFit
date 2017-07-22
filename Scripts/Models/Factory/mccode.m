@@ -1,8 +1,8 @@
 function y = mccode(instr, options)
-% y = mccode(p) : McCode (McStas/McXtrace) instrument
+% y = mccode(instr, options) : McCode (McStas/McXtrace) instrument
 %
 %   iFunc/mccode a McCode instrument
-%     y=monitor value for given instrument parameters
+%     y=model instrument
 %
 % MODEL CREATION:
 % ------------------------------------------------------------------------------
@@ -60,6 +60,13 @@ function y = mccode(instr, options)
 % ex:     model =mccode('templateDIFF'); 
 %         signal=iData(model,[],linspace(-10,100,100));
 %         signal=iData(model, [], nan); % to get the raw monitor
+%
+% MODEL GEOMETRY
+% ------------------------------------------------------------------------------
+% To view the model geometry, use the mccode_display routine:
+%   model = mccode('templateDIFF');
+%   mccode_display(model)
+%   mccode_display(model, parameters)
 %
 % MODEL PARAMETER SCAN
 % ------------------------------------------------------------------------------
