@@ -380,9 +380,10 @@ catch ME
   disp([ 'Error: Could not evaluate Expression in model ' this.Name ' ' this.Tag ]);
   disp(this)
   t=this.Eval;
-  if numel(t) > 20
+  if numel(t) > 40
     t(1:20)
     disp('...')
+    t((end-15):end)
   else
     t
   end
