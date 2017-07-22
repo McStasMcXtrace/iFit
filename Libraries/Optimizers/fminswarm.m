@@ -1,4 +1,4 @@
-function [pars,fval,exitflag,output] = fminswarm(fun, pars, options, varargin)
+function [pars,fval,exitflag,output] = fminswarm(varargin)
 % [MINIMUM,FVAL,EXITFLAG,OUTPUT] = FMINSWARM(FUN,PARS,[OPTIONS],[CONSTRAINTS]) Particle Swarm Optimization
 %
 % This minimization method uses a Particle Swarm Optimization algorithm for 
@@ -79,7 +79,7 @@ function [pars,fval,exitflag,output] = fminswarm(fun, pars, options, varargin)
 
 % this is a wrapper to fminswarmhybrid, without hybrid optimizer
 
-if nargin == 0 || (nargin == 1 && strcmp(fun,'defaults'))
+if nargin == 0 || (nargin == 1 && strcmp(varargin{1},'defaults'))
   options=fminswarmhybrid('defaults');
   options.Hybrid='none';
   options.algorithm = [ 'Particle Swarm Optimizer (by Leontitsis) [fminswarm]' ];
@@ -89,20 +89,13 @@ if nargin == 0 || (nargin == 1 && strcmp(fun,'defaults'))
 end
 if nargin <= 2
 	options=[];
+else options=varargin{3};
 end
 if isempty(options)
   options=feval(mfilename, 'defaults');
 end
 options.Hybrid='none';
 
-if nargin >= 1 && isa(varargin{1}, 'iFunc')
-  fun = varargin{1};  % name it so that we can propagate back its value to caller
-  [pars,fval,exitflag,output] = fmin_private_wrapper(mfilename, fun, varargin{2:end});
-  if ~isempty(inputname(1))
-    assignin('caller', inputname(1), fun);
-  end
-else
-  [pars,fval,exitflag,output] = fmin_private_wrapper(mfilename, varargin{:});
-end
+[pars,fval,exitflag,output] = fmin_private_wrapper(mfilename, varargin{:});
 
 

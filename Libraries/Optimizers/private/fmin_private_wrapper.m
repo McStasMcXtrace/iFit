@@ -127,32 +127,6 @@ elseif nargin >= 2 && isstruct(fun)
   elseif isfield(fun, 'model'),       tmp=fun.model; fun=[]; fun=tmp;
   elseif isfield(fun, 'f'),           tmp=fun.f; fun=[]; fun=tmp;
   elseif isfield(fun, 'function'),    tmp=fun.function; fun=[]; fun=tmp; end
-elseif nargin >= 2 && isa(fun, 'iFunc')
-  % we minimize the iFunc: (p)feval(iFunc, p). Must guess some axes to use.
-  
-  if nargin >= 3  % use parameters as given. return axes
-    [signal, fun, ax, name] = feval(fun, pars);
-  else
-    [signal, fun, ax, name] = feval(fun);
-  end
-  % save the objective function (for evaluation)
-  objective = fun;
-  % now get starting parameters
-  pars = fun.ParameterValues;
-  % create the evaluation of the function
-  if isempty(ax)
-    fun = @(p)feval(objective', p);
-  else
-    fun = @(p)feval(objective', p, ax{:});
-  end
-  % assume 'pars' is a structure (to keep iFunc names)
-  pars_isstruct = strtok(objective.Parameters);
-  pars = cell2struct(num2cell(pars(:)), pars_isstruct(:), 1);
-  % carry 'constraints' from the iFunc if not in input
-  if nargin < 5
-    constraints = objective.constraint;
-    objective.constraint=[];  % we have transfered the restraints.
-  end
 elseif nargin < 3
   error([ 'syntax is: ' inline_localChar(optimizer) '(objective, parameters, ...)' ] );
 end
@@ -160,7 +134,7 @@ if isempty(pars)
   error([ inline_localChar(optimizer) ': starting parameters (3rd argument) must not be empty.' ] );
 end
 
-if ~ischar(fun) && ~isa(fun, 'function_handle') && ~isa(fun, 'iFunc')
+if ~ischar(fun) && ~isa(fun, 'function_handle')
   error([ inline_localChar(optimizer) ': objective function (2nd argument) must be a char or function_handle, but is a ' class(fun) '.' ] );
 end
 
@@ -728,12 +702,6 @@ if strcmp(options.Display,'final') || strcmp(options.Display,'iter') ...
     disp(' Correlation matrix (non diagonal terms indicate non-independent parameters):')
     disp(corr)
   end
-end
-
-if nargin >= 2 && isa(objective, 'iFunc') && ~isempty(inputname(2))
-  objective.ParameterValues = pars(:);
-  objective.constraint = constraints; % restore initial constraints
-  assignin('caller', inputname(2), objective);
 end
 
 % restore initial parameters as a structure (when given as such)
