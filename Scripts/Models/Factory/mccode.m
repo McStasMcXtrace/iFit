@@ -52,6 +52,15 @@ function y = mccode(instr, options)
 % model(p, x,y,...) 
 %   evaluates the model and interpolates the McCode data set onto given axes.
 %
+% input:  p: variable instrument parameters (double, struct, char)
+%            p = [ double_type_instrument_parameters ]
+%         x,y,...: axes (double)
+%
+% output: y: monitor value
+% ex:     model =mccode('templateDIFF'); 
+%         signal=iData(model,[],linspace(-10,100,100));
+%         signal=iData(model, [], nan); % to get the raw monitor
+%
 % MODEL PARAMETER SCAN
 % ------------------------------------------------------------------------------
 % It is possible to scan model parameters when using vectors as value for the
@@ -70,24 +79,8 @@ function y = mccode(instr, options)
 % any optimiser. To maximise the model, use '-model' as argument, as in the example:
 %   model = -mccode('templateDIFF');  % maximize
 %   fix(model, 'all'); model.RV='free';
-%   model.RV=1;            % starting value
-%   model.RV=[0 2];        % bounds
-%   p = fmin( model , [])  % return the optimal parameters
-%
-% In order to use the raw monitors, and avoid the iFunc to guess its axes, rather
-% use the syntax:
-%   p = fmin( @(p)feval(model, p, nan), model.p)
-%
-%
-% PARAMETERS:
-% input:  p: variable instrument parameters (double, struct, char)
-%            p = [ double_type_instrument_parameters ]
-%         x,y,...: axes (double)
-%
-% output: y: monitor value
-% ex:     model =mccode('templateDIFF'); 
-%         signal=iData(model,[],linspace(-10,100,100));
-%         signal=iData(model, [], nan); % to get the raw monitor
+%   model.RV=[0 1 2];        % bounds and starting value
+%   p = fmin( model , [], nan)  % return the optimal parameters using the raw monitors
 %
 % Version: $Date$
 % See also iFunc, iFunc/fits, iFunc/plot, iFunc/feval, mcstas
