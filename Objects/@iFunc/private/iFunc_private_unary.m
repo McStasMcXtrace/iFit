@@ -45,4 +45,6 @@ else
   a.Expression = [ a.Expression sprintf('\nsignal=%s(signal);', op) ];
 end
 
+a.Eval=cellstr(a); % trigger new Eval
+
 b = copyobj(a);
