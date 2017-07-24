@@ -8,7 +8,8 @@
   <body>
     <ifit: changes="" title=""></ifit:>
     <h1 style="text-align: center;"><a class="mozTocH1"
-        name="mozTocId294096"></a>iFit: McStas simulation/optimization<br>
+        name="mozTocId294096"></a>iFit: McStas/McXtrace
+      simulation/optimization<br>
     </h1>
     <h1 style="text-align: center;"><a href="http://www.mcstas.org/"><img
           alt="McStas [www.mcstas.org]" title="McStas [www.mcstas.org]"
@@ -17,6 +18,12 @@
     <h1 style="text-align: center;"> </h1>
     <ol id="mozToc">
       <!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6-->
+      <li><a href="#mozTocId513250">Building an instrument model</a>
+        <ol>
+          <li><a href="#mozTocId500394">Specifying which monitor to use</a></li>
+          <li><a href="#mozTocId619025">Requirements</a></li>
+        </ol>
+      </li>
       <li><a href="#mozTocId234815">Running a single simulation</a></li>
       <li><a href="#mozTocId124981">Getting instrument information and
           Displaying the instrument geometry</a></li>
@@ -45,175 +52,301 @@
       The resulting McStas data has an additional <span
         style="font-style: italic;">Parameters</span> field which holds
       the instrument parameters used for the simulation.<br>
-      <pre style="margin-left: 40px;">&gt;&gt; results(1).Parameters</pre>
-      <h3><a class="mozTocH3" name="mozTocId234815"></a>Running a single
-        simulation</h3>
-      As iFit contains powerful import routines, that support McStas
-      data files, it is straight forward to launch a McStas instrument
-      simulation from Matlab and get back the simulation results. To do
-      so, you will obviously need to have <span style="font-style:
-        italic;">iFit</span> installed (refer to the <a
-        href="Install.html">Install</a> page), as well as <span
-        style="font-style: italic;">McStas</span> (refer to the <a
-        href="http://www.mcstas.org">McStas web site</a>). An easy
-      solution is to install our <a
-href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/illcs-livedvd/">ILL/CS
-
-
-
-
-        Live DVD</a> ready-to-run system with <span style="font-style:
-        italic;">McStas</span> pre-installed, and then put on top <a
-        href="http://www.mathworks.com">Matlab</a> (requires a valid
-      license).<br>
-      <br>
-      The syntax for running a McStas instrument model is:<br>
-      <pre style="margin-left: 40px;">&gt;&gt; results = <span style="color: rgb(51, 102, 255);">mcstas</span>(<span style="color: rgb(204, 51, 204);">'instrument'</span>, parameters, options);</pre>
-      where <span style="font-style: italic;">parameters</span> is a
-      structure that holds parameter names and values, e.g.<br>
-      <br>
-      <div style="margin-left: 40px;">parameters.RV=1<br>
-        parameters.lambda=2.36<br>
-        parameters.powder=<span style="color: rgb(204, 51, 204);">'Na2Ca3Al2F14.laz'</span><br>
-      </div>
-      <div style="text-align: left;"><br>
-        and both numerical values and strings are supported. Numerical
-        values should be single scalars, whereas strings are used as-is,
-        that is they may assign DEFINITION instrument parameters such as
-        file names, arrays and other types that are sent to the commands
-        line. The unspecified instrument parameters are used with their
-        default values (when defined).<br>
-        <br>
-        The parameters can also be given as a single string with members
-        separated with the ';' character ans assigned with '=':<br>
-        <pre style="margin-left: 40px;">&gt;&gt; results = <span style="color: rgb(51, 102, 255);">mcstas</span>(<span style="color: rgb(204, 51, 204);">'instrument'</span>, <span style="color: rgb(204, 51, 204);">'RV=1; lambda=2.36; powder=Na2Ca3Al2F14.laz'</span>);</pre>
-      </div>
+      <pre style="margin-left: 40px;">&gt;&gt; results(1).Parameters<br></pre>
+      <h3><a class="mozTocH3" name="mozTocId513250"></a>Building an
+        instrument model</h3>
+      <p>The syntax for building a McCode (McStas or McXtrace)
+        instrument model is:<br>
+      </p>
+      <pre style="margin-left: 40px;">&gt;&gt; model = <span style="color: rgb(51, 102, 255);">mccode</span>(<span style="color: rgb(204, 51, 204);">'instrument'</span>);	<i>% uses the given instrument file (*.instr)</i><br>&gt;&gt; model = <span style="color: rgb(51, 102, 255);">mccode</span>(<span style="color: rgb(204, 51, 204);">'gui'</span>);		<i>% lists all available instruments to select one</i><br>&gt;&gt; model = <span style="color: rgb(51, 102, 255);">mccode</span>(<span style="color: rgb(204, 51, 204);">''</span>);			<i>% pop-up a file selector to select an *.instr file</i><br>&gt;&gt; model = <span style="color: rgb(51, 102, 255);">mccode</span>(<span style="color: rgb(204, 51, 204);">'defaults'</span>);		<i>% uses the templateDIFF instrument as example <br></i></pre>
+      which compile the instrument, and create an <a
+        href="file:///home/farhi/dev/iFit/Docs/iFunc.html">iFunc</a>
+      model. <br>
       When the instrument is not found in the current directory, it is
       searched in the McStas library (may be specified with the MCSTAS
       and MCXTRACE environment variables), and eventually copied
       locally, which triggers its compilation.<br>
       <br>
-      If McStas/McXtrace executables (e.g. 'mcrun') are not found, you
-      may have to extend the PATH with e.g.:<br>
-      <ul>
-        <li><font color="#3366ff">setenv</font>(<font color="#cc33cc">'PATH'</font>,
-          [<font color="#3366ff">getenv</font>('PATH') <font
-            color="#cc33cc">':/usr/local/bin' ':/usr/bin'
-            ':/usr/share/bin'</font> ]);</li>
-      </ul>
-      The last argument <span style="font-style: italic;">options</span>
-      controls simulation configuration.<br>
-      <ul>
-        <li><span style="font-weight: bold;">options.dir</span>:&nbsp;&nbsp;&nbsp;
-directory
-where
-to
-store
-
-
-
-
-          results. When not defined, a temporary location is created,
-          and removed after the simulation (string).<span style="color:
-            rgb(255, 0, 0); font-weight: bold;"></span><br>
-        </li>
-        <li><span style="font-weight: bold;">options.ncount</span>:
-          number of neutron events per iteration, <span
-            style="font-style: italic;">e.g. </span>1e5 (double)</li>
-        <li><span style="font-weight: bold;">options.mpi</span>:&nbsp;&nbsp;&nbsp;
-number
-of
-processors
-
-
-
-
-          to use with MPI (integer. The simulation should be re-compiled
-          accordingly with <span style="font-style: italic;">options.compile='yes'</span></li>
-        <li><b>options.machines</b>: a file name containing the list of
-          machines/nodes to use with MPI<span style="font-style:
-            italic;"><br>
-          </span></li>
-        <li><span style="font-weight: bold;">options.seed</span>:&nbsp;&nbsp;
-random
-
-
-
-
-          number seed to use for each iteration (double)</li>
-        <li><span style="font-weight: bold;">options.gravitation</span>:
-          0 or 1 to set gravitation handling in neutron propagation
-          (boolean)</li>
-        <li><span style="font-weight: bold;">options.mode</span>:&nbsp;&nbsp;
-should
-
-
-
-
-          be <span style="color: rgb(204, 51, 204);">'simulate'<span
-              style="color: rgb(0, 0, 0);">. This is automatically set
-              when no 'optimization' configuration parameter is set. </span><br>
-          </span></li>
-        <li><span style="font-weight: bold;">options.compile</span>: 0
-          or 1 to force re-compilation of the instrument (boolean)</li>
-        <li><span style="font-weight: bold;">options.monitors</span>:&nbsp;
-cell
-
-
-
-
-          string of monitor file names, or empty for all (cellstr)</li>
-        <li><span style="font-weight: bold;">options.particle</span>: <span
-            style="color: rgb(204, 51, 204);">'n' </span>for neutrons<span
-            style="color: rgb(255, 0, 0);"> (McStas) </span>or<span
-            style="color: rgb(204, 51, 204);"> 'x' </span>for X-rays<span
-            style="color: rgb(255, 0, 0);"> (McXtrace). </span>Default
-          is <span style="color: rgb(204, 51, 204);">'n'</span>.</li>
-        <li><b>options.mcrun</b>: set the executable path for running
-          simulations. You can specify a full path to a specific 'mcrun'
-          or 'mxrun' command.<br>
-        </li>
-        <li><b>options.mcdisplay</b>: set the executable path for
-          viewing the simulation geometry. You can specify a full path
-          to a specific 'mcdisplay' or 'mxdisplay' command.</li>
-      </ul>
-      In the following examples, we define required structures on the
-      fly, run the <span style="font-style: italic;">templateDIFF</span>
-      instrument (the file must be accessible from Matlab current path)
-      and get back monitors:<br>
-      <pre style="margin-left: 40px;">&gt;&gt; monitors=<span style="color: rgb(51, 102, 255);">mcstas</span>(<span style="color: rgb(204, 51, 204);">'templateDIFF'</span>, <span style="color: rgb(51, 102, 255);">struct</span>(<span style="color: rgb(204, 51, 204);">'RV'</span>,1),<span style="color: rgb(51, 102, 255);"> struct</span>(<span style="color: rgb(204, 51, 204);">'ncount'<span style="color: rgb(0, 0, 0);">,1e6</span></span><span style="color: rgb(204, 51, 204);"></span>))<br>&gt;&gt; monitors=<span style="color: rgb(51, 102, 255);">mcstas</span>(<span style="color: rgb(204, 51, 204);">'templateDIFF'</span>, <span style="color: rgb(51, 102, 255);">'</span><span style="color: rgb(204, 51, 204);">RV=1'</span>,<span style="color: rgb(51, 102, 255);"> </span><span style="color: rgb(204, 51, 204);">'ncount=1e6'<span style="color: rgb(0, 0, 0);"></span></span><span style="color: rgb(204, 51, 204);"></span>);	<span style="font-style: italic;">% same as above</span><br>monitors =  array [1  5] iData object:<br><br>Index     [Tag]     [Dimension]                           [Title] [Last command]          [Label]<br>    1  id445199        [40  40] 'File Diff_Mono_XY_1299773321...' id445199=load(iData,... Diff_Mono_XY <br>    2  id445212        [40   1] 'File Diff_Mono_Lambda_129977...' id445212=load(iData,... Diff_Mono_... <br>    3  id445224        [40   1] 'File Diff_Sample_Lambda_1299...' id445224=load(iData,... Diff_Sampl... <br>    4  id445236      [340    1] 'File Diff_BananaTheta_129977...' id445236=load(iData,... Diff_Banan... <br>    5  id445248      [170   25] 'File Diff_BananaPSD_12997733...' id445248=load(iData,... Diff_Banan... <br>&gt;&gt; <span style="color: rgb(51, 102, 255);">subplot</span>(monitors)<br></pre>
-      The last line displays the simulation results. Usual data analysis
-      (display, mathematics, fit, export) can be performed (refer to the
-      <a href="index.html">iFit</a> and <a href="iData.html">iData</a>
-      documentation). <br>
-      The resulting McStas data has an additional <span
-        style="font-style: italic;">Parameters</span> field which holds
-      the instrument parameters used for the simulation.<br>
-      <pre style="margin-left: 40px;">&gt;&gt; monitors(1).Parameters<br></pre>
-      The<span style="font-weight: bold; font-style: italic;">
-        'monitors' </span>option can be specified to limit the number
-      of monitor files to load after each simulation. Specifying a
-      monitor file name list highly speeds-up the importation of files
-      after each iteration.<br>
-      It should contain one token string or a cellstr {...} of tokens to
-      search for. These tokens are compared with the monitor file names,
-      and only matches are imported. If no match can be identified, all
-      monitors are read, the monitor list can be reduced by searching
-      tokens in the data sets contents.<br>
-      <h3><a class="mozTocH3" name="mozTocId124981"></a>Getting
-        instrument information and Displaying the instrument geometry</h3>
-      To display the instrument geometry, use the syntax:<br>
-      <pre style="margin-left: 40px;">&gt;&gt; results = <span style="color: rgb(51, 102, 255);">mcstas</span>(<span style="color: rgb(204, 51, 204);">'templateDIFF'</span>, <span style="color: rgb(204, 51, 204);">'RV=1','mode=display'</span>);</pre>
-      which will launch 'mcdisplay' in the background, and open the
-      resulting figure. No neutron trajectory is shown though, only the
-      instrument geometry.<br>
+      In addition, it is possible to select an instrument from the
+      McStas installation with:<br>
       <br>
-      In order to just get information about the instrument, especially
-      its input parameters, you can run<br>
-      <pre style="margin-left: 40px;">&gt;&gt; results = <span style="color: rgb(51, 102, 255);">mcstas</span>(<span style="color: rgb(204, 51, 204);">'instrument'</span>, <span style="color: rgb(204, 51, 204);">'parameters=values...','mode=info'</span>);<br>&gt;&gt; result  = <span style="color: rgb(51, 102, 255);">mcstas</span>(<span style="color: rgb(204, 51, 204);">'instrument'</span>, <span style="color: rgb(204, 51, 204);">'</span><span style="color: rgb(204, 51, 204);">--info'</span>);	<span style="font-style: italic;">% same as above</span></pre>
+      You may even assemble these models as iFunc arrays to iteratively
+      perform series of simulations, or use arithmetic operations to
+      combine models (see the <a href="iFunc.html#mozTocId443357">iFunc</a>
+      documentation).<br>
+      <br>
+      It is also possible to finely tune the instrument configuration
+      using standard McStas/McXtrace options with the syntax:<br>
+      <blockquote>
+        <pre>&gt;&gt;  <span style="color: rgb(51, 102, 255);">mccode</span>(<span style="color: rgb(204, 51, 204);">'instrument'</span>, options)</pre>
+      </blockquote>
+      and the following options:<br>
+      <table width="100%" border="1" cellpadding="2" cellspacing="2">
+        <tbody>
+          <tr>
+            <td valign="top"><b>options.dir</b></td>
+            <td valign="top"> directory where to store results, or set
+              automatically (string) ;<br>
+              the last simulation files are stored therein 'sim'.</td>
+          </tr>
+          <tr>
+            <td valign="top"><b>options.ncount</b></td>
+            <td valign="top">number of neutron events per iteration,
+              e.g. 1e6 (double).</td>
+          </tr>
+          <tr>
+            <td valign="top"><b> options.mpi</b><b><br>
+              </b> </td>
+            <td valign="top">number of processors/cores to use with MPI
+              on localhost or cluster (integer) ;<br>
+              when MPI is available, and mpi options is not given, all
+              cores are then used. Use options.mpi=1 for a serial
+              calculation.<br>
+            </td>
+          </tr>
+          <tr>
+            <td valign="top"><b> options.machines</b></td>
+            <td valign="top">file name containing the list of
+              machines/nodes to use (string), as often found in cluster
+              job schedulers.<br>
+            </td>
+          </tr>
+          <tr>
+            <td valign="top"><b>options.seed</b></td>
+            <td valign="top">random number seed to use for each
+              iteration (double)</td>
+          </tr>
+          <tr>
+            <td valign="top"><b>options.gravitation</b></td>
+            <td valign="top">0 or 1 to set gravitation handling in
+              neutron propagation (boolean)</td>
+          </tr>
+          <tr>
+            <td valign="top"><b>options.monitor</b></td>
+            <td valign="top">a <i>single</i> monitor name to read, or
+              left empty for the last (string). The whole monitors are
+              available as iData objects in the <i>model.UserData.monitors</i>
+              field.<br>
+            </td>
+          </tr>
+          <tr>
+            <td valign="top"><b>options.mpirun</b></td>
+            <td valign="top">set the executable path to 'mpirun', or
+              automatically found when not set.<br>
+            </td>
+          </tr>
+          <tr>
+            <td valign="top"><b>options.compile</b></td>
+            <td valign="top">0 or 1 to force re-compilation of the
+              executable. Try that first if you can not create/use the
+              object (an old executable may be used).</td>
+          </tr>
+        </tbody>
+      </table>
+      &nbsp;<br>
+      The options can be given as a structure or as a string, e.g. <font
+        color="#cc33cc">'ncount=1e6; compile=1'</font>.<br>
+      &nbsp;<br>
+      The scalar instrument parameters of type 'double' are used as
+      model parameters. <br>
+      Other parameters (e.g. of type string and int) are stored as a
+      structure in:<br>
+      <ul>
+        <li>model.UserData.Parameters_Constant</li>
+      </ul>
+      The options <i>ncount, seed, gravitation, monitor</i> can be
+      changed after the model creation in the UserData area of the
+      object e.g.:<br>
+      <ul>
+        <li>model.UserData.options.gravitation=1;</li>
+        <li>model.UserData.options.monitor=<font color="#cc33cc">''</font>;</li>
+      </ul>
+      <h4><a class="mozTocH4" name="mozTocId500394"></a><i><b>Specifying
+            which monitor to use</b></i></h4>
+      The default behaviour is to leave <i>options.monitor</i> left
+      unset at the model creation, so that all monitors are read when
+      simulating instruments. The last monitor is then used as model
+      value. This provides maximum information, but the processing
+      overhead time is increased due to more data handling compared to a
+      single/restricted monitor name selection.<br>
+      <ul>
+        <li>model=<font color="#3366ff">mccode</font>(<font
+            color="#cc33cc">'templateDIFF'</font>);</li>
+      </ul>
+      In order to improve the computational efficiency, it is advised to
+      specify which files have to be imported to define the model value
+      by giving a file pattern. This can be done either when building
+      the model:<br>
+      <ul>
+        <li>model=<font color="#3366ff">mccode</font>(<font
+            color="#cc33cc">'templateDIFF'</font>,<font color="#cc33cc">'monitor=Diff_BananaPSD'</font>);</li>
+      </ul>
+      or afterwards:<br>
+      <ul>
+        <li>model=<font color="#3366ff">mccode</font>(<font
+            color="#cc33cc">'templateDIFF'</font>);</li>
+        <li>model.UserData.options.monitor=<font color="#cc33cc">'</font><font
+            color="#cc33cc"><font color="#cc33cc">Diff_Banana</font>'</font></li>
+      </ul>
+      which in both cases will select monitor files which <i>start</i>
+      with the given string ( <font color="#cc33cc">'Diff_Banana*' </font>).
+      In case the selection brings multiple files, the last one is used.
+      When the monitor name selection does not match any file, or is
+      given as empty, all monitors are imported, and the last one in the
+      list is used.<br>
+      <br>
+      All selected monitors are imported as <a href="Fit.html">iData</a>
+      object(s), in:<br>
+      <ul>
+        <li>model.UserData.monitors</li>
+      </ul>
+      In practice, you will often either not specify the 'monitors' at
+      the model creation to leave the system select the last one, or
+      indicate a specific monitor name of your choice.<br>
+      <h4><a class="mozTocH4" name="mozTocId619025"></a><i><b>Requirements</b></i></h4>
+      As iFit contains powerful import routines, that support McStas
+      data files, it is straight forward to launch a McStas instrument
+      simulation from Matlab and get back the simulation results. To do
+      so, you will obviously need to have <span style="font-style:
+        italic;">iFit</span> installed (refer to the <a
+        href="file:///home/farhi/dev/iFit/Docs/Install.html">Install</a>
+      page), as well as <span style="font-style: italic;">McStas</span>
+      (refer to the <a href="http://www.mcstas.org">McStas web site</a>)
+      or <a href="http://mcxtrace.org/">McXtrace</a>. When used with
+      the standalone version, no Matlab license is needed.<br>
+      <h3><a class="mozTocH3" name="mozTocId234815"></a>Running a single
+        simulation</h3>
+      The model value is corresponds with the 'options.monitor'
+      selected, i.e. the last one, or a specific name pattern. This
+      selection can be changed any time without rebuilding the model
+      (see <a href="mozTocId500394">above</a>).<br>
+      <br>
+      The instrument can be evaluated with given parameters and
+      optionally axes:<br>
+      <pre style="margin-left: 40px;">&gt;&gt; results = <font color="#3366ff">feval</font>(model, parameters);		<i>% return the monitor as an array using guessed axes</i><br>&gt;&gt; results = <font color="#3366ff">feval</font>(model, parameters, x,y,...);	<i>% return the monitor as an array</i><i>, using specified axes</i><br>&gt;&gt; results = <font color="#3366ff">feval</font>(model, parameters, nan);	<i>% return the raw monitor as an array</i><br></pre>
+      but it may be more convenient to manipulate the model value as
+      iData objects:<br>
+      <pre style="margin-left: 40px;">&gt;&gt; result = <font color="#3366ff">iData</font>(model, parameters);		<i>% return monitor interpolated onto guessed axes<br></i>&gt;&gt; result = <font color="#3366ff">iData</font>(model, parameters, nan);	<i>% return raw monitor as an iData object</i><br>&gt;&gt; result = <font color="#3366ff">iData</font>(model, parameters, x,y,...);	<i>% return monitor interpolated onto axes x,y,...</i><br>&gt;&gt; <font color="#3366ff">plot</font>(result);<br>&gt;&gt; <font color="#3366ff">plot</font>(model.UserData.monitors)</pre>
+      where <span style="font-style: italic;">parameters</span> is a
+      structure, or string, or vector that holds parameter names and
+      values, e.g.<br>
+      <div style="margin-left: 40px;">
+        <ul>
+          <li>model=<font color="#3366ff">mccode</font>(<font
+              color="#cc33cc">'templateDIFF'</font>);</li>
+          <li> parameters.RV=1;</li>
+          <li> parameters.lambda=2.36;</li>
+          <li> <font color="#3366ff"><font color="#000000">value = </font>iData</font>(model,
+            parameters);</li>
+        </ul>
+      </div>
+      <div style="text-align: left;">or in a more compact way, giving
+        parameters as a single string with members assigned with '=' and
+        separated with the ';' character. <br>
+        In the following example, we plot the model value, and then all
+        the available monitors in <i>model.UserData.monitors</i><br>
+        <ul>
+          <li>model=<font color="#3366ff">mccode</font>(<font
+              color="#cc33cc">'templateDIFF'</font>);</li>
+          <li> <font color="#3366ff"><font color="#000000">value = </font>iData</font>(model,
+            <font color="#cc33cc">'RV=1; lambda=2.36'</font>, nan)</li>
+        </ul>
+        <blockquote>
+          <pre>value =&nbsp; iData (methods,doc,plot,plot(log),values,more...) 2D object:<br>&nbsp;&nbsp;&nbsp; [Tag] [Dimension]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Title] [Last command]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Label/DisplayName]</pre>
+          <pre>&nbsp; iD61442&nbsp;&nbsp;&nbsp; [51 170]&nbsp;&nbsp; 'templateDIFF.instr McCode [... "signal"' iD61442=setalias(iD6... templateDI/templateDI...</pre>
+        </blockquote>
+        <ul>
+          <li><font color="#3366ff">plot</font>(value, <font
+              color="#cc33cc">'view2'</font>)</li>
+          <li>model.UserData.monitors<br>
+          </li>
+        </ul>
+        <blockquote>
+          <pre>model.UserData.monitors =&nbsp; array [5&nbsp; 1] iData (methods,doc,plot,plot(log),values,more...) object:<br><br>Index&nbsp;&nbsp;&nbsp;&nbsp; [Tag] [Dimension]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Title] [Last command]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Label/DisplayName]<br>&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp; iD61449&nbsp;&nbsp;&nbsp;&nbsp; [40 40] 'mccode.sim McCode sim file ... "Data ..."' iD61449=load(iData,'... Diff_Mono_XY<br>&nbsp;&nbsp;&nbsp; 2&nbsp;&nbsp; iD61457&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [40 1] 'mccode.sim McCode sim file ... "Inten..."' iD61457=load(iData,'... Diff_Mono_Lambda<br>&nbsp;&nbsp;&nbsp; 3&nbsp;&nbsp; iD61459&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [40 1] 'mccode.sim McCode sim file ... "Inten..."' iD61459=load(iData,'... Diff_Sample_Lambda<br>&nbsp;&nbsp;&nbsp; 4&nbsp;&nbsp; iD61461&nbsp;&nbsp;&nbsp;&nbsp; [340 1] 'mccode.sim McCode sim file ... "Inten..."' iD61461=load(iData,'... Diff_BananaTheta<br>&nbsp;&nbsp;&nbsp; 5&nbsp;&nbsp; iD61463&nbsp;&nbsp;&nbsp; [25 170] 'mccode.sim McCode sim file ... "Data ..."' iD61463=load(iData,'... Diff_BananaPSD</pre>
+        </blockquote>
+        <ul>
+          <li><font color="#3366ff">plot</font>(model.UserData.monitors)</li>
+        </ul>
+        You can equally set the non numerical scalar parameters (e.g.
+        strings and integers):<br>
+        <blockquote>model.UserData.Parameters_Constant.powder=<span
+            style="color: rgb(204, 51, 204);">'Na2Ca3Al2F14.laz'</span><br>
+          <span style="color: rgb(204, 51, 204);"></span></blockquote>
+        <span style="color: rgb(204, 51, 204);"></span>The unspecified
+        instrument parameters are used with their default values (when
+        defined).<br>
+        <br>
+        The model value, and the raw monitors in
+        model.UserData.monitors, in the form of an iData objects have an
+        additional <span style="font-style: italic;">Parameters</span>
+        field which holds the instrument parameters used for the
+        simulation.<br>
+        <pre style="margin-left: 40px;">&gt;&gt; value.Parameters</pre>
+        Usual data analysis (display, mathematics, fit, export) can be
+        performed (refer to the <a
+          href="file:///home/farhi/dev/iFit/Docs/index.html">iFit</a>
+        and <a href="file:///home/farhi/dev/iFit/Docs/iData.html">iData</a>
+        documentation). <br>
+        <h3><a class="mozTocH3" name="mozTocId124981"></a>Getting
+          instrument information and Displaying the instrument geometry</h3>
+        To display the instrument geometry, use the syntax:<br>
+        <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">mccode_display</span>(model<span style="color: rgb(204, 51, 204);"></span>);</pre>
+        which open a geometrical representation of the instrument. The
+        current model parameters are used. It can be given as well a set
+        of parameter values:<br>
+        <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">mccode_display</span>(model<span style="color: rgb(204, 51, 204);"></span>, parameters);</pre>
+        An empty parameter argument requests to use the current value.
+        In addition, this routine returns the list of components, and
+        can be given more options (3rd argument), as <font
+          color="#cc33cc">'html'</font>,<font color="#cc33cc">'png'</font>,
+        and <font color="#cc33cc">'x3d'</font>.<br>
+        <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">mccode_display</span>(model<span style="color: rgb(204, 51, 204);"></span>, [], <font color="#cc33cc">'html png x3d'</font>);</pre>
+        to generate hardcopy files and geometry rendering.<br>
+        <br>
+        In order to get information about the instrument, especially its
+        input parameters, you can access the model.UserData area:<br>
+        <pre>&gt;&gt; model.UserData<br><br>ans = <br><br>        instrument_source: [1x7011 char]<br>    instrument_executable: [1299344x1 double]<br>           instrument_exe: 'templateDIFF.out'<br>          instrument_info: [1x960 char]<br>                  options: [1x1 struct]<br>               Parameters: [1x1 struct]<br>      Parameters_Constant: [1x1 struct]<br>                 monitors: [5x1 iData]<br></pre>
+        and especially the instrument_info and instrument_source, which
+        you can edit with e.g:<br>
+        <ul>
+          <li><font color="#3366ff">disp</font>(model.UserData.instrument_info)</li>
+        </ul>
+        or even in a separate window:<br>
+        <blockquote>
+          <pre>&gt;&gt; <font color="#3366ff">TextEdit</font>(model.UserData.instrument_source)<br>&gt;&gt; <font color="#3366ff">TextEdit</font>(model.UserData.instrument_info)</pre>
+        </blockquote>
+      </div>
       <h3><a class="mozTocH3" name="mozTocId821585"></a>Running series
         of simulations (scans)</h3>
-      It is very simple to perform parameter scans, even in
+      You may scan the model parameters when they are assigned as
+      vector.<br>
+      <ul>
+        <li>model=<font color="#3366ff">mccode</font>(<font
+            color="#cc33cc">'templateDIFF'</font>);</li>
+        <li>parameters.RV = 0.5:.05:1.5;</li>
+        <li>scan = <font color="#3366ff">iData</font>(model,
+          parameters);</li>
+      </ul>
+      A more compact way can be used, using explicit scan values:<br>
+      <ul>
+        <li>model=<font color="#3366ff">mccode</font>(<font
+            color="#cc33cc">'templateDIFF'</font>);</li>
+        <li>scan = <font color="#3366ff">iData</font>(model, <font
+            color="#cc33cc">'RV=[0.5 1 1.5]'</font>);</li>
+      </ul>
+      You may also scan the non numerical parameters with e.g. for the
+      'powder' string parameter:<br>
+      <ul>
+        <li>r=[];</li>
+        <li>for vector = {<span style="color: rgb(204, 51, 204);">'Na2Ca3Al2F14.laz'</span>,<span
+            style="color: rgb(204, 51, 204);">'Al.laz'</span>,<span
+            style="color: rgb(204, 51, 204);">'Ge.laz'</span>};
+          model.UserData.Parameters_Constant.powder = vector{1}; r = [ r
+          iData(model) ]; end</li>
+      </ul>
+      <br>
+      <br>
+      &nbsp;It is very simple to perform parameter scans, even in
       multi-dimensional spaces. For this, the parameter values just need
       to be vectors of numeric or vector cells, such as<br>
       <ul>
@@ -277,6 +410,9 @@ cell
 
 
 
+
+
+
       or <span style="font-weight: bold; font-style: italic;">plot3</span>.
       <br>
       <br>
@@ -286,6 +422,9 @@ of
 the
 number
 of
+
+
+
 
 
 
@@ -324,11 +463,17 @@ of
 
 
 
+
+
+
           <span style="color: rgb(204, 51, 204);">'minimize'</span> or<span
             style="color: rgb(204, 51, 204);"> 'maximize'</span>, which
           is the default (string)</li>
         <li><span style="font-weight: bold;">options.monitors</span>:&nbsp;
 cell
+
+
+
 
 
 
@@ -344,6 +489,9 @@ cell
         </li>
         <li><span style="font-weight: bold;">options.mode</span>:&nbsp;&nbsp;
 should
+
+
+
 
 
 
@@ -377,6 +525,9 @@ should
 
 
 
+
+
+
           </span>% plots the criteria and parameters evolution during
           the optimization. <span style="font-style: italic;
             font-weight: bold;">This is the default</span>. Set to <span
@@ -398,12 +549,18 @@ should
 
 
 
+
+
+
       methods</a>, the optimizer final status and optional returned
     information can be obtained with e.g. <br>
     <pre style="margin-left: 40px;">&gt;&gt; [parameters, monitors, <span style="color: rgb(255, 0, 0);">status, output</span>]=<span style="color: rgb(51, 102, 255);">mcstas</span>(<span style="color: rgb(204, 51, 204);">'templateDIFF'</span>,<span style="color: rgb(51, 102, 255);">struct</span>(<span style="color: rgb(204, 51, 204);">'RV'</span>,1), ...<br>      <span style="color: rgb(51, 102, 255);">struct</span>(<span style="color: rgb(204, 51, 204);"></span><span style="color: rgb(204, 51, 204);">'monitors'</span>,<span style="color: rgb(204, 51, 204);">'Banana'</span>,<span style="color: rgb(204, 51, 204);">'mode','optimize','optimizer','fminimfil'</span>));</pre>
     where <span style="font-style: italic;">output</span> stores most
     of the optimization process data, including uncertainty on the best
     parameter values, <span style="font-style: italic;">output.parsHistoryUncertainty
+
+
+
 
 
 
@@ -450,10 +607,16 @@ should
 
 
 
+
+
+
       the optimization plot</span> window. The actual end occurs after a
     few more iterations.<br>
     <br>
     <span style="color: rgb(255, 0, 0); font-weight: bold;">Warning: </span>as
+
+
+
 
 
 
@@ -511,6 +674,9 @@ should
     <div style="text-align: center;">
       <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
+
+
+
 
 
 
