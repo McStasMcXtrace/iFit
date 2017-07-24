@@ -151,10 +151,14 @@ if nargin
 end
 
 if nargin && ischar(filename)
-  if size(filename,1) == 1 && ~isempty(dir(filename))
-    textedit_load(filename);
-  else
-    textedit_setText(options.display_pane, filename)
+  try
+      if size(filename,1) == 1 && ~isempty(dir(filename))
+        textedit_load(filename);
+      else
+        textedit_setText(options.display_pane, filename)
+      end
+  catch
+      textedit_setText(options.display_pane, filename)
   end
 end
 
