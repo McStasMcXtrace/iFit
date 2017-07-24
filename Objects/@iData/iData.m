@@ -100,7 +100,7 @@ else  % convert input argument into object
     % iData(x,y,..., signal)
     index = length(varargin);
     out   = iData(varargin{index});  % last argument is the Signal
-    if ~isempty(inputname(index)) && ~isfield(out, inputname(index))
+    if ~isempty(inputname(index)) && any(~isfield(out, inputname(index)))
       out = setalias(out, inputname(index), 'Signal');
     end
     
@@ -249,13 +249,13 @@ function [out, this_in]=iData_iFunc2iData(this_in, axes_in, varargin)
     names   = { names };
   end
   % convert each of the returned data into an iData
-  for i=1:numel(signals)
+  for i=1:numel(axs)
     signal = signals{i};
     ax     = axs{i};
     name   = names{i};
     
-    if length(signal) == length(this_in.Parameters) % this was in fact a parameter guess...
-      [signal, this_in, ax, name] = feval(this_in, signal, axes_in{:});
+    if length(signal) == length(this_in(i).Parameters) % this was in fact a parameter guess...
+      [signal, this_in(i), ax, name] = feval(this_in(i), signal, axes_in{:});
     end
     if isempty(signal), 
       iData_private_warning(mfilename, [ ': iFunc evaluation failed (empty value). Check axes and parameters.' ]);
@@ -270,6 +270,8 @@ function [out, this_in]=iData_iFunc2iData(this_in, axes_in, varargin)
       ax1 = axes_in{index};
       if index<numel(ax), ax2 = ax{index}; else ax2=[]; end
       if ~isempty(ax2)
+        if iscell(ax1) && numel(ax1) == 1, ax1=ax1{1}; end
+        if iscell(ax2) && numel(ax2) == 1, ax2=ax2{1}; end
         if isempty(ax1), ax1 = ax2;
         elseif ~isempty(find(isnan(ax1))), ax1 = ax2;
         elseif numel(ax2) == size(signal, index), ax1 = ax2;
@@ -297,13 +299,13 @@ function [out, this_in]=iData_iFunc2iData(this_in, axes_in, varargin)
     this_out.Label = name;
     this_out.DisplayName = name;
     setalias(this_out,'Error', 0);
-    if ~isempty(this_in.ParameterValues)
-        par_val = this_in.ParameterValues;
-        pars    = this_in.Parameters;
+    if ~isempty(this_in(i).ParameterValues)
+        par_val = this_in(i).ParameterValues;
+        pars    = this_in(i).Parameters;
       pars_out = cell2struct(num2cell(par_val(:)'), strtok(pars(:)'), 2);
       setalias(this_out,'Parameters', pars_out, [ name ' model parameters' ]);
     end
-    setalias(this_out,'Model', this_in, this_in.Name);
+    setalias(this_out,'Model', this_in(i), this_in(i).Name);
     clear signal ax
     out = [ out this_out ];
   end % feval return arguments (can be a parameter scan)

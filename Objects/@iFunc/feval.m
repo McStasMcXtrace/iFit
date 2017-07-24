@@ -146,24 +146,29 @@ if isstruct(p)
 end
 
 if iscell(p) && ~isempty(p) % as parameter cell (iterative function evaluation)
-  signal = {}; ax={}; name={}; p0 = p;
-  if all(cellfun(@isscalar, p))
-    [signal{end+1}, model, ax{end+1}, name{end+1}] = feval(model, cell2mat(p), varargin{:});
-    if numel(signal) == 1, 
-      signal=signal{1}; ax=ax{1}; name=name{1};
+  % we build an ndgrid with all non-scalar parameters
+  index_scalar    = cellfun(@isscalar, p);
+  index_nonscalar = find(~index_scalar);
+  index_scalar    = find(index_scalar);
+  p_scalar        = cell2mat(p(index_scalar));
+  % we build a grid and fill it with ndgrid, corresponding to p(index_nonscalar) 
+  P_nonscalar = cell(1, numel(index_nonscalar));
+  [ P_nonscalar{:} ] = ndgrid(p{index_nonscalar});
+  % then we iterate all combinaisons
+  models=[]; signal={}; name={}; ax={};
+  for index=1:numel(P_nonscalar{1}) % the number of iterations to perform
+    % build a 'normal' numerical parameter vector
+    this_p = nan*ones(1, numel(p));
+    this_p(index_scalar)    = [ p{index_scalar} ];
+    for index2=1:numel(index_nonscalar)
+      this_P_nonscalar = P_nonscalar{index2};
+      this_p(index_nonscalar(index2)) = this_P_nonscalar(index);
     end
-    return
+    [signal{index}, this_model, ax{index}, name{index}] = feval(model, this_p, varargin{:});
+    models = [ models this_model ];
+    
   end
-  for index=1:numel(p)  % we scan Parameters
-    p_index = p0{index};  % a scalar or vector
-    if isnumeric(p_index) && numel(p_index) > 1
-      for i=1:numel(p_index)  % we scan the values of the Parameter      
-        p{index} = p_index(i);
-        [signal{end+1}, model, ax{end+1}, name{end+1}] = feval(model, p, varargin{:});
-      end
-    end
-  end
-  
+  model  = models;
   return
 end
 
