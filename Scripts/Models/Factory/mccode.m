@@ -361,18 +361,24 @@ if ~any(isnan((y.Guess)))
     end
     signal=signal(index_position);
   end
-  y.UserData.options.monitor = get(signal,'Component');
+  % leave the monitor selection empty as 
+  % Could be: get(signal,'Component') but this choice fails when the monitor 
+  % file names do not match the component names
+  y.UserData.options.monitor = []; 
   y.Dimension = ndims(signal);
   % handle interpolation onto axes
   ax = ',x,y,z,t';
   y.Expression{end+1} = 'if numel(signal) > 1, signal = signal(end); end';
-  y.Expression{end+1} = [ 'if ~isempty(x) && ~all(isnan(x)), signal = interp(signal ' ax(1:(2*y.Dimension)) '); else x=getaxis(signal,1); y=getaxis(signal,2); z=getaxis(signal,3); t=getaxis(signal,4); end;' ];
+  y.Expression{end+1} = 'this.Dimension = ndims(signal);';
+  y.Expression{end+1} = [ 'ax={' ax(2:(2*y.Dimension)) '};' ];
+  y.Expression{end+1} = 'if ~isempty(x) && ~all(isnan(x)), signal = interp(signal, ax{:});'
+  y.Expression{end+1} = 'else x=getaxis(signal,1); y=getaxis(signal,2); z=getaxis(signal,3); t=getaxis(signal,4); end;';
   y.Expression{end+1} = 'signal = double(signal);';
   % update model description
   y.Description = [ y.Description ...
-    sprintf([ '\n  Using initially monitor %s\n  ' ...
-      'Set UserData.options.monitor to get an other one, or [] to get the last.\n  ' ...
-      'Monitors are stored in UserData.monitors' ], y.UserData.options.monitor) ];
+      '\n  Set UserData.options.monitor to specify a given monitor file pattern, ' ...
+      '\n  or [] to get the last.\n  ' ...
+      'Monitors are stored in UserData.monitors' ];
   
   if numel(y.UserData.monitors) > 1
     y.Description = [ y.Description sprintf('\n  Available monitors:') ];
