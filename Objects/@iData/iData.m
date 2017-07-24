@@ -253,9 +253,10 @@ function [out, this_in]=iData_iFunc2iData(this_in, axes_in, varargin)
     signal = signals{i};
     ax     = axs{i};
     name   = names{i};
+    if numel(this_in) > 1, this_model = this_in(i); else this_model=this_in; end
     
-    if length(signal) == length(this_in(i).Parameters) % this was in fact a parameter guess...
-      [signal, this_in(i), ax, name] = feval(this_in(i), signal, axes_in{:});
+    if length(signal) == length(this_model.Parameters) % this was in fact a parameter guess...
+      [signal, this_model, ax, name] = feval(this_model, signal, axes_in{:});
     end
     if isempty(signal), 
       iData_private_warning(mfilename, [ ': iFunc evaluation failed (empty value). Check axes and parameters.' ]);
@@ -299,13 +300,13 @@ function [out, this_in]=iData_iFunc2iData(this_in, axes_in, varargin)
     this_out.Label = name;
     this_out.DisplayName = name;
     setalias(this_out,'Error', 0);
-    if ~isempty(this_in(i).ParameterValues)
-        par_val = this_in(i).ParameterValues;
-        pars    = this_in(i).Parameters;
+    if ~isempty(this_model.ParameterValues)
+        par_val = this_model.ParameterValues;
+        pars    = this_model.Parameters;
       pars_out = cell2struct(num2cell(par_val(:)'), strtok(pars(:)'), 2);
       setalias(this_out,'Parameters', pars_out, [ name ' model parameters' ]);
     end
-    setalias(this_out,'Model', this_in(i), this_in(i).Name);
+    setalias(this_out,'Model', this_model, this_model.Name);
     clear signal ax
     out = [ out this_out ];
   end % feval return arguments (can be a parameter scan)
