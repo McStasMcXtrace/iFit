@@ -149,27 +149,31 @@ if iscell(p) && ~isempty(p) % as parameter cell (iterative function evaluation)
   % we build an ndgrid with all non-scalar parameters
   index_scalar    = cellfun(@isscalar, p);
   index_nonscalar = find(~index_scalar);
-  index_scalar    = find(index_scalar);
-  p_scalar        = cell2mat(p(index_scalar));
-  % we build a grid and fill it with ndgrid, corresponding to p(index_nonscalar) 
-  P_nonscalar = cell(1, numel(index_nonscalar));
-  [ P_nonscalar{:} ] = ndgrid(p{index_nonscalar});
-  % then we iterate all combinaisons
-  models=[]; signal={}; name={}; ax={};
-  for index=1:numel(P_nonscalar{1}) % the number of iterations to perform
-    % build a 'normal' numerical parameter vector
-    this_p = nan*ones(1, numel(p));
-    this_p(index_scalar)    = [ p{index_scalar} ];
-    for index2=1:numel(index_nonscalar)
-      this_P_nonscalar = P_nonscalar{index2};
-      this_p(index_nonscalar(index2)) = this_P_nonscalar(index);
+  if isempty(index_nonscalar), p = [ p{:} ];
+  else
+    index_scalar    = find(index_scalar);
+    p_scalar        = cell2mat(p(index_scalar));
+    % we build a grid and fill it with ndgrid, corresponding to p(index_nonscalar) 
+    P_nonscalar = cell(1, numel(index_nonscalar));
+    [ P_nonscalar{:} ] = ndgrid(p{index_nonscalar});
+    % then we iterate all combinaisons
+    models=[]; signal={}; name={}; ax={};
+    disp([ mfilename ': This is a ' num2str(numel(P_nonscalar{1})) ' steps scan' ])
+    for index=1:numel(P_nonscalar{1}) % the number of iterations to perform
+      % build a 'normal' numerical parameter vector
+      this_p = nan*ones(1, numel(p));
+      this_p(index_scalar)    = [ p{index_scalar} ];
+      for index2=1:numel(index_nonscalar)
+        this_P_nonscalar = P_nonscalar{index2};
+        this_p(index_nonscalar(index2)) = this_P_nonscalar(index);
+      end
+      [signal{index}, this_model, ax{index}, name{index}] = feval(model, this_p, varargin{:});
+      models = [ models this_model ];
+      
     end
-    [signal{index}, this_model, ax{index}, name{index}] = feval(model, this_p, varargin{:});
-    models = [ models this_model ];
-    
+    model  = models;
+    return
   end
-  model  = models;
-  return
 end
 
 if ~ischar(p)
