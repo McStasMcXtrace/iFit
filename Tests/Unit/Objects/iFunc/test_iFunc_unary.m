@@ -26,18 +26,18 @@ function result = test_iFunc_unary
     
     % operator on iFunc
     try
-      d1 = feval(op{index}, a);
+      d1 = feval(op{index}, a); % op(gauss) by iFunc
       % evaluate resulting function on axis
-      d1 = feval(d1, p, x);
+      d1 = feval(d1, p, x);     % and eval -> d1
     catch
       failed = [ failed ' ' upper(op{index}) ]; d1=[];
     end
     
-    
+    d3 = feval(op{index}, d2);  % op(gauss) by hand
     
     % do they match ?
-    if (abs(sum(d1(:)) - sum(d2(:))))/(abs(sum(d1(:)) + sum(d2(:)))) > 0.01
-      fprintf(1, '%s:%s: %g ~= %g\n', mfilename, op{index}, abs(sum(d1(:))), abs(sum(d2(:))));
+    if (abs(sum(d1(:)) - sum(d3(:))))/(abs(sum(d1(:)) + sum(d3(:)))) > 0.01
+      fprintf(1, '%s:%s: %g ~= %g\n', mfilename, op{index}, abs(sum(d1(:))), abs(sum(d3(:))));
       failed = [ failed ' ' op{index} ];
     end
   end
