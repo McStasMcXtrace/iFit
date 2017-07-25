@@ -60,8 +60,15 @@ function [pars,fval,exitflag,output] = fmin(objective, pars, options,  varargin)
 %          EXITFLAG return state of the optimizer
 %          OUTPUT additional information returned as a structure.
 %
+% Example:
+%  model= gauss1;
+%  fix(model, 'all'); model.Intensity='free';
+%  model.Intensity=1; model.HalfWidth=.5;
+%  xlim(model, 'Intensity',[-2 2])
+%  fmin(model)
+%
 % Version: $Date$
-% See also: fminsearch, optimset, 
+% See also: fminsearch, optimset, iFunc/fmax
 % (c) E.Farhi, ILL. License: EUPL.
 
 % we minimize the iFunc: (p)feval(iFunc, p). Must guess some axes to use.
