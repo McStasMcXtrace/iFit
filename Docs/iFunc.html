@@ -115,6 +115,7 @@
 
 
 
+
     <br>
     The name of the parameters can be changed by accessing the <span
       style="font-weight: bold;">Parameters</span> property (this is a
@@ -127,6 +128,7 @@
     return a vector of parameter values<span style="font-style: italic;">
       'p' </span>as a function of the axes <span style="font-style:
       italic;">x,y,z...</span> and a <span style="font-style: italic;">signal.
+
 
 
 
@@ -204,8 +206,16 @@
       values and axes</h3>
     The syntax for evaluating a model is<br>
     <br>
-    <div style="margin-left: 40px;"><span style="font-weight: bold;
-        font-style: italic;">model(parameters, x,y, ...)</span><br>
+    <div style="margin-left: 40px;"><br>
+      <span style="font-weight: bold; font-style: italic;"><span
+          style="font-weight: bold; font-style: italic;">model(parameters)&nbsp;&nbsp;&nbsp;
+          &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+          &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; % use
+          guessed axes</span><br>
+        <br>
+        model(parameters, x,y, ...)</span>&nbsp;&nbsp;&nbsp;
+      &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; <i><b>%
+          use given axes</b></i><br>
       <br>
       <span style="font-weight: bold; font-style: italic;">feval(model,
         parameters, x,y,z, ...)</span><br>
@@ -218,14 +228,22 @@
     named parameters matching the model ones, <i>x,y,z,t,u,v,w</i> are
     axes values for ranks 1,2,3... Additional arguments (above the model
     dimensionality) are usable in the Expression as<span
-      style="font-style: italic;"> 'varargin' </span>cell. When the
-    parameters are specified as empty ( [] ), current parameter values
-    are used, or guessed.<br>
+      style="font-style: italic;"> 'varargin' </span>cell. <br>
     <br>
+    When the parameters are specified as empty ( [] ), current parameter
+    values are used, or guessed. These parameters can also be given as a
+    vector corresponding to the model parameter order, a string such as
+    <font color="#cc33cc">'Intentisy=1; Width=.5'</font>, a structure
+    with named fields and values such as:<br>
+    <ul>
+      <li>p.Intensity=1;</li>
+      <li>p.Width=0.5;</li>
+      <li>model(p)</li>
+    </ul>
     The evaluation of a model with a set of parameters is obtained by
     calling the <span style="color: rgb(51, 102, 255);">feval</span>
-    function with the parameter values, or sending tIhese values
-    directly to the object :<br>
+    function with the parameter values, or sending these values directly
+    to the object :<br>
     <pre style="margin-left: 40px;">&gt;&gt; signal = <span style="color: rgb(51, 102, 255);">feval</span>(gauss, [ 1 0 .1 0])<br>&gt;&gt; gauss([ 1 0 .1 0])		<span style="font-style: italic;">	% same as above: evaluate model</span>
 </pre>
     In this case, tentative axes are computed from the model definition.
@@ -246,8 +264,8 @@
     given as a named structure, or as a string such as <font
       color="#cc33cc">'Intensity=[ .5 1 1.5 2 ];'</font> <br>
     <br>
-    For instance, to scan the Intensity parameter in a Gaussian, and get
-    the model value as an array of data sets, use:<br>
+    For instance, to scan the <i>Intensity</i> parameter in a Gaussian,
+    and get the model value as an array of data sets, use:<br>
     <ul>
       <li>
         <pre>model = <font color="#3366ff">gauss1</font>;</pre>
@@ -267,6 +285,7 @@
     <h3 align="center"><a class="mozTocH3" name="mozTocId579374"></a>Setting
 
 
+
       and removing constraints on models</h3>
     Models are often used for fitting purposes (refer to the <a
       href="Fit.html">Fit</a> help page).<br>
@@ -284,6 +303,7 @@
     (cross-constraints). For instance<br>
     <pre style="margin-left: 40px;">&gt;&gt; f=<span style="color: rgb(51, 102, 255);">gauss</span>;			<span style="font-style: italic;">% create a Gaussian model</span><br>&gt;&gt; f.Amplitude = <span style="color: rgb(204, 51, 204);">'fix'</span>;		<span style="font-style: italic;">% fix its Amplitude</span><br>&gt;&gt; f.Background = [0 1e-4];	<span style="font-style: italic;">% bound its background</span><br>&gt;&gt; f.Width = <span style="color: rgb(204, 51, 204);">'p(1)/1000'</span>;	<span style="font-style: italic;">% use an expression referring to </span>p(1)=Amplitude<span style="font-style: italic;"> value</span><br>&gt;&gt; f.Width = <span style="color: rgb(204, 51, 204);">'"Amplitude"/1000'</span>;	<span style="font-style: italic;">% same as above with direct naming of parameters using ""</span><br></pre>
     Alternatively, you can use the <span style="font-weight: bold;">mlock,
+
 
 
 
@@ -426,6 +446,7 @@
 
 
 
+
     catenates the string before/after the Expression of the model. For
     instance the following example does the same as above, explicitly
     setting the new signal value, and the next one displays a text
@@ -453,20 +474,27 @@
     objects (see the <a href="Methods.html">Methods</a> page).<br>
     <br>
     <h3 align="center"><a class="mozTocH3" name="mozTocId604963"></a>Optimising
+
       the iFunc model parameters</h3>
     It is possible to optimize the model parameter values in order to
-    minimize or maximize the model value. For this, any optimizer can be
-    used, e.g.<br>
+    minimize or maximize the model value, with the '<b>fmin</b>' method.
+    For this, any optimizer can be used, e.g.<br>
     <pre style="margin-left: 40px;">&gt;&gt; p = <span style="color: rgb(51, 102, 255);">fmin</span>(model)
 </pre>
     will use some guessed axes and automatic optimizer choice for the
-    optimisation. You may also set manually the optimizer configuration
-    and axes to use with:<br>
-    <pre style="margin-left: 40px;">&gt;&gt; p = <span style="color: rgb(51, 102, 255);">fmin</span>(model, starting_pars, options, x,y, ...)</pre>
+    optimisation. To start the optimization for a given initial
+    parameter set, use:<br>
+    <pre style="margin-left: 40px;">&gt;&gt; p = <span style="color: rgb(51, 102, 255);">fmin</span>(model, starting_pars)</pre>
+    The starting parameters can be given as a vector, structure or
+    string such as <font color="#cc33cc">'Intensity=1'</font> as
+    explained <a href="mozTocId966568">above</a>.<br>
+    You may also set manually the optimizer configuration and axes to
+    use with:<br>
+    <pre style="margin-left: 40px;">&gt;&gt; p = <span style="color: rgb(51, 102, 255);">fmin</span>(model, starting_pars, options)</pre>
     Just as detailed in the <a href="Optimizers.html">Optimizers</a>
     documentation, you may specify the 'options' as the name of the
-    optimizer, a string, or a structure, such as in the following
-    examples:<br>
+    optimizer (then using its default configuration), a string, or a
+    structure, such as in the following examples:<br>
     <pre style="margin-left: 40px;">&gt;&gt; p = <span style="color: rgb(51, 102, 255);">fmin</span>(model, starting_pars, <font color="#cc33cc">'fminpso'</font>)<br>&gt;&gt; p = <span style="color: rgb(51, 102, 255);">fmin</span>(model, starting_pars, <font color="#cc33cc">'optimizer=fminpso; OutputFcn=fminplot; Display=iter'</font>)<br></pre>
     By default, the axes to use for the evaluation will be guessed. In
     order to explicitly specify the axes to use, add them after the
@@ -476,9 +504,14 @@
     to fix the non-relevant parameters, and bound the others, as
     explained <a href="#mozTocId579374">above</a>.<br>
     For instance:<br>
-    <pre style="margin-left: 40px;">&gt;&gt; model= <font color="#3366ff">gauss1</font>;<br>&gt;&gt; <font color="#3366ff">fix</font>(model, <font color="#cc33cc">'all'</font>); model.Intensity=<font color="#cc33cc">'free'</font>;<br>&gt;&gt; model.Intensity=1; model.HalfWidth=.5;<br>&gt;&gt; <font color="#3366ff">xlim</font>(model, <font color="#cc33cc">'Intensity'</font>,[-2 2])<br>&gt;&gt; <font color="#3366ff">fmin</font>(model)<br></pre>
+    <pre style="margin-left: 40px;">&gt;&gt; model= <font color="#3366ff">gauss1</font>;<br>&gt;&gt; <font color="#3366ff">fix</font>(model, <font color="#cc33cc">'all'</font>); model.Intensity=<font color="#cc33cc">'free'</font>;<br>&gt;&gt; model.Intensity=1; model.HalfWidth=.5;<br>&gt;&gt; <font color="#3366ff">xlim</font>(model, <font color="#cc33cc">'Intensity'</font>,[-2 2])<br>&gt;&gt; <font color="#3366ff">fmin</font>(model)<br>ans =<br>   -2.0000         0    0.5000<br></pre>
     will search for the intensity that minimizes a Gaussian. This is of
     course the lower Intensity bound, other parameters being fixed.<br>
+    <br>
+    It is also possible to maximize the model parameters with the
+    similar '<b>fmax</b>' method. The result is then the upper Intensity
+    bound.<br>
+    <pre style="margin-left: 40px;">&gt;&gt; model= <font color="#3366ff">gauss1</font>;<br>&gt;&gt; <font color="#3366ff">fix</font>(model, <font color="#cc33cc">'all'</font>); model.Intensity=<font color="#cc33cc">'free'</font>;<br>&gt;&gt; model.Intensity=1; model.HalfWidth=.5;<br>&gt;&gt; <font color="#3366ff">xlim</font>(model, <font color="#cc33cc">'Intensity'</font>,[-2 2])<br>&gt;&gt; <font color="#3366ff">fmin</font>(model)<br>ans =<br>    1.9995         0    0.5000<br></pre>
     <h3 style="text-align: center;"><a class="mozTocH3"
         name="mozTocId443357"></a>Fitting model parameters onto data<br>
     </h3>
@@ -489,6 +522,7 @@
     The data can be given as an <a href="iData.html">iData</a> object,
     a vector/matrix, <br>
     <div style="margin-left: 40px;"><span style="font-style: italic;">data=[
+
 
 
 
@@ -515,6 +549,7 @@
 
 
 
+
       </span><br style="font-style: italic;">
       <span style="font-style: italic;">data.Error </span><br
         style="font-style: italic;">
@@ -524,6 +559,7 @@
     </div>
     or a cell <br>
     <div style="margin-left: 40px;"><span style="font-style: italic;">data={
+
 
 
 
@@ -566,6 +602,7 @@
     <hr style="width: 100%; height: 2px;">
     <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
+
 
 
 
