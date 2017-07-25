@@ -2,6 +2,10 @@ function result = test_Models_mccode
 
   % test McCode model builder
   y = mccode('defaults');
+  % set a specific monitor file name
+  y.UserData.options.monitor='Diff_BananaTheta';
+  % create 3D view
+  [~,fig]=mccode_display(y);
   % then evaluate the model with raw McCode data
   f = iData(y, [], nan);
   % check dimension and integral
@@ -11,3 +15,4 @@ function result = test_Models_mccode
   else
     result = [ 'FAILED ' mfilename ];
   end 
+  close(fig);

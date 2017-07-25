@@ -226,6 +226,7 @@ function [comps, fig, model]=mccode_display(model, p, options)
     elseif ndims(val) == 2
       a=axes('Parent',fig,'position',[.8 .05 .15 .15]);
       h=surf(a, val); view(2); axis tight; set(a,'XTick',[], 'YTick',[]);
+      set(h,'EdgeColor','none')
       if ~isempty(model.UserData.options.monitor)
         title(model.UserData.options.monitor,'Interpreter','none');
       end
