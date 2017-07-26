@@ -68,11 +68,18 @@
 divided
 
 
+
         by the <span style="font-style: italic;">Monitor, </span>as a
         function of the defined <span style="font-style: italic;">Axes</span>
         (or default ones when not defined). A way to plot the raw <span
           style="font-style: italic;">Signal</span> is to set the <span
-          style="font-style: italic;">Monitor</span> to 1.<br>
+          style="font-style: italic;">Monitor</span> to 1 or 0.<br>
+        <br>
+        You can of course display the object information with the disp
+        method:<br>
+        <pre style="margin-left: 40px;">&gt;&gt; a=<span style="color: rgb(51, 102, 255);">load</span>(iData, <span style="color: rgb(204, 51, 204);">[ ifitpath 'Data/sv1850.scn'</span> ])<br>&gt;&gt; <font color="#3366ff">disp</font>(a)<br></pre>
+        or edit its values in a spreadsheet:<br>
+        <pre style="margin-left: 40px;">&gt;&gt; <font color="#3366ff">edit</font>(a)<br></pre>
       </div>
     </div>
     <h3><a class="mozTocH3" name="mozTocId726945"></a>Plotting objects
@@ -84,6 +91,7 @@ divided
     slices, as seen below. The quantity which appears onto plots is the
     <span style="font-style: italic;">Signal/Monitor</span>. In order to
     vizualize the raw <span style="font-style: italic;">Signal, </span>set
+
 
 
     <span style="font-style: italic;">Monitor</span> to 1 with e.g. <br>
@@ -98,17 +106,18 @@ divided
     Let us import a simple 1D (vector <span style="font-style: italic;">Signal=f(x)
 
 
+
     </span>) data set into an iData object, and plot it:<br>
     <pre style="margin-left: 40px;">&gt;&gt; a=<span style="color: rgb(51, 102, 255);">load</span>(iData, <span style="color: rgb(204, 51, 204);">[ ifitpath 'Data/sv1850.scn'</span> ])<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(a);<br></pre>
     <div style="text-align: center;"><a
         href="images/iData_plot_1d_menu.png"><img style="width: 400px;
           height: 354px;" alt="iData plot 1D with menu" title="iData
           plot 1D with menu" src="images/iData_plot_1d_menu.png"
-          align="middle" border="0" width="568" height="503"></a> <a
+          height="503" width="568" border="0" align="middle"></a> <a
         href="images/iData_plot_About.png"><img style="width: 474px;
           height: 184px;" alt="iData plot About" title="iData plot
-          About" src="images/iData_plot_About.png" align="middle"
-          border="0" width="474" height="184"></a><br>
+          About" src="images/iData_plot_About.png" height="184"
+          width="474" border="0" align="middle"></a><br>
     </div>
     <br>
     A standard Matlab figure appears, with the <span style="font-style:
@@ -147,9 +156,11 @@ divided
     select the contextual menu item '<span style="font-style: italic;">Reset
 
 
+
       view</span>'.<br>
     <br>
     The Matlab documentation about <span style="font-style: italic;">Graphics/Plots
+
 
 
       and Plotting Tools/Figures, Plots, and Graphs</span> provides a
@@ -342,6 +353,7 @@ href="#/usr/pgi/linux86-64/2010/bin:/usr/pgi/linux86-64/2010/mpi/mvapich/bin">im
 explained
 
 
+
     in the <a href="iData.html#mozTocId765887">iData axis definition</a>,
     the axis of rank 1 is usually assigned to the 'Y' label, and the
     axis of rank 2 to 'X'.<br>
@@ -361,6 +373,7 @@ explained
           alt="iData_plot_3d_surf: plot(d)" title="iData_plot_3d_surf:
           plot(d)" src="images/iData_plot_3d_surf.png" style="border:
           0px solid ; width: 200px; height: 177px;" align="middle"></a>&nbsp;
+
 
 
       <a href="images/iData_plot_3d_surf_half.png"><img
@@ -435,6 +448,7 @@ explained
     <br>
     <span style="font-weight: bold; font-style: italic;">NOTE: </span>as
 explained
+
 
 
     in the <a href="iData.html#mozTocId765887">iData axis definition</a>,
@@ -522,6 +536,7 @@ explained
           style="font-style: italic;"> 'scatter3'</span> methods are
         here equivalen<span style="font-style: italic;">t (colored
           lines)</span>, whereas <span style="font-style: italic;">'plot3'
+
 
         </span>and <span style="font-style: italic;">'waterfall'</span>
         draw simple lines.<br>
@@ -671,6 +686,7 @@ explained
     <hr style="width: 100%; height: 2px;">
     <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
+
 
 
         - iFit/iData plotting - </span><span style="font-style:
