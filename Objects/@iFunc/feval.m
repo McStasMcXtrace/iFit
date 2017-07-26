@@ -62,7 +62,7 @@ try
   inputname1=inputname(1);
   % handle bug in Matlab R2015-2016 for inputname shifted in feval
   % make sure argument is indeed what we expect
-  if ~isa(evalin('caller', inputname1), 'iFunc') inputname1=''; end
+  if ~isempty(inputname1) && ~isa(evalin('caller', inputname1), 'iFunc') inputname1=''; end
 catch
   inputname1 = '';
 end
@@ -155,10 +155,15 @@ if iscell(p) && ~isempty(p) % as parameter cell (iterative function evaluation)
     p_scalar        = cell2mat(p(index_scalar));
     % we build a grid and fill it with ndgrid, corresponding to p(index_nonscalar) 
     P_nonscalar = cell(1, numel(index_nonscalar));
-    [ P_nonscalar{:} ] = ndgrid(p{index_nonscalar});
+    if isscalar(index_nonscalar)
+      P_nonscalar = p(index_nonscalar);
+    else
+      [ P_nonscalar{:} ] = ndgrid(p{index_nonscalar});
+    end
     % then we iterate all combinaisons
     models=[]; signal={}; name={}; ax={};
-    disp([ mfilename ': This is a ' num2str(numel(P_nonscalar{1})) ' steps scan' ])
+    disp([ mfilename ': This is a ' num2str(numel(P_nonscalar{1})) ' steps scan.' ]);
+    t0 = clock;
     for index=1:numel(P_nonscalar{1}) % the number of iterations to perform
       % build a 'normal' numerical parameter vector
       this_p = nan*ones(1, numel(p));
@@ -169,9 +174,29 @@ if iscell(p) && ~isempty(p) % as parameter cell (iterative function evaluation)
       end
       [signal{index}, this_model, ax{index}, name{index}] = feval(model, this_p, varargin{:});
       models = [ models this_model ];
+      % compute remaining time
+      % time for 'index' steps is etime(clock, t0)
+      % this corresponds with a fraction index/numel(P_nonscalar{1})
+      % the time per iteration is then etime(clock, t0)/index
+      % remaining steps are: (numel(P_nonscalar{1})-index)
+      % which should last: (numel(P_nonscalar{1})-index)*etime(clock, t0)/index
+      eta = (numel(P_nonscalar{1})-index)*etime(clock, t0)/index; % [s]
+      if eta > 3600
+        disp([ mfilename ': step ' num2str(index) '/' num2str(numel(P_nonscalar{1})) ...
+               ' done: ETA ' num2str(eta/3600) ' [h]' ]);
+      elseif eta > 60
+        disp([ mfilename ': step ' num2str(index) '/' num2str(numel(P_nonscalar{1})) ...
+               ' done: ETA ' num2str(eta/60) ' [min]' ]);
+      elseif eta > 5 && etime(clock, t0)/index > 5
+        disp([ mfilename ': step ' num2str(index) '/' num2str(numel(P_nonscalar{1})) ...
+               ' done: ETA ' num2str(eta) ' [s]' ]);
+      end
       
     end
-    model  = models;
+    model  = reshape(models, size(P_nonscalar{1}));
+    signal = reshape(signal, size(P_nonscalar{1}));
+    ax     = reshape(ax,     size(P_nonscalar{1}));
+    name   = reshape(name,   size(P_nonscalar{1}));
     return
   end
 end
