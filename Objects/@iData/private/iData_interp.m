@@ -71,7 +71,11 @@ otherwise % nD, n>1
     any_matrix  = 0;
     for i=1:length(i_axes); 
         v=i_axes{i}; 
-        if numel(v) == length(v), i_axes{i}=v(:); any_vector = 1; 
+        if numel(v) == length(v)  % isvector
+          sz = ones(size(i_axes));
+          sz(i) = numel(v);
+          i_axes{i}=reshape(v, sz); 
+          any_vector = 1; 
         else any_matrix =1; end; 
     end
     % check if we have mixed axes as vector/matrices -> all go to matrices

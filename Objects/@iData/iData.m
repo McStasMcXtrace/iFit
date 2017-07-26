@@ -172,11 +172,14 @@ else  % convert input argument into object
       
       [this_out, this_in] = iData_iFunc2iData(this_in, axes_in, varargin{2:end});
       
-      if numel(in) == 1, in = this_in; else; in(n_in) = this_in; end
+      if numel(in) == 1 || numel(in) == numel(this_in), in = this_in; 
+      elseif numel(this_in) == 1
+          in(n_in) = this_in; 
+      end
       out = [ out this_out ];
     end % for n_in
     % update initial iFunc, if possible
-    if ~isempty(inputname(1))
+    if ~isempty(inputname(1)) && numel(in) == numel(varargin{1})
        assignin('caller',inputname(1),in);
     end
     return
@@ -310,6 +313,8 @@ function [out, this_in]=iData_iFunc2iData(this_in, axes_in, varargin)
     clear signal ax
     out = [ out this_out ];
   end % feval return arguments (can be a parameter scan)
-  
+  if numel(out) > 1 && numel(out) == numel(signals)
+   out = reshape(out, size(signals));
+  end
 % ============================================================================
 
