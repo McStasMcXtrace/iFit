@@ -141,13 +141,17 @@ end
 s_dims = size(b); % Signal/object dimensions
 myisvector = @(c)length(c) == numel(c);
 
+% do we have mixed vector and matrix f_axes ?
+has_vector = 0;
+has_matrix = 0;
+
 for index=1:ndims(b)
   v = f_axes{index}; 
   if isempty(v), v= i_axes{index}; end % no axis specified, use the initial one
 
   % compute the initial axis length
-  if myisvector(v), a_len = numel(v);
-  else            a_len = size( v, index);
+  if myisvector(v), a_len = numel(v); has_vector=1;
+  else            a_len = size( v, index); has_matrix=1;
   end
   if isvector(b) >= 2 && a_len > prod(size(b))^(1/ndims(b))*2 % event data set
     a_len = prod(size(b))^(1/ndims(b))*2;
@@ -159,6 +163,7 @@ for index=1:ndims(b)
   s_dims(index) = a_len;
 
 end
+if has_vector && has_matrix, requires_meshgrid=1; end
 
 % check if interpolation is indeed required ------------------------------------
 if isvector(b) >=2 % event data set: redirect to hist method (accumarray)

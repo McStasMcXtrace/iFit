@@ -26,6 +26,8 @@ if nargin >= 3 || ~isempty(varargin)
     elseif isnumeric(b) || islogical(b) 
       if ndims(b) > 2,   b=b(:); end
       if numel(b) > 50, toadd = [ toadd c ' [' sprintf('%g ',double(b(1:20))) '...' sprintf('%g ',double(b((end-20):end))) ']' ]; 
+      elseif isempty(b) 
+        toadd = [ toadd c ' []' ];
       else 
         toadd = [ toadd c ' ' sprintf('%g ',double(full(b))) ];
       end
