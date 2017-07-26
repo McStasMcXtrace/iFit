@@ -398,20 +398,20 @@ function data = mcplot_check_data(structure)
     return
   end
   
-  % check a single structure format
-  % fields
-  if ~isfield(structure, 'Source')
-    if isfield(structure,'Instrument') && ~isfield(structure, 'filename')
-      structure.Source = structure.Instrument;
-    else
-      structure.Source = filename;
+  % check a single structure format fields
+  if isfield(structure, 'Source') && isempty(dir(structure.Source))
+    % not a file name
+    if ~isfield(structure, 'Instrument')
+      structure.Instrument = structure.Source;
     end
   end
+
   if ~isfield(structure, 'component') structure.component = 'unknown'; end
   if ~isfield(structure, 'filename')  structure.filename  = pwd; end
   if ~isfield(structure, 'errors')    structure.errors    = [];  end
   if ~isfield(structure, 'events')    structure.events    = [];  end
   if ~isfield(structure, 'title'),    structure.title     = '';  end
+  structure.Source = structure.filename;
 
   % extract type and theoretical dimension of data block
   if ~isfield(structure, 'size')
