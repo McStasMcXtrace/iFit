@@ -92,7 +92,11 @@ else
             const = [ const ' set from ' char(s.Constraint.set(p)) ];
           end
       end
-      if ~isempty(val) && isfinite(val), line = [ line sprintf('=%g ', val)  ]; end
+      try
+        if ~isempty(val) && isfinite(val), line = [ line sprintf('=%g ', val)  ]; end
+      catch
+        line = [ line sprintf('=%s ', class(val))  ];
+      end
       if ~isempty(const), line = [ line const ]; end
       if ~isempty(R),     line = [ line sprintf('  %% entered as: %s', R) ]; end
       fprintf(1, '%s\n', line);

@@ -91,7 +91,11 @@ else
             val = s.ParameterValues(p);
           end
         end
-        if ~isempty(val), t = [ t sprintf('=%g', val) ]; end
+        try
+          if ~isempty(val), t = [ t sprintf('=%g', val) ]; end
+        catch
+          t = [ t sprintf('=%s', class(val)) ];
+        end
         t = [ t ' ' ];
       end
       if length(t) > 40, t = [ t(1:37) '...'  ]; end
