@@ -82,12 +82,12 @@ function y = mccode(instr, options)
 % MODEL OPTIMISATION
 % ------------------------------------------------------------------------------
 % To optimise instrument parameters, you should first fix the non-varying
-% parameters, and possibly bound the others. Then the optimiser is launched with
-% any optimiser. To maximise the model, use '-model' as argument, as in the example:
-%   model = -mccode('templateDIFF');  % maximize
+% parameters, and possibly bound the others. Then the optimiser is launched
+% with any 'fmax':
+%   model = mccode('templateDIFF');  % maximize
 %   fix(model, 'all'); model.RV='free';
 %   model.RV=[0 1 2];        % bounds and starting value
-%   p = fmin( model , [], nan)  % return the optimal parameters using the raw monitors
+%   p = fmax( model , [], '', nan)  % return the optimal parameters using the raw monitors
 %
 % Version: $Date$
 % See also iFunc, iFunc/fits, iFunc/plot, iFunc/feval, mcstas
@@ -322,15 +322,16 @@ y.Expression = { ...
 '  if ~isempty(options.monitor) && ischar(options.monitor)', ...
 '    signal = iData(fullfile(options.dir,''sim'',[ strtrim(options.monitor) ''*'' ]));', ...
 '  end', ...
-'  if isempty(signal) || isempty(options.monitor)', ...
+'  if all(isempty(signal)) || isempty(options.monitor)', ...
 '    signal = iData(fullfile(options.dir,''sim'',''mccode.sim''));', ...
 '  end', ...
 '  this.UserData.monitors = signal;', ...
 '  if ~isempty(options.monitor) && ischar(options.monitor)', ...
 '    if ~isa(signal, ''iData'') || numel(signal) <= 1, index=[];', ...
-'    elseif strcmp(options.monitor, ''first''), index=1;', ...
 '    else index=strcmp(options.monitor, get(signal,''Component'')); end', ...
-'    if ~isempty(index), signal=signal(index); end', ...
+'    if numel(signal) > 1 && ~isempty(index), signal=signal(index); end', ...
+'  elseif ~isempty(options.monitor) && isnumeric(options.monitor) && numel(signal) > 1', ...
+'    signal=signal(options.monitor);', ...
 '  end', ...
 '' ...
 };
@@ -351,15 +352,8 @@ if ~any(isnan((y.Guess)))
   [signal,y] = feval(y,y.Guess);
   signal = y.UserData.monitors;     % get all monitors
   y.UserData.options.ncount = ncount;
-  if numel(signal) > 1
-    % get the monitor Positions, and the further away one
-    positions = get(signal,findfield(signal, 'position'));
-    if ~isempty(positions)
-      [~,index_position] = max(cellfun(@(c)norm(c), positions));
-    else
-      index_position = numel(signal); % last one
-    end
-    signal=signal(index_position);
+  if numel(signal) > 1  % get the last one
+    signal=signal(end);
   end
   % leave the monitor selection empty as 
   % Could be: get(signal,'Component') but this choice fails when the monitor 
@@ -370,8 +364,9 @@ if ~any(isnan((y.Guess)))
   ax = ',x,y,z,t';
   y.Expression{end+1} = 'if numel(signal) > 1, signal = signal(end); end';
   y.Expression{end+1} = 'this.Dimension = ndims(signal);';
-  y.Expression{end+1} = [ 'ax={' ax(2:(2*y.Dimension)) '};' ];
-  y.Expression{end+1} = 'if ~isempty(x) && ~all(isnan(x)), signal = interp(signal, ax{:});'
+  y.Expression{end+1} =['ax=''' ax(2:end) ''';' ];
+  y.Expression{end+1} = 'ax=eval([ ''{'' ax(1:(2*this.Dimension)) ''}'']);';
+  y.Expression{end+1} = 'if ~isempty(x) && ~all(isnan(x(:))), signal = interp(signal, ax{:});'
   y.Expression{end+1} = 'else x=getaxis(signal,1); y=getaxis(signal,2); z=getaxis(signal,3); t=getaxis(signal,4); end;';
   y.Expression{end+1} = 'signal = double(signal);';
   % update model description
