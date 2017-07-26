@@ -74,6 +74,8 @@ function [pars,fval,exitflag,output] = fmin(varargin)
 %   constraints.eval=  expression making use of 'p', 'constraints', and 'options' 
 %                        and returning modified 'p'
 %                      or function handle p=@constraints.eval(p)
+%   When given as a vector of 0,1, CONSTRAINTS indicate which parameters
+%   are fixed.
 %  An empty CONSTRAINTS sets no constraints.
 %
 %  Additional arguments are sent to the objective function.
