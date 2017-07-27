@@ -74,25 +74,10 @@ function [pars,fval,exitflag,output] = fmin(objective, pars, options,  varargin)
 % we minimize the iFunc: (p)feval(iFunc, p). Must guess some axes to use.
 
 if nargin < 2, pars    = []; end
-if isstruct(pars), 
-  flag_pars_struct = true;
-  if isempty(fieldnames(pars))
-    pars = cell2struct(num2cell(objective.ParameterValues(:)), ...
-      strtok(objective.Parameters(:)), 1);
-  end
-else 
-  flag_pars_struct = false; 
-end
-if isempty(pars)
-  pars = objective.ParameterValues;
-end
 if nargin < 3, options = []; end
-  
-if nargin < 4  % no axes given, we guess them
-  [~, ~, ax] = feval(objective, pars);
-else
-  ax = varargin;
-end
+
+% handle parameters: from char, structure or vector
+[pars, pars_isstruct, ax] = iFunc_private_get_pars(objective, pars, varargin);
 
 % create the evaluation of the function
 fun = @(p)feval(objective', p, ax{:});
@@ -111,9 +96,8 @@ if ~isempty(inputname(1)) && 0
   assignin('caller', inputname(1), objective);
 end
 % return struct when pars where given as such,only those changed
-if flag_pars_struct
-  pars = pars(constraints.index_variable);
-  pars_name = constraints.pars_name(constraints.index_variable);
+if ~isempty(pars_isstruct)
+  pars = pars(pars_isstruct);
+  pars_name = objective.Parameters(pars_isstruct);
   pars = cell2struct(num2cell(pars(:)), strtok(pars_name(:)), 1);
 end
-
