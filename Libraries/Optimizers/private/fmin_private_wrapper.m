@@ -152,6 +152,10 @@ elseif ischar(options), options=str2struct(options); end
 if ischar(pars),
   pars   =str2struct(pars); 
 end
+if isstruct(pars)
+  pars_name=fieldnames(pars);
+  pars=cell2mat(struct2cell(pars));
+end
 
 % handle case when parameters are given as structures
 % constraints =============================================================
@@ -174,8 +178,6 @@ if length(constraints)==length(pars) & (isnumeric(constraints) | islogical(const
 end
 
 if isstruct(pars)
-  pars_name=fieldnames(pars);
-  pars=cell2mat(struct2cell(pars));
   % check if constraints are also structures, but with same fields
   check = {'min','max','fixed','step'};
   for index=1:length(check)
@@ -257,8 +259,14 @@ if isfield(constraints, 'Expression') && ~isfield(constraints, 'eval')
 end
 
 % options ======================================================================
+
 if ~isfield(options,'optimizer') || isempty(options.optimizer)
   options.optimizer = optimizer;
+end
+if strcmp(options.optimizer, 'fmin')
+  [optimizer, algorithm] = inline_auto_optimizer(fun, pars_all, varargin{:});
+  options.optimizer = optimizer;
+  options.algorithm = algorithm;
 end
 if ~isfield(options,'Display') options.Display=''; end
 
@@ -335,7 +343,7 @@ catch ME
 end % try
 
 if isstruct(output) && isfield(output,'lasterror') && isempty(strfind(output.lasterror.message, 'stop condition:'))
-  disp('Code error when launching the optimizer. Please fix it...')
+  disp('???? Code error when launching the optimizer. Please fix it...')
   disp(output.lasterror.message);
   for index=1:length(output.lasterror.stack)
     disp(output.lasterror.stack(index))
@@ -498,16 +506,6 @@ end
 % This is where we call the actual optimizer. 
 % This is controlled from fmin_private_wrapper
 
-  if strcmp(options.optimizer, 'fmin')
-    [optimizer, algorithm] = inline_auto_optimizer(fun, pars_all, varargin{:});
-    % update options
-    options2 =feval(optimizer, 'defaults');
-    % merge the structures/cells handling duplicated fields
-    options = mergestruct(options2, options);
-    options.optimizer = optimizer;
-    options.algorithm = algorithm;
-  end
-  
   switch options.optimizer
   case {'cmaes','fmincmaes'}    
   % Evolution Strategy with Covariance Matrix Adaption ---------------------------
@@ -588,7 +586,7 @@ end
     case -1, message='Converged: Termination parameter tolerance criteria reached';
     end
   case {'powell','fminpowell'}
-  % Powell minimization ----------------------------------------------------------
+  % Powell minimization --------------------------------------------------------
     if isempty(options.Hybrid), options.Hybrid='Coggins'; end
     if strcmp(lower(options.Hybrid), 'coggins') 
       t = 'Coggins';
@@ -599,13 +597,13 @@ end
     [constraints, constraints_var] = inline_constraints_minmax(pars_all, constraints);
     [pars,fval,exitflag,output] = powell(@(pars) inline_objective(fun, pars, varargin{:}), pars, options);
   case {'pso','fminpso'}
-  % particle swarm ---------------------------------------------------------------
+  % particle swarm -------------------------------------------------------------
     [constraints, constraints_var] = inline_constraints_minmax(pars_all, constraints);
     [pars,fval,exitflag,output] = PSO(@(pars) inline_objective(fun, pars, varargin{:}),pars, ...
        constraints_var.min(:),constraints_var.max(:),options);
     message = output.message;
   case {'ralg','fminralg','solvopt'}
-  % Shor's r-algorithm -----------------------------------------------------------
+  % Shor's r-algorithm ---------------------------------------------------------
     opt(1) = -1;
     opt(2) = options.TolX;
     opt(3) = options.TolFun;
@@ -621,7 +619,7 @@ end
     if out(9) < 0, exitflag = out(9); 
     else exitflag=0; end
   case {'fminsearch','fminsearchbnd'}
-  % Nelder-Mead simplex, with constraints ----------------------------------------
+  % Nelder-Mead simplex, with constraints --------------------------------------
     [pars,fval,exitflag,output] = fminsearch(@(pars) inline_objective(fun, pars, varargin{:}), pars, options);
   %     1  Maximum coordinate difference between current best point and other
   %        points in simplex is less than or equal to TolX, and corresponding 
@@ -633,12 +631,12 @@ end
     elseif exitflag ==-1, exitflag=-6;
     end
   case {'simpsa','fminsimpsa','SIMPSA'}
-  % simplex/simulated annealing --------------------------------------------------
+  % simplex/simulated annealing ------------------------------------------------
     [constraints, constraints_var] = inline_constraints_minmax(pars_all, constraints);
     [pars,fval,exitflag,output] = SIMPSA(@(pars) inline_objective(fun, pars, varargin{:}), pars, ...
       constraints_var.min(:),constraints_var.max(:),options);
   case {'SCE','fminsce'}
-  % shuffled complex evolution ---------------------------------------------------
+  % shuffled complex evolution -------------------------------------------------
     [constraints, constraints_var] = inline_constraints_minmax(pars_all, constraints);
     [pars,fval,exitflag,output] = SCE(@(pars) inline_objective(fun, pars, varargin{:}), pars, ...
       constraints_var.min(:),constraints_var.max(:),options);
