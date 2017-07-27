@@ -95,7 +95,7 @@ if nargin < 3, options = []; end
 
 if ~isempty(inputname(1)) && 0
   objective.UserData.output = output;
-  objective.ParameterValues = pars(:);
+  objective.ParameterValues = objective2.ParameterValues;
   objective.Constraint = output.constraints; % restore initial constraints
   assignin('caller', inputname(1), objective);
 end

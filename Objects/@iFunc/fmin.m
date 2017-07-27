@@ -74,9 +74,17 @@ function [pars,fval,exitflag,output] = fmin(objective, pars, options,  varargin)
 % we minimize the iFunc: (p)feval(iFunc, p). Must guess some axes to use.
 
 if nargin < 2, pars    = []; end
-if isempty(pars), 
-  pars = cell2struct(num2cell(objective.ParameterValues(:)), ...
-    strtok(objective.Parameters(:)), 1);
+if isstruct(pars), 
+  flag_pars_struct = true;
+  if isempty(fieldnames(pars))
+    pars = cell2struct(num2cell(objective.ParameterValues(:)), ...
+      strtok(objective.Parameters(:)), 1);
+  end
+else 
+  flag_pars_struct = false; 
+end
+if isempty(pars)
+  pars = objective.ParameterValues;
 end
 if nargin < 3, options = []; end
   
@@ -101,5 +109,11 @@ if ~isempty(inputname(1)) && 0
   objective.ParameterValues = pars(:);
   objective.Constraint = constraints; % restore initial constraints
   assignin('caller', inputname(1), objective);
+end
+% return struct when pars where given as such,only those changed
+if flag_pars_struct
+  pars = pars(constraints.index_variable);
+  pars_name = constraints.pars_name(constraints.index_variable);
+  pars = cell2struct(num2cell(pars(:)), strtok(pars_name(:)), 1);
 end
 
