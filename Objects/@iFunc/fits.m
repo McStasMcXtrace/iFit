@@ -131,10 +131,11 @@ function [pars_out,criteria,message,output] = fits(model, a, pars, options, cons
 %           parsHistoryUncertainty: Uncertainty on the parameters obtained from 
 %                              the optimization trajectory (double)
 %
-% ex:     p=fits(gauss, data,[1 2 3 4]);
+% ex:     data=load(iData, [ ifitpath 'Data/sv1850.scn' ])
+%         p=fits(data);
 %         o=fminpowell('defaults'); o.OutputFcn='fminplot'; 
-%         [p,c,m,o]=fits(gauss,data,[1 2 3 4],o); 
-%         plot(a); hold on; plot(o.modelAxes, o.modelValue,'r');
+%         [p,c,m,o]=fits(gauss,data,[],o); 
+%         figure; plot(a); hold on; plot(o.modelAxes, o.modelValue,'r');
 %
 % Version: $Date$
 % See also fminsearch, optimset, optimget, iFunc, iData/fits, iData, ifitmakefunc
@@ -355,58 +356,7 @@ elseif model.Dimension ~= ndimS
 end
 
 % handle parameters: from char, structure or vector
-
-pars_isstruct=[];
-if isempty(pars), pars='current'; end
-if ischar(pars) && strcmp(pars,'current')
-  pars = model.ParameterValues;
-end
-if ischar(pars) && ~strcmp(pars,'guess')
-  pars = str2struct(pars);
-end
-
-if isstruct(pars)
-  if isempty(fieldnames(pars))
-    [~, model] = feval(model, 'current', a.Axes{:}, a.Signal);
-    pars = cell2struct(num2cell(model.ParameterValues(:)), ...
-      strtok(model.Parameters(:)), 1);
-  end
-  % search 'pars' names in the model parameters, and reorder the parameter vector
-  p = []; f=fieldnames(pars);
-  for index=1:length(f)
-    match = strcmp(f{index}, model.Parameters);
-    if any(match) && isscalar(pars.(f{index})) ...
-      && isnumeric(pars.(f{index}))
-      p(index) = pars.(f{index});
-    else
-      pars_isstruct.(f{index}) = pars.(f{index});
-    end
-  end
-  % we try to simply build a parameter vector
-  if length(p) ~= length(model.Parameters)
-    p = [];
-    for index=1:length(f)
-      if isnumeric(pars.(f{index}))
-        p = [ p pars.(f{index}) ];
-      end
-    end
-  end
-  if length(p) ~= length(model.Parameters)
-    disp('Actual parameters')
-    disp(pars)
-    disp([ 'Required model ' model.Name ' ' model.Tag ' parameters' ])
-    disp(model.Parameters)
-    error([ 'iFunc:' mfilename], [ 'The parameters entered as a structure do not define all required model parameters.\n\tUse a vector or a structure with same fields or number of numerical values.' ]);
-  else
-    if isempty(pars_isstruct), pars_isstruct=1; end
-    pars = p;
-  end
-elseif strcmp(pars,'guess') || (isnumeric(pars) && length(pars) < length(model.Parameters))
-  if isempty(pars), pars='guess'; end
-  [pars, model] = feval(model, 'guess', a.Axes{:}, a.Signal); % guess missing starting parameters
-  pars = model.ParameterValues;
-end
-pars = reshape(pars, [ 1 numel(pars)]); % a single row
+[pars, pars_isstruct] = iFunc_private_get_pars(model, pars, a.Axes, a.Signal);
 
 % handle options
 if isempty(options)
@@ -564,6 +514,7 @@ try
   end
 end % try
 
+constraints = output.constraints;
 if strcmp(options.Display, 'iter') || strcmp(options.Display, 'final')
   sigma = output.parsHistoryUncertainty;
   if ~isempty(output.parsHessianUncertainty)
@@ -571,7 +522,7 @@ if strcmp(options.Display, 'iter') || strcmp(options.Display, 'final')
   end
   
   disp([ '** Final parameters (duration ' num2str(output.duration) ' [s]):' ]);
-
+  
   for index=1:length(model.Parameters); 
     if numel(sigma) < index, 
         sigma(index)=0; 
@@ -632,16 +583,11 @@ output.parsNames  = model.Parameters;
 % final plot when in OutputFcn mode (with optimisation result)
 % eval_criteria(model, [], options.criteria, a, varargin{:});
 
+% return struct when pars where given as such,only those changed
 if ~isempty(pars_isstruct)
-  % first rebuild the model parameter structure
-  pars_out = cell2struct(num2cell(pars_out(:)'), strtok(model.Parameters(:)'), 2);
-  % then add initial additional fields
-  if isstruct(pars_isstruct)
-    f = fieldnames(pars_isstruct);
-    for index=1:length(f)
-      pars_out.(f{index}) = pars_isstruct.(f{index});
-    end
-  end
+  pars_out = pars_out(pars_isstruct);
+  pars_name = model.Parameters(pars_isstruct);
+  pars_out = cell2struct(num2cell(pars_out(:)), strtok(pars_name(:)), 1);
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% EMBEDDED FUNCTION %%%%%%%%%%%%%%%%%%%%%%%%%%%

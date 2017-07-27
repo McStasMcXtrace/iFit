@@ -208,7 +208,7 @@ end
 % handle varargin ==============================================================
 % handle case where varargin contains itself model cell as 1st arg for axes and
 % Signal
-
+Signal = [];
 signal_in_varargin = []; % holds the index of a Signal after Axes in varargin
 if ~isempty(varargin) 
   this = varargin{1};
