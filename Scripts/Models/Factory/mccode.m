@@ -366,7 +366,7 @@ if ~any(isnan((y.Guess)))
   y.Expression{end+1} = 'this.Dimension = ndims(signal);';
   y.Expression{end+1} =['ax=''' ax(2:end) ''';' ];
   y.Expression{end+1} = 'ax=eval([ ''{'' ax(1:(2*this.Dimension)) ''}'']);';
-  y.Expression{end+1} = 'if ~isempty(x) && ~all(isnan(x(:))), signal = interp(signal, ax{:});'
+  y.Expression{end+1} = 'if ~isempty(x) && ~all(isnan(x(:))), signal = interp(signal, ax{:});';
   y.Expression{end+1} = 'else x=getaxis(signal,1); y=getaxis(signal,2); z=getaxis(signal,3); t=getaxis(signal,4); end;';
   y.Expression{end+1} = 'signal = double(signal);';
   % update model description

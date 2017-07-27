@@ -3,7 +3,7 @@ function [constraints, constraints_var] = inline_constraints_minmax(pars, constr
   if ~isfield(constraints, 'min')
     constraints.min = NaN*ones(size(pars));
   end
-  for i=find(isnan(constraints.min));
+  for i=find(isnan(constraints.min(:)'));
     constraints.min(i) = -2*abs(pars(i)); % default min values
     if pars(i) == 0
       constraints.min(i) = -1;
@@ -12,7 +12,7 @@ function [constraints, constraints_var] = inline_constraints_minmax(pars, constr
   if ~isfield(constraints, 'max')
     constraints.max = NaN*ones(size(pars));
   end
-  for i=find(isnan(constraints.max));
+  for i=find(isnan(constraints.max(:)'));
     constraints.max(i) =  2*abs(pars(i)); % default max values
     if pars(i) == 0
       constraints.max(i) = 1;
