@@ -37,13 +37,10 @@ function [istop, message] = inline_private_check(pars, fval, funccount, options,
   end
   
   % reduce pars and constraints to only those that vary
-  constraints.min=constraints.min(constraints.index_variable);
-  constraints.max=constraints.max(constraints.index_variable);
-  if isfield(constraints,'step')
-    constraints.step=constraints.step(constraints.index_variable);
-  end
-  if isfield(constraints,'set')
-    constraints.set=constraints.set(constraints.index_variable);
+  for f={'min','max','step','set'}
+      if isfield(constraints, f{1})
+          c=constraints.(f{1}); c=c(constraints.index_variable); constraints.(f{1})=c;
+      end
   end
   pars = pars(constraints.index_variable);
   

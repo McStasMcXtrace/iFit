@@ -1,4 +1,4 @@
-function c = inline_objective_all(fun, pars, options, constraints, varargin)
+function [c, pars] = inline_objective_all(fun, pars, options, constraints, varargin)
   % criteria to minimize, fun returns a scalar, or vector which is summed
   if nargin < 3, varargin={}; end
   % apply constraints on pars first

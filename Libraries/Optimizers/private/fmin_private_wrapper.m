@@ -154,30 +154,48 @@ if ischar(pars),
 end
 
 % handle case when parameters are given as structures
-% constraints ==================================================================
+% constraints =============================================================
+
+if length(constraints)==length(pars) & (isnumeric(constraints) | islogical(constraints))
+  if nargin < 6,               % given as fixed index vector
+    fixed             = constraints; 
+    constraints       = [];
+    constraints.fixed = fixed;  % avoid warning for variable redefinition.
+  elseif isnumeric(varargin{1}) && ~isempty(varargin{1}) ...
+      && length(constraints) == length(varargin{1})
+    % given as lb,ub parameters (nargin==6)
+    lb = constraints; 
+    ub = varargin{1};
+    varargin(1) = []; % remove the 'ub' from the additional arguments list
+    constraints     = [];
+    constraints.min = lb;
+    constraints.max = ub;
+  end
+end
+
 if isstruct(pars)
-  constraints.pars_name=fieldnames(pars);
+  pars_name=fieldnames(pars);
   pars=cell2mat(struct2cell(pars));
   % check if constraints are also structures, but with same fields
   check = {'min','max','fixed','step'};
   for index=1:length(check)
     if isfield(constraints,check{index}) && isstruct(constraints.(check{index}))
       new = [];
-      for f=1:length(constraints.pars_name)
-        if isfield(constraints.(check{index}), constraints.pars_name{f})
-          new = [ new constraints.(check{index}).(constraints.pars_name{f}) ];
+      for f=1:length(pars_name)
+        if isfield(constraints.(check{index}), pars_name{f})
+          new = [ new constraints.(check{index}).(pars_name{f}) ];
         end
       end
       if length(new) == length(pars)
         constraints.(check{index}) = new;
       else
-        error([ inline_localChar(optimizer) ': parameters and constraint %s are given as structures, but not with same length/fields (%i and %i resp.).' ],  ...
-          check{index}, length(constraints.pars_name), length(fieldnames(constraints.(check{index}))) );
+        error([ inline_localChar(optimizer) ': parameters and constraints %s are given as structures, but not with same length/fields (%i and %i resp.).' ],  ...
+          check{index}, length(pars_name), length(fieldnames(constraints.(check{index}))) );
       end
     end
   end
 else
-  constraints.pars_name={};
+  pars_name = {};
 end
 
 if length(constraints)==length(pars) & (isnumeric(constraints) | islogical(constraints))
@@ -196,6 +214,7 @@ if length(constraints)==length(pars) & (isnumeric(constraints) | islogical(const
     constraints.max = ub;
   end
 end
+
 if ~isempty(constraints) && ischar(constraints)
   constraints = str2struct(constraints);
 end
@@ -206,9 +225,13 @@ if ~isstruct(options)
   error([ inline_localChar(optimizer) ': The options argument is of class ' class(options) '. Should be a string or a struct' ]);
 end
 
+pars = pars(:)';
 constraints.parsStart       = pars;  % used when applying constraints
 if ~isfield(constraints,'fixed')
   constraints.fixed=zeros(size(pars));
+end
+if ~isfield(constraints,'pars_name')
+  constraints.pars_name=pars_name;
 end
 
 % reduce the number of free parameters to only those which are not fixed
@@ -293,7 +316,7 @@ message    = constraints.message;
 exitflag   = 0;
 iterations = 0;
 fval       = Inf;       % in case this is a vector, it should be a row
-pars       = pars(:);   % should be a column
+pars       = pars(:);   % should be a column for most optimizers
 output     = [];
 
 try
@@ -301,9 +324,10 @@ try
 % calls the optimizer with a wrapped 'inline_objective' function
 %    which applies constraints and makes stop condition checks.
 % the main optimizer call is within a try/catch block which exits when an early 
-%  stop is met. See private 'inline_objective' and 'inline_apply_constraints' below.
-inline_call_optimizer(fun, pars_all, pars, options, constraints, varargin{:});
-
+%  stop is met. See private 'inline_objective' and 'inline_apply_constraints'
+%
+  inline_call_optimizer(fun, pars_all, pars, options, constraints, varargin{:});
+  
 catch ME
   % we may get here when the inline_objective issue an error after a stop condition.
   output.lasterror = ME;
@@ -325,6 +349,7 @@ end
 fval = constraints.criteriaBest; % set in inline_objective
 fval = sum(fval(:));
 pars = constraints.parsBest;
+pars = pars(:)';  % returned as a row
 
 if iterations, 
   output.iterations    = iterations;
@@ -344,18 +369,6 @@ if isempty(message)
 end
 if ~isfield(output,'message')
   output.message         = message;
-end
-
-% raise fminplot if it exists
-h = findall(0, 'Tag', 'fminplot'); 
-if ~isempty(h)
-  d = findall(h, 'Tag', 'fminplot:stop');
-  figure(h(1));
-  t = [ '#' num2str(constraints.funcCount) ' f=' num2str(fval,4) ' [End]' sprintf('\n') options.optimizer  ];
-  set(h, 'Visible', 'on', 'Name', t);
-  title(t); 
-  set(d, 'String','END','BackgroundColor','green' );
-
 end
 
 output.funcCount       = constraints.funcCount ;
@@ -423,7 +436,10 @@ if strcmp(options.Display,'final') || strcmp(options.Display,'iter') ...
   || (isfield(options,'Diagnostics') && strcmp(options.Diagnostics,'on'))
   disp([ sprintf('\n') '** Finishing minimization of ' inline_localChar(fun) ' using algorithm ' inline_localChar(options.algorithm) ]);
   disp( [ ' Status: ' output.message ]);
-  disp(' Func_count     min[f(x)]        Parameters');
+  if ~isempty(constraints.pars_name)
+    spars = sprintf(' %s', constraints.pars_name{constraints.index_variable});
+  else spars = ''; end
+  disp([ ' Func_count     min[f(x)]        Parameters' spars ]);
   inline_disp(struct('Display','iter'), -constraints.funcCount , pars, mean(fval));
   
   % test length of tolerance region
@@ -460,8 +476,13 @@ if ~isempty(constraints.pars_name)
   pars_name = constraints.pars_name(:);
   pars = cell2struct(num2cell(pars(:)), ...
     strtok(pars_name(constraints.index_variable)), 1);
+else % provide full parameter vector
+  pall = constraints.parsStart;
+  
+  index_variable = find(~constraints.fixed | isnan(constraints.fixed));
+  pall(index_variable) = pars;
+  pars = pall;
 end
-
 
 % ==============================================================================
 %     |_   _| \ | | |    |_   _| \ | |  ____| 
@@ -476,16 +497,18 @@ end
   function inline_call_optimizer(fun, pars_all, pars, options, constraints, varargin)
 % This is where we call the actual optimizer. 
 % This is controlled from fmin_private_wrapper
-  
-  switch options.optimizer
-  case 'fmin' % automatic guess
+
+  if strcmp(options.optimizer, 'fmin')
     [optimizer, algorithm] = inline_auto_optimizer(fun, pars_all, varargin{:});
+    % update options
+    options2 =feval(optimizer, 'defaults');
+    % merge the structures/cells handling duplicated fields
+    options = mergestruct(options2, options);
     options.optimizer = optimizer;
     options.algorithm = algorithm;
-    if ~isempty(constraints.pars_name)
-      pars_all = cell2struct(num2cell(pars_all(:)), constraints.pars_name(:), 1);
-    end
-    [pars,fval,exitflag,output] = feval(optimizer, fun, pars_all, options, constraints, varargin{:});
+  end
+  
+  switch options.optimizer
   case {'cmaes','fmincmaes'}    
   % Evolution Strategy with Covariance Matrix Adaption ---------------------------
     hoptions.MaxIter    = options.MaxIter;
@@ -755,40 +778,45 @@ end
   
   end % inline_call_optimizer
 
+
+
+
   % ============================================================================
   % inline objective function so that we can use options and constraints
-  function c = inline_objective(fun, p, varargin)
+  function fval = inline_objective(fun, p, varargin)
     % prepares an objective function which only has variable parameters
   
     % new objective fun(p, varargin)
     pall = constraints.parsStart;
+    p    = p(:)';
     
     index_variable = find(~constraints.fixed | isnan(constraints.fixed));
     pall(index_variable) = p;
     
     t = clock;
     % call the objective with all parameters
-    c = inline_objective_all(fun, pall, options, constraints, varargin{:});
+    [fval, pall] = inline_objective_all(fun, pall, options, constraints, varargin{:});
+    p = pall(index_variable);
     
     % save current optimization state
-    if sum(c) < sum(constraints.criteriaBest(:)), 
-      constraints.criteriaBest=c;
+    if sum(fval) < sum(constraints.criteriaBest(:)), 
+      constraints.criteriaBest=fval;
       constraints.parsBest    =p;
     end
     
     constraints.parsPrevious    = pall;
-    constraints.parsHistory     = [ constraints.parsHistory ; p ]; 
+    constraints.parsHistory     = [ constraints.parsHistory ; p(:)' ]; 
     
     % check for usual stop conditions MaxFunEvals, TolX, TolFun ..., and call OutputFcn
-    [exitflag, message] = inline_private_check(pall, sum(c), ...
+    [exitflag, message] = inline_private_check(pall, sum(fval), ...
        constraints.funcCount , options, constraints);
     constraints.message = message;
     
     if isempty(constraints.criteriaStart)
-      constraints.criteriaStart = c;
+      constraints.criteriaStart = fval;
     end
     constraints.fevalDuration   = etime(clock, t); % time required to estimate the criteria
-    constraints.criteriaPrevious= c;
+    constraints.criteriaPrevious= fval;
     constraints.criteriaHistory = [ constraints.criteriaHistory ; sum(constraints.criteriaPrevious)
      ];
     constraints.funcCount       = constraints.funcCount +1; 

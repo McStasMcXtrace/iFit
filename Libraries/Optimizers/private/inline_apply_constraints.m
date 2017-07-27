@@ -1,6 +1,5 @@
 function pars = inline_apply_constraints(pars, constraints, options)
   % take into account constraints on parameters, and perform stop condition checks
-
   if isfield(constraints, 'step') % restrict parameter change
     parsStep    = pars(:) - constraints.parsPrevious(:);
     index       = find(constraints.steps(:) & abs(parsStep) > abs(constraints.steps(:)) & ~isnan(constraints.steps(:)));

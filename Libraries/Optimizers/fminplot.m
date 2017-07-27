@@ -83,7 +83,7 @@ function stop = fminplot(pars, optimValues, state)
     if ((isempty(h) || strncmp(get(d,'String'), 'END', 3)) ...
       && ~isempty(optimValues) && optimValues.funcount) || strcmp(state, 'abort')
       if ~isempty(d)
-        set(d, 'String','ENDING','BackgroundColor',[1 .5 0]);
+        set(d, 'String','END','BackgroundColor','green');
       end
       stop = true;  % figure was closed: abort optimization by user
       return
