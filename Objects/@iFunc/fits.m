@@ -366,6 +366,11 @@ if ischar(pars) && ~strcmp(pars,'guess')
 end
 
 if isstruct(pars)
+  if isempty(fieldnames(pars))
+    [~, model] = feval(model, 'current', a.Axes{:}, a.Signal);
+    pars = cell2struct(num2cell(model.ParameterValues(:)), ...
+      strtok(model.Parameters(:)), 1);
+  end
   % search 'pars' names in the model parameters, and reorder the parameter vector
   p = []; f=fieldnames(pars);
   for index=1:length(f)
