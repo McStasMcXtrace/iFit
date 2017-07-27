@@ -192,10 +192,10 @@ class Matlab(object):
             
         if expr is not None and expr != '':
             # send the command
-            self.proc.stdin.write(expr+"\n")            
+            self.proc.stdin.write(str(expr+"\n").encode())
         
         # request to display the prompt so that we can monitor the idle state
-        self.proc.stdin.write("disp('"+self.prompt+"');\n")
+        self.proc.stdin.write(str("disp('"+self.prompt+"');\n").encode())
         self.busy = True
         # check for idle state or timeout
         if waitidle:
@@ -290,7 +290,7 @@ class Matlab(object):
         # read all available lines
         while True:
             try:
-                line = self.queue.get_nowait()
+                line = self.queue.get_nowait().decode()
             except Empty:
                 # no more lines to read
                 line = None
