@@ -10,7 +10,7 @@ function result = test_Models_mccode
   f = iData(y, [], nan);
   % check dimension and integral
   
-  if ndims(f) == 1 && prod(size(f)) == 340 && abs(sum(f,0) - 7.8e4) < 1e3
+  if ndims(f) == 1 && prod(size(f)) == 340 && abs(sum(f,0) - 7.8e4) < 1e4
     result = [ 'OK     ' mfilename ];
   else
     result = [ 'FAILED ' mfilename ];
