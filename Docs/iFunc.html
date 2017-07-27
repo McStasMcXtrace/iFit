@@ -116,6 +116,7 @@
 
 
 
+
     <br>
     The name of the parameters can be changed by accessing the <span
       style="font-weight: bold;">Parameters</span> property (this is a
@@ -128,6 +129,7 @@
     return a vector of parameter values<span style="font-style: italic;">
       'p' </span>as a function of the axes <span style="font-style:
       italic;">x,y,z...</span> and a <span style="font-style: italic;">signal.
+
 
 
 
@@ -209,6 +211,7 @@
     <div style="margin-left: 40px;"><br>
       <span style="font-weight: bold; font-style: italic;"><span
           style="font-weight: bold; font-style: italic;">model(parameters)&nbsp;&nbsp;&nbsp;
+
           &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
           &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; % use
           guessed axes</span><br>
@@ -286,6 +289,7 @@
 
 
 
+
       and removing constraints on models</h3>
     Models are often used for fitting purposes (refer to the <a
       href="Fit.html">Fit</a> help page).<br>
@@ -303,6 +307,7 @@
     (cross-constraints). For instance<br>
     <pre style="margin-left: 40px;">&gt;&gt; f=<span style="color: rgb(51, 102, 255);">gauss</span>;			<span style="font-style: italic;">% create a Gaussian model</span><br>&gt;&gt; f.Amplitude = <span style="color: rgb(204, 51, 204);">'fix'</span>;		<span style="font-style: italic;">% fix its Amplitude</span><br>&gt;&gt; f.Background = [0 1e-4];	<span style="font-style: italic;">% bound its background</span><br>&gt;&gt; f.Width = <span style="color: rgb(204, 51, 204);">'p(1)/1000'</span>;	<span style="font-style: italic;">% use an expression referring to </span>p(1)=Amplitude<span style="font-style: italic;"> value</span><br>&gt;&gt; f.Width = <span style="color: rgb(204, 51, 204);">'"Amplitude"/1000'</span>;	<span style="font-style: italic;">% same as above with direct naming of parameters using ""</span><br></pre>
     Alternatively, you can use the <span style="font-weight: bold;">mlock,
+
 
 
 
@@ -447,6 +452,7 @@
 
 
 
+
     catenates the string before/after the Expression of the model. For
     instance the following example does the same as above, explicitly
     setting the new signal value, and the next one displays a text
@@ -475,6 +481,7 @@
     <br>
     <h3 align="center"><a class="mozTocH3" name="mozTocId604963"></a>Optimising
 
+
       the iFunc model parameters</h3>
     It is possible to optimize the model parameter values in order to
     minimize or maximize the model value, with the '<b>fmin</b>' method.
@@ -488,9 +495,12 @@
     The starting parameters can be given as a vector, structure or
     string such as <font color="#cc33cc">'Intensity=1'</font> as
     explained <a href="mozTocId966568">above</a>.<br>
+    When given as a structure or a string, the resulting optimised
+    parameters are returned as a structure.<br>
+    <br>
     You may also set manually the optimizer configuration and axes to
     use with:<br>
-    <pre style="margin-left: 40px;">&gt;&gt; p = <span style="color: rgb(51, 102, 255);">fmin</span>(model, starting_pars, options)</pre>
+    <pre style="margin-left: 40px;">&gt;&gt; p = <span style="color: rgb(51, 102, 255);">fmin</span>(model, starting_pars, options, x,y, ...)</pre>
     Just as detailed in the <a href="Optimizers.html">Optimizers</a>
     documentation, you may specify the 'options' as the name of the
     optimizer (then using its default configuration), a string, or a
@@ -504,14 +514,14 @@
     to fix the non-relevant parameters, and bound the others, as
     explained <a href="#mozTocId579374">above</a>.<br>
     For instance:<br>
-    <pre style="margin-left: 40px;">&gt;&gt; model= <font color="#3366ff">gauss1</font>;<br>&gt;&gt; <font color="#3366ff">fix</font>(model, <font color="#cc33cc">'all'</font>); model.Intensity=<font color="#cc33cc">'free'</font>;<br>&gt;&gt; model.Intensity=1; model.HalfWidth=.5;<br>&gt;&gt; <font color="#3366ff">xlim</font>(model, <font color="#cc33cc">'Intensity'</font>,[-2 2])<br>&gt;&gt; <font color="#3366ff">fmin</font>(model)<br>ans =<br>   -2.0000         0    0.5000<br></pre>
+    <pre style="margin-left: 40px;">&gt;&gt; model= <font color="#3366ff">gauss1</font>;<br>&gt;&gt; <font color="#3366ff">fix</font>(model, <font color="#cc33cc">'all'</font>); model.Intensity=<font color="#cc33cc">'free'</font>;<br>&gt;&gt; model.Intensity=1; model.HalfWidth=.5;<br>&gt;&gt; <font color="#3366ff">xlim</font>(model, <font color="#cc33cc">'Intensity'</font>,[-2 2])<br>&gt;&gt; <font color="#3366ff">fmin</font>(model)<br>ans =<br>   -2.0000         0    0.5000<br>&gt;&gt; <font color="#3366ff">fmin</font>(model, <font color="#cc33cc">'Intensity=1'</font>)</pre>
     will search for the intensity that minimizes a Gaussian. This is of
     course the lower Intensity bound, other parameters being fixed.<br>
     <br>
     It is also possible to maximize the model parameters with the
     similar '<b>fmax</b>' method. The result is then the upper Intensity
     bound.<br>
-    <pre style="margin-left: 40px;">&gt;&gt; model= <font color="#3366ff">gauss1</font>;<br>&gt;&gt; <font color="#3366ff">fix</font>(model, <font color="#cc33cc">'all'</font>); model.Intensity=<font color="#cc33cc">'free'</font>;<br>&gt;&gt; model.Intensity=1; model.HalfWidth=.5;<br>&gt;&gt; <font color="#3366ff">xlim</font>(model, <font color="#cc33cc">'Intensity'</font>,[-2 2])<br>&gt;&gt; <font color="#3366ff">fmin</font>(model)<br>ans =<br>    1.9995         0    0.5000<br></pre>
+    <pre style="margin-left: 40px;">&gt;&gt; model= <font color="#3366ff">gauss1</font>;<br>&gt;&gt; <font color="#3366ff">fix</font>(model, <font color="#cc33cc">'all'</font>); model.Intensity=<font color="#cc33cc">'free'</font>;<br>&gt;&gt; model.Intensity=1; model.HalfWidth=.5;<br>&gt;&gt; <font color="#3366ff">xlim</font>(model, <font color="#cc33cc">'Intensity'</font>,[-2 2])<br>&gt;&gt; <font color="#3366ff">fmax</font>(model)<br>ans =<br>    1.9995         0    0.5000<br></pre>
     <h3 style="text-align: center;"><a class="mozTocH3"
         name="mozTocId443357"></a>Fitting model parameters onto data<br>
     </h3>
@@ -522,6 +532,7 @@
     The data can be given as an <a href="iData.html">iData</a> object,
     a vector/matrix, <br>
     <div style="margin-left: 40px;"><span style="font-style: italic;">data=[
+
 
 
 
@@ -550,6 +561,7 @@
 
 
 
+
       </span><br style="font-style: italic;">
       <span style="font-style: italic;">data.Error </span><br
         style="font-style: italic;">
@@ -559,6 +571,7 @@
     </div>
     or a cell <br>
     <div style="margin-left: 40px;"><span style="font-style: italic;">data={
+
 
 
 
@@ -602,6 +615,7 @@
     <hr style="width: 100%; height: 2px;">
     <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
+
 
 
 

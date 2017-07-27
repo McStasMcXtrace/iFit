@@ -55,12 +55,19 @@
       <pre style="margin-left: 40px;">&gt;&gt; results(1).Parameters<br></pre>
       <h3><a class="mozTocH3" name="mozTocId513250"></a>Building an
         instrument model</h3>
+      <p align="center"><font color="#ff0000">NOTE: the <b>'mcstas'</b>
+          routine was used up to iFit version 1.9. <br>
+          It will be obsoleted in future versions, as the <b>'mccode'</b>
+          solution below is more robust. <br>
+          You may still used it, and get help for it with: '<i>&gt;&gt;
+            help mcstas</i>'.</font><br>
+      </p>
       <p>The syntax for building a McCode (McStas or McXtrace)
         instrument model is:<br>
       </p>
       <pre style="margin-left: 40px;">&gt;&gt; model = <span style="color: rgb(51, 102, 255);">mccode</span>(<span style="color: rgb(204, 51, 204);">'instrument'</span>);	<i>% uses the given instrument file (*.instr)</i><br>&gt;&gt; model = <span style="color: rgb(51, 102, 255);">mccode</span>(<span style="color: rgb(204, 51, 204);">'gui'</span>);		<i>% lists all available instruments to select one</i><br>&gt;&gt; model = <span style="color: rgb(51, 102, 255);">mccode</span>(<span style="color: rgb(204, 51, 204);">''</span>);			<i>% pop-up a file selector to select an *.instr file</i><br>&gt;&gt; model = <span style="color: rgb(51, 102, 255);">mccode</span>(<span style="color: rgb(204, 51, 204);">'defaults'</span>);		<i>% uses the templateDIFF instrument as example <br></i></pre>
       which compile the instrument, and create an <a
-        href="file:///home/farhi/dev/iFit/Docs/iFunc.html">iFunc</a>
+        href="iFunc.html">iFunc</a>
       model. <br>
       When the instrument is not found in the current directory, it is
       searched in the McStas library (may be specified with the MCSTAS
@@ -138,15 +145,24 @@
           <tr>
             <td valign="top"><b>options.compile</b></td>
             <td valign="top">0 or 1 to force re-compilation of the
-              executable. Try that first if you can not create/use the
-              object (an old executable may be used).</td>
+              executable. <font color="#ff0000">Try that first if you
+                can not create/use the object (an old executable may be
+                used).</font></td>
           </tr>
         </tbody>
       </table>
       &nbsp;<br>
       The options can be given as a structure or as a string, e.g. <font
         color="#cc33cc">'ncount=1e6; compile=1'</font>.<br>
-      &nbsp;<br>
+      <br>
+      <font color="#ff0000"><b>NOTE:</b> if the instrument can not be
+        built, force the compilation with:</font><br>
+      <blockquote>
+        <pre>&gt;&gt;  <span style="color: rgb(51, 102, 255);">mccode</span>(<span style="color: rgb(204, 51, 204);">'instrument'</span>, <font color="#cc33cc">'compile=1'</font>)<br></pre>
+      </blockquote>
+      as a previous executable may be in the way, and block the
+      generation of the new model.<br>
+      <br>
       The scalar instrument parameters of type 'double' are used as
       model parameters. <br>
       Other parameters (e.g. of type string and int) are stored as a
@@ -179,21 +195,29 @@
       the model:<br>
       <ul>
         <li>model=<font color="#3366ff">mccode</font>(<font
-            color="#cc33cc">'templateDIFF'</font>,<font color="#cc33cc">'monitor=Diff_BananaPSD'</font>);</li>
+            color="#cc33cc">'templateDIFF'</font>,<font color="#cc33cc">'monitor=Diff_BananaPSD'</font>);<a
+            href="images/iFit_McStas_Monitor_scan.png"><img title="iFit:
+              McStas: evolution of a monitor"
+              src="images/iFit_McStas_Monitor_scan.png" alt="iFit:
+              McStas: evolution of a monitor" style="border: 0px solid ;
+              width: 200px; height: 177px;" height="503" width="568"
+              border="0" align="right"></a></li>
       </ul>
       or afterwards:<br>
       <ul>
         <li>model=<font color="#3366ff">mccode</font>(<font
             color="#cc33cc">'templateDIFF'</font>);</li>
         <li>model.UserData.options.monitor=<font color="#cc33cc">'</font><font
-            color="#cc33cc"><font color="#cc33cc">Diff_Banana</font>'</font></li>
+            color="#cc33cc"><font color="#cc33cc">*BananaPSD</font>'</font></li>
       </ul>
       which in both cases will select monitor files which <i>start</i>
-      with the given string ( <font color="#cc33cc">'Diff_Banana*' </font>).
-      In case the selection brings multiple files, the last one is used.
-      When the monitor name selection does not match any file, or is
-      given as empty, all monitors are imported, and the last one in the
-      list is used.<br>
+      with the given string ( <font color="#cc33cc">'Diff_Banana*' </font>)
+      or match the pattern when using a wildcard expression ( <font
+        color="#cc33cc">'*Banana_Theta*' </font>). In case the
+      selection brings multiple files, the last one is used. When the
+      monitor name selection does not match any file, or is given as
+      empty, all monitors are imported, and the last one in the list is
+      used.<br>
       <br>
       All selected monitors are imported as <a href="Fit.html">iData</a>
       object(s), in:<br>
@@ -209,7 +233,7 @@
       simulation from Matlab and get back the simulation results. To do
       so, you will obviously need to have <span style="font-style:
         italic;">iFit</span> installed (refer to the <a
-        href="file:///home/farhi/dev/iFit/Docs/Install.html">Install</a>
+        href="Install.html">Install</a>
       page), as well as <span style="font-style: italic;">McStas</span>
       (refer to the <a href="http://www.mcstas.org">McStas web site</a>)
       or <a href="http://mcxtrace.org/">McXtrace</a>. When used with
@@ -223,7 +247,7 @@
       <br>
       The instrument can be evaluated with given parameters and
       optionally axes:<br>
-      <pre style="margin-left: 40px;">&gt;&gt; results = <font color="#3366ff">feval</font>(model, parameters);		<i>% return the monitor as an array using guessed axes</i><br>&gt;&gt; results = <font color="#3366ff">feval</font>(model, parameters, x,y,...);	<i>% return the monitor as an array</i><i>, using specified axes</i><br>&gt;&gt; results = <font color="#3366ff">feval</font>(model, parameters, nan);	<i>% return the raw monitor as an array</i><br></pre>
+      <pre style="margin-left: 40px;">&gt;&gt; results = <font color="#3366ff">feval</font>(model);			<i>% return the monitor, using current/default parameters</i><br>&gt;&gt; results = <font color="#3366ff">feval</font>(model, parameters);		<i>% return the monitor as an array using guessed axes</i><br>&gt;&gt; results = <font color="#3366ff">feval</font>(model, parameters, x,y,...);	<i>% return the monitor as an array</i><i>, using specified axes</i><br>&gt;&gt; results = <font color="#3366ff">feval</font>(model, parameters, nan);	<i>% return the raw monitor as an array</i><br></pre>
       but it may be more convenient to manipulate the model value as
       iData objects:<br>
       <pre style="margin-left: 40px;">&gt;&gt; result = <font color="#3366ff">iData</font>(model, parameters);		<i>% return monitor interpolated onto guessed axes<br></i>&gt;&gt; result = <font color="#3366ff">iData</font>(model, parameters, nan);	<i>% return raw monitor as an iData object</i><br>&gt;&gt; result = <font color="#3366ff">iData</font>(model, parameters, x,y,...);	<i>% return monitor interpolated onto axes x,y,...</i><br>&gt;&gt; <font color="#3366ff">plot</font>(result);<br>&gt;&gt; <font color="#3366ff">plot</font>(model.UserData.monitors)</pre>
@@ -237,19 +261,32 @@
           <li> parameters.RV=1;</li>
           <li> parameters.lambda=2.36;</li>
           <li> <font color="#3366ff"><font color="#000000">value = </font>iData</font>(model,
+
+
+
+
             parameters);</li>
         </ul>
       </div>
       <div style="text-align: left;">or in a more compact way, giving
         parameters as a single string with members assigned with '=' and
-        separated with the ';' character. <br>
-        In the following example, we plot the model value, and then all
-        the available monitors in <i>model.UserData.monitors</i><br>
+        separated with the ';' character. An empty parameter value (e.g.
+        []) will compute the model evaluation using current/default
+        parameters.<br>
+        <br>
+        In the following example, we plot the model value (raw monitor),
+        and then all the available monitors in <i>model.UserData.monitors</i><br>
         <ul>
-          <li>model=<font color="#3366ff">mccode</font>(<font
+          <li>model= <font color="#3366ff">mccode</font>(<font
               color="#cc33cc">'templateDIFF'</font>);</li>
           <li> <font color="#3366ff"><font color="#000000">value = </font>iData</font>(model,
-            <font color="#cc33cc">'RV=1; lambda=2.36'</font>, nan)</li>
+
+
+
+
+            <font color="#cc33cc">'RV=1; lambda=2.36'</font>, nan)&nbsp;
+            <i>% the last monitor</i><br>
+          </li>
         </ul>
         <blockquote>
           <pre>value =&nbsp; iData (methods,doc,plot,plot(log),values,more...) 2D object:<br>&nbsp;&nbsp;&nbsp; [Tag] [Dimension]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Title] [Last command]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Label/DisplayName]</pre>
@@ -257,7 +294,13 @@
         </blockquote>
         <ul>
           <li><font color="#3366ff">plot</font>(value, <font
-              color="#cc33cc">'view2'</font>)</li>
+              color="#cc33cc">'view2 tight'</font>)<a
+              href="images/iFit_McStas_Monitor_scan.png"><img
+                title="iFit: McStas: evolution of a monitor"
+                src="images/iFit_McStas_Monitor_scan.png" alt="iFit:
+                McStas: evolution of a monitor" style="border: 0px solid
+                ; width: 200px; height: 177px;" height="503" width="568"
+                border="0" align="right"></a></li>
           <li>model.UserData.monitors<br>
           </li>
         </ul>
@@ -265,7 +308,11 @@
           <pre>model.UserData.monitors =&nbsp; array [5&nbsp; 1] iData (methods,doc,plot,plot(log),values,more...) object:<br><br>Index&nbsp;&nbsp;&nbsp;&nbsp; [Tag] [Dimension]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Title] [Last command]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Label/DisplayName]<br>&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp; iD61449&nbsp;&nbsp;&nbsp;&nbsp; [40 40] 'mccode.sim McCode sim file ... "Data ..."' iD61449=load(iData,'... Diff_Mono_XY<br>&nbsp;&nbsp;&nbsp; 2&nbsp;&nbsp; iD61457&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [40 1] 'mccode.sim McCode sim file ... "Inten..."' iD61457=load(iData,'... Diff_Mono_Lambda<br>&nbsp;&nbsp;&nbsp; 3&nbsp;&nbsp; iD61459&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [40 1] 'mccode.sim McCode sim file ... "Inten..."' iD61459=load(iData,'... Diff_Sample_Lambda<br>&nbsp;&nbsp;&nbsp; 4&nbsp;&nbsp; iD61461&nbsp;&nbsp;&nbsp;&nbsp; [340 1] 'mccode.sim McCode sim file ... "Inten..."' iD61461=load(iData,'... Diff_BananaTheta<br>&nbsp;&nbsp;&nbsp; 5&nbsp;&nbsp; iD61463&nbsp;&nbsp;&nbsp; [25 170] 'mccode.sim McCode sim file ... "Data ..."' iD61463=load(iData,'... Diff_BananaPSD</pre>
         </blockquote>
         <ul>
-          <li><font color="#3366ff">plot</font>(model.UserData.monitors)</li>
+          <li><font color="#3366ff">subplot</font>(model.UserData.monitors)<a
+              href="images/iFit_McStas_simulate.png"><img
+                alt="iFit_McStas_simulate" title="iFit_McStas_simulate"
+                src="images/iFit_McStas_simulate.png" height="186"
+                width="200" border="0" align="right"></a></li>
         </ul>
         You can equally set the non numerical scalar parameters (e.g.
         strings and integers):<br>
@@ -276,16 +323,17 @@
         instrument parameters are used with their default values (when
         defined).<br>
         <br>
-        The model value, and the raw monitors in
-        model.UserData.monitors, in the form of an iData objects have an
-        additional <span style="font-style: italic;">Parameters</span>
+        The model value, and the raw monitors in <i>
+          model.UserData.monitors</i>, in the form of iData objects have
+        an additional <span style="font-style: italic;">Parameters</span>
         field which holds the instrument parameters used for the
         simulation.<br>
-        <pre style="margin-left: 40px;">&gt;&gt; value.Parameters</pre>
-        Usual data analysis (display, mathematics, fit, export) can be
-        performed (refer to the <a
-          href="file:///home/farhi/dev/iFit/Docs/index.html">iFit</a>
-        and <a href="file:///home/farhi/dev/iFit/Docs/iData.html">iData</a>
+        <pre style="margin-left: 40px;">&gt;&gt; value.Parameters<br>&gt;&gt; <font color="#3366ff">get</font>(model.UserData.monitors(1),<font color="#cc33cc">'Parameters'</font>)</pre>
+        Usual data analysis (<a href="Plot.html">display</a>, <a
+          href="Math.html">mathematics</a>, <a href="Fit.html">fit</a>,
+        <a href="Save.html">export</a>) can be performed (refer to the <a
+          href="index.html">iFit</a>
+        and <a href="iData.html">iData</a>
         documentation). <br>
         <h3><a class="mozTocH3" name="mozTocId124981"></a>Getting
           instrument information and Displaying the instrument geometry</h3>
@@ -301,7 +349,8 @@
           color="#cc33cc">'html'</font>,<font color="#cc33cc">'png'</font>,
         and <font color="#cc33cc">'x3d'</font>.<br>
         <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">mccode_display</span>(model<span style="color: rgb(204, 51, 204);"></span>, [], <font color="#cc33cc">'html png x3d'</font>);</pre>
-        to generate hardcopy files and geometry rendering.<br>
+        to generate hardcopy files and geometry rendering. The generated
+        filenames are then displayed.<br>
         <br>
         In order to get information about the instrument, especially its
         input parameters, you can access the model.UserData area:<br>
@@ -327,96 +376,48 @@
         <li>scan = <font color="#3366ff">iData</font>(model,
           parameters);</li>
       </ul>
-      A more compact way can be used, using explicit scan values:<br>
+      A more compact way can be used, using explicit scan values and
+      axes:<br>
       <ul>
         <li>model=<font color="#3366ff">mccode</font>(<font
             color="#cc33cc">'templateDIFF'</font>);</li>
         <li>scan = <font color="#3366ff">iData</font>(model, <font
-            color="#cc33cc">'RV=[0.5 1 1.5]'</font>);</li>
+            color="#cc33cc">'RV=[0.5 1 1.5]'<font color="#000000">,
+              -.15:.05:.15, -5:50</font></font>);</li>
       </ul>
-      You may also scan the non numerical parameters with e.g. for the
-      'powder' string parameter:<br>
-      <ul>
-        <li>r=[];</li>
-        <li>for vector = {<span style="color: rgb(204, 51, 204);">'Na2Ca3Al2F14.laz'</span>,<span
-            style="color: rgb(204, 51, 204);">'Al.laz'</span>,<span
-            style="color: rgb(204, 51, 204);">'Ge.laz'</span>};
-          model.UserData.Parameters_Constant.powder = vector{1}; r = [ r
-          iData(model) ]; end</li>
-      </ul>
-      <br>
-      <br>
-      &nbsp;It is very simple to perform parameter scans, even in
-      multi-dimensional spaces. For this, the parameter values just need
-      to be vectors of numeric or vector cells, such as<br>
-      <ul>
-        <li>parameters.RV={0.5 1 1.5};</li>
-        <li>parameters.L2= 2:0.5:4;</li>
-        <li>parameters.L3= 1.3;</li>
-      </ul>
-      Scans with string parameters are also possible, such as with<br>
-      <ul>
-        <li>parameters.Powder={<span style="color: rgb(204, 51, 204);">'Na2Ca3Al2F14.laz','Al.laz','Cd.laz'</span>};</li>
-      </ul>
-      and then executes for instance:<br>
-      <div style="margin-left: 40px;">
-        <pre>&gt;&gt; [integral,monitors]=<span style="color: rgb(51, 102, 255);">mcstas</span>(<span style="color: rgb(204, 51, 204);">'templateDIFF'</span>, parameters, <span style="color: rgb(51, 102, 255);">struct</span>(<span style="color: rgb(204, 51, 204);">'ncount'</span>,1e4));<br></pre>
-      </div>
-      A live display of the on-going scan is shown when specifying <span
-        style="font-weight: bold;">OutputFcn</span>=<span style="color:
-        rgb(204, 51, 204);">'fminplot' </span>in the last <span
-        style="font-weight: bold;">options</span> argument (struct).<br>
-      <br>
-      The <span style="font-style: italic;">integral</span> argument
-      returned is an <a href="iData.html">iData</a> object containing
-      the integral of monitors as a function of the scanned parameters.
-      It can be directly plotted with e.g. <br>
-      <div style="margin-left: 40px;">
-        <pre>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(integral);     <span style="font-style: italic;">% simple plot, or median surface for multidimensional scans</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">scatter3</span>(integral); <span style="font-style: italic;">% coloured points (possibly in 2D,3D)</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot3</span>(integral);    <span style="font-style: italic;">% coloured lines in 2D, or volume for multidimensional scans</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">slice</span>(integral);    <span style="font-style: italic;">% only for 3D, use slice-o-matic for volume inspection</span><br></pre>
-      </div>
-      <a href="images/iFit_McStas_scan2D_integral.png"><img title="iFit:
-          MsCtas scan: ploting the integral monitor value"
-          src="images/iFit_McStas_scan2D_integral.png" alt="iFit: MsCtas
-          scan: ploting the integral monitor value" style="border: 0px
-          solid ; width: 200px; height: 177px;" align="right"></a>The <span
-        style="font-style: italic;">monitors</span> argument returned is
-      an array containing individual scan monitors. You may extract and
-      catenate a selection (slices) or it by e.g. the <span
-        style="font-style: italic; font-weight: bold;">iData/cat</span>
-      method.<br>
-      <br>
-      In the following example, we launch a quick 2D scan:<br>
-      <pre style="margin-left: 40px;">&gt;&gt; [p,m]=<span style="color: rgb(51, 102, 255);">mcstas</span>(<span style="color: rgb(204, 51, 204);">'templateDIFF'</span>, <span style="color: rgb(51, 102, 255);">struct</span>(<span style="color: rgb(204, 51, 204);">'RV'</span>,[0.7 0.9 1.2],<span style="color: rgb(204, 51, 204);">'L2'</span>,[1 1.3 1.5]),<span style="color: rgb(51, 102, 255);">struct</span>(<span style="color: rgb(204, 51, 204);">'ncount'</span>,1e4));<br></pre>
-      Then we may plot, as a 2D surface, the integral value for the last
-      (5th) monitor:<br>
-      <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(p(:,:,5));<br></pre>
-      <a href="images/iFit_McStas_Monitor_scan.png"><img title="iFit:
-          McStas: evolution of a monitor"
-          src="images/iFit_McStas_Monitor_scan.png" alt="iFit: McStas:
-          evolution of a monitor" style="border: 0px solid ; width:
-          200px; height: 177px;" align="right"></a>You may look at the
-      instrument parameters used for the scans, e.g.<br>
-      <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">get</span>(m,<span style="color: rgb(204, 51, 204);">'RV'</span>)<br></pre>
-      which are also available in the <span style="font-style: italic;">Parameters</span>
-      field of the objects.<br>
-      Let's finally look at the evolution of the 4-th monitor, which is
-      a 1D diffractogram, along an 'RV' parameter scan:<br>
-      <pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">squeeze</span>(m(2,:,:));  <span style="font-style: italic;">         % extract an 'RV' line, with L2=1.3</span><br>&gt;&gt; b = a(:,4);   <span style="font-style: italic;">                   % get 4th monitor on this line</span><br>&gt;&gt; setaxis(b,2,<span style="color: rgb(204, 51, 204);">'RV'</span>);               % define a new axis along the line RV<br>&gt;&gt; c = <span style="color: rgb(51, 102, 255);">cat</span>(2, b);   <span style="font-style: italic;">                % assemble into a single iData object</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(c,<span style="color: rgb(204, 51, 204);">'tight interp'</span>);          <span style="font-style: italic;">% plot</span><br></pre>
-      This methodology also works with 2D monitors assembled along, e.g.
-      a scan line, which creates a 3D volume to explore with <span
-        style="font-style: italic; font-weight: bold;">slice, </span>or
-      <span style="font-style: italic; font-weight: bold;">plot</span>&nbsp;
-
-
-
-
-
-
-
-      or <span style="font-weight: bold; font-style: italic;">plot3</span>.
-      <br>
-      <br>
-      <div style="margin-left: 40px;"> </div>
+      The argument returned is an <a
+        href="iData.html">iData</a>
+      object array containing the model monitor as a function of the
+      scanned parameters. You may compute the integral value with the
+      'sum' method:<br>
+      <blockquote>
+        <pre>&gt;&gt; integral = <font color="#3366ff">sum</font>(scan, 0);</pre>
+      </blockquote>
+      which can be directly plotted with e.g.&nbsp;
+      <pre>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(integral);     <span style="font-style: italic;">% simple plot, or median surface for multidimensional scans</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">scatter3</span>(integral); <span style="font-style: italic;">% coloured points (possibly in 2D,3D)</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot3</span>(integral);    <span style="font-style: italic;">% coloured lines in 2D, or volume for multidimensional scans</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">slice</span>(integral);    <span style="font-style: italic;">% only for 3D scans, use slice-o-matic for volume inspection</span></pre>
+      You may as well concatenate the scan steps into a higher
+      dimensionality volume using e.g. the <span style="font-style:
+        italic; font-weight: bold;">iData/cat</span> method:<br>
+      <blockquote>
+        <pre>&gt;&gt; catenated = <font color="#3366ff">cat</font>(scan, 2);</pre>
+      </blockquote>
+      <pre style="margin-left: 40px;"><a href="images/iFit_McStas_scan2D_integral.png"><img title="iFit:          MsCtas scan: ploting the integral monitor value" src="images/iFit_McStas_scan2D_integral.png" alt="iFit: MsCtas          scan: ploting the integral monitor value" style="border: 0px
+          solid ; width: 200px; height: 177px;" height="503" width="568" border="0" align="right"></a></pre>
+      Multidimensional scans are also possible. In the following
+      example, we launch a quick 2D scan with parameters specified as a
+      structure:<br>
+      <pre style="margin-left: 40px;">&gt;&gt; model = <span style="color: rgb(51, 102, 255);">mccode</span>(<span style="color: rgb(204, 51, 204);">'templateDIFF'</span>,<font color="#cc33cc">'monitor=Diff_BananaTheta'</font>);<br>&gt;&gt; scan = <font color="#3366ff">iData</font>(model, <span style="color: rgb(51, 102, 255);">struct</span>(<span style="color: rgb(204, 51, 204);">'RV'</span>,[0.7 0.9 1.2],<span style="color: rgb(204, 51, 204);">'L2'</span>,[1 1.3 1.5])<span style="color: rgb(51, 102, 255);"></span><span style="color: rgb(204, 51, 204);"></span>, nan);</pre>
+      Then we may plot, as a 2D surface, the integral value for the
+      model value monitor:<br>
+      <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(<font color="#3366ff">iData</font>(<font color="#3366ff">sum</font>(scan,0)));<br></pre>
+      <a
+href="images/iFit_McStas_Monitor_scan.png"><img
+          title="iFit: McStas: evolution of a monitor"
+src="images/iFit_McStas_Monitor_scan.png"
+          alt="iFit: McStas: evolution of a monitor" style="border: 0px
+          solid ; width: 200px; height: 177px;" align="right"></a>You
+      may look at the instrument parameters used for the scans, e.g.<br>
+      <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">get</span>(scan,<span style="color: rgb(204, 51, 204);">'Parameters.RV'</span>)</pre>
       <span style="color: rgb(255, 0, 0); font-weight: bold;">Warning: </span>Beware
 of
 the
@@ -429,86 +430,62 @@ of
 
 
 
+
+
+
+
       iterations required to scan large dimensionality spaces. In
       practice you should avoid spaces above 2 or 3 scanned parameters.
       Exceeding this will undoubtedly require very long computation
       times, and large memory storage.<br>
+      <br>
+      You may also scan the non numerical parameters with e.g. for the
+      'powder' string parameter:<br>
+      <ul>
+        <li>scan=[];</li>
+        <li><font color="#3366ff">for</font> vector = {<span
+            style="color: rgb(204, 51, 204);">'Na2Ca3Al2F14.laz'</span>,<span
+            style="color: rgb(204, 51, 204);">'Al.laz'</span>,<span
+            style="color: rgb(204, 51, 204);">'Ge.laz'</span>};
+          model.UserData.Parameters_Constant.powder = vector{1}; scan =
+          [ scan <font color="#3366ff">iData</font>(model, [], nan) ];
+          <font color="#3366ff">end</font></li>
+        <li><font color="#3366ff">subplot<font color="#000000">(scan)</font></font></li>
+      </ul>
       <h3><a class="mozTocH3" name="mozTocId690143"></a>Optimizing
         instrument parameters<br>
       </h3>
       The optimization of instrument parameters is performed as simply
-      as a single simulation, just by e.g. setting <span
-        style="font-style: italic;">options.mode</span> to <span
-        style="color: rgb(204, 51, 204);">'optimize'</span>. <span
-        style="font-style: italic;"><br>
+      as a single simulation, using the <b>fmax</b> method<span
+        style="color: rgb(204, 51, 204);"></span> to maximize the
+      monitor value. <span style="font-style: italic;"><br>
       </span>
-      <pre style="margin-left: 40px;">&gt;&gt; [solution, monitors] = <span style="color: rgb(51, 102, 255);">mcstas</span>(<span style="color: rgb(204, 51, 204);">'instrument'</span>, parameters, options);</pre>
-      The parameters, as a named structure, are initiated to their
-      starting value, from which the optimization proceeds.<span
-        style="font-style: italic;"> Only numerical</span> parameters
-      can be optimized. Also, it is <span style="color: rgb(255, 0,
-        0);">highly encouraged to use bounded parameters</span> (that is
-      define constraints, see <a href="#mozTocId359721">below</a>),
+      <pre style="margin-left: 40px;">&gt;&gt; best_parameters = <span style="color: rgb(51, 102, 255);">fmax</span>(model);		<i>% maximize with the current/default parameters</i><br>&gt;&gt; best_parameters = <span style="color: rgb(51, 102, 255);">fmax</span>(model, parameters);	<i>% maximize with given initial parameters</i></pre>
+      The parameters, as a vector, string or named structure, are
+      initiated to their starting value, from which the optimization
+      proceeds. An empty value requests to use the current/default
+      values.<span style="font-style: italic;"> Only numerical</span>
+      parameters can be optimized. Also, it is <span style="color:
+        rgb(255, 0, 0);">highly encouraged to use bounded parameters</span>
+      (that is define constraints, see <a href="#mozTocId359721">below</a>),
+
+
+
       else the optimizer can get lost, produce un-meaningful results, or
       return <span style="font-style: italic;">NaN</span> parameter
       values.<br>
       <br>
-      More specifically, the <span style="font-style: italic;">options</span>
-      structure may contain, in addition to the optimization mode, the
-      following members:<br>
-      <ul>
-        <li><span style="font-weight: bold;">options.type</span>:&nbsp;&nbsp;
-
-
-
-
-
-
-
-
-          <span style="color: rgb(204, 51, 204);">'minimize'</span> or<span
-            style="color: rgb(204, 51, 204);"> 'maximize'</span>, which
-          is the default (string)</li>
-        <li><span style="font-weight: bold;">options.monitors</span>:&nbsp;
-cell
-
-
-
-
-
-
-
-          string of monitor file names, or empty for all (cellstr). This
-          option actually improves dramatically the file importation by
-          selecting only the relevant files.<br>
-        </li>
-        <li><span style="font-weight: bold;">options.optimizer</span>:
-          function name of the optimizer to use, default is <span
-            style="font-style: italic;">fminpso</span> (string or
-          function handle). See <a href="Optimizers.html">Optimizers</a>.<br>
-        </li>
-        <li><span style="font-weight: bold;">options.mode</span>:&nbsp;&nbsp;
-should
-
-
-
-
-
-
-
-          be <span style="color: rgb(204, 51, 204);">'optimize'</span>.
-          This is automatically set whenever an 'optimization'
-          configuration field is set, such as <span style="font-style:
-            italic;">monitors, optimizer, TolFun, ...</span><span
-            style="color: rgb(204, 51, 204);"> </span></li>
-      </ul>
+      You can tune the optimizer configuration, as explained in the <a
+        href="iFunc.html#mozTocId604963">iFunc</a> documentation, with
+      syntax:<br>
+      <pre style="margin-left: 40px;">&gt;&gt; best_parameters = <span style="color: rgb(51, 102, 255);">fmax</span>(model, parameters, options);</pre>
       as well as any other optimizer configuration fields such as<br>
       <ul>
         <li><span style="font-weight: bold;">options.TolFun</span> =<span
             style="color: rgb(204, 51, 204);">'1%'</span>;&nbsp;<span
-            style="font-style: italic;"> % stop when criteria changes
-            are smaller that 1%,<span style="font-weight: bold;"> this
-              is the default</span><br>
+            style="font-style: italic;">&nbsp;&nbsp;&nbsp;&nbsp; % stop
+            when criteria changes are smaller that 1%<span
+              style="font-weight: bold;"></span><br>
           </span></li>
         <li><span style="font-weight: bold;">options.TolX</span> =<span
             style="color: rgb(204, 51, 204);">'0.1%';</span>
@@ -528,20 +505,35 @@ should
 
 
 
+
+
+
+
           </span>% plots the criteria and parameters evolution during
-          the optimization. <span style="font-style: italic;
-            font-weight: bold;">This is the default</span>. Set to <span
-            style="color: rgb(204, 51, 204);">''</span> to override this
-          choice. A view of the monitors used as criteria is also
-          displayed.<br>
+          the optimization.&nbsp;</li>
+        <li><b>options.optimizer</b>=<font color="#cc33cc">'fminpowell'</font><br>
         </li>
       </ul>
     </div>
+    The options can be given as a structure or assembled into a string.
     The default optimizer configuration is used when not specified (see
     the <a href="Optimizers.html">Optimizers</a> page for more
-    details), as well as the interactive plotting and verbose
-    information during the optimization.<br>
-    <br>
+    details). The optimizer routine is automatically guessed, but can be
+    forced:<br>
+    <ul>
+      <li><b>fmaxpso:</b> Particle Swarm Optimization</li>
+      <li><b>fmaxpowell:</b> Powell with Coggins line search</li>
+      <li><b>fmaxhooke:</b> Hooke-Jeeves direct search</li>
+      <li><b>fmaxralg:</b> Shor R-algorithm</li>
+      <li><b>fmaxsimpsa:</b> Simplex/simulated annealing</li>
+      <li><b>fmaximfil:</b> Unconstrained Implicit filtering</li>
+    </ul>
+    It is highly recommended to request the opimisation using the raw
+    monitors. The axes are specified as additional arguments after the
+    options:<br>
+    <pre style="margin-left: 40px;">&gt;&gt; best_parameters = <span style="color: rgb(51, 102, 255);">fmax</span>(model, parameters, options, x, y, ...);</pre>
+    and in particular:<br>
+    <pre style="margin-left: 40px;">&gt;&gt; best_parameters = <span style="color: rgb(51, 102, 255);">fmax</span>(model, parameters, options, nan);	<i>% use raw monitors</i></pre>
     The optimization returns the best parameter guess, as well as the
     monitor value for this solution.<br>
     In addition, similarly with other iFit <a href="Optimizers.html">optimization
@@ -552,9 +544,13 @@ should
 
 
 
+
+
+
+
       methods</a>, the optimizer final status and optional returned
     information can be obtained with e.g. <br>
-    <pre style="margin-left: 40px;">&gt;&gt; [parameters, monitors, <span style="color: rgb(255, 0, 0);">status, output</span>]=<span style="color: rgb(51, 102, 255);">mcstas</span>(<span style="color: rgb(204, 51, 204);">'templateDIFF'</span>,<span style="color: rgb(51, 102, 255);">struct</span>(<span style="color: rgb(204, 51, 204);">'RV'</span>,1), ...<br>      <span style="color: rgb(51, 102, 255);">struct</span>(<span style="color: rgb(204, 51, 204);"></span><span style="color: rgb(204, 51, 204);">'monitors'</span>,<span style="color: rgb(204, 51, 204);">'Banana'</span>,<span style="color: rgb(204, 51, 204);">'mode','optimize','optimizer','fminimfil'</span>));</pre>
+    <pre style="margin-left: 40px;">&gt;&gt; model = <span style="color: rgb(51, 102, 255);">mccode</span>(<span style="color: rgb(204, 51, 204);">'templateDIFF'</span>,<font color="#cc33cc">'monitor=Diff_BananaTheta'</font>);<br>&gt;&gt; <font color="#3366ff">fix</font>(model, <font color="#cc33cc">'all'</font>); <br>&gt;&gt; model.RV=<font color="#cc33cc">'free'</font>; model.RV=[0.5 0.8 1.5];<br>&gt;&gt; model.L2=<font color="#cc33cc">'free'</font>; model.L2=[1 3 4];<br>&gt;&gt; [parameters, fval, <span style="color: rgb(255, 0, 0);">status, output</span>]=<span style="color: rgb(51, 102, 255);">fmax</span>(model<span style="color: rgb(204, 51, 204);"></span>,<span style="color: rgb(51, 102, 255);">[], </span><span style="color: rgb(204, 51, 204);">'optimizer=fminimfil; OutputFcn=fminplot'</span>, nan);</pre>
     where <span style="font-style: italic;">output</span> stores most
     of the optimization process data, including uncertainty on the best
     parameter values, <span style="font-style: italic;">output.parsHistoryUncertainty
@@ -564,23 +560,21 @@ should
 
 
 
+
+
+
+
     </span>and<span style="font-style: italic;"> </span><span
       style="font-style: italic;">output.parsHessianUncertainty</span>.<br>
+    <br>
     <br>
     <a href="images/iFit_McStas_optimize.png"><img
         src="images/iFit_McStas_optimize.png" alt="iFit: McStas wrapper:
         dynamic optimization evolution" style="border: 0px solid ;
-        width: 200px; height: 190px;" align="right"></a>In the following
-    example, we search for an optimal monochromator curvature (parameter
-    <span style="font-style: italic;">RV</span>) on the <span
-      style="font-style: italic;">templateDIFF</span> instrument model,
-    in order to maximize the <span style="font-style: italic;">Banana</span>
-    monitors (as<span style="font-style: italic;"> 'monitors' </span>option):<br>
-    <pre style="margin-left: 40px;">&gt;&gt; [parameters, monitors]=<span style="color: rgb(51, 102, 255);">mcstas</span>(<span style="color: rgb(204, 51, 204);">'templateDIFF'</span>,<span style="color: rgb(51, 102, 255);">struct</span>(<span style="color: rgb(204, 51, 204);">'RV'</span>,1), ...<br>      <span style="color: rgb(51, 102, 255);">struct</span>(<span style="color: rgb(204, 51, 204);"></span><span style="color: rgb(204, 51, 204);">'monitors'</span>,<span style="color: rgb(204, 51, 204);">'Banana'</span>,<span style="color: rgb(204, 51, 204);">'optimizer','fminimfil'</span>));<br>parameters =<br>     RV: 0.75<br></pre>
-    The monitors to use as optimization criteria (<span
-      style="font-style: italic;">options.monitors</span>) can be part
-    of a more complex expression, which still must start with the file
-    name of the monitor, and then refer to itself with the<span
+        width: 200px; height: 190px;" align="right"></a>The monitors to
+    use as optimization criteria (<span style="font-style: italic;">options.monitors</span>)
+    can be part of a more complex expression, which still must start
+    with the file name of the monitor, and then refer to itself with the<span
       style="font-style: italic;"> 'this' </span>variable (which is an
     <a href="iData.html">iData</a> object), such as in the following
     example where we define the criteria as <span style="font-style:
@@ -610,10 +604,18 @@ should
 
 
 
+
+
+
+
       the optimization plot</span> window. The actual end occurs after a
     few more iterations.<br>
     <br>
     <span style="color: rgb(255, 0, 0); font-weight: bold;">Warning: </span>as
+
+
+
+
 
 
 
@@ -674,6 +676,10 @@ should
     <div style="text-align: center;">
       <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
+
+
+
+
 
 
 
