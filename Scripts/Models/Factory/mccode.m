@@ -8,8 +8,8 @@ function y = mccode(instr, options)
 % ------------------------------------------------------------------------------
 % mccode(description)
 %       creates a model with specified McCode instrument 
-%       The instrument may be given as an '.instr' McCode description, directly
-%       as an executable, or as an other.
+%       The instrument may be given as an '.instr' McCode description, or directly
+%       as an executable.
 % mccode('')
 %       requests a McCode file (*.instr,*.out) with a file selector.
 % mccode('gui')   and 'mccode'  alone.
@@ -27,20 +27,29 @@ function y = mccode(instr, options)
 %   options.seed:        random number seed to use for each iteration (double)
 %   options.gravitation: 0 or 1 to set gravitation handling in neutron propagation (boolean)
 %   options.monitor:     a single monitor name to read, or left empty for the last (string).
+%                        this can be a wildcard expression.
 %   options.mccode:      set the executable path to 'mcrun' (default, neutrons) or 'mxrun' (xrays)
 %   options.mpirun:      set the executable path to 'mpirun'
 %   options.compile:     0 or 1 to force re-compilation of the executable.
 %                          try that first if you can not create/use the object (old 
 %                          executable may be used).
-%
-%   options can also be given as a string, e.g. 'ncount=1e6; compile=1'
+%   All options are stored and assignable in model.UserData.options.
+%   options can also be given as a string, e.g. 'ncount=1e6; monitor=*Theta*; compile=1'
+%   the 'monitor' option can also include further expressions, such as:
+%     options.monitor='*Theta*; signal=max(signal)/std(signal)^2;'
 %
 % The instrument parameters of type 'double' are used as model parameters. Other
 % parameters (e.g. of type string and int) are stored in UserData.Parameters_Constant
 %
 % The options ncount, seed, gravitation, monitor can be changed for the model 
 % evaluation, with e.g.:
+%   model.UserData.options.ncount     =1e5;
 %   model.UserData.options.gravitation=1;
+%   model.UserData.options.monitor    ='*Theta*';
+%
+% Additional information is stored in the model.UserData, such as the instrument
+% source, which you may view with:
+%   TextEdit(model.UserData.instrument_source)
 %
 % MODEL EVALUATION:
 % ------------------------------------------------------------------------------
@@ -58,7 +67,7 @@ function y = mccode(instr, options)
 %
 % output: y: monitor value
 % ex:     model =mccode('templateDIFF'); 
-%         signal=iData(model,[],linspace(-10,100,100));
+%         signal=iData(model, [], linspace(-10,100,100));
 %         signal=iData(model, [], nan); % to get the raw monitor
 %
 % MODEL GEOMETRY
@@ -103,9 +112,16 @@ if nargin == 0
   instr = '';
 end
 
-if nargin > 1 && ischar(options)
+if nargin > 1
+  if ischar(options)
     options = str2struct(options);
+  elseif ~isstruct(options)
+    options=[]; 
+  end
 else
+  options=[];
+end
+if isempty(options)
   options = struct();
 end
 options = instrument_parse_options(options);
@@ -240,7 +256,11 @@ if ~isempty(UserData.Parameters_Constant) && ~isempty(fieldnames(UserData.Parame
 end
 
 y.Name       = strtrim([ options.instrument ' McCode [' mfilename ']' ]);
-y.Description= strtrim([ 'McCode virtual experiment ' options.instrument ]);
+NL = sprintf('\n');
+y.Description= [ 'McCode virtual experiment ' options.instrument ...
+    NL '  Set UserData.options.monitor to specify a given monitor file pattern, ' ...
+    NL '  or [] to get the last.' ...
+    NL '  Monitors are stored in UserData.monitors' ];
 y.UserData   = UserData;
 
 % assemble the Expression: 
@@ -249,6 +269,7 @@ y.UserData   = UserData;
 %     execute
 %     get back results (filter monitor)
 %     set signal (interp to Axes)
+ax = ',x,y,z,t';
 y.Expression = { ...
 '  UD = this.UserData; options=UD.options;', ...
 '  % check directory for execution', ...
@@ -320,18 +341,25 @@ y.Expression = { ...
 '  % read results', ...
 '  signal = [];', ...
 '  if ~isempty(options.monitor) && ischar(options.monitor)', ...
-'    signal = iData(fullfile(options.dir,''sim'',[ strtrim(options.monitor) ''*'' ]));', ...
+'    [pattern,expr] = strtok(options.monitor, '' ;:='');', ...
+'    signal = iData(fullfile(options.dir,''sim'',pattern));', ...
+'    if ~isempty(expr) && any(expr(1)=='' :;='') expr=expr(2:end); end', ...
+'    try; eval([ expr '';'' ]); catch; disp([ ''ERROR: '' this.Tag '': mccode: Ignoring faulty monitor expression '' expr]); end', ...
 '  end', ...
 '  if all(isempty(signal)) || isempty(options.monitor)', ...
 '    signal = iData(fullfile(options.dir,''sim'',''mccode.sim''));', ...
 '  end', ...
 '  this.UserData.monitors = signal;', ...
-'  if ~isempty(options.monitor) && ischar(options.monitor)', ...
-'    if ~isa(signal, ''iData'') || numel(signal) <= 1, index=[];', ...
-'    else index=strcmp(options.monitor, get(signal,''Component'')); end', ...
-'    if numel(signal) > 1 && ~isempty(index), signal=signal(index); end', ...
-'  elseif ~isempty(options.monitor) && isnumeric(options.monitor) && numel(signal) > 1', ...
+'  if ~isempty(options.monitor) && isnumeric(options.monitor) && numel(signal) > 1', ...
 '    signal=signal(options.monitor);', ...
+'  end', ...
+'  if isa(signal, ''iData'')', ...
+'    if numel(signal) > 1, signal = signal(end); end', ...
+'    this.Dimension = ndims(signal);', ...
+['    ax=''' ax(2:end) ''';' ], ...
+'    ax=eval([ ''{'' ax(1:(2*this.Dimension)) ''}'']);', ...
+'    if ~isempty(x) && ~all(isnan(x(:))), signal = interp(signal, ax{:});', ...
+'    else x=getaxis(signal,1); y=getaxis(signal,2); z=getaxis(signal,3); t=getaxis(signal,4); end;', ...
 '  end', ...
 '' ...
 };
@@ -345,36 +373,19 @@ y = iFunc(y);
 % all parameters must be defined to get execute with default values
 %
 % at this stage, 'signal' contains all monitors
-if ~any(isnan((y.Guess)))
-  disp([ mfilename ': Determining the model dimension...' ]);
-  ncount = options.ncount;
-  y.UserData.options.ncount = 1e2;  % fast as we only need the size and position
-  [signal,y] = feval(y,y.Guess);
-  signal = y.UserData.monitors;     % get all monitors
-  y.UserData.options.ncount = ncount;
+disp([ mfilename ': Determining the model dimension...' ]);
+ncount = options.ncount;
+y.UserData.options.ncount = 1e2;  % fast as we only need the size and position
+y.UserData.monitors    = [];
+[signal,y] = feval(y,y.Guess, nan);
+signal = y.UserData.monitors;     % get all monitors
+y.UserData.options.ncount = ncount;
+if isa(signal,'iData')
   if numel(signal) > 1  % get the last one
     signal=signal(end);
   end
-  % leave the monitor selection empty as 
-  % Could be: get(signal,'Component') but this choice fails when the monitor 
-  % file names do not match the component names
-  y.UserData.options.monitor = []; 
   y.Dimension = ndims(signal);
-  % handle interpolation onto axes
-  ax = ',x,y,z,t';
-  y.Expression{end+1} = 'if numel(signal) > 1, signal = signal(end); end';
-  y.Expression{end+1} = 'this.Dimension = ndims(signal);';
-  y.Expression{end+1} =['ax=''' ax(2:end) ''';' ];
-  y.Expression{end+1} = 'ax=eval([ ''{'' ax(1:(2*this.Dimension)) ''}'']);';
-  y.Expression{end+1} = 'if ~isempty(x) && ~all(isnan(x(:))), signal = interp(signal, ax{:});';
-  y.Expression{end+1} = 'else x=getaxis(signal,1); y=getaxis(signal,2); z=getaxis(signal,3); t=getaxis(signal,4); end;';
-  y.Expression{end+1} = 'signal = double(signal);';
-  % update model description
-  y.Description = [ y.Description ...
-      '\n  Set UserData.options.monitor to specify a given monitor file pattern, ' ...
-      '\n  or [] to get the last.\n  ' ...
-      'Monitors are stored in UserData.monitors' ];
-  
+
   if numel(y.UserData.monitors) > 1
     y.Description = [ y.Description sprintf('\n  Available monitors:') ];
     for index=1:numel(y.UserData.monitors)
@@ -385,8 +396,13 @@ if ~any(isnan((y.Guess)))
   for index=1:y.Dimension
     x = getaxis(signal, index); x=x(:);
     y.Description = [ y.Description ...
+      sprintf('\n') char(signal) ...
       sprintf('\n  Axis %i "%s" label is "%s", range [%g:%g]', index, ax(2*index), label(signal, index), min(x), max(x)) ];
   end
+elseif isnumeric(signal)
+  if isscalar(signal),     y.Dimension = 0;
+  elseif isvector(signal), y.Dimension = 1;
+  else y.Dimension = ndims(signal); end
 end
 
 disp(y.Description);
