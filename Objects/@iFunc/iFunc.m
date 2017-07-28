@@ -9,6 +9,7 @@ function a = iFunc(varargin)
 %                       signal=Expression(p, x,y, ...)
 %                         The parameter names surrounded by "" are replaced
 %                         by the corresponing p(n)
+%                       the iFunc object itself is named 'this' in the Expression
 %   Guess:            Vector, expression or function to evaluate in order to obtain
 %                       guessed parameters from axes x,y,z, ... and signal
 %                       p=Guess(x,y,z, ..., signal) should return a vector. NaN values 

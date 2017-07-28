@@ -89,10 +89,10 @@ objective.Constraint=[];  % we have transfered the restraints.
 
 [pars,fval,exitflag,output] = fmin(fun, pars, options, constraints);
 
-if ~isempty(inputname(1)) && 0
+if ~isempty(inputname(1))
   objective.UserData.output = output;
   objective.ParameterValues = pars(:);
-  objective.Constraint = constraints; % restore initial constraints
+  objective.Constraint      = constraints; % restore initial constraints
   assignin('caller', inputname(1), objective);
 end
 % return struct when pars where given as such,only those changed

@@ -379,6 +379,7 @@ signal = [];
 iFunc_ax = 'x y z t u v w ';
 iFunc_dim= abs(this.Dimension);
 iFunc_t0 = clock;
+iFunc_this = this;  % make a copy in case something goes wrong
 
 if iFunc_dim
   if numel(varargin) >= iFunc_dim
@@ -410,25 +411,29 @@ try
   this.Eval = cellstr(this.Eval);
   this.Eval = this.Eval(~strncmp('%', this.Eval, 1)); % remove comment lines
   eval(sprintf('%s\n', this.Eval{:}));
+  signal = double(signal);  % in case the signal is not an array
 catch ME
   disp([ 'Error: Could not evaluate Expression in model ' this.Name ' ' this.Tag ]);
   disp(this)
   t=this.Eval;
-  if numel(t) > 40
-    t(1:20)
+  if numel(t) > 20
+    disp(t(1:10))
     disp('...')
-    t((end-15):end)
+    disp(t((end-5):end))
   else
-    t
+    disp(t)
   end
   disp(getReport(ME,'basic'))
   save iFunc_feval_error
   error([ 'iFunc:' mfilename ], [ 'Failed model evaluation. Saved state in ' fullfile(pwd,'iFunc_feval_error') ]);
 end
 
+% if the model evaluation destroys the iFunc object, we restore it
+if ~isa(this, 'iFunc') this=iFunc_this; end
+
 % copy the actual axes, in case they have been changed during evaluation
 if nargout > 1 && iFunc_dim
-  iFunc_ax = eval([ '{' iFunc_ax(1:(2*iFunc_dim)) '}' ]);
+  iFunc_ax = eval([ '{' iFunc_ax(1:(2*abs(this.Dimension))) '}' ]);
 else
   iFunc_ax = [];
 end
