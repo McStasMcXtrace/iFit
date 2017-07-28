@@ -93,10 +93,10 @@ if nargin < 3, options = []; end
 
 [pars,fval,exitflag,output] = fmin(objective2, pars, options,  varargin{:});
 
-if ~isempty(inputname(1)) && 0
-  objective.UserData.output = output;
+if ~isempty(inputname(1))
+  objective.UserData        = objective2.UserData;
   objective.ParameterValues = objective2.ParameterValues;
-  objective.Constraint = output.constraints; % restore initial constraints
+  objective.Constraint      = output.constraints; % restore initial constraints
   assignin('caller', inputname(1), objective);
 end
 

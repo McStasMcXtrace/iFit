@@ -155,6 +155,8 @@ end
 if isstruct(pars)
   pars_name=fieldnames(pars);
   pars=cell2mat(struct2cell(pars));
+else
+  pars_name = {};
 end
 
 % handle case when parameters are given as structures
@@ -196,8 +198,6 @@ if isstruct(pars)
       end
     end
   end
-else
-  pars_name = {};
 end
 
 if length(constraints)==length(pars) & (isnumeric(constraints) | islogical(constraints))

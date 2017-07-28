@@ -133,8 +133,7 @@ function [pars_out,criteria,message,output] = fits(model, a, pars, options, cons
 %
 % ex:     data=load(iData, [ ifitpath 'Data/sv1850.scn' ])
 %         p=fits(data);
-%         o=fminpowell('defaults'); o.OutputFcn='fminplot'; 
-%         [p,c,m,o]=fits(gauss,data,[],o); 
+%         [p,c,m,o]=fits(gauss,data,[],'optimizer=fminpowell; OutputFcn=fminplot'); 
 %         figure; plot(a); hold on; plot(o.modelAxes, o.modelValue,'r');
 %
 % Version: $Date$
