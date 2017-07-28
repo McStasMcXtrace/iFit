@@ -117,6 +117,7 @@
 
 
 
+
     <br>
     The name of the parameters can be changed by accessing the <span
       style="font-weight: bold;">Parameters</span> property (this is a
@@ -129,6 +130,7 @@
     return a vector of parameter values<span style="font-style: italic;">
       'p' </span>as a function of the axes <span style="font-style:
       italic;">x,y,z...</span> and a <span style="font-style: italic;">signal.
+
 
 
 
@@ -212,6 +214,7 @@
       <span style="font-weight: bold; font-style: italic;"><span
           style="font-weight: bold; font-style: italic;">model(parameters)&nbsp;&nbsp;&nbsp;
 
+
           &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
           &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; % use
           guessed axes</span><br>
@@ -290,6 +293,7 @@
 
 
 
+
       and removing constraints on models</h3>
     Models are often used for fitting purposes (refer to the <a
       href="Fit.html">Fit</a> help page).<br>
@@ -298,8 +302,8 @@
     input argument when calling <span style="font-weight: bold;
       font-style: italic;">fits</span> (see <a href="Fit.html">Fit</a>)
     or set the constraint directly on the model parameters with:<br>
-    <pre style="margin-left: 40px;">&gt;&gt; model.parameter=<span style="color: rgb(204, 51, 204);">'fix'</span>     <span style="font-style: italic;">% to lock its value during a fit process</span><br>&gt;&gt; model.parameter='<span style="color: rgb(204, 51, 204);">clear'</span>   <span style="font-style: italic;">% or <font color="#cc33cc">'free'</font> to unlock value during a fit process</span>
-&gt;&gt; model.parameter=[min max] <span style="font-style: italic;">% to bound value</span><br>&gt;&gt; model.parameter=[nan nan] <span style="font-style: italic;">% to remove bound constraint</span><br>&gt;&gt; model.parameter=<span style="color: rgb(204, 51, 204);">''</span>        <span style="font-style: italic;">% to remove all constraints on 'parameter'</span><br>&gt;&gt; model.parameter=<span style="color: rgb(204, 51, 204);">'expression'</span>        <span style="font-style: italic;">% to set the parameter from an expression</span> which can use '<i>p(n)</i>' for other parameters<br>&gt;&gt; model.Constraint=<span style="color: rgb(204, 51, 204);">''</span>       <span style="font-style: italic;">% to remove all constraints</span><br>&gt;&gt; model.Constraint = 0;     <span style="font-style: italic;">% to unlock/free all Parameters during a fit process<br></span>&gt;&gt; model.Constraint = 1;     <span style="font-style: italic;">% to lock/fix all Parameters during a fit process</span><br></pre>
+    <pre style="margin-left: 40px;">&gt;&gt; model.parameter=<span style="color: rgb(204, 51, 204);">'fix'</span>     <span style="font-style: italic;">% to lock its value during a fit process</span>. Same as mlock<br>&gt;&gt; model.parameter='<span style="color: rgb(204, 51, 204);">clear'</span>   <span style="font-style: italic;">% or <font color="#cc33cc">'free'</font> to unlock value during a fit process. Same as munlock</span>
+&gt;&gt; model.parameter=[min max] <span style="font-style: italic;">% to bound value</span><br>&gt;&gt; model.parameter=[min value max] <span style="font-style: italic;">% to bound the parameter</span> and set its value<br>&gt;&gt; model.parameter=[nan nan] <span style="font-style: italic;">% to remove bound constraint</span><br>&gt;&gt; model.parameter=<span style="color: rgb(204, 51, 204);">''</span>        <span style="font-style: italic;">% to remove all constraints on 'parameter'</span><br>&gt;&gt; model.parameter=<span style="color: rgb(204, 51, 204);">'expression'</span>        <span style="font-style: italic;">% to set the parameter from an expression</span> which can use '<i>p(n)</i>' for other parameters<br>&gt;&gt; model.Constraint=<span style="color: rgb(204, 51, 204);">''</span>       <span style="font-style: italic;">% to remove all constraints</span><br>&gt;&gt; model.Constraint = 0;     <span style="font-style: italic;">% to unlock/free all Parameters during a fit process<br></span>&gt;&gt; model.Constraint = 1;     <span style="font-style: italic;">% to lock/fix all Parameters during a fit process</span><br></pre>
     Any parameter name surrounded by double quotes, e.g. <span
       style="font-style: italic;">"Amplitude"</span>, is replaced by the
     corresponding <span style="font-style: italic;">p(n)</span> value
@@ -307,6 +311,7 @@
     (cross-constraints). For instance<br>
     <pre style="margin-left: 40px;">&gt;&gt; f=<span style="color: rgb(51, 102, 255);">gauss</span>;			<span style="font-style: italic;">% create a Gaussian model</span><br>&gt;&gt; f.Amplitude = <span style="color: rgb(204, 51, 204);">'fix'</span>;		<span style="font-style: italic;">% fix its Amplitude</span><br>&gt;&gt; f.Background = [0 1e-4];	<span style="font-style: italic;">% bound its background</span><br>&gt;&gt; f.Width = <span style="color: rgb(204, 51, 204);">'p(1)/1000'</span>;	<span style="font-style: italic;">% use an expression referring to </span>p(1)=Amplitude<span style="font-style: italic;"> value</span><br>&gt;&gt; f.Width = <span style="color: rgb(204, 51, 204);">'"Amplitude"/1000'</span>;	<span style="font-style: italic;">% same as above with direct naming of parameters using ""</span><br></pre>
     Alternatively, you can use the <span style="font-weight: bold;">mlock,
+
 
 
 
@@ -331,8 +336,9 @@
     <br>
     To list parameters which are fixed, free and bound, use:<br>
     <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">mlock</span>(f)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">munlock</span>(f)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">xlim</span>(f)</pre>
-    which return the number of parameters in each category.<br>
-    <br>
+    which return the number of parameters in each category. This is also
+    displayed when using:<br>
+    <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">disp</span>(f)</pre>
     Under the hood, the constraints are stored as a structure with
     fields <span style="font-style: italic;">min, max, fixed, set</span>
     (with one expression per parameter), and <span style="font-style:
@@ -453,6 +459,7 @@
 
 
 
+
     catenates the string before/after the Expression of the model. For
     instance the following example does the same as above, explicitly
     setting the new signal value, and the next one displays a text
@@ -480,6 +487,7 @@
     objects (see the <a href="Methods.html">Methods</a> page).<br>
     <br>
     <h3 align="center"><a class="mozTocH3" name="mozTocId604963"></a>Optimising
+
 
 
       the iFunc model parameters</h3>
@@ -514,7 +522,7 @@
     to fix the non-relevant parameters, and bound the others, as
     explained <a href="#mozTocId579374">above</a>.<br>
     For instance:<br>
-    <pre style="margin-left: 40px;">&gt;&gt; model= <font color="#3366ff">gauss1</font>;<br>&gt;&gt; <font color="#3366ff">fix</font>(model, <font color="#cc33cc">'all'</font>); model.Intensity=<font color="#cc33cc">'free'</font>;<br>&gt;&gt; model.Intensity=1; model.HalfWidth=.5;<br>&gt;&gt; <font color="#3366ff">xlim</font>(model, <font color="#cc33cc">'Intensity'</font>,[-2 2])<br>&gt;&gt; <font color="#3366ff">fmin</font>(model)<br>ans =<br>   -2.0000         0    0.5000<br>&gt;&gt; <font color="#3366ff">fmin</font>(model, <font color="#cc33cc">'Intensity=1'</font>)</pre>
+    <pre style="margin-left: 40px;">&gt;&gt; model= <font color="#3366ff">gauss1</font>;<br>&gt;&gt; <font color="#3366ff">fix</font>(model, <font color="#cc33cc">'all'</font>); model.Intensity=<font color="#cc33cc">'free'</font>;<br>&gt;&gt; model.Intensity=1; model.HalfWidth=.5;<br>&gt;&gt; <font color="#3366ff">xlim</font>(model, <font color="#cc33cc">'Intensity'</font>,[-2 2])<br>&gt;&gt; <font color="#3366ff">fmin</font>(model)<br>ans =<br>   -2.0000         0    0.5000<br>&gt;&gt; <font color="#3366ff">fmin</font>(model, <font color="#cc33cc">'Intensity=1'</font>)<br>ans = <br>    Intensity: -2<br></pre>
     will search for the intensity that minimizes a Gaussian. This is of
     course the lower Intensity bound, other parameters being fixed.<br>
     <br>
@@ -525,6 +533,11 @@
     <h3 style="text-align: center;"><a class="mozTocH3"
         name="mozTocId443357"></a>Fitting model parameters onto data<br>
     </h3>
+    <div align="center"> <i><b>NOTE:</b> a more detailed documentation
+        on this topic is available in the </i><i><a href="Fit.html">Fit</a></i><i>
+        page.</i><br>
+    </div>
+    <br>
     Once models have been assembled, it is possible to use them for
     fitting, that is find the best parameter values to match a data set.
     The syntax for this is :<br>
@@ -545,10 +558,12 @@
 
 
 
+
         .... ]</span><br>
     </div>
     a structure with members <br>
     <div style="margin-left: 40px;"><span style="font-style: italic;">data.Signal
+
 
 
 
@@ -584,6 +599,7 @@
 
 
 
+
         x,y, ... , Signal }</span><br>
       <br>
     </div>
@@ -601,20 +617,31 @@
     returned arguments, are the same as described in the <a
       href="Fit.html">Fit</a> page. Empty input argument values request
     the fit to use default values.<br>
-    <br>
+    <pre>	&gt;&gt; data=<font color="#3366ff">load</font>(iData, [ <font color="#3366ff">ifitpath</font> <font color="#cc33cc">'Data/sv1850.scn'</font> ])<br>	&gt;&gt; p=<font color="#3366ff">fits</font>(data);	% fit to a gaussian<br></pre>
+    or with a specific optmiser choice:<br>
+    <pre>	&gt;&gt; [p,c,m,o]=<font color="#3366ff">fits</font>(gauss,data,[],<font color="#cc33cc">'optimizer=fminpowell; OutputFcn=fminplot'</font>); </pre>
     The model value when the fit procedure ends is stored in the
     output.modelValue member :<br>
-    <pre style="margin-left: 40px;">&gt;&gt; [parameters,criteria,message,<span style="color: rgb(255, 0, 0);">output</span>]= <span style="color: rgb(51, 102, 255);">fits</span>(<span style="color: rgb(204, 51, 204);">model,<span style="color: rgb(0, 0, 0);"> a, </span></span>initial_parameters,...)</pre>
+    <pre style="margin-left: 40px;">&gt;&gt; [parameters,criteria,message,<span style="color: rgb(255, 0, 0);">output</span>]= <span style="color: rgb(51, 102, 255);">fits</span>(<span style="color: rgb(204, 51, 204);">model,<span style="color: rgb(0, 0, 0);"> data, </span></span>initial_parameters,...)</pre>
     which is an <a href="iData.html">iData</a> object when <span
-      style="font-style: italic;">a</span> is given as an iData. In this
-    case, <span style="font-style: italic;">fits(iFunc, iData, ...)</span>
-    is equivalent to <span style="font-style: italic;">fits(iData,
-      iFunc, ...)</span>.<br>
-    <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(a, <span style="color: rgb(255, 0, 0);">output</span>.modelValue)</pre>
+      style="font-style: italic;">data</span> is given as an iData. In
+    this case, <span style="font-style: italic;">fits(iFunc, iData,
+      ...)</span> is equivalent to <span style="font-style: italic;">fits(iData,
+
+      iFunc, ...)</span>, and you can directly plot the result on top of
+    the initial data with:<br>
+    <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(data, <span style="color: rgb(255, 0, 0);">output</span>.modelValue)</pre>
+    When the data to be fitted is not an iData object, you can plot the
+    fit result from e.g.<br>
+    <blockquote>
+      <pre>&gt;&gt; <font color="#3366ff">plot</font>(output.modelAxes,output.modelValue)	% 1D<br>&gt;&gt; <font color="#3366ff">surf</font>(output.modelAxes{:},output.modelValue)	% 2D
+</pre>
+    </blockquote>
     <br>
     <hr style="width: 100%; height: 2px;">
     <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
+
 
 
 
