@@ -53,7 +53,11 @@ function ifit(varargin)
 
 persistent ifit_options
 
-if ~isdeployed,
+if nargin == 1 && strcmp(varargin{1}, 'test')
+  ifittest
+  return
+  
+elseif ~isdeployed,
   disp([ mfilename ': you do not need the iFit Terminal. Just use Matlab as usual.' ])
   return; 
 end
