@@ -3,6 +3,7 @@ function s=str2struct(string)
 %   This function creates a structure from string containing <name> <value> pairs
 %   Structure member must be separated by ';' or end-of-lines.
 %   The member assignation can be specified with spaces, '=' and ':'
+%   Values of type string can be specified with ' and " delimiters.
 %
 % input arguments:
 %   string: string from which the structure should be extracted. It can
@@ -11,7 +12,7 @@ function s=str2struct(string)
 % output variables:
 %   s: structure which contains the named values
 %
-% example: str=str2struct('Temperature: 200; RV=3; comment something nice');
+% example: str=str2struct('Temperature: 200; RV=3; comment something nice; a="blah"');
 %          
 % See also: mat2str, num2str, eval, sprintf, class2str
 %
@@ -61,10 +62,7 @@ end
 % ==============================================================================
 function [name, value] = str2struct_value_pair(this)
   % split token 'this' as name=value
-  [name, line] = strtok(this, ':');
-  if isempty(line)
-      [name, line] = strtok(this, sprintf('='));
-  end
+  [name, line] = strtok(this, ':=');
   if isempty(line)
       [name, line] = strtok(this, sprintf(' \t'));
   end
@@ -73,6 +71,13 @@ function [name, value] = str2struct_value_pair(this)
   if name(1)=='#' || name(1)=='%' || strncmp(name, '//', 2) || name(1) == '!'
     name=[]; % skip comment lines
     return
+  end
+  if any(line(1) == '"''') % a string indicated as such -> find next matching quote
+    nextline = find(line(2:end) == line(1), 1);
+    if ~isempty(nextline)
+      value = line(2:(nextline-1))
+      return
+    end
   end
 
   nextline = min(find(isstrprop(line, 'alphanum')));
