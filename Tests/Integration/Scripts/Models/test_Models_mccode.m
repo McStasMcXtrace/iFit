@@ -3,7 +3,7 @@ function result = test_Models_mccode
   % test McCode model builder
   y = mccode('defaults');
   % set a specific monitor file name
-  y.UserData.options.monitor='Diff_BananaTheta';
+  y.UserData.options.monitor='Diff_BananaTheta*';
   % create 3D view
   [~,fig]=mccode_display(y);
   % then evaluate the model with raw McCode data
