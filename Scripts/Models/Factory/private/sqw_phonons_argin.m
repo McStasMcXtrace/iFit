@@ -115,6 +115,12 @@ end
 if isfield(options, 'smearing') && isempty(options.occupations)
   options.occupations = options.smearing;
 end
+if isfield(options, 'nstep') && ~options.nsteps
+  options.nsteps = options.nstep;
+end
+if isfield(options, 'cutoff') && ~options.ecut
+  options.ecut = options.cutoff;
+end
 if isfield(options, 'kpts')
   options.kpoints=options.kpts;
 end
