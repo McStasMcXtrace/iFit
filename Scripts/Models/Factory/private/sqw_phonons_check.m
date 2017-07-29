@@ -4,11 +4,12 @@ function [options, result, read] = sqw_phonons_check(configuration, options, sta
 %   output:   generates a script 'sqw_phonons_check.py' to generate ASE atoms.pkl
 
 target = options.target;
+result = [];
+read = [];
 
 % determine if the atoms.pkl exists. If so, nothing else to do
 if ~isempty(dir(fullfile(target, 'atoms.pkl')))
   disp([ mfilename ': re-using ' fullfile(target, 'atoms.pkl') ]);
-  return
 end
 
 if ismac,      precmd = 'DYLD_LIBRARY_PATH= ;';
