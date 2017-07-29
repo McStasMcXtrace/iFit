@@ -95,6 +95,7 @@
 
 
 
+
               <br>
             </li>
             <li>Optional: any <b>DFT code</b> out of <a
@@ -128,6 +129,7 @@
           Then you can either build a bootable USB key using e.g. <a
             href="https://unetbootin.github.io/">Unetbootin</a> (or
           simply a command in the style "<i>dd if=iso of=usbkey bs=1m</i>"),
+
 
 
 
@@ -179,6 +181,7 @@
           <li><b>Other Linux distributions</b></li>
         </ul>
         <blockquote>Use your package manager (e.g. <i>yum</i> and <i>dnf</i>),
+
 
 
 
@@ -250,6 +253,7 @@
 
 
 
+
             input IO</a> module for a full list of supported input
           formats.<br>
           <br>
@@ -259,6 +263,7 @@
         <ul>
           <li><b>MaterialsProject</b>&lt;<a
               href="https://www.materialsproject.org/">https://www.materialsproject.org/</a>&gt;
+
 
 
 
@@ -310,6 +315,7 @@
         <ul>
           <li><b>PhononDB</b> &lt;<a
               href="http://phonondb.mtl.kyoto-u.ac.jp/">http://phonondb.mtl.kyoto-u.ac.jp/</a>&gt;
+
 
 
 
@@ -401,12 +407,14 @@
 
 
 
+
             can store any computational result from e.g. ABINIT,
             QuantumEspresso, VASP, and others.</li>
           <li><b>ICSD</b> Inorganic Crystal Structure Database &lt;<a
               href="http://icsd.ill.fr">http://icsd.ill.fr</a>&gt; with
             plenty of CIFs.</li>
           <li><b>AflowLib</b> &lt;<a href="http://aflowlib.org/">http://aflowlib.org/</a>&gt;
+
 
 
 
@@ -463,6 +471,7 @@
                 the Terminal iFit prompt. This will probably crash iFit
               </font><font color="#ff0000">[<a
                   href="http://www.mathworks.com/support/bugreports/624817">bug
+
 
 
 
@@ -705,6 +714,8 @@ href="http://mail.mccode.org/cgi-bin/mailman/listinfo/ifit-users"
         specify its full path, and sqw_phonons will find it.<br>
         The automatic configuration uses:<br>
         <ul>
+          <li>Space group: F m-3m (225), cubic fcc.<br>
+          </li>
           <li>supercell=3</li>
           <li>kpoints=4</li>
           <li>kpoints_density= 1728</li>
@@ -713,6 +724,9 @@ href="http://mail.mccode.org/cgi-bin/mailman/listinfo/ifit-users"
             uses 1500 eV.<br>
           </li>
         </ul>
+        <i><b>Outcome</b></i>: all calculators give similar results. The
+        phonon dispersions are in all agreement in all cases. The
+        QuantumEspresso and AbInit calculators are the fastest.<br>
         <br>
         Results with different DFT codes<br>
         <table height="541" width="1102" border="1" cellpadding="2"
@@ -733,7 +747,9 @@ href="http://mail.mccode.org/cgi-bin/mailman/listinfo/ifit-users"
 
 
 
-                </b>with <i>qh=0.01:0.5:50;qk=qh; ql=qh; w=0.01:0.5:51;</i><i><br>
+
+                </b>with <i>qh=0.01:0.5:1.5;qk=qh; ql=qh;
+                  w=0.01:0.5:51;</i><i><br>
                 </i><i>f=s([], qh,qk,ql',w);</i></td>
               <td valign="top" bgcolor="#ffffcc"><b>command:<br>
                   s=</b><font color="#3366ff">sqw_phonons</font>(<font
@@ -791,7 +807,7 @@ href="http://mail.mccode.org/cgi-bin/mailman/listinfo/ifit-users"
             </tr>
             <tr>
               <td valign="top" bgcolor="#ffcccc"><b>Elk</b><b><br>
-                </b></td>
+                </b> </td>
               <td valign="top">9820<br>
               </td>
               <td valign="top"><br>
@@ -804,7 +820,7 @@ href="http://mail.mccode.org/cgi-bin/mailman/listinfo/ifit-users"
             </tr>
             <tr>
               <td valign="top" bgcolor="#ffcccc"><b>EMT</b><b><br>
-                </b></td>
+                </b> </td>
               <td valign="top">1<br>
               </td>
               <td valign="top"><a
@@ -832,7 +848,7 @@ href="http://mail.mccode.org/cgi-bin/mailman/listinfo/ifit-users"
             <tr>
               <td valign="top" bgcolor="#ffcccc"><b>ABINIT&nbsp; / GGA
                   FHI</b><b><br>
-                </b></td>
+                </b> </td>
               <td valign="top">78<br>
               </td>
               <td valign="top"> <a
@@ -859,8 +875,8 @@ href="http://mail.mccode.org/cgi-bin/mailman/listinfo/ifit-users"
               </td>
             </tr>
             <tr>
-              <td valign="top" bgcolor="#ffcccc">ABINIT / PAW (GBRV)<br>
-              </td>
+              <td valign="top" bgcolor="#ffcccc"><b>ABINIT / PAW (GBRV)</b><b><br>
+                </b> </td>
               <td valign="top">87<br>
               </td>
               <td valign="top"><a
@@ -887,8 +903,9 @@ href="http://mail.mccode.org/cgi-bin/mailman/listinfo/ifit-users"
               <td valign="top"><font color="#cc33cc">'abinit','metal','pps=paw'</font>)</td>
             </tr>
             <tr>
-              <td valign="top" bgcolor="#ffcccc">ABINIT / PAWXML (JTH)<br>
-              </td>
+              <td valign="top" bgcolor="#ffcccc"><b>ABINIT / PAWXML
+                  (JTH)</b><b><br>
+                </b> </td>
               <td valign="top">84<br>
               </td>
               <td valign="top"><a
@@ -915,8 +932,8 @@ href="http://mail.mccode.org/cgi-bin/mailman/listinfo/ifit-users"
               <td valign="top"><font color="#cc33cc">'abinit','metal','pps=pawxml'</font>)</td>
             </tr>
             <tr>
-              <td valign="top" bgcolor="#ffcccc">ABINIT / HGH<br>
-              </td>
+              <td valign="top" bgcolor="#ffcccc"><b>ABINIT / HGH</b><b><br>
+                </b> </td>
               <td valign="top">64<br>
               </td>
               <td valign="top"><a
@@ -941,8 +958,8 @@ href="http://mail.mccode.org/cgi-bin/mailman/listinfo/ifit-users"
               <td valign="top"><font color="#cc33cc">'abinit','metal','pps=hgh'</font>)</td>
             </tr>
             <tr>
-              <td valign="top" bgcolor="#ffcccc">ABINIT / TM<br>
-              </td>
+              <td valign="top" bgcolor="#ffcccc"><b>ABINIT / TM</b><b><br>
+                </b> </td>
               <td valign="top">73<br>
               </td>
               <td valign="top"><a
@@ -976,12 +993,21 @@ src="images/phonons/Models_Phonons_Al_abinit_tm_plot3.png" height="150"
           The automatic configuration uses:<br>
         </p>
         <ul>
+          <li>Space group: F m -3 m (225), cubic fcc.<br>
+          </li>
           <li>supercell=2</li>
           <li>kpoints=4</li>
           <li>kpoints_density= 1024</li>
           <li>equilibrium and 2 displacements (Mg, O) computations</li>
           <li>energy cut-off: use default calculator settings. ABINIT
             uses 1500 eV.</li>
+        </ul>
+        <i><b>Outcome</b></i>: Only QuantumEspresso, Elk and VASP
+        provide sensible results. QuantumEspresso is also very fast. Elk
+        also provides sensible results, including a fair density of
+        states, but with a higher proportion of unstable modes, and is
+        much slower.<br>
+        <ul>
         </ul>
         <table height="541" width="1102" border="1" cellpadding="2"
           cellspacing="2">
@@ -1001,11 +1027,42 @@ src="images/phonons/Models_Phonons_Al_abinit_tm_plot3.png" height="150"
 
 
 
-                </b>with <i>qh=0.01:0.5:50;qk=qh; ql=qh; w=0.01:0.5:51;</i><i><br>
+
+                </b>with <i>qh=0.01:0.5:1.5;qk=qh; ql=qh;
+                  w=0.01:0.5:151;</i><i><br>
                 </i><i>f=s([], qh,qk,ql',w);</i></td>
               <td valign="top" bgcolor="#ffffcc"><b>command:<br>
                   s=</b><font color="#3366ff">sqw_phonons</font>(<font
-                  color="#cc33cc">'POSCAR_Al',</font></td>
+                  color="#cc33cc">'POSCAR_MgO',</font></td>
+            </tr>
+            <tr>
+              <td valign="top">Reference from PhononDB<br>
+                <a
+                  href="http://phonondb.mtl.kyoto-u.ac.jp/ph20170621/d001/mp-1265.html">MgO
+                  mp-1265</a><br>
+                using VASP<br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><a
+                  href="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-1265-band.png"><img
+                    alt="mp-1265-band" title="mp-1265-band"
+                    src="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-1265-band.png"
+                    height="103" width="200" border="0"></a><br>
+              </td>
+              <td valign="top"><a
+                  href="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-1265-tprops1.png"><img
+                    alt="mp-1265-tprops1" title="mp-1265-tprops1"
+                    src="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-1265-tprops1.png"
+                    height="133" width="200" border="0"></a><br>
+              </td>
+              <td valign="top"><a
+                  href="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-1265-dos1.png"><img
+                    alt="mp-1265-dos1" title="mp-1265-dos1"
+                    src="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-1265-dos1.png"
+                    height="112" width="200" border="0"></a></td>
+              <td valign="top"><br>
+              </td>
             </tr>
             <tr>
               <td valign="top" bgcolor="#ffcccc"><b>QuantumEspresso</b><b>
@@ -1030,7 +1087,7 @@ src="images/phonons/Models_Phonons_Al_abinit_tm_plot3.png" height="150"
                     src="images/phonons/Models_Phonons_MgO_qe_plot3.png"
                     height="150" width="200" border="0"></a><br>
               </td>
-              <td valign="top"><font color="#cc33cc">'qe','metal'</font>)</td>
+              <td valign="top"><font color="#cc33cc">'qe'</font>)</td>
             </tr>
             <tr>
               <td valign="top" bgcolor="#ffcccc"><b>VASP (4.6)</b><b> /
@@ -1055,7 +1112,7 @@ src="images/phonons/Models_Phonons_Al_abinit_tm_plot3.png" height="150"
                     src="images/phonons/Models_Phonons_MgO_vasp_plot3.png"
                     height="150" width="200" border="0"></a><br>
               </td>
-              <td valign="top"><font color="#cc33cc">'vasp','metal'</font>)</td>
+              <td valign="top"><font color="#cc33cc">'vasp'</font>)</td>
             </tr>
             <tr>
               <td valign="top" bgcolor="#ffcccc"><b>Elk</b><b><br>
@@ -1063,29 +1120,28 @@ src="images/phonons/Models_Phonons_Al_abinit_tm_plot3.png" height="150"
               <td valign="top">2408<br>
               </td>
               <td valign="top"><a
-href="images/phonons/Models_Phonons_MgO_elk_kpath.png"><img
+                  href="images/phonons/Models_Phonons_MgO_elk_kpath.png"><img
                     alt="MgO_elk_kpath" title="MgO_elk_kpath"
                     src="images/phonons/Models_Phonons_MgO_elk_kpath.png"
                     height="150" width="200" border="0"></a><br>
               </td>
               <td valign="top"><a
-href="images/phonons/Models_Phonons_MgO_elk_thermo.png"><img
+                  href="images/phonons/Models_Phonons_MgO_elk_thermo.png"><img
                     alt="MgO_elk_thermo" title="MgO_elk_thermo"
                     src="images/phonons/Models_Phonons_MgO_elk_thermo.png"
                     height="150" width="200" border="0"></a><br>
               </td>
               <td valign="top"><a
-href="images/phonons/Models_Phonons_MgO_elk_plot3.png"><img
+                  href="images/phonons/Models_Phonons_MgO_elk_plot3.png"><img
                     alt="MgO_elk_plot3" title="MgO_elk_plot3"
                     src="images/phonons/Models_Phonons_MgO_elk_plot3.png"
                     height="150" width="200" border="0"></a><br>
               </td>
-              <td valign="top"><font color="#cc33cc">'elk','metal'</font>)</td>
+              <td valign="top"><font color="#cc33cc">'elk'</font>)</td>
             </tr>
             <tr>
-              <td valign="top" bgcolor="#ffcccc"><b>ABINIT&nbsp; / GGA
-                  FHI</b><b><br>
-                </b></td>
+              <td valign="top" bgcolor="#ffcccc">ABINIT&nbsp; / GGA FHI<br>
+              </td>
               <td valign="top">41<br>
               </td>
               <td valign="top"> <a
@@ -1106,8 +1162,7 @@ href="images/phonons/Models_Phonons_MgO_elk_plot3.png"><img
                     src="images/phonons/Models_Phonons_MgO_abinit_plot3.png"
                     height="150" width="200" border="0"></a><br>
               </td>
-              <td valign="top"><font color="#cc33cc">'abinit','metal'</font>)
-                <i><br>
+              <td valign="top"><font color="#cc33cc">'abinit'</font>) <i><br>
                   pps=fhi is the default</i><br>
               </td>
             </tr>
@@ -1137,7 +1192,7 @@ href="images/phonons/Models_Phonons_MgO_elk_plot3.png"><img
                     src="images/phonons/Models_Phonons_MgO_abinit_paw_plot3.png"
                     height="150" width="200" border="0"></a><br>
               </td>
-              <td valign="top"><font color="#cc33cc">'abinit','metal','pps=paw'</font>)</td>
+              <td valign="top"><font color="#cc33cc">'abinit','pps=paw'</font>)</td>
             </tr>
             <tr>
               <td valign="top" bgcolor="#ffcccc">ABINIT / PAWXML (JTH)<br>
@@ -1165,7 +1220,7 @@ href="images/phonons/Models_Phonons_MgO_elk_plot3.png"><img
                     src="images/phonons/Models_Phonons_MgO_abinit_pawxml_plot3.png"
                     height="150" width="200" border="0"></a><br>
               </td>
-              <td valign="top"><font color="#cc33cc">'abinit','metal','pps=pawxml'</font>)</td>
+              <td valign="top"><font color="#cc33cc">'abinit','pps=pawxml'</font>)</td>
             </tr>
             <tr>
               <td valign="top" bgcolor="#ffcccc">ABINIT / HGH<br>
@@ -1191,7 +1246,7 @@ href="images/phonons/Models_Phonons_MgO_elk_plot3.png"><img
                     title="MgO_abinit_hgh_plot3"
                     src="images/phonons/Models_Phonons_MgO_abinit_hgh_plot3.png"
                     height="150" width="200" border="0"></a> </td>
-              <td valign="top"><font color="#cc33cc">'abinit','metal','pps=hgh'</font>)</td>
+              <td valign="top"><font color="#cc33cc">'abinit','pps=hgh'</font>)</td>
             </tr>
             <tr>
               <td valign="top" bgcolor="#ffcccc">ABINIT / TM<br>
@@ -1219,7 +1274,7 @@ href="images/phonons/Models_Phonons_MgO_elk_plot3.png"><img
                     src="images/phonons/Models_Phonons_MgO_abinit_tm_plot3.png"
                     height="150" width="200" border="0"></a><br>
               </td>
-              <td valign="top"><font color="#cc33cc">'abinit','metal','pps=tm'</font>)</td>
+              <td valign="top"><font color="#cc33cc">'abinit','pps=tm'</font>)</td>
             </tr>
           </tbody>
         </table>
@@ -1230,6 +1285,8 @@ href="images/phonons/Models_Phonons_MgO_elk_plot3.png"><img
           to specify its full path, and sqw_phonons will find it.<br>
         </p>
         <ul>
+          <li>Spacegroup: P m -3 m, cubic.<br>
+          </li>
           <li>supercell=2</li>
           <li>kpoints=3</li>
           <li>kpoints_density=&nbsp; 1080<br>
@@ -1255,11 +1312,43 @@ href="images/phonons/Models_Phonons_MgO_elk_plot3.png"><img
 
 
 
-                </b>with <i>qh=0.01:0.5:50;qk=qh; ql=qh; w=0.01:0.5:51;</i><i><br>
+
+                </b>with <i>qh=0.01:0.5:1.50;qk=qh; ql=qh;
+                  w=0.01:0.5:51;</i><i><br>
                 </i><i>f=s([], qh,qk,ql',w);</i></td>
               <td valign="top" bgcolor="#ffffcc"><b>command:<br>
                   s=</b><font color="#3366ff">sqw_phonons</font>(<font
                   color="#cc33cc">'POSCAR_SrTiO3',</font></td>
+            </tr>
+            <tr>
+              <td valign="top">Reference from PhononDB<br>
+                <a
+                  href="http://phonondb.mtl.kyoto-u.ac.jp/ph20170621/d005/mp-5229.html">SrTiO3
+                  mp-5229</a><br>
+                using VASP<br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><a
+                  href="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-5229-band.png"><img
+                    alt="mp-5229-band" title="mp-5229-band"
+                    src="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-5229-band.png"
+                    height="83" width="200" border="0"></a><br>
+              </td>
+              <td valign="top"><a
+                  href="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-5229-tprops.png"><img
+                    alt="mp-5229-tprops." title="mp-5229-tprops."
+                    src="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-5229-tprops.png"
+                    height="133" width="200" border="0"></a><br>
+              </td>
+              <td valign="top"><a
+                  href="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-5229-dos1.png"><img
+                    alt="mp-5229-dos1" title="mp-5229-dos1"
+                    src="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-5229-dos1.png"
+                    height="112" width="200" border="0"></a><br>
+              </td>
+              <td valign="top"><br>
+              </td>
             </tr>
             <tr>
               <td valign="top" bgcolor="#ffcccc"><b>QuantumEspresso</b><b>
@@ -1428,7 +1517,11 @@ href="images/phonons/Models_Phonons_MgO_elk_plot3.png"><img
         </table>
         <h3><a name="mozTocId884775" class="mozTocH3"></a>Phonons in
           Tb2SeO2 (mp-755340)</h3>
-        <br>
+        For this material, we re-use a previously computed set of force
+        constants, available at the PhononDB web site. The calculator is
+        set to VASP. Only the final steps of the calculation are
+        performed (equilibrium energy, momentum, stress, magnetic
+        moment, ...).<br>
         <h3><a name="mozTocId894568" class="mozTocH3"></a>Creating more
           complex models</h3>
         <br>
@@ -1439,9 +1532,10 @@ href="images/phonons/Models_Phonons_MgO_elk_plot3.png"><img
           style="font-style: italic;"> </span>- back to <a
           href="index.html">Main iFit Page </a><a
           href="http://www.ill.eu/"><img title="ILL, Grenoble, France
-            &lt;www.ill.eu&gt;" src="fimages/ILL-web-jpeg.jpg" alt="ILL,
+            &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL,
             Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px
-            solid ; width: 53px; height: 50px;" align="right"></a><br>
+            solid ; width: 53px; height: 50px;" height="171" width="182"
+            border="0" align="right"></a><br>
         <br>
       </div>
     </div>
