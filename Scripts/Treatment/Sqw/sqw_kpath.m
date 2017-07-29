@@ -360,8 +360,8 @@ function [qLim,lab, points]=sqw_kpath_crystalsystem(crystalsystem)
     K=    [3 / 8, 3 / 8, 3 / 4];
     U=    [5 / 8, 1 / 4, 5 / 8];
     L=    [1 / 2, 1 / 2, 1 / 2];
-    qLim = { Gamma X W K Gamma L U W };
-    lab  =  'Gamma X W K Gamma L U W';
+    qLim = { Gamma X U K Gamma L W X };
+    lab  =  'Gamma X U K Gamma L W X';
   case 'bcc'
     Gamma=[0,      0,     0    ];
     H=    [1 / 2, -1 / 2, 1 / 2];
