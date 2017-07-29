@@ -76,6 +76,7 @@ end
 if usegetframe
   % force figure to be 'onscreen'
   movegui(f);
+  set(f,'renderer','zbuffer');
   frame=getframe(f);
 end
 
