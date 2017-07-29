@@ -21,7 +21,7 @@ switch upper(calc_choice)
 % ==============================================================================
 case 'ABINIT'
   % build: ./configure --enable-mpi CC=mpicc CXX=mpicxx FC=mpif90 --enable-optim --with-dft-flavor=libxc
-  % ABINIT with pawxml requires ecut=1000 and nsteps > 30 (default)
+  % ABINIT with pawxml requires ecut=1500 and nsteps > 30 (default)
   
   if isempty(strfind(status.(lower(options.calculator)),'abinis')) && isempty(options.command)
     options.command = status.(lower(options.calculator));
@@ -67,7 +67,7 @@ case 'ABINIT'
   decl = 'from ase.calculators.abinit import Abinit';
   calc = 'calc = Abinit(chksymbreak=0, maxnsym=10384';
   if options.ecut <= 0, 
-    options.ecut=1000; 
+    options.ecut=1500; 
   end % no default in ABINIT (eV)
   if options.ecut > 0
     calc = [ calc sprintf(', ecut=%g', options.ecut/Ha) ];
