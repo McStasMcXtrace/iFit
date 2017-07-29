@@ -24,6 +24,7 @@ function [t, fig]=sqw_thermochemistry(s, T, options)
 %
 % output:
 %   t: structure with [DOS, DOS_partials, S U F Cv ]
+%   fig: figure handle
 
 t=[]; fig=[];
 % test the input object
