@@ -10,8 +10,8 @@
       dynamics<br>
     </h1>
     <h1 style="text-align: center;"><img
-        src="images/Models_sqw_phon.png"
-        title="Sqw Phonons" alt="Sqw Phonons" height="95" width="128"></h1>
+        src="images/Models_sqw_phon.png" title="Sqw Phonons" alt="Sqw
+        Phonons" height="95" width="128"></h1>
     <ol id="mozToc">
       <!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6-->
       <li><a href="#mozTocId406805">Installation</a></li>
@@ -91,6 +91,10 @@
 
 
 
+
+
+
+
               <br>
             </li>
             <li>Optional: any <b>DFT code</b> out of <a
@@ -124,6 +128,10 @@
           Then you can either build a bootable USB key using e.g. <a
             href="https://unetbootin.github.io/">Unetbootin</a> (or
           simply a command in the style "<i>dd if=iso of=usbkey bs=1m</i>"),
+
+
+
+
 
 
 
@@ -171,6 +179,10 @@
           <li><b>Other Linux distributions</b></li>
         </ul>
         <blockquote>Use your package manager (e.g. <i>yum</i> and <i>dnf</i>),
+
+
+
+
 
 
 
@@ -234,6 +246,10 @@
           <br>
           You should refer to the table in <a
             href="https://wiki.fysik.dtu.dk/ase/ase/io/io.html#module-ase.io">ASE/File
+
+
+
+
             input IO</a> module for a full list of supported input
           formats.<br>
           <br>
@@ -243,6 +259,10 @@
         <ul>
           <li><b>MaterialsProject</b>&lt;<a
               href="https://www.materialsproject.org/">https://www.materialsproject.org/</a>&gt;
+
+
+
+
 
 
 
@@ -290,6 +310,10 @@
         <ul>
           <li><b>PhononDB</b> &lt;<a
               href="http://phonondb.mtl.kyoto-u.ac.jp/">http://phonondb.mtl.kyoto-u.ac.jp/</a>&gt;
+
+
+
+
 
 
 
@@ -373,12 +397,20 @@
 
 
 
+
+
+
+
             can store any computational result from e.g. ABINIT,
             QuantumEspresso, VASP, and others.</li>
           <li><b>ICSD</b> Inorganic Crystal Structure Database &lt;<a
               href="http://icsd.ill.fr">http://icsd.ill.fr</a>&gt; with
             plenty of CIFs.</li>
           <li><b>AflowLib</b> &lt;<a href="http://aflowlib.org/">http://aflowlib.org/</a>&gt;
+
+
+
+
 
 
 
@@ -431,6 +463,10 @@
                 the Terminal iFit prompt. This will probably crash iFit
               </font><font color="#ff0000">[<a
                   href="http://www.mathworks.com/support/bugreports/624817">bug
+
+
+
+
                   624817</a>].</font></li>
             <li><font color="#ff0000">Ctrl-C is use for stopping a
                 current computation, or exit iFit. Rather use the menu
@@ -485,8 +521,8 @@
           TextEdit windows as you wish, load/save files (e.g. .m),
           copy/paste filenames and raw text.<br>
           <br>
-          The TextEdit window have a <i>Help</i> menu which links to
-          the main iFit functionalities.<br>
+          The TextEdit window has a <i>Help</i> menu which links to the
+          main iFit functionalities.<br>
         </blockquote>
         <ul>
           <li><b>web server</b></li>
@@ -626,7 +662,11 @@ href="http://mail.mccode.org/cgi-bin/mailman/listinfo/ifit-users"
         <ul>
           <li>Choosing the DFT calculator, DeltaCodesDFT<br>
           </li>
-          <li>Smearing</li>
+          <li>Smearing, Ecut</li>
+        </ul>
+        ABINIT uses 1500 eV, other codes use their default cut-off (e.g.
+        from the pseudo potential definition).<br>
+        <ul>
           <li>Supercell/k-mesh</li>
           <li>XC/PPS</li>
           <li>Tolerance criteria and max number of iterations for SCF
@@ -669,6 +709,9 @@ href="http://mail.mccode.org/cgi-bin/mailman/listinfo/ifit-users"
           <li>kpoints=4</li>
           <li>kpoints_density= 1728</li>
           <li>equilibrium and 1 displacement (Al) computations</li>
+          <li>energy cut-off: use default calculator settings. ABINIT
+            uses 1500 eV.<br>
+          </li>
         </ul>
         <br>
         Results with different DFT codes<br>
@@ -685,7 +728,11 @@ href="http://mail.mccode.org/cgi-bin/mailman/listinfo/ifit-users"
               <td valign="top" bgcolor="#ffffcc"><b>sqw_kpath(s)</b></td>
               <td valign="top" bgcolor="#ffffcc"><b>sqw_thermochemistry(s)</b><b><br>
                 </b></td>
-              <td valign="top" bgcolor="#ffffcc"><b>plot3(log10(f(1,:,:,:))
+              <td valign="top" bgcolor="#ffffcc"><b>plot3(log10(f(1,:,:,:)))
+
+
+
+
                 </b>with <i>qh=0.01:0.5:50;qk=qh; ql=qh; w=0.01:0.5:51;</i><i><br>
                 </i><i>f=s([], qh,qk,ql',w);</i></td>
               <td valign="top" bgcolor="#ffffcc"><b>command:<br>
@@ -697,11 +744,23 @@ href="http://mail.mccode.org/cgi-bin/mailman/listinfo/ifit-users"
                   / SSSP</b></td>
               <td valign="top">87<br>
               </td>
-              <td valign="top"><br>
+              <td valign="top"><a
+                  href="images/phonons/Models_Phonons_Al_qe_kpath.png"><img
+                    alt="Al_qe_kpath" title="Al_qe_kpath"
+                    src="images/phonons/Models_Phonons_Al_qe_kpath.png"
+                    height="150" width="200" border="0"></a><br>
               </td>
-              <td valign="top"><br>
+              <td valign="top"><a
+                  href="images/phonons/Models_Phonons_Al_qe_thermo.png"><img
+                    alt="Al_qe_thermo" title="Al_qe_thermo"
+                    src="images/phonons/Models_Phonons_Al_qe_thermo.png"
+                    height="150" width="200" border="0"></a><br>
               </td>
-              <td valign="top"><br>
+              <td valign="top"><a
+                  href="images/phonons/Models_Phonons_Al_qe_plot3.png"><img
+                    alt="Al_qe_plot3" title="Al_qe_plot3"
+                    src="images/phonons/Models_Phonons_Al_qe_plot3.png"
+                    height="150" width="200" border="0"></a><br>
               </td>
               <td valign="top"><font color="#cc33cc">'qe','metal'</font>)</td>
             </tr>
@@ -710,30 +769,25 @@ href="http://mail.mccode.org/cgi-bin/mailman/listinfo/ifit-users"
                   PAW PBE</b></td>
               <td valign="top">525<br>
               </td>
-              <td valign="top"><br>
+              <td valign="top"><a
+                  href="images/phonons/Models_Phonons_Al_vasp_kpath.png"><img
+                    alt="Al_vasp_kpath" title="Al_vasp_kpath"
+                    src="images/phonons/Models_Phonons_Al_vasp_kpath.png"
+                    height="150" width="200" border="0"></a><br>
               </td>
-              <td valign="top"><br>
+              <td valign="top"><a
+                  href="images/phonons/Models_Phonons_Al_vasp_thermo.png"><img
+                    alt="Al_vasp_thermo" title="Al_vasp_thermo"
+                    src="images/phonons/Models_Phonons_Al_vasp_thermo.png"
+                    height="150" width="200" border="0"></a><br>
               </td>
-              <td valign="top"><br>
+              <td valign="top"><a
+                  href="images/phonons/Models_Phonons_Al_vasp_plot3.png"><img
+                    alt="Al_vasp_plot3" title="Al_vasp_plot3"
+                    src="images/phonons/Models_Phonons_Al_vasp_plot3.png"
+                    height="150" width="200" border="0"></a><br>
               </td>
               <td valign="top"><font color="#cc33cc">'vasp','metal'</font>)</td>
-            </tr>
-            <tr>
-              <td valign="top" bgcolor="#ffcccc"><b>ABINIT&nbsp; / GGA
-                  FHI</b><b><br>
-                </b></td>
-              <td valign="top">78<br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><font color="#cc33cc">'abinit','metal'</font>)
-                <i><br>
-                  pps=fhi is the default</i><br>
-              </td>
             </tr>
             <tr>
               <td valign="top" bgcolor="#ffcccc"><b>Elk</b><b><br>
@@ -749,59 +803,59 @@ href="http://mail.mccode.org/cgi-bin/mailman/listinfo/ifit-users"
               <td valign="top"><font color="#cc33cc">'elk','metal'</font>)</td>
             </tr>
             <tr>
-              <td valign="top" bgcolor="#ffcccc"><b>GPAW</b><b><br>
-                </b></td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><br>
-              </td>
-            </tr>
-            <tr>
               <td valign="top" bgcolor="#ffcccc"><b>EMT</b><b><br>
                 </b></td>
-              <td valign="top"><br>
+              <td valign="top">1<br>
               </td>
-              <td valign="top"><br>
+              <td valign="top"><a
+                  href="images/phonons/Models_Phonons_Al_emt_kpath.png"><img
+                    alt="Al_emt_kpath" title="Al_emt_kpath"
+                    src="images/phonons/Models_Phonons_Al_emt_kpath.png"
+                    height="150" width="200" border="0"></a><br>
               </td>
-              <td valign="top"><br>
+              <td valign="top"><a
+                  href="images/phonons/Models_Phonons_Al_emt_thermo.png"><img
+                    alt="Al_emt_thermo" title="Al_emt_thermo"
+                    src="images/phonons/Models_Phonons_Al_emt_thermo.png"
+                    height="150" width="200" border="0"></a><br>
               </td>
-              <td valign="top"><br>
+              <td valign="top"><a
+                  href="images/phonons/Models_Phonons_Al_emt_plot3.png"><img
+                    alt="Al_emt_plot3" title="Al_emt_plot3"
+                    src="images/phonons/Models_Phonons_Al_emt_plot3.png"
+                    height="150" width="200" border="0"></a><br>
               </td>
-              <td valign="top"><br>
+              <td valign="top"><font color="#cc33cc">'emt','metal'</font>)<br>
+                only for limited elements<br>
               </td>
             </tr>
             <tr>
-              <td valign="top" bgcolor="#ffcccc"><b>NWChem</b><b><br>
+              <td valign="top" bgcolor="#ffcccc"><b>ABINIT&nbsp; / GGA
+                  FHI</b><b><br>
                 </b></td>
-              <td valign="top"><br>
+              <td valign="top">78<br>
               </td>
-              <td valign="top"><br>
+              <td valign="top"> <a
+                  href="images/phonons/Models_Phonons_Al_abinit_kpath.png"><img
+                    alt="Al_abinit_kpath" title="Al_abinit_kpath"
+                    src="images/phonons/Models_Phonons_Al_abinit_kpath.png"
+                    height="150" width="200" border="0"></a><br>
               </td>
-              <td valign="top"><br>
+              <td valign="top"><a
+                  href="images/phonons/Models_Phonons_Al_abinit_thermo.png"><img
+                    alt="Al_abinit_thermo" title="Al_abinit_thermo"
+                    src="images/phonons/Models_Phonons_Al_abinit_thermo.png"
+                    height="150" width="200" border="0"></a><br>
               </td>
-              <td valign="top"><br>
+              <td valign="top"> <a
+                  href="images/phonons/Models_Phonons_Al_abinit_plot3.png"><img
+                    alt="Al_abinit_plot3" title="Al_abinit_plot3"
+                    src="images/phonons/Models_Phonons_Al_abinit_plot3.png"
+                    height="150" width="200" border="0"></a><br>
               </td>
-              <td valign="top"><br>
-              </td>
-            </tr>
-            <tr>
-              <td valign="top" bgcolor="#ffcccc"><b>Dacapo</b><b><br>
-                </b></td>
-              <td valign="top">3455<br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><br>
+              <td valign="top"><font color="#cc33cc">'abinit','metal'</font>)
+                <i><br>
+                  pps=fhi is the default</i><br>
               </td>
             </tr>
             <tr>
@@ -809,11 +863,26 @@ href="http://mail.mccode.org/cgi-bin/mailman/listinfo/ifit-users"
               </td>
               <td valign="top">87<br>
               </td>
-              <td valign="top"><br>
+              <td valign="top"><a
+                  href="images/phonons/Models_Phonons_Al_abinit_paw_kpath.png"><img
+                    alt="Al_abinit_paw_kpath"
+                    title="Al_abinit_paw_kpath"
+                    src="images/phonons/Models_Phonons_Al_abinit_paw_kpath.png"
+                    height="150" width="200" border="0"></a><br>
               </td>
-              <td valign="top"><br>
+              <td valign="top"><a
+                  href="images/phonons/Models_Phonons_Al_abinit_paw_thermo.png"><img
+                    alt="Al_abinit_paw_thermo"
+                    title="Al_abinit_paw_thermo"
+                    src="images/phonons/Models_Phonons_Al_abinit_paw_thermo.png"
+                    height="150" width="200" border="0"></a><br>
               </td>
-              <td valign="top"><br>
+              <td valign="top"><a
+                  href="images/phonons/Models_Phonons_Al_abinit_paw_plot3.png"><img
+                    alt="Al_abinit_paw_plot3"
+                    title="Al_abinit_paw_plot3"
+                    src="images/phonons/Models_Phonons_Al_abinit_paw_plot3.png"
+                    height="150" width="200" border="0"></a><br>
               </td>
               <td valign="top"><font color="#cc33cc">'abinit','metal','pps=paw'</font>)</td>
             </tr>
@@ -822,11 +891,26 @@ href="http://mail.mccode.org/cgi-bin/mailman/listinfo/ifit-users"
               </td>
               <td valign="top">84<br>
               </td>
-              <td valign="top"><br>
+              <td valign="top"><a
+                  href="images/phonons/Models_Phonons_Al_abinit_pawxml_kpath.png"><img
+                    alt="Al_abinit_pawxml_kpath"
+                    title="Al_abinit_pawxml_kpath"
+                    src="images/phonons/Models_Phonons_Al_abinit_pawxml_kpath.png"
+                    height="150" width="200" border="0"></a><br>
               </td>
-              <td valign="top"><br>
+              <td valign="top"><a
+                  href="images/phonons/Models_Phonons_Al_abinit_pawxml_thermo.png"><img
+                    alt="Al_abinit_pawxml_thermo"
+                    title="Al_abinit_pawxml_thermo"
+                    src="images/phonons/Models_Phonons_Al_abinit_pawxml_thermo.png"
+                    height="150" width="200" border="0"></a><br>
               </td>
-              <td valign="top"><br>
+              <td valign="top"><a
+                  href="images/phonons/Models_Phonons_Al_abinit_pawxml_plot3.png"><img
+                    alt="Al_abinit_pawxml_plot3"
+                    title="Al_abinit_pawxml_plot3"
+                    src="images/phonons/Models_Phonons_Al_abinit_pawxml_plot3.png"
+                    height="150" width="200" border="0"></a><br>
               </td>
               <td valign="top"><font color="#cc33cc">'abinit','metal','pps=pawxml'</font>)</td>
             </tr>
@@ -835,12 +919,25 @@ href="http://mail.mccode.org/cgi-bin/mailman/listinfo/ifit-users"
               </td>
               <td valign="top">64<br>
               </td>
-              <td valign="top"><br>
+              <td valign="top"><a
+                  href="images/phonons/Models_Phonons_Al_abinit_hgh_kpath.png"><img
+                    alt="Al_abinit_hgh_kpath"
+                    title="Al_abinit_hgh_kpath"
+                    src="images/phonons/Models_Phonons_Al_abinit_hgh_kpath.png"
+                    height="150" width="200" border="0"></a> </td>
+              <td valign="top"><a
+                  href="images/phonons/Models_Phonons_Al_abinit_hgh_thermo.png"><img
+                    alt="Al_abinit_hgh_thermo"
+                    title="Al_abinit_hgh_thermo"
+                    src="images/phonons/Models_Phonons_Al_abinit_hgh_thermo.png"
+                    height="150" width="200" border="0"></a><br>
               </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><br>
-              </td>
+              <td valign="top"><a
+                  href="images/phonons/Models_Phonons_Al_abinit_hgh_plot3.png"><img
+                    alt="Al_abinit_hgh_plot3"
+                    title="Al_abinit_hgh_plot3"
+                    src="images/phonons/Models_Phonons_Al_abinit_hgh_plot3.png"
+                    height="150" width="200" border="0"></a> </td>
               <td valign="top"><font color="#cc33cc">'abinit','metal','pps=hgh'</font>)</td>
             </tr>
             <tr>
@@ -848,11 +945,24 @@ href="http://mail.mccode.org/cgi-bin/mailman/listinfo/ifit-users"
               </td>
               <td valign="top">73<br>
               </td>
-              <td valign="top"><br>
+              <td valign="top"><a
+                  href="images/phonons/Models_Phonons_Al_abinit_tm_kpath.png"><img
+                    alt="Al_abinit_tm_kpath" title="Al_abinit_tm_kpath"
+src="images/phonons/Models_Phonons_Al_abinit_tm_kpath.png" height="150"
+                    width="200" border="0"></a><br>
               </td>
-              <td valign="top"><br>
+              <td valign="top"><a
+                  href="images/phonons/Models_Phonons_Al_abinit_tm_thermo.png"><img
+                    alt="Al_abinit_tm_thermo"
+                    title="Al_abinit_tm_thermo"
+                    src="images/phonons/Models_Phonons_Al_abinit_tm_thermo.png"
+                    height="150" width="200" border="0"></a><br>
               </td>
-              <td valign="top"><br>
+              <td valign="top"><a
+                  href="images/phonons/Models_Phonons_Al_abinit_tm_plot3.png"><img
+                    alt="Al_abinit_tm_plot3" title="Al_abinit_tm_plot3"
+src="images/phonons/Models_Phonons_Al_abinit_tm_plot3.png" height="150"
+                    width="200" border="0"></a><br>
               </td>
               <td valign="top"><font color="#cc33cc">'abinit','metal','pps=tm'</font>)</td>
             </tr>
@@ -870,6 +980,262 @@ href="http://mail.mccode.org/cgi-bin/mailman/listinfo/ifit-users"
           <li>kpoints=4</li>
           <li>kpoints_density= 1024</li>
           <li>equilibrium and 2 displacements (Mg, O) computations</li>
+          <li>energy cut-off: use default calculator settings. ABINIT
+            uses 1500 eV.</li>
+        </ul>
+        <table height="541" width="1102" border="1" cellpadding="2"
+          cellspacing="2">
+          <tbody>
+            <tr>
+              <td valign="top" bgcolor="#ffffcc"><b>Code</b><br>
+              </td>
+              <td valign="top" bgcolor="#ffffcc"><b>computation time <br>
+                  (24 cores, 2.7 GHz)</b><br>
+                <br>
+              </td>
+              <td valign="top" bgcolor="#ffffcc"><b>sqw_kpath(s)</b></td>
+              <td valign="top" bgcolor="#ffffcc"><b>sqw_thermochemistry(s)</b><b><br>
+                </b></td>
+              <td valign="top" bgcolor="#ffffcc"><b>plot3(log10(f(1,:,:,:)))
+
+
+
+
+                </b>with <i>qh=0.01:0.5:50;qk=qh; ql=qh; w=0.01:0.5:51;</i><i><br>
+                </i><i>f=s([], qh,qk,ql',w);</i></td>
+              <td valign="top" bgcolor="#ffffcc"><b>command:<br>
+                  s=</b><font color="#3366ff">sqw_phonons</font>(<font
+                  color="#cc33cc">'POSCAR_Al',</font></td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#ffcccc"><b>QuantumEspresso</b><b>
+                  / SSSP</b></td>
+              <td valign="top">408<br>
+              </td>
+              <td valign="top"><a
+                  href="images/phonons/Models_Phonons_MgO_qe_kpath.png"><img
+                    alt="MgO_qe_kpath" title="MgO_qe_kpath"
+                    src="images/phonons/Models_Phonons_MgO_qe_kpath.png"
+                    height="150" width="200" border="0"></a><br>
+              </td>
+              <td valign="top"><a
+                  href="images/phonons/Models_Phonons_MgO_qe_thermo.png"><img
+                    alt="MgO_qe_thermo" title="MgO_qe_thermo"
+                    src="images/phonons/Models_Phonons_MgO_qe_thermo.png"
+                    height="150" width="200" border="0"></a><br>
+              </td>
+              <td valign="top"><a
+                  href="images/phonons/Models_Phonons_MgO_qe_plot3.png"><img
+                    alt="MgO_qe_plot3" title="MgO_qe_plot3"
+                    src="images/phonons/Models_Phonons_MgO_qe_plot3.png"
+                    height="150" width="200" border="0"></a><br>
+              </td>
+              <td valign="top"><font color="#cc33cc">'qe','metal'</font>)</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#ffcccc"><b>VASP (4.6)</b><b> /
+                  PAW PBE</b></td>
+              <td valign="top">636<br>
+              </td>
+              <td valign="top"><a
+                  href="images/phonons/Models_Phonons_MgO_vasp_kpath.png"><img
+                    alt="MgO_vasp_kpath" title="MgO_vasp_kpath"
+                    src="images/phonons/Models_Phonons_MgO_vasp_kpath.png"
+                    height="150" width="200" border="0"></a><br>
+              </td>
+              <td valign="top"><a
+                  href="images/phonons/Models_Phonons_MgO_vasp_thermo.png"><img
+                    alt="MgO_vasp_thermo" title="MgO_vasp_thermo"
+                    src="images/phonons/Models_Phonons_MgO_vasp_thermo.png"
+                    height="150" width="200" border="0"></a><br>
+              </td>
+              <td valign="top"><a
+                  href="images/phonons/Models_Phonons_MgO_vasp_plot3.png"><img
+                    alt="MgO_vasp_plot3" title="MgO_vasp_plot3"
+                    src="images/phonons/Models_Phonons_MgO_vasp_plot3.png"
+                    height="150" width="200" border="0"></a><br>
+              </td>
+              <td valign="top"><font color="#cc33cc">'vasp','metal'</font>)</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#ffcccc"><b>Elk</b><b><br>
+                </b></td>
+              <td valign="top">2408<br>
+              </td>
+              <td valign="top"><a
+href="images/phonons/Models_Phonons_MgO_elk_kpath.png"><img
+                    alt="MgO_elk_kpath" title="MgO_elk_kpath"
+                    src="images/phonons/Models_Phonons_MgO_elk_kpath.png"
+                    height="150" width="200" border="0"></a><br>
+              </td>
+              <td valign="top"><a
+href="images/phonons/Models_Phonons_MgO_elk_thermo.png"><img
+                    alt="MgO_elk_thermo" title="MgO_elk_thermo"
+                    src="images/phonons/Models_Phonons_MgO_elk_thermo.png"
+                    height="150" width="200" border="0"></a><br>
+              </td>
+              <td valign="top"><a
+href="images/phonons/Models_Phonons_MgO_elk_plot3.png"><img
+                    alt="MgO_elk_plot3" title="MgO_elk_plot3"
+                    src="images/phonons/Models_Phonons_MgO_elk_plot3.png"
+                    height="150" width="200" border="0"></a><br>
+              </td>
+              <td valign="top"><font color="#cc33cc">'elk','metal'</font>)</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#ffcccc"><b>ABINIT&nbsp; / GGA
+                  FHI</b><b><br>
+                </b></td>
+              <td valign="top">41<br>
+              </td>
+              <td valign="top"> <a
+                  href="images/phonons/Models_Phonons_MgO_abinit_kpath.png"><img
+                    alt="MgO_abinit_kpath" title="MgO_abinit_kpath"
+                    src="images/phonons/Models_Phonons_MgO_abinit_kpath.png"
+                    height="150" width="200" border="0"></a><br>
+              </td>
+              <td valign="top"><a
+                  href="images/phonons/Models_Phonons_MgO_abinit_thermo.png"><img
+                    alt="MgO_abinit_thermo" title="MgO_abinit_thermo"
+                    src="images/phonons/Models_Phonons_MgO_abinit_thermo.png"
+                    height="150" width="200" border="0"></a><br>
+              </td>
+              <td valign="top"> <a
+                  href="images/phonons/Models_Phonons_MgO_abinit_plot3.png"><img
+                    alt="MgO_abinit_plot3" title="MgO_abinit_plot3"
+                    src="images/phonons/Models_Phonons_MgO_abinit_plot3.png"
+                    height="150" width="200" border="0"></a><br>
+              </td>
+              <td valign="top"><font color="#cc33cc">'abinit','metal'</font>)
+                <i><br>
+                  pps=fhi is the default</i><br>
+              </td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#ffcccc">ABINIT / PAW (GBRV)<br>
+              </td>
+              <td valign="top">181<br>
+              </td>
+              <td valign="top"><a
+                  href="images/phonons/Models_Phonons_MgO_abinit_paw_kpath.png"><img
+                    alt="MgO_abinit_paw_kpath"
+                    title="MgO_abinit_paw_kpath"
+                    src="images/phonons/Models_Phonons_MgO_abinit_paw_kpath.png"
+                    height="150" width="200" border="0"></a><br>
+              </td>
+              <td valign="top"><a
+                  href="images/phonons/Models_Phonons_MgO_abinit_paw_thermo.png"><img
+                    alt="MgO_abinit_paw_thermo"
+                    title="MgO_abinit_paw_thermo"
+                    src="images/phonons/Models_Phonons_MgO_abinit_paw_thermo.png"
+                    height="150" width="200" border="0"></a><br>
+              </td>
+              <td valign="top"><a
+                  href="images/phonons/Models_Phonons_MgO_abinit_paw_plot3.png"><img
+                    alt="MgO_abinit_paw_plot3"
+                    title="MgO_abinit_paw_plot3"
+                    src="images/phonons/Models_Phonons_MgO_abinit_paw_plot3.png"
+                    height="150" width="200" border="0"></a><br>
+              </td>
+              <td valign="top"><font color="#cc33cc">'abinit','metal','pps=paw'</font>)</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#ffcccc">ABINIT / PAWXML (JTH)<br>
+              </td>
+              <td valign="top">110<br>
+              </td>
+              <td valign="top"><a
+                  href="images/phonons/Models_Phonons_MgO_abinit_pawxml_kpath.png"><img
+                    alt="MgO_abinit_pawxml_kpath"
+                    title="MgO_abinit_pawxml_kpath"
+                    src="images/phonons/Models_Phonons_MgO_abinit_pawxml_kpath.png"
+                    height="150" width="200" border="0"></a><br>
+              </td>
+              <td valign="top"><a
+                  href="images/phonons/Models_Phonons_MgO_abinit_pawxml_thermo.png"><img
+                    alt="MgO_abinit_pawxml_thermo"
+                    title="MgO_abinit_pawxml_thermo"
+                    src="images/phonons/Models_Phonons_MgO_abinit_pawxml_thermo.png"
+                    height="150" width="200" border="0"></a><br>
+              </td>
+              <td valign="top"><a
+                  href="images/phonons/Models_Phonons_MgO_abinit_pawxml_plot3.png"><img
+                    alt="MgO_abinit_pawxml_plot3"
+                    title="MgO_abinit_pawxml_plot3"
+                    src="images/phonons/Models_Phonons_MgO_abinit_pawxml_plot3.png"
+                    height="150" width="200" border="0"></a><br>
+              </td>
+              <td valign="top"><font color="#cc33cc">'abinit','metal','pps=pawxml'</font>)</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#ffcccc">ABINIT / HGH<br>
+              </td>
+              <td valign="top">40<br>
+              </td>
+              <td valign="top"><a
+                  href="images/phonons/Models_Phonons_MgO_abinit_hgh_kpath.png"><img
+                    alt="MgO_abinit_hgh_kpath"
+                    title="MgO_abinit_hgh_kpath"
+                    src="images/phonons/Models_Phonons_MgO_abinit_hgh_kpath.png"
+                    height="150" width="200" border="0"></a> </td>
+              <td valign="top"><a
+                  href="images/phonons/Models_Phonons_MgO_abinit_hgh_thermo.png"><img
+                    alt="MgO_abinit_hgh_thermo"
+                    title="MgO_abinit_hgh_thermo"
+                    src="images/phonons/Models_Phonons_MgO_abinit_hgh_thermo.png"
+                    height="150" width="200" border="0"></a><br>
+              </td>
+              <td valign="top"><a
+                  href="images/phonons/Models_Phonons_MgO_abinit_hgh_plot3.png"><img
+                    alt="MgO_abinit_hgh_plot3"
+                    title="MgO_abinit_hgh_plot3"
+                    src="images/phonons/Models_Phonons_MgO_abinit_hgh_plot3.png"
+                    height="150" width="200" border="0"></a> </td>
+              <td valign="top"><font color="#cc33cc">'abinit','metal','pps=hgh'</font>)</td>
+            </tr>
+            <tr>
+              <td valign="top" bgcolor="#ffcccc">ABINIT / TM<br>
+              </td>
+              <td valign="top">58<br>
+              </td>
+              <td valign="top"><a
+                  href="images/phonons/Models_Phonons_MgO_abinit_tm_kpath.png"><img
+                    alt="MgO_abinit_tm_kpath"
+                    title="MgO_abinit_tm_kpath"
+                    src="images/phonons/Models_Phonons_MgO_abinit_tm_kpath.png"
+                    height="150" width="200" border="0"></a><br>
+              </td>
+              <td valign="top"><a
+                  href="images/phonons/Models_Phonons_MgO_abinit_tm_thermo.png"><img
+                    alt="MgO_abinit_tm_thermo"
+                    title="MgO_abinit_tm_thermo"
+                    src="images/phonons/Models_Phonons_MgO_abinit_tm_thermo.png"
+                    height="150" width="200" border="0"></a><br>
+              </td>
+              <td valign="top"><a
+                  href="images/phonons/Models_Phonons_MgO_abinit_tm_plot3.png"><img
+                    alt="MgO_abinit_tm_plot3"
+                    title="MgO_abinit_tm_plot3"
+                    src="images/phonons/Models_Phonons_MgO_abinit_tm_plot3.png"
+                    height="150" width="200" border="0"></a><br>
+              </td>
+              <td valign="top"><font color="#cc33cc">'abinit','metal','pps=tm'</font>)</td>
+            </tr>
+          </tbody>
+        </table>
+        <h3><a name="mozTocId339109" class="mozTocH3"></a>Phonons in
+          SrTiO3</h3>
+        <p>The atom confiiguration '<a href="../Data/POSCAR_SrTiO3">POSCAR_SrTiO3</a>'
+          is given within iFit Data directory. It is thus not required
+          to specify its full path, and sqw_phonons will find it.<br>
+        </p>
+        <ul>
+          <li>supercell=2</li>
+          <li>kpoints=3</li>
+          <li>kpoints_density=&nbsp; 1080<br>
+          </li>
+          <li>energy cut-off: use default calculator settings. ABINIT
+            uses 1500 eV.</li>
         </ul>
         <table height="541" width="1102" border="1" cellpadding="2"
           cellspacing="2">
@@ -885,196 +1251,10 @@ href="http://mail.mccode.org/cgi-bin/mailman/listinfo/ifit-users"
               <td valign="top" bgcolor="#ffffcc"><b>sqw_thermochemistry(s)</b><b><br>
                 </b></td>
               <td valign="top" bgcolor="#ffffcc"><b>plot3(log10(f(1,:,:,:))
-                </b>with <i>qh=0.01:0.5:50;qk=qh; ql=qh; w=0.01:0.5:51;</i><i><br>
-                </i><i>f=s([], qh,qk,ql',w);</i></td>
-              <td valign="top" bgcolor="#ffffcc"><b>command:<br>
-                  s=</b><font color="#3366ff">sqw_phonons</font>(<font
-                  color="#cc33cc">'POSCAR_MgO',</font></td>
-            </tr>
-            <tr>
-              <td valign="top" bgcolor="#ffcccc"><b>QuantumEspresso</b><b>
-                  / SSSP</b></td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><font color="#cc33cc">'qe'</font>)</td>
-            </tr>
-            <tr>
-              <td valign="top" bgcolor="#ffcccc"><b>VASP (4.6)</b><b> /
-                  PAW PBE</b></td>
-              <td valign="top">636<br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><font color="#cc33cc">'vasp'</font>)</td>
-            </tr>
-            <tr>
-              <td valign="top" bgcolor="#ffcccc"><b>ABINIT&nbsp; / GGA
-                  FHI</b><b><br>
-                </b></td>
-              <td valign="top">78<br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><font color="#cc33cc">'abinit'</font>) <i><br>
-                  pps=fhi is the default</i><br>
-              </td>
-            </tr>
-            <tr>
-              <td valign="top" bgcolor="#ffcccc"><b>Elk</b><b><br>
-                </b></td>
-              <td valign="top">2480<br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><font color="#cc33cc">'elk'</font>)</td>
-            </tr>
-            <tr>
-              <td valign="top" bgcolor="#ffcccc"><b>GPAW</b><b><br>
-                </b></td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><br>
-              </td>
-            </tr>
-            <tr>
-              <td valign="top" bgcolor="#ffcccc"><b>EMT</b><b><br>
-                </b></td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><br>
-              </td>
-            </tr>
-            <tr>
-              <td valign="top" bgcolor="#ffcccc"><b>NWChem</b><b><br>
-                </b></td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><br>
-              </td>
-            </tr>
-            <tr>
-              <td valign="top" bgcolor="#ffcccc"><b>Dacapo</b><b><br>
-                </b></td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><br>
-              </td>
-            </tr>
-            <tr>
-              <td valign="top" bgcolor="#ffcccc">ABINIT / PAW (GBRV)<br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><font color="#cc33cc">'abinit','pps=paw'</font>)</td>
-            </tr>
-            <tr>
-              <td valign="top" bgcolor="#ffcccc">ABINIT / PAWXML (JTH)<br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><font color="#cc33cc">'abinit'','pps=pawxml'</font>)</td>
-            </tr>
-            <tr>
-              <td valign="top" bgcolor="#ffcccc">ABINIT / HGH<br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><font color="#cc33cc">'abinit','pps=hgh'</font>)</td>
-            </tr>
-            <tr>
-              <td valign="top" bgcolor="#ffcccc">ABINIT / TM<br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><font color="#cc33cc">'abinit','pps=tm'</font>)</td>
-            </tr>
-          </tbody>
-        </table>
-        <h3><a name="mozTocId339109" class="mozTocH3"></a>Phonons in
-          SrTiO3</h3>
-        <p>The atom confiiguration '<a href="../Data/POSCAR_SrTiO3">POSCAR_SrTiO3</a>'
-          is given within iFit Data directory. It is thus not required
-          to specify its full path, and sqw_phonons will find it.</p>
-        <table height="541" width="1102" border="1" cellpadding="2"
-          cellspacing="2">
-          <tbody>
-            <tr>
-              <td valign="top" bgcolor="#ffffcc"><b>Code</b><br>
-              </td>
-              <td valign="top" bgcolor="#ffffcc"><b>computation time <br>
-                  (24 cores, 2.7 GHz)</b><br>
-                <br>
-              </td>
-              <td valign="top" bgcolor="#ffffcc"><b>sqw_kpath(s)</b></td>
-              <td valign="top" bgcolor="#ffffcc"><b>sqw_thermochemistry(s)</b><b><br>
-                </b></td>
-              <td valign="top" bgcolor="#ffffcc"><b>plot3(log10(f(1,:,:,:))
+
+
+
+
                 </b>with <i>qh=0.01:0.5:50;qk=qh; ql=qh; w=0.01:0.5:51;</i><i><br>
                 </i><i>f=s([], qh,qk,ql',w);</i></td>
               <td valign="top" bgcolor="#ffffcc"><b>command:<br>
@@ -1254,17 +1434,14 @@ href="http://mail.mccode.org/cgi-bin/mailman/listinfo/ifit-users"
         <br>
         <br>
         <hr style="width: 100%; height: 2px;"> <span style="font-style:
-          italic;">E.
-          Farhi - iFit/Phonon model - </span><span style="font-style:
-          italic;"> $Date$ $Revision$ </span><span style="font-style:
-          italic;"> </span>- back to <a
-          href="index.html">Main iFit
-          Page </a><a href="http://www.ill.eu/"><img title="ILL,
-            Grenoble, France &lt;www.ill.eu&gt;"
-            src="fimages/ILL-web-jpeg.jpg"
-            alt="ILL, Grenoble, France &lt;www.ill.eu&gt;"
-            style="border: 0px solid ; width: 53px; height: 50px;"
-            align="right"></a><br>
+          italic;">E. Farhi - iFit/Phonon model - </span><span
+          style="font-style: italic;"> $Date$ $Revision$ </span><span
+          style="font-style: italic;"> </span>- back to <a
+          href="index.html">Main iFit Page </a><a
+          href="http://www.ill.eu/"><img title="ILL, Grenoble, France
+            &lt;www.ill.eu&gt;" src="fimages/ILL-web-jpeg.jpg" alt="ILL,
+            Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px
+            solid ; width: 53px; height: 50px;" align="right"></a><br>
         <br>
       </div>
     </div>
