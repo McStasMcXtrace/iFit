@@ -68,7 +68,10 @@ class Matlab(object):
     or even use multi-line strings and control statements (if, for, while, ...). 
     
     By default, Python will wait for the commands to complete before returning 
-    to the prompt. 
+    to the prompt. The timeout is set with e.g.:
+    
+    >>> m.timeout = 5
+    
     To force an asynchronous execution use:
     
     >>> m.eval('commands',waitidle=False) 
@@ -76,6 +79,7 @@ class Matlab(object):
     especially for commands which are long to execute. In this case, use:
     
     >>> m.waitidle()
+    >>> m.waitidle(timeout=10)
     
     to wait for Matlab Idle state. You can stop this waiting with a keyboard
     interrupt, leaving Matlab execution in asynchronous mode. 
@@ -93,7 +97,7 @@ class Matlab(object):
         self.busy   = False # indicates when Matlab is ready/idle
         self.stdout = ''    # the stdout from Matlab
         self.executable = ''
-        self.format = 'mat'
+        self.timeout = 60
         
         # prompt: this is sent after every command to make sure we
         # detect the Idle state
@@ -261,7 +265,7 @@ class Matlab(object):
         
         
     # ==========================================================================
-    def waitidle(self, timeout=60):
+    def waitidle(self, timeout=None):
         """
         Wait for the Matlab interpreter to become idle
         
@@ -272,6 +276,9 @@ class Matlab(object):
         start_time = time.time()
         
         # loop as long as in Busy state or timeout
+        if timeout is None:
+            timeout = self.timeout
+            
         while self.flush():
             if timeout and time.time() - start_time > timeout:
                 break
