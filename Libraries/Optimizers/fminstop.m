@@ -14,7 +14,11 @@ function val = fminstop(x, optimValues, state)
 
 persistent fig stop
 
-if nargin < 3, return; end
+if nargin == 1 && ischar(x)
+  state = x;
+  x = [];
+  optimValues = [];
+elseif nargin < 3, return; end
 
 if isempty(stop), stop = false; end
 
@@ -47,6 +51,9 @@ case 'done'
   delete(fig);
   drawnow;
   stop = true;
+  % clean up remaining STOP windows
+  fig = findall(0, 'Tag','Optim:fminstop');
+  delete(fig);
   fig  = [];
 end
 
@@ -57,7 +64,7 @@ function fig = fminstop_create
   fig = figure('Tag','Optim:fminstop','MenuBar','None','NextPlot','new', ...
       'Name','Fit [close to abort]','CloseRequestFcn','fminstop([],[],''done'');');
   p = get(fig, 'Position');
-  p(3:4) = [100 50];
+  p(3:4) = [100 100];
   set(fig, 'Position',p);
   h = uicontrol(fig,'String','STOP OPTIM',...
     'Style','pushbutton','callback','fminstop([],[],''done'');','BackgroundColor','red', ...
