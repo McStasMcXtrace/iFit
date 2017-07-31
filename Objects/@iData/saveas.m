@@ -320,6 +320,7 @@ try
   case {'ppt','pptx'}
     
     f = figure('visible','off');
+    set(f,'renderer','zbuffer');
     b = plot(a, options);
     exportToPPTX('new');
     exportToPPTX('addslide');
@@ -439,6 +440,7 @@ try
   case 'epsc' % color encapsulated postscript file format, with TIFF preview
     f=figure('visible','off');
     plot(a,options);
+    set(f,'renderer','zbuffer');
     print(f, '-depsc', filename); % tiff preview may be broken on some GPU
     close(f);
   case {'psc','pdf','ill','jpeg'}  % other bitmap and vector graphics formats (PDF, ...)
@@ -465,6 +467,7 @@ try
   case {'vrml','wrl'} % VRML format
     f=figure('visible','off');
     h = plot(a,options);
+    set(f,'renderer','zbuffer');
     g = gca;
     vrml(g,filename);
     close(f);
