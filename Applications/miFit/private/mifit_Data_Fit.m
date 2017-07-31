@@ -68,7 +68,8 @@ function mifit_Data_Fit(varargin)
     mifit_disp([ '** Final fit results for ' char(this_d) ], true);
     sigma = output.parsHistoryUncertainty;
     if ~isempty(output.parsHessianUncertainty)
-      sigma = max(sigma, output.parsHessianUncertainty);
+      jj=output.constraints.index_variable;
+      sigma(jj) = max(sigma(jj), output.parsHessianUncertainty);
     end
     if isfield(output, 'constraints')
       constraints= output.constraints;

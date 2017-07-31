@@ -464,10 +464,6 @@ if strcmp(options.Display,'final') || strcmp(options.Display,'iter') ...
     % correlated parameters
     corr = output.parsHessianCorrelation;
     n_free = numel(pars);
-    if isfield(constraints, 'fixed')  % fix some parameters
-      n_free = n_free - numel(find(constraints.fixed & ~isnan(constraints.fixed)));
-      corr=corr(find(~constraints.fixed),find(~constraints.fixed));
-    end
     nb_true_independent_parameters = sum(1./sum(corr.^2));
     
     if n_free > ceil(nb_true_independent_parameters*1.2)+1
