@@ -206,9 +206,13 @@ def phonons_run_eq(phonon, supercell):
             sys.stdout.write('Writing %s\n' % filename)
             fd.close()
             # check forces
-            fmax = output.max()
-            fmin = output.min()
-            sys.stdout.write('[ASE] Equilibrium forces min=%g max=%g\n' % (fmin, fmax))
+            try:
+                fmax = output.max()
+                fmin = output.min()
+                sys.stdout.write('[ASE] Equilibrium forces min=%g max=%g\n' % (fmin, fmax))
+            except AttributeError:
+                sys.stdout.write('[ASE] output is has no min/max (list)\n');
+                pass
         sys.stdout.flush()
     else:
         # read previous data
@@ -916,7 +920,10 @@ def phonopy_run_calculate(phonon, phonpy, supercell, single):
         print "[ASE/Phonopy] Computing equilibrium"
     feq = phonons_run_eq(phonon, supercell)
     for i, a in enumerate(phonon.indices):
-        feq[a] -= feq.sum(0)  # translational invariance
+        try:
+            feq[a] -= feq.sum(0)  # translational invariance
+        except AttributeError:
+            pass
     
     # compute the forces
     set_of_forces   = []
@@ -949,8 +956,11 @@ def phonopy_run_calculate(phonon, phonpy, supercell, single):
             for force in forces:
                 force -= drift_force / forces.shape[0]
             
-            if feq is not None:  
-                forces -= feq # forward difference, but assumes equilibrium is not always 0
+            if feq is not None:
+                try:
+                    forces -= feq # forward difference, but assumes equilibrium is not always 0
+                except AttributeError:
+                    print "[ASE/PhonoPy] Can not use forward difference (equilibrium forces are mis-formatted)"
 
             # save the forces in a pickle
             f = opencew(filename)

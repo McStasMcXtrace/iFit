@@ -330,7 +330,7 @@ function Phonon_Model = sqw_phonons_htmlreport_model(fid, options)
   fprintf(fid, '<p><a name="model"></a>The Phonon model object is available in the following formats.</p>\n');
   % generate the Model into additional formats
   try; save(Phonon_Model, fullfile(options.target,name), 'xml');  end
-  try; save(Phonon_Model, fullfile(options.target,name), 'json'); end
+  try; save(Phonon_Model, fullfile(options.target,name), 'json'); end 
   try; save(Phonon_Model, fullfile(options.target,name), 'yaml'); end
   save(Phonon_Model, fullfile(options.target,name), 'm');
   sqw_phonons_htmlreport_table(fid, options, 'Phonon_Model');
