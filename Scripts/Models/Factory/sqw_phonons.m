@@ -752,5 +752,5 @@ function content = binary_fileread(filename)
   content = [];
   fid = fopen(filename, 'r');
   if fid == -1, return; end
-  content = fread(fid);
+  content = uint8(fread(fid));
   fclose(fid);
