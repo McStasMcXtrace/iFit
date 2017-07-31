@@ -44,7 +44,8 @@ switch class(M)
         for i=1:length(f)
             try
               J=[J,'"',f{i},'":',mat2json(M.(f{i})),','];
-            catch
+            catch ME
+              disp(ME.message)
               disp([ mfilename ': Ignoring field "' f{i} '" which is not a base Matlab class, but is ' class(M.(f{i})) ]);
             end
         end
@@ -66,8 +67,8 @@ switch class(M)
                 J=num2str(M);
             else
                 s=size(M);
-                if (length(s)==2)&(s(1)<2) % horizontal or null vector
-                    J=['[',num2str(M),']']; % and of destroying dimensionality
+                if (numel(M) == prod(size(M)) % horizontal or null vector
+                    J=['[',num2str(M(:)'),']']; % and of destroying dimensionality
                     J=regexprep(J,'\s+',',');
                 elseif length(s)==2 %2D solution
                     J='[';
