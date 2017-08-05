@@ -1,0 +1,1 @@
+ipython -c "from matlab import Matlab;print 'Welcome to Python/iFit !!\n\nTo start a session use:\n  m=Matlab() or m=Matlab(''ifit'')\nThen, to send/receive/execute commands use:\n  m.set(''var'',val) m.get(''var'') and m.eval(''cmds'')\nType Matlab? to get more help.' " -i
