@@ -31,6 +31,7 @@ except ImportError:
 # a function to concatenate a queue from a stream, line by line
 # this is used by a Thread as stdout reader
 def enqueue_output(out, queue):
+    out.flush()
     for line in iter(out.readline, b''):
         queue.put(line)
     out.close()
@@ -204,6 +205,7 @@ class Matlab(object):
         
         # request to display the prompt so that we can monitor the idle state
         self.proc.stdin.write(str("disp('"+self.prompt+"');\n").encode())
+        self.proc.stdin.flush()
         self.busy = True
         # check for idle state or timeout
         if waitidle:
@@ -261,7 +263,7 @@ class Matlab(object):
         f.close()
         
         # simplify object when loaded as multi-dimensional
-        for key in value.iterkeys():
+        for key in value.keys():
             if isinstance(value[key], numpy.ndarray):
                 while value[key].shape and value[key].shape[-1] == 1:
                     value[key] = value[key][0]
