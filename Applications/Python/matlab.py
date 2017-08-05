@@ -48,12 +48,11 @@ class Matlab(object):
     
     >>> from matlab import Matlab
     >>> m=Matlab()
-    >>> m.open()
     
     By default the 'matlab' command is used, but you can specify an other program
     
-    >>> m.open('/opt/MATLAB/R2010a/bin/matlab')
-    >>> m.open('ifit')
+    >>> m=Matlab('/opt/MATLAB/R2010a/bin/matlab')
+    >>> m=Matlab('ifit')
         
     Then you can get and set variables in the Matlab workspace
        
@@ -88,10 +87,12 @@ class Matlab(object):
     
     >>> m.close()
     
+    which is also done automatically when exiting Python.
+    
     """
     
 
-    def __init__(self):
+    def __init__(self, executable='matlab'):
         self.proc   = None  # the subprocess
         self.reader = None
         self.busy   = False # indicates when Matlab is ready/idle
@@ -101,9 +102,12 @@ class Matlab(object):
         
         # prompt: this is sent after every command to make sure we
         # detect the Idle state
-        self.prompt = '>>'; 
+        self.prompt = '>>'
         # error: displayed by Matlab when printing an error message
         self.error  = '???'
+        
+        if executable is not None:
+            self.open(executable)
 
     def open(self, executable='matlab'):
         """
@@ -241,7 +245,10 @@ class Matlab(object):
             
         self.eval("tmp_class = class("+varname+"); if isobject("+varname+"), tmp_var=struct("+varname+"); tmp_var.class = tmp_class; else tmp_var="+varname+"; end; save('"+m+"', 'tmp_var','tmp_class','-v7'); clear tmp_var tmp_class;",
             waitidle=True)
-            
+        
+        # wait for file to exist
+        while not os.path.isfile(m):
+            time.sleep(.5)
         # wait for file to be written
         time.sleep(.5)
         while not os.path.getsize(m):
@@ -309,12 +316,12 @@ class Matlab(object):
                 if len(rline) > 0:
                     if rline[-1] == self.prompt:
                         self.busy = False
+                        line = line.replace(self.prompt,'')  # remove any prompt text for display
                     if rline[0] == self.error:
                         self.busy = False
                         raise MatlabError(line)
                     
                 # store and display output
-                line = line.replace(self.prompt,'')  # remove any prompt text for display
                 self.stdout += line
                 sys.stdout.write(line)
                 sys.stdout.flush()
