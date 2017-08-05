@@ -1,5 +1,5 @@
 """
-A class to communicate with Matlab from a Python session.
+A module to communicate with Matlab from a Python session.
 
 Use matlab.Matlab? to get more help about how to use this module.
 """
@@ -306,7 +306,10 @@ class Matlab(object):
         # read all available lines
         while True:
             try:
-                line = self.queue.get_nowait().decode()
+                if sys.version_info >= (3,0):
+                    line = self.queue.get_nowait().decode()
+                else:
+                    line = self.queue.get_nowait()
             except Empty:
                 # no more lines to read
                 line = None
