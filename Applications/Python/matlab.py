@@ -119,7 +119,10 @@ class Matlab(object):
         
         self.executable = executable
         
-        
+        if self.proc is not None:
+            print('Session', ' '.join([executable,'-nodesktop','-nosplash']), 'already opened as PID', self.proc.pid)
+            return self
+            
         # we shall use stdout and stdin. Stderr is left untouched.
         # The os.setsid() is passed in the argument preexec_fn so
         # it's run after the fork() and before  exec() to run the shell.
