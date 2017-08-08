@@ -33,7 +33,8 @@ except ImportError:
 def enqueue_output(out, queue):
     out.flush()
     for line in iter(out.readline, b''):
-        queue.put(line)
+        if len(line):
+            queue.put(line)
     out.close()
     
 class MatlabError(Exception):
@@ -129,9 +130,11 @@ class Matlab(object):
         
         os.setpgrp() # create new process group, become its leader
         
+        # merge stdout and stderr from Matlab process
         self.proc = subprocess.Popen([executable,'-nosplash','-nodesktop'], 
-            preexec_fn=os.setsid,
-            stdout=subprocess.PIPE, stdin=subprocess.PIPE)
+            preexec_fn=os.setsid, universal_newlines=True, bufsize=4096,
+            close_fds=True, 
+            stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.STDOUT)
             
         # create an independent stdout reader sending data in a queue
         self.queue = Queue()
@@ -145,8 +148,7 @@ class Matlab(object):
         atexit.register(lambda handle=self: handle.close())
         
         # print start message reading stdout
-        self.eval(waitidle=True) # check initial state
-        self.busy = False
+        self.eval(waitidle=True) # check initial state, returns when Idle
         
         return self
         # end open
@@ -169,6 +171,7 @@ class Matlab(object):
             # the process was closed indeed. No need to force.
             pass
         self.eval() # force to poll the process and finalize close
+        self.proc = None
         # end close
             
     # ==========================================================================
@@ -190,12 +193,10 @@ class Matlab(object):
         if not self.proc:
             print('Matlab process is not started. Use Matlab.open()')
             return False
-            
-        self.proc.poll()
         
-        # if no return code (still runs), we get its stdout
-        if self.proc.returncode is not None:
-            print('Matlab process is not active. Return code=', self.proc.returncode)
+        # test if the process is still active before sending anything
+        if self.proc.returncode is not None or self.proc.stdin.closed or self.proc.stdout.closed:
+            print('Matlab process is not active (stopped). Return code=', self.proc.returncode)
             return False
         
         if self.busy:
@@ -204,10 +205,9 @@ class Matlab(object):
             
         if expr is not None and expr != '':
             # send the command
-            self.proc.stdin.write(str(expr+"\n").encode())
-        
+            self.proc.stdin.write(expr+"\n")
         # request to display the prompt so that we can monitor the idle state
-        self.proc.stdin.write(str("disp('"+self.prompt+"');\n").encode())
+        self.proc.stdin.write("disp('"+self.prompt+"');\n")
         self.proc.stdin.flush()
         self.busy = True
         # check for idle state or timeout
@@ -251,13 +251,14 @@ class Matlab(object):
         self.eval("tmp_class = class("+varname+"); if isobject("+varname+"), tmp_var=struct("+varname+"); tmp_var.class = tmp_class; else tmp_var="+varname+"; end; save('"+m+"', 'tmp_var','tmp_class','-v7'); clear tmp_var tmp_class;",
             waitidle=True)
         
-        # wait for file to exist
-        while not os.path.isfile(m):
+        if not self.busy:
+            # wait for file to exist
+            while not os.path.isfile(m):
+                time.sleep(.5)
+            # wait for file to be written
             time.sleep(.5)
-        # wait for file to be written
-        time.sleep(.5)
-        while not os.path.getsize(m):
-            time.sleep(.5)
+            while not os.path.getsize(m):
+                time.sleep(.5)
     
         # then get that variable
         value = scipy.io.loadmat(m, squeeze_me=True, chars_as_strings=True)
@@ -284,7 +285,9 @@ class Matlab(object):
         input:
             timeout: a timeout in seconds for the wait. Default is 60.
         """
-        
+        if not self.proc:
+            return
+            
         start_time = time.time()
         
         # loop as long as in Busy state or timeout
@@ -303,14 +306,26 @@ class Matlab(object):
             busy: False when Matlab is Idle, True when Busy.
         """
         
+        if not self.proc:
+            return
+            
         # we flush all available stdout lines and wait for the prompt
         # the prompt is sent to Matlab stdin when calling eval.
+        
+        # if no return code (still runs), we get its stdout via the Thread/Queue reader
+        self.proc.poll()
+        if self.proc.returncode is not None:
+            print('Matlab process is not active (stopped). Return code=', self.proc.returncode)
+            return False
+        
+        self.proc.stdout.flush()
+        self.proc.stdin.flush()
         
         # read all available lines
         while True:
             try:
                 if sys.version_info >= (3,0):
-                    line = self.queue.get_nowait().decode()
+                    line = self.queue.get_nowait()
                 else:
                     line = self.queue.get_nowait()
             except Empty:
@@ -322,10 +337,12 @@ class Matlab(object):
                 # analyse the line, and search for the prompt (e.g. >>)
                 rline = line.rsplit()
                 if len(rline) > 0:
-                    if rline[-1] == self.prompt:
+                    # ends with the prompt ?
+                    if rline[-1] == self.prompt:  
                         self.busy = False
                         line = line.replace(self.prompt,'')  # remove any prompt text for display
-                    if rline[0] == self.error:
+                    # starts with error ?
+                    if self.error in rline[0] or (len(rline) > 1 and self.error in rline[1]):    
                         self.busy = False
                         raise MatlabError(line)
                     
