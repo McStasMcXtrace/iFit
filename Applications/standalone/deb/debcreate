@@ -14,7 +14,7 @@ rm -f ${BUILDDIR}/usr/local/bin/ResLibCal
 ln -s ../ifit/ifit .
 ln -s ../ifit/ResLibCal .
 ln -s ../ifit/mifit .
-#ln -s ../ifit/pyfit .
+ln -s ../ifit/Python/pyfit .
 cd $PW
 chmod a+x ${BUILDDIR}/usr/local/bin/ifit
 chmod a+x ${BUILDDIR}/usr/local/bin/ResLibCal
@@ -22,13 +22,13 @@ chmod a+x ${BUILDDIR}/usr/local/bin/mifit
 chmod a+x ${BUILDDIR}/usr/local/ifit/ifit
 chmod a+x ${BUILDDIR}/usr/local/ifit/mifit
 chmod a+x ${BUILDDIR}/usr/local/ifit/ResLibCal
-#chmod a+x ${BUILDDIR}/usr/local/bin/pyfit
-#chmod a+x ${BUILDDIR}/usr/local/ifit/pyfit
+chmod a+x ${BUILDDIR}/usr/local/bin/pyfit
+chmod a+x ${BUILDDIR}/usr/local/ifit/Python/pyfit
 
 echo create the DEB build directory
 sed -i "s/arch/$2/g" ${BUILDDIR}/DEBIAN/control
 sed -i "s|\`dirname \"\$0\"\`|/usr/local/ifit|g" ${BUILDDIR}/usr/local/ifit/ifit
-#sed -i "s|\`dirname \"\$0\"\`|/usr/local/ifit|g" ${BUILDDIR}/usr/local/ifit/pyfit
+sed -i "s|\`dirname \"\$0\"\`|/usr/local/ifit/Python|g" ${BUILDDIR}/usr/local/ifit/Python/pyfit
 
 find ${BUILDDIR} -type d -exec chmod 0755 \{\} \;
 
