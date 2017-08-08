@@ -132,7 +132,7 @@ class Matlab(object):
         
         # merge stdout and stderr from Matlab process
         self.proc = subprocess.Popen([executable,'-nosplash','-nodesktop'], 
-            preexec_fn=os.setsid, universal_newlines=True, bufsize=4096,
+            preexec_fn=os.setsid, universal_newlines=True, 
             close_fds=True, 
             stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.STDOUT)
             
@@ -318,7 +318,7 @@ class Matlab(object):
             print('Matlab process is not active (stopped). Return code=', self.proc.returncode)
             return False
         
-        self.proc.stdout.flush()
+        #self.proc.stdout.flush() may conflict with the Queue readline
         self.proc.stdin.flush()
         
         # read all available lines
