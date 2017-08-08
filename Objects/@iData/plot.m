@@ -112,8 +112,8 @@ else % multiple plot/methods to render
     if ~isempty(varargin{index})
         if ischar(varargin{index})
           method = varargin{index}; % plot stored iData objects with current method
-          method
-          h =[ h iData_plot(a, method, args{:}) ];
+          hh = iData_plot(a, method, args{:});
+          h =[ h(:) ;  hh(:) ];
           a = []; method='';
           hold on
         elseif isa(varargin{index},'iData') % store some iData objects until we plot them
