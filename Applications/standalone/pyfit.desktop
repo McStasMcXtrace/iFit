@@ -1,0 +1,18 @@
+#!/usr/bin/env xdg-open
+
+[Desktop Entry]
+Version=1.0
+Type=Application
+Terminal=true
+Exec=pyfit
+Name=iFit Python
+Comment=iFit Python notebook
+Icon=iFit-logo.png
+Categories=Education;Applications;
+Actions=Help;
+
+[Desktop Action Help]
+Name=Open iFit Python Help
+Exec=xdg-open /usr/local/ifit/Docs/Python.html
+
+OnlyShowIn=Unity;Gnome;

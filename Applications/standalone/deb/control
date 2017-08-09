@@ -3,7 +3,7 @@ Version: @IFIT_VERSION@
 Architecture: arch
 Installed-Size: 48100
 Depends: bash
-Recommends: mcrinstaller, libxmu6, libxp6
+Recommends: mcrinstaller, libxmu6, libxp6, ipython-notebook, python-scipy
 Suggests: mcstas-suite, libopenmpi-dev
 Section: Science
 Priority: optional
@@ -22,7 +22,7 @@ Description: @IFIT_NAME@ generic data analysis and fitting to models
  - iData objects to hold data sets ; Import with:          iData('filename')
  - iFunc objects to hold models ;    Create new ones with: iFunc('expression')
  - fit model to data with: fits(data, model)
- - documentation is available in /usr/local/share/doc/@IFIT_TARNAME@
+ - documentation is available in /usr/local/ifit/Docs
  .
  .
  You can not define new Matlab functions in this stand-alone release, but can define
@@ -37,5 +37,7 @@ Description: @IFIT_NAME@ generic data analysis and fitting to models
  .
  To start @IFIT_NAME@, use: @IFIT_TARNAME@
  .
- Refer to <ifit.mccode.org> for on-line documentation.
+ You may as well use the Python wrapper 'pyfit'.
+ .
+ Refer to <http://ifit.mccode.org> for on-line documentation.
  Matlab is a registered trademark of The Mathworks Inc.
