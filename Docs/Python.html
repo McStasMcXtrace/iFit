@@ -27,31 +27,45 @@
       or <a href="https://www.enthought.com/products/canopy">Entought
         Canopy</a> for Windows and MacOSX. Linux flavors provide numpy
       as e.g. RPM and Debian packages.The <a href="http://ipython.org/">IPython</a>
-      package is also recommended.<br>
+      package is also recommended. Both Python 2 and 3 are supported.<br>
       <br>
-      The required packages are:<br>
+      The minimal required packages are:<br>
       <ul>
-        <li>python <i>or better</i> ipython<br>
-        </li>
+        <li>python</li>
         <li>numpy</li>
         <li>scipy</li>
       </ul>
+      but it is recommended to use the ipython notebook:<br>
+      <ul>
+        <li>ipython-notebook</li>
+      </ul>
       which can all be installed on Ubuntu/Debian systems with:<br>
       <ul>
-        <li>sudo apt-get install python-scipy</li>
+        <li>sudo apt-get install python-scipy ipython-notebook<br>
+        </li>
       </ul>
     </blockquote>
     <h3><a class="mozTocH3" name="mozTocId638108"></a>Usage</h3>
-    Launche the<br>
+    To use the IPython notebook, launch:<br>
     <ul>
       <li>pyfit</li>
     </ul>
-    command from a terminal.<br>
+    command from a terminal. A browser will appear with an iPython
+    notebook session ready to be used. Remember to execute command
+    'cells' possibly in order, by pressing <i><b>Shift-Return</b></i>
+    on each. As the string specifier with Matlab is the single quote, we
+    recommend to use the double quote string within Python (as in the
+    example below).<br>
     <br>
     Alternatively, navigate to the iFit/Applications/Python directory
-    and launch IPython or Python. You may even use IPython notebook.
+    and launch manually IPython or Python:
     <blockquote>
-      <p>% ipython notebook<br>
+      <p>% ipython notebook PyMatlab.ipynb</p>
+    </blockquote>
+    <p>or<br>
+    </p>
+    <blockquote>
+      <p>% python<br>
       </p>
     </blockquote>
     <p>Then issue the command:<br>
@@ -65,15 +79,13 @@
       from Python.<br>
     </p>
     <blockquote>
-      <pre>&gt;&gt;&gt; a = m.eval("a=iData('filename')")<br>&gt;&gt;&gt; m.eval("plot(a)")<br>&gt;&gt;&gt; m.eval("b = a/2")<br>&gt;&gt;&gt; b=m.get('b.Signal') <br></pre>
+      <pre>&gt;&gt;&gt; a = m.eval(<b>"a=iData('filename')"</b>)		# to import a data file<br>&gt;&gt;&gt; a = m.eval(<b>"a=iData(peaks)"</b>)		# as an example<br>&gt;&gt;&gt; m.eval(<b>"plot(a)"</b>)				# generate a Matlab plot<br>&gt;&gt;&gt; m.eval(<b>"b = a/2"</b>)<br>&gt;&gt;&gt; b=m.get(<b>"b.Signal"</b>)				# get the signal as a Numpy Array<br>&gt;&gt;&gt; ax = m.get(<b>"getaxis(b, 1:ndims(b))"</b>)	# get all axes values, here 'x' and 'y' axes.<br></pre>
     </blockquote>
-    The main idea is that any call to iFit/Matlab should be prepended by
+    The main idea is that any call to iFit/Matlab should be prepended with
     '<b>m.</b>' and use the set/get/eval methods.<br>
     <br>
-    iFit objects are stored as Python NumPy arrays. Refer to the <a
-      href="Methods.html">Methods</a> page to learn about all methods
-    that can be called for <a href="iData.html">iData</a> and <a
-      href="iFunc.html">iFunc</a> objects.<br>
+    iFit objects are stored as Python NumPy arrays. Refer to the <a href="Methods.html">Methods</a> page to learn about all methods
+    that can be called for <a href="iData.html">iData</a> and <a href="iFunc.html">iFunc</a> objects.<br>
     <br>
     <h3><a class="mozTocH3" name="mozTocId441413"></a>The commands to
       use</h3>
@@ -100,10 +112,10 @@ Farhi
 
         - iFit Python - </span><span style="font-style: italic;">
         $Date$ $Revision$ </span><span style="font-style: italic;"> </span>-
-      back to <a href="index.html">Main iFit Page </a><a
-        href="http://www.ill.eu/"><img title="ILL, Grenoble, France
+      back to <a href="index.html">Main iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France
           &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL,
           Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid
           ; width: 53px; height: 50px;" align="right"></a> </div>
-  </body>
-</html>
+  
+
+</body></html>
