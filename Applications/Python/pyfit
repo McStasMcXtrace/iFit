@@ -2,4 +2,7 @@
 exe_dir=`dirname "$0"`
 
 cd $exe_dir
-ipython3 -i -c "from matlab import Matlab;import sys;sys.stdout.write('\nType Matlab? to get the documentation. Start with e.g. m=Matlab()\n\n')"
+
+echo "Starting IPython notebook session. Think about stopping the server after use."
+ipython notebook --pylab=auto --pprint PyMatlab.ipynb
+
