@@ -126,7 +126,8 @@ else % multiple plot/methods to render
     index=index+1;
   end
   if numel(a) > 0 % if we have some objects left, we plot them with default method
-    h =[ h iData_plot(a, '', args{:}) ];
+    hh = iData_plot(a, '', args{:})
+    h =[ h(:) ; hh(:)  ];
   end
   return
 end
@@ -151,7 +152,7 @@ if ~isempty(funcs)
   axis(axis); % fix plot limits
   hline = plot(funcs);
   set(findobj(hline,'Type','Line'),'LineStyle','--');
-  h = [ h hline ];
+  h = [ h(:) ;  hline(:) ];
 end
 
 if ~ih, hold off; end
@@ -231,7 +232,7 @@ elseif ~isempty(strfind(method,'figure'))
 end
 
 % possibly select Rendered prior to start plotting
-if ~feature('ShowFigureWindows')
+if exist('feature') && ~feature('ShowFigureWindows')
   set(gcf,'Renderer','painters')
 elseif ~isempty(strfind(method,'opengl'))   % faster for large data sets
 	set(gcf,'Renderer','OpenGL')
