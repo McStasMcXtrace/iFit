@@ -5,14 +5,14 @@ Version=1.0
 Type=Application
 Terminal=true
 Exec=ifit ResLibCal %F
-Name=ResLibCal
+Name=iFit ResLibCal
 Comment=Neutron TAS Resolution function
 Icon=ResLibCal-logo.png
 Categories=Education;Applications;
 Actions=Help;
 
 [Desktop Action Help]
-Name=Open ResLibCal Help
+Name=Open iFit ResLibCal Help
 Exec=xdg-open http://ifit.mccode.org/Applications/ResLibCal/doc/ResLibCal.html
 
 OnlyShowIn=Unity;Gnome;
