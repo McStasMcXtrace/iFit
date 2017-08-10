@@ -215,14 +215,18 @@ else
   % VASP_PP_PATH=/usr/share/vasp/pseudo
   
   % test for Octopus
-  [st, result] = system([ precmd 'octopus -v' ]);
-  if any(st == 0:2)
-    status.octopus = 'octopus';
-  else
-    status.octopus = '';
+  status.octopus = '';
+  for calc={'octopus_mpi','octopus'}
+    % now test executable
+    [st,result]=system([ precmd calc{1} ' -v' ]);
+    if any(st == 0:2)
+        status.octopus=calc{1};
+        st = 0;
+        break;
+    end
   end
   if ~isempty(status.octopus)
-    disp([ '  Octopus         (http://tddft.org/programs/octopus) as "' status.octopus '"' ]);
+    disp([ '  Octopus         (http://octopus-code.org/) as "' status.octopus '"' ]);
   end
   
 end
