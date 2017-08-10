@@ -44,10 +44,13 @@
         input atomic configuration. However, it is possible to specify
         more advanced options.<br>
         <br>
-        <div align="center"><b>The documentation listing all options for
-            the </b><b><a href="file://Models.html#mozTocId990577">sqw_phonons</a></b><b>
-            is available in the Models page.</b><br>
-          This is the Tutorial.<br>
+        <div align="center"><font color="#ff0000"><b>The documentation
+              listing all options for the </b><b><a
+                href="file://Models.html#mozTocId990577">sqw_phonons</a></b><b>
+              is available in the Models page.</b></font><br>
+          This is the Tutorial which explains how to use the sqw_phonons
+          in practice, but does not go much into the details of all
+          options.<br>
         </div>
         <br>
         <h3><a name="mozTocId406805" class="mozTocH3"></a>Installation</h3>
@@ -108,6 +111,7 @@
 
 
 
+
               <br>
             </li>
             <li>Optional: any <b>DFT code</b> out of <a
@@ -130,17 +134,18 @@
           (see below).<br>
           <br>
           The recommended systems for running iFit-Phonons are Ubuntu
-          14.04 or 16.04 and Debian Jessie 8.<br>
+          (14.04 or 16.04) and Debian Jessie 8.<br>
         </blockquote>
         <ul>
           <li><b>USB/ISO</b></li>
         </ul>
         <blockquote>The fastest way to have a running system for Phonon
-          estimates using iFit is use download the ISO. <br>
+          estimates using iFit is to download the ISO. <br>
           <br>
           Then you can either build a bootable USB key using e.g. <a
             href="https://unetbootin.github.io/">Unetbootin</a> (or
           simply a command in the style "<i>dd if=iso of=usbkey bs=1m</i>"),
+
 
 
 
@@ -199,6 +204,7 @@
           <li><b>Other Linux distributions</b></li>
         </ul>
         <blockquote>Use your package manager (e.g. <i>yum</i> and <i>dnf</i>),
+
 
 
 
@@ -647,12 +653,12 @@
           </blockquote>
           at the iFit/Matlab prompt. <br>
           You may also read the main <a href="Models.html">Models</a>
-          page, which lists all pre-defined models in iFit.<br>
+          page, which lists all pre-defined models in iFit, including sqw_phonons.<br>
           <br>
           To get help on the model object of class <a href="iFunc.html">iFunc</a>,
           use:<br>
           <blockquote>
-            <pre>&gt;&gt; <font color="#3366ff">disp</font>(s)		% displays details about the object<br>&gt;&gt; <font color="#3366ff">methods</font>(s)		% lists all methods that can be used with iData objects
+            <pre>&gt;&gt; <font color="#3366ff">disp</font>(s)		% displays details about the object<br>&gt;&gt; <font color="#3366ff">methods</font>(s)		% lists all methods that can be used with iFunc objects
 &gt;&gt; <font color="#3366ff">help iFun</font>c		% help about the class definition<br>&gt;&gt; <font color="#3366ff">doc</font>(iFunc)		% main web help about the class<br>&gt;&gt; <font color="#3366ff">help</font> iFunc/&lt;method&gt;	% explains how to use a given method<br></pre>
           </blockquote>
           The evaluation of the model provides a data set of class <a href="iData.html">iData</a>. To get help about these
@@ -677,14 +683,14 @@
           'Issues' tab lists all current bugs and enhancement requests
           (so called 'tickets'). <br>
           <br>
-          You can declare a new ticket by first registering at github.
+          You can declare a new ticket by first registering at <a href="https://github.com/">github</a>.
           Once registered, if you ever <i>find a bug</i> and wish to
           correct it, do so by editing the relevant iFit source code
           from the github page, and commit it. A 'pull request', that is
           a request for a modification, will be created. After
           discussion via the merge request tracking and email, your
           modification will be approved and included in the iFit
-          'master' code.<br>
+          'master' code, to be part of the next release.<br>
           <br>
           Last, if you are lost, do not hesitate to register at to the <a href="http://mail.mccode.org/cgi-bin/mailman/listinfo/ifit-users" style="font-family: &quot;Times New Roman&quot;; font-size:
             medium; font-style: normal; font-variant-ligatures: normal;
@@ -692,9 +698,7 @@
             letter-spacing: normal; orphans: 2; text-align: start;
             text-indent: 0px; text-transform: none; white-space: normal;
             widows: 2; word-spacing: 0px; -webkit-text-stroke-width:
-            0px;">ifit-users</a> list and send an email at
-          <meta http-equiv="content-type" content="text/html; charset=windows-1252">
-          &nbsp;<a href="mailto:ifit-users@mccode.org" style="font-family: &quot;Times New Roman&quot;; font-size:
+            0px;">ifit-users</a> list and send an email at<meta http-equiv="content-type" content="text/html; charset=windows-1252"> <a href="mailto:ifit-users@mccode.org" style="font-family: &quot;Times New Roman&quot;; font-size:
             medium; font-style: normal; font-variant-ligatures: normal;
             font-variant-caps: normal; font-weight: normal;
             letter-spacing: normal; orphans: 2; text-align: start;
@@ -704,14 +708,13 @@
         <h3><a name="mozTocId182819" class="mozTocH3"></a>Calculator
           options</h3>
         <ul>
-          <li>Choosing the DFT calculator, DeltaCodesDFT<br>
-          </li>
-          <li>Smearing, Ecut</li>
+          </ul><h4>Choosing the DFT calculator</h4><p>It is usually not an easy task to choose the 'right' DFT calculator, as there are many on the market. However, following the benchmarks below, as well as feedback from 'phonon' specialists, the best calculators would be:<br></p><ul><li><b>VASP:</b> a rock solid solution, using validated pseudo-potentials for all elements. Requires a valid license.</li><li><b>QuantumEspresso:</b> when used with the SSSP pseudo-potentials, is a very nice (free) alternative to VASP, and computes faster for similar settings.</li><li><b>Elk:</b> often provides reasonable results, but is much slower that VASP and QE (by factor e.g. 10).</li></ul>Some other calculators exist but are not as efficient as the list above for phonon calculations, in our view:<br><ul><li><i>ABINIT:</i> quite difficult to have converging and stable results, but very fast when it does. iFit/Ponons supports PAW(GBRV), PAWXML(JTH), FHI, HGH and TM pseudo potentials.<br></li><li><i>GPAW:</i> is slow compared to VASP and QE.</li><li><i>Dacapo</i> and <i>NWChem</i> should be avoided as these codes are not designed to provide accurate force estimates in crystalline materials.</li></ul>We are continuously testing new calculators, and will report for their capabilities in the future (Octopus, Siesta, bigDFT, CP2K, Gulp).<br><br>You may read the DFT code cross comparison study available at&nbsp; <a href="https://molmod.ugent.be/deltacodesdft">https://molmod.ugent.be/deltacodesdft</a> to get an idea of the software accuracy.<br><br>The calculator, once chosen, is specified using the 'calculator' field in the options, or writing the calculator as an argument to sqw_phonons:<br><ul><li><font color="#3366ff">sqw_phonons</font>(..., <font color="#cc33cc">'calculator=qe'</font>, ...)</li><li><font color="#3366ff">sqw_phonons</font>(..., <font color="#cc33cc">'qe'</font>, ...)</li></ul><h4>
+          </h4><ul>
+          </ul><h4>Energy cut-off<br></h4><ul>
         </ul>
-        ABINIT uses 1500 eV, other codes use their default cut-off (e.g.
-        from the pseudo potential definition).<br>
-        <ul>
-          <li>Supercell/k-mesh</li>
+        In most DFT codes, the plane wave energy cut-off is determined from the pseudo potential default. We recommend then to <i><b>not</b></i> specify any energy cut-off and let the codes find suitable settings. <br><br>In case you still wish to specify a cut-off value (in eV), you may use the 'ecut' field in the options:<br><ul><li><font color="#3366ff">sqw_phonons</font>(..., <font color="#cc33cc">'ecut=1500'</font>, ...)</li></ul>The recommended values from the <a href="http://materialscloud.org/sssp/">MaterialsCloud SSSP</a> convergence tests indicate e.g. 100 Ry=1300-1500 eV. The <a href="https://www.materialsproject.org/docs/calculations#Total_Energy_Calculation_Details">MaterialsProject recommendation</a> is around 520 eV. Remember that 1 Ha = 27.2 eV and 1 Ry=Ha/2=13.6 eV.<br><br>The computation time increases approximatively (and phenomenologically) as the energy cut-off to the power 1.6. So using an energy cut-off of 520 eV is about 5 times faster than using a 1500 eV cut-off.<br><h4>Smearing</h4><p>The 'smearing' is used when the electronic bands are very sharp, e.g. in metallic-type systems. The smearing avoids the discontinuity around the electronic band gaps, and highly improves the convergence of the DFT cycles. For this reason, setting a smearing value is highly recommended, even for non-metallic systems when the convergence gets difficult. Recommended values (see <a href="http://materialscloud.org/sssp/bands.html">SSSP</a>) are e.g. 0.01-0.02 Ry = 0.1-0.3 eV. The default is to set a 0.13 eV smearing, except for Elk which has an automatic determination mechanism. <br></p><p>In case you wish to manually set the smearing, use the 'occupations' or 'smearing' option (in eV):<br></p><ul><li><font color="#3366ff">sqw_phonons</font>(..., <font color="#cc33cc">'smearing=0.1'</font>, ...)</li></ul><p>We recommend the following values:<br></p><ul><li>for metals: use 0.27 eV</li><li>for semi-conductors: use a very small value, e.g. 0.01 eV</li><li>for insulators: use a negative value (e.g. -1) to suppress the smearing. This is usually equivalent to setting a 0 smearing.<br></li></ul><h4>
+        </h4><ul>
+          </ul><h4>Supercell/k-mesh</h4><p>The size of the system influences the stability and accuracy of the computation. In short, a small system will have a tendency to result in unstable (negative/imaginary) modes, especially close to the Brillouin zone centers. <br></p><p>Let us consider a crystal with a lattice spacing <i>a</i>. The corresponding momentum norm is k1=2pi/a corresponds with 1 reciprocal lattice unit [rlu]. For a system containing a total of [N N N] supercells, the equivalent lattice parameter is increased by a factor n, and the minimum k vector is reduced by the same factor. The reduced lattice unit minimal k norm is then k(rlu) = 1/N per atom in the unit cell. Now, by dividing the k-grid into a [K K K] Monkhorst-Pack mesh, the minimal k value that can be accurately estimated is again divided by K. We then get a minimal q-vector norm of 1/NK. Typically, for a supercell [3 3 3] and a MP grid [4 4 4], this results in a kmin=1/4/3=0.08. The K-points density per atom is then (1/kmin)^3&nbsp; =1728 per atom in the cell. The conclusion is that increasing either the supercell and the K-grid mesh is equivalent. This also determines the accuracy at small q-vectors (e.g. zone centers). <br></p><p>In practice, using the above values ensures a k-point density higher than (NK)<sup>3</sup> = 1000/atom in the cell, which is usually enough to get reasonable results:<br></p><ul><li>kpoints=4</li><li>supercell=3</li><li>k<sub>min</sub>=0.08 rlu<br></li></ul><p>More aggressive setting could be to use a k-points density of  (NK)<sup>3</sup> = 6750/atom:<br></p><ul><li>kpoints=5</li><li>supercell=4</li><li>k<sub>min</sub>=0.05 rlu<br></li></ul><p>The sqw_phonons builder automatically determines the best kpoints and supercell grid in order to achieve a k-points density higher than 1000/atom, which is usually satisfactory. However, some codes may then locally produce unstable (negative/imaginary) modes, especially close to the zone-center or high symmatry points. In this case, you may whish to use an other k-points/supercell set, using the 'kpoints' and 'supercell' options:<br></p><ul><li><font color="#3366ff">sqw_phonons</font>(..., <font color="#cc33cc">'kpoints=5; supercell=4'</font>, ...)</li></ul>Remember that the calculation time is proportional to the k-points density. So using the kpoints=4; supercell=3 is about 5 times faster as using kpoints=5; supercell=4.<br><ul>
           <li>XC/PPS</li>
           <li>Tolerance criteria and max number of iterations for SCF
             convergence</li>
@@ -732,7 +735,7 @@
           </li>
           <li>sqw_kpath and its options (Bragg, k-list, BZ points)<br>
           </li>
-          <li>sqw_thermochemistry</li>
+          <li>sqw_thermochemistry</li><li>generating a report (during / after)</li>
         </ul>
         <h3><a name="mozTocId362621" class="mozTocH3"></a>Loading/saving
           your work</h3>
@@ -740,10 +743,8 @@
           <li>loading an initial structure (file)</li>
           <li>loading a previous iFit computation (directory/mat)</li>
           <li>loading a previous PhonoPy computation (directory)</li>
-          <li>generating a report (during / after)<br>
-          </li>
-          <li>saving the model: MAT, YAML, JSON, XML<br>
-          </li>
+          
+          <li>saving the model: MAT, YAML, JSON, XML</li><li>generating a report (during / after)</li>
         </ul>
         <h3><a name="mozTocId131712" class="mozTocH3"></a>Phonons in Al</h3>
         The atom confiiguration '<a href="../Data/POSCAR_Al">POSCAR_Al'</a>
@@ -762,7 +763,7 @@
           </li>
         </ul>
         <i><b>Outcome</b></i>: all calculators give similar results. The
-        phonon dispersions are in all agreement in all cases. The
+        phonon dispersions are in agreement in all cases. The
         QuantumEspresso and AbInit calculators are the fastest.<br>
         <br>
         Results with different DFT codes<br>
@@ -960,7 +961,7 @@
         </ul>
         <i><b>Outcome</b></i>: Only QuantumEspresso, Elk and VASP
         provide sensible results. QuantumEspresso is also very fast. Elk
-        also provides sensible results, including a fair density of
+        also provides reasonable results, including a fair density of
         states, but with a higher proportion of unstable modes, and is
         much slower.<br>
         <ul>
@@ -1138,7 +1139,7 @@
             uses 1500 eV.</li>
         </ul>
         <i><b>Outcome</b></i>: VASP and QE give similar results. QE is
-        faster.<br>
+        faster. Other calculators provide crazy results.<br>
         <ul>
         </ul>
         <table width="1102" height="541" cellspacing="2" cellpadding="2" border="1">
@@ -1396,5 +1397,6 @@
       </div>
     </div>
   
+
 
 </body></html>
