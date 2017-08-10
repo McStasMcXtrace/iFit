@@ -17,6 +17,17 @@ if isempty(status.(lower(options.calculator))) && isempty(options.command)
   return
 end
 
+if     strncmp(options.occupations, 'auto',4) && ~strcmp(upper(calc_choice),'ELK')
+  % Elk handle 'auto' by itself
+  options.occupations=0.13;
+elseif strncmp(options.occupations, 'semi',4)
+  options.occupations=0.01;
+elseif strncmp(options.occupations, 'metal',5)
+  options.occupations=0.27;
+elseif strncmp(options.occupations, 'fix',3) || strncmp(options.occupations, 'insu',4)
+  options.occupations=-1;
+end
+  
 switch upper(calc_choice)
 % ==============================================================================
 case 'ABINIT'
@@ -126,8 +137,9 @@ case 'ABINIT'
   if options.nsteps > 0
     calc = [ calc sprintf(', nstep=%i', options.nsteps) ];
   end
+  
   if isscalar(options.occupations) && options.occupations >=0
-    calc=[ calc sprintf(', tsmear=%g, occopt=3', options.occupations/Ha) ];
+    calc=[ calc sprintf(', tsmear=%g, occopt=4', options.occupations/Ha) ]; % "Cold smearing" of N. Marzari
   end
   if ~isempty(options.raw)
     calc = [ calc sprintf(', %s', options.raw) ];
@@ -170,7 +182,7 @@ case 'ELK' % ===================================================================
   calc = 'calc = ELK(tforce=True, tasks=0, mixtype=3'; % Pulay mixing
 
   if strcmp(options.occupations, 'auto')
-    % other distribution: MethfesselPaxton
+    % stypen: 1-2: MethfesselPaxton; 3:FermiDirac
     calc=[ calc sprintf(', stype=3, autoswidth=True') ];
   elseif isscalar(options.occupations) && options.occupations >=0
     calc=[ calc sprintf(', stype=3, swidth=%g', options.occupations/Ha) ];
@@ -208,7 +220,7 @@ case 'GPAW' % ==================================================================
   
   decl = 'from gpaw import GPAW, PW, FermiDirac';
   calc = [ 'calc = GPAW(symmetry={"point_group": False}, txt="' fullfile(options.target,'gpaw.log') '"' ]; % because small displacement breaks symmetry
-
+  
   if isscalar(options.occupations) && options.occupations>=0 % smearing in eV
     calc=[ calc sprintf(', occupations=FermiDirac(%g)', options.occupations) ];
     % other distribution: MethfesselPaxton
@@ -281,6 +293,7 @@ case 'JACAPO' % ================================================================
   if options.nbands > 0
     calc = [ calc sprintf(', nbands=%i', options.nbands) ];
   end
+
   if options.occupations > 0
     calc = [ calc sprintf(', ft=%g', options.occupations) ];
   end
@@ -332,13 +345,6 @@ case 'NWCHEM' % ================================================================
     calc = [ calc sprintf(', basis="%s"', options.potentials) ];
   end
   % smearing is in Hartree
-  if strcmp(options.occupations, 'smearing') || strcmp(options.occupations, 'metal') % metals
-    options.occupations=0.1;
-  elseif strcmp(options.occupations, 'semiconductor')
-    options.occupations=0;
-  elseif strcmp(options.occupations, 'fixed') || strcmp(options.occupations, 'insulator') % insulators
-    options.occupations=-1;
-  end
   if isscalar(options.occupations) && options.occupations>=0 % smearing
     calc=[ calc sprintf(', smearing=("gaussian",%g)', options.occupations/Ha) ]; % in Hartree
   end
@@ -428,13 +434,11 @@ case 'QUANTUMESPRESSO_ASE'
   
   decl = 'from qeutil import QuantumEspresso';
   calc = [ 'calc = QuantumEspresso(use_symmetry=False, tstress=True, nspin=2,  label=atoms.get_chemical_formula(), wdir="' options.target '"' ]; % because small displacement breaks symmetry
-
+  
   if isscalar(options.occupations) && options.occupations>=0 % smearing in eV
     calc=[ calc sprintf(', occupations="smearing", smearing="methfessel-paxton", degauss=%g', options.occupations/Ry) ];
   elseif isscalar(options.occupations) && options.occupations < 0
     calc = [ calc sprintf(', occupations="fixed"') ]
-  elseif ischar(options.occupations) && ~isempty(options.occupations)
-    calc = [ calc sprintf(', occupations="%s"', options.occupations) ]
   end
   if all(options.kpoints > 0)
     calc = [ calc sprintf(', kpts=(%i,%i,%i)', options.kpoints) ];
@@ -514,6 +518,7 @@ case {'QUANTUMESPRESSO','QUANTUMESPRESSO_PHON'}
   if options.ecut > 0 && ~isfield(options,'ecutwfc')
     options.ecutwfc=options.ecut/Ry; end % in Ry
   if options.nsteps, options.electron_maxstep=options.nsteps; end
+  
   if isscalar(options.occupations), options.occupations=options.occupations/Ry; end
 
   decl = [ 'sqw_phon(''' poscar ''', options); % QuantumEspresso/PHON wrapper' ];
@@ -613,6 +618,7 @@ case 'VASP'
   if options.nsteps > 0
     calc = [ calc sprintf(', nelm=%i', options.nsteps) ];
   end
+  
   if isscalar(options.occupations) && options.occupations >=0
     calc=[ calc sprintf(', sigma=%g, ismear=0', options.occupations) ];
   end
