@@ -21,9 +21,10 @@
 
 
 
+
           - @IFIT_DATE@</span></span><br>
       <a href="http://ifit.mccode.org"><img alt="iFit" title="iFit"
-          src="images/iFit-logo.png" width="116" border="0" height="64"></a><br>
+          src="images/iFit-logo.png" width="116" height="64" border="0"></a><br>
     </div>
     <ul id="mozToc">
       <!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6-->
@@ -70,11 +71,14 @@
         href="Save.html">Save</a> <a href="Optimizers.html">Optimization</a>
       <a href="iFunc.html">iFunc</a> <a href="Models.html">Models</a> <a
         href="Loaders.html">File formats</a>]<br>
+      [ <a href="miFit.html">miFit</a>
+      <a href="Python.html">PyFit</a> ]<br>
       <br>
       <div style="text-align: left;">
         <h3><a class="mozTocH3" name="mozTocId127491"></a>Purpose</h3>
         The <span style="font-style: italic; font-weight: bold;">iFit</span>
         library (pronounce [<span style="font-style: italic;">eye-fit</span>])
+
 
 
 
@@ -105,11 +109,10 @@
           href="http://www.numpy.org/">NumPy</a>. Refer to our <a
           href="Python.html">PyFit</a> documentation. <a
           href="http://python.org/"><img alt="Python" title="Python"
-            src="images/python-logo.gif" width="100" border="0"
-            height="34" align="right"></a><a
-          href="http://www.numpy.org/"><img alt="NumPy" title="NumPy"
-            src="images/numpy_logo.png" width="100" border="0"
-            height="34" align="right"></a><br>
+            src="images/python-logo.gif" width="100" height="34"
+            align="right" border="0"></a><a href="http://www.numpy.org/"><img
+            alt="NumPy" title="NumPy" src="images/numpy_logo.png"
+            width="100" height="34" align="right" border="0"></a><br>
         <br>
         The spirit of the library is to include object definitions, with
         a set of methods that provide all the means to perform the usual
@@ -123,10 +126,11 @@
         The library can be used from user interfaces, or from the prompt
         as a set of commands and scripts.<br>
         <br>
-        <table width="100%" border="1" cellpadding="2" cellspacing="2">
+        <table width="100%" cellspacing="2" cellpadding="2" border="1">
           <tbody>
             <tr>
-              <td valign="top" align="center">From the prompt<br>
+              <td valign="top" align="center">From the prompt (command
+                line)<br>
               </td>
               <td valign="top" align="center">User interface: <b><a
                     href="miFit.html">miFit</a></b><br>
@@ -140,11 +144,15 @@
                   width="150" height="99"><br>
                 Have a look at the <a href="QuickStart.html">Quick
                   Start</a> or the <a href="iFit.html">iFit standalone</a>
-                page. <br>
+                page. There, you mostly manipulate <a
+                  href="iData.html">iData</a>
+                and <a
+                  href="iFunc.html">iFunc</a>
+                objects.<br>
               </td>
               <td valign="top" align="center"><a href="miFit.html"><img
                     alt="miFit" title="miFit" src="images/miFit.png"
-                    width="150" border="0" height="121"></a><br>
+                    width="150" height="121" border="0"></a><br>
                 an advanced yet simple user interface to load data sets,
                 plot, transform, export, and fit.<br>
               </td>
@@ -152,7 +160,7 @@
                   href="../Applications/ResLibCal/doc/ResLibCal.html"><img
                     alt="ResLibCal" title="ResLibCal"
                     src="../Applications/ResLibCal/doc/ResLibCal.png"
-                    width="150" border="0" height="169"></a><br>
+                    width="150" height="169" border="0"></a><br>
                 compute the neutron TAS spectrometer resolution
                 ellipsoid (ResCal/ResLib merge)<br>
               </td>
@@ -212,6 +220,7 @@
 
 
 
+
                 packages</span></a> (no need for a Matlab license) for
             Linux, Windows and Mac OS X are available from the <a
               style="font-weight: bold;" href="Install.html">Install</a>
@@ -250,7 +259,9 @@
 
 
 
+
               Git</a> ][ <a href="http://ifit.mccode.org/Downloads/">older/other
+
 
 
 
@@ -276,10 +287,12 @@
           box...</h3>
         <br>
         What you will handle mainly deals with <a href="iData.html">iData</a>
-        and <a href="iFunc.html">iFunc</a> objects. Please start to
-        read these pages first, as well as the <a
-          href="QuickStart.html">Quick Start</a> page if you're in a
-        hurry.<br>
+        and <a href="iFunc.html">iFunc</a> objects. The <a
+          href="miFit.html">miFit</a>
+        user interface is a simplified entry point to these objects and
+        their capabilities. Please start to read these pages first, as
+        well as the <a href="QuickStart.html">Quick Start</a> page if
+        you're in a hurry. <br>
         <img style="width: 128px; height: 100px;" alt="iFit package"
           title="iFit package" src="images/box.jpeg" align="right"><br>
         <br>
@@ -338,26 +351,31 @@
         operators.<br>
       </p>
     </div>
-    <h4 style="margin-left: 40px;"><a class="mozTocH4"
-        name="mozTocId858815"></a>The optimization library (iFit/<a
-        href="Optimizers.html">Optimizers</a>)</h4>
-    <div style="margin-left: 40px;">A set of optimization routines has
-      been gathered in the <a href="Optimizers.html">Optimizers</a>
-      part of iFit. It enables to choose and compare how different
-      optimization methods can solve a problem. This library is used
-      transparently by the iData <a href="Fit.html">fits</a> method,
-      but it may also be used independently.<br>
+    <div style="margin-left: 40px;">
       <h4><a class="mozTocH4" name="mozTocId526330"></a>The fit
         functions/models (iFit/<a href="Models.html">Models</a>)</h4>
-      A set of parametrized models is given in the <a
+      A predefined set of parametrized models is given in the <a
         href="Models.html">Models</a> part of iFit in order to fit some
       imported data and find best parameter sets which describe it.
       These functions may be used by the <a href="Fit.html">fits</a>
       method. All these models are <a href="iFunc.html">iFunc</a>
       objects. There are very advanced Models to compute for instance <a
         href="Models.html#mozTocId990577">4D phonon dispersions</a>
-      using <i>ab-initio</i> codes, and other simpler analytical
+      using <i>ab-initio</i> codes, neutron Monte-carlo instruments (<a
+        href="McStas.html">McCode</a>) and other simpler analytical
       methods.<br>
+      <br>
+      <div align="left">
+        <h4><a class="mozTocH4" name="mozTocId858815"></a>The lower
+          level optimization library (iFit/<a
+            href="Optimizers.html">Optimizers</a>)</h4>
+        A set of optimization routines has been gathered in the <a
+          href="Optimizers.html">Optimizers</a>
+        part of iFit. It enables to choose and compare how different
+        optimization methods can solve a problem. This library is used
+        transparently by the iData <a
+          href="Fit.html">fits</a>
+        method, but it may also be used independently.</div>
     </div>
     <h4 style="margin-left: 40px;"><a class="mozTocH4"
         name="mozTocId897464"></a>The lower level import routines (iFit/<a
@@ -380,8 +398,8 @@
       have their own embedded help. To access it use:<br>
       <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">doc</span>(iData)<br></pre>
       A list of all available <a href="Methods.html">iData methods</a>
-      is also available, and can be directly accesed with<br>
-      <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">methods</span>(iData)<br></pre>
+      is also available, and can be directly accessed with<br>
+      <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">methods</span>(iData)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">methods</span>(iFunc)	% equivalently for models<br></pre>
       The documentation currently contains the following pages:<br>
       <ul>
         <li><a href="Changes.html">Changes</a>: Version releases, <b>Changes
@@ -423,21 +441,21 @@
           and related data handling to apply on iData objects.</li>
         <li><a href="McStas.html">McStas</a>: an interface with the <a href="http://www.mcstas.org"> McStas</a> neutron scattering
           ray-tracing simulation code for simulation, scanning and
-          optimization.</li><li><a href="miFit.html">miFit</a>: the iFit main user interface.</li><li><a href="../Applications/ResLibCal/doc/ResLibCal.html">ResLibCal</a>: the neutron triple-axis resolution computation tool, with a user interface.<br></li>
-        <li><a href="Methods.html">Methods</a>: a list of all available
-          methods for iData objects.</li>
+          optimization.</li><li><a href="Methods.html">Methods</a>: a list of all available
+          methods for iData objects.</li><li><a href="miFit.html">miFit</a>: the iFit main user interface.</li>
+        
         <li><a href="Plot.html">Plot</a>: many ways to plot the iData
-          objects.</li>
+          objects.</li><li><a href="Python.html">PyFit</a>: an interface which exposes
+          transparently all iFit methods and objects into Python/NumPy.</li>
         <li><a href="QuickStart.html">QuickStart</a>: where you should
-          start (a quick tutorial).</li>
+          start (a quick tutorial).</li><li><a href="file:///home/farhi/dev/iFit/Applications/ResLibCal/doc/ResLibCal.html">ResLibCal</a>: the neutron triple-axis resolution computation tool, with a user interface.</li>
         <li><a href="Save.html">Save</a>: Saving iData objects into many
           file formats.</li>
         <li><a href="Treatment.html">Treatment</a>: a set of
           methodologies applied to specific cases, for instance neutron
           scattering (dynamic structure factors).<br>
         </li>
-        <li><a href="Python.html">PyFit</a>: an interface which exposes
-          transparently all iFit methods and objects into Python/NumPy.</li>
+        
         <li><a href="techdoc/index.html">Technical documentation</a><br>
         </li>
       </ul>
@@ -479,7 +497,7 @@
       <br>
     </h3>
     <div style="margin-left: 40px;">To download and install the package, refer to the
-      <a href="Install.html">Install</a> page, you just need Matlab.<br><br>We then recommend that you start with the <a href="miFit.html">miFit</a> user interface.<br><br>
+      <a href="Install.html">Install</a> page.<br><br>We then recommend that you start with the <a href="miFit.html">miFit</a> user interface.<br><br>
       If you want a quick example with commands, refer to the <a href="QuickStart.html">Quick Start</a> page. Otherwise, the
       typical usage would be:</div>
     <pre style="margin-left: 80px;"><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">Start Matlab... or iFit stand-alone<br>&gt;&gt; </span>addpath</span>(<span style="color: rgb(51, 102, 255);">genpath</span>(<span style="color: rgb(204, 51, 204);">'/some/path/to/iFit'</span>)); <span style="font-style: italic;">% not needed for the stand-alone version</span><br><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">&gt;&gt; </span></span>a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">[ ifitpath 'Data/ILL_IN6.dat' ]</span>);<span style="color: rgb(51, 102, 255);"></span><br><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">&gt;&gt; </span></span><span style="color: rgb(51, 102, 255);">plot</span>(log10(a))<br><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">&gt;&gt; </span></span>b=2*a+<span style="color: rgb(51, 102, 255);">log</span>(a)<br>&gt;&gt; plot(gauss2d)<br><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">&gt;&gt; </span></span>parameters=<span style="color: rgb(51, 102, 255);">fits</span>(a,<span style="color: rgb(204, 51, 204);">gauss2d</span>)<br><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">&gt;&gt; </span></span><span style="color: rgb(51, 102, 255);">saveas</span>(a,<span style="color: rgb(204, 51, 204);">'filename.</span><span style="color: rgb(204, 51, 204);">pdf'</span>)<br></pre>
@@ -491,7 +509,7 @@
       and all methods are able to tolerate (and correct) most of the
       user mistakes. In this respect, when some of the input parameters
       are missing, sensible choices can be made automatically. You can
-      look at the <a href="iFit.html">iFit</a> page, where a short
+      look at the <a href="iFit.html">iFit</a> standalone page, where a short
       Matlab introduction is available.<br>
       <br>
       <span style="font-style: italic; font-weight: bold;">If you have
