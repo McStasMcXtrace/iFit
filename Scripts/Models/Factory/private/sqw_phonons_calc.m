@@ -1,4 +1,4 @@
-function [decl,calc,signal] = sqw_phonons_calc(options, status, calc_choice, read)
+function [decl,calc,signal,options] = sqw_phonons_calc(options, status, calc_choice, read)
 % sqw_phonons_calc: set python code to initiate the calculator
 %   requires: nothing except options, status(requirements), choice and 
 %   output:   python snippets to setup ASE Calculator, or signal=iFunc (QE case)
@@ -378,9 +378,12 @@ case 'OCTOPUS'
     options.command = [ options.mpirun ' ' options.command ]; 
   end
   if isempty(options.command), options.command=status.(lower(options.calculator)); end
+  if ~isempty(options.command)
+    setenv('ASE_OCTOPUS_COMMAND', options.command);
+  end
   
   decl = 'from ase.calculators.octopus import Octopus';
-  calc = 'calc = Octopus(Output="dos + density + potential", OutputFormat="xcrysden"';
+  calc = 'calc = Octopus(Output="dos + density + potential", OutputFormat="xcrysden", Spacing=0.25';
   if all(options.kpoints > 0)
     calc = [ calc sprintf(', KPointsGrid=[[%i,%i,%i]], KPointsUseSymmetries=True', options.kpoints) ];
   end
