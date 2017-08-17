@@ -16,13 +16,41 @@
       <!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6-->
       <li><a href="#mozTocId406805">Installation</a></li>
       <li><a href="#mozTocId846642">Getting initial atomic
-          configurations</a></li>
+          configurations </a></li>
       <li><a href="#mozTocId503533">Starting iFit/Phonons</a></li>
       <li><a href="#mozTocId333190">Phonon computation syntax:
           sqw_phonons</a></li>
       <li><a href="#mozTocId280436">Getting help</a></li>
-      <li><a href="#mozTocId182819">Calculator options</a></li>
-      <li><a href="#mozTocId438325">Plotting results</a></li>
+      <li><a href="#mozTocId182819">Calculator options</a>
+        <ol>
+          <li><a href="#mozTocId300601">Choosing the DFT calculator</a></li>
+          <li><a href="#mozTocId493804">Energy cut-off</a></li>
+          <li><a href="#mozTocId630847">Smearing</a></li>
+          <li><a href="#mozTocId671646">Supercell/k-mesh</a></li>
+          <li><a href="#mozTocId99928">Pseudo-potential specification
+              (XC/PPS)</a></li>
+          <li><a href="#mozTocId179994">Tolerance criteria and max
+              number of iterations for SCF convergence (toldfe/nsteps)</a></li>
+          <li><a href="#mozTocId16442">Initial optimisation (optimize)</a></li>
+          <li><a href="#mozTocId84638">Other options</a></li>
+          <li><a href="#mozTocId379680">Report generation during/after
+              the calculation</a></li>
+        </ol>
+      </li>
+      <li><a href="#mozTocId438325">Getting results</a>
+        <ol>
+          <li><a href="#mozTocId370236">Vibrational density of states
+              (vDOS)</a></li>
+          <li><a href="#mozTocId964599">Thermo-chemistry basic
+              quantities (vDOS,F,U,S,Cv)</a></li>
+          <li><a href="#mozTocId216396">Phonon dispersion along
+              principal axes</a></li>
+          <li><a href="#mozTocId890089">Report generation after the
+              calculation</a></li>
+          <li><a href="#mozTocId401231">Phonon dispersion rendering in
+              3D</a></li>
+        </ol>
+      </li>
       <li><a href="#mozTocId362621">Loading/saving your work</a></li>
       <li><a href="#mozTocId131712">Phonons in Al</a></li>
       <li><a href="#mozTocId526943">Phonons in MgO</a></li>
@@ -47,7 +75,8 @@
         <div align="center"><font color="#ff0000"><b>The documentation
               listing all options for the </b><b><a
                 href="file://Models.html#mozTocId990577">sqw_phonons</a></b><b>
-              is available in the Models page.</b></font><br>
+              is available in the <a href="Models.html">Models</a>
+              page.</b></font><br>
           This is the Tutorial which explains how to use the sqw_phonons
           in practice, but does not go much into the details of all
           options.<br>
@@ -86,12 +115,29 @@
               <a href="http://docs.scipy.org/doc/numpy/reference/">Numpy</a>,
               <a href="http://docs.scipy.org/doc/scipy/reference/">Scipy</a>
               and <a href="http://matplotlib.org/">MatPlotLib</a>.</li>
+            <li><b><a href="https://pythonhosted.org/hdf5storage/">python-hdf5storage</a></b>
+              to transfer large data sets between Python and iFit.<br>
+            </li>
             <li>Optional: <b>PhonoPy</b> <a
-                href="https://atztogo.github.io/phonopy/">https://atztogo.github.io/phonopy/</a></li>
+                href="https://atztogo.github.io/phonopy/">https://atztogo.github.io/phonopy/</a><br>
+            </li>
             <li>Optional: QE-util <a
                 href="https://github.com/jochym/qe-util">https://github.com/jochym/qe-util</a>
               <br>
             </li>
+            <li>Optional: any <b>DFT code</b> out of <a
+                href="http://www.quantum-espresso.org/">QuantumEspresso</a>,
+              <a href="http://www.abinit.org/">ABINIT</a>, <a
+                href="https://www.vasp.at/">VASP</a>, <a
+                href="http://wiki.fysik.dtu.dk/gpaw">GPAW</a>, <a
+                href="http://elk.sourceforge.net/">ELK</a>, <a
+                href="https://wiki.fysik.dtu.dk/dacapo/">Dacapo</a>,<a
+                href="http://wiki.fysik.dtu.dk/gpaw"> </a><a
+                href="http://www.nwchem-sw.org/">NWChem</a><a
+                href="http://wiki.fysik.dtu.dk/gpaw">.</a></li>
+            <li>Optional: An implementation of MPI (e.g. OpenMPI) is
+              highly recommended in order to make use of the
+              multi-core/cpu hardware.</li>
             <li>Optional: PHON <a
                 href="http://www.homepages.ucl.ac.uk/%7Eucfbdxa/phon/">http://www.homepages.ucl.ac.uk/~ucfbdxa/phon/</a>&nbsp;
 
@@ -112,39 +158,47 @@
 
 
 
-              <br>
-            </li>
-            <li>Optional: any <b>DFT code</b> out of <a
-                href="http://www.quantum-espresso.org/">QuantumEspresso</a>,
-              <a href="http://www.abinit.org/">ABINIT</a>, <a
-                href="https://www.vasp.at/">VASP</a>, <a
-                href="http://wiki.fysik.dtu.dk/gpaw">GPAW</a>, <a
-                href="http://elk.sourceforge.net/">ELK</a>, <a
-                href="https://wiki.fysik.dtu.dk/dacapo/">Dacapo</a>,<a
-                href="http://wiki.fysik.dtu.dk/gpaw"> </a><a
-                href="http://www.nwchem-sw.org/">NWChem</a><a
-                href="http://wiki.fysik.dtu.dk/gpaw">.</a></li>
-            <li>Optional: An implementation of MPI (e.g. OpenMPI) is
-              highly recommended in order to make use of the
-              multi-core/cpu hardware.</li>
+
+
+
+              (this is low priority)</li>
           </ul>
-          If some of the packages are not available, or not functional,
-          iFit-Phonons will still be usable with the other functional
-          parts. It is however recommended to install most of this list
-          (see below).<br>
+          See below on how to install these packages. If some of the
+          packages are not available, or not functional, iFit-Phonons
+          will still be usable with the other functional parts. It is
+          however recommended to install most of this list (see below).<br>
           <br>
           The recommended systems for running iFit-Phonons are Ubuntu
           (14.04 or 16.04) and Debian Jessie 8.<br>
         </blockquote>
         <ul>
-          <li><b>USB/ISO</b></li>
+          <li><b>USB/ISO</b><b> (our recommendation)</b></li>
         </ul>
         <blockquote>The fastest way to have a running system for Phonon
-          estimates using iFit is to download the ISO. <br>
+          estimates using iFit is to download our <a
+href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/illcs-livedvd/">ILL/CS
+
+
+
+
+
+
+
+
+
+
+
+            Live DVD</a> ready-to-run system with <i>Phonons</i>, <span
+            style="font-style: italic;">McStas</span> and <i>iFit</i>
+          (standalone) all pre-installed.<br>
           <br>
           Then you can either build a bootable USB key using e.g. <a
             href="https://unetbootin.github.io/">Unetbootin</a> (or
           simply a command in the style "<i>dd if=iso of=usbkey bs=1m</i>"),
+
+
+
+
 
 
 
@@ -198,12 +252,17 @@
             href="http://localhost/ifit-web-services">http://localhost/ifit-web-services</a>
           . To benefit from the email tracking (start/stop of
           computations) you will need to edit the file <i>/usr/lib/cgi-bin/computing_sqw_phonons.pl</i>
-          and change the email server/account/password to use.<br>
+          as administrator and change the email server/account/password
+          to use.<br>
         </blockquote>
         <ul>
           <li><b>Other Linux distributions</b></li>
         </ul>
         <blockquote>Use your package manager (e.g. <i>yum</i> and <i>dnf</i>),
+
+
+
+
 
 
 
@@ -489,7 +548,7 @@
         </blockquote>
         <h3><a name="mozTocId503533" class="mozTocH3"></a>Starting
           iFit/Phonons</h3>
-        You may use the iFit-Phonon infrastructure in three different
+        You may use the iFit-Phonon infrastructure in four different
         ways.<br>
         <ul>
           <li><b>command line</b></li>
@@ -503,7 +562,7 @@
           <a href="images/iFit_standalone.png"><img alt="iFit standalone
               window (no Matlab license required)" title="iFit
               standalone window (no Matlab license required)" src="images/iFit_standalone.png" style="border: 0px solid;
-              border: 0px solid; width: 300px; height: 198px;" width="747" height="492" align="right" border="0"></a>If
+              border: 0px solid; width: 300px; height: 198px;" border="0" align="right" width="747" height="492"></a>If
           you do not have a Matlab license, start the iFit standalone by
           either clicking on its icon, or start a Terminal and type <br>
           <blockquote>
@@ -543,7 +602,7 @@
           <li><b>dialogue window</b></li>
         </ul>
         <blockquote>To use a very basic user interface, use the
-          procedure above and type in the ifit/Matlab prompt:<a href="images/Models_sqw_ph_ase_gui.png"><img alt="sqw_ph_ase_gui" title="sqw_ph_ase_gui" src="images/Models_sqw_ph_ase_gui.png" width="200" height="168" align="right" border="0"></a>
+          procedure above and type in the ifit/Matlab prompt:<a href="images/Models_sqw_ph_ase_gui.png"><img alt="sqw_ph_ase_gui" title="sqw_ph_ase_gui" src="images/Models_sqw_ph_ase_gui.png" border="0" align="right" width="200" height="168"></a>
           <blockquote>
             <pre>&gt;&gt; <font color="#3366ff"><font color="#000000">s=</font>sqw_phonons</font>(<font color="#cc33cc">'gui'</font>)<br></pre>
           </blockquote>
@@ -562,7 +621,7 @@
           <li><b>TextEdit: an editor which allows to evaluate code</b><br>
           </li>
         </ul>
-        <blockquote>You can open a TextEdit window by typing:<a href="images/iFit_TextEdit.png"><img src="images/iFit_TextEdit.png" title="iFit_TextEdit" alt="iFit_TextEdit" width="250" height="190" align="right" border="0"></a>
+        <blockquote>You can open a TextEdit window by typing:<a href="images/iFit_TextEdit.png"><img src="images/iFit_TextEdit.png" title="iFit_TextEdit" alt="iFit_TextEdit" border="0" align="right" width="250" height="190"></a>
           <blockquote>
             <pre>&gt;&gt; <font color="#3366ff">TextEdit</font></pre>
           </blockquote>
@@ -577,10 +636,10 @@
           in the TextEdit window appears (when evaluating) in the iFit
           Terminal, and <i>vice-versa</i>. You can open as many
           TextEdit windows as you wish, load/save files (e.g. .m),
-          copy/paste filenames and raw text.<br>
+          copy/paste filenames and raw text.<br><br>This way, you keep track of all commands entered to compute Phonons, and may execute selected ones.<br>
           <br>
           The TextEdit window has a <i>Help</i> menu which links to the
-          main iFit functionalities.<br>
+          main iFit functionalities. <br>
         </blockquote>
         <ul>
           <li><b>web server</b></li>
@@ -600,7 +659,7 @@
           without any prior knowledge on the iFit infrastructure.<br>
           <br>
           Once launched, note down the URL of the running computation,
-          and do not switch off the computer. You can monitor the
+          and do not switch off the server computer. You can monitor the
           calculation report any time.<br>
         </blockquote>
         <h3><a name="mozTocId333190" class="mozTocH3"></a>Phonon
@@ -639,9 +698,9 @@
         </blockquote>
         <h3><a name="mozTocId280436" class="mozTocH3"></a>Getting help</h3>
         <ul>
-          <li><b>help pages</b>: sqw_phonons, models, data sets</li>
+          <li><b>help pages</b>: <b>sqw_phonons</b>, models, data sets</li>
         </ul>
-        <blockquote>To get more help on the sqw_phonons command, access
+        <blockquote>To get more help on the <i>sqw_phonons</i> command, access
           the <a href="Models.html#mozTocId990577">iFit/Models</a>
           page, or type:<br>
           <blockquote>
@@ -708,36 +767,144 @@
         <h3><a name="mozTocId182819" class="mozTocH3"></a>Calculator
           options</h3>
         <ul>
-          </ul><h4>Choosing the DFT calculator</h4><p>It is usually not an easy task to choose the 'right' DFT calculator, as there are many on the market. However, following the benchmarks below, as well as feedback from 'phonon' specialists, the best calculators would be:<br></p><ul><li><b>VASP:</b> a rock solid solution, using validated pseudo-potentials for all elements. Requires a valid license.</li><li><b>QuantumEspresso:</b> when used with the SSSP pseudo-potentials, is a very nice (free) alternative to VASP, and computes faster for similar settings.</li><li><b>Elk:</b> often provides reasonable results, but is much slower that VASP and QE (by factor e.g. 10).</li></ul>Some other calculators exist but are not as efficient as the list above for phonon calculations, in our view:<br><ul><li><i>ABINIT:</i> quite difficult to have converging and stable results, but very fast when it does. iFit/Ponons supports PAW(GBRV), PAWXML(JTH), FHI, HGH and TM pseudo potentials.<br></li><li><i>GPAW:</i> is slow compared to VASP and QE.</li><li><i>Dacapo</i> and <i>NWChem</i> should be avoided as these codes are not designed to provide accurate force estimates in crystalline materials.</li></ul>We are continuously testing new calculators, and will report for their capabilities in the future (Octopus, Siesta, bigDFT, CP2K, Gulp).<br><br>You may read the DFT code cross comparison study available at&nbsp; <a href="https://molmod.ugent.be/deltacodesdft">https://molmod.ugent.be/deltacodesdft</a> to get an idea of the software accuracy.<br><br>The calculator, once chosen, is specified using the 'calculator' field in the options, or writing the calculator as an argument to sqw_phonons:<br><ul><li><font color="#3366ff">sqw_phonons</font>(..., <font color="#cc33cc">'calculator=qe'</font>, ...)</li><li><font color="#3366ff">sqw_phonons</font>(..., <font color="#cc33cc">'qe'</font>, ...)</li></ul><h4>
-          </h4><ul>
-          </ul><h4>Energy cut-off<br></h4><ul>
+          </ul><h4><a name="mozTocId300601" class="mozTocH4"></a>Choosing the DFT calculator</h4><blockquote><p>It is usually not an easy task to choose the 'right' DFT calculator, as there are many on the market. However, following the benchmarks below, as well as feedback from 'phonon' specialists, the best calculators would be:<br></p><ul><li><b>VASP:</b> a rock solid solution, using validated pseudo-potentials for all elements. Requires a valid license.</li><li><b>QuantumEspresso:</b> when used with the <a href="http://materialscloud.org/">SSSP pseudo-potentials</a>, is a very nice (free) alternative to VASP, and computes faster for similar settings.</li><li><b>Elk:</b> often provides reasonable results, but is much slower that VASP and QE (by factor e.g. 10).</li></ul>Some other calculators exist but are not as efficient as the list above for phonon calculations, in our view:<br><ul><li><i>ABINIT:</i> quite difficult to have converging and stable results, but very fast when it does. iFit/Phonons supports PAW(GBRV), PAWXML(JTH), FHI, HGH and TM pseudo potentials (see below).<br></li><li><i>GPAW:</i> is slow compared to VASP and QE.</li><li><i>Dacapo</i> and <i>NWChem</i> should be avoided as these codes are not designed to provide accurate force estimates in crystalline materials.</li></ul>We are continuously testing new calculators, and will report for their capabilities in the future (Octopus, Siesta, bigDFT, CP2K, Gulp, ...).<br><br>You may read the DFT code cross comparison study available at&nbsp; <a href="https://molmod.ugent.be/deltacodesdft">https://molmod.ugent.be/deltacodesdft</a> to get an idea of the software accuracy.<br><br>The calculator, once chosen, is specified using the <i>'calculator'</i> field in the options, or writing the calculator as an argument to sqw_phonons:<br><ul><li><font color="#3366ff">sqw_phonons</font>(..., <font color="#cc33cc">'calculator=qe'</font>, ...)</li><li><font color="#3366ff">sqw_phonons</font>(..., <font color="#cc33cc">'qe'</font>, ...)</li></ul>Depending on the DFT code chosen, the lattice complexity, and the computer capabilities, the calculation may take from minutes to days/weeks. See below for examples.<br></blockquote><ul>
+          </ul><h4><a name="mozTocId493804" class="mozTocH4"></a>Energy cut-off<br></h4><ul>
+        </ul><blockquote>
+        In most DFT codes, the plane wave energy cut-off is determined from the pseudo potential default. We recommend then to <i><b>not</b></i> specify any energy cut-off and let the DFT calculator find suitable settings. <br><br>In case you still wish to specify a cut-off value (in eV), you should use the <i>'ecut'</i> field in the options:<br><ul><li><font color="#3366ff">sqw_phonons</font>(..., <font color="#cc33cc">'ecut=1500'</font>, ...)</li></ul>The recommended values from the <a href="http://materialscloud.org/sssp/">MaterialsCloud SSSP</a> convergence tests indicate e.g. 100 Ry=1300-1500 eV. The <a href="https://www.materialsproject.org/docs/calculations#Total_Energy_Calculation_Details">MaterialsProject recommendation</a> is around 520 eV. Remember that 1 Ha = 27.2 eV and 1 Ry=Ha/2=13.6 eV.<br><br>The computation time increases approximately (and phenomenologically) as the energy cut-off to the power 1.6. So using an energy cut-off of 520 eV is about 5 times faster than using a 1500 eV cut-off.<br></blockquote><h4><a name="mozTocId630847" class="mozTocH4"></a>Smearing</h4><blockquote><p>The 'smearing' is used when the electronic bands are very sharp, e.g. in metallic-type systems. The smearing avoids the discontinuity around the electronic band gaps, and highly improves the convergence of the DFT cycles. For this reason, setting a smearing value is highly recommended, even for non-metallic systems when the convergence gets difficult. Recommended values (see <a href="http://materialscloud.org/sssp/bands.html">SSSP</a>) are e.g. 0.01-0.02 Ry = 0.1-0.3 eV. The default is to set a 0.13 eV smearing, except for Elk which has an automatic determination mechanism. <br></p><p>In case you wish to manually set the smearing, use the 'occupations' or 'smearing' option (in eV):<br></p><ul><li><font color="#3366ff">sqw_phonons</font>(..., <font color="#cc33cc">'smearing=0.1'</font>, ...)</li></ul><p>We recommend the following values:<br></p><ul><li>for metals: use 0.27 eV</li><li>for semi-conductors: use a very small value, e.g. 0.01 eV</li><li>for insulators: use a negative value (e.g. -1) to suppress the smearing. This is usually equivalent to setting a 0 smearing.<br></li></ul></blockquote><ul>
+          </ul><h4><a name="mozTocId671646" class="mozTocH4"></a>Supercell/k-mesh</h4><blockquote><p>The size of the system influences the stability and accuracy of the computation. In short, a small system will have a tendency to result in unstable (negative/imaginary) modes, especially close to the Brillouin zone centers. <br></p><p>Let us consider a crystal with a lattice spacing <i>a</i>. The corresponding momentum norm is <i>k<sub>1</sub>=2pi/a</i> corresponds with 1 reciprocal lattice unit [rlu]. For a system containing a total of [N N N] supercells, the equivalent lattice parameter is increased by a factor <i>N</i>, and the minimum <i>k</i> vector is reduced by the same factor. The reduced lattice unit minimal <i>k</i> norm is then <i>k = 1/N</i> in [rlu] per atom in the unit cell. Now, by dividing the k-grid into a [K K K] Monkhorst-Pack mesh, the minimal <i>k</i> value that can be accurately estimated is again divided by <i>K</i>. We then get a minimal k-vector norm of <i>1/NK</i> in [rlu]. Typically, for a supercell [3 3 3] and a MP grid [4 4 4], this results in a <i>k<sub>min</sub></i>=1/4/3=0.08. The K-points density per atom is then (1/<i>k<sub>min</sub></i>)<sup>3</sup>&nbsp; =1728 per atom in the cell.<br></p><p>The conclusion is that increasing either the supercell or the K-grid mesh are equivalent. This also determines the accuracy at small k-vectors (e.g. zone centers). <br></p><p>In practice, using the above values ensures a k-point density higher than (NK)<sup>3</sup> = 1000/atom in the cell, which is usually enough to get reasonable results:<br></p><ul><li>kpoints=4</li><li>supercell=3</li><li>k<sub>min</sub>=0.08 rlu<br></li></ul><p>More demanding settings could be to use a k-points density of  (NK)<sup>3</sup> = 8000/atom:<br></p><ul><li>kpoints=5</li><li>supercell=4</li><li>k<sub>min</sub>=0.05 rlu<br></li></ul><p>The <i>sqw_phonons</i> model automatically determines the best kpoints and supercell grid in order to achieve a k-points density higher than 1000/atom, which is usually satisfactory. However, some codes may then locally produce unstable (negative/imaginary) modes, especially close to the zone-center or high symmetry points. In this case, you may wish to use an other k-points/supercell set, with the <i>'kpoints'</i> and <i>'supercell'</i> options:<br></p><ul><li><font color="#3366ff">sqw_phonons</font>(..., <font color="#cc33cc">'kpoints=5; supercell=4'</font>, ...)</li></ul>Remember that the calculation time is proportional to the k-points density. So using the kpoints=4; supercell=3 is about 5 times faster as using kpoints=5; supercell=4.<br></blockquote><ul>
+          </ul><h4><a name="mozTocId99928" class="mozTocH4"></a><b>Pseudo-potential specification (XC/PPS)</b></h4><blockquote>Most DFT codes come with their own set of pseudo-potentials. The rationale for sqw_phonons is to prefer a set with a GGA/PBE exchange-correlation (XC) functional. You can select the XC using the <b><i>'xc'</i></b> option:<br><ul><li><font color="#3366ff">sqw_phonons</font>(..., <font color="#cc33cc">'xc=PBE'</font>, ...)</li></ul>The possible values for <i>xc</i> depend on the DFT calculator, but all support 'LDA','GGA','PBE'. Some support 'RPBE','PBEsol'.<br><br>In all cases, GGA (generalised gradient approximation) should be preferred over LDA ( local density approximation). Among the GGA, the PW91, PBE or RPBE are recommended when available.<br><br>It is also possible to select among different pseudo-potential sets (setups) using the <b><i>'pps'</i></b> option. This option highly depends on the calculator. Some calculators such as VASP, QuantumEspresso and ABINIT allow vast choices, specifying either the file format and/or the origin of the pseudo-potential. Typical values can be:<br><ul><li>'NC' (norm conserving), </li><li>'PAW' (Abinit PAW format, e.g. <a href="http://www.physics.rutgers.edu/gbrv/">GBRV</a>),</li><li>'PAWXML' (GPAW unified format, e.g. <a href="http://www.abinit.org/downloads/PAW2">JTH</a>)</li><li>'FHI' (<span class="st">Fritz-Haber-Institute)</span></li><li>'HGH' (<span class="st">Hartwigsen-Goedeker-Hutter)</span></li><li>'TM' (<span class="st">Troullier-Martins)</span></li></ul></blockquote><meta http-equiv="content-type" content="text/html; charset=windows-1252"><meta http-equiv="content-type" content="text/html; charset=windows-1252"><ul>
+          </ul><h4><a name="mozTocId179994" class="mozTocH4"></a>Tolerance criteria and max number of iterations for SCF
+            convergence (toldfe/nsteps)</h4><blockquote><p>The criteria for stopping the DFT calculation is to study the convergence of the total energy during the SCF cycles. The usual criteria to stop each calculation is when the difference in energy gets smaller than a threshold <i>'toldfe'</i>. This value is often set to 10<sup>-6</sup> or  10<sup>-7</sup> [eV]. For faster calculations (relaxed convergence criteria), we use 10<sup>-5</sup> [eV] as default value, which helps convergence but may result more often in unstable modes.<br></p><p>The maximum number of SCF cycles is usually around 30-50. However, some codes and pseudo-potential choices may result in a longer pathway to energy convergence. Then the default value (set by each DFT calculator) should be increased by mean of the <i>'nsteps'</i> option:<br></p><ul><li><font color="#3366ff">sqw_phonons</font>(..., <font color="#cc33cc">'toldfe=1e-5; nsteps=100'</font>, ...)</li></ul><p>For a longer, but potentially more accurate, calculation, use:<br></p><ul><li><font color="#3366ff">sqw_phonons</font>(..., <font color="#cc33cc">'toldfe=1e-6; nsteps=300'</font>, ...)</li></ul></blockquote><ul>
+          </ul><h4><a name="mozTocId16442" class="mozTocH4"></a>Initial optimisation (optimize)</h4><blockquote><p>In principle, the initial structure given to the calculator for the force constants estimate is at the equilibrium (minimum energy as a function of e.g. lattice cell parameters or atom positions). This usually means that the forces for the equilibrium structure (when no additional displacement have been done yet) should not exceed e.g. 3 10<sup>-4</sup> eV/Angs. In case these forces are larger, there are more chances that the force estimates get wrong and unstable modes appear.<br></p><p>In order to handle this case, it is highly preferable to optimize the structure before starting the phonon calculation. This can be done manually using your preferred DFT code, but we also provide an automatic procedure for this, using:</p><ul><li><font color="#3366ff">sqw_phonons</font>(..., <font color="#cc33cc">'optimize'</font>, ...)</li><li><font color="#3366ff">sqw_phonons</font>(..., <font color="#cc33cc">'optimizer=BFGS'</font>, ...)</li></ul><p>which will then move atoms in the lattice, in order to minimize the total energy, keeping the lattice parameters constant. The <a href="https://wiki.fysik.dtu.dk/ase/ase/optimize.html">optimizer</a> can be chosen among <meta http-equiv="content-type" content="text/html; charset=windows-1252">'BFGS' (default), 'LBFGS', 'MDMin' and 'FIRE'.</p><p><font color="#ff0000">A warning is in place here</font> as this optimization may change the space group. We thus do <b><i>not</i></b> recommend to optimize the structure systematically.<br></p></blockquote><h4><a name="mozTocId84638" class="mozTocH4"></a>Other options</h4><blockquote><p>Many other options, not detailed here, are explained in the <font color="#ff0000"><b><a href="file://Models.html#mozTocId990577">sqw_phonons</a></b></font> documentation of the Models page.<br></p></blockquote><ul>
+          </ul><h4><a name="mozTocId379680" class="mozTocH4"></a>Report generation during/after the calculation</h4><blockquote><p>It is possible to generate an automatic report while computing the lattice dynamics model, by specifying the 'report' option:<br></p><ul><li><font color="#3366ff">sqw_phonons</font>(..., <font color="#cc33cc">'report'</font>, ...)</li></ul>This report contains all information regarding the calculation itself, but also generates nice images of the structure, the dispersion curves along principal axes, the density of states, the powder average, etc. This is an HTML document with attached images and files, which can be viewed with any web-browser.<br><br>This report can also be generated any time from an existing model <i>'s'</i>, using:<br>
+<ul><li><font color="#3366ff">sqw_phonons</font>( s , <font color="#cc33cc">'report'</font>)</li></ul>
+Once done, open the report following the link printed in the command window, or using e.g.:<br><ul><li><font color="#3366ff">web</font>( s.UserData.options.report )</li></ul></blockquote><ul>
         </ul>
-        In most DFT codes, the plane wave energy cut-off is determined from the pseudo potential default. We recommend then to <i><b>not</b></i> specify any energy cut-off and let the codes find suitable settings. <br><br>In case you still wish to specify a cut-off value (in eV), you may use the 'ecut' field in the options:<br><ul><li><font color="#3366ff">sqw_phonons</font>(..., <font color="#cc33cc">'ecut=1500'</font>, ...)</li></ul>The recommended values from the <a href="http://materialscloud.org/sssp/">MaterialsCloud SSSP</a> convergence tests indicate e.g. 100 Ry=1300-1500 eV. The <a href="https://www.materialsproject.org/docs/calculations#Total_Energy_Calculation_Details">MaterialsProject recommendation</a> is around 520 eV. Remember that 1 Ha = 27.2 eV and 1 Ry=Ha/2=13.6 eV.<br><br>The computation time increases approximatively (and phenomenologically) as the energy cut-off to the power 1.6. So using an energy cut-off of 520 eV is about 5 times faster than using a 1500 eV cut-off.<br><h4>Smearing</h4><p>The 'smearing' is used when the electronic bands are very sharp, e.g. in metallic-type systems. The smearing avoids the discontinuity around the electronic band gaps, and highly improves the convergence of the DFT cycles. For this reason, setting a smearing value is highly recommended, even for non-metallic systems when the convergence gets difficult. Recommended values (see <a href="http://materialscloud.org/sssp/bands.html">SSSP</a>) are e.g. 0.01-0.02 Ry = 0.1-0.3 eV. The default is to set a 0.13 eV smearing, except for Elk which has an automatic determination mechanism. <br></p><p>In case you wish to manually set the smearing, use the 'occupations' or 'smearing' option (in eV):<br></p><ul><li><font color="#3366ff">sqw_phonons</font>(..., <font color="#cc33cc">'smearing=0.1'</font>, ...)</li></ul><p>We recommend the following values:<br></p><ul><li>for metals: use 0.27 eV</li><li>for semi-conductors: use a very small value, e.g. 0.01 eV</li><li>for insulators: use a negative value (e.g. -1) to suppress the smearing. This is usually equivalent to setting a 0 smearing.<br></li></ul><h4>
-        </h4><ul>
-          </ul><h4>Supercell/k-mesh</h4><p>The size of the system influences the stability and accuracy of the computation. In short, a small system will have a tendency to result in unstable (negative/imaginary) modes, especially close to the Brillouin zone centers. <br></p><p>Let us consider a crystal with a lattice spacing <i>a</i>. The corresponding momentum norm is k1=2pi/a corresponds with 1 reciprocal lattice unit [rlu]. For a system containing a total of [N N N] supercells, the equivalent lattice parameter is increased by a factor n, and the minimum k vector is reduced by the same factor. The reduced lattice unit minimal k norm is then k(rlu) = 1/N per atom in the unit cell. Now, by dividing the k-grid into a [K K K] Monkhorst-Pack mesh, the minimal k value that can be accurately estimated is again divided by K. We then get a minimal q-vector norm of 1/NK. Typically, for a supercell [3 3 3] and a MP grid [4 4 4], this results in a kmin=1/4/3=0.08. The K-points density per atom is then (1/kmin)^3&nbsp; =1728 per atom in the cell. The conclusion is that increasing either the supercell and the K-grid mesh is equivalent. This also determines the accuracy at small q-vectors (e.g. zone centers). <br></p><p>In practice, using the above values ensures a k-point density higher than (NK)<sup>3</sup> = 1000/atom in the cell, which is usually enough to get reasonable results:<br></p><ul><li>kpoints=4</li><li>supercell=3</li><li>k<sub>min</sub>=0.08 rlu<br></li></ul><p>More aggressive setting could be to use a k-points density of  (NK)<sup>3</sup> = 6750/atom:<br></p><ul><li>kpoints=5</li><li>supercell=4</li><li>k<sub>min</sub>=0.05 rlu<br></li></ul><p>The sqw_phonons builder automatically determines the best kpoints and supercell grid in order to achieve a k-points density higher than 1000/atom, which is usually satisfactory. However, some codes may then locally produce unstable (negative/imaginary) modes, especially close to the zone-center or high symmatry points. In this case, you may whish to use an other k-points/supercell set, using the 'kpoints' and 'supercell' options:<br></p><ul><li><font color="#3366ff">sqw_phonons</font>(..., <font color="#cc33cc">'kpoints=5; supercell=4'</font>, ...)</li></ul>Remember that the calculation time is proportional to the k-points density. So using the kpoints=4; supercell=3 is about 5 times faster as using kpoints=5; supercell=4.<br><ul>
-          <li>XC/PPS</li>
-          <li>Tolerance criteria and max number of iterations for SCF
-            convergence</li>
-          <li>Initial optimisation</li>
-          <li>Report generation during the calculation<br>
-          </li>
-        </ul>
-        <h3><a name="mozTocId438325" class="mozTocH3"></a>Plotting
-          results</h3>
-        <ul>
-          <li>requires initial evaluation on a BZ area<br>
-          </li>
-          <li>plot</li>
-          <li>plot3</li>
-          <li>slice<br>
-          </li>
-          <li>sqw_phonon_dos<br>
-          </li>
-          <li>sqw_kpath and its options (Bragg, k-list, BZ points)<br>
-          </li>
-          <li>sqw_thermochemistry</li><li>generating a report (during / after)</li>
-        </ul>
-        <h3><a name="mozTocId362621" class="mozTocH3"></a>Loading/saving
+        <h3><a name="mozTocId438325" class="mozTocH3"></a>Getting
+          results</h3><blockquote><p>Once a model has been created using the <i>sqw_phonons </i>call, it is possible to derive a number of physical quantities to estimate the quality of the lattice dynamics model. In the following, we assume the model has been transferred into a variable <i>'s'</i>.</p><p>For instance you may use:</p><ul><li><b>s=</b><font color="#3366ff">sqw_phonons</font>(<font color="#cc33cc">'POSCAR_Al'</font>,<font color="#cc33cc">'emt'</font>,<font color="#cc33cc">'metal'</font>)</li></ul>The result is a model of type <a href="iFunc.html">iFunc</a>, which has model parameters. As DFT models are <i>ab-initio</i>, they have very few adjustable parameters. The model evaluates the neutron scattering intensity, and has the following parameters:<br><blockquote>p(&nbsp;
+      1)=&nbsp; <b>Amplitude</b><br>p(&nbsp;
+      2)=&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      <b>Gamma</b>&nbsp; Damped Harmonic Oscillator width in energy
+      [meV]<br>p(&nbsp;
+      3)=&nbsp; <b>Background</b><br>p(&nbsp;
+      4)=&nbsp; <b>Temperature</b>&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      [K] used to compute the Bose factor <i>n(w)</i><br>
+p(&nbsp; 5)=&nbsp; <b>Energy_scaling</b><br></blockquote>The model energy width '<b>Gamma</b>' is the same for all modes. Any imaginary part in the mode frequencies is added to the width. The '<b>Energy_scaling</b>' parameter allows to <i>scale</i> the phonon spectrum in order to e.g. adapt it to measurements. All frequencies are then scaled by the same factor.<br><br>The object contains a lot of information in it's <i>UserData</i> area, such as:<br><ul><li><b>s.UserData.properties</b>: is a structure with many systematic quantities extracted from the DFT calculation: energies, magnetic moment, chemical stuff, structure, ...</li><li><b>s.UserData.configuration</b>: holds the initial configuration used</li><li><b>s.UserData.options</b>: the 'options' used for the calculation (e.g. DFT stuff)<br></li><li><b>s.UserData.FORCES</b>: a dump of the force constants</li></ul>and as soon as the model is being used, other quantities get available:<br><ul><li><b>s.UserData.maxFreq</b>: the maximal energy of the phonon modes</li><li><b>s.UserData.DOS</b>: the vibrational density of states (see below, iData object)</li><li><b>s.UserData.FREQ</b>: mode frequencies from the last evaluation (limited to 10<sup>5</sup> HKL locations)</li><li><b>s.UserData.POLAR</b>: mode polarisation vectors (limited to 10<sup>5</sup> HKL locations)</li><li><b>s.UserData.HKL</b>: the HKL locations used for the last evaluation (limited to 10<sup>5</sup> HKL locations)</li></ul></blockquote>
+        <h4><a name="mozTocId370236" class="mozTocH4"></a>Vibrational density of states (vDOS)</h4><blockquote>The coherent vibrational density of states (aka phonon or frequency spectrum) is defined as, for each mode energy <i>&#969;</i>, the number of phonon modes lying
+    within a frequency [<i>&#969;</i>-d<i>&#969;</i> : <i>&#969;</i>+d<i>&#969;</i>] for
+    all wavevectors. The density of states is normalised to the total number of modes:<br><div align="center">
+    &#8747;g(<i>&#969;</i>) d<i>&#969;</i> = 3N<br></div>This computation is done with:<br><ul><li><font color="#3366ff">sqw_phonon_dos</font>(s)</li></ul>which also returns an iData object. When no output argument is specified, a plot is shown.<br></blockquote><h4><a name="mozTocId964599" class="mozTocH4"></a><a href="images/phonons/Models_Phonons_MgO_qe_thermo.png"><img src="images/phonons/Models_Phonons_MgO_qe_thermo.png" title="MgO_qe_thermo" alt="MgO_qe_thermo" border="0" align="right" width="200" height="150"></a>Thermo-chemistry basic quantities (vDOS,F,U,S,Cv)</h4><blockquote>In a similar way as for the vDOS above, the:<br><ul><li><font color="#3366ff">sqw_thermochemistry</font>(s)</li></ul>call computes the internal energy U, entropy S, Helmholtz_energy F, heat
+                capacity Cv, and also returns the DOS.These are returned in a structure. When no output argument is specified, a multi-panel plot is shown.<br></blockquote><h4><a name="mozTocId216396" class="mozTocH4"></a>Phonon dispersion along principal axes</h4><ul>
+          </ul><blockquote><a href="images/phonons/Models_Phonons_MgO_qe_kpath.png"><img src="images/phonons/Models_Phonons_MgO_qe_kpath.png" title="MgO_qe_kpath" alt="MgO_qe_kpath" border="0" align="right" width="200" height="150"></a>It is possible to evaluate and plot the phonon frequencies evaluated along the high symmetry directions in the Brillouin zone (BZ). In addition, the neutron intensity is also calculated with:<br><ul><li><font color="#3366ff">sqw_kpath</font>(s)</li></ul>When no output argument is specified, a multi-panel plot is shown.<br>By default, the space group of the crystal is used to determine the high symmetry points of the BZ. However, you may specify as second argument, e.g.:<br><ul><li>a Bravais lattice type such as any of 'Cubic', 'Hexagonal','Trigonal', 'Tetragonal','Orthorhombic', 'Monoclinic','Triclinic', 'fcc','bcc'</li><li>a set of high symmetry points for the lattice space group (see <a href="https://en.wikipedia.org/wiki/Brillouin_zone">here</a>), such as {'Gamma' 'K' 'M' 'Gamma' 'A' 'H' 'L' 'A' }</li><li>a Bragg point (which changes the neutron intensity), such as [0 0 1]. By default the [0 0 0] BZ is used, so that in principle transverse modes have a null neutron intensity.</li><li>a set of HKL locations which define lines to follow in between, such as [0 0 0 ; 1 1 1 ; 1 1 0 ; 0 0 0 ; 0 0 1]. This allows any path in the BZ.<br></li></ul>In case you wish to change the space group setting, assign a new value, e.g.:<br><ul><li>s.UserData.properties.spacegroup_number = 225;<br></li></ul></blockquote><h4><a name="mozTocId890089" class="mozTocH4"></a>Report generation after the calculation</h4><blockquote>As explained <a href="#mozTocId379680">above</a>, it is possible to generate a human readable document containing most of the results, using e.g.:<br>
+<ul><li><font color="#3366ff">sqw_phonons</font>( s , <font color="#cc33cc">'report'</font>)</li></ul>
+Once done, open the report following the link printed in the command window, or using e.g.:<br><ul><li><font color="#3366ff">web</font>( s.UserData.options.report )</li></ul></blockquote><h4><a name="mozTocId401231" class="mozTocH4"></a>Phonon dispersion rendering in 3D</h4>In order to render the vibrational modes in an HKL volume, e.g. a full block of the Brillouin zone, it is necessary to first evaluate the model on an area. This requires in principle to define ranges along the H,K,L (in rlu) and energy (in meV) axes which define the 4D space where phonons dispersions exist.<br><br>The type of evaluation depends on how the HKLE locations are given:<br>
+<ul><li>When all axes are given as vectors of same orientation <i>and</i>
+        same length, the HKLE set is assumed to be list of 'events'.</li><li>When the H K L axes are vectors of same length/orientation,
+        the HKL locations is assumed to be a q-path in the BZ, but the E
+        (energy) axis can be of different length/orientation to compute
+        the Model along (q,E) path, resulting in a 2D object. Typically,
+        the <b>sqw_kpath</b> function does this, to provide the phonon
+        dispersion curve along principal directions.</li><li>When the H K L E axes are given as mixed orientations/length,
+        as vectors or matrices, the Model evaluation is done on a HKLE
+        cube, which is well suited to visualize the whole dispersion
+        surfaces. <b>In the example below</b>, <i>ql</i> has a
+        different orientation (it is transposed) as <i>qh</i> and <i>qk</i>,
+        which triggers a 4D HKLE cube evaluation. <br></li></ul>
+The HKLE range is usually specified as a vector in reciprocal lattice units [rlu] spanning over 0.5 or 1 unit. It can be centered around 0, or shifted towards a specific BZ center (Bragg point), for instance from -0.5 to 0.5 rlu on all reciprocal axes, and up to 50 meV, all with a binning of 50 steps:<br><ul><li><b>qh</b>=<font color="#3366ff">linspace</font>(-0.5, .5, 50); <b>qk</b>=qh; <b>ql</b>=qh; <b>w</b>=<font color="#3366ff">linspace</font>(0.01, 50, 51);</li></ul>Then we evaluate the model, transposing the L axis (we then write <b>ql'</b> where <b>'</b> is the transpose operator) so that we&nbsp; have mixed orientations and define a 'cube':<br><ul><li>f=<font color="#3366ff">iData</font>(s, [], qh,qk,<b>ql'</b>, w);<i>% evaluate model into an iData</i>.</li></ul>The [] stands for the model parameters, which are requested to be used as is (automatic). One could specify as well a vector with the 5 values for the model parameters. The evaluation usually takes a few seconds for 10<sup>5</sup> HKL locations, but this of course depends on the number of phonon modes.<br><br>The resulting variable 'f' is a data set of type <a href="iData.html">iData</a>. It can be rendered as a volumetric plot in 3D, but still requires to reduce the dimensionality from 4D to 3D for this purpose. In this example, we wish to select the QH=0 plane, and plot the 0KLE cube. <br><br>As the <b>qh</b> variable is centered around 0, and has 50 values, we shall plot a slice of 'f' with the <b>25-th</b> value for qh (in the middle from -0.5 to 0.5 as defined above). The other axes are used as is, specified using the <b>:</b> symbol (whole range). And we use the simple 'plot' command using the log of the intensity:<br><ul><li><font color="#3366ff">plot</font>(<font color="#3366ff">log</font>(f(25,:,:,:)))<a href="images/phonons/Models_Phonons_Al_emt_plot3.png"><img src="images/phonons/Models_Phonons_Al_emt_plot3.png" title="Al_emt_plot3" alt="Al_emt_plot3" border="0" align="right" width="200" height="150"></a></li></ul>To rotate the volume, use the 'rotate' icon in the toolbar (an arrow on a circle). Other <a href="Plot.html">plot</a> types can be used, such as:<br><ul><li>the <font color="#3366ff">plot3</font> method which shows a fille volume with colors, e.g. <font color="#3366ff">plot</font>3(<font color="#3366ff">log</font>(f(25,:,:,:)))</li><li>the <font color="#3366ff">slice</font> method which allows an interactive volume exploration, e.g. <font color="#3366ff">slice</font>(<font color="#3366ff">log</font>(f(25,:,:,:))). Click and move the mouse over the lower color scale to change the equi-intensity value, and click on the side axes to select a volume cut. Defined iso-surfaces and cuts can be moved and stacked. De-select the rorate tool in order to act on iso-surfaces and cuts.<br></li></ul><h3><a name="mozTocId362621" class="mozTocH3"></a>Loading/saving
           your work</h3>
         <ul>
           <li>loading an initial structure (file)</li>
@@ -767,19 +934,19 @@
         QuantumEspresso and AbInit calculators are the fastest.<br>
         <br>
         Results with different DFT codes<br>
-        <table width="1102" height="541" cellspacing="2" cellpadding="2" border="1">
+        <table border="1" width="1102" cellspacing="2" cellpadding="2" height="541">
           <tbody>
             <tr>
-              <td valign="top" bgcolor="#ffffcc"><b>Code</b><br>
+              <td bgcolor="#ffffcc" valign="top"><b>Code</b><br>
               </td>
-              <td valign="top" bgcolor="#ffffcc"><b>computation time <br>
+              <td bgcolor="#ffffcc" valign="top"><b>computation time <br>
                   (24 cores, 2.7 GHz)</b><br>
                 <br>
               </td>
-              <td valign="top" bgcolor="#ffffcc"><b>sqw_kpath(s)</b></td>
-              <td valign="top" bgcolor="#ffffcc"><b>sqw_thermochemistry(s)</b><b><br>
+              <td bgcolor="#ffffcc" valign="top"><b>sqw_kpath(s)</b></td>
+              <td bgcolor="#ffffcc" valign="top"><b>sqw_thermochemistry(s)</b><b><br>
                 </b></td>
-              <td valign="top" bgcolor="#ffffcc"><b>plot3(log10(f(1,:,:,:)))
+              <td bgcolor="#ffffcc" valign="top"><b>plot3(log10(f(1,:,:,:)))
 
 
 
@@ -793,7 +960,7 @@
                 </b>with <i>qh=0.01:0.5:1.5;qk=qh; ql=qh;
                   w=0.01:0.5:51;</i><i><br>
                 </i><i>f=s([], qh,qk,ql',w);</i></td>
-              <td valign="top" bgcolor="#ffffcc"><b>command:<br>
+              <td bgcolor="#ffffcc" valign="top"><b>command:<br>
                   s=</b><font color="#3366ff">sqw_phonons</font>(<font color="#cc33cc">'POSCAR_Al',</font></td>
             </tr>
             <tr>
@@ -807,7 +974,7 @@
               </td>
               <td valign="top"><br>
               </td>
-              <td valign="top"><a href="http://www.computingformaterials.com/phoncfm/3fig/refer/al1.gif"><img alt="al1" title="al1" src="http://www.computingformaterials.com/phoncfm/3fig/refer/al1.gif" width="200" height="133" border="0"></a><br>
+              <td valign="top"><a href="http://www.computingformaterials.com/phoncfm/3fig/refer/al1.gif"><img alt="al1" title="al1" src="http://www.computingformaterials.com/phoncfm/3fig/refer/al1.gif" border="0" width="200" height="133"></a><br>
               </td>
               <td valign="top"><br>
               </td>
@@ -817,70 +984,70 @@
               </td>
             </tr>
             <tr>
-              <td valign="top" bgcolor="#ffcccc"><b>QuantumEspresso</b><b>
+              <td bgcolor="#ffcccc" valign="top"><b>QuantumEspresso</b><b>
                   / SSSP</b></td>
               <td valign="top">87<br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_Al_qe_kpath.png"><img alt="Al_qe_kpath" title="Al_qe_kpath" src="images/phonons/Models_Phonons_Al_qe_kpath.png" width="200" height="150" border="0"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_qe_kpath.png"><img alt="Al_qe_kpath" title="Al_qe_kpath" src="images/phonons/Models_Phonons_Al_qe_kpath.png" border="0" width="200" height="150"></a><br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_Al_qe_thermo.png"><img alt="Al_qe_thermo" title="Al_qe_thermo" src="images/phonons/Models_Phonons_Al_qe_thermo.png" width="200" height="150" border="0"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_qe_thermo.png"><img alt="Al_qe_thermo" title="Al_qe_thermo" src="images/phonons/Models_Phonons_Al_qe_thermo.png" border="0" width="200" height="150"></a><br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_Al_qe_plot3.png"><img alt="Al_qe_plot3" title="Al_qe_plot3" src="images/phonons/Models_Phonons_Al_qe_plot3.png" width="200" height="150" border="0"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_qe_plot3.png"><img alt="Al_qe_plot3" title="Al_qe_plot3" src="images/phonons/Models_Phonons_Al_qe_plot3.png" border="0" width="200" height="150"></a><br>
               </td>
               <td valign="top"><font color="#cc33cc">'qe','metal'</font>)</td>
             </tr>
             <tr>
-              <td valign="top" bgcolor="#ffcccc"><b>VASP (4.6)</b><b> /
+              <td bgcolor="#ffcccc" valign="top"><b>VASP (4.6)</b><b> /
                   PAW PBE</b></td>
               <td valign="top">525<br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_Al_vasp_kpath.png"><img alt="Al_vasp_kpath" title="Al_vasp_kpath" src="images/phonons/Models_Phonons_Al_vasp_kpath.png" width="200" height="150" border="0"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_vasp_kpath.png"><img alt="Al_vasp_kpath" title="Al_vasp_kpath" src="images/phonons/Models_Phonons_Al_vasp_kpath.png" border="0" width="200" height="150"></a><br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_Al_vasp_thermo.png"><img alt="Al_vasp_thermo" title="Al_vasp_thermo" src="images/phonons/Models_Phonons_Al_vasp_thermo.png" width="200" height="150" border="0"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_vasp_thermo.png"><img alt="Al_vasp_thermo" title="Al_vasp_thermo" src="images/phonons/Models_Phonons_Al_vasp_thermo.png" border="0" width="200" height="150"></a><br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_Al_vasp_plot3.png"><img alt="Al_vasp_plot3" title="Al_vasp_plot3" src="images/phonons/Models_Phonons_Al_vasp_plot3.png" width="200" height="150" border="0"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_vasp_plot3.png"><img alt="Al_vasp_plot3" title="Al_vasp_plot3" src="images/phonons/Models_Phonons_Al_vasp_plot3.png" border="0" width="200" height="150"></a><br>
               </td>
               <td valign="top"><font color="#cc33cc">'vasp','metal'</font>)</td>
             </tr>
             <tr>
-              <td valign="top" bgcolor="#ffcccc"><b>Elk</b><b><br>
+              <td bgcolor="#ffcccc" valign="top"><b>Elk</b><b><br>
                 </b> </td>
               <td valign="top">9820<br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_Al_elk_kpath.png"><img alt="Al_elk_kpath" title="Al_elk_kpath" src="images/phonons/Models_Phonons_Al_elk_kpath.png" width="200" height="150" border="0"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_elk_kpath.png"><img alt="Al_elk_kpath" title="Al_elk_kpath" src="images/phonons/Models_Phonons_Al_elk_kpath.png" border="0" width="200" height="150"></a><br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_Al_elk_thermo.png"><img alt="Al_emlk_thermo" title="Al_elk_thermo" src="images/phonons/Models_Phonons_Al_elk_thermo.png" width="200" height="150" border="0"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_elk_thermo.png"><img alt="Al_emlk_thermo" title="Al_elk_thermo" src="images/phonons/Models_Phonons_Al_elk_thermo.png" border="0" width="200" height="150"></a><br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_Al_elk_plot3.png"><img alt="Al_elk_plot3" title="Al_elk_plot3" src="images/phonons/Models_Phonons_Al_elk_plot3.png" width="200" height="150" border="0"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_elk_plot3.png"><img alt="Al_elk_plot3" title="Al_elk_plot3" src="images/phonons/Models_Phonons_Al_elk_plot3.png" border="0" width="200" height="150"></a><br>
               </td>
               <td valign="top"><font color="#cc33cc">'elk','metal'</font>)</td>
             </tr>
             <tr>
-              <td valign="top" bgcolor="#ffcccc"><b>EMT</b><b><br>
+              <td bgcolor="#ffcccc" valign="top"><b>EMT</b><b><br>
                 </b> </td>
               <td valign="top">1<br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_Al_emt_kpath.png"><img alt="Al_emt_kpath" title="Al_emt_kpath" src="images/phonons/Models_Phonons_Al_emt_kpath.png" width="200" height="150" border="0"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_emt_kpath.png"><img alt="Al_emt_kpath" title="Al_emt_kpath" src="images/phonons/Models_Phonons_Al_emt_kpath.png" border="0" width="200" height="150"></a><br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_Al_emt_thermo.png"><img alt="Al_emt_thermo" title="Al_emt_thermo" src="images/phonons/Models_Phonons_Al_emt_thermo.png" width="200" height="150" border="0"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_emt_thermo.png"><img alt="Al_emt_thermo" title="Al_emt_thermo" src="images/phonons/Models_Phonons_Al_emt_thermo.png" border="0" width="200" height="150"></a><br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_Al_emt_plot3.png"><img alt="Al_emt_plot3" title="Al_emt_plot3" src="images/phonons/Models_Phonons_Al_emt_plot3.png" width="200" height="150" border="0"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_emt_plot3.png"><img alt="Al_emt_plot3" title="Al_emt_plot3" src="images/phonons/Models_Phonons_Al_emt_plot3.png" border="0" width="200" height="150"></a><br>
               </td>
               <td valign="top"><font color="#cc33cc">'emt','metal'</font>)<br>
                 only for limited elements<br>
               </td>
             </tr>
             <tr>
-              <td valign="top" bgcolor="#ffcccc"><b>ABINIT&nbsp; / GGA
+              <td bgcolor="#ffcccc" valign="top"><b>ABINIT&nbsp; / GGA
                   FHI</b><b><br>
                 </b> </td>
               <td valign="top">78<br>
               </td>
-              <td valign="top"> <a href="images/phonons/Models_Phonons_Al_abinit_kpath.png"><img alt="Al_abinit_kpath" title="Al_abinit_kpath" src="images/phonons/Models_Phonons_Al_abinit_kpath.png" width="200" height="150" border="0"></a><br>
+              <td valign="top"> <a href="images/phonons/Models_Phonons_Al_abinit_kpath.png"><img alt="Al_abinit_kpath" title="Al_abinit_kpath" src="images/phonons/Models_Phonons_Al_abinit_kpath.png" border="0" width="200" height="150"></a><br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_thermo.png"><img alt="Al_abinit_thermo" title="Al_abinit_thermo" src="images/phonons/Models_Phonons_Al_abinit_thermo.png" width="200" height="150" border="0"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_thermo.png"><img alt="Al_abinit_thermo" title="Al_abinit_thermo" src="images/phonons/Models_Phonons_Al_abinit_thermo.png" border="0" width="200" height="150"></a><br>
               </td>
-              <td valign="top"> <a href="images/phonons/Models_Phonons_Al_abinit_plot3.png"><img alt="Al_abinit_plot3" title="Al_abinit_plot3" src="images/phonons/Models_Phonons_Al_abinit_plot3.png" width="200" height="150" border="0"></a><br>
+              <td valign="top"> <a href="images/phonons/Models_Phonons_Al_abinit_plot3.png"><img alt="Al_abinit_plot3" title="Al_abinit_plot3" src="images/phonons/Models_Phonons_Al_abinit_plot3.png" border="0" width="200" height="150"></a><br>
               </td>
               <td valign="top"><font color="#cc33cc">'abinit','metal'</font>)
                 <i><br>
@@ -888,53 +1055,53 @@
               </td>
             </tr>
             <tr>
-              <td valign="top" bgcolor="#ffcccc"><b>ABINIT / PAW (GBRV)</b><b><br>
+              <td bgcolor="#ffcccc" valign="top"><b>ABINIT / PAW (GBRV)</b><b><br>
                 </b> </td>
               <td valign="top">87<br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_paw_kpath.png"><img alt="Al_abinit_paw_kpath" title="Al_abinit_paw_kpath" src="images/phonons/Models_Phonons_Al_abinit_paw_kpath.png" width="200" height="150" border="0"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_paw_kpath.png"><img alt="Al_abinit_paw_kpath" title="Al_abinit_paw_kpath" src="images/phonons/Models_Phonons_Al_abinit_paw_kpath.png" border="0" width="200" height="150"></a><br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_paw_thermo.png"><img alt="Al_abinit_paw_thermo" title="Al_abinit_paw_thermo" src="images/phonons/Models_Phonons_Al_abinit_paw_thermo.png" width="200" height="150" border="0"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_paw_thermo.png"><img alt="Al_abinit_paw_thermo" title="Al_abinit_paw_thermo" src="images/phonons/Models_Phonons_Al_abinit_paw_thermo.png" border="0" width="200" height="150"></a><br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_paw_plot3.png"><img alt="Al_abinit_paw_plot3" title="Al_abinit_paw_plot3" src="images/phonons/Models_Phonons_Al_abinit_paw_plot3.png" width="200" height="150" border="0"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_paw_plot3.png"><img alt="Al_abinit_paw_plot3" title="Al_abinit_paw_plot3" src="images/phonons/Models_Phonons_Al_abinit_paw_plot3.png" border="0" width="200" height="150"></a><br>
               </td>
               <td valign="top"><font color="#cc33cc">'abinit','metal','pps=paw'</font>)</td>
             </tr>
             <tr>
-              <td valign="top" bgcolor="#ffcccc"><b>ABINIT / PAWXML
+              <td bgcolor="#ffcccc" valign="top"><b>ABINIT / PAWXML
                   (JTH)</b><b><br>
                 </b> </td>
               <td valign="top">84<br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_pawxml_kpath.png"><img alt="Al_abinit_pawxml_kpath" title="Al_abinit_pawxml_kpath" src="images/phonons/Models_Phonons_Al_abinit_pawxml_kpath.png" width="200" height="150" border="0"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_pawxml_kpath.png"><img alt="Al_abinit_pawxml_kpath" title="Al_abinit_pawxml_kpath" src="images/phonons/Models_Phonons_Al_abinit_pawxml_kpath.png" border="0" width="200" height="150"></a><br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_pawxml_thermo.png"><img alt="Al_abinit_pawxml_thermo" title="Al_abinit_pawxml_thermo" src="images/phonons/Models_Phonons_Al_abinit_pawxml_thermo.png" width="200" height="150" border="0"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_pawxml_thermo.png"><img alt="Al_abinit_pawxml_thermo" title="Al_abinit_pawxml_thermo" src="images/phonons/Models_Phonons_Al_abinit_pawxml_thermo.png" border="0" width="200" height="150"></a><br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_pawxml_plot3.png"><img alt="Al_abinit_pawxml_plot3" title="Al_abinit_pawxml_plot3" src="images/phonons/Models_Phonons_Al_abinit_pawxml_plot3.png" width="200" height="150" border="0"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_pawxml_plot3.png"><img alt="Al_abinit_pawxml_plot3" title="Al_abinit_pawxml_plot3" src="images/phonons/Models_Phonons_Al_abinit_pawxml_plot3.png" border="0" width="200" height="150"></a><br>
               </td>
               <td valign="top"><font color="#cc33cc">'abinit','metal','pps=pawxml'</font>)</td>
             </tr>
             <tr>
-              <td valign="top" bgcolor="#ffcccc"><b>ABINIT / HGH</b><b><br>
+              <td bgcolor="#ffcccc" valign="top"><b>ABINIT / HGH</b><b><br>
                 </b> </td>
               <td valign="top">64<br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_hgh_kpath.png"><img alt="Al_abinit_hgh_kpath" title="Al_abinit_hgh_kpath" src="images/phonons/Models_Phonons_Al_abinit_hgh_kpath.png" width="200" height="150" border="0"></a> </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_hgh_thermo.png"><img alt="Al_abinit_hgh_thermo" title="Al_abinit_hgh_thermo" src="images/phonons/Models_Phonons_Al_abinit_hgh_thermo.png" width="200" height="150" border="0"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_hgh_kpath.png"><img alt="Al_abinit_hgh_kpath" title="Al_abinit_hgh_kpath" src="images/phonons/Models_Phonons_Al_abinit_hgh_kpath.png" border="0" width="200" height="150"></a> </td>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_hgh_thermo.png"><img alt="Al_abinit_hgh_thermo" title="Al_abinit_hgh_thermo" src="images/phonons/Models_Phonons_Al_abinit_hgh_thermo.png" border="0" width="200" height="150"></a><br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_hgh_plot3.png"><img alt="Al_abinit_hgh_plot3" title="Al_abinit_hgh_plot3" src="images/phonons/Models_Phonons_Al_abinit_hgh_plot3.png" width="200" height="150" border="0"></a> </td>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_hgh_plot3.png"><img alt="Al_abinit_hgh_plot3" title="Al_abinit_hgh_plot3" src="images/phonons/Models_Phonons_Al_abinit_hgh_plot3.png" border="0" width="200" height="150"></a> </td>
               <td valign="top"><font color="#cc33cc">'abinit','metal','pps=hgh'</font>)</td>
             </tr>
             <tr>
-              <td valign="top" bgcolor="#ffcccc"><b>ABINIT / TM</b><b><br>
+              <td bgcolor="#ffcccc" valign="top"><b>ABINIT / TM</b><b><br>
                 </b> </td>
               <td valign="top">73<br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_tm_kpath.png"><img alt="Al_abinit_tm_kpath" title="Al_abinit_tm_kpath" src="images/phonons/Models_Phonons_Al_abinit_tm_kpath.png" width="200" height="150" border="0"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_tm_kpath.png"><img alt="Al_abinit_tm_kpath" title="Al_abinit_tm_kpath" src="images/phonons/Models_Phonons_Al_abinit_tm_kpath.png" border="0" width="200" height="150"></a><br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_tm_thermo.png"><img alt="Al_abinit_tm_thermo" title="Al_abinit_tm_thermo" src="images/phonons/Models_Phonons_Al_abinit_tm_thermo.png" width="200" height="150" border="0"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_tm_thermo.png"><img alt="Al_abinit_tm_thermo" title="Al_abinit_tm_thermo" src="images/phonons/Models_Phonons_Al_abinit_tm_thermo.png" border="0" width="200" height="150"></a><br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_tm_plot3.png"><img alt="Al_abinit_tm_plot3" title="Al_abinit_tm_plot3" src="images/phonons/Models_Phonons_Al_abinit_tm_plot3.png" width="200" height="150" border="0"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_tm_plot3.png"><img alt="Al_abinit_tm_plot3" title="Al_abinit_tm_plot3" src="images/phonons/Models_Phonons_Al_abinit_tm_plot3.png" border="0" width="200" height="150"></a><br>
               </td>
               <td valign="top"><font color="#cc33cc">'abinit','metal','pps=tm'</font>)</td>
             </tr>
@@ -963,22 +1130,22 @@
         provide sensible results. QuantumEspresso is also very fast. Elk
         also provides reasonable results, including a fair density of
         states, but with a higher proportion of unstable modes, and is
-        much slower.<br>
+        much slower. Unfortunatly, ABINIT and other codes do not provide reliable results or fail.<br>
         <ul>
         </ul>
-        <table width="1102" height="541" cellspacing="2" cellpadding="2" border="1">
+        <table border="1" width="1102" cellspacing="2" cellpadding="2" height="541">
           <tbody>
             <tr>
-              <td valign="top" bgcolor="#ffffcc"><b>Code</b><br>
+              <td bgcolor="#ffffcc" valign="top"><b>Code</b><br>
               </td>
-              <td valign="top" bgcolor="#ffffcc"><b>computation time <br>
+              <td bgcolor="#ffffcc" valign="top"><b>computation time <br>
                   (24 cores, 2.7 GHz)</b><br>
                 <br>
               </td>
-              <td valign="top" bgcolor="#ffffcc"><b>sqw_kpath(s)</b></td>
-              <td valign="top" bgcolor="#ffffcc"><b>sqw_thermochemistry(s)</b><b><br>
+              <td bgcolor="#ffffcc" valign="top"><b>sqw_kpath(s)</b></td>
+              <td bgcolor="#ffffcc" valign="top"><b>sqw_thermochemistry(s)</b><b><br>
                 </b></td>
-              <td valign="top" bgcolor="#ffffcc"><b>plot3(log10(f(1,:,:,:)))
+              <td bgcolor="#ffffcc" valign="top"><b>plot3(log10(f(1,:,:,:)))
 
 
 
@@ -992,7 +1159,7 @@
                 </b>with <i>qh=0.01:0.5:1.5;qk=qh; ql=qh;
                   w=0.01:0.5:90;</i><i><br>
                 </i><i>f=s([], qh,qk,ql',w);</i></td>
-              <td valign="top" bgcolor="#ffffcc"><b>command:<br>
+              <td bgcolor="#ffffcc" valign="top"><b>command:<br>
                   s=</b><font color="#3366ff">sqw_phonons</font>(<font color="#cc33cc">'POSCAR_MgO',</font></td>
             </tr>
             <tr>
@@ -1008,118 +1175,70 @@
               </td>
               <td valign="top"><br>
               </td>
-              <td valign="top"><a href="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-1265-band.png"><img alt="mp-1265-band" title="mp-1265-band" src="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-1265-band.png" width="200" height="103" border="0"></a><br>
+              <td valign="top"><a href="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-1265-band.png"><img alt="mp-1265-band" title="mp-1265-band" src="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-1265-band.png" border="0" width="200" height="103"></a><br>
               </td>
-              <td valign="top"><a href="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-1265-tprops1.png"><img alt="mp-1265-tprops1" title="mp-1265-tprops1" src="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-1265-tprops1.png" width="200" height="133" border="0"></a><br>
+              <td valign="top"><a href="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-1265-tprops1.png"><img alt="mp-1265-tprops1" title="mp-1265-tprops1" src="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-1265-tprops1.png" border="0" width="200" height="133"></a><br>
               </td>
-              <td valign="top"><a href="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-1265-dos1.png"><img alt="mp-1265-dos1" title="mp-1265-dos1" src="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-1265-dos1.png" width="200" height="112" border="0"></a></td>
+              <td valign="top"><a href="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-1265-dos1.png"><img alt="mp-1265-dos1" title="mp-1265-dos1" src="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-1265-dos1.png" border="0" width="200" height="112"></a></td>
               <td valign="top"><br>
               </td>
             </tr>
-            <tr><td valign="top">Reference from p50 in <a href="http://dx.doi.org/10.1007/978-3-642-81347-4">Biltz &amp; Kress, Springer Series 10 (1979)</a><br></td><td valign="top"><br></td><td valign="top"><a href="/images/phonons/Models_Phonons_MgO_Bilz_kpath.png"><img src="images/phonons/Models_Phonons_MgO_Bilz_kpath.png" title="MgO_Bilz_kpat" alt="MgO_Bilz_kpat" width="200" height="152" border="0"></a><br></td><td valign="top"><br></td><td valign="top"><a href="images/phonons/Models_Phonons_MgO_Biltz_dos.png"><img src="images/phonons/Models_Phonons_MgO_Biltz_dos.png" title="MgO_Biltz_dos" alt="MgO_Biltz_dos" width="200" height="118" border="0"></a><br></td><td valign="top"><br></td></tr><tr>
-              <td valign="top" bgcolor="#ffcccc"><b>QuantumEspresso</b><b>
+            <tr><td valign="top">Reference from p50 in <a href="http://dx.doi.org/10.1007/978-3-642-81347-4">Biltz &amp; Kress, Springer Series 10 (1979)</a><br></td><td valign="top"><br></td><td valign="top"><a href="/images/phonons/Models_Phonons_MgO_Bilz_kpath.png"><img src="images/phonons/Models_Phonons_MgO_Bilz_kpath.png" title="MgO_Bilz_kpat" alt="MgO_Bilz_kpat" border="0" width="200" height="152"></a><br></td><td valign="top"><br></td><td valign="top"><a href="images/phonons/Models_Phonons_MgO_Biltz_dos.png"><img src="images/phonons/Models_Phonons_MgO_Biltz_dos.png" title="MgO_Biltz_dos" alt="MgO_Biltz_dos" border="0" width="200" height="118"></a><br></td><td valign="top"><br></td></tr><tr>
+              <td bgcolor="#ffcccc" valign="top"><b>QuantumEspresso</b><b>
                   / SSSP</b></td>
               <td valign="top">408<br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_qe_kpath.png"><img alt="MgO_qe_kpath" title="MgO_qe_kpath" src="images/phonons/Models_Phonons_MgO_qe_kpath.png" width="200" height="150" border="0"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_qe_kpath.png"><img alt="MgO_qe_kpath" title="MgO_qe_kpath" src="images/phonons/Models_Phonons_MgO_qe_kpath.png" border="0" width="200" height="150"></a><br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_qe_thermo.png"><img alt="MgO_qe_thermo" title="MgO_qe_thermo" src="images/phonons/Models_Phonons_MgO_qe_thermo.png" width="200" height="150" border="0"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_qe_thermo.png"><img alt="MgO_qe_thermo" title="MgO_qe_thermo" src="images/phonons/Models_Phonons_MgO_qe_thermo.png" border="0" width="200" height="150"></a><br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_qe_plot3.png"><img alt="MgO_qe_plot3" title="MgO_qe_plot3" src="images/phonons/Models_Phonons_MgO_qe_plot3.png" width="200" height="150" border="0"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_qe_plot3.png"><img alt="MgO_qe_plot3" title="MgO_qe_plot3" src="images/phonons/Models_Phonons_MgO_qe_plot3.png" border="0" width="200" height="150"></a><br>
               </td>
               <td valign="top"><font color="#cc33cc">'qe'</font>)</td>
             </tr>
             <tr>
-              <td valign="top" bgcolor="#ffcccc"><b>VASP (4.6)</b><b> /
+              <td bgcolor="#ffcccc" valign="top"><b>VASP (4.6)</b><b> /
                   PAW PBE</b></td>
               <td valign="top">636<br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_vasp_kpath.png"><img alt="MgO_vasp_kpath" title="MgO_vasp_kpath" src="images/phonons/Models_Phonons_MgO_vasp_kpath.png" width="200" height="150" border="0"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_vasp_kpath.png"><img alt="MgO_vasp_kpath" title="MgO_vasp_kpath" src="images/phonons/Models_Phonons_MgO_vasp_kpath.png" border="0" width="200" height="150"></a><br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_vasp_thermo.png"><img alt="MgO_vasp_thermo" title="MgO_vasp_thermo" src="images/phonons/Models_Phonons_MgO_vasp_thermo.png" width="200" height="150" border="0"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_vasp_thermo.png"><img alt="MgO_vasp_thermo" title="MgO_vasp_thermo" src="images/phonons/Models_Phonons_MgO_vasp_thermo.png" border="0" width="200" height="150"></a><br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_vasp_plot3.png"><img alt="MgO_vasp_plot3" title="MgO_vasp_plot3" src="images/phonons/Models_Phonons_MgO_vasp_plot3.png" width="200" height="150" border="0"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_vasp_plot3.png"><img alt="MgO_vasp_plot3" title="MgO_vasp_plot3" src="images/phonons/Models_Phonons_MgO_vasp_plot3.png" border="0" width="200" height="150"></a><br>
               </td>
               <td valign="top"><font color="#cc33cc">'vasp'</font>)</td>
             </tr>
             <tr>
-              <td valign="top" bgcolor="#ffcccc"><b>Elk</b><b><br>
+              <td bgcolor="#ffcccc" valign="top"><b>Elk</b><b><br>
                 </b></td>
               <td valign="top">2408<br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_elk_kpath.png"><img alt="MgO_elk_kpath" title="MgO_elk_kpath" src="images/phonons/Models_Phonons_MgO_elk_kpath.png" width="200" height="150" border="0"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_elk_kpath.png"><img alt="MgO_elk_kpath" title="MgO_elk_kpath" src="images/phonons/Models_Phonons_MgO_elk_kpath.png" border="0" width="200" height="150"></a><br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_elk_thermo.png"><img alt="MgO_elk_thermo" title="MgO_elk_thermo" src="images/phonons/Models_Phonons_MgO_elk_thermo.png" width="200" height="150" border="0"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_elk_thermo.png"><img alt="MgO_elk_thermo" title="MgO_elk_thermo" src="images/phonons/Models_Phonons_MgO_elk_thermo.png" border="0" width="200" height="150"></a><br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_elk_plot3.png"><img alt="MgO_elk_plot3" title="MgO_elk_plot3" src="images/phonons/Models_Phonons_MgO_elk_plot3.png" width="200" height="150" border="0"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_elk_plot3.png"><img alt="MgO_elk_plot3" title="MgO_elk_plot3" src="images/phonons/Models_Phonons_MgO_elk_plot3.png" border="0" width="200" height="150"></a><br>
               </td>
               <td valign="top"><font color="#cc33cc">'elk'</font>)</td>
             </tr>
+            
             <tr>
-              <td valign="top" bgcolor="#ffcccc">ABINIT&nbsp; / GGA FHI<br>
-              </td>
-              <td valign="top">41<br>
-              </td>
-              <td valign="top"> <a href="images/phonons/Models_Phonons_MgO_abinit_kpath.png"><img alt="MgO_abinit_kpath" title="MgO_abinit_kpath" src="images/phonons/Models_Phonons_MgO_abinit_kpath.png" width="200" height="150" border="0"></a><br>
-              </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_abinit_thermo.png"><img alt="MgO_abinit_thermo" title="MgO_abinit_thermo" src="images/phonons/Models_Phonons_MgO_abinit_thermo.png" width="200" height="150" border="0"></a><br>
-              </td>
-              <td valign="top"> <a href="images/phonons/Models_Phonons_MgO_abinit_plot3.png"><img alt="MgO_abinit_plot3" title="MgO_abinit_plot3" src="images/phonons/Models_Phonons_MgO_abinit_plot3.png" width="200" height="150" border="0"></a><br>
-              </td>
-              <td valign="top"><font color="#cc33cc">'abinit'</font>) <i><br>
-                  pps=fhi is the default</i><br>
-              </td>
-            </tr>
-            <tr>
-              <td valign="top" bgcolor="#ffcccc">ABINIT / PAW (GBRV)<br>
+              <td bgcolor="#ffcccc" valign="top">ABINIT / PAW (GBRV)<br><br><i><b>wrong</b></i><br>
               </td>
               <td valign="top">181<br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_abinit_paw_kpath.png"><img alt="MgO_abinit_paw_kpath" title="MgO_abinit_paw_kpath" src="images/phonons/Models_Phonons_MgO_abinit_paw_kpath.png" width="200" height="150" border="0"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_abinit_paw_kpath.png"><img alt="MgO_abinit_paw_kpath" title="MgO_abinit_paw_kpath" src="images/phonons/Models_Phonons_MgO_abinit_paw_kpath.png" border="0" width="200" height="150"></a><br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_abinit_paw_thermo.png"><img alt="MgO_abinit_paw_thermo" title="MgO_abinit_paw_thermo" src="images/phonons/Models_Phonons_MgO_abinit_paw_thermo.png" width="200" height="150" border="0"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_abinit_paw_thermo.png"><img alt="MgO_abinit_paw_thermo" title="MgO_abinit_paw_thermo" src="images/phonons/Models_Phonons_MgO_abinit_paw_thermo.png" border="0" width="200" height="150"></a><br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_abinit_paw_plot3.png"><img alt="MgO_abinit_paw_plot3" title="MgO_abinit_paw_plot3" src="images/phonons/Models_Phonons_MgO_abinit_paw_plot3.png" width="200" height="150" border="0"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_abinit_paw_plot3.png"><img alt="MgO_abinit_paw_plot3" title="MgO_abinit_paw_plot3" src="images/phonons/Models_Phonons_MgO_abinit_paw_plot3.png" border="0" width="200" height="150"></a><br>
               </td>
               <td valign="top"><font color="#cc33cc">'abinit','pps=paw'</font>)</td>
             </tr>
-            <tr>
-              <td valign="top" bgcolor="#ffcccc">ABINIT / PAWXML (JTH)<br>
-              </td>
-              <td valign="top">110<br>
-              </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_abinit_pawxml_kpath.png"><img alt="MgO_abinit_pawxml_kpath" title="MgO_abinit_pawxml_kpath" src="images/phonons/Models_Phonons_MgO_abinit_pawxml_kpath.png" width="200" height="150" border="0"></a><br>
-              </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_abinit_pawxml_thermo.png"><img alt="MgO_abinit_pawxml_thermo" title="MgO_abinit_pawxml_thermo" src="images/phonons/Models_Phonons_MgO_abinit_pawxml_thermo.png" width="200" height="150" border="0"></a><br>
-              </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_abinit_pawxml_plot3.png"><img alt="MgO_abinit_pawxml_plot3" title="MgO_abinit_pawxml_plot3" src="images/phonons/Models_Phonons_MgO_abinit_pawxml_plot3.png" width="200" height="150" border="0"></a><br>
-              </td>
-              <td valign="top"><font color="#cc33cc">'abinit','pps=pawxml'</font>)</td>
-            </tr>
-            <tr>
-              <td valign="top" bgcolor="#ffcccc">ABINIT / HGH<br>
-              </td>
-              <td valign="top">40<br>
-              </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_abinit_hgh_kpath.png"><img alt="MgO_abinit_hgh_kpath" title="MgO_abinit_hgh_kpath" src="images/phonons/Models_Phonons_MgO_abinit_hgh_kpath.png" width="200" height="150" border="0"></a> </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_abinit_hgh_thermo.png"><img alt="MgO_abinit_hgh_thermo" title="MgO_abinit_hgh_thermo" src="images/phonons/Models_Phonons_MgO_abinit_hgh_thermo.png" width="200" height="150" border="0"></a><br>
-              </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_abinit_hgh_plot3.png"><img alt="MgO_abinit_hgh_plot3" title="MgO_abinit_hgh_plot3" src="images/phonons/Models_Phonons_MgO_abinit_hgh_plot3.png" width="200" height="150" border="0"></a> </td>
-              <td valign="top"><font color="#cc33cc">'abinit','pps=hgh'</font>)</td>
-            </tr>
-            <tr>
-              <td valign="top" bgcolor="#ffcccc">ABINIT / TM<br>
-              </td>
-              <td valign="top">58<br>
-              </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_abinit_tm_kpath.png"><img alt="MgO_abinit_tm_kpath" title="MgO_abinit_tm_kpath" src="images/phonons/Models_Phonons_MgO_abinit_tm_kpath.png" width="200" height="150" border="0"></a><br>
-              </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_abinit_tm_thermo.png"><img alt="MgO_abinit_tm_thermo" title="MgO_abinit_tm_thermo" src="images/phonons/Models_Phonons_MgO_abinit_tm_thermo.png" width="200" height="150" border="0"></a><br>
-              </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_abinit_tm_plot3.png"><img alt="MgO_abinit_tm_plot3" title="MgO_abinit_tm_plot3" src="images/phonons/Models_Phonons_MgO_abinit_tm_plot3.png" width="200" height="150" border="0"></a><br>
-              </td>
-              <td valign="top"><font color="#cc33cc">'abinit','pps=tm'</font>)</td>
-            </tr>
+            
+            
+            
           </tbody>
         </table>
         <h3><a name="mozTocId339109" class="mozTocH3"></a>Phonons in
@@ -1139,22 +1258,22 @@
             uses 1500 eV.</li>
         </ul>
         <i><b>Outcome</b></i>: VASP and QE give similar results. QE is
-        faster. Other calculators provide crazy results.<br>
+        faster. Unfortunatly, other ABINIT does not provide reliable results. Other calculators provide questionable results or fail.<br>
         <ul>
         </ul>
-        <table width="1102" height="541" cellspacing="2" cellpadding="2" border="1">
+        <table border="1" width="1102" cellspacing="2" cellpadding="2" height="541">
           <tbody>
             <tr>
-              <td valign="top" bgcolor="#ffffcc"><b>Code</b><br>
+              <td bgcolor="#ffffcc" valign="top"><b>Code</b><br>
               </td>
-              <td valign="top" bgcolor="#ffffcc"><b>computation time <br>
+              <td bgcolor="#ffffcc" valign="top"><b>computation time <br>
                   (24 cores, 2.7 GHz)</b><br>
                 <br>
               </td>
-              <td valign="top" bgcolor="#ffffcc"><b>sqw_kpath(s)</b></td>
-              <td valign="top" bgcolor="#ffffcc"><b>sqw_thermochemistry(s)</b><b><br>
+              <td bgcolor="#ffffcc" valign="top"><b>sqw_kpath(s)</b></td>
+              <td bgcolor="#ffffcc" valign="top"><b>sqw_thermochemistry(s)</b><b><br>
                 </b></td>
-              <td valign="top" bgcolor="#ffffcc"><b>plot3(log10(f(1,:,:,:))
+              <td bgcolor="#ffffcc" valign="top"><b>plot3(log10(f(1,:,:,:))
 
 
 
@@ -1168,7 +1287,7 @@
                 </b>with <i>qh=0.01:0.5:1.50;qk=qh; ql=qh;
                   w=0.01:0.5:110;</i><i><br>
                 </i><i>f=s([], qh,qk,ql',w);</i></td>
-              <td valign="top" bgcolor="#ffffcc"><b>command:<br>
+              <td bgcolor="#ffffcc" valign="top"><b>command:<br>
                   s=</b><font color="#3366ff">sqw_phonons</font>(<font color="#cc33cc">'POSCAR_SrTiO3',</font></td>
             </tr>
             <tr>
@@ -1184,121 +1303,47 @@
               </td>
               <td valign="top"><br>
               </td>
-              <td valign="top"><a href="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-5229-band.png"><img alt="mp-5229-band" title="mp-5229-band" src="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-5229-band.png" width="200" height="83" border="0"></a><br>
+              <td valign="top"><a href="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-5229-band.png"><img alt="mp-5229-band" title="mp-5229-band" src="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-5229-band.png" border="0" width="200" height="83"></a><br>
               </td>
-              <td valign="top"><a href="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-5229-tprops.png"><img alt="mp-5229-tprops." title="mp-5229-tprops." src="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-5229-tprops.png" width="200" height="133" border="0"></a><br>
+              <td valign="top"><a href="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-5229-tprops.png"><img alt="mp-5229-tprops." title="mp-5229-tprops." src="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-5229-tprops.png" border="0" width="200" height="133"></a><br>
               </td>
-              <td valign="top"><a href="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-5229-dos1.png"><img alt="mp-5229-dos1" title="mp-5229-dos1" src="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-5229-dos1.png" width="200" height="112" border="0"></a><br>
+              <td valign="top"><a href="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-5229-dos1.png"><img alt="mp-5229-dos1" title="mp-5229-dos1" src="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-5229-dos1.png" border="0" width="200" height="112"></a><br>
               </td>
               <td valign="top"><br>
               </td>
             </tr>
-            <tr><td valign="top">Reference from p147 in <a href="http://dx.doi.org/10.1007/978-3-642-81347-4">Biltz &amp; Kress, Springer Series 10 (1979)</a></td><td valign="top"><br></td><td valign="top"><a href="images/phonons/Models_Phonons_SrTiO3_Biltz_kpath.png"><img src="images/phonons/Models_Phonons_SrTiO3_Biltz_kpath.png" title="SrTiO3_Biltz_kpath" alt="SrTiO3_Biltz_kpath" width="200" height="176" border="0"></a><br></td><td valign="top"><br></td><td valign="top"><a href="images/phonons/Models_Phonons_SrTiO3_Biltz_dos.png"><img src="images/phonons/Models_Phonons_SrTiO3_Biltz_dos.png" title="SrTiO3_Biltz_dos" alt="SrTiO3_Biltz_dos" width="200" height="116" border="0"></a><br></td><td valign="top"><br></td></tr><tr>
-              <td valign="top" bgcolor="#ffcccc"><b>QuantumEspresso</b><b>
+            <tr><td valign="top">Reference from p147 in <a href="http://dx.doi.org/10.1007/978-3-642-81347-4">Biltz &amp; Kress, Springer Series 10 (1979)</a></td><td valign="top"><br></td><td valign="top"><a href="images/phonons/Models_Phonons_SrTiO3_Biltz_kpath.png"><img src="images/phonons/Models_Phonons_SrTiO3_Biltz_kpath.png" title="SrTiO3_Biltz_kpath" alt="SrTiO3_Biltz_kpath" border="0" width="200" height="176"></a><br></td><td valign="top"><br></td><td valign="top"><a href="images/phonons/Models_Phonons_SrTiO3_Biltz_dos.png"><img src="images/phonons/Models_Phonons_SrTiO3_Biltz_dos.png" title="SrTiO3_Biltz_dos" alt="SrTiO3_Biltz_dos" border="0" width="200" height="116"></a><br></td><td valign="top"><br></td></tr><tr>
+              <td bgcolor="#ffcccc" valign="top"><b>QuantumEspresso</b><b>
                   / SSSP</b></td>
               <td valign="top">1410<br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_SrTiO3_qe_kpath.png"><img alt="SrTiO3_qe_kpath" title="SrTiO3_qe_kpath" src="images/phonons/Models_Phonons_SrTiO3_qe_kpath.png" width="200" height="150" border="0"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_SrTiO3_qe_kpath.png"><img alt="SrTiO3_qe_kpath" title="SrTiO3_qe_kpath" src="images/phonons/Models_Phonons_SrTiO3_qe_kpath.png" border="0" width="200" height="150"></a><br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_SrTiO3_qe_thermo.png"><img alt="SrTiO3_qe_thermo" title="SrTiO3_qe_thermo" src="images/phonons/Models_Phonons_SrTiO3_qe_thermo.png" width="200" height="150" border="0"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_SrTiO3_qe_thermo.png"><img alt="SrTiO3_qe_thermo" title="SrTiO3_qe_thermo" src="images/phonons/Models_Phonons_SrTiO3_qe_thermo.png" border="0" width="200" height="150"></a><br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_SrTiO3_qe_plot3.png"><img alt="SrTiO3_qe_plot3" title="SrTiO3_qe_plot3" src="images/phonons/Models_Phonons_SrTiO3_qe_plot3.png" width="200" height="150" border="0"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_SrTiO3_qe_plot3.png"><img alt="SrTiO3_qe_plot3" title="SrTiO3_qe_plot3" src="images/phonons/Models_Phonons_SrTiO3_qe_plot3.png" border="0" width="200" height="150"></a><br>
               </td>
               <td valign="top"><font color="#cc33cc">'qe'</font>)</td>
             </tr>
             <tr>
-              <td valign="top" bgcolor="#ffcccc"><b>VASP (4.6)</b><b> /
+              <td bgcolor="#ffcccc" valign="top"><b>VASP (4.6)</b><b> /
                   PAW PBE</b></td>
               <td valign="top">2560<br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_SrTiO3_vasp_kpath.png"><img alt="SrTiO3_vasp_kpath" title="SrTiO3_vasp_kpath" src="images/phonons/Models_Phonons_SrTiO3_vasp_kpath.png" width="200" height="150" border="0"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_SrTiO3_vasp_kpath.png"><img alt="SrTiO3_vasp_kpath" title="SrTiO3_vasp_kpath" src="images/phonons/Models_Phonons_SrTiO3_vasp_kpath.png" border="0" width="200" height="150"></a><br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_SrTiO3_vasp_thermo.png"><img alt="SrTiO3_vasp_thermo" title="SrTiO3_vasp_thermo" src="images/phonons/Models_Phonons_SrTiO3_vasp_thermo.png" width="200" height="150" border="0"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_SrTiO3_vasp_thermo.png"><img alt="SrTiO3_vasp_thermo" title="SrTiO3_vasp_thermo" src="images/phonons/Models_Phonons_SrTiO3_vasp_thermo.png" border="0" width="200" height="150"></a><br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_SrTiO3_vasp_plot3.png"><img alt="SrTiO3_vasp_plot3" title="SrTiO3_vasp_plot3" src="images/phonons/Models_Phonons_SrTiO3_vasp_plot3.png" width="200" height="150" border="0"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_SrTiO3_vasp_plot3.png"><img alt="SrTiO3_vasp_plot3" title="SrTiO3_vasp_plot3" src="images/phonons/Models_Phonons_SrTiO3_vasp_plot3.png" border="0" width="200" height="150"></a><br>
               </td>
               <td valign="top"><font color="#cc33cc">'vasp'</font>)</td>
             </tr>
-            <tr>
-              <td valign="top" bgcolor="#ffcccc">ABINIT&nbsp; / GGA FHI<b><br>
-                </b></td>
-              <td valign="top">165<br>
-              </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_SrTiO3_abinit_kpath.png"><img alt="SrTiO3_abinit_kpath" title="SrTiO3_abinit_kpath" src="images/phonons/Models_Phonons_SrTiO3_abinit_kpath.png" width="200" height="150" border="0"></a><br>
-              </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_SrTiO3_abinit_thermo.png"><img alt="SrTiO3_abinit_thermo" title="SrTiO3_abinit_thermo" src="images/phonons/Models_Phonons_SrTiO3_abinit_thermo.png" width="200" height="150" border="0"></a><br>
-              </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_SrTiO3_abinit_plot3.png"><img alt="SrTiO3_abinit_plot3" title="SrTiO3_abinit_plot3" src="images/phonons/Models_Phonons_SrTiO3_abinit_plot3.png" width="200" height="150" border="0"></a><br>
-              </td>
-              <td valign="top"><font color="#cc33cc">'abinit'</font>) <i><br>
-                  pps=fhi is the default</i><br>
-              </td>
-            </tr>
-            <tr>
-              <td valign="top" bgcolor="#ffcccc"><b>Elk</b><b><br>
-                </b></td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><font color="#cc33cc">'elk'</font>)</td>
-            </tr>
-            <tr>
-              <td valign="top" bgcolor="#ffcccc">ABINIT / PAW (GBRV)<br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><font color="#cc33cc">'abinit','pps=paw'</font>)</td>
-            </tr>
-            <tr>
-              <td valign="top" bgcolor="#ffcccc">ABINIT / PAWXML (JTH)<br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><font color="#cc33cc">'abinit'','pps=pawxml'</font>)</td>
-            </tr>
-            <tr>
-              <td valign="top" bgcolor="#ffcccc">ABINIT / HGH<br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><font color="#cc33cc">'abinit','pps=hgh'</font>)</td>
-            </tr>
-            <tr>
-              <td valign="top" bgcolor="#ffcccc">ABINIT / TM<br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><br>
-              </td>
-              <td valign="top"><font color="#cc33cc">'abinit','pps=tm'</font>)</td>
-            </tr>
+            
+            
+            
+            
+            
+            
           </tbody>
         </table>
         <h3><a name="mozTocId884775" class="mozTocH3"></a>Phonons in
@@ -1327,19 +1372,19 @@
         The computation reconstruction provides the same results as
         PhonoPy.<br>
         <br>
-        <table width="1102" height="541" cellspacing="2" cellpadding="2" border="1">
+        <table border="1" width="1102" cellspacing="2" cellpadding="2" height="541">
           <tbody>
             <tr>
-              <td valign="top" bgcolor="#ffffcc"><b>Code</b><br>
+              <td bgcolor="#ffffcc" valign="top"><b>Code</b><br>
               </td>
-              <td valign="top" bgcolor="#ffffcc"><b>computation time <br>
+              <td bgcolor="#ffffcc" valign="top"><b>computation time <br>
                   (24 cores, 2.7 GHz)</b><br>
                 <br>
               </td>
-              <td valign="top" bgcolor="#ffffcc"><b>sqw_kpath(s)</b></td>
-              <td valign="top" bgcolor="#ffffcc"><b>sqw_thermochemistry(s)</b><b><br>
+              <td bgcolor="#ffffcc" valign="top"><b>sqw_kpath(s)</b></td>
+              <td bgcolor="#ffffcc" valign="top"><b>sqw_thermochemistry(s)</b><b><br>
                 </b></td>
-              <td valign="top" bgcolor="#ffffcc"><b>plot3(log10(f(1,:,:,:))
+              <td bgcolor="#ffffcc" valign="top"><b>plot3(log10(f(1,:,:,:))
 
 
 
@@ -1363,22 +1408,22 @@
               </td>
               <td valign="top"><br>
               </td>
-              <td valign="top"><a href="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-755340-band.png"><img alt="mp-755340-band" title="mp-755340-band" src="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-755340-band.png" width="206" height="79" border="0"></a><br>
+              <td valign="top"><a href="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-755340-band.png"><img alt="mp-755340-band" title="mp-755340-band" src="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-755340-band.png" border="0" width="206" height="79"></a><br>
               </td>
-              <td valign="top"><a href="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-755340-tprops1.png"><img alt="mp-755340-tprop" title="mp-755340-tprop" src="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-755340-tprops1.png" width="200" height="133" border="0"></a><br>
+              <td valign="top"><a href="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-755340-tprops1.png"><img alt="mp-755340-tprop" title="mp-755340-tprop" src="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-755340-tprops1.png" border="0" width="200" height="133"></a><br>
               </td>
-              <td valign="top"><a href="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-755340-dos1.png"><img alt="mp-755340-dos1" title="mp-755340-dos1" src="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-755340-dos1.png" width="200" height="112" border="0"></a> </td>
+              <td valign="top"><a href="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-755340-dos1.png"><img alt="mp-755340-dos1" title="mp-755340-dos1" src="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-755340-dos1.png" border="0" width="200" height="112"></a> </td>
             </tr>
             <tr>
-              <td valign="top" bgcolor="#ffcccc"><b>VASP (4.6)</b><b> /
+              <td bgcolor="#ffcccc" valign="top"><b>VASP (4.6)</b><b> /
                   PAW PBE</b></td>
               <td valign="top">300 (reconstruction)<br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_Tb2SeO2_vasp_kpath.png"><img alt="Tb2SeO2_vasp_kpath" title="Tb2SeO2_vasp_kpath" src="images/phonons/Models_Phonons_Tb2SeO2_vasp_kpath.png" width="200" height="150" border="0"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Tb2SeO2_vasp_kpath.png"><img alt="Tb2SeO2_vasp_kpath" title="Tb2SeO2_vasp_kpath" src="images/phonons/Models_Phonons_Tb2SeO2_vasp_kpath.png" border="0" width="200" height="150"></a><br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_Tb2SeO2_vasp_thermo.png"><img alt="Tb2SeO2_vasp_thermo" title="Tb2SeO2_vasp_thermo" src="images/phonons/Models_Phonons_Tb2SeO2_vasp_thermo.png" width="200" height="150" border="0"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Tb2SeO2_vasp_thermo.png"><img alt="Tb2SeO2_vasp_thermo" title="Tb2SeO2_vasp_thermo" src="images/phonons/Models_Phonons_Tb2SeO2_vasp_thermo.png" border="0" width="200" height="150"></a><br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_Tb2SeO2_vasp_plot3.png"><img alt="Tb2SeO2_vasp_plot3" title="Tb2SeO2_vasp_plot3" src="images/phonons/Models_Phonons_Tb2SeO2_vasp_plot3.png" width="200" height="150" border="0"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Tb2SeO2_vasp_plot3.png"><img alt="Tb2SeO2_vasp_plot3" title="Tb2SeO2_vasp_plot3" src="images/phonons/Models_Phonons_Tb2SeO2_vasp_plot3.png" border="0" width="200" height="150"></a><br>
               </td>
             </tr>
           </tbody>
@@ -1392,7 +1437,7 @@
           italic;">E. Farhi - iFit/Phonon model - </span><span style="font-style: italic;"> $Date$ $Revision$ </span><span style="font-style: italic;"> </span>- back to <a href="index.html">Main iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France
             &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL,
             Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px
-            solid ; width: 53px; height: 50px;" width="182" height="171" align="right" border="0"></a><br>
+            solid ; width: 53px; height: 50px;" border="0" align="right" width="182" height="171"></a><br>
         <br>
       </div>
     </div>
