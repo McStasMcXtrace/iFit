@@ -332,7 +332,7 @@ function Phonon_Model = sqw_phonons_htmlreport_model(fid, options)
   try; save(Phonon_Model, fullfile(options.target,name), 'xml');  end
   try; save(Phonon_Model, fullfile(options.target,name), 'json'); end 
   try; save(Phonon_Model, fullfile(options.target,name), 'yaml'); end
-  save(Phonon_Model, fullfile(options.target,name), 'm');
+  try; save(Phonon_Model, fullfile(options.target,name), 'm');    end
   sqw_phonons_htmlreport_table(fid, options, 'Phonon_Model');
   
   fprintf(fid, '<p>Here is some additional information about the atom/molecule physical properties\n');
