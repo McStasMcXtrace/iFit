@@ -67,8 +67,8 @@ switch class(M)
                 J=num2str(M);
             else
                 s=size(M);
-                if (numel(M) == prod(size(M)) % horizontal or null vector
-                    J=['[',num2str(M(:)'),']']; % and of destroying dimensionality
+                if numel(s) == 2 && any(s == 1) % vector
+                    J=['[', val2str(M)  ,']']; % and of destroying dimensionality
                     J=regexprep(J,'\s+',',');
                 elseif length(s)==2 %2D solution
                     J='[';
@@ -77,7 +77,7 @@ switch class(M)
                     end
                     J(end)=']';
                 elseif length(s)>2 % for now treat higher dimensions as linear vectors
-                    J=['[',num2str(M(:)'),']']; % and of destroying dimensionality
+                    J=['[', val2str(M(:)') ,']']; % and of destroying dimensionality
                     J=regexprep(J,'\s+',',');
                 end
             end
@@ -95,3 +95,16 @@ if nargin>1 %save JSON result in file
     fprintf(fid,'%s',J);
     fclose(fid);
 end
+
+% ------------------------------------------------------------------------------
+function val = val2str(val)
+  s = size(val);
+  if numel(s) == 2 && s(1) == 1     % vector: horizontal
+    val = sprintf('%g ',val);
+  elseif numel(s) == 2 && s(2) == 1 % vector: vertical
+    val = sprintf('%g\n',val);
+  else
+    val = num2str(val);
+  end
+  
+          

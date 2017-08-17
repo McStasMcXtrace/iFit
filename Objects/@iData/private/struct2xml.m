@@ -213,8 +213,15 @@ function [str,succes] = val2str(val)
     elseif (ischar(val))
         %do nothing
     elseif (isnumeric(val))
+        s = size(val);
         try
-          val = num2str(val);
+          if numel(s) == 2 && s(1) == 1     % vector: horizontal
+            val = sprintf('%g ',val);
+          elseif numel(s) == 2 && s(2) == 1 % vector: vertical
+            val = sprintf('%g\n',val);
+          else
+            val = num2str(val);
+          end
         catch
           succes = false;
         end
