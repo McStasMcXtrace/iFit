@@ -216,7 +216,7 @@ else
   
   % test for Octopus
   status.octopus = '';
-  for calc={'octopus_mpi','octopus'}
+  for calc={'octopus','octopus_mpi'}
     % now test executable
     [st,result]=system([ precmd calc{1} ' -v' ]);
     if any(st == 0:2)

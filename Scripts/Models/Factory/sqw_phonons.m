@@ -338,7 +338,13 @@ if isa(configuration, 'iFunc') && configuration.Dimension == 4
 
   sqw_phonons_htmlreport('', 'create_atoms', options);
   sqw_phonons_htmlreport('', 'results', options);
-  sqw_phonons_htmlreport('', 'download', options);
+  filename = sqw_phonons_htmlreport('', 'download', options);
+
+  signal.UserData.options.report = filename;
+  signal.UserData.options.target = options.target;
+  if ~isempty(inputname(1))
+    assignin('caller',inputname(1),signal);
+  end
   return
 end
 
@@ -445,7 +451,7 @@ if isempty(dir(fullfile(target, 'atoms.pkl')))  % FATAL
   return
 end
 
-sqw_phonons_htmlreport('', 'create_atoms', options);
+options.report = sqw_phonons_htmlreport('', 'create_atoms', options);
 
 % ==============================================================================
 %                               BUILD MODEL (get calculator)
@@ -454,7 +460,7 @@ sqw_phonons_htmlreport('', 'create_atoms', options);
 
 % get the calculator
 % for QE, this triggers computation with sqw_phon()
-[decl, calc, signal] = sqw_phonons_calc(options, status, options.calculator, read);
+[decl, calc, signal,options] = sqw_phonons_calc(options, status, options.calculator, read);
 % return directly is the signal=iFunc has been created (QE case)
 if isempty(decl) && isempty(signal), return; end
 
