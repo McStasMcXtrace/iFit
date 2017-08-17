@@ -157,16 +157,10 @@ classdef YAML
                 result = java.lang.String(r);
             elseif builtin('isnumeric', r) && ~isscalar(r)
                 result = java.util.ArrayList();
-                if size(r,1)==1
-                    for i = 1:numel(r)
-                        if iscell(r)
-                            result.add(YAML.dump_data(r{i}));
-                        else
-                            result.add(YAML.dump_data(r(i)));
-                        end
-                    end
+                if isvector(r)
+                  result = java.lang.String(sprintf('%g ', r));
                 else
-                    for i = 1:size(r,1)
+                    for i = 1:size(r,1) % row by row (slow)
                         result.add(YAML.dump_data(r(i,:)));
                     end
                 end
