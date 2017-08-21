@@ -74,30 +74,23 @@
     Any expression can be entered, and an analysis of the parameters
     results in default parameter names. <br>
     <br>
-    It is also possible to create a model out of an <a
-      href="iData.html">iData</a> (data set) object. Then, the model
+    It is also possible to create a model out of an <a href="iData.html">iData</a> (data set) object. Then, the model
     parameters are the total intensity scaling, as well as an offset and
     a scaling factor per axis. In order to create a model from a data
     file, use:<br>
     <pre>	&gt;&gt; <font color="#3366ff">iFunc</font>(<font color="#3366ff">iData</font>(<font color="#cc33cc">'filename'</font>))</pre>
     will create a data set object and derive a model out of it.<br>
     <br>
-    You can then display the full content of the object with the <span
-      style="color: rgb(51, 102, 255);">disp</span> or <span
-      style="color: rgb(51, 102, 255);">get</span> methods :<br>
+    You can then display the full content of the object with the <span style="color: rgb(51, 102, 255);">disp</span> or <span style="color: rgb(51, 102, 255);">get</span> methods :<br>
     <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">disp</span>(a)<a href="images/iFunc_plot.png"><img alt="iFunc: plot" title="iFunc: plot" src="images/iFunc_plot.png" style="border: 0px solid; border: 0px solid; width: 300px; height: 267px;" align="right"></a><br>a = iFunc 1D model:<br>         <span style="font-weight: bold;">Expression: </span>signal = p(1)*x+p(2);<br>                Tag: 'iF193482'<br>               Date: '17-Jul-2012 10:49:50'<br>               Name: ' p(1)*x+p(2)'<br>         <span style="font-weight: bold;">Parameters: </span>{'Amplitude'  'Constant'}<br>          Dimension: 1<br>    ParameterValues: []<br>           UserData: ''<br><br>Parameters:<br>  p(  1)=           Amplitude<br>  p(  2)=            Constant<br><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(a)<br></pre>
-    A graphical representation of the model is obtained using the <span
-      style="color: rgb(51, 102, 255);">plot</span> method. <br>
+    A graphical representation of the model is obtained using the <span style="color: rgb(51, 102, 255);">plot</span> method. <br>
     <br>
-    Properties of the model can be obtained with the <span
-      style="color: rgb(51, 102, 255);">get</span> method, or with
+    Properties of the model can be obtained with the <span style="color: rgb(51, 102, 255);">get</span> method, or with
     direct indexing :<br>
     <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">get</span>(a, <span style="color: rgb(204, 51, 204);">'Expression'</span>)<br>&gt;&gt; a.Expression<br>ans =<br><br>signal = p(1)*x+p(2);<br><span style="color: rgb(51, 102, 255);"></span></pre>
     The <span style="font-weight: bold;">Expression</span> can be a
     character string returning the<span style="font-style: italic;">
-      'signal' </span>as a function of the parameters<span
-      style="font-style: italic;"> 'p' </span>and axes <span
-      style="font-style: italic;">x,y,z,t,u,v,w</span><br>
+      'signal' </span>as a function of the parameters<span style="font-style: italic;"> 'p' </span>and axes <span style="font-style: italic;">x,y,z,t,u,v,w</span><br>
     It can also be given as a function handle <span style="font-style:
       italic;">signal=@Expression(p, x,y, ...)</span>, which usually
     makes the model evaluation much faster.<br>
@@ -119,8 +112,7 @@
 
 
     <br>
-    The name of the parameters can be changed by accessing the <span
-      style="font-weight: bold;">Parameters</span> property (this is a
+    The name of the parameters can be changed by accessing the <span style="font-weight: bold;">Parameters</span> property (this is a
     cell of strings) :<br>
     <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);"></span>a.Parameters = {<span style="color: rgb(204, 51, 204);">'Slope','Constant'</span>}<br></pre>
     The <span style="font-weight: bold;">ParameterValues</span>
@@ -144,8 +136,7 @@
 
 
 
-    </span>This is a character string, vector or a function handle <span
-      style="font-style: italic;">p=@Guess(x,y,z, ..., signal)</span>.
+    </span>This is a character string, vector or a function handle <span style="font-style: italic;">p=@Guess(x,y,z, ..., signal)</span>.
     Values of the parameters left as <span style="font-style: italic;">NaN</span>
     indicate that the automatic guess procedure should be used (which is
     based upon a signal peak search, and baseline analysis). The Guess
@@ -184,15 +175,11 @@
     <p>Alternatively, it is possible to modify parameter values :<br>
     </p>
     <pre style="margin-left: 40px;">&gt;&gt; a.p(1) = 2;<br>&gt;&gt; a.Slope = 2;<br></pre>
-    <h4><a class="mozTocH4" name="mozTocId354273"></a> <span
-        style="font-weight: bold;">Defining a new model</span></h4>
+    <h4><a class="mozTocH4" name="mozTocId354273"></a> <span style="font-weight: bold;">Defining a new model</span></h4>
     <span style="font-weight: bold;">To define a new model</span> with a
     dialogue window, use:<br>
     <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">edit</span>(iFunc) <span style="font-style: italic;"></span></pre>
-    <a href="images/iFunc_subplot.png"><img alt="iFunc: subplot"
-        title="iFunc: subplot" src="images/iFunc_subplot.png"
-        style="border: 0px solid; width: 200px; height: 304px;"
-        align="right"></a>Refer to the dedicated help on this topic in
+    <a href="images/iFunc_subplot.png"><img alt="iFunc: subplot" title="iFunc: subplot" src="images/iFunc_subplot.png" style="border: 0px solid; width: 200px; height: 304px;" align="right"></a>Refer to the dedicated help on this topic in
     the <a href="Models.html">Models</a> page, which also lists
     pre-defined models (Gaussian, Lorentzian, exponential, lines,
     quadratic, ...). Edit their code to see how to define new models:<br>
@@ -205,14 +192,12 @@
     frame, or a set of panels (<span style="color: rgb(51, 102, 255);">subplot</span>)
     :<br>
     <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>([gauss lorz])<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">subplot</span>([gauss sine<span style="color: rgb(255, 0, 0);">.*</span>expon])	<span style="font-style: italic;">% use unary and binary operators, see below</span><br></pre>
-    <h3 style="text-align: center;"><a class="mozTocH3"
-        name="mozTocId966568"></a> Evaluating a model with parameter
+    <h3 style="text-align: center;"><a class="mozTocH3" name="mozTocId966568"></a> Evaluating a model with parameter
       values and axes</h3>
     The syntax for evaluating a model is<br>
     <br>
     <div style="margin-left: 40px;"><br>
-      <span style="font-weight: bold; font-style: italic;"><span
-          style="font-weight: bold; font-style: italic;">model(parameters)&nbsp;&nbsp;&nbsp;
+      <span style="font-weight: bold; font-style: italic;"><span style="font-weight: bold; font-style: italic;">model(parameters)&nbsp;&nbsp;&nbsp;
 
 
           &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
@@ -233,13 +218,12 @@
     where parameters can be a numerical vector, or a structure with
     named parameters matching the model ones, <i>x,y,z,t,u,v,w</i> are
     axes values for ranks 1,2,3... Additional arguments (above the model
-    dimensionality) are usable in the Expression as<span
-      style="font-style: italic;"> 'varargin' </span>cell. <br>
+    dimensionality) are usable in the Expression as<span style="font-style: italic;"> 'varargin' </span>cell. <br>
     <br>
     When the parameters are specified as empty ( [] ), current parameter
     values are used, or guessed. These parameters can also be given as a
     vector corresponding to the model parameter order, a string such as
-    <font color="#cc33cc">'Intentisy=1; Width=.5'</font>, a structure
+    <font color="#cc33cc">'Intensity=1; Width=.5'</font>, a structure
     with named fields and values such as:<br>
     <ul>
       <li>p.Intensity=1;</li>
@@ -253,10 +237,8 @@
     <pre style="margin-left: 40px;">&gt;&gt; signal = <span style="color: rgb(51, 102, 255);">feval</span>(gauss, [ 1 0 .1 0])<br>&gt;&gt; gauss([ 1 0 .1 0])		<span style="font-style: italic;">	% same as above: evaluate model</span>
 </pre>
     In this case, tentative axes are computed from the model definition.
-    Axes can also be passed as additional arguments for <span
-      style="font-style: italic;">x,y,z,...</span> either as separate
-    arguments, as a cell array {x,y,...}, as a structure, or as an <a
-      href="iData.html">iData</a> object which axes are used.<br>
+    Axes can also be passed as additional arguments for <span style="font-style: italic;">x,y,z,...</span> either as separate
+    arguments, as a cell array {x,y,...}, as a structure, or as an <a href="iData.html">iData</a> object which axes are used.<br>
     <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">feval</span>(gauss, [ 1 0 .1 0], <span style="color: rgb(51, 102, 255);">linspace</span>(-5,5, 100) )
 &gt;&gt; gauss([ 1 0 .1 0], <span style="color: rgb(51, 102, 255);">linspace</span>(-5,5, 100) )		<span style="font-style: italic;">% same as above: evaluate model</span><br></pre>
     When used together with <a href="iData.html">iData</a> objects, the
@@ -267,8 +249,7 @@
     <pre style="margin-left: 40px;">&gt;&gt; g=<font color="#3366ff">gauss</font>;<br>&gt;&gt; <font color="#3366ff">iData</font>(g, [1 0 .1 0], <span style="color: rgb(51, 102, 255);">linspace</span>(-5,5, 100), <font color="#3366ff">zeros</font>(1,100))	<i>% evaluate model into a new iData object<br></i></pre>
     It is also possible to evaluate the model while <b>scanning
       parameters</b>. To achieve that, the parameter values must be
-    given as a named structure, or as a string such as <font
-      color="#cc33cc">'Intensity=[ .5 1 1.5 2 ];'</font> <br>
+    given as a named structure, or as a string such as <font color="#cc33cc">'Intensity=[ .5 1 1.5 2 ];'</font> <br>
     <br>
     For instance, to scan the <i>Intensity</i> parameter in a Gaussian,
     and get the model value as an array of data sets, use:<br>
@@ -295,8 +276,7 @@
 
 
       and removing constraints on models</h3>
-    Models are often used for fitting purposes (refer to the <a
-      href="Fit.html">Fit</a> help page).<br>
+    Models are often used for fitting purposes (refer to the <a href="Fit.html">Fit</a> help page).<br>
     <br>
     To set a constraint on a model parameter, define the 'constraint'
     input argument when calling <span style="font-weight: bold;
@@ -304,8 +284,7 @@
     or set the constraint directly on the model parameters with:<br>
     <pre style="margin-left: 40px;">&gt;&gt; model.parameter=<span style="color: rgb(204, 51, 204);">'fix'</span>     <span style="font-style: italic;">% to lock its value during a fit process</span>. Same as mlock<br>&gt;&gt; model.parameter='<span style="color: rgb(204, 51, 204);">clear'</span>   <span style="font-style: italic;">% or <font color="#cc33cc">'free'</font> to unlock value during a fit process. Same as munlock</span>
 &gt;&gt; model.parameter=[min max] <span style="font-style: italic;">% to bound value</span><br>&gt;&gt; model.parameter=[min value max] <span style="font-style: italic;">% to bound the parameter</span> and set its value<br>&gt;&gt; model.parameter=[nan nan] <span style="font-style: italic;">% to remove bound constraint</span><br>&gt;&gt; model.parameter=<span style="color: rgb(204, 51, 204);">''</span>        <span style="font-style: italic;">% to remove all constraints on 'parameter'</span><br>&gt;&gt; model.parameter=<span style="color: rgb(204, 51, 204);">'expression'</span>        <span style="font-style: italic;">% to set the parameter from an expression</span> which can use '<i>p(n)</i>' for other parameters<br>&gt;&gt; model.Constraint=<span style="color: rgb(204, 51, 204);">''</span>       <span style="font-style: italic;">% to remove all constraints</span><br>&gt;&gt; model.Constraint = 0;     <span style="font-style: italic;">% to unlock/free all Parameters during a fit process<br></span>&gt;&gt; model.Constraint = 1;     <span style="font-style: italic;">% to lock/fix all Parameters during a fit process</span><br></pre>
-    Any parameter name surrounded by double quotes, e.g. <span
-      style="font-style: italic;">"Amplitude"</span>, is replaced by the
+    Any parameter name surrounded by double quotes, e.g. <span style="font-style: italic;">"Amplitude"</span>, is replaced by the
     corresponding <span style="font-style: italic;">p(n)</span> value
     in an expression used for setting a parameter value
     (cross-constraints). For instance<br>
@@ -328,8 +307,7 @@
       munlock </span>and <span style="font-weight: bold;">xlim</span>
     methods:<br>
     <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">mlock</span>(f, {<span style="color: rgb(204, 51, 204);">'Amplitude','Background'</span>})	<span style="font-style: italic;">% fix these 2 parameters</span>, same as setting parameters to 'fix' <br>&gt;&gt; <span style="color: rgb(51, 102, 255);">munlock</span>(f, <span style="color: rgb(204, 51, 204);">'Background'</span>)		<span style="font-style: italic;">% unlock that parameter</span>, same as f.Background='clear'<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">xlim</span>(f, <span style="color: rgb(204, 51, 204);">   'Background'</span>, [0 1e-3])	<span style="font-style: italic;">% force parameter within range</span>, same as f.Background=[min max]<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">xlim</span>(f,  <span style="color: rgb(204, 51, 204);">  'Background'</span>, [])		<span style="font-style: italic;">% remove limits constraint</span><br></pre>
-    Last, you can fix/clear/bound parameters based on a <a
-      href="http://en.wikipedia.org/wiki/Regular_expression">regular
+    Last, you can fix/clear/bound parameters based on a <a href="http://en.wikipedia.org/wiki/Regular_expression">regular
       expression</a> search such as:<br>
     <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">mlock</span>(f, <span style="color: rgb(51, 102, 255);">regexp</span>(f.Parameters, <span style="color: rgb(204, 51, 204);">'Amplitude|Background'</span>})</pre>
     where we have used the '|' OR operator.<br>
@@ -345,42 +323,34 @@
       italic;">eval</span> (to be evaluated before the object
     Expression).<br>
     <br>
-    <h3 style="text-align: center;"><a class="mozTocH3"
-        name="mozTocId2492"></a>Saving objects for further re-use: save,
+    <h3 style="text-align: center;"><a class="mozTocH3" name="mozTocId2492"></a>Saving objects for further re-use: save,
       saveas</h3>
     <p>Once you have created an manipulated a model, it is possible to
       export it into a file so that you can re-use it latter. To do so,
       use <span style="font-style: italic;">saveas(object, ...)</span>
-      similarly as when <a href="Save.html">saving iData objects</a>. '<span
-        style="font-style: italic;">save</span>' is equivalent to <span
-        style="font-style: italic;">saveas</span>.<br>
+      similarly as when <a href="Save.html">saving iData objects</a>. '<span style="font-style: italic;">save</span>' is equivalent to <span style="font-style: italic;">saveas</span>.<br>
     </p>
     <pre style="margin-left: 40px;">&gt;&gt; a=<span style="color: rgb(51, 102, 255);">iFunc</span>(<span style="color: rgb(204, 51, 204);">'p(1)*x+p(2)'</span>) + gauss ;<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">saveas</span>(a);			<span style="font-style: italic;">% save as a Matlab m-file function</span>, file name is automatically set to the model iD<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">saveas</span>(a,<span style="color: rgb(204, 51, 204);"> ''</span>, <span style="color: rgb(204, 51, 204);">'mat'</span>)		<span style="font-style: italic;">% same, with a 'mat' file</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">save</span>(a,<span style="color: rgb(204, 51, 204);"> 'model.</span><span style="color: rgb(204, 51, 204);">mat'</span>)	<span style="font-style: italic;">% same, with a 'mat' file, specifying the file name</span>
 </pre>
-    <p>The supported export formats are [ as listed with <span
-        style="font-style: italic;"><span style="color: rgb(51, 102,
+    <p>The supported export formats are [ as listed with <span style="font-style: italic;"><span style="color: rgb(51, 102,
           255);">saveas</span>(iFunc,<span style="color: rgb(204, 51,
           204);">'formats'</span>)</span> ]:<br>
     </p>
-    <pre style="margin-left: 40px;">       DAT  Flat text file with comments (*.dat) <br>       EPS  Encapsulated PostScrip (color, *.eps) <br>       FIG  Matlab figure (*.fig) <br>   HDF4;H4  Hierarchical Data Format 4 image (*.hdf4) <br>  HTML;HTM  Hypertext Markup Language document (*.html) <br>       JPG  JPEG image (*.jpg) <br>      JSON  JSON JavaScript Object Notation (*.json) <br>         M  Matlab script/function (*.m) <br>       MAT  Matlab binary file (*.mat) <br>       PDF  Portable Document Format (*.pdf) <br>       PNG  Portable Network Graphics image (*.png) <br>        PS  PostScrip (color, *.ps) <br>  TIFF;TIF  TIFF image (*.tif) <br>       XML  XML file (*.xml) <br>  YAML;YML  YAML interchange format (*.yaml) <br></pre>
+    <pre style="margin-left: 40px;">       DAT  Flat text file with comments (*.dat) <br>       EPS  Encapsulated PostScript (color, *.eps) <br>       FIG  Matlab figure (*.fig) <br>   HDF4;H4  Hierarchical Data Format 4 image (*.hdf4) <br>  HTML;HTM  Hypertext Markup Language document (*.html) <br>       JPG  JPEG image (*.jpg) <br>      JSON  JSON JavaScript Object Notation (*.json) <br>         M  Matlab script/function (*.m) <br>       MAT  Matlab binary file (*.mat) <br>       PDF  Portable Document Format (*.pdf) <br>       PNG  Portable Network Graphics image (*.png) <br>        PS  PostScript (color, *.ps) <br>  TIFF;TIF  TIFF image (*.tif) <br>       XML  XML file (*.xml) <br>  YAML;YML  YAML interchange format (*.yaml) <br></pre>
     <p>We recommend to save iFunc models as MAT files, or m-files or
       YAML.</p>
-    <p> To load back an <span style="font-style: italic;">m</span> or <span
-        style="font-style: italic;">mat</span> file into memory for
-      re-use, type the m-file name without extension, or '<span
-        style="font-style: italic;">load filename.mat</span>' for
+    <p> To load back an <span style="font-style: italic;">m</span> or <span style="font-style: italic;">mat</span> file into memory for
+      re-use, type the m-file name without extension, or '<span style="font-style: italic;">load filename.mat</span>' for
       MAT-files, or<i> 'iFunc(filename)'</i> for other formats.<br>
     </p>
     <span style="font-weight: bold;"></span>
-    <h3 style="text-align: center;"><a class="mozTocH3"
-        name="mozTocId443357"></a>Manipulating models: operators<br>
+    <h3 style="text-align: center;"><a class="mozTocH3" name="mozTocId443357"></a>Manipulating models: operators<br>
     </h3>
     Models can be assembled to create more complex models. This is
     achieved simply with <span style="font-weight: bold;">unary</span>
     and <span style="font-weight: bold;">binary</span> operators:<br>
     <br>
-    <table style=" text-align: left; width: 100%;" border="1"
-      cellpadding="2" cellspacing="2">
+    <table style=" text-align: left; width: 100%;" border="1" cellspacing="2" cellpadding="2">
       <tbody>
         <tr>
           <td style="vertical-align: top; font-weight: bold;">Unary
@@ -418,19 +388,15 @@
     The element-wise times(.*), divide(./) and power(.^) operators apply
     the operation along the model dimensions, with parallel axes.&nbsp;
     <br>
-    The matrix-operators mtimes(*), <a
-      href="images/iFunc_operators.png"><img alt="iFunc: + .* and *
-        operators" title="iFunc: + .* and * operators"
-        src="images/iFunc_operators.png" style="border: 0px solid;
+    The matrix-operators mtimes(*), <a href="images/iFunc_operators.png"><img alt="iFunc: + .* and *
+        operators" title="iFunc: + .* and * operators" src="images/iFunc_operators.png" style="border: 0px solid;
         width: 200px; height: 279px;" align="right"></a>mrdivide(/) and
-    mpower(^) operator perform <span style="font-style: italic;"><span
-        style="font-weight: bold;">orthogonal</span> axes multiplication</span>,
+    mpower(^) operator perform <span style="font-style: italic;"><span style="font-weight: bold;">orthogonal</span> axes multiplication</span>,
     with extension of the model dimensionality. <br>
     <br>
     Examples are easier to understand, so let's see a few operations :<br>
     <pre style="margin-left: 40px;">&gt;&gt; a = gauss  + lorz;		<span style="font-style: italic;">% addition</span><br>&gt;&gt; b = gauss  * lorz; 		<span style="font-style: italic;">% <span style="font-weight: bold;">orthogonal</span> axes multiplication 2x 1D -&gt; 2D</span><br>&gt;&gt; c = gauss .* lorz; 		<span style="font-style: italic;">% parallel axes multiplication</span><br>&gt;&gt; c.Constraint = <span style="color: rgb(204, 51, 204);">'p(8) = 0;'</span>;	% avoid having two Background parameters<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">subplot</span>([a b c])<br></pre>
-    In binary operations, passing one of the arguments as a <span
-      style="font-weight: bold;">string</span> will simply insert the
+    In binary operations, passing one of the arguments as a <span style="font-weight: bold;">string</span> will simply insert the
     corresponding code into the model Expression as the argument to the
     operator. For instance the following statement appends a zero value
     vector to the <span style="font-style: italic;">gauss</span> model
@@ -440,8 +406,7 @@
       <pre>&gt;&gt; c = gauss + <span style="color: rgb(204, 51, 204);">'zeros(size(x))'</span></pre>
     </div>
     The addition operator <span style="font-style: italic;">plus (+)</span>
-    used with a string argument which contains an equal sign<span
-      style="color: rgb(255, 0, 0);"> </span><span style="font-weight:
+    used with a string argument which contains an equal sign<span style="color: rgb(255, 0, 0);"> </span><span style="font-weight:
       bold; color: rgb(255, 0, 0);">'='</span> or<span style="color:
       rgb(255, 0, 0);"> </span><span style="font-weight: bold; color:
       rgb(255, 0, 0);">';'</span><span style="color: rgb(255, 0, 0);"> </span>character
@@ -460,7 +425,7 @@
 
 
 
-    catenates the string before/after the Expression of the model. For
+    concatenates the string before/after the Expression of the model. For
     instance the following example does the same as above, explicitly
     setting the new signal value, and the next one displays a text
     before evaluating the model :<br>
@@ -530,8 +495,7 @@
     similar '<b>fmax</b>' method. The result is then the upper Intensity
     bound.<br>
     <pre style="margin-left: 40px;">&gt;&gt; model= <font color="#3366ff">gauss1</font>;<br>&gt;&gt; <font color="#3366ff">fix</font>(model, <font color="#cc33cc">'all'</font>); model.Intensity=<font color="#cc33cc">'free'</font>;<br>&gt;&gt; model.Intensity=1; model.HalfWidth=.5;<br>&gt;&gt; <font color="#3366ff">xlim</font>(model, <font color="#cc33cc">'Intensity'</font>,[-2 2])<br>&gt;&gt; <font color="#3366ff">fmax</font>(model)<br>ans =<br>    1.9995         0    0.5000<br></pre>
-    <h3 style="text-align: center;"><a class="mozTocH3"
-        name="mozTocId443357"></a>Fitting model parameters onto data<br>
+    <h3 style="text-align: center;"><a class="mozTocH3" name="mozTocId443357"></a>Fitting model parameters onto data<br>
     </h3>
     <div align="center"> <i><b>NOTE:</b> a more detailed documentation
         on this topic is available in the </i><i><a href="Fit.html">Fit</a></i><i>
@@ -578,10 +542,8 @@
 
 
       </span><br style="font-style: italic;">
-      <span style="font-style: italic;">data.Error </span><br
-        style="font-style: italic;">
-      <span style="font-style: italic;">data.Monitor </span><br
-        style="font-style: italic;">
+      <span style="font-style: italic;">data.Error </span><br style="font-style: italic;">
+      <span style="font-style: italic;">data.Monitor </span><br style="font-style: italic;">
       <span style="font-style: italic;">data.Axes={x,y,...}</span><br>
     </div>
     or a cell <br>
@@ -614,8 +576,7 @@
     The fit begins from the given starting values, or from guessed
     values if entered as empty. Other <span style="font-weight: bold;">options</span>
     and <span style="font-weight: bold;">constraints</span>, as well as
-    returned arguments, are the same as described in the <a
-      href="Fit.html">Fit</a> page. Empty input argument values request
+    returned arguments, are the same as described in the <a href="Fit.html">Fit</a> page. Empty input argument values request
     the fit to use default values.<br>
     <pre>	&gt;&gt; data=<font color="#3366ff">load</font>(iData, [ <font color="#3366ff">ifitpath</font> <font color="#cc33cc">'Data/sv1850.scn'</font> ])<br>	&gt;&gt; p=<font color="#3366ff">fits</font>(data);	% fit to a gaussian<br></pre>
     or with a specific optmiser choice:<br>
@@ -623,8 +584,7 @@
     The model value when the fit procedure ends is stored in the
     output.modelValue member :<br>
     <pre style="margin-left: 40px;">&gt;&gt; [parameters,criteria,message,<span style="color: rgb(255, 0, 0);">output</span>]= <span style="color: rgb(51, 102, 255);">fits</span>(<span style="color: rgb(204, 51, 204);">model,<span style="color: rgb(0, 0, 0);"> data, </span></span>initial_parameters,...)</pre>
-    which is an <a href="iData.html">iData</a> object when <span
-      style="font-style: italic;">data</span> is given as an iData. In
+    which is an <a href="iData.html">iData</a> object when <span style="font-style: italic;">data</span> is given as an iData. In
     this case, <span style="font-style: italic;">fits(iFunc, iData,
       ...)</span> is equivalent to <span style="font-style: italic;">fits(iData,
 
@@ -656,10 +616,10 @@ Farhi
 
 
         - iFit/iFunc objects - $Date$ $Revision:1.7 $ </span> - back to
-      <a href="index.html">Main iFit Page </a><a
-        href="http://www.ill.eu/"><img title="ILL, Grenoble, France
+      <a href="index.html">Main iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France
           &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL,
           Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid
           ; width: 53px; height: 50px;" align="right"></a> </div>
-  </body>
-</html>
+  
+
+</body></html>
