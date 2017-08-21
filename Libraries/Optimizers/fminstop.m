@@ -13,8 +13,11 @@ function val = fminstop(x, optimValues, state)
 %   fmin(@objective, [], 'OutputFcn=fminplot')
 
 persistent fig stop
+val = false;
 
-if nargin == 1 && ischar(x)
+if nargin == 1 && (strcmp(pars, 'defaults') || strcmp(pars, 'identify'))
+    return;
+elseif nargin == 1 && ischar(x)
   state = x;
   x = [];
   optimValues = [];
