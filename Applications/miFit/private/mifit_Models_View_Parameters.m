@@ -207,6 +207,9 @@ function stop=mifit_Models_View_Parameters(varargin)
     if ~isempty(modelValue) && isfield(modelValue,'FitOutput')
       dat.sig = modelValue.FitOutput.parsHistoryUncertainty;
       if ~isempty(modelValue.FitOutput.parsHessianUncertainty)
+        if ~isfield(modelValue.FitOutput.constraints, 'index_variable')
+          modelValue.FitOutput.constraints.index_variable = 1:numel(dat.sig);
+        end
         dat.sig(modelValue.FitOutput.constraints.index_variable) = ...
             max(dat.sig(modelValue.FitOutput.constraints.index_variable), ...
             modelValue.FitOutput.parsHessianUncertainty);
