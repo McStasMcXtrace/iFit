@@ -1,7 +1,7 @@
 function status = sqw_phonons_requirements
 % sqw_phonons_requirements: check for availability of ASE and MD codes
 %
-% MPI, EMT, GPAW, NWChem, Dacapo, Abinit, Elk, QE, VASP
+% MPI, EMT, GPAW, Abinit, Elk, QE, VASP
 %
 % returns a structure with a field for each MD software being 1 when available.
 status = [];
@@ -71,55 +71,6 @@ else
     disp([ '  GPAW            (http://wiki.fysik.dtu.dk/gpaw) as "' status.gpaw '"' ]);
   else
     status.gpaw='';
-  end
-  
-  % test for NWChem
-  [st, result] = system([ precmd status.python ' -c "from ase.calculators.nwchem import NWChem"' ]);
-  status.nwchem='';
-  if any(st == 0:2)
-    % now test executable
-    % create a fake nwchem.nw
-    f = tempname;
-    dlmwrite([ f '.nw' ], '');
-    [st,result]=system([ precmd 'nwchem ' f '.nw' ]);
-    if any(st == 0:2) || st==139
-      status.nwchem='nwchem';
-    end
-    delete([ f '.*' ])
-    [p,f] = fileparts(f);
-    if ~isempty(dir([ f '.db' ])), delete([ f '.db' ]); end
-  end
-  if ~isempty(status.nwchem)
-    disp(['  NWChem          (http://www.nwchem-sw.org/) as "' status.nwchem '"' ]);
-  end
-  
-  % test for Jacapo
-  [st, result] = system([ precmd status.python ' -c "from ase.calculators.jacapo import Jacapo"' ]);
-  status.jacapo='';
-  if st == 0
-    % now test executable: serial
-    for calc={'dacapo_serial.run','dacapo.run','dacapo'}
-      [st,result]=system([ precmd calc{1} ]);
-      if any(st == 0:2)
-          status.jacapo=calc{1};
-          st = 0;
-          break;
-      end
-    end
-    % now test executable: mpi
-    [st,result]=system([ precmd 'dacapo_mpi.run' ]);
-    if st == 0 || st == 2
-      status.jacapo_mpi='dacapo_mpi.run';
-    else
-      status.jacapo_mpi='';
-    end
-  end
-  if ~isempty(status.jacapo)
-    if ~isempty(status.jacapo_mpi)
-      disp([ '  Dacapo          (http://wiki.fysik.dtu.dk/dacapo) as "' status.jacapo '" and "' status.jacapo_mpi '"' ]);
-    else
-      disp([ '  Dacapo          (http://wiki.fysik.dtu.dk/dacapo) as "' status.jacapo '"' ]);
-    end
   end
   
   % test for Elk
