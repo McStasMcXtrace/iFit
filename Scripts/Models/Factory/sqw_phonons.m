@@ -13,11 +13,9 @@ function signal=sqw_phonons(configuration, varargin)
 %
 %   Supported calculators are:
 %     ABINIT    Plane-wave pseudopotential code
-%     Dacapo    Plane-wave ultra-soft pseudopotential code
 %     ELK       Full Potential LAPW code
 %     EMT       Effective Medium Theory calculator (Al,Cu,Ag,Au,Ni,Pd,Pt,H,C,N,O)
 %     GPAW      Real-space/plane-wave/LCAO PAW code
-%     NWChem    Gaussian based electronic structure code
 %     QuantumEspresso_ASE Plane-wave pseudopotential code (with ASE/QE-util)
 %     QuantumEspresso     Plane-wave pseudopotential code (with PHON)
 %     VASP      Plane-wave PAW code (when installed and licensed)
@@ -87,12 +85,9 @@ function signal=sqw_phonons(configuration, varargin)
 %   options.target =path                   Where to store all files and FORCES
 %     a temporary directory is created when not specified.
 %   options.supercell=scalar or [nx ny nz] supercell size. Default is 0 (auto mode).
-%   options.calculator=string              EMT,GPAW,Elk,NWChem,Dacapo,ABINIT,Quantum
+%   options.calculator=string              EMT,GPAW,Elk,ABINIT,Quantum
 %     We recommend ABINIT,QE and Elk. Default set from installed software.
 %   options.potentials=string              Basis datasets or pseudopotentials.
-%     NWChem: see http://www.nwchem-sw.org/index.php/Release64:AvailableBasisSets
-%       e.g. 'ANO-RCC'
-%     Dacapo: path to potentials, e.g. /usr/share/dacapo-psp       (DACAPOPATH)
 %     Elk:    path to potentials, e.g. /usr/share/elk-lapw/species (ELK_SPECIES_PATH)
 %     ABINIT: path to potentials, e.g. /usr/share/abinit/psp/      (ABINIT_PP_PATH)
 %       or any of 'NC' 'fhi' 'hgh' 'hgh.sc' 'hgh.k' 'tm' 'paw'
@@ -123,10 +118,8 @@ function signal=sqw_phonons(configuration, varargin)
 %   options.kpoints=scalar or [nx ny nz]   Monkhorst-Pack grid. Default is 0 (auto mode).
 %   options.xc=string                      Type of Exchange-Correlation functional to use
 %     'LDA','PBE','revPBE','RPBE','PBE0','B3LYP'   for GPAW
-%     'PZ', 'PBE','revPBE','RPBE','PW91','VWN'     for Dacapo/Jacapo
 %     'LDA','PBE','revPBE','RPBE','GGA'            for ABINIT
 %     'LDA','PBE','REVPBE','PBESOL','WC06','AM05'  for ELK
-%     'LDA','PBE','RHF','MP2','B3LYP'              for NWChem
 %     'LDA','PBE','PW91'                           for VASP
 %     Default is 'PBE'.
 %   options.raw='name=value, ...'          Additional arguments passed to the ASE
@@ -193,13 +186,9 @@ function signal=sqw_phonons(configuration, varargin)
 %   Repository: http://download.opensuse.org/repositories/home:/dtufys/
 % GPAW J. J. Mortensen et al, Phys Rev B, Vol. 71, 035109 (2005). 
 %   <http://wiki.fysik.dtu.dk/gpaw>. Exists as Debian package 'gpaw' and 'gpaw-setups' (gpaw-data).
-% NWChem M. Valiev et al, Comput. Phys. Commun. 181, 1477 (2010).
-%   <http://www.nwchem-sw.org/>. Exists as Debian package 'nwchem' and 'nwchem-data'.
 % Elk <http://elk.sourceforge.net>. Exists as Debian package 'elk-lapw'. 
 %   The Elk executable should be compiled with e.g. 
 %     elk/src/modmain.f90:289 maxsymcrys=1024 or larger
-% DACAPO B. Hammer et al, Phys.Rev. B 59, 7413 (1999) 
-%   <https://wiki.fysik.dtu.dk/dacapo/>. Exists as Debian package 'dacapo' and 'dacapo-psp'.
 % ABINIT  X. Gonze et al, Computer Physics Communications 180, 2582-2615 (2009).
 %   <http://www.abinit.org/>. Exists as Debian package 'abinit' and 'abinit-doc' (abinit-data).
 %   Install potentials from http://wiki.fysik.dtu.dk/abinit-files/abinit-pseudopotentials-2.tar.gz
@@ -384,7 +373,7 @@ end
 if isempty(options.calculator)
   % select default calculator according to those installed
   for index={'quantumespresso','quantumespresso_ase',  ...
-      'abinit','vasp','gpaw','elk','jacapo','nwchem'};
+      'abinit','vasp','gpaw','elk'};
     if ~isempty(status.(index{1})), options.calculator=index{1}; break; end
   end
 end
@@ -682,12 +671,8 @@ cite = { ' * Atomic Simulation Environment', ...
 switch upper(options.calculator)
 case 'GPAW'
 cite{end+1} = ' * GPAW:   J. J. Mortensen et al, Phys Rev B, Vol. 71, 035109 (2005).';
-case 'NWCHEM'
-cite{end+1} = ' * NWChem: M. Valiev et al, Comput. Phys. Commun. 181, 1477 (2010).';
 case 'ELK'
 cite{end+1} = ' * ELK:    http://elk.sourceforge.net';
-case {'DACAPO','JACAPO'}
-cite{end+1} = ' * DACAPO: B. Hammer et al, Phys. Rev. B 59, 7413 (1999).';
 case 'ABINIT'
 cite{end+1} = ' * ABINIT: X. Gonze et al, Computer Physics Communications 180, 2582-2615 (2009).';
 case 'EMT'

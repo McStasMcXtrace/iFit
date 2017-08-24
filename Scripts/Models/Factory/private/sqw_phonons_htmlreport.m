@@ -223,17 +223,9 @@ function [logo, link, op] = sqw_phonons_htmlreport_init(options)
     logo='logo-gpaw.png';
     link='http://wiki.fysik.dtu.dk/gpaw';
     copyfile(fullfile(ifitpath,'Docs','images',logo), options.target);
-  case 'NWCHEM'
-    logo='nwchem.png';
-    link='http://www.nwchem-sw.org/';
-    copyfile(fullfile(ifitpath,'Docs','images',logo), options.target);
   case 'ELK'
     logo='elk.png';
     link='http://elk.sourceforge.net';
-    copyfile(fullfile(ifitpath,'Docs','images',logo), options.target);
-  case {'DACAPO','JACAPO'}
-    logo='jacapo.png';
-    link='http://wiki.fysik.dtu.dk/dacapo';
     copyfile(fullfile(ifitpath,'Docs','images',logo), options.target);
   case 'ABINIT'
     logo='abinit.png';

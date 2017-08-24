@@ -51,10 +51,6 @@ for index=1:numel(varargin)
       options.calculator = 'EMT';
     elseif strcmpi(varargin{index},'gpaw')
       options.calculator = 'GPAW';
-    elseif strcmpi(varargin{index},'jacapo') || strcmpi(varargin{index},'dacapo')
-      options.calculator = 'Jacapo';
-    elseif strcmpi(varargin{index},'nwchem')
-      options.calculator = 'NWChem';
     elseif strcmpi(varargin{index},'elk')
       options.calculator = 'Elk';
     elseif strcmpi(varargin{index},'abinit')
