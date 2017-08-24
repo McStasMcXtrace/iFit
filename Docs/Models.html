@@ -137,6 +137,7 @@
 
 
 
+
         </a>fits(iData)</span>, <a href="iFunc.html">iFunc</a><br>
     </div>
     <br>
@@ -4103,8 +4104,7 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
             </b></td>
           <td valign="top">Phonon dispersions from the Dynamical matrix,
             using forces estimated by <i>ab-initio </i>using <a href="https://wiki.fysik.dtu.dk/ase">ASE</a> and a
-            selection of DFT codes (EMT, GPAW, ABINIT, Elk, Dacapo,
-            NWChem, QuantumEspresso, VASP). </td>
+            selection of DFT codes (EMT, GPAW, ABINIT, Elk, QuantumEspresso, VASP). </td>
           <td valign="top"><font color="#33cc00">4D (HKLw)</font><br>
             <a href="images/Models_sqw_ph_ase.png"><img src="images/Models_sqw_ph_ase.png" title="sqw_ph_ase Al
                 fcc" alt="sqw_ph_ase Al fcc" border="0" align="left" width="100" height="74"></a></td>
@@ -4981,7 +4981,7 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
         automatically the <i>supercell</i> from the number of atoms in
         the material cell as (1000/N)^(1/6).</li>
       <li><b>calculator</b>: the calculator to use, see below.</li>
-      <li><b>potentials</b>: pseudo potential directory to use, e.g. <font color="#cc33cc">'/usr/share/elk-lapw/species'</font>, <font color="#cc33cc">'/usr/share/abinit/psp'</font>, <font color="#cc33cc">'/usr/share/dacapo-psp'</font>,<font color="#cc33cc">'/usr/share/espresso/pseudo'</font>.</li>
+      <li><b>potentials</b>: pseudo potential directory to use, e.g. <font color="#cc33cc">'/usr/share/elk-lapw/species'</font>, <font color="#cc33cc">'/usr/share/abinit/psp'</font>, <font color="#cc33cc">'/usr/share/espresso/pseudo'</font>.</li>
       <li><b>diagonalization</b>: <font color="#cc33cc">'david'</font>
         or <font color="#cc33cc">'cg'</font>. or <font color="#cc33cc">'rmm-diis'</font>.
         The Davidson method is faster than the conjugate-gradient but
@@ -5420,87 +5420,8 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
               limited.</i><br>
           </td><td valign="top">0.9<br>
           </td><td valign="top"><br>
-          </td></tr><tr>
-          <td valign="top"><a href="https://wiki.fysik.dtu.dk/dacapo/"><img alt="jacapo" title="jacapo" src="images/jacapo.png" border="0" align="middle" width="80" height="29"></a><a href="https://wiki.fysik.dtu.dk/dacapo/">&nbsp;Dacapo</a></td>
-          <td valign="top">Plane-wave ultra-soft pseudopotential code. <i>Not
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            </i><i>recommended</i><i><i> for phonon calculations</i>.</i></td>
-          <td valign="top"><br>
-          </td>
-          <td valign="top"><br>
-          </td>
-        </tr>
-        <tr>
-          <td valign="top"><a href="http://www.nwchem-sw.org/"><img alt="nwchem" title="nwchem" src="images/nwchem.png" border="0" align="middle" width="80" height="22"></a><a href="http://www.nwchem-sw.org/">&nbsp;NWChem</a></td>
-          <td valign="top">Gaussian based electronic structure code. <i>Not
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-              recommended for phonon calculations.</i><br>
-          </td>
-          <td valign="top"><br>
-          </td>
-          <td valign="top"><br>
-          </td>
-        </tr>
+          </td></tr>
+        
       </tbody>
     </table>
     <div align="center"><i>The available calculators in </i><i><b>sqw_phonons</b></i><i>.
@@ -5533,11 +5454,9 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
       <li>Elk can not handle large supercells without
         recompiling. The Debian package we provide is done so.<br>
       </li>
-      <li>NWChem and Elk are hardly sensitive to the energy cut-off in
+      <li>Elk is hardly sensitive to the energy cut-off in
         results and computational needs.</li>
-      <li>We <i>do not recommend</i> <a href="https://wiki.fysik.dtu.dk/dacapo/">Dacapo</a> and
-        NWChem, which are both rather slow compared to other codes.<br>
-      </li>
+      
       <li>Refer to <a href="https://molmod.ugent.be/deltacodesdft">https://molmod.ugent.be/deltacodesdft</a>
         for codes comparison. Currently, best codes are QE with SSSP,
         Elk, Abinit with PAWXML JTH or GBRV, GPAW. VASP 5.2 with PAW2015 GW
@@ -5611,19 +5530,13 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
       <li> <a href="http://wiki.fysik.dtu.dk/gpaw">GPAW</a>&nbsp; J. J.
         Mortensen et al, <i>Phys Rev B</i>, Vol. <b>71</b>, 035109
         (2005). <a href="https://wiki.fysik.dtu.dk/gpaw/setups/setups.html">Pseudo-potentials</a>.</li>
-      <li> <a href="http://www.nwchem-sw.org/">NWChem</a>&nbsp; M.
-        Valiev et al, <i>Comput. Phys. Commun.</i> <b>181</b>, 1477
-        (2010).</li>
+      
       <li> <a href="http://elk.sourceforge.net">Elk</a> cite
         &lt;http://elk.sourceforge.net&gt;. <i><b>NOTE:</b></i> The Elk
         executable should be compiled with e.g. elk/src/modmain.f90:289
         maxsymcrys=10384 or larger to handle supercells. We provide an <a href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/elk-lapw_3.3.17-1_amd64.deb">Elk-3.3.17</a>
         Debian package compiled with this setting.</li>
-      <li> <a href="https://wiki.fysik.dtu.dk/dacapo/">DACAPO</a> B.
-        Hammer et al, <i>Phys.Rev.</i><i> B</i> <b>59</b>, 7413
-        (1999). <a href="https://wiki.fysik.dtu.dk/dacapo/Pseudopotential_Library">Pseudo-potentials</a>.
-        <br>
-      </li>
+      
       <li> <a href="http://www.abinit.org/">ABINIT</a> X. Gonze et al,
         <i>Computer Physics Communications</i> <b>180</b>, 2582-2615
         (2009). <a href="http://www.abinit.org/downloads/psp-links/pseudopotentials">Pseudo-potentials
@@ -5920,7 +5833,7 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
     </blockquote>
     which is equivalent to <br>
     <blockquote>
-      <pre>% sudo apt-get install ifit elk-lapw dacapo dacapo-psp gpaw nwchem nwchem-data python-matplotlib<br>% sudo apt-get install abinit abinit-doc abinit-psp quantum-espresso quantum-espresso-sssp phon libnetcdf-dev libxc1 openmpi-bin <br>% sudo apt-get install abinit-psp-jth abinit-psp-gbrv python-ase-qe-spglib python-hdf5storage python-ase</pre>
+      <pre>% sudo apt-get install ifit elk-lapw gpaw python-matplotlib<br>% sudo apt-get install abinit abinit-doc abinit-psp quantum-espresso quantum-espresso-sssp phon libnetcdf-dev libxc1 openmpi-bin <br>% sudo apt-get install abinit-psp-jth abinit-psp-gbrv python-ase-qe-spglib python-hdf5storage python-ase python-phonopy</pre>
     </blockquote>
     <blockquote><i><b>Note:</b></i> The <i>gpaw-setups</i> package is
       named <a href="http://packages.ubuntu.com/wily/gpaw-data"><i>gpaw-data</i></a>
