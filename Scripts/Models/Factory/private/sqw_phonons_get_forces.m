@@ -25,14 +25,14 @@ function [options, sav] = sqw_phonons_get_forces(options, decl, calc)
   if isfield(options.available,'phonopy') && ~isempty(options.available.phonopy) ...
     && options.use_phonopy
     % use PhonoPy = very fast (forward difference)
-    ph_run = 'ifit.phonopy_run(ph, single=True)\n';
+    ph_run = 'ret=ifit.phonopy_run(ph, single=True)\n';
   elseif isfield(options, 'accuracy') && strcmpi(options.accuracy,'very fast')
     % very fast: twice faster, but less accurate (assumes initial lattice at equilibrium)
     options.use_phonopy = 0;
-    ph_run = 'ifit.phonons_run(ph, single=True, difference="forward")\n'; 
+    ph_run = 'ret=ifit.phonons_run(ph, single=True, difference="forward")\n'; 
   elseif isfield(options, 'accuracy') && any(strcmpi(options.accuracy,{'slow','accurate'}))
     % slow: the default ASE routine: all moves, slower, more accurate
-    ph_run = 'ph.run()\n';
+    ph_run = 'ph.run(); ret=False\n';
   else
     % fast (use symmetry operators from spacegroup)
     ph_run = 'ifit.phonons_run(ph, single=True, difference="central")\n'; 
@@ -73,15 +73,21 @@ function [options, sav] = sqw_phonons_get_forces(options, decl, calc)
     '# Phonon calculator\n', ...
     sprintf('ph = Phonons(atoms, calc, supercell=(%i, %i, %i), delta=%f)\n',options.supercell, displ), ...
     'ret = ' ph_run, ...
+    'if isinstance(ret, tuple): # multiple return values\n' ...
+    '    nb_of_iterations = ret[1]\n' ...
+    '    ret = ret[0]\n' ...
+    'else:\n' ...
+    '    nb_of_iterations = 1\n' ...
     'fid = open("phonon.pkl","wb")\n', ...
     'calc = ph.calc\n', ...
     sav, ...
     'pickle.dump(ph, fid)\n', ...
     'fid.close()\n', ...
+    '# return the number of remaining steps\n', ...
     'if ret:\n' ...
-    '    exit(0)  # a single step was done\n' ...
+    '    exit(nb_of_iterations)  # a single step was done\n' ...
     'else:\n' ...
-    '    exit(1)  # no more steps required\n' ];
+    '    exit(0)  # no more steps required\n' ];
     
   options.script_get_forces_finalize = [ ...
     '# python script built by ifit.mccode.org/Models.html sqw_phonons\n', ...
@@ -199,25 +205,14 @@ function [options, sav] = sqw_phonons_get_forces(options, decl, calc)
   options.status = 'Starting computation. Script is <a href="sqw_phonons_forces_iterate.py">sqw_phonons_forces_iterate.py</a>';
   sqw_phonons_htmlreport('', 'status', options);
   
-  % compute the maximum number of steps
-  if ~isempty(fullfile(target, 'properties.mat'))
-    properties  = load(fullfile(target, 'properties.mat'));
-    if isfield(options, 'accuracy') && strcmpi(options.accuracy,'very fast')
-      nb_of_steps = numel(cellstr(properties.chemical_symbols))*3;
-    else
-      nb_of_steps = numel(cellstr(properties.chemical_symbols))*6; % central difference
-    end
-    % use that to determine the ETA as in sqw_phon
-  else
-    nb_of_steps = 0;
-  end
+  nb_of_steps = 0;
   
   result = '';
-  st = 0;
+  st = 1;
   t0 = clock;           % a vector used to compute elapsed/remaining seconds
   move = 1;
   
-  while st == 0
+  while st>0
     try
       if strcmpi(options.calculator, 'GPAW') && isfield(options,'mpi') ...
         && ~isempty(options.mpi) && options.mpi > 1
@@ -227,30 +222,27 @@ function [options, sav] = sqw_phonons_get_forces(options, decl, calc)
       end
       % display result
       disp(result)
-      if st
-        disp([ mfilename ': return code ' num2str(st) ]);
-      end
+      
+      % the first return 'st' gives the max number of steps remaining
+      % but one at least was done so far
+      if ~nb_of_steps && st > 0, nb_of_steps = st+1; end
+
       options.status = result;
       sqw_phonons_htmlreport('', 'status', options);
-      % get how many displacements have been computed: name is 'phonon.N[xyz][+-].pckl'
-      move_update = dir(fullfile(target,'phonon.*.pckl'));
-      if numel(move_update) > move
-        move = numel(move_update);
-      end
-      if move <= nb_of_steps
-        % display ETA. There are nb_of_steps steps.
-        % up to now we have done 'move' and it took etime(clock, t)
-        % time per iteration is etime(clock, t)/move.
-        % total time of computation is etime(clock, t)/move*nb_of_steps
-        % time remaining is etime(clock, t)/move*(nb_of_steps-move+1)
-        % final time is     t+etime(clock, t)/move*nb_of_steps
-        remaining = etime(clock, t0)/move*max(1,nb_of_steps-move+1);
+      
+      if 0 < st && st <= nb_of_steps
+        % we have done so far nb_of_steps - st steps, which took etime(clock, t0)
+        % so one step takes etime(clock, t0)/(nb_of_steps-st)
+        time_per_step = etime(clock, t0)/(nb_of_steps-st);
+        % then the remaining time is
+        remaining = time_per_step*st;
+
         hours     = floor(remaining/3600);
         minutes   = floor((remaining-hours*3600)/60);
         seconds   = floor(remaining-hours*3600-minutes*60);
         enddate   = addtodate(now, ceil(remaining), 'second');
         
-        options.status = [ '[' datestr(now) '] ETA ' sprintf('%i:%02i:%02i', hours, minutes, seconds) ', ending on ' datestr(enddate) '. move ' num2str(move) '/' num2str(nb_of_steps) ' [' num2str(round(move*100.0/nb_of_steps)) '%]'];
+        options.status = [ '[' datestr(now) '] ETA ' sprintf('%i:%02i:%02i', hours, minutes, seconds) ', ending on ' datestr(enddate) '. Remaining steps ' num2str(st) '/' num2str(nb_of_steps) ' [' num2str(round(nb_of_steps-st)/nb_of_steps*100) '%]'];
         disp([ mfilename ': ' options.status ]);
         sqw_phonons_htmlreport('', 'status', options);
       end

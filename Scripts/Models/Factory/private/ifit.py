@@ -31,7 +31,7 @@ import os
 
 from ase.atoms     import Atoms
 from ase.utils     import opencew
-from ase.parallel  import rank, barrier
+from ase.parallel  import rank, barrier, world
 
 # check if we have access to get_spacegroup from spglib
 # https://atztogo.github.io/spglib/
@@ -55,6 +55,25 @@ except ImportError:
     pass
 
 # ------------------------------------------------------------------------------
+# TODO: should go into ase.utils.__init__
+def isfile(filename):
+    """Check if a file is opened, taking into account the MPI environment
+    
+    input:
+        filename
+    output:
+        0 when the file does not exist, 1 if it does
+    """
+
+    if world.rank == 0:
+      isf = os.path.isfile(filename)
+    else:
+      isf = 0
+    # Syncronize:
+    return world.sum(isf)
+
+# TODO: should go into ase.spacegroup
+# used in phonons_run
 def get_spacegroup(atoms, symprec=1e-5, method='phonopy'):
     """Determine the spacegroup to which belongs the Atoms object.
     
@@ -99,6 +118,7 @@ def get_spacegroup(atoms, symprec=1e-5, method='phonopy'):
     return found
             
 # ------------------------------------------------------------------------------
+# TODO: should go into ase.spacegroup or ase.atoms
 def _get_spacegroup(atoms, symprec=1e-5, center=None):
     """ASE implementation of get_spacegroup.
     """ 
@@ -181,6 +201,7 @@ def _get_wigner_seitz(atoms, move=0, wrap=1, symprec=1e-6):
     return xtmp
     
 # ------------------------------------------------------------------------------
+# TODO: should go into ase.phonons as run_equilibrium or so
 def phonons_run_eq(phonon, supercell):
     """Run the calculation for the equilibrium lattice
     
@@ -211,7 +232,7 @@ def phonons_run_eq(phonon, supercell):
                 fmin = output.min()
                 sys.stdout.write('[ASE] Equilibrium forces min=%g max=%g\n' % (fmin, fmax))
             except AttributeError:
-                sys.stdout.write('[ASE] output is has no min/max (list)\n');
+                sys.stdout.write('[ASE] output has no min/max (list)\n');
                 pass
         sys.stdout.flush()
     else:
@@ -221,6 +242,8 @@ def phonons_run_eq(phonon, supercell):
     return output
         
 # ------------------------------------------------------------------------------
+# TODO: should go into ase.phonons as drop-in replacement to run()
+# needs get_spacegroup first and _get_wigner_seitz, force1 and force2
 def phonons_run(phonon, single=True, difference='central'):
     """Run the calculations for the required displacements.
     This function uses the Spacegroup in order to speed-up the calculation.
@@ -254,6 +277,7 @@ def phonons_run(phonon, single=True, difference='central'):
     output:
     
       True when a calculation step was performed, False otherwise or no more is needed.
+      nb_of_iterations: the number of steps remaining
 
     """
     
@@ -279,13 +303,13 @@ def phonons_run(phonon, single=True, difference='central'):
     
     # when not central difference, we check if the equilibrium forces are small
     # and will use the '0' forces in gradient
-    if len(signs) == 1 and not os.path.isfile(phonon.name + '.eq.pckl'): 
+    if len(signs) == 1 and not isfile(phonon.name + '.eq.pckl'): 
         # Do calculation on equilibrium structure
         if rank == 0:
             print "[ASE] Computing equilibrium"
         phonons_run_eq(phonon, supercell)
         if single:
-            return True # and some more iterations may be required
+            return True, len(signs)*len(phonon.indices)*3 # and some more iterations may be required
 
     # Positions of atoms to be displaced in the reference cell
     natoms = len(phonon.atoms)
@@ -293,8 +317,11 @@ def phonons_run(phonon, single=True, difference='central'):
     pos    = supercell.positions[offset: offset + natoms].copy()
     pos0   = supercell.positions.copy()
     
-    L    = supercell.get_cell()         # latticecell       = at
+    L    = supercell.get_cell()     # lattice      cell       = at
     invL = numpy.linalg.inv(L)      # no 2*pi multiplier here = inv(at) = bg.T
+    
+    # number of iterations left
+    nb_of_iterations = len(signs)*len(phonon.indices)*3
     
     for sign in signs:  # +-
         # guess displacements and rotations
@@ -302,15 +329,16 @@ def phonons_run(phonon, single=True, difference='central'):
         
         for a in phonon.indices:    # atom index to move in cell
         
-            # we determine the Wigner-Seitz cell around atom 'a' (Cartesian)
-            ws = _get_wigner_seitz(supercell, a, 1)
-        
             # check if this step has been done before (3 files written per step)
             filename = '%s.%d%s%s.pckl' % \
                        (phonon.name, a, 'xyz'[0], ' +-'[sign])
-            if os.path.isfile(filename):
-                    # Skip if these 3 moves are already done.
+            if isfile(filename):
+                    # Skip if this move ('x') is already done.
+                    nb_of_iterations -= 3
                     continue
+                    
+            # we determine the Wigner-Seitz cell around atom 'a' (Cartesian)
+            ws = _get_wigner_seitz(supercell, a, 1)
             
             # compute the forces for 3 independent moves
             force0 = None
@@ -359,11 +387,13 @@ def phonons_run(phonon, single=True, difference='central'):
             # derive a Cartesian basis, and write pickle files
             force2 = _phonons_run_force2(phonon, dxlist, force1, a, sign, symprec=1e-6)
             
+            nb_of_iterations -= 3
+            
             # then we derive the Cartesian basis 'force2' array and write files
             if single:
-                return True # and some more iterations may be required
+                return True,nb_of_iterations # and some more iterations may be required
 
-    return False  # nothing left to do
+    return False,0  # nothing left to do
 
 # ------------------------------------------------------------------------------
 def _phonons_move_is_independent(dxlist, dx, symprec=1e-6):
@@ -576,7 +606,6 @@ def _phonons_run_force2(phonon, dxlist, force1, a, sign, symprec=1e-6):
     
     """
 
-    found = 0
     # print 'dxlist:', dxlist
     # print 'force1:', force1
     # get the 3 displacement vectors (rows) and normalise
@@ -597,7 +626,7 @@ def _phonons_run_force2(phonon, dxlist, force1, a, sign, symprec=1e-6):
         # skip if the pickle already exists
         filename = '%s.%d%s%s.pckl' % \
                (phonon.name, a, 'xyz'[i], ' +-'[sign])
-        if os.path.isfile(filename):
+        if isfile(filename):
             # Skip if already done. Also the case for initial 'disp/dx'
             continue
         # write the pickle for the current Cartesian axis
@@ -607,16 +636,11 @@ def _phonons_run_force2(phonon, dxlist, force1, a, sign, symprec=1e-6):
             sys.stdout.write('Writing %s\n' % filename)
             fd.close()
             sys.stdout.flush()
-        found += 1
     
-    if found > 0 and False:
-        print '[ASE] Displacements, and inverse:'
-        print dxlist
-        print invdx
-        print 'force2 [xyz]:', force2
     return force2
     
 # ------------------------------------------------------------------------------
+# TODO: should go into ase.phonons as drop-in replacement to read()
 def phonons_read(phonon, method='Frederiksen', symmetrize=3, acoustic=True,
          cutoff=None, born=False, **kwargs):
     """Read forces from pickle files and calculate force constants.
@@ -673,7 +697,7 @@ def phonons_read(phonon, method='Frederiksen', symmetrize=3, acoustic=True,
     # get equilibrium forces (if any)
     filename = phonon.name + '.eq.pckl'
     feq = 0
-    if os.path.isfile(filename):
+    if isfile(filename):
         feq = pickle.load(open(filename))
         if method == 'frederiksen':
             for i, a in enumerate(phonon.indices):
@@ -685,11 +709,11 @@ def phonons_read(phonon, method='Frederiksen', symmetrize=3, acoustic=True,
             # Atomic forces for a displacement of atom a in direction v
             basename = '%s.%d%s' % (phonon.name, a, v)
             
-            if os.path.isfile(basename + '-.pckl'):
+            if isfile(basename + '-.pckl'):
                 fminus_av = pickle.load(open(basename + '-.pckl'))
             else:
                 fminus_av = None
-            if os.path.isfile(basename + '+.pckl'):
+            if isfile(basename + '+.pckl'):
                 fplus_av = pickle.load(open(basename + '+.pckl'))
             else:
                 fplus_av = None
@@ -775,6 +799,8 @@ def find_primitive(cell, symprec=1e-5):
 def phonopy_run(phonon, single=True, filename='FORCE_SETS'):
     """Run the phonon calculations, using PhonoPy.
     
+    The force constants are then stored in the Phonon ASE object.
+          
     input:
     
       phonon: ASE Phonon object with Atoms and Calculator
@@ -787,7 +813,7 @@ def phonopy_run(phonon, single=True, filename='FORCE_SETS'):
     output:
     
       True when a calculation step was performed, False otherwise or no more is needed.
-      the force constants are then stored in the Phonon ASE object.
+      nb_of_iterations: the number of steps remaining
 
     """
     
@@ -835,10 +861,10 @@ def phonopy_run(phonon, single=True, filename='FORCE_SETS'):
         # generate displacements (minimal set)
         phonpy.generate_displacements(distance=0.01)
         # iterative call for all displacements
-        set_of_forces, flag = phonopy_run_calculate(phonon, phonpy, supercell, single)
+        set_of_forces, flag, nb_of_iterations = phonopy_run_calculate(phonon, phonpy, supercell, single)
         
         if flag is True:
-            return flag # some more work is probably required
+            return flag, nb_of_iterations # some more work is probably required
             
         sys.stdout.write('[ASE/Phonopy] Computing force constants\n')
         # use symmetry to derive forces in equivalent displacements
@@ -902,7 +928,7 @@ def phonopy_run(phonon, single=True, filename='FORCE_SETS'):
     for D in phonon.D_N:
         D *= M_inv
     
-    return False  # nothing left to do
+    return False, nb_of_iterations  # nothing left to do
     
 # ------------------------------------------------------------------------------
 def phonopy_run_calculate(phonon, phonpy, supercell, single):
@@ -916,7 +942,7 @@ def phonopy_run_calculate(phonon, phonpy, supercell, single):
         
     # Do calculation on equilibrium structure (used to improve gradient accuracy)
     supercell.set_calculator(phonon.calc)
-    if rank == 0:
+    if rank == 0 and not isfile(phonon.name + '.eq.pckl'):
         print "[ASE/Phonopy] Computing equilibrium"
     feq = phonons_run_eq(phonon, supercell)
     for i, a in enumerate(phonon.indices):
@@ -930,7 +956,7 @@ def phonopy_run_calculate(phonon, phonpy, supercell, single):
     for d in range(len(supercells)):
         # skip if this step has been done already.
         filename = '%s.%d.pkl' % (phonon.name, d)
-        if os.path.isfile(filename):
+        if isfile(filename):
             f = open(filename, 'rb')
             forces = pickle.load(f)
             f.close()
@@ -971,12 +997,12 @@ def phonopy_run_calculate(phonon, phonpy, supercell, single):
             
             # in single shot mode, we return when forces were computed
             if single:
-                return set_of_forces, True
+                return set_of_forces, True, len(supercells)-d-1
         
         # store the incremental list of forces
         set_of_forces.append(forces)
         
-    return set_of_forces, False
+    return set_of_forces, False, 0
     
 # ------------------------------------------------------------------------------
 def phonopy_band_structure(phonpy, path_kc, modes=False):
