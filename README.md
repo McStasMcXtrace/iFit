@@ -56,10 +56,14 @@ Installation
     /opt/MATLAB/R2010a/toolbox/local/iFit
   
   Then start Matlab and type in, e.g.:
-    >> addpath(genpath('/home/joe/Matlab/iFit'))
+```matlab
+>> addpath(genpath('/home/joe/Matlab/iFit'))
+```
   or
-    >> addpath(genpath('/opt/MATLAB/R2010a/toolbox/local/iFit'))
-  
+```matlab
+>> addpath(genpath('/opt/MATLAB/R2010a/toolbox/local/iFit'))
+```
+
 **Installation for standalone (binary) package**
   Install the MCR (see above, prefer /opt/MATLAB location on Linux systems), then 
   extract the iFit binary package and launch 'ifit'.
@@ -73,9 +77,10 @@ Installation
 
 **Quick start**
   type at Matlab prompt:
-    >> addpath(genpath('/path/to/iFit'))
-    >> doc(iData)
-
+```matlab
+>> addpath(genpath('/path/to/iFit'))
+>> doc(iData)
+```
   Then refer to the Quick Start tutorial (in iFit/Docs/QuickStart.html).
   
   The miFit interface will be automaticaly opened. It allows to drag-and-drop 
