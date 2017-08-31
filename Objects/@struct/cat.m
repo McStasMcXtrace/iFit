@@ -1,5 +1,5 @@
 function s = cat(varargin)
-% concatenate structures
+% struct/cat: concatenate structures
 
 % first build up a cell array of structures
 s_cell = {};
