@@ -1,4 +1,4 @@
-function [selection,value] = listdlg_nonmodal(varargin)
+function [selection,value] = listdlg(varargin)
 %LISTDLG_nonmodal  List selection dialog box.
 %   [SELECTION,OK] = LISTDLG('ListString',S) creates a modal dialog box
 %   which allows you to select a string or multiple strings from a list.
