@@ -1,4 +1,4 @@
-function a = iFunc(varargin)
+classdef iFunc
 % model = iFunc(...): create a fit model function
 %
 % Any Fit Model function can be created from a mathematical expression, a
@@ -111,171 +111,181 @@ function a = iFunc(varargin)
 % See also iFunc, iFunc/feval, iFunc/plot, iFunc/fits, iFunc/save, methods
 % (c) E.Farhi, ILL. License: EUPL.
 
-persistent id % the id number for all new objects
-
-a = [];
-
-if nargin == 0  % create the empty iFunc object structure
+properties  % create the empty iFunc object structure
   % create a new iFunc object
-  a.Tag         = 0;
-  a.Date        = clock;  % creation date
-  a.Name        = ''; % the function Name
-  a.Description = ''; % the Description
-  a.Parameters  = {}; % the function parameters, a cellstr or words or a single
+  Tag         = 0;
+  Date        = clock;  % creation date
+  Name        = ''; % the function Name
+  Description = ''; % the Description
+  Parameters  = {}; % the function parameters, a cellstr or words or a single
                       % string of words separated by spaces, or a structure with parameter values
-  a.Guess       = 'automatic'; % the default parameter set or expression or function handle
+  Guess       = 'automatic'; % the default parameter set or expression or function handle
                       % char or function_handle(x,y,..., signal, Parameters{})
                       % or 'automatic'
-  a.Expression  = ''; % the expression to evaluate to get the function value
+  Expression  = ''; % the expression to evaluate to get the function value
                       % char or function_handle(p, x,y, ...)
-  a.Constraint  = ''; % code to evaluate before computing the Expression
+  Constraint  = ''; % code to evaluate before computing the Expression
                       % can be: a function_handle
                       %         a char/cellstr
                       %         a vector (length p)
                       %         a structure with fields: min, max, fixed
-  a.Dimension   = 0;  % function dimensionality (1,2,3,4...) 0=scalar=empty.
+  Dimension   = 0;  % function dimensionality (1,2,3,4...) 0=scalar=empty.
                       % a negative dimension is used to indicate a variable dimensionality.
-  a.ParameterValues = [];
-  a.Eval        = ''; % code to evaluate for the model value
-  a.UserData    = '';
-  a.Duration    = 0;
+  ParameterValues = [];
+  Eval        = ''; % code to evaluate for the model value
+  UserData    = '';
+  Duration    = 0;
+end % properties  
 
-  if isempty(id),   id=0; end
-  if id > 1e6, id=0; end
-  if id <=0, 
-    id = a.Date;
-    id = fix(id(6)*1e4); 
-  else 
-    id=id+1;
-  end
-
-  a.Tag      = [ 'iF' sprintf('%0.f', id) ];
-  a = class(a, 'iFunc');
-elseif length(varargin) > 1 % import data to create the object array
-  % do we have a name/value set ?
-  if rem(length(varargin),2) == 0 && iscellstr(varargin(1:2:(end-1)))
-    try
-      a = iFunc(struct(varargin{:}));
-      return
-    end
-  end
+methods
+  function a=iFunc(varargin)
   
-  % can be a structure, or an expression, or a function_handle
-  for index=1:length(varargin)
-    a = [ a iFunc(varargin{index}) ];
-  end
-  return
-elseif isa(varargin{1}, 'iData')
-  % create a model from a fixed data set
-  
-  a = iFunc_from_iData(varargin{1});
-  
-else   % import data to create a single object
-  % can be a structure, or an expression, or a function_handle
-  this = varargin{1};
-  
-  if ischar(this) && ~isempty(dir(this))  % a filename
-    [p,f,e] = fileparts(this);
-    if strcmp(lower(e), '.m')
-      try
-        run(this);
-        if isa(ans, 'iFunc'), a=ans; end
-      end
-      if isempty(a)
-        try
-          a = eval(f);
-        end
-      end
-    elseif strcmp(lower(e), '.mat')
-      this=load(this);
-      f=fieldnames(this);
-      for index=1:numel(f)
-        if isa(this.(f{index}), 'iFunc')
-          a = [ a this.(f{index}) ];
-        end
-      end
-    end
-    if isempty(a) % other: JSON, YAML, XML will generate a structure when read
-      a = iFunc(iLoad(this));
-    end
-  elseif ischar(this) % ----------------------------------------------------------
-    % check if this is a predefined function
-    isfunction = 0;
-    try
-      if exist(this) == 2 && abs(nargin(this)) > 0 && nargout(this) == 1
-        isfunction = 1;
-      end
-    end
-    if isfunction
-      a=iFunc(feval(this));
-      a.Name = this;
-    else
-      % from a string/expression: analyse the expression to get the
-      % dimension and parameter names
-      a=iFunc;
-      if exist(this, 'file') || exist([ this '.m' ], 'file')
-        a.Name = this;
-        if exist([ this '.m' ], 'file'), this = [ this '.m' ]; end
-        disp([ mfilename ': building model from file ' this ' content (script/function using p,x,y,...).']);
-        this   = fileread(this);
-      end
-      a.Expression = this;
-    end
-  elseif iscell(this)
-    for index=1:numel(this)
-      try 
-        a = [ a iFunc(this{index}) ];
-      end
-    end
-    return
-  elseif isa(this, 'iFunc') % ------------------------------------------------
-    % make a copy of the initial object
-    a = this;
-  elseif isa(this, 'sw') | isa(this, 'spinw') % ------------------------------------------------
-    % convert spinw object into iFunc
-    a = sqw_spinw(this);
-  elseif isstruct(this) % ----------------------------------------------------
-    a = iFunc;
-    % identify if some of the structure fields can be directly used, and overlayed
-    if isfield(this, 'x0'),              a.Guess=this.x0;
-    elseif isfield(this, 'Guess'),       a.Guess=this.Guess; end
-    if isfield(this, 'objective'),       a.Expression=this.objective; end
-    if isfield(this, 'Expression'),      a.Expression=this.Expression; end
-    if isfield(this, 'pars'),            a.Parameters=this.pars;
-    elseif isfield(this, 'Parameters'),  a.Parameters=this.Parameters; end
-    if isfield(this, 'function'),        a.Name=this.function; 
-    elseif isfield(this, 'Name'),        a.Name=this.Name; end
-    if isfield(this, 'Description'),     a.Description=this.Description; end
-    if isfield(this, 'Constraint'),      a.Constraint=this.Constraint; end
-    if isfield(this, 'Dimension'),       a.Dimension=this.Dimension; end
-    if isfield(this, 'ParameterValues'), a.ParameterValues=this.ParameterValues; end
-    if isfield(this, 'UserData'),        a.UserData=this.UserData; end
+    persistent id % the id number for all new objects
     
-  elseif isa(this, 'function_handle') % --------------------------------------
-    a = iFunc;  % empty object
-    if abs(nargout(this)) < 1
-      error(['iFunc:' mfilename ], '%s: function %s should return at least one output value.\n  signal=f(p, axes{:}, additional_arguments{:})', ...
-        mfilename, func2str(this));
+    % assign the ID and Tag
+    if isempty(id),   id=0; end
+    if id > 1e6, id=0; end
+    if id <=0, 
+      id = a.Date;
+      id = fix(id(6)*1e4); 
+    else 
+      id=id+1;
     end
-    if ~abs(nargin(this)) || ~abs(nargout(this))
-      error(['iFunc:' mfilename ], '%s: function %s should use at least one input and output arguments.\n  signal=f(p, x,y,z, ...)', ...
-        mfilename, func2str(this));
-    end
-    if exist(func2str(this))
-      a = feval(this);
-    else
-      a.Expression  = this;
-      if a.Dimension == 0
-        a.Dimension   = nargin(this) - 1;
+
+    a.Tag      = [ 'iF' sprintf('%0.f', id) ];
+
+    if nargin == 0, return; end
+    if length(varargin) > 1 % import data to create the object array
+      % do we have a name/value set ?
+      if rem(length(varargin),2) == 0 && iscellstr(varargin(1:2:(end-1)))
+        try
+          a = iFunc(struct(varargin{:}));
+          return
+        end
       end
-    end
-  else
-    error(['iFunc:' mfilename ], [mfilename ': import of ' inputname(1) ' of class ' class(this) ' is not supported. Use struct, function handle, char, iFunc object.' ]);
-  end
-  
-  % check parameter names wrt expression and dimensionality, ...
-  a = iFunc_private_check(a);
-  
-end % if nargin
+      
+      % can be a structure, or an expression, or a function_handle
+      for index=1:length(varargin)
+        a = [ a iFunc(varargin{index}) ];
+      end
+      return
+    elseif isa(varargin{1}, 'iData')
+      % create a model from a fixed data set
+      
+      a = iFunc_from_iData(varargin{1});
+      
+    else   % import data to create a single object
+      % can be a structure, or an expression, or a function_handle
+      this = varargin{1};
+      
+      if ischar(this) && ~isempty(dir(this))  % a filename
+        [p,f,e] = fileparts(this);
+        if strcmp(lower(e), '.m')
+          try
+            run(this);
+            if isa(ans, 'iFunc'), a=ans; end
+          end
+          if isempty(a)
+            try
+              a = eval(f);
+            end
+          end
+        elseif strcmp(lower(e), '.mat')
+          this=load(this);
+          f=fieldnames(this);
+          for index=1:numel(f)
+            if isa(this.(f{index}), 'iFunc')
+              a = [ a this.(f{index}) ];
+            end
+          end
+        end
+        if isempty(a) % other: JSON, YAML, XML will generate a structure when read
+          a = iFunc(iLoad(this));
+        end
+      elseif ischar(this) % ----------------------------------------------------------
+        % check if this is a predefined function
+        isfunction = 0;
+        try
+          if exist(this) == 2 && abs(nargin(this)) > 0 && nargout(this) == 1
+            isfunction = 1;
+          end
+        end
+        if isfunction
+          a=iFunc(feval(this));
+          a.Name = this;
+        else
+          % from a string/expression: analyse the expression to get the
+          % dimension and parameter names
+          a=iFunc;
+          if exist(this, 'file') || exist([ this '.m' ], 'file')
+            a.Name = this;
+            if exist([ this '.m' ], 'file'), this = [ this '.m' ]; end
+            disp([ mfilename ': building model from file ' this ' content (script/function using p,x,y,...).']);
+            this   = fileread(this);
+          end
+          a.Expression = this;
+        end
+      elseif iscell(this)
+        for index=1:numel(this)
+          try 
+            a = [ a iFunc(this{index}) ];
+          end
+        end
+        return
+      elseif isa(this, 'iFunc') % ------------------------------------------------
+        % make a copy of the initial object
+        a = this;
+      elseif isa(this, 'sw') | isa(this, 'spinw') % ------------------------------------------------
+        % convert spinw object into iFunc
+        a = sqw_spinw(this);
+      elseif isstruct(this) % ----------------------------------------------------
+        a = iFunc;
+        % identify if some of the structure fields can be directly used, and overlayed
+        if isfield(this, 'x0'),              a.Guess=this.x0;
+        elseif isfield(this, 'Guess'),       a.Guess=this.Guess; end
+        if isfield(this, 'objective'),       a.Expression=this.objective; end
+        if isfield(this, 'Expression'),      a.Expression=this.Expression; end
+        if isfield(this, 'pars'),            a.Parameters=this.pars;
+        elseif isfield(this, 'Parameters'),  a.Parameters=this.Parameters; end
+        if isfield(this, 'function'),        a.Name=this.function; 
+        elseif isfield(this, 'Name'),        a.Name=this.Name; end
+        if isfield(this, 'Description'),     a.Description=this.Description; end
+        if isfield(this, 'Constraint'),      a.Constraint=this.Constraint; end
+        if isfield(this, 'Dimension'),       a.Dimension=this.Dimension; end
+        if isfield(this, 'ParameterValues'), a.ParameterValues=this.ParameterValues; end
+        if isfield(this, 'UserData'),        a.UserData=this.UserData; end
+        
+      elseif isa(this, 'function_handle') % --------------------------------------
+        a = iFunc;  % empty object
+        if abs(nargout(this)) < 1
+          error(['iFunc:' mfilename ], '%s: function %s should return at least one output value.\n  signal=f(p, axes{:}, additional_arguments{:})', ...
+            mfilename, func2str(this));
+        end
+        if ~abs(nargin(this)) || ~abs(nargout(this))
+          error(['iFunc:' mfilename ], '%s: function %s should use at least one input and output arguments.\n  signal=f(p, x,y,z, ...)', ...
+            mfilename, func2str(this));
+        end
+        if exist(func2str(this))
+          a = feval(this);
+        else
+          a.Expression  = this;
+          if a.Dimension == 0
+            a.Dimension   = nargin(this) - 1;
+          end
+        end
+      else
+        error(['iFunc:' mfilename ], [mfilename ': import of ' inputname(1) ' of class ' class(this) ' is not supported. Use struct, function handle, char, iFunc object.' ]);
+      end
+      
+      % check parameter names wrt expression and dimensionality, ...
+      a = iFunc_private_check(a);
+      
+    end % if nargin
+  end % iFunc init
+end % methods
+
+end % classdef
 
 % ------------------------------------------------------------------------------
+
+

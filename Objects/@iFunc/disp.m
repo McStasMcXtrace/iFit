@@ -17,6 +17,8 @@ else
   iname = 'ans';
 end
 
+warning off MATLAB:structOnObject
+
 if numel(s_in) > 1
   eval([ iname ' = s_in;' ])
   eval([ 'display(' iname ');' ]); % makes sure the variable name is sent to 'display'.
