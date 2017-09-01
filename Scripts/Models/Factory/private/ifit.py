@@ -309,7 +309,7 @@ def phonons_run(phonon, single=True, difference='central'):
             print "[ASE] Computing equilibrium"
         phonons_run_eq(phonon, supercell)
         if single:
-            return True, len(signs)*len(phonon.indices)*3 # and some more iterations may be required
+            return len(signs)*len(phonon.indices)*3 # and some more iterations may be required
 
     # Positions of atoms to be displaced in the reference cell
     natoms = len(phonon.atoms)
@@ -391,9 +391,9 @@ def phonons_run(phonon, single=True, difference='central'):
             
             # then we derive the Cartesian basis 'force2' array and write files
             if single:
-                return True,nb_of_iterations # and some more iterations may be required
+                return nb_of_iterations # and some more iterations may be required
 
-    return False,0  # nothing left to do
+    return 0  # nothing left to do
 
 # ------------------------------------------------------------------------------
 def _phonons_move_is_independent(dxlist, dx, symprec=1e-6):
@@ -864,7 +864,7 @@ def phonopy_run(phonon, single=True, filename='FORCE_SETS'):
         set_of_forces, flag, nb_of_iterations = phonopy_run_calculate(phonon, phonpy, supercell, single)
         
         if flag is True:
-            return flag, nb_of_iterations # some more work is probably required
+            return nb_of_iterations # some more work is probably required
             
         sys.stdout.write('[ASE/Phonopy] Computing force constants\n')
         # use symmetry to derive forces in equivalent displacements
@@ -928,7 +928,7 @@ def phonopy_run(phonon, single=True, filename='FORCE_SETS'):
     for D in phonon.D_N:
         D *= M_inv
     
-    return False, nb_of_iterations  # nothing left to do
+    return 0  # nothing left to do
     
 # ------------------------------------------------------------------------------
 def phonopy_run_calculate(phonon, phonpy, supercell, single):

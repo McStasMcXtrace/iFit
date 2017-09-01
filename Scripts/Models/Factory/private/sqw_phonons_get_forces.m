@@ -21,6 +21,7 @@ function [options, sav] = sqw_phonons_get_forces(options, decl, calc)
     sav = sprintf('ph.calc=None\natoms.calc=None\nph.atoms.calc=None\n');
   end
   
+  % Call phonons. Return number of remaining steps in 'ret', or 0 when all done.
   % handle accuracy requirement
   if isfield(options.available,'phonopy') && ~isempty(options.available.phonopy) ...
     && options.use_phonopy
@@ -32,10 +33,10 @@ function [options, sav] = sqw_phonons_get_forces(options, decl, calc)
     ph_run = 'ret=ifit.phonons_run(ph, single=True, difference="forward")\n'; 
   elseif isfield(options, 'accuracy') && any(strcmpi(options.accuracy,{'slow','accurate'}))
     % slow: the default ASE routine: all moves, slower, more accurate
-    ph_run = 'ph.run(); ret=False\n';
+    ph_run = 'ph.run(); ret=0\n';
   else
     % fast (use symmetry operators from spacegroup)
-    ph_run = 'ifit.phonons_run(ph, single=True, difference="central")\n'; 
+    ph_run = 'ret=ifit.phonons_run(ph, single=True, difference="central")\n'; 
   end
   
   displ = options.disp;
@@ -72,22 +73,14 @@ function [options, sav] = sqw_phonons_get_forces(options, decl, calc)
     'atoms.set_calculator(calc)\n' ...
     '# Phonon calculator\n', ...
     sprintf('ph = Phonons(atoms, calc, supercell=(%i, %i, %i), delta=%f)\n',options.supercell, displ), ...
-    'ret = ' ph_run, ...
-    'if isinstance(ret, tuple): # multiple return values\n' ...
-    '    nb_of_iterations = ret[1]\n' ...
-    '    ret = ret[0]\n' ...
-    'else:\n' ...
-    '    nb_of_iterations = 1\n' ...
+    ph_run, ...
     'fid = open("phonon.pkl","wb")\n', ...
     'calc = ph.calc\n', ...
     sav, ...
     'pickle.dump(ph, fid)\n', ...
     'fid.close()\n', ...
     '# return the number of remaining steps\n', ...
-    'if ret:\n' ...
-    '    exit(nb_of_iterations)  # a single step was done\n' ...
-    'else:\n' ...
-    '    exit(0)  # no more steps required\n' ];
+    'exit(ret)\n' ];
     
   options.script_get_forces_finalize = [ ...
     '# python script built by ifit.mccode.org/Models.html sqw_phonons\n', ...
@@ -208,9 +201,8 @@ function [options, sav] = sqw_phonons_get_forces(options, decl, calc)
   nb_of_steps = 0;
   
   result = '';
-  st = 1;
+  st = 1; st_previous = Inf;
   t0 = clock;           % a vector used to compute elapsed/remaining seconds
-  move = 1;
   
   while st>0
     try
@@ -220,17 +212,17 @@ function [options, sav] = sqw_phonons_get_forces(options, decl, calc)
       else
         [st, result] = system([ precmd options.available.python ' ' fullfile(target,'sqw_phonons_forces_iterate.py') ]);
       end
-      % display result
-      disp(result)
       
       % the first return 'st' gives the max number of steps remaining
       % but one at least was done so far
       if ~nb_of_steps && st > 0, nb_of_steps = st+1; end
 
+      % display result
+      disp(result)
       options.status = result;
       sqw_phonons_htmlreport('', 'status', options);
       
-      if 0 < st && st <= nb_of_steps
+      if 0 <= st && st <= nb_of_steps
         % we have done so far nb_of_steps - st steps, which took etime(clock, t0)
         % so one step takes etime(clock, t0)/(nb_of_steps-st)
         time_per_step = etime(clock, t0)/(nb_of_steps-st);
@@ -245,8 +237,15 @@ function [options, sav] = sqw_phonons_get_forces(options, decl, calc)
         options.status = [ '[' datestr(now) '] ETA ' sprintf('%i:%02i:%02i', hours, minutes, seconds) ', ending on ' datestr(enddate) '. Remaining steps ' num2str(st) '/' num2str(nb_of_steps) ' [' num2str(round(nb_of_steps-st)/nb_of_steps*100) '%]'];
         disp([ mfilename ': ' options.status ]);
         sqw_phonons_htmlreport('', 'status', options);
+      else
+        % something is wrong. The phonon remaining displacement is inconsistent
+        break
       end
-      move = move+1;
+      % detect if we are stuck (and we are not finished)
+      if st == st_previous
+        break
+      end
+      st_previous = st;
     catch ME
       disp(result)
       disp(getReport(ME))
@@ -260,6 +259,14 @@ function [options, sav] = sqw_phonons_get_forces(options, decl, calc)
   end
   
   % now finalize ---------------------------------------------------------------
+  
+  % in principle, if all went OK, we have st == 0
+  if st ~= 0
+    % something got wrong
+    sqw_phonons_error([ mfilename ': failed some iterations of ASE script ' ...
+        fullfile(target,'sqw_phonons_iterate.py') ], options);
+    options = []; return
+  end
   
   % write the script in the target directory
   fid = fopen(fullfile(target,'sqw_phonons_forces_finalize.py'),'w');
