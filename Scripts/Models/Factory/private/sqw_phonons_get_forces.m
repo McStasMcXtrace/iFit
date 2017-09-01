@@ -187,6 +187,9 @@ function [options, sav] = sqw_phonons_get_forces(options, decl, calc)
   
   % moves ----------------------------------------------------------------------
   
+  % clean up any previous forces/phonon displacement pickle file
+  delete(fullfile(target,'phonon.*.pckl'))
+  
   % write the script in the target directory
   fid = fopen(fullfile(target,'sqw_phonons_forces_iterate.py'),'w');
   fprintf(fid, options.script_get_forces_iterate);
@@ -260,12 +263,13 @@ function [options, sav] = sqw_phonons_get_forces(options, decl, calc)
   
   % now finalize ---------------------------------------------------------------
   
-  % in principle, if all went OK, we have st == 0
+  % in principle, if all went OK, we have st == 0 (no more iteration needed)
   if st ~= 0
     % something got wrong
     sqw_phonons_error([ mfilename ': failed some iterations of ASE script ' ...
         fullfile(target,'sqw_phonons_iterate.py') ], options);
-    options = []; return
+    % we still continue in case it can be processed, building force constants (lucky)
+    % but result should be expected wrong...
   end
   
   % write the script in the target directory

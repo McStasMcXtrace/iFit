@@ -305,8 +305,6 @@ def phonons_run(phonon, single=True, difference='central'):
     # and will use the '0' forces in gradient
     if len(signs) == 1 and not isfile(phonon.name + '.eq.pckl'): 
         # Do calculation on equilibrium structure
-        if rank == 0:
-            print "[ASE] Computing equilibrium"
         phonons_run_eq(phonon, supercell)
         if single:
             return len(signs)*len(phonon.indices)*3 # and some more iterations may be required
@@ -942,8 +940,6 @@ def phonopy_run_calculate(phonon, phonpy, supercell, single):
         
     # Do calculation on equilibrium structure (used to improve gradient accuracy)
     supercell.set_calculator(phonon.calc)
-    if rank == 0 and not isfile(phonon.name + '.eq.pckl'):
-        print "[ASE/Phonopy] Computing equilibrium"
     feq = phonons_run_eq(phonon, supercell)
     for i, a in enumerate(phonon.indices):
         try:
@@ -955,7 +951,7 @@ def phonopy_run_calculate(phonon, phonpy, supercell, single):
     set_of_forces   = []
     for d in range(len(supercells)):
         # skip if this step has been done already.
-        filename = '%s.%d.pkl' % (phonon.name, d)
+        filename = '%s.%d.pckl' % (phonon.name, d)
         if isfile(filename):
             f = open(filename, 'rb')
             forces = pickle.load(f)
