@@ -862,7 +862,7 @@ def phonopy_run(phonon, single=True, filename='FORCE_SETS'):
         set_of_forces, flag, nb_of_iterations = phonopy_run_calculate(phonon, phonpy, supercell, single)
         
         if flag is True:
-            return nb_of_iterations # some more work is probably required
+            return nb_of_iterations # some more work is required
             
         sys.stdout.write('[ASE/Phonopy] Computing force constants\n')
         # use symmetry to derive forces in equivalent displacements
@@ -961,7 +961,6 @@ def phonopy_run_calculate(phonon, phonpy, supercell, single):
             disp = disps[d]
             scell = supercells[d]
             if rank == 0:
-                print "[ASE/Phonopy] Computing step %i/%i" % (d+1, len(supercells))
                 print "Moving  atom #%-3i %-3s    to " % \
                     (disp[0], scell.get_chemical_symbols()[disp[0]]), disp[1:]
             
@@ -992,7 +991,7 @@ def phonopy_run_calculate(phonon, phonpy, supercell, single):
                 f.close()
             
             # in single shot mode, we return when forces were computed
-            if single:
+            if single and d+1 < len(supercells):
                 return set_of_forces, True, len(supercells)-d-1
         
         # store the incremental list of forces

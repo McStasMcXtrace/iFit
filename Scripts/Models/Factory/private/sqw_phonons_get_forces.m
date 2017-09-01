@@ -225,7 +225,7 @@ function [options, sav] = sqw_phonons_get_forces(options, decl, calc)
       options.status = result;
       sqw_phonons_htmlreport('', 'status', options);
       
-      if 0 <= st && st <= nb_of_steps
+      if 0 <= st && st <= nb_of_steps && nb_of_steps
         % we have done so far nb_of_steps - st steps, which took etime(clock, t0)
         % so one step takes etime(clock, t0)/(nb_of_steps-st)
         time_per_step = etime(clock, t0)/(nb_of_steps-st);
