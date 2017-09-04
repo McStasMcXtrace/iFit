@@ -71,9 +71,7 @@ function h=plot(a, varargin)
 %   fscatter3: Felix Morsdorf, Jan 2003, Remote Sensing Laboratory Zuerich
 %   vol3d:     Joe Conti, 2004
 
-if ~isempty(get(0,'CurrentFigure'))
-  ih     = ishold;
-else ih=0; end
+
 
 h      = [];
 funcs  = []; % additional iFunc objects to plot afterwards...
@@ -81,12 +79,20 @@ method = '';
 args   = {};
 vargs  = {};
 
+if ~isempty(get(0,'CurrentFigure'))
+  fig = get(0,'CurrentFigure');
+  if ~strcmp(get(fig, 'HandleVisibility'),'on') % make sure we do not overwrite in a protected figure
+    method = 'figure ';
+  end
+  ih     = ishold;
+else ih=0; end
+
 % analyze input arguments
 if nargin == 1, 
-  h = iData_plot(a, '');
+  h = iData_plot(a, method);
 elseif length(varargin) == 1
   if ischar(varargin{1})
-    method=varargin{1};
+    method=[ method varargin{1} ];
     args = method;
   elseif isa(varargin{1},'iData')
     b = varargin{1};
@@ -111,10 +117,10 @@ else % multiple plot/methods to render
   while index <= length(varargin)  % parse input arguments and split with char/methods calls
     if ~isempty(varargin{index})
         if ischar(varargin{index})
-          method = varargin{index}; % plot stored iData objects with current method
-          hh = iData_plot(a, method, args{:});
+          method1 = [ method varargin{index} ]; % plot stored iData objects with current method
+          hh = iData_plot(a, method1, args{:});
           h =[ h(:) ;  hh(:) ];
-          a = []; method='';
+          a = [];
           hold on
         elseif isa(varargin{index},'iData') % store some iData objects until we plot them
           b = varargin{index};
