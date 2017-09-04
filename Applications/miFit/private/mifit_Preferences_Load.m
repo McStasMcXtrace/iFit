@@ -25,12 +25,14 @@ function config = mifit_Preferences_Load(file)
     if ~isfield(config, 'Fit_Verbose'),       config.Fit_Verbose      = 'no'; end
     if ~isfield(config, 'ProxyHost'),         config.ProxyHost        = ''; end
     if ~isfield(config, 'ProxyPort'),         config.ProxyPort        = 0; end
-    setappdata(mifit_fig, 'Preferences', config);
+    if ~isempty(mifit_fig), setappdata(mifit_fig, 'Preferences', config); end
     if isfield(config, 'FontSize')
       set(0,'defaultUicontrolFontSize', config.FontSize);
     end
   end
   
   % TODO: resize main panel. Is this really needed ?
-  handle = findobj(mifit_fig, 'Tag','Panel_DataSets');
-  set(handle, 'Units','normalized', 'Position',[0.002 0 0.99 0.99]);
+  if ~isempty(mifit_fig)
+    handle = findobj(mifit_fig, 'Tag','Panel_DataSets');
+    set(handle, 'Units','normalized', 'Position',[0.002 0 0.99 0.99]);
+  end

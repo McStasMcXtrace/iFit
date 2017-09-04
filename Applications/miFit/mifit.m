@@ -1,13 +1,15 @@
 function varargout = mifit(varargin)
 % miFit: a user interface to iFit
 %
-% data = mifit('data')  retrieves all data sets from the interface
-% data = mifit('pull') retrieves the selected data sets
+% data = mifit('data')      retrieves all data sets from the interface
+% data = mifit('pull')      retrieves the selected data sets
 % mifit('push', datasets)   replace existing data sets and append new ones
-% mifit('filename')     imports the file into a new Data set/Model
-% mifit(iData_object)   add the iData object into the interface Data stack
-% mifit(iFunc_object)   add the iFunc Model into the interface Models menu
+% mifit('filename')         imports the file into a new Data set/Model
+% mifit(iData_object)       add the iData object into the interface Data stack
+% mifit(iFunc_object)       add the iFunc Model into the interface Models menu
 % config = mifit('config')  retrieves the miFit configuration
+% mifit('exit')             closes miFit
+% mifit('reset')            reset miFit to its Factory settings
 %
 % Version: $Date$
 % (c) E.Farhi, ILL. License: EUPL.
@@ -53,7 +55,18 @@ function varargout = mifit(varargin)
     
     % look if the main window is opened
     fig = mifit_fig();
-    if isempty(fig) && nargin == 1 && strcmp(varargin{1},'File_Exit'), return; end
+    if isempty(fig) && nargin == 1
+      % interface does not exist yet. Handle high priority commands.
+      if strcmp(varargin{1},'File_Exit') || strcmpi(varargin{1},'exit'), return;
+      elseif strcmp(varargin{1},'File_Reset_Factory') ...
+      || strcmp(varargin{1},'reset') || strcmp(varargin{1},'factory')
+        file = fullfile(prefdir, [ mfilename '.ini' ]);
+        if ~isempty(dir(file)), delete(file); end
+        file = fullfile(prefdir, [ mfilename '.mat' ]);
+        if ~isempty(dir(file)), delete(file); end
+        return
+      end
+    end
     
     if isempty(fig) || ~ishandle(fig)
       fig = feval([ mfilename '_OpeningFcn' ]);
@@ -93,7 +106,13 @@ function varargout = mifit(varargin)
           elseif any(strcmpi(action,{'push','replace','merge'})) && nargin >= 2
             mifit_List_Data_push(varargin(2:end), 'replace');
             return
-          else
+          elseif any(strcmpi(action,{'exit','quit'}))
+            mifit_File_Exit;
+            return
+          elseif any(strcmpi(action,{'reset','factory'}))
+            mifit_File_Reset_Factory(action);
+            return
+          elseif ~isempty(action)
             try
               feval([ 'mifit_' action ], varargin{2:end});
             catch ME
@@ -275,7 +294,7 @@ function mifit_File_Preferences(varargin)
       'You can specify additional menu items by entering a cell (pairs)\n' ...
       '* Menu_<Label> = {''Item_Label'',''Command'', ...}' ], mfilename);
 
-  config1 = inputdlg(config, options);
+  config1 = uitable(config, options); % structure GUI as a Table (spreadsheet)
   if isempty(config1), return; end
   config = config1;
   % set new Preferences
@@ -321,17 +340,31 @@ function mifit_File_Reset(varargin)
     '{\bf{Reset now ?}}'}, 'miFit: Reset ?', ...
     'Reset', 'Cancel', 'Factory settings', ...
     options);
-  if ~strcmp(ButtonName, 'Cancel')
-    if ~strcmp(ButtonName, 'Reset') % Factory settings
-      file = fullfile(prefdir, [ mfilename '.ini' ]);
-      if ~isempty(dir(file)), delete(file); end
-      mifit_Preferences_Load();
-      % mifit_Preferences_Save();
+  if ~strcmpi(ButtonName, 'Cancel')
+    mifit_File_Reset_Factory(ButtonName);
+    
+    if ~strcmpi(ButtonName, 'Reset') % Factory settings
+      mifit_File_Exit;
+      mifit;
+    end
+  end
+  
+function mifit_File_Reset_Factory(ButtonName)
+  % File Reset or factory settings
+  if nargin == 0, ButtonName='Factory'; end
+  if ~strcmpi(ButtonName, 'Reset') % Factory settings
+    file = fullfile(prefdir, [ mfilename '.ini' ]);
+    if ~isempty(dir(file)), delete(file); end
+    file = fullfile(prefdir, [ mfilename '.mat' ]);
+    if ~isempty(dir(file)), delete(file); end
+    mifit_Preferences_Load();
+    % mifit_Preferences_Save();
+    if ~isempty(mifit_fig)
       setappdata(mifit_fig, 'Models',[]);
       setappdata(mifit_fig, 'Optimizers',[]);
-      file = fullfile(prefdir, [ mfilename '.mat' ]);
-      if ~isempty(dir(file)), delete(file); end
     end
+  end
+  if ~isempty(mifit_fig)
     hObject        = mifit_fig('List_Data_Files');
     set(hObject, 'String',[],'Value',[]);
     setappdata(mifit_fig, 'Data',[]);
@@ -339,14 +372,14 @@ function mifit_File_Reset(varargin)
     setappdata(mifit_fig, 'CurrentDataSetIndex', []);
     setappdata(mifit_fig, 'History', []);
     mifit_History_push();
+  end
 
-    file = fullfile(prefdir, [ mfilename '.log' ]);
-    if ~isempty(dir(file)), delete(file); end
-    
-    if ~strcmp(ButtonName, 'Reset') % Factory settings
-      mifit_File_Exit;
-      mifit;
-    end
+  file = fullfile(prefdir, [ mfilename '.log' ]);
+  if ~isempty(dir(file)), delete(file); end
+  
+  if ~strcmpi(ButtonName, 'Reset') % Factory settings
+    mifit_File_Exit;
+    mifit;
   end
   
 function mifit_File_Log(varargin)
@@ -837,7 +870,7 @@ function mifit_Optimizers_Configure(varargin)
     '* MaxIter - Maximum number of iterations allowed [ positive scalar ]' NL ...
     '* TolFun - Termination tolerance on the function value [ positive scalar ]' NL ...
     '* TolX - Termination tolerance on X [ positive scalar ]' ];
-  options1 = inputdlg(options, o);
+  options1 = uitable(options, o); % structure GUI as a Table (spreadsheet)
   if isempty(options1), return; end
   % look for changes in new options...
   fields = fieldnames(options);
