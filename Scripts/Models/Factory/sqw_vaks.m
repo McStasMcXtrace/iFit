@@ -7,6 +7,14 @@ function signal=sqw_vaks(varargin)
 %      Hamiltonian, valid for e.g. |k|<.3 rlu in a cubic 
 %      crystal and provides energies of TA1,TA2,LA,TO1 and TO2 modes.
 %
+% To build a model, you may use:
+%   sqw_vaks('gui')     displays a dialogue box
+%   sqw_vaks            same as above ('gui')
+%   sqw_vaks('KTaO3')   use parameters for KTaO3 perovskite
+%   sqw_vaks('BaTiO3')  use parameters for BaTiO3 perovskite
+%   sqw_vaks('SrTiO3')  use parameters for SrTiO3 perovskite
+%   sqw_vaks([ ... ])   use a 12 values vector as model parameters
+%
 % WARNING:
 %      Single intensity and line width parameters are used here.
 %      The HKL position is relative to the closest Bragg peak. 

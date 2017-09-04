@@ -7,8 +7,11 @@ function y=ngauss(varargin)
 %   The HalfWidth parameters are the Gaussian square root variances (Sigma). 
 %   The 'true' half width are thus 1.177*HalfWidth.
 %
-% To initiate n gaussians use: ngauss(n)
-% will result in an iFunc model of n Gaussian functions.
+% You may build a model using any of:
+%   ngauss('defaults')        builds a 2 Gaussians model
+%   ngauss(n)                 builds an n Gaussians model
+%   ngauss and ngauss('gui')  shows a Dialogue to enter the number of Gaussians.
+%   ngauss([ ... ])           use a 3n+1 values parameters for n Gaussians
 %
 % Reference: http://en.wikipedia.org/wiki/Gaussian_function
 %

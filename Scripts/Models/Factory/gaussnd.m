@@ -19,7 +19,7 @@ function y=gaussnd(varargin)
 % gaussnd('ResLibCal') extracts a 4D TAS resolution function from ResLibCal
 % gaussnd('defaults')
 %   builds a 2D Gaussian
-% gaussnd
+% gaussnd and gaussnd('gui')
 %   shows a Dialogue to enter the Gaussian matrix, widths or other option.
 %
 % input:  p: Gaussian model matrix (double, symmetric ndims*ndims)

@@ -6,8 +6,11 @@ function y=nlorz(varargin)
 %
 %   This expression assumes that the Amplitudes are independent from the Widths.
 %
-% to initiate n Lorentzian use: nlorz(n)
-% will result in an iFunc model of n Lorentzian functions.
+% You may build a model using any of:
+%   nlorz('defaults')       builds a 2 Lorentzians model
+%   nlorz(n)                builds an n Lorentzians model
+%   nlorz and nlorz('gui')  shows a Dialogue to enter the number of Lorentzians.
+%   nlorz([ ... ])          use a 3n+1 values parameters for n Lorentzians
 %
 % Reference: http://en.wikipedia.org/wiki/Lorenztian_function
 %

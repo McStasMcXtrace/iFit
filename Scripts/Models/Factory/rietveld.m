@@ -59,6 +59,8 @@ function y = rietveld(varargin)
 %
 % * a char with label/value pairs separated by ';' to build a structure.
 %
+% * the string 'defaults' or 'gui' to use a default model, or pop-up dialogue box.
+%
 % * All additional structure fields are sent to the McStas instrument model.
 %
 % Example: refine a NaCaAlF powder structure with the templateDIFF McStas instrument

@@ -50,7 +50,7 @@ function signal=sqw_phonons(configuration, varargin)
 %   is the usual syntax, such as sqw_phonons('POSCAR','qe','metal')
 % sqw_phonons('gui')
 %   shows a dialogue to select the phonon calculator configuration.
-% sqw_phonons('defaults')
+% sqw_phonons('defaults') or sqw_phonons
 %   uses a simple fcc Aluminium as example.
 % sqw_phonons(dir, calculator, options, ...)
 %   re-use an existing directory containing any of POSCAR, ASE atom object, PhonoPy
