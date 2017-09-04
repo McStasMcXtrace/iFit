@@ -275,7 +275,7 @@ function mifit_File_Preferences(varargin)
       'You can specify additional menu items by entering a cell (pairs)\n' ...
       '* Menu_<Label> = {''Item_Label'',''Command'', ...}' ], mfilename);
 
-  config1 = structdlg(config, options);
+  config1 = inputdlg(config, options);
   if isempty(config1), return; end
   config = config1;
   % set new Preferences
@@ -837,7 +837,7 @@ function mifit_Optimizers_Configure(varargin)
     '* MaxIter - Maximum number of iterations allowed [ positive scalar ]' NL ...
     '* TolFun - Termination tolerance on the function value [ positive scalar ]' NL ...
     '* TolX - Termination tolerance on X [ positive scalar ]' ];
-  options1 = structdlg(options, o);
+  options1 = inputdlg(options, o);
   if isempty(options1), return; end
   % look for changes in new options...
   fields = fieldnames(options);
