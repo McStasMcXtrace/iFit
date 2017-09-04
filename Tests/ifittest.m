@@ -32,6 +32,8 @@ for index=1:length(varargin)
   tests_list = [ tests_list{:} ;  getAllFiles(varargin{index}) ];
 end
 
+disp([ mfilename ': There are ' num2str(length(tests_list)) ' tests.' ]);
+
 % execute iteratively all tests
 % build wait bar from full test length
 t0 = clock;
@@ -52,22 +54,28 @@ for index=1:length(tests_list)
   if exist(f) ~= 2 || strcmp(f, mfilename) || ~strcmp(e, '.m')
     continue; % only for valid M-files
   end
+  
   % set short name of test
   if strncmp(p, pwd_test, length(pwd_test))
     p = p((length(pwd_test)+2):end);
   end
   tests_list{index} = fullfile(p,f);
+  disp([ mfilename ': executing test ' tests_list{index} ' -------------------' ]);
+  result = 'IGNORE';
+  
+  % display the waitbar
+  if length(tests_list) > 1
+    if ~ishandle(h)
+      % user closed the wait bar -> abort tests
+      disp([ mfilename ': user ABORT at ' tests_list{index} ]);
+      break
+    end 
+    waitbar(index/length(tests_list), h, ...
+        [ 'iFit test: ' tests_list{index} ' (close to Abort)' ]);
+  end
+  
   try
-    disp([ mfilename ': executing test ' tests_list{index} ' -------------------' ]);
-    
     result= feval(f); % no input args, returns 0/FAILED or 1/OK
-    if isnumeric(result)
-      if result, 
-        result = [ 'OK     ' f ]; 
-      else 
-        result = [ 'FAILED ' f ];
-      end
-    end
   catch exception
     if ~isempty(exception.stack),
       result = sprintf('ERROR  %s\t\t%s in %s:%i', ...
@@ -77,14 +85,16 @@ for index=1:length(tests_list)
     end
     errors{end+1} = exception;
   end
+  if isnumeric(result)
+    if result, result = [ 'OK     ' f ]; 
+    else       result = [ 'FAILED ' f ];
+    end
+  end
   
   % store result and update wait bar
   status{index} = result;
 
   if length(tests_list) > 1
-    if ~ishandle(h), break; end % user closed the wait bar -> abort tests
-    waitbar(index/length(tests_list), h, ...
-        [ 'iFit test: ' tests_list{index} ' (close to Abort)' ]);
     if any(strncmp(status{index},{'FAILE','ERROR'},5))
       if ishandle(h)
         set(h, 'Color','magenta');
@@ -94,6 +104,7 @@ for index=1:length(tests_list)
   end
   test_length = test_length+1;
 end
+
 if ishandle(h), delete(h); end
 
 % write report
