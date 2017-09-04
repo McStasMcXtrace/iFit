@@ -67,6 +67,7 @@ if isempty(cache) || isempty(strfind(option, 'cache'))
   struct_s=rmfield(struct_s,'Tag');
   % add the Aliases
   aliases=getalias(s);
+  warning off MATLAB:structOnObject
   for index=1:numel(aliases)
       alias=aliases{index};
       value = get(s,alias);
