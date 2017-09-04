@@ -20,6 +20,8 @@ else
   iname = 'ans';
 end
 
+warning off MATLAB:structOnObject
+
 % removes warnings during disp
 iData_private_warning('enter',mfilename);
  

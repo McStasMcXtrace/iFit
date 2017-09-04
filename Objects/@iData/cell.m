@@ -24,4 +24,6 @@ if length(s(:)) > 1
   s = s(1);
 end
 
-content = struct2cell(s);
+warning off MATLAB:structOnObject
+
+content = struct2cell(struct(s));

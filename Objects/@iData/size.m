@@ -14,8 +14,8 @@ function y=size(s, dim)
 % EF 23/09/07 iData implementation
 
 if numel(s) > 1  % this is an array of iData
-  if nargin > 1, y = size(struct(s), dim);
-  else           y = size(struct(s)); end
+  if nargin > 1, y = builtin('size', s, dim);
+  else           y = builtin('size', s); end
   return
 end
 
