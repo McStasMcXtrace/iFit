@@ -167,7 +167,7 @@ else
   
   % test for Octopus
   status.octopus = '';
-  for calc={'octopus','octopus_mpi'}
+  for calc={'octopus','octopus_mpi'}  % octopus_mpi is obsolete, 2nd choice.
     % now test executable
     [st,result]=system([ precmd calc{1} ' -v' ]);
     if any(st == 0:2)
@@ -178,6 +178,36 @@ else
   end
   if ~isempty(status.octopus)
     disp([ '  Octopus         (http://octopus-code.org/) as "' status.octopus '"' ]);
+  end
+  
+  % test for CP2K
+  status.cp2k = '';
+  for calc={'cp2k_shell','cp2k_shell.popt'}
+    % now test executable
+    [st,result]=system([ precmd 'echo EXIT | ' calc{1} ]);
+    if any(st == 0)
+        status.cp2k=calc{1};
+        st = 0;
+        break;
+    end
+  end
+  if ~isempty(status.cp2k)
+    disp([ '  CP2K            (http://www.cp2k.org/) as "' status.cp2k '"' ]);
+  end
+  
+  % test for SIESTA
+  status.siesta = '';
+  for calc={'siesta'}
+    % now test executable
+    [st,result]=system([ precmd 'echo | ' calc{1} ]);
+    if any(st == 0:1)
+        status.siesta=calc{1};
+        st = 0;
+        break;
+    end
+  end
+  if ~isempty(status.siesta)
+    disp([ '  SIESTA          (https://departments.icmab.es/leem/siesta/) as "' status.siesta '"' ]);
   end
   
 end

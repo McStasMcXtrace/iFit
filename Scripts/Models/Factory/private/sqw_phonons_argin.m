@@ -15,16 +15,16 @@ options.occupations= 'auto';          % could be auto, fixed, metal, semiconduct
 options.ecut       = 0;
 options.nbands     = 0;
 options.nsteps     = 0;
-options.toldfe     = 1e-5;  % required. When too low, the convergence gets difficult.
+options.toldfe     = 1e-5;            % required. When too low, the convergence gets difficult.
 options.command    = '';
 options.raw        = '';
 options.autoplot   = 0;
 options.gui        = nan;
 options.htmlreport = 0;
 options.optimizer  = '';
-options.accuracy   = 'very fast';  % can be 'fast' 'very fast' or 'accurate' (much slower)
-options.disp       = 0.01;    % displacement of atoms in Angs
-options.use_phonopy= 1;
+options.accuracy   = 'very fast';     % can be 'fast' 'very fast' or 'accurate' (much slower)
+options.disp       = 0.01;            % displacement of atoms in Angs
+options.use_phonopy= 1;               % PhonoPy when available
 
 % read input arguments
 for index=1:numel(varargin)
@@ -67,6 +67,10 @@ for index=1:numel(varargin)
       options.calculator = 'quantumespresso';
     elseif strcmpi(varargin{index},'octopus')
       options.calculator = 'octopus';
+    elseif strcmpi(varargin{index},'cp2k')
+      options.calculator = 'cp2k';
+    elseif strcmpi(varargin{index},'siesta')
+      options.calculator = 'siesta';
     
     % other options
     elseif strcmpi(varargin{index},'plot') || strcmpi(varargin{index},'autoplot')

@@ -35,7 +35,7 @@ function [options, sav] = sqw_phonons_get_forces(options, decl, calc)
     % slow: the default ASE routine: all moves, slower, more accurate
     ph_run = 'ph.run(); ret=0\n';
   else
-    % fast (use symmetry operators from spacegroup)
+    % fast (use symmetry operators from spacegroup), with +/- difference
     ph_run = 'ret=ifit.phonons_run(ph, single=True, difference="central")\n'; 
   end
   

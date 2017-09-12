@@ -146,6 +146,38 @@ case 'ABINIT'
   end
   calc = [ calc ')' ];
 
+case 'CP2K' % ==================================================================
+  if isempty(strfind(status.(lower(options.calculator)),'cp2k')) && isempty(options.command)
+    options.command = status.(lower(options.calculator));
+  end
+  if isfield(options,'mpi') && ~isempty(options.mpi) && options.mpi > 1
+    if isempty(options.command) options.command=status.(lower(options.calculator)); end
+    options.command = [ options.mpirun ' ' options.command ]; 
+  end
+  if ~isempty(options.command)
+    cmd = options.command;
+    setenv('ASE_CP2K_COMMAND', cmd);
+  end
+  
+  decl = 'from ase.calculators.cp2k import CP2K';
+  calc = 'calc = CP2K(uks=True';
+  
+  % not supported: kpoints smearing nbands toldfe
+  if options.ecut > 0
+    calc = [ calc sprintf(', cutoff=%g', options.ecut) ];
+  end
+  if options.nsteps > 0
+    calc = [ calc sprintf(', max_scf=%i', options.nsteps) ];
+  end
+  if ~isempty(options.xc)
+    calc = [ calc sprintf(', xc="%s"', options.xc) ];
+  end
+  
+  if ~isempty(options.raw)
+    calc = [ calc sprintf(', %s', options.raw) ];
+  end
+  calc = [ calc ')' ];
+
 case 'ELK' % ===================================================================
   % requires custom compilation with elk/src/modmain.f90:289 maxsymcrys=1024
 
@@ -156,11 +188,11 @@ case 'ELK' % ===================================================================
       disp([ '  ' options.potentials ])
       disp('  WARNING: if this is not the right location, use options.potentials=<location>');
     else
-      sqw_phonons_error([ mfilename ': ' options.calculator ': undefined "species". Use options.potentials=<location of elk/species>.' ], options)
+      sqw_phonons_error([ mfilename ': ' options.calculator ': undefined "species". Use options.potentials=<location of elk/species> or define the variable ELK_SPECIES_PATH.' ], options)
       return
     end
   end
-  if ~isempty(options.potentials)
+  if ~isempty(options.potentials) && isdir(options.potentials)
     setenv('ELK_SPECIES_PATH', [ options.potentials, filesep ]);
   end
   if ~strcmp(status.(lower(options.calculator)),'elk') && isempty(options.command)
@@ -182,7 +214,7 @@ case 'ELK' % ===================================================================
   calc = 'calc = ELK(tforce=True, tasks=0, mixtype=3'; % Pulay mixing
 
   if strcmp(options.occupations, 'auto')
-    % stypen: 1-2: MethfesselPaxton; 3:FermiDirac
+    % stype: 1-2: MethfesselPaxton; 3:FermiDirac
     calc=[ calc sprintf(', stype=3, autoswidth=True') ];
   elseif isscalar(options.occupations) && options.occupations >=0
     calc=[ calc sprintf(', stype=3, swidth=%g', options.occupations/Ha) ];
@@ -219,7 +251,7 @@ case 'EMT'
 case 'GPAW' % ==================================================================
   
   decl = 'from gpaw import GPAW, PW, FermiDirac';
-  calc = [ 'calc = GPAW(symmetry={"point_group": False}, txt="' fullfile(options.target,'gpaw.log') '"' ]; % because small displacement breaks symmetry
+  calc = [ 'calc = GPAW(symmetry={"point_group": True}, txt="' fullfile(options.target,'gpaw.log') '"' ]; % because small displacement breaks symmetry
   
   if isscalar(options.occupations) && options.occupations>=0 % smearing in eV
     calc=[ calc sprintf(', occupations=FermiDirac(%g)', options.occupations) ];
@@ -266,14 +298,22 @@ case 'OCTOPUS'
   if isfield(options,'mpi') && ~isempty(options.mpi) && options.mpi > 1
     if isempty(options.command) options.command=status.(lower(options.calculator)); end
     options.command = [ options.mpirun ' ' options.command ]; 
+    
   end
   if isempty(options.command), options.command=status.(lower(options.calculator)); end
   if ~isempty(options.command)
     setenv('ASE_OCTOPUS_COMMAND', options.command);
   end
-  
   decl = 'from ase.calculators.octopus import Octopus';
   calc = 'calc = Octopus(Output="dos + density + potential", OutputFormat="xcrysden", Spacing=0.25';
+  if ~isempty(options.command)
+    setenv('ASE_OCTOPUS_COMMAND', options.command);
+    calc = [ calc sprintf(', command="%s"', options.command) ];
+  end
+  if isfield(options,'mpi') && ~isempty(options.mpi) && options.mpi > 1
+    calc = [ calc ', ParStates = "auto", ParDomains = "auto"' ];
+  end
+  
   if all(options.kpoints > 0)
     calc = [ calc sprintf(', KPointsGrid=[[%i,%i,%i]], KPointsUseSymmetries=True', options.kpoints) ];
   end
@@ -326,7 +366,7 @@ case 'QUANTUMESPRESSO_ASE'
   
   
   decl = 'from qeutil import QuantumEspresso';
-  calc = [ 'calc = QuantumEspresso(use_symmetry=False, tstress=True, nspin=2,  label=atoms.get_chemical_formula(), wdir="' options.target '"' ]; % because small displacement breaks symmetry
+  calc = [ 'calc = QuantumEspresso(use_symmetry=True, tstress=True, nspin=2,  label=atoms.get_chemical_formula(), wdir="' options.target '"' ]; % because small displacement breaks symmetry
   
   if isscalar(options.occupations) && options.occupations>=0 % smearing in eV
     calc=[ calc sprintf(', occupations="smearing", smearing="methfessel-paxton", degauss=%g', options.occupations/Ry) ];
@@ -417,7 +457,9 @@ case {'QUANTUMESPRESSO','QUANTUMESPRESSO_PHON'}
   decl = [ 'sqw_phon(''' poscar ''', options); % QuantumEspresso/PHON wrapper' ];
   % sqw_phonons_htmlreport(fullfile(options.target, 'sqw_phonons.html'), 'init', options, decl);
   
+  % MAIN CALL to PHON <<<<<<<<<<<<<<<<<<<<<<<<
   signal=sqw_phon(poscar, options);
+  
   if isempty(signal), decl=[]; return; end
   
   % get 'atoms' back from python
@@ -432,6 +474,52 @@ case {'QUANTUMESPRESSO','QUANTUMESPRESSO_PHON'}
   end
   signal.UserData.calc = 'quantumespresso';
   signal.UserData.configuration = fileread(poscar);
+  
+% ==============================================================================
+case 'SIESTA'
+  if isfield(options,'mpi') && ~isempty(options.mpi) && options.mpi > 1
+    if isempty(options.command) options.command=status.(lower(options.calculator)); end
+    options.command = [ options.mpirun ' ' options.command ]; 
+  end
+  if isempty(options.command), options.command=status.(lower(options.calculator)); end
+  if ~isempty(options.command)
+    cmd = options.command;
+    if isempty(strfind(cmd, '%s'))
+      cmd = [ cmd ' < %s > %s' ];
+    end
+    setenv('SIESTA_COMMAND', cmd);
+  end
+  if isunix
+    if isempty(options.potentials) && isempty(getenv('SIESTA_PP_PATH'))
+      options.potentials='/usr/share/siesta/pseudo/';
+      disp([ mfilename ': ' options.calculator ': assuming atom species are in' ])
+      disp([ '  ' options.potentials ])
+      disp('  WARNING: if this is not the right location, use options.potentials=<location>');
+    end
+  end
+  if ~isempty(options.potentials) && isdir(options.potentials)
+    setenv('SIESTA_PP_PATH', options.potentials);
+  end
+  
+  decl = 'from ase.calculators.siesta import Siesta';
+  calc = [ 'calc = Siesta(spin="COLLINEAR"' ];
+  
+  if (options.ecut > 0)
+    calc = [ calc sprintf(', mesh_cutoff=%g', options.ecut) ];
+  end
+  if all(options.kpoints > 0)
+    calc = [ calc sprintf(', kpts=[%i,%i,%i]', options.kpoints) ];
+  end
+  if ~isempty(options.xc)
+    calc = [ calc sprintf(', xc="%s"', options.xc) ];
+  end
+  
+  if ~isempty(options.raw)
+    calc = [ calc sprintf(', %s', options.raw) ];
+  end
+  % missing: nsteps, nbands, pps, smearing, toldfe
+  
+  calc = [ calc ')' ];
   
 % ==============================================================================
 case 'VASP'
