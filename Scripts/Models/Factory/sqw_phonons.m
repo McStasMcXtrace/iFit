@@ -11,13 +11,15 @@ function signal=sqw_phonons(configuration, varargin)
 %   The phonon spectra is computed using one of the calculator supported by the
 %   Atomic Simulation Environment (ASE) <https://wiki.fysik.dtu.dk/ase>.
 %
-%   Supported calculators are:
+%   Supported calculators are (use name as input argument, or set 'calculator=...'):
 %     ABINIT    Plane-wave pseudopotential code
 %     ELK       Full Potential LAPW code
 %     EMT       Effective Medium Theory calculator (Al,Cu,Ag,Au,Ni,Pd,Pt,H,C,N,O)
 %     GPAW      Real-space/plane-wave/LCAO PAW code
+%     OCTOPUS
 %     QuantumEspresso_ASE Plane-wave pseudopotential code (with ASE/QE-util)
 %     QuantumEspresso     Plane-wave pseudopotential code (with PHON)
+%     SIESTA
 %     VASP      Plane-wave PAW code (when installed and licensed)
 %
 %   We recommend QuantumEspresso, GPAW, ABINIT and Elk.
@@ -149,8 +151,10 @@ function signal=sqw_phonons(configuration, varargin)
 %   options.mode='pw','fd', or 'lcao'      GPAW computation mode as Plane-Wave,
 %     Finite Difference, or LCAO (linear combination of atomic orbitals). Default is 'pw'.
 %   options.iscf='NC','PAW'                Type of SCF cycles (ABINIT) 
-%   options.pps = 'fhi' 'hgh' 'hgh.sc' 'hgh.k' 'tm' 'paw' 'pawxml' Type of database (ABINIT)
-%                 a structure such as struct('Ca','_pv') ... (VASP)
+%   options.pps = 'fhi' 'hgh' 'hgh.sc' 'hgh.k' 'tm' 'paw' 'pawxml'      (ABINIT)
+%                 a structure such as struct('Ca','_pv') ...              (VASP)
+%                 'fhi' 'tm'                                            (SIESTA)
+%                 'hscv_pbe' 'hscv_lda' 'hgh_lda' 'sg15'               (Octopus)
 %   options.mixing_beta=scalar             mixing factor for self-consistency
 %     default=0.7. use 0.3 to improve convergence (QuantumEspresso)
 %   options.mixing_ndim=scalar             number of iterations used in mixing

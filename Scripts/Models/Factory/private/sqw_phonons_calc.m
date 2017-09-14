@@ -61,7 +61,12 @@ case 'ABINIT'
     end
   end
   if isunix
-    if isempty(options.potentials), options.potentials='/usr/share/abinit/psp/'; end
+    if isempty(options.potentials), 
+      options.potentials='/usr/share/abinit/psp/'; 
+      disp([ mfilename ': ' options.calculator ': assuming pseudo-potentials are in' ])
+      disp([ '  ABINIT_PP_PATH=' options.potentials ])
+      disp('  WARNING: if this is not the right location, use options.potentials=<location>');
+    end
   end
   if ~isempty(options.potentials) && isdir(options.potentials)
     setenv('ABINIT_PP_PATH', options.potentials);
@@ -185,7 +190,7 @@ case 'ELK' % ===================================================================
   if isempty(options.potentials) && isempty(getenv('ELK_SPECIES_PATH'))
     if isunix, options.potentials = '/usr/share/elk-lapw/species';
       disp([ mfilename ': ' options.calculator ': assuming atom species are in' ])
-      disp([ '  ' options.potentials ])
+      disp([ '  ELK_SPECIES_PATH=' options.potentials ])
       disp('  WARNING: if this is not the right location, use options.potentials=<location>');
     else
       sqw_phonons_error([ mfilename ': ' options.calculator ': undefined "species". Use options.potentials=<location of elk/species> or define the variable ELK_SPECIES_PATH.' ], options)
@@ -305,7 +310,7 @@ case 'OCTOPUS'
     setenv('ASE_OCTOPUS_COMMAND', options.command);
   end
   decl = 'from ase.calculators.octopus import Octopus';
-  calc = 'calc = Octopus(Output="dos + density + potential", OutputFormat="xcrysden", Spacing=0.25';
+  calc = 'calc = Octopus(Output="dos + density + potential", OutputFormat="xcrysden", Spacing=0.25, ExperimentalFeatures=True, SpinComponents="spin_polarized"';
   if ~isempty(options.command)
     setenv('ASE_OCTOPUS_COMMAND', options.command);
     calc = [ calc sprintf(', command="%s"', options.command) ];
@@ -344,11 +349,11 @@ case 'OCTOPUS'
     elseif strcmpi(options.pps, 'nc')
       options.pps = 'sg15'; % ONCV
     end
-    calc = [ calc sprintf(', ExperimentalFeatures=True, PseudopotentialSet="%s"', options.pps) ];
+    calc = [ calc sprintf(', PseudopotentialSet="%s"', options.pps) ];
   end
   
   if isscalar(options.occupations) && options.occupations>=0 % smearing in eV, Gaussian
-    calc=[ calc sprintf(', Smearing=%g, SmearingFunction="spline_smearing"', options.occupations) ];
+    calc=[ calc sprintf(', Smearing=%g, SmearingFunction="cold_smearing"', options.occupations) ];
   end
   
   if options.nsteps > 0
@@ -492,32 +497,59 @@ case 'SIESTA'
   if isunix
     if isempty(options.potentials) && isempty(getenv('SIESTA_PP_PATH'))
       options.potentials='/usr/share/siesta/pseudo/';
-      disp([ mfilename ': ' options.calculator ': assuming atom species are in' ])
-      disp([ '  ' options.potentials ])
+      if ~isfield(options,'pps') || isempty(options.pps)
+        sublist = {'TM','tm','FHI','fhi'}; % test if we have sub-directories, TM first
+      else sublist = options.pps;
+      end
+      if ~iscell(sublist) sublist = { sublist lower(sublist) upper(sublist) }; end
+      for sub = sublist
+        if isdir(fullfile(options.potentials,sub{1}))
+          options.potentials = fullfile(options.potentials,sub{1});
+          break
+        end
+      end
+      disp([ mfilename ': ' options.calculator ': assuming pseudo-potentials are in' ])
+      disp([ '  SIESTA_PP_PATH=' options.potentials ])
       disp('  WARNING: if this is not the right location, use options.potentials=<location>');
     end
-  end
-  if ~isempty(options.potentials) && isdir(options.potentials)
-    setenv('SIESTA_PP_PATH', options.potentials);
   end
   
   decl = 'from ase.calculators.siesta import Siesta';
   calc = [ 'calc = Siesta(spin="COLLINEAR"' ];
-  
+  if ~isempty(options.potentials) && isdir(options.potentials)
+    calc = [ calc sprintf(', pseudo_path="%s"', options.potentials) ];
+  end
   if (options.ecut > 0)
     calc = [ calc sprintf(', mesh_cutoff=%g', options.ecut) ];
   end
   if all(options.kpoints > 0)
     calc = [ calc sprintf(', kpts=[%i,%i,%i]', options.kpoints) ];
   end
-  if ~isempty(options.xc)
+  if ~isempty(options.xc) % defines pseudo name as Element.psf (LDA) or Element.gga.psf (GGA)
     calc = [ calc sprintf(', xc="%s"', options.xc) ];
   end
   
   if ~isempty(options.raw)
     calc = [ calc sprintf(', %s', options.raw) ];
   end
-  % missing: nsteps, nbands, pps, smearing, toldfe
+  % missing: nsteps, smearing, toldfe in additional fdf tokens
+  fdf = '"SystemName":atoms.get_chemical_formula()';
+  % smearing: fdf_arguments={'OccupationFunction','MP', ...
+  %                          'ElectronicTemperature', options.occupations*1000*11.6}
+  if isscalar(options.occupations) && options.occupations >=0
+    fdf = [ fdf ', "OccupationFunction":"MP","ElectronicTemperature":' num2str(options.occupations*1000*11.6) ];
+  end
+  % nsteps:                  'MaxSCFIterations': options.nsteps
+  if options.nsteps > 0
+    fdf = [ fdf ', "MaxSCFIterations":' num2str(options.nsteps) ];
+  end
+  % toldfe:                  'DM.Energy.Tolerance': options.toldfe
+  if options.toldfe > 0
+    fdf = [ fdf ', "DM.EnergyTolerance":' num2str(options.toldfe) ];
+  end
+  if ~isempty(fdf)
+    calc = [ calc ', fdf_arguments={' fdf '}' ];
+  end
   
   calc = [ calc ')' ];
   
@@ -533,7 +565,12 @@ case 'VASP'
     setenv('VASP_COMMAND', options.command);
   end
   if isunix
-    if isempty(options.potentials), options.potentials='/usr/share/vasp/pseudo/'; end
+    if isempty(options.potentials), 
+      options.potentials='/usr/share/vasp/pseudo/';
+      disp([ mfilename ': ' options.calculator ': assuming pseudo potentials are in' ])
+      disp([ '  VASP_PP_PATH=' options.potentials ])
+      disp('  WARNING: if this is not the right location, use options.potentials=<location>');
+    end
   end
   if ~isempty(options.potentials) && isdir(options.potentials)
     setenv('VASP_PP_PATH', options.potentials);
