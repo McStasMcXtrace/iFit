@@ -28,7 +28,7 @@
           <li><a href="#mozTocId774280">Phenomenological
               linear/quadratic dispersion</a></li>
           <li><a href="#mozTocId897311">Phenomenological acoustic/optic
-              dispersion (quadratic)</a></li>
+              dispersion (quadratic) </a></li>
           <li><a href="#mozTocId990577">Phonon dispersion from ab-initio
               force estimate and dynamical matrix </a>
             <ul>
@@ -42,6 +42,9 @@
               <li><a href="#mozTocId486503">Specific options for GPAW</a></li>
               <li><a href="#mozTocId902505">Specific options for
                   QuantumEspresso/PHON</a></li>
+              <li><a href="#mozTocId269170">Specific options for Octopus</a></li>
+              <li><a href="#mozTocId227008">Specific options for Siesta</a></li>
+              <li><a href="#mozTocId294368">Specific options for VASP</a></li>
               <li><a href="#mozTocId577034">Choosing a calculator (DFT
                   code)</a></li>
               <li><a href="#mozTocId715775">Convergence issues: what to
@@ -71,6 +74,9 @@
     <hr style="width: 100%; height: 2px;">
     <div style="text-align: center;">Commands we use in this page: <span
         style="font-style: italic;">fits, <a href="#mozTocId775891">ifitmakefunc,
+
+
+
 
 
 
@@ -4921,7 +4927,7 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
     <br>
     An example is:<br>
     <pre><font color="#cc33cc">	</font>&gt;&gt; s=<font color="#3366ff">sqw_phonons</font>(POSCAR,<font color="#cc33cc">'ABINIT'</font>,<font color="#cc33cc">'nsteps=100; occupations=smearing; ecut=1000; pps=paw</font><font color="#cc33cc"><font color="#cc33cc">;</font>'</font>);</pre>
-    More options can be obtained from '<i>help sqw_phonons</i>'<br>
+    More options can be obtained from '<i>help sqw_phonons</i>':<br>
     <ul>
       <li><b>target</b>: The <font color="#cc33cc">'target=LOCATION'</font>
         argument can be set to save these files to a defined directory,
@@ -4980,7 +4986,7 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
           3 2]'</font>. Let <i>supercell</i>=0 (default) to set
         automatically the <i>supercell</i> from the number of atoms in
         the material cell as (1000/N)^(1/6).</li>
-      <li><b>calculator</b>: the calculator to use, see below.</li>
+      <li><b>calculator</b>: the calculator to use, see <a href="#mozTocId577034">below</a>.</li>
       <li><b>potentials</b>: pseudo potential directory to use, e.g. <font color="#cc33cc">'/usr/share/elk-lapw/species'</font>, <font color="#cc33cc">'/usr/share/abinit/psp'</font>, <font color="#cc33cc">'/usr/share/espresso/pseudo'</font>.</li>
       <li><b>diagonalization</b>: <font color="#cc33cc">'david'</font>
         or <font color="#cc33cc">'cg'</font>. or <font color="#cc33cc">'rmm-diis'</font>.
@@ -5031,8 +5037,8 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
 
 
 
-        is longer to execute (e.g. 3-6 times slower), but computes all
-        forces. <br>
+        is longer to execute (e.g. 3-6 times slower), and computes all
+        forces ignoring symmetry. <br>
       </li>
       <li><b>use_phonopy</b>: when set to 1, or using directly <i>sqw_phonons</i>(...,
 
@@ -5048,7 +5054,7 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
         used (using PHON methodology).<br>
       </li>
     </ul>
-    and specific DFT related options<br>
+    and more specific DFT related options:<br>
     <ul>
       <li><b> occupations</b>: For metallic and insulator systems, the <i>electron
 
@@ -5151,14 +5157,12 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
         one of <font color="#cc33cc">'NC' 'fhi' 'hgh' 'hgh.sc' 'hgh.k'
           'tm' 'paw'</font> <span class="st"><font color="#cc33cc">'pawxml'</font>
           which is then sent to <b>pps</b> below.</span>.</li>
-      <li><b>pps</b>: Type of pseudo potential database, any of <font color="#cc33cc">'fhi' 'hgh' 'hgh.sc' 'hgh.k' 'tm' 'paw'</font><span class="st"> <font color="#cc33cc">'pawxml'</font> which stand
-          for Fritz-Haber-Institute, Hartwigsen-Goedeker-Hutter
-          (with/without semi-core valence electrons), Troullier-Martins,
-          Projector-Augmented-Wave, and <a href="https://wiki.fysik.dtu.dk/gpaw/setups/pawxml.html">PAW
-            in XML</a> format (from GPAW). <font color="#cc33cc">'fhi'<font color="#000000"> is fast but not very accurate</font></font>.
-          <font color="#cc33cc">'hgh'</font> is usually better,<font color="#cc33cc"> 'pawxml'</font> is best. The </span><span class="st"><span class="st"><font color="#cc33cc">'pawxml'</font></span>
-          PP requires more iterations (e.g. <b>ecut=1500</b>; <b>nsteps=100</b>).<br>
-        </span></li>
+      <li><b>pps</b>: Type of pseudo potential database, any of<br></li><ul><li><font color="#cc33cc">'fhi' </font><span class="st">Fritz-Haber-Institute, </span><span class="st"><font color="#cc33cc"><font color="#000000">fast but not very accurate</font></font></span></li><li><font color="#cc33cc">'hgh' </font><span class="st">Hartwigsen-Goedeker-Hutter
+          (without semi-core valence electrons) rather fast and moderately accurate<br></span></li><li><font color="#cc33cc">'hgh.sc' </font><span class="st">Hartwigsen-Goedeker-Hutter
+          (with semi-core valence electrons)</span><span class="st"> rather fast and </span><span class="st"><span class="st">moderately </span>accurate</span></li><li><font color="#cc33cc">'hgh.k' </font><span class="st">Hartwigsen-Goedeker-Hutter
+          (high k)</span><span class="st"> rather fast and </span><span class="st"><span class="st">moderately </span>accurate</span></li><li><font color="#cc33cc">'tm' </font><span class="st">Troullier-Martins</span></li><li><font color="#cc33cc">'paw'</font><span class="st">&nbsp;</span><span class="st">Projector-Augmented-Wave from ATOMPAW, very good<br></span></li><li><span class="st"><font color="#cc33cc">'pawxml'</font> </span><span class="st"><a href="https://wiki.fysik.dtu.dk/gpaw/setups/pawxml.html">PAW
+            in XML</a> format (from GPAW)</span><span class="st"><span class="st"> the best, requires more iterations (e.g. <b>ecut=1500</b>; <b>nsteps=100</b>)</span></span><span class="st"><br>
+        </span></li></ul>
     </ul>
     <h5><a class="mozTocH5" name="mozTocId486503"></a><u>Specific
         options for GPAW</u></h5>
@@ -5192,32 +5196,8 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
 
           mode</a> as Plane-Wave, Finite Difference, or LCAO (linear
         combination of atomic orbitals). Can be <font color="#cc33cc">'pw','fd',</font>
-        or <font color="#cc33cc">'lcao'</font>. Default is <font color="#cc33cc">'fd'</font>. The <a href="https://wiki.fysik.dtu.dk/gpaw/documentation/lcao/lcao.html#lcao"><font color="#cc33cc">'lcao'</font></a> mode is fast for large
-        systems, and requires less memory.</li>
-    </ul>
-    <h5><u>Specific options for VASP</u></h5>
-    <ul>
-      <li><b>pps:</b> a structure such as <i>struct('K','_pv', 'Ca',
-          '_pv', 'Rb', '_pv', 'Sr', '_sv', 'Y',&nbsp; '_sv', 'Zr',
-          '_sv', 'Nb', '_pv', 'Cs', '_sv', 'Ba', '_sv', 'Fr', '_sv',
-          'Ra', '_sv', 'Sc', '_sv')</i><br>
-      </li>
-    </ul>
-    <blockquote> <br>
-      <blockquote><font color="#cc33cc">or better</font> <i>struct('B','_h','C','_h','N','_h','O','_h','F','_h','H','_h','Li','_sv','Be','_sv','Na',
-
-
-
-'_sv','Mg','_pv','K','_sv','Ca','_sv','Rb','_sv','Sr','_sv','Cs','_sv','Ba','_sv','Sc','_sv','Ti','_pv',
-'V','_pv','Cr','_pv','Mn','_pv','Fe','_pv','Ni','_pv','Cu','_pv','Y','_sv','Zr','_sv','Nb','_pv','Mo','_pv',
-'Tc','_pv','Ru','_pv','Rh','_pv','Pd','_pv','Hf','_pv','Ta','_pv','W','_pv','Re','_pv','Os','_pv','Al','_h',
-'Si','_h','P','_h','S','_h','Cl','_h','Ga','_h','Ge','_h','In','_d','Sn','_d','Tl','_d','Pb','_d','Bi','_d','Fr','_sv','Ra','_sv')</i></blockquote>
-    </blockquote>
-    <ul>
-    </ul>
-    <ul>
-    </ul>
-    <h5><a class="mozTocH5" name="mozTocId902505"></a><u>Specific
+        or <font color="#cc33cc">'lcao'</font>. Default is <font color="#cc33cc">'pw'</font>. The <a href="https://wiki.fysik.dtu.dk/gpaw/documentation/lcao/lcao.html#lcao"><font color="#cc33cc">'lcao'</font></a> mode is fast for large
+        systems, and requires less memory.</li></ul><h5><a name="mozTocId269170" class="mozTocH5"></a><u>Specific options for Octopus</u></h5><ul><li><b>pps</b>: Type of pseudo potential database, any of <br></li><ul><li><font color="#cc33cc">'standard' </font>LDA only for H, Li, C, N, O, Na, Si, S, Ti, Se, Cd<font color="#cc33cc"><br></font></li><li><font color="#cc33cc">'hscv_pbe' </font>Hamann-Schlueter-Chiang-Vanderbilt</li><li><font color="#cc33cc">'hscv_lda' </font>Hamann-Schlueter-Chiang-Vanderbilt</li><li><font color="#cc33cc">'hgh_lda' </font>(Hartwigsen-Goedecker-Hutter LDA pseudopotentials for elements from H to Rn)<font color="#cc33cc"><br></font></li><li><font color="#cc33cc">'sg15'</font> (Optimized Norm-Conserving Vanderbilt PBE up to Bi, no Lanthanides)</li></ul></ul><h5><a class="mozTocH5" name="mozTocId902505"></a><u>Specific
         options for QuantumEspresso/PHON</u></h5>
     <p>The <i>pseudopotentials</i><i> </i>are given as many
       filenames/directories (UPF format) suitable for QuantumEspresso.
@@ -5279,35 +5259,48 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
         PP selector</a>. We recommend the <a href="http://materialscloud.org/">SSSP library</a>, which is
       very accurate.<br>
     </p>
-    <ul>
-      <li><b>disp</b>: The generation of the supercell and the forces
+    <ul><li><b>disp</b>: The generation of the supercell and the forces
         can be tuned by choosing the <i>initial atom displacement</i>,
         or a random one. Use e.g. <font color="#cc33cc">'disp=[ 1 -1
           1]' </font>or <font color="#cc33cc">'disp=random'</font> or
-        <font color="#cc33cc">'random'</font> as argument. </li>
-      <li><b>potential_auto</b>: when set to 1, a 'good'
-        pseudo-potential will automatically be chosen (e.g. PBE/PAW).</li>
-      <li><b>potentials</b>: a list (cell) of UPF potential files to
+        <font color="#cc33cc">'random'</font> as argument. </li><li><b>potential_auto</b>: when set to 1, a 'good'
+        pseudo-potential will automatically be chosen (e.g. PBE/PAW).</li><li><b>potentials</b>: a list (cell) of UPF potential files to
         use. You may also specify a directory. If not specified, the
         user will be prompted for a list of sensible potentials, to
         select one per atom. The <b>potential_auto=1</b> skips the
         potential selection dialog, and selects a 'good' potential (PBE
-        PAW). A typical location is '/usr/share/espresso/pseudo'.</li>
-      <li><b>mixing_ndim</b>: number of iterations used in mixing,
+        PAW). A typical location is '/usr/share/espresso/pseudo'.</li><li><b>mixing_ndim</b>: number of iterations used in mixing,
         default=8. If you are tight with memory, you may reduce it to 4.
         A larger value will improve the SCF convergence, and use more
-        memory.</li>
-      <li><b>mixing_beta</b>: mixing factor for self-consistency,
-        default=0.7. use 0.3 to improve convergence.</li>
-    </ul>
+        memory.</li><li><b>mixing_beta</b>: mixing factor for self-consistency,
+        default=0.7. use 0.3 to improve convergence.</li></ul>
     <blockquote> If you have difficulties in the model SCF convergence,
       you may use e.g:<br>
       <pre>  &gt;&gt; s=<font color="#3366ff">sqw_phonons</font>(POSCAR,<font color="#cc33cc">'QuantumEspresso'</font>, <font color="#cc33cc">'nsteps=200; toldfe=1e-6; occupations=smearing; ecut=500; mixing_ndim=12; </font><font color="#cc33cc"><font color="#cc33cc">miximg_beta=0.3;</font>'</font>);</pre>
       If you are tight on the memory (e.g. the system is large), you may
       try (but it may not converge):<br>
-      <pre>  &gt;&gt; s=<font color="#3366ff">sqw_phonons</font>(POSCAR,<font color="#cc33cc"><font color="#cc33cc">'QuantumEspresso', </font></font><font color="#cc33cc">'ecut=15; mixing_ndim=4; diagonalization=cg'</font>);</pre>
+      <pre>  &gt;&gt; s=<font color="#3366ff">sqw_phonons</font>(POSCAR,<font color="#cc33cc"><font color="#cc33cc">'QuantumEspresso', </font></font><font color="#cc33cc">'ecut=15; mixing_ndim=4; diagonalization=cg'</font>);<br></pre></blockquote><h5><a name="mozTocId227008" class="mozTocH5"></a><u>Specific options for Siesta</u></h5><ul><li>
+    <b>potentials</b>: should be defined as a path to a directory containing the pseudo-potentials, e.g. <font color="#cc33cc">'/usr/share/siesta/pseudo/'</font> </li><li><b>pps</b>: Type of pseudo potential database, any of <br></li><ul><li><font color="#cc33cc">'fhi' </font><span class="st">Fritz-Haber-Institute (from ABINIT)</span><span class="st">.<br></span></li><li><font color="#cc33cc">'tm' </font><span class="st"></span><span class="st">Troullier-Martins (from NNIN). <br></span></li></ul></ul><ul>
+    </ul>
+    <h5><a name="mozTocId294368" class="mozTocH5"></a><u>Specific options for VASP</u></h5>
+    <ul>
+      <li><b>pps:</b> can be a structure to define explicitly which flavour of pseudo-potentials have to be used, per element, such as&nbsp;</li></ul><blockquote><blockquote><i>struct('K','_pv', 'Ca',
+          '_pv', 'Rb', '_pv', 'Sr', '_sv', 'Y',&nbsp; '_sv', 'Zr',
+          '_sv', 'Nb', '_pv', 'Cs', '_sv', 'Ba', '_sv', 'Fr', '_sv',
+          'Ra', '_sv', 'Sc', '_sv')</i><br>
+      </blockquote></blockquote><ul></ul><blockquote><blockquote><font color="#cc33cc">or better</font> <i>struct('B','_h','C','_h','N','_h','O','_h','F','_h','H','_h','Li','_sv','Be','_sv','Na',
+
+
+
+'_sv','Mg','_pv','K','_sv','Ca','_sv','Rb','_sv','Sr','_sv','Cs','_sv','Ba','_sv','Sc','_sv','Ti','_pv',
+'V','_pv','Cr','_pv','Mn','_pv','Fe','_pv','Ni','_pv','Cu','_pv','Y','_sv','Zr','_sv','Nb','_pv','Mo','_pv',
+'Tc','_pv','Ru','_pv','Rh','_pv','Pd','_pv','Hf','_pv','Ta','_pv','W','_pv','Re','_pv','Os','_pv','Al','_h',
+'Si','_h','P','_h','S','_h','Cl','_h','Ga','_h','Ge','_h','In','_d','Sn','_d','Tl','_d','Pb','_d','Bi','_d','Fr','_sv','Ra','_sv')</i></blockquote>
     </blockquote>
-    <h5><a class="mozTocH5" name="mozTocId577034"></a><u>Choosing a
+    <ul>
+    </ul>
+    <ul>
+    </ul><h5><a class="mozTocH5" name="mozTocId577034"></a><u>Choosing a
         calculator (DFT code)</u></h5>
     <p>The <b>sqw_phonons</b> model may use any of the calculators
       listed below:<br>
@@ -5408,8 +5401,8 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
         <tr>
           <td valign="top"><a href="http://wiki.fysik.dtu.dk/gpaw"><img alt="GPAW" title="GPAW" src="images/logo-gpaw.png" border="0" align="middle" width="80" height="39"> </a><a href="http://wiki.fysik.dtu.dk/gpaw">GPAW</a><a href="http://wiki.fysik.dtu.dk/gpaw"><br>
             </a></td>
-          <td valign="top">Real-space/plane-wave/LCAO PAW code. Potential issues with MPI.<br></td>
-          <td valign="top"><font color="#ff0000">4548</font><br>
+          <td valign="top">Real-space/plane-wave/LCAO PAW code. <br></td>
+          <td valign="top">465<br>
           </td>
           <td valign="top">1.5<br>
           </td>
@@ -5420,7 +5413,7 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
               limited.</i><br>
           </td><td valign="top">0.9<br>
           </td><td valign="top"><br>
-          </td></tr>
+          </td></tr><tr><td valign="top"><a href="http://octopus-code.org">Octopus</a><br></td><td valign="top"><br></td><td valign="top"><br></td><td valign="top"><br></td></tr><tr><td valign="top"><a href="https://departments.icmab.es/leem/siesta/">Siesta</a><br></td><td valign="top"><br></td><td valign="top"><br></td><td valign="top"><br></td></tr>
         
       </tbody>
     </table>
@@ -5455,7 +5448,7 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
         recompiling. The Debian package we provide is done so.<br>
       </li>
       <li>Elk is hardly sensitive to the energy cut-off in
-        results and computational needs.</li>
+        results and computational needs.</li><li>NWChem and Dacapo calculators are not supported as they do not provide reliable results for phonon calculations.</li>
       
       <li>Refer to <a href="https://molmod.ugent.be/deltacodesdft">https://molmod.ugent.be/deltacodesdft</a>
         for codes comparison. Currently, best codes are QE with SSSP,

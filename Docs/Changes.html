@@ -41,10 +41,12 @@
           <li><a href="#mozTocId383867">Import of a text file fails</a></li>
           <li><a href="#mozTocId888843">Model sqw_phonon fails with
               Dacapo/Jacapo and MPI</a></li>
+          <li><a href="#mozTocId62902">Matlab crashes when displaying 3D
+              plots</a></li>
+          <li><a href="#mozTocId16941">miFit/matlab crashes when
+              starting/loading/saving</a></li>
         </ol>
       </li>
-      <li><a href="#mozTocId62902">Matlab crashes when displaying 3D
-          plots</a></li>
     </ol>
     <hr style="width: 100%; height: 2px;">
     <h3><a class="mozTocH3" name="mozTocId919749"></a>Releases and
@@ -52,6 +54,10 @@
     </h3>
     <span style="font-weight: bold;"></span>
     <ul>
+      <li><b>2.0</b>: new iData and iFunc storage class. See <a
+          href="#mozTocId16941">here</a> if you experience load/save
+        crashes.<br>
+      </li>
       <li><b>1.10</b>: new <a href="McStas.html">mccode</a> model
         maker, replacing the 'mcstas' function. New mccode_mcdisplay
         function which does not require external libraries. New <a
@@ -66,6 +72,7 @@
         allow export as HTML report and more coordinate frame choices,
         added FLEXX config. <a
 href="https://github.com/McStasMcXtrace/iFit/issues?q=is%3Aissue+is%3Aclosed+label%3A%22release+1.10%22">List
+
 
           of tickets</a> for this release. (Aug 22nd 2017)<br>
       </li>
@@ -97,10 +104,12 @@ href="https://github.com/McStasMcXtrace/iFit/issues?q=is%3Aissue+is%3Aclosed+lab
 
 
 
+
             of Tickets</a> for this release.</small><br>
       </li>
       <li><small><b>1.8</b>: read <a
 href="https://www.ill.eu/instruments-support/instruments-groups/instruments/cyclops/description/instrument-layout/">ILL
+
 
 
 
@@ -196,6 +205,7 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
 
 
 
+
           method. Added predefined TAS configurations in <a
             href="../Applications/ResLibCal/doc/ResLibCal.html">ResLibCal</a>
           and cross-checked computation methods. Fix TAS angles in 3D
@@ -230,6 +240,7 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
           NetCDF/CDF/NeXus/HDF support, import/export of <a
             href="http://www.mantidproject.org">Mantid</a> workspaces
           (HDF/NeXus), import of <a href="http://www.wavemetrics.com/">Igor
+
 
 
 
@@ -375,6 +386,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
 
 
 
+
             Computing Toolbox</a> (when available), improved
           interpolation, added <span style="font-style: italic;">meshgrid</span>,
           <span style="font-style: italic;">rotate, </span>radial
@@ -382,6 +394,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
               style="font-style: italic;">cart2sph</span></a>), better
           support for event files, save of iFunc models to m-files.
           Added simple models for <a href="Models.html#mozTocId285330">small
+
 
 
 
@@ -492,6 +505,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
 
 
 
+
           fix of the <a href="Optimizers.html">Levenberg-Marquardt
             optimizer</a>, improved Error propagation for unary
           operators, support for <a href="Loaders.html">import</a> of
@@ -501,6 +515,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
           &gt;= 2010, added many <a href="Models.html">fit models</a>
           including 2D functions <span style="font-style: italic;">signal=f(x,y)</span>.
           Improved speed by e.g. +25% <span style="font-style: italic;">(Feb
+
 
 
 
@@ -601,6 +616,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
 
 
 
+
             6th, 2011</span>). Added correlation function method, plus a
           number of minor improvements (esp. in plot contextual menus),
           and bug fix for McStas 1D data set import <span
@@ -608,6 +624,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
         <span style="font-weight: bold;"></span></li>
       <li><small><span style="font-weight: bold;">1.0</span>: First
           official iFit release <span style="font-style: italic;">(August
+
 
 
 
@@ -707,6 +724,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
     inaccurate results. One solution is to re-sample the signals with
     more points. For <a href="iData.html">iData</a> objects, this can
     be achieved with e.g. the <span style="font-style: italic;">interp(object,
+
 
 
 
@@ -1089,7 +1107,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
     <blockquote>
       <pre>% sudo ln -s /usr/lib/libmpi_f90.so.1 /usr/lib/libmpi_f77.so.0</pre>
     </blockquote><font color="#ff0000">
-    Warning: </font>We do not recommend using Dacapo/Jacapo, as this software is not maintained anymore.<br><h3><a name="mozTocId62902" class="mozTocH3"></a>Matlab crashes when displaying 3D plots</h3>Since Matlab R2014b, the underlying infrastructure for display of plots has been fully revamped. As a consequence, displays are much nicer, but also much slower to render. Also, depending on the graphics card/driver installed on the computer, Matlab may crash with messages such as:<br><blockquote><pre>Nativewindow X11 IOError: Display 0x7f44e040e8b0 (:0.0): Bad address</pre><pre>MATLAB: javainit.cpp:1411: void {anonymous}::mwJavaAbort(): Assertion `Fatal Java Exception.&nbsp; See Java Crash Report for details.' failed.</pre></blockquote>A way to get things fixed is to switch to the software OpenGL rendering. Start Matlab and type immediately:<br><ul><li><font color="#3366ff">opengl</font> <font color="#cc33cc">save software</font></li></ul>then exit Matlab and restart it.<br><br>The immediate consequence is that all works (good), but also it gets even slower (!!!). Calculations are not affected.<br><br>
+    Warning: </font>We do not recommend using Dacapo/Jacapo, as this software is not maintained anymore.<br><h4><a name="mozTocId62902" class="mozTocH3"></a>Matlab crashes when displaying 3D plots</h4>Since Matlab R2014b, the underlying infrastructure for display of plots has been fully revamped. As a consequence, displays are much nicer, but also much slower to render. Also, depending on the graphics card/driver installed on the computer, Matlab may crash with messages such as:<br><blockquote><pre>Nativewindow X11 IOError: Display 0x7f44e040e8b0 (:0.0): Bad address</pre><pre>MATLAB: javainit.cpp:1411: void {anonymous}::mwJavaAbort(): Assertion `Fatal Java Exception.&nbsp; See Java Crash Report for details.' failed.</pre></blockquote>A way to get things fixed is to switch to the software OpenGL rendering. Start Matlab and type immediately:<br><ul><li><font color="#3366ff">opengl</font> <font color="#cc33cc">save software</font></li></ul>then exit Matlab and restart it.<br><br>The immediate consequence is that all works (good), but also it gets even slower (!!!). Calculations are not affected.<br><h4><a name="mozTocId16941" class="mozTocH4"></a>miFit/matlab crashes when starting/loading/saving</h4>The storage class for iData and iFunc has changed. This makes old '.mat' files crash when imported. To solve this issue, you should start a previous version of iFit (e.g. 1.10) and export your objects into e.g. HDF5 files. Then, with the new iFit version, import back this files to recreate the same iData objects.<br><br>With miFit, you may reset the application with:<br><ul><li><font color="#3366ff">mifit</font> <font color="#cc33cc">reset</font><br></li></ul>which fully resets its configuration and data to the factory settings. Your existing data stored in miFit will be lost. Alternatively, you may start an older iFit version (e.g. 1.10), and export the workspace items into e.g. HDF5. Then start the new miFit interface (from iFit 2.x), and load the HDF5 files in the workspace.<br><br>
     <hr style="width: 100%; height: 2px;">
     <div style="text-align: center;">
       <div style="text-align: center;"><span style="font-style: italic;">E.
