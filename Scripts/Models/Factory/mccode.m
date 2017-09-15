@@ -1,5 +1,5 @@
-function y = mccode(instr, options)
-% y = mccode(instr, options) : McCode (McStas/McXtrace) instrument
+function y = mccode(instr, options, parameters)
+% y = mccode(instr, options, parameters) : McCode (McStas/McXtrace) instrument
 %
 %   iFunc/mccode a McCode instrument
 %     y=model instrument
@@ -30,13 +30,16 @@ function y = mccode(instr, options)
 %                        this can be a wildcard expression.
 %   options.mccode:      set the executable path to 'mcrun' (default, neutrons) or 'mxrun' (xrays)
 %   options.mpirun:      set the executable path to 'mpirun'
-%   options.compile:     0 or 1 to force re-compilation of the executable.
-%                          try that first if you can not create/use the object (old 
-%                          executable may be used).
+%   options.compile:     0 or 1 to compilation the executable. The default is to compile.
+%
 %   All options are stored and assignable in model.UserData.options.
 %   options can also be given as a string, e.g. 'ncount=1e6; monitor=*Theta*; compile=1'
 %   the 'monitor' option can also include further expressions, such as:
 %     options.monitor='*Theta*; signal=max(signal)/std(signal)^2;'
+%
+% mccode(description, options, parameters) 
+%   Specifies the instrument parameters values to use as default. These values can
+%   be given as a string e.g. 'QM=1; lambda=2.36' or a structure.
 %
 % The instrument parameters of type 'double' are used as model parameters. Other
 % parameters (e.g. of type string and int) are stored in UserData.Parameters_Constant
@@ -129,6 +132,12 @@ options = instrument_parse_options(options);
 if isempty(options.dir), 
   options.dir = tempname; 
   mkdir(options.dir);
+end
+if nargin < 3, 
+  parameters = [];
+end
+if ischar(parameters)
+  parameters = str2struct(parameters);
 end
 
 % get the instrument. If not available, search for one in a McCode installation
@@ -241,9 +250,14 @@ y.Parameters = fieldnames(UserData.Parameters);
 % set starting configuration (Guess)
 c = struct2cell(UserData.Parameters);
 f = fieldnames(UserData.Parameters);
+
 y.Guess = [];
 for index=1:numel(c)
   this = c{index};
+  % override defined value in instrument with that given in 'parameters' input arg.
+  if isfield(parameters, f{index})
+    this = parameters.(f{index});
+  end
   if ~isempty(this) && isfinite(this), 
        y.Guess(end+1) = this; 
   else y.Guess(end+1) = nan; end
@@ -377,8 +391,16 @@ disp([ mfilename ': Determining the model dimension...' ]);
 ncount = options.ncount;
 y.UserData.options.ncount = 1e2;  % fast as we only need the size and position
 y.UserData.monitors    = [];
-[signal,y] = feval(y,y.Guess, nan);
-signal = y.UserData.monitors;     % get all monitors
+
+% evaluate the model. This may fail if some ERROR is raised by the
+% instrument itself (e.g. missing input parameter, wrong configuration,
+% ...)
+try
+    [signal,y] = feval(y,y.Guess, nan);
+    signal = y.UserData.monitors;     % get all monitors
+catch
+    signal = [];
+end
 y.UserData.options.ncount = ncount;
 if isa(signal,'iData')
   if numel(signal) > 1  % get the last one
@@ -424,7 +446,7 @@ function options = instrument_parse_options(options)
   if ~isfield(options,'mccode'),     options.mccode     = []; end
   if ~isfield(options,'mpirun'),     options.mpirun     = 'mpirun'; end
   if ~isfield(options,'trace'),      options.trace      = ''; end
-  if ~isfield(options,'compile'),    options.compile    = 0; end
+  if ~isfield(options,'compile'),    options.compile    = 1; end
   
 % ------------------------------------------------------------------------------
 function present = mccode_check(options)
