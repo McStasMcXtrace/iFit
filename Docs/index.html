@@ -25,6 +25,9 @@
 
 
 
+
+
+
           - @IFIT_DATE@</span></span><br>
       <a href="http://ifit.mccode.org"><img alt="iFit" title="iFit"
           src="images/iFit-logo.png" border="0" width="116" height="64"></a><br>
@@ -32,30 +35,11 @@
     <ul id="mozToc">
       <!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6-->
       <li><a href="#mozTocId127491">Purpose</a></li>
-      <li><a href="#mozTocId318588">Obtaining the package</a></li>
-      <li><a href="#mozTocId969915">What's in the box...</a>
-        <ul>
-          <li><a href="#mozTocId480595">The miFit User interface: the
-              iFit main window</a></li>
-          <li><a href="#mozTocId751903">The iData objects (iFit/@iData):
-              the core data set </a></li>
-          <li><a href="#mozTocId419212">The iFunc objects (iFit/@iFunc):
-              the core model</a></li>
-          <li><a href="#mozTocId858815">The optimization library
-              (iFit/Optimizers)</a></li>
-          <li><a href="#mozTocId526330">The fit functions/models
-              (iFit/Models)</a></li>
-          <li><a href="#mozTocId897464">The lower level import routines
-              (iFit/Loaders) </a></li>
-          <li><a href="#mozTocId300912">The documentation (iFit/Docs)</a></li>
-          <li><a href="#mozTocId338083">Example data files (iFit/Data)</a></li>
-          <li><a href="#mozTocId54326">Interfaces with other software
-              and Graphical front-ends (iFit/GUI)</a></li>
-        </ul>
-      </li>
+      <li><a href="#mozTocId969915">Main functionalities</a></li>
       <li><a href="#mozTocId755938">Ok, let's start ! </a></li>
       <li><a href="#mozTocId639966">For beginners</a></li>
       <li><a href="#mozTocId66420">Help me !</a></li>
+      <li><a href="#mozTocId318588">Obtaining the package</a></li>
       <li><a href="#mozTocId93435">Credits, Links and Disclaimer </a></li>
     </ul>
     <hr style="width: 100%; height: 2px;">
@@ -77,12 +61,15 @@
       [ <a href="miFit.html">miFit</a> <a href="Python.html">PyFit</a>
       <a href="Models_Phonons.html"> Phonons</a> <a
         href="../Applications/ResLibCal/doc/ResLibCal.html">ResLibCal</a>
-      ]<br>
+      <a href="McStas.html">McStas</a> ]<br>
       <br>
       <div style="text-align: left;">
         <h3><a class="mozTocH3" name="mozTocId127491"></a>Purpose</h3>
         The <span style="font-style: italic; font-weight: bold;">iFit</span>
         library (pronounce [<span style="font-style: italic;">eye-fit</span>])
+
+
+
         is a set of methods to load, analyze, plot, fit and optimize
         models, and export results. <span style="font-style: italic;">iFit</span>
         is based on <a href="http://www.mathworks.com">Matlab</a>, but
@@ -96,39 +83,128 @@
         dimensionality can be handled, including event based data sets
         (even though not all methods do work for these). Any model can
         be assembled for fitting data sets.<br>
-        <br>
-        <i><b>iFit</b></i> can also be used transparently from <a
-          href="http://python.org/">Python </a>/ <a
-          href="http://www.numpy.org/">NumPy</a>. Refer to our <a
-          href="Python.html">PyFit</a> documentation. <a
-          href="http://python.org/"><img alt="Python" title="Python"
-            src="images/python-logo.gif" border="0" align="right"
-            width="100" height="34"></a><a href="http://www.numpy.org/"><img
-            alt="NumPy" title="NumPy" src="images/numpy_logo.png"
-            border="0" align="right" width="100" height="34"></a><br>
-        <br>
-        The spirit of the library is to include object definitions, with
-        a set of methods that provide all the means to perform the usual
-        data analysis procedures.<br>
+        <div align="center"><img alt="Animated features" title="Animated
+            features" src="images/animated.gif" width="560" height="420"><br>
+        </div>
+        <div align="center"> <i>A gallery of some of the things iFit
+            can do</i><br>
+        </div>
         <ul>
-          <li>The <a href="iData.html">iData</a> object holds any data
-            set</li>
-          <li>The <a href="iFunc.html">iFunc</a> object holds any
-            mathematical model function (for e.g. fitting)<br>
-          </li>
         </ul>
-        In addition, there are a number of specific 'show case'
-        applications:<br>
-        <ul>
-          <li><a href="miFit.html">Main user interface</a> (miFit)</li>
-          <li><a href="Models_Phonons.html">Phonon</a> calculation with
-            neutron scattering intensity estimate (using transparently a
-            DFT code)</li>
-          <li><a href="../Applications/ResLibCal/doc/ResLibCal.html">Neutron
-              triple-axis-spectrometer</a> modelling (ResLibCal)</li>
-          <li><a href="McStas.html">McCode Monte-Carlo ray-trace
-              instrument simulation</a> (neutron/X rays)</li>
-        </ul>
+        <h3><a class="mozTocH3" name="mozTocId969915"></a>Main
+          functionalities<br>
+        </h3>
+        The iFit package constitutes a full data analysis
+        infrastructure. To summarize, we list below the most important
+        resources you may use:<br>
+        <br>
+        <table border="1" width="100%" cellspacing="2" cellpadding="2">
+          <tbody>
+            <tr>
+              <td valign="top"><a href="iData.html">iData</a></td>
+              <td valign="top">the main container for data sets</td>
+            </tr>
+            <tr>
+              <td valign="top"><a href="Load.html">Load</a></td>
+              <td valign="top">how to import data sets into iData
+                objects</td>
+            </tr>
+            <tr>
+              <td valign="top"><a href="Plot.html">Plot</a></td>
+              <td valign="top">how to plot a data set (1D, 2D, 3D and
+                above)</td>
+            </tr>
+            <tr>
+              <td valign="top"><a href="Math.html">Math</a></td>
+              <td valign="top">plenty of math to work with data sets</td>
+            </tr>
+            <tr>
+              <td valign="top"><a href="Fit.html">Fit</a></td>
+              <td valign="top">how to fit a model onto a data set (using
+                an optimizer)<br>
+              </td>
+            </tr>
+            <tr>
+              <td valign="top"><a href="Save.html">Save</a></td>
+              <td valign="top">saving data sets<br>
+              </td>
+            </tr>
+            <tr>
+              <td valign="top"><a href="Optimizers.html">Optimization</a></td>
+              <td valign="top">routines for optimisation of anything
+                (including models)<br>
+              </td>
+            </tr>
+            <tr>
+              <td valign="top"><a href="iFunc.html">iFunc</a></td>
+              <td valign="top">the main model object<br>
+              </td>
+            </tr>
+            <tr>
+              <td valign="top"><a href="Loaders.html">File formats</a></td>
+              <td valign="top">a list of supported input file formats
+                (for data sets and models)<br>
+              </td>
+            </tr>
+            <tr>
+              <td valign="top"><a href="miFit.html">miFit</a></td>
+              <td valign="top">the main iFit user interface (for those
+                avoiding command lines)<br>
+              </td>
+            </tr>
+            <tr>
+              <td valign="top"><a href="Python.html">PyFit</a></td>
+              <td valign="top">using iFit from Python<a
+                  href="http://python.org/"><img alt="Python"
+                    title="Python" src="images/python-logo.gif"
+                    border="0" align="right" width="100" height="34"></a></td>
+            </tr>
+          </tbody>
+        </table>
+        <br>
+        In addition, we provide some higher level applications:<br>
+        <br>
+        <table border="1" width="100%" cellspacing="2" cellpadding="2">
+          <tbody>
+            <tr>
+              <td valign="top"><a href="Models.html">Models</a></td>
+              <td valign="top">pre-defined models (1D, 2D, 4D)<br>
+              </td>
+            </tr>
+            <tr>
+              <td valign="top"><a href="Treatment.html">Treat</a></td>
+              <td valign="top">Neutron scattering data treatment<br>
+              </td>
+            </tr>
+            <tr>
+              <td valign="top"><a href="Models_Phonons.html">Phonons</a></td>
+              <td valign="top">lattice dynamics aka phonons<img
+                  src="images/Models_sqw_phon.png"
+                  title="Models_sqw_phon" alt="Models_sqw_phon"
+                  align="right" width="80" height="59"><br>
+              </td>
+            </tr>
+            <tr>
+              <td valign="top"><a
+                  href="../Applications/ResLibCal/doc/ResLibCal.html">ResLibCal</a></td>
+              <td valign="top">Neutron triple-axis spectrometer model,
+                resolution and fitting<img
+                  src="../Applications/ResLibCal/doc/ResLibCal-logo.png"
+                  title="ResLibCal" alt="ResLibCal" align="right"
+                  width="80" height="80"><br>
+              </td>
+            </tr>
+            <tr>
+              <td valign="top"><a href="McStas.html">McStas</a></td>
+              <td valign="top">Monte-Carlo neutron/x-ray ray-tracing
+                instrument simulation<img src="images/mcstas.png"
+                  title="mcstas" alt="mcstas" align="right" width="80"
+                  height="47"><br>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <br>
         The library can be used from user interfaces, or from the prompt
         as a set of commands and scripts.<br>
         <br>
@@ -171,368 +247,23 @@
           </tbody>
         </table>
         <br>
-        <ul>
-        </ul>
-        <div align="center"><img alt="Animated features" title="Animated
-            features" src="images/animated.gif" width="560" height="420"><br>
-          <i>A gallery of some of the things iFit can do</i><br>
-        </div>
-        <ul>
-        </ul>
-        <h3><a class="mozTocH3" name="mozTocId318588"></a>Obtaining the
-          package</h3>
-        To install the package, refer to the <b><a href="Install.html">Install</a></b>
-        page. <br>
-        You need <a href="http://www.mathworks.com">Matlab</a> to make
-        use of the source package. The stand-alone (binary) package does
-        not require Matlab, but you will need the Matlab Compiler
-        Runtime (refer to the <a style="font-weight: bold;"
-          href="Install.html">Install</a> page). The <a
-          href="Python.html">Python</a> interface requires either Matlab
-        or the iFit standalone package to be installed, as well as <i>Python</i>
-        and <i>NumPy.</i><br>
-        <br>
-        The package is currently available from the <a
-          href="http://ifit.mccode.org/">ifit.mccode.org</a> web site:<br>
-        <ul>
-          <li><a style="font-weight: bold;"
-              href="http://ifit.mccode.org/Downloads/iFit.zip">source
-              package</a> for all platforms, requires a Matlab license
-            to run [ <a
-              href="http://ifit.mccode.org/Downloads/iFit.zip">zip</a>,
-            44 Mb, <a href="Changes.html">Changes</a> and <font
-              color="#ff0000">Bugs</font>].</li>
-        </ul>
-        <div align="center">&nbsp;<a
-            href="http://ifit.mccode.org/Downloads/iFit.zip"><img
-              alt="matlab" title="matlab" src="images/ml_icon.gif"
-              style="border: 2px solid; width: 45px; height: 38px;
-              border: 2px solid;" align="middle"></a></div>
-        <ul>
-        </ul>
-        <ul>
-          <li><a href="Install.html"><span style="font-weight: bold;">standalone
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                packages</span></a> (no need for a Matlab license) for
-            Linux, Windows and Mac OS X are available from the <a
-              style="font-weight: bold;" href="Install.html">Install</a>
-            page. You will then use the <a href="iFit.html">iFit</a><a
-              href="iFit.html"> standalone</a> command line and its <a
-              href="miFit.html">miFit</a> graphical user interface to
-            the package (a terminal/command window providing Matlab/iFit
-            capabilities). <br>
-          </li>
-        </ul>
-        <div align="center">
-          <blockquote><a
-              href="http://ifit.mccode.org/Downloads/binary/glnx64"><img
-                alt="linux" title="linux" src="images/linux.png"
-                style="border: 2px solid; border: 2px solid; width:
-                50px; height: 60px;" align="middle"></a><a
-              href="http://ifit.mccode.org/Downloads/binary/mac64"><img
-                alt="mac" title="mac" src="images/mac.png"
-                style="border: 2px solid; width: 50px; height: 61px;
-                border: 2px solid;" align="middle"></a><a
-              href="http://ifit.mccode.org/Downloads/binary/win64"><img
-                alt="windows" title="windows" src="images/windows.png"
-                style="border: 2px solid; border: 2px solid; width:
-                50px; height: 50px;" align="middle"></a></blockquote>
-        </div>
-        <ul>
-          <li>ISO distribution: <a
-href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/illcs-livedvd/">ILL/CS
-
-
-
-
-
-
-
-
-
-
-
-              Live DVD</a> ready-to-run system with <i>Phonons</i>, <span
-              style="font-style: italic;">McStas</span> and <i>iFit</i>
-            (standalone) all pre-installed.</li>
-        </ul>
-        <div align="center"><a
-href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/illcs-livedvd/"><img
-              src="images/cd-to-usb-icon-120x120.png" title="iso-usb"
-              alt="iso-usb" border="2" align="middle" width="50"
-              height="50"></a></div>
-        <ul>
-          <li>[&nbsp; <a href="https://github.com/McStasMcXtrace/iFit">McCode/iFit
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-              Git</a> ][ <a href="http://ifit.mccode.org/Downloads/">older/other
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-              versions</a> ][ <a href="techdoc/index.html">TechDoc</a>
-            ]<br>
-          </li>
-        </ul>
-        <ul>
-        </ul>
-        <br>
-        Please register to the <a
-          href="http://mail.mccode.org/cgi-bin/mailman/listinfo/ifit-users">ifit-users</a>
-        mailing list.
-        <h3><a class="mozTocH3" name="mozTocId969915"></a>What's in the
-          box...</h3>
-        <br>
-        What you will handle mainly deals with <a href="iData.html">iData</a>
-        and <a href="iFunc.html">iFunc</a> objects. The <a
-          href="miFit.html">miFit</a> user interface is a simplified
-        entry point to these objects and their capabilities. Please
-        start to read these pages first, as well as the <a
-          href="QuickStart.html">Quick Start</a> page if you're in a
-        hurry. <br>
-        <img style="width: 128px; height: 100px;" alt="iFit package"
-          title="iFit package" src="images/box.jpeg" align="right"><br>
-        <br>
-        <blockquote>
-          <h4><a class="mozTocH4" name="mozTocId480595"></a>The <b><a
-                href="miFit.html">miFit</a></b> User interface: the iFit
-            main window</h4>
-        </blockquote>
-        <blockquote><a href="miFit.html">miFit</a> is the main entry
-          point for an easy access to most iFit functionalities: import,
-          plot, fit, treat, export data sets and Models. <br>
-          This is definitely where you should start.<br>
-        </blockquote>
-        <h4 style="margin-left: 40px;"><a class="mozTocH4"
-            name="mozTocId751903"></a>The iData objects (iFit/@<a
-            href="iData.html">iData</a>): the core data set<br>
-        </h4>
+        Get more details about <a href="InTheBox.html">what's in the
+          box</a>.<img src="images/box.jpeg" title="box" alt="box"
+          align="right" width="128" height="100"><br>
       </div>
     </div>
-    <div style="margin-left: 40px;">The <a href="iData.html">iData</a>
-      objects have been defined in order to perform the following
-      operations seamlessly:<br>
-    </div>
-    <ul style="margin-left: 40px;">
-      <li><a href="Load.html">Load</a> any text formatted file, and a
-        large set of binary format files</li>
-      <li>Display object information, including metadata from the
-        original file<br>
-      </li>
-      <li><a href="Plot.html">Plot</a> the object Signal in a simple
-        view for 1D, 2D and 3D objects</li>
-      <li>Perform <a href="Math.html">mathematical</a> operations using
-        objects (=-/* trigonometric projections integration
-        re-binning...)</li>
-      <li><a href="Fit.html">Fit</a> a parametrized model to the object
-        Signal, which makes use of the <a href="Optimizers.html">Optimizers</a>
-        and <a href="Models.html">Models</a> libraries.<br>
-      </li>
-      <li><a href="Save.html">Save</a> the object into a set of output
-        formats</li>
-    </ul>
-    <div style="margin-left: 40px;">An extended list of iData methods is
-      available in the <a href="Methods.html">Methods</a> page. In
-      addition, a few dedicated applications of these methods is
-      presented in the <a href="Treatment.html">Treatment</a> page, for
-      instance for neutron scattering.<br>
-      <h4><a class="mozTocH4" name="mozTocId419212"></a>The <a
-          href="iFunc.html">iFunc</a> objects (iFit/@<a
-          href="iFunc.html">iFunc</a>): the core model</h4>
-      <p>The <a href="iFunc.html">iFunc</a> objects hold models
-        (mathematical expressions that return a vector, matrix, ...)
-        value, as a function of a parameter set, and axes. You can
-        easily create new models, or use those from the <a
-          href="Models.html">Models</a> page, and combine them to build
-        more complex models. The objects support most usual mathematical
-        operators.<br>
-      </p>
-    </div>
-    <div style="margin-left: 40px;">
-      <h4><a class="mozTocH4" name="mozTocId526330"></a>The fit
-        functions/models (iFit/<a href="Models.html">Models</a>)</h4>
-      A predefined set of parametrized models is given in the <a
-        href="Models.html">Models</a> part of iFit in order to fit some
-      imported data and find best parameter sets which describe it.
-      These functions may be used by the <a href="Fit.html">fits</a>
-      method. All these models are <a href="iFunc.html">iFunc</a>
-      objects. There are very advanced Models to compute for instance <a
-        href="Models.html#mozTocId990577">4D phonon dispersions</a>
-      using <i>ab-initio</i> codes, neutron Monte-carlo instruments (<a
-        href="McStas.html">McCode</a>) and other simpler analytical
-      methods.<br>
-      <div align="left">
-        <h4><a class="mozTocH4" name="mozTocId858815"></a>The lower
-          level optimization library (iFit/<a href="Optimizers.html">Optimizers</a>)</h4>
-        A set of optimization routines has been gathered in the <a
-          href="Optimizers.html">Optimizers</a> part of iFit. It enables
-        to choose and compare how different optimization methods can
-        solve a problem. This library is used transparently by the iData
-        <a href="Fit.html">fits</a> method, but it may also be used
-        independently.</div>
-    </div>
-    <h4 style="margin-left: 40px;"><a class="mozTocH4"
-        name="mozTocId897464"></a>The lower level import routines (iFit/<a
-        href="Loaders.html">Loaders</a>)<br>
-    </h4>
-    <div style="margin-left: 40px;">The file import method used by iData
-      is performed on a lower level by the <a href="Loaders.html">Loaders</a>
-      part of iFit. Its purpose is to import any binary or text file,
-      without knowing its format. A number of post-import wrappers exist
-      in order to reshape the imported data to match specific needs.
-      These wrappers are very short to write.<br>
-      If needed, other importation methods should be added there, to be
-      able to handle more formats. This library is used transparently by
-      the iData <a href="Load.html">load</a> method, but it may also be
-      used independently to produce simple structures describing the
-      data files (even though we do not recommend this).<br>
-      <h4><a class="mozTocH4" name="mozTocId300912"></a>The
-        documentation (iFit/Docs)</h4>
-      The documentation is given as web pages, and all methods/functions
-      have their own embedded help. To access it use:<br>
-      <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">doc</span>(iData)<br></pre>
-      A list of all available <a href="Methods.html">iData methods</a>
-      is also available, and can be directly accessed with<br>
-      <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">methods</span>(iData)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">methods</span>(iFunc)	% equivalently for models<br></pre>
-      The documentation currently contains the following pages:<br>
-      <ul>
-        <li><a href="Changes.html">Changes</a>: Version releases, <b>Changes
-
-
-
-
-            and Bugs</b> list.</li>
-        <li><a href="Credits.html">Credits</a>: Credits, Licensing and
-          contributions from others.</li>
-        <li><a href="Fit.html">Fit</a>: how to fit data sets onto
-          mathematical models and find the best parameter set</li>
-        <li><a href="iData.html">iData</a>: the description of the
-          fundamental data set object used in iFit, properties and how
-          to handle it</li>
-        <li><a href="iFunc.html">iFunc</a>: the description of the
-          fundamental model object used in iFit, properties and how to
-          handle it</li>
-        <li><a href="Loaders.html">Loaders</a>: how to import data files
-          into structures, which can be converted into iData afterwards.
-          This is a sub-library which you should only use if you need
-          the data NOT to be an object (but you then loose most of the
-          iData capabilities).</li>
-        <li><a href="Models.html">Models</a>: model functions that cab
-          be use for data fitting. A function maker tool is also
-          provided. Specialized models provide phonon dispersions,
-          Rietveld refinement, small angle scattering.<br>
-        </li>
-        <li><a href="index.html">index</a>: This iFit Welcome page.</li>
-        <li><a href="iFit.html">iFit</a>: the interface used in the
-          stand-alone distribution.<br>
-        </li>
-        <li><a href="Install.html">Install</a>: the download and installation page.</li>
-        <li><a href="Optimizers.html">Optimizers</a>: the low level
-          optimization methods.</li>
-        <li><a href="Load.html">Load</a>: how to load data set directly
-          as iData objects. This is what you should use.</li>
-        <li><a href="Math.html">Math</a>: all mathematical operations
-          and related data handling to apply on iData objects.</li>
-        <li><a href="McStas.html">McStas</a>: an interface with the <a href="http://www.mcstas.org"> McStas</a> neutron scattering
-          ray-tracing simulation code for simulation, scanning and
-          optimization.</li>
-        <li><a href="Methods.html">Methods</a>: a list of all available
-          methods for iData objects.</li>
-        <li><a href="miFit.html">miFit</a>: the iFit main user interface.</li><li><a href="Models_Phonons.html">Models_Phonons</a>: a tutorial for those wishing to compute phonons in materials (lattice dynamics).<br></li>
-        
-        <li><a href="Plot.html">Plot</a>: many ways to plot the iData
-          objects.</li><li><a href="Python.html">PyFit</a>: an interface which exposes
-          transparently all iFit methods and objects into Python/NumPy.</li>
-        <li><a href="QuickStart.html">QuickStart</a>: where you should
-          start (a quick tutorial).</li><li><a href="../Applications/ResLibCal/doc/ResLibCal.html">ResLibCal</a>: the neutron triple-axis resolution computation tool, with a user interface.</li>
-        <li><a href="Save.html">Save</a>: Saving iData objects into many
-          file formats.</li>
-        <li><a href="Treatment.html">Treatment</a>: a set of
-          methodologies applied to specific cases, for instance neutron
-          scattering (dynamic structure factors).<br>
-        </li>
-        
-        <li><a href="techdoc/index.html">Technical documentation</a><br>
-        </li>
-      </ul>
-      You may also search this whole documentation (using Google):
-      <form method="get" action="http://www.google.com/search"> <input name="q" size="31" maxlength="255" type="text"> <input value="Search iFit Doc" type="submit"> <input name="sitesearch" value="ifit.mccode.org" checked="checked" type="radio"> </form>
-      <h4><a class="mozTocH4" name="mozTocId338083"></a>Example data
-        files (iFit/<a href="../Data">Data</a>)</h4>
-      Some <a href="../Data">Data</a> files are given as examples to be
-      used along the documentation web pages and in the <a href="QuickStart.html">Quick Start</a>.<br>
-      <h4><a class="mozTocH4" name="mozTocId54326"></a>Interfaces with
-        other software and Graphical front-ends (iFit/GUI)</h4>
-      Specific interfaces have been written in order to use iFit
-      transparently for end-user applications:<br>
-      <ul>
-        <li><b><a href="miFit.html">miFit</a></b>: an advanced yet simple user interface to load data sets, plot, transform, export, and fit.</li><li><a href="McStas.html">McStas</a>: a wrapper to run
-          simulations or optimize <a href="http://www.mcstas.org">McStas</a>
-          and <a href="http://www.mcxtrace.org">McXtrace</a>
-          instruments. <br>
-        </li>
-        <li><b><a href="../Applications/ResLibCal/doc/ResLibCal.html">ResLibCal</a></b>:
-          compute the neutron TAS spectrometer resolution ellipsoid
-          (ResCal/ResLib merge).</li>
-        <li><b><a href="Models.html#mozTocId990577">Sqw_Phonons</a></b>:
-          Phonon dispersion from <i>ab-initio</i> force estimate and
-          dynamical matrix. Have a look as well to the <a href="Models_Phonons.html">Models_Phonons</a> page.
-        </li>
-        <li><a href="Models.html#mozTocId210092">iFunc/Model Builder</a>:
-          a dialogue to create <a href="iFunc.html">iFunc</a> fit
-          function/models.</li>
-        <li><a href="iFit.html">iFit standalone</a>: the prompt
-          interface used in the no-Matlab-license release. Can execute
-          any Matlab expression, scripts, handle iData and iFunc
-          objects, optimizers, plotting, ...</li>
-        <li><a href="Python.html">PyFit</a>: using iFit transparently
-          from <a href="http://www.numpy.org/">Python/NumPy</a>.</li>
-      </ul>
-    </div>
-    <h3><a class="mozTocH4" name="mozTocId755938"></a><span style="font-style: italic; font-weight: bold;">Ok, let's start !</span>
+    <h3><a class="mozTocH4" name="mozTocId755938"></a><span
+        style="font-style: italic; font-weight: bold;">Ok, let's start !</span>
       <br>
     </h3>
-    <div style="margin-left: 40px;">To download and install the package, refer to the
-      <a href="Install.html">Install</a> page.<br><br>We then recommend that you start with the <a href="miFit.html">miFit</a> user interface.<br><br>
-      If you want a quick example with commands, refer to the <a href="QuickStart.html">Quick Start</a> page. Otherwise, the
+    <div style="margin-left: 40px;">To download and install the package,
+      refer to the <a href="Install.html">Install</a> page.<br>
+      <br>
+      We then recommend that you start with the <a href="miFit.html">miFit</a>
+      user interface.<br>
+      <br>
+      If you want a quick example with commands, refer to the <a
+        href="QuickStart.html">Quick Start</a> page. Otherwise, the
       typical usage would be:</div>
     <pre style="margin-left: 80px;"><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">Start Matlab... or iFit stand-alone<br>&gt;&gt; </span>addpath</span>(<span style="color: rgb(51, 102, 255);">genpath</span>(<span style="color: rgb(204, 51, 204);">'/some/path/to/iFit'</span>)); <span style="font-style: italic;">% not needed for the stand-alone version</span><br><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">&gt;&gt; </span></span>a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">[ ifitpath 'Data/ILL_IN6.dat' ]</span>);<span style="color: rgb(51, 102, 255);"></span><br><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">&gt;&gt; </span></span><span style="color: rgb(51, 102, 255);">plot</span>(log10(a))<br><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">&gt;&gt; </span></span>b=2*a+<span style="color: rgb(51, 102, 255);">log</span>(a)<br>&gt;&gt; plot(gauss2d)<br><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">&gt;&gt; </span></span>parameters=<span style="color: rgb(51, 102, 255);">fits</span>(a,<span style="color: rgb(204, 51, 204);">gauss2d</span>)<br><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">&gt;&gt; </span></span><span style="color: rgb(51, 102, 255);">saveas</span>(a,<span style="color: rgb(204, 51, 204);">'filename.</span><span style="color: rgb(204, 51, 204);">pdf'</span>)<br></pre>
     <h3><a class="mozTocH3" name="mozTocId639966"></a>For beginners</h3>
@@ -597,7 +328,112 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
     You may register by entering your email address and press subscribe:
     <br>
     <form method="POST" action="http://mailman.mccode.org/cgi-bin/mailman/subscribe/ifit-users"><input name="email" size="30" type="Text"><input name="email-button" value="Subscribe" type="Submit"></form>
-    <br>
+    <br><h3><a class="mozTocH3" name="mozTocId318588"></a>Obtaining the
+          package</h3>
+        To install the package, refer to the <b><a href="Install.html">Install</a></b>
+        page. <br>
+        You need <a href="http://www.mathworks.com">Matlab</a> to make
+        use of the source package. The stand-alone (binary) package does
+        not require Matlab, but you will need the Matlab Compiler
+        Runtime (refer to the <a style="font-weight: bold;" href="Install.html">Install</a> page). The <a href="Python.html">Python</a> interface requires either Matlab
+        or the iFit standalone package to be installed, as well as <i>Python</i>
+        and <i>NumPy.</i><br>
+        <br>
+        The package is currently available from the <a href="http://ifit.mccode.org/">ifit.mccode.org</a> web site:<br>
+        <ul><li><a style="font-weight: bold;" href="http://ifit.mccode.org/Downloads/iFit.zip">source
+              package</a> for all platforms, requires a Matlab license
+            to run [ <a href="http://ifit.mccode.org/Downloads/iFit.zip">zip</a>,
+            44 Mb, <a href="Changes.html">Changes</a> and <font color="#ff0000">Bugs</font>].</li></ul>
+        <div align="center">&nbsp;<a href="http://ifit.mccode.org/Downloads/iFit.zip"><img alt="matlab" title="matlab" src="images/ml_icon.gif" style="border: 2px solid; width: 45px; height: 38px;
+              border: 2px solid;" align="middle"></a></div>
+        
+        <ul><li><a href="Install.html"><span style="font-weight: bold;">standalone
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                packages</span></a> (no need for a Matlab license) for
+            Linux, Windows and Mac OS X are available from the <a style="font-weight: bold;" href="Install.html">Install</a>
+            page. You will then use the <a href="iFit.html">iFit</a><a href="iFit.html"> standalone</a> command line and its <a href="miFit.html">miFit</a> graphical user interface to
+            the package (a terminal/command window providing Matlab/iFit
+            capabilities). <br>
+          </li></ul>
+        <div align="center">
+          <blockquote><a href="http://ifit.mccode.org/Downloads/binary/glnx64"><img alt="linux" title="linux" src="images/linux.png" style="border: 2px solid; border: 2px solid; width:
+                50px; height: 60px;" align="middle"></a><a href="http://ifit.mccode.org/Downloads/binary/mac64"><img alt="mac" title="mac" src="images/mac.png" style="border: 2px solid; width: 50px; height: 61px;
+                border: 2px solid;" align="middle"></a><a href="http://ifit.mccode.org/Downloads/binary/win64"><img alt="windows" title="windows" src="images/windows.png" style="border: 2px solid; border: 2px solid; width:
+                50px; height: 50px;" align="middle"></a></blockquote>
+        </div>
+        <ul><li>ISO distribution: <a href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/illcs-livedvd/">ILL/CS
+
+
+
+
+
+
+
+
+
+
+
+
+              Live DVD</a> ready-to-run system with <i>Phonons</i>, <span style="font-style: italic;">McStas</span> and <i>iFit</i>
+            (standalone) all pre-installed.</li></ul>
+        <div align="center"><a href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/illcs-livedvd/"><img src="images/cd-to-usb-icon-120x120.png" title="iso-usb" alt="iso-usb" border="2" align="middle" width="50" height="50"></a></div>
+        <ul><li>[&nbsp; <a href="https://github.com/McStasMcXtrace/iFit">McCode/iFit
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+              Git</a> ][ <a href="http://ifit.mccode.org/Downloads/">older/other
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+              versions</a> ][ <a href="techdoc/index.html">TechDoc</a>
+            ]<br>
+          </li></ul>
+        
+        <br>
+        Please register to the <a href="http://mail.mccode.org/cgi-bin/mailman/listinfo/ifit-users">ifit-users</a>
+        mailing list.
+        
     <h3><a class="mozTocH3" name="mozTocId93435"></a>Credits, Links and
       Disclaimer<br>
     </h3>
@@ -685,6 +521,8 @@ Farhi
           Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid
           ; width: 53px; height: 50px;" align="right"></a> </div>
   
+
+
 
 
 

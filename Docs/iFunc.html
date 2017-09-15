@@ -12,6 +12,7 @@
       <li><a href="#mozTocId466436">Creating and inquiring iFunc models
           (iFunc, get, plot, subplot) </a>
         <ul>
+          <li><a href="#mozTocId721898">Model from a tabulated data set</a></li>
           <li><a href="#mozTocId780038"> Accessing or modifying
               parameter values</a></li>
           <li><a href="#mozTocId354273"> Defining a new model</a></li>
@@ -22,7 +23,7 @@
       <li><a href="#mozTocId579374">Setting and removing constraints on
           models</a></li>
       <li><a href="#mozTocId2492">Saving objects for further re-use:
-          save, saveas</a></li>
+          save, saveas, load</a></li>
       <li><a href="#mozTocId443357">Manipulating models: operators </a></li>
       <li><a href="#mozTocId604963">Optimising the iFunc model
           parameters</a></li>
@@ -73,7 +74,7 @@
 <br>a =  iFunc 1D model:<br><br>    [Tag] [Dim]                                [Model] [Parameters 'p']<br> iF193482   1        p(1)*x+p(2)  signal = p(1)*x+p(.. Amplitude Constant <br><br>&gt;&gt; a=<span style="color: rgb(51, 102, 255);">iFunc</span>(<span style="color: rgb(204, 51, 204);">'a=p(1); b=p(2); signal=a*x+b'</span>);	<span style="font-style: italic;">% same as above</span><br></pre>
     Any expression can be entered, and an analysis of the parameters
     results in default parameter names. <br>
-    <br>
+    <br><h4><a name="mozTocId721898" class="mozTocH4"></a>Model from a tabulated data set</h4>
     It is also possible to create a model out of an <a href="iData.html">iData</a> (data set) object. Then, the model
     parameters are the total intensity scaling, as well as an offset and
     a scaling factor per axis. In order to create a model from a data
@@ -324,7 +325,7 @@
     Expression).<br>
     <br>
     <h3 style="text-align: center;"><a class="mozTocH3" name="mozTocId2492"></a>Saving objects for further re-use: save,
-      saveas</h3>
+      saveas, load<br></h3>
     <p>Once you have created an manipulated a model, it is possible to
       export it into a file so that you can re-use it latter. To do so,
       use <span style="font-style: italic;">saveas(object, ...)</span>
@@ -340,9 +341,8 @@
     <p>We recommend to save iFunc models as MAT files, or m-files or
       YAML.</p>
     <p> To load back an <span style="font-style: italic;">m</span> or <span style="font-style: italic;">mat</span> file into memory for
-      re-use, type the m-file name without extension, or '<span style="font-style: italic;">load filename.mat</span>' for
-      MAT-files, or<i> 'iFunc(filename)'</i> for other formats.<br>
-    </p>
+      re-use:<br></p><ul><li>type the m-file name without extension, </li><li>or '<span style="font-style: italic;">load filename.mat</span>' for
+      MAT-files, </li><li>or<i> 'iFunc(filename)'</i> for other formats (supports JSON, YAML, M, MAT, XML).</li></ul>
     <span style="font-weight: bold;"></span>
     <h3 style="text-align: center;"><a class="mozTocH3" name="mozTocId443357"></a>Manipulating models: operators<br>
     </h3>
@@ -621,5 +621,6 @@ Farhi
           Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid
           ; width: 53px; height: 50px;" align="right"></a> </div>
   
+
 
 </body></html>
