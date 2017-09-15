@@ -24,6 +24,7 @@
 
 
 
+
           - @IFIT_DATE@</span></span><br>
       <a href="http://ifit.mccode.org"><img alt="iFit" title="iFit"
           src="images/iFit-logo.png" border="0" width="116" height="64"></a><br>
@@ -75,27 +76,13 @@
         href="Loaders.html">File formats</a>]<br>
       [ <a href="miFit.html">miFit</a> <a href="Python.html">PyFit</a>
       <a href="Models_Phonons.html"> Phonons</a> <a
-href="../Applications/ResLibCal/doc/ResLibCal.html">ResLibCal</a>
+        href="../Applications/ResLibCal/doc/ResLibCal.html">ResLibCal</a>
       ]<br>
       <br>
       <div style="text-align: left;">
         <h3><a class="mozTocH3" name="mozTocId127491"></a>Purpose</h3>
         The <span style="font-style: italic; font-weight: bold;">iFit</span>
         library (pronounce [<span style="font-style: italic;">eye-fit</span>])
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         is a set of methods to load, analyze, plot, fit and optimize
         models, and export results. <span style="font-style: italic;">iFit</span>
         is based on <a href="http://www.mathworks.com">Matlab</a>, but
@@ -127,7 +114,20 @@ href="../Applications/ResLibCal/doc/ResLibCal.html">ResLibCal</a>
           <li>The <a href="iData.html">iData</a> object holds any data
             set</li>
           <li>The <a href="iFunc.html">iFunc</a> object holds any
-            mathematical model function</li>
+            mathematical model function (for e.g. fitting)<br>
+          </li>
+        </ul>
+        In addition, there are a number of specific 'show case'
+        applications:<br>
+        <ul>
+          <li><a href="miFit.html">Main user interface</a> (miFit)</li>
+          <li><a href="Models_Phonons.html">Phonon</a> calculation with
+            neutron scattering intensity estimate (using transparently a
+            DFT code)</li>
+          <li><a href="../Applications/ResLibCal/doc/ResLibCal.html">Neutron
+              triple-axis-spectrometer</a> modelling (ResLibCal)</li>
+          <li><a href="McStas.html">McCode Monte-Carlo ray-trace
+              instrument simulation</a> (neutron/X rays)</li>
         </ul>
         The library can be used from user interfaces, or from the prompt
         as a set of commands and scripts.<br>
@@ -226,6 +226,7 @@ href="../Applications/ResLibCal/doc/ResLibCal.html">ResLibCal</a>
 
 
 
+
                 packages</span></a> (no need for a Matlab license) for
             Linux, Windows and Mac OS X are available from the <a
               style="font-weight: bold;" href="Install.html">Install</a>
@@ -264,6 +265,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
               Live DVD</a> ready-to-run system with <i>Phonons</i>, <span
               style="font-style: italic;">McStas</span> and <i>iFit</i>
             (standalone) all pre-installed.</li>
@@ -289,7 +291,9 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
               Git</a> ][ <a href="http://ifit.mccode.org/Downloads/">older/other
+
 
 
 
@@ -469,8 +473,10 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
           and related data handling to apply on iData objects.</li>
         <li><a href="McStas.html">McStas</a>: an interface with the <a href="http://www.mcstas.org"> McStas</a> neutron scattering
           ray-tracing simulation code for simulation, scanning and
-          optimization.</li><li><a href="Methods.html">Methods</a>: a list of all available
-          methods for iData objects.</li><li><a href="miFit.html">miFit</a>: the iFit main user interface.</li><li><a href="Models_Phonons.html">Models_Phonons</a>: a tutorial for those wishing to compute phonons in materials (lattice dynamics).<br></li>
+          optimization.</li>
+        <li><a href="Methods.html">Methods</a>: a list of all available
+          methods for iData objects.</li>
+        <li><a href="miFit.html">miFit</a>: the iFit main user interface.</li><li><a href="Models_Phonons.html">Models_Phonons</a>: a tutorial for those wishing to compute phonons in materials (lattice dynamics).<br></li>
         
         <li><a href="Plot.html">Plot</a>: many ways to plot the iData
           objects.</li><li><a href="Python.html">PyFit</a>: an interface which exposes
@@ -679,6 +685,7 @@ Farhi
           Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid
           ; width: 53px; height: 50px;" align="right"></a> </div>
   
+
 
 
 

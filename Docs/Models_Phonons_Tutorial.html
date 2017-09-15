@@ -1,0 +1,1488 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <meta content="text/html; charset=windows-1252"
+      http-equiv="content-type">
+    <title>iFit: Models: Phonons</title>
+  </head>
+  <body>
+    <h1 style="text-align: center;">iFit: Models: Phonons - Lattice
+      dynamics<br>
+    </h1>
+    <h1 style="text-align: center;"><img
+        src="images/Models_sqw_phon.png" title="Sqw Phonons" alt="Sqw
+        Phonons" width="128" height="95"></h1>
+    <ol id="mozToc">
+      <!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6-->
+      <li><a href="#mozTocId406805">Installation</a></li>
+      <li><a href="#mozTocId846642">Getting initial atomic
+          configurations </a></li>
+      <li><a href="#mozTocId503533">Starting iFit/Phonons</a></li>
+      <li><a href="#mozTocId333190">Phonon computation syntax:
+          sqw_phonons</a></li>
+      <li><a href="#mozTocId280436">Getting help</a></li>
+      <li><b><a href="#mozTocId182819">Calculator options</a></b>
+        <ol>
+          <li><a href="#mozTocId300601">Choosing the DFT calculator</a></li>
+          <li><a href="#mozTocId493804">Energy cut-off</a></li>
+          <li><a href="#mozTocId630847">Smearing</a></li>
+          <li><a href="#mozTocId671646">Supercell/k-mesh</a></li>
+          <li><a href="#mozTocId99928">Pseudo-potential specification
+              (XC/PPS)</a></li>
+          <li><a href="#mozTocId179994">Tolerance criteria and max
+              number of iterations for SCF convergence (toldfe/nsteps)</a></li>
+          <li><a href="#mozTocId16442">Initial optimisation (optimize)</a></li>
+          <li><a href="#mozTocId84638">Other options</a></li>
+          <li><a href="#mozTocId379680">Report generation during/after
+              the calculation</a></li>
+          <li><a href="#mozTocId191576">Using multicore-machines and
+              clusters</a></li>
+        </ol>
+      </li>
+      <li><b><a href="#mozTocId438325">First example. Getting results</a></b>
+        <ol>
+          <li><a href="#mozTocId370236">Vibrational density of states
+              (vDOS)</a></li>
+          <li><a href="#mozTocId964599">Thermo-chemistry basic
+              quantities (vDOS,F,U,S,Cv)</a></li>
+          <li><a href="#mozTocId216396">Phonon dispersion along
+              principal axes</a></li>
+          <li><a href="#mozTocId890089">Report generation after the
+              calculation</a></li>
+          <li><a href="#mozTocId401231">Phonon dispersion rendering in
+              3D</a></li>
+        </ol>
+      </li>
+      <li><a href="#mozTocId362621">Loading/saving your work</a>
+        <ol>
+          <li><a href="#mozTocId365079">Loading an initial structure
+              (file)</a></li>
+        </ol>
+      </li>
+      <li><a href="#mozTocId696596">Loading a previous iFit computation
+          (directory/mat)</a></li>
+      <li><a href="#mozTocId146436">Loading a previous PhonoPy
+          computation (directory)</a></li>
+      <li><a href="#mozTocId71649">Saving the model: MAT, YAML, JSON,
+          XML, M</a></li>
+      <li><a href="#mozTocId49582">Generating a report (during / after)</a></li>
+      <li><a href="#mozTocId131712">Phonons in Al</a></li>
+      <li><a href="#mozTocId526943">Phonons in MgO</a></li>
+      <li><a href="#mozTocId339109">Phonons in SrTiO3</a></li>
+      <li><a href="#mozTocId884775">Phonons in Tb2SeO2 (mp-755340)</a></li>
+      <li><a href="#mozTocId894568">Creating more complex models</a></li>
+    </ol>
+    <hr style="width: 100%; height: 2px;">
+    <div style="text-align: center;">Commands we use in this page: <span
+        style="font-style: italic;"><a href="Models.html#mozTocId990577">sqw_phonons</a>,
+        sqw_kpath, sqw_thermochemistry</span><br>
+      <div align="left"><br>
+        In this documentation, we explain in details how to compute the
+        dynamical structure factor S(q,w) of Phonons in materials, using
+        DFT codes in the background. This corresponds to the coherent
+        inelastic contribution to the dynamical structure factor, in the
+        harmonic approximation, also known as the "lattice dynamics".
+        The whole procedure is fully automatic, and only requires an
+        input atomic configuration. However, it is possible to specify
+        more advanced options.<br>
+        <br>
+        <div align="center"><font color="#ff0000"><b>The documentation
+              listing all options for the </b><b><a
+                href="Models_Phonons.html">sqw_phonons</a></b><b>.</b></font><br>
+          This is the Tutorial which explains how to use the sqw_phonons
+          in practice, but does not go much into the details of all
+          options.<br>
+          <br>
+          <br>
+        </div>
+        <h3><a name="mozTocId406805" class="mozTocH3"></a>Installation</h3>
+        <ul>
+          <li><b>Requirements</b></li>
+        </ul>
+        <blockquote>A multi-core/CPU computer is highly recommended in
+          order to run the DFT computations is a reasonable time.
+          Typically, a 16-cores machine allows to run simple material
+          (e.g. binary/ternary materials with up to 10 atoms per cell)
+          phonon estimates within 1 hour. More complex materials will
+          require e.g. a few days. In terms of memory, you should have
+          2-3 Gb per core, that is to say 32 Gb RAM. When installed on
+          disk, the whole system requires less that 10 Gb, and you need
+          some limited storage. So, in short 100 Gb is fair.<br>
+          <br>
+          The required software needed to perform Phonon estimates are
+          (see below for the installation procedure):<br>
+          <ul>
+            <li><b>iFit</b> <a href="http://ifit.mccode.org">http://ifit.mccode.org</a>
+              which can be used with&nbsp;
+              <meta http-equiv="content-type" content="text/html;
+                charset=windows-1252">
+              <a href="http://www.mathworks.com/">Matlab</a> or as a <a
+                href="http://ifit.mccode.org/iFit.html">standalone</a>
+              executable not requiring any license. You can get the
+              development source code at <a
+                href="https://github.com/McStasMcXtrace/iFit">https://github.com/McStasMcXtrace/iFit</a>
+              <br>
+            </li>
+            <li><b>ASE</b> <a href="https://wiki.fysik.dtu.dk/ase/">https://wiki.fysik.dtu.dk/ase/</a>
+              which requires <a href="http://www.python.org/">Python</a>,
+              <a href="http://docs.scipy.org/doc/numpy/reference/">Numpy</a>,
+              <a href="http://docs.scipy.org/doc/scipy/reference/">Scipy</a>
+              and <a href="http://matplotlib.org/">MatPlotLib</a>.</li>
+            <li><b><a href="https://pythonhosted.org/hdf5storage/">python-hdf5storage</a></b>
+              to transfer large data sets between Python and iFit.<br>
+            </li>
+            <li>Optional: <b>PhonoPy</b> <a
+                href="https://atztogo.github.io/phonopy/">https://atztogo.github.io/phonopy/</a><br>
+            </li>
+            <li>Optional: QE-util <a
+                href="https://github.com/jochym/qe-util">https://github.com/jochym/qe-util</a>
+              <br>
+            </li>
+            <li>Optional: any <b>DFT code</b> out of <a
+                href="http://www.quantum-espresso.org/">QuantumEspresso</a>,
+              <a href="http://www.abinit.org/">ABINIT</a>, <a
+                href="https://www.vasp.at/">VASP</a>, <a
+                href="http://wiki.fysik.dtu.dk/gpaw">GPAW</a>, <a
+                href="http://elk.sourceforge.net/">ELK</a>.</li>
+            <li>Optional: An implementation of MPI (e.g. OpenMPI) is
+              highly recommended in order to make use of the
+              multi-core/cpu hardware.</li>
+            <li>Optional: PHON <a
+                href="http://www.homepages.ucl.ac.uk/%7Eucfbdxa/phon/">http://www.homepages.ucl.ac.uk/~ucfbdxa/phon/</a>&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+              (this is low priority)</li>
+          </ul>
+          See below on how to install these packages. If some of the
+          packages are not available, or not functional, iFit-Phonons
+          will still be usable with the other functional parts. It is
+          however recommended to install most of this list (see below).<br>
+          <br>
+          The recommended systems for running iFit-Phonons are Ubuntu
+          (14.04 or 16.04) and Debian Jessie 8.<br>
+        </blockquote>
+        <ul>
+          <li><b>USB/ISO</b><b> (our recommendation)</b></li>
+        </ul>
+        <blockquote>The fastest way to have a running system for Phonon
+          estimates using iFit is to download our <a
+href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/illcs-livedvd/">ILL/CS
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            Live DVD</a> ready-to-run system with <i>Phonons</i>, <span
+            style="font-style: italic;">McStas</span> and <i>iFit</i>
+          (standalone) all pre-installed.<br>
+          <br>
+          Then you can either build a bootable USB key using e.g. <a
+            href="https://unetbootin.github.io/">Unetbootin</a> (or
+          simply a command in the style "<i>dd if=iso of=usbkey bs=1m</i>"),
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          burn the image (for those still having a DVD burner), or
+          launch the system in a virtual machine using e.g. <a
+            href="https://www.virtualbox.org/">VirtualBox</a>.<br>
+          <br>
+          This system contains all the needed software, including the
+          web service (see below).<br>
+        </blockquote>
+        <ul>
+          <li><b>Debian packages (our recommendation)</b><br>
+          </li>
+        </ul>
+        <blockquote>If you have a Debian/Ubuntu/Mint Linux system, then
+          you can install the whole infrastructure from our repository <a
+            href="http://packages.mccode.org/">http://packages.mccode.org/</a>.
+          Refer to that page to setup the repository reference on your
+          system, update the package list, and then install <b>ifit-phonons</b>
+          using your package manager such as Synaptic, Aptitude, or
+          simply apt:<br>
+          <blockquote>
+            <pre>sudo apt-get update</pre>
+            <pre>sudo apt-get install ifit-phonons</pre>
+          </blockquote>
+        </blockquote>
+        <blockquote>This is equivalent to the following dependencies:<br>
+          <ul>
+            <li><i>ifit elk-lapw gpaw python-matplotlibabinit abinit-doc
+                abinit-psp quantum-espresso quantum-espresso-sssp phon
+                libnetcdf-dev libxc1 openmpi-bin abinit-psp-jth
+                abinit-psp-gbrv python-ase-qe-spglib python-hdf5storage
+                python-ase python-phonopy</i></li>
+          </ul>
+          If in addition you wish to use the web interface (which is a
+          very simple access solution without learning how to use the
+          iFit-Phonons software itself), install the package
+          ifit-web-services:<br>
+          <blockquote>
+            <pre>sudo apt-get install ifit-web-services</pre>
+          </blockquote>
+        </blockquote>
+        <blockquote>Then open a browser and enter the URL address <a
+            href="http://localhost/ifit-web-services">http://localhost/ifit-web-services</a>
+          . To benefit from the email tracking (start/stop of
+          computations) you will need to edit the file <i>/usr/lib/cgi-bin/computing_sqw_phonons.pl</i>
+          as administrator and change the email server/account/password
+          to use.<br>
+        </blockquote>
+        <ul>
+          <li><b>Other Linux distributions</b></li>
+        </ul>
+        <blockquote>Use your package manager (e.g. <i>yum</i> and <i>dnf</i>),
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          if available, to install some of e.g. <br>
+          <blockquote>python-ase, quantum-espresso, elk-lapw, gpaw,
+            abinit.<br>
+          </blockquote>
+          Then install the standalone linux executable of <b>ifit</b>
+          (standalone, zip archive) from e.g. <a
+            href="http://ifit.mccode.org/Downloads/binary/glnx64/">http://ifit.mccode.org/Downloads/binary/glnx64/</a>
+          into e.g. /usr/local/ifit. Also install the <b>MCRInstaller</b>
+          in /opt/MATLAB. Create a link to the ifit exeutable with e.g.:<br>
+          <blockquote>
+            <pre>sudo ln -s /usr/local/ifit/ifit /usr/local/bin/ifit<br></pre>
+          </blockquote>
+          <div align="left">You may try to install the ifit-web-services
+            package from <a href="https://github.com/McStasMcXtrace/iFit-Web">https://github.com/McStasMcXtrace/iFit-Web</a>.<br>
+          </div>
+        </blockquote>
+        <ul>
+          <li><b>Other systems</b></li>
+        </ul>
+        <blockquote>Install the standalone executable of <b>ifit</b>
+          (standalone, zip archive) from e.g. <a href="http://ifit.mccode.org/Install.html">http://ifit.mccode.org/Install.html</a>
+          <br>
+          You need Python, Numpy, SciPy and MatPlotLib to be installed.
+          For this, we recommend that you install the <a href="https://docs.continuum.io/anaconda/">Anaconda</a>
+          distribution.<br>
+          Install ASE, PhonoPy and QE-util using conda or pip, e.g.:<br>
+          <blockquote>
+            <pre>conda install phonopy</pre>
+            <pre>conda install -c jochym qeutil</pre>
+            <pre>pip install ase</pre>
+          </blockquote>
+          Finally, install the DFT codes referring to their
+          documentation (see 'requirements' above). Some of the packages
+          may not be easily installable on MacOSX or Windows systems.<br>
+        </blockquote>
+        <h3><a name="mozTocId846642" class="mozTocH3"></a>Getting
+          initial atomic configurations<br>
+        </h3>
+        The iFit-Phonon infrastructure requires to input a minimal
+        information on the atomic system you wish to simulate. This
+        atomic configuration describes e.g. a crystal lattice, i.e. the
+        composition and location of atoms in the lattice space. <br>
+        <br>
+        A number of possibilities are suggested below. <br>
+        <ul>
+          <li><b>Supported input configuration files</b></li>
+        </ul>
+        <blockquote>It is possible to input a wide set of file formats,
+          including CIF, PDB, POSCAR (VASP), Material Studio (XSD, MDL),
+          CASTEP, ABINIT, DL_POLY, Dmol, Espresso, ETSF,&nbsp; ShelX,
+          Wien2k, Siesta, Yaml, Json, ...<br>
+          <br>
+          You should refer to the table in <a href="https://wiki.fysik.dtu.dk/ase/ase/io/io.html#module-ase.io">ASE/File
+
+
+
+
+
+
+
+
+
+
+            input IO</a> module for a full list of supported input
+          formats.<br>
+          <br>
+          When using such a structure, a number of DFT computations will
+          be used to determine the force constants in the crystal.<br>
+        </blockquote>
+        <ul>
+          <li><b>MaterialsProject</b>&lt;<a href="https://www.materialsproject.org/">https://www.materialsproject.org/</a>&gt;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            using VASP.&nbsp; <span name="ISTEXInserted">A. Jain*, S.P.
+              Ong*, et al, APL Materials, 2013, 1(1), 011002. doi:<a href="http://dx.doi.org/10.1063/1.4812323">10.1063/1.4812323</a></span></li>
+        </ul>
+        <span name="ISTEXInserted"></span>
+        <blockquote>This extensive data base of materials provides
+          optimised (i.e. energetically minimized&nbsp; structures)
+          configurations, which can be obtained as CIF and VASP POSCAR
+          files. In addition, when registered, you can submit your own
+          structures or optimisation.<br>
+        </blockquote>
+        <ul>
+          <li><b>PhononDB</b> &lt;<a href="http://phonondb.mtl.kyoto-u.ac.jp/">http://phonondb.mtl.kyoto-u.ac.jp/</a>&gt;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            using PhonoPy and VASP. <br>
+          </li>
+        </ul>
+        <blockquote>This resource makes use of some MaterialsProject
+          materials, and the force constants have been pre-computed. You
+          should search for your material in the list, and if you're
+          lucky, you should get the LZMA archive. Extract it and
+          identify one of the 'phonon-XX' or 'gruneisen-XX' directories,
+          usually one in the middle of the scanned range (which are
+          lattice volume variations). You will use that directory as
+          input to iFit-Phonon. The force constants do not need to be
+          calculated, which saves a lot of time. Only the final DFT
+          steps will be computed (to get e.g. the stress tensor,
+          moments, and other physical quantities). </blockquote>
+        <ul>
+          <li><b>NoMaD</b> repository &lt;<a href="http://nomad-repository.eu/cms/">http://nomad-repository.eu/cms/</a>&gt;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            can store any computational result from e.g. ABINIT,
+            QuantumEspresso, VASP, and others.</li>
+          <li><b>ICSD</b> Inorganic Crystal Structure Database &lt;<a href="http://icsd.ill.fr">http://icsd.ill.fr</a>&gt; with
+            plenty of CIFs.</li>
+          <li><b>AflowLib</b> &lt;<a href="http://aflowlib.org/">http://aflowlib.org/</a>&gt;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            a calculation service using ICSD materials.</li>
+          <li><b>COD</b> <a href="http://www.crystallography.net/cod/">Crystallography
+              Open Database</a> <br>
+          </li>
+          <li><b>CCDC </b><a href="https://www.ccdc.cam.ac.uk/">The
+              Cambridge Crystallographic Data Centre</a><br>
+          </li>
+          <li><b>AMCSD </b><a href="http://rruff.geo.arizona.edu/AMS/amcsd.php">The
+              American Mineralogist Crystal Structure Database</a> <br>
+          </li>
+        </ul>
+        <blockquote>These resources are mostly storage areas, which
+          contain many materials. Search for the materials you are
+          interested in. Get the initial/optimised configuration files.<br>
+        </blockquote>
+        <h3><a name="mozTocId503533" class="mozTocH3"></a>Starting
+          iFit/Phonons</h3>
+        You may use the iFit-Phonon infrastructure in four different
+        ways.<br>
+        <ul>
+          <li><b>command line</b></li>
+        </ul>
+        <blockquote>If you are using Matlab, use:<br>
+          <blockquote>
+            <pre>&gt;&gt; <font color="#3366ff">addpath</font>(<font color="#3366ff">genpath</font>(<font color="#cc33cc">'/path/to/ifit'</font>))</pre>
+          </blockquote>
+          which will make iFit fully available from Matlab.<br>
+          <br>
+          <a href="images/iFit_standalone.png"><img alt="iFit standalone
+              window (no Matlab license required)" title="iFit
+              standalone window (no Matlab license required)" src="images/iFit_standalone.png" style="border: 0px solid;
+              border: 0px solid; width: 300px; height: 198px;" border="0" align="right" width="747" height="492"></a>If
+          you do not have a Matlab license, start the iFit standalone by
+          either clicking on its icon, or start a Terminal and type <br>
+          <blockquote>
+            <pre>ifit -nodesktop</pre>
+          </blockquote>
+          Then, the main command to use for the phonon computation is:<br>
+          <blockquote>
+            <pre>&gt;&gt; <font color="#3366ff"><font color="#3366ff"><font color="#000000">s=</font></font>sqw_phonons</font>(<font color="#cc33cc">'file'</font>, ...)<br></pre>
+          </blockquote>
+          <div align="left">Once done, you get the result in the form of
+            a variable (here 's').<br>
+            <br>
+          </div>
+          <font color="#ff0000"><b>WARNING for iFit standalone<br>
+            </b></font>
+          <ol>
+            <li><font color="#ff0000">do not use accent characters at
+                the Terminal iFit prompt. This will probably crash iFit
+              </font><font color="#ff0000">[<a href="http://www.mathworks.com/support/bugreports/624817">bug
+
+
+
+
+
+
+
+
+
+
+                  624817</a>].</font></li>
+            <li><font color="#ff0000">Ctrl-C is use for stopping a
+                current computation, or exit iFit. Rather use the menu
+                for Copy/Paste actions.</font></li>
+          </ol>
+        </blockquote>
+        <ul>
+          <li><b>dialogue window</b></li>
+        </ul>
+        <blockquote>To use a very basic user interface, use the
+          procedure above and type in the ifit/Matlab prompt:<a href="images/Models_sqw_ph_ase_gui.png"><img alt="sqw_ph_ase_gui" title="sqw_ph_ase_gui" src="images/Models_sqw_ph_ase_gui.png" border="0" align="right" width="200" height="168"></a>
+          <blockquote>
+            <pre>&gt;&gt; <font color="#3366ff"><font color="#000000">s=</font>sqw_phonons</font>(<font color="#cc33cc">'gui'</font>)<br></pre>
+          </blockquote>
+          <div align="left">A dialogue window pops-up, and allow to
+            enter (as text) a filename, directory, or python code to
+            describe the atomic configuration, as well as the calculator
+            and other options. This dialogue window is less fragile than
+            the Terminal concerning accent characters, and should be
+            preferred for non-expert users.<br>
+            <br>
+            Once done, you get the result in the form of a variable
+            (here 's').<br>
+          </div>
+        </blockquote>
+        <ul>
+          <li><b>TextEdit: an editor which allows to evaluate code</b><br>
+          </li>
+        </ul>
+        <blockquote>You can open a TextEdit window by typing:<a href="images/iFit_TextEdit.png"><img src="images/iFit_TextEdit.png" title="iFit_TextEdit" alt="iFit_TextEdit" border="0" align="right" width="250" height="190"></a>
+          <blockquote>
+            <pre>&gt;&gt; <font color="#3366ff">TextEdit</font></pre>
+          </blockquote>
+          at the iFit/Matlab prompt. This is highly recommended when
+          using the iFit standalone distribution (without Matlab
+          license). If you are using a Matlab license, then the Matlab
+          command window is more convenient.<br>
+          <br>
+          You can type Matlab/iFit commands in there, and then use the <i>File/Evaluate</i>
+          menu item to evaluate either all the content, or a selection.
+          The result is sent into the iFit Terminal. Any variable used
+          in the TextEdit window appears (when evaluating) in the iFit
+          Terminal, and <i>vice-versa</i>. You can open as many
+          TextEdit windows as you wish, load/save files (e.g. .m),
+          copy/paste filenames and raw text.<br><br>This way, you keep track of all commands entered to compute Phonons, and may execute selected ones.<br>
+          <br>
+          The TextEdit window has a <i>Help</i> menu which links to the
+          main iFit functionalities. <br>
+        </blockquote>
+        <ul>
+          <li><b>web server</b></li>
+        </ul>
+        <blockquote>This options requires to install the <b>ifit-web-services</b>
+          package (see above).<br>
+          <br>
+          Accessing the iFit-Phonon infrastructure from a web browser
+          completely hides the complexity of the command line. You only
+          see a web page where you can configure most of the calculation
+          options. Also, you do not need to keep a terminal opened
+          during the computation, which is carried out in the
+          background. <br>
+          <br>
+          Also, you can launch a calculation remotely, as long as the
+          computer is accessible. Novice users can launch calculations
+          without any prior knowledge on the iFit infrastructure.<br>
+          <br>
+          Once launched, note down the URL of the running computation,
+          and do not switch off the server computer. You can monitor the
+          calculation report any time.<br>
+        </blockquote>
+        <h3><a name="mozTocId333190" class="mozTocH3"></a>Phonon
+          computation syntax: sqw_phonons</h3>
+        <blockquote>The main command to use for the phonon computation
+          is:<br>
+          <blockquote>
+            <pre>&gt;&gt; <font color="#3366ff"><font color="#3366ff"><font color="#000000">s=</font></font>sqw_phonons</font>(<font color="#cc33cc">'file'</font>, ...)<br></pre>
+          </blockquote>
+          where <font color="#cc33cc">'file'</font> is an atomic
+          configuration file (POSCAR, CIF, PDB, Yaml, ... see all <a href="https://wiki.fysik.dtu.dk/ase/ase/io/io.html">available formats</a>) or directory
+          containing such information. Additional arguments allow to specify the DFT calculator and configuration (see below). Once done, you get the result in
+          the form of a variable (here 's'). This model object S(q,w) is
+          of class '<a href="iFunc.html">iFunc</a>' 4-dimensional with axes QH,QK,QL,E in [rlu^3,
+          meV]. It holds the coherent inelastic contribution to the
+          dynamical structure factor, in the harmonic approximation.<br>
+          <br>
+          If you forget to put <i>'s='</i> before '<i>sqw_phonon</i>s',
+          the returned model is assigned to the <i>'ans' </i>variable.
+          Simply type <br>
+          <blockquote>
+            <pre>&gt;&gt; s=ans;</pre>
+          </blockquote>
+          to transfer the volatile answer into a named variable of your
+          choice. <br>
+          See <a href="#mozTocId362621">below</a> on how to save these
+          variables and secure your work.<br>
+          <br>
+          When using the dialogue window, a similar variable is
+          returned, but the input data is entered in the editable text
+          fields. <br>
+          When using the web interface, the object is created and all
+          results, including the model object, are saved into a
+          directory.<br>
+          <br>
+        </blockquote>
+        <h3><a name="mozTocId280436" class="mozTocH3"></a>Getting help</h3>
+        <ul>
+          <li><b>help pages</b>: <b>sqw_phonons</b>, models, data sets</li>
+        </ul>
+        <blockquote>To get more help on the <i>sqw_phonons</i> command, access
+          the <a href="Models.html#mozTocId990577">iFit/Models</a>
+          page, or type:<br>
+          <blockquote>
+            <pre>&gt;&gt; <font color="#3366ff">help sqw_phonons</font> (displayed a raw text)</pre>
+          </blockquote>
+          or<br>
+          <blockquote>
+            <pre>&gt;&gt; <font color="#3366ff">doc sqw_phonons</font> (displayed in a web browser)</pre>
+          </blockquote>
+          at the iFit/Matlab prompt. <br>
+          You may also read the main <a href="Models.html">Models</a>
+          page, which lists all pre-defined models in iFit, including sqw_phonons.<br>
+          <br>
+          To get help on the model object of class <a href="iFunc.html">iFunc</a>,
+          use:<br>
+          <blockquote>
+            <pre>&gt;&gt; <font color="#3366ff">disp</font>(s)		% displays details about the object<br>&gt;&gt; <font color="#3366ff">methods</font>(s)		% lists all methods that can be used with iFunc objects
+&gt;&gt; <font color="#3366ff">help iFun</font>c		% help about the class definition<br>&gt;&gt; <font color="#3366ff">doc</font>(iFunc)		% main web help about the class<br>&gt;&gt; <font color="#3366ff">help</font> iFunc/&lt;method&gt;	% explains how to use a given method<br></pre>
+          </blockquote>
+          The evaluation of the model provides a data set of class <a href="iData.html">iData</a>. To get help about these
+          objects, use:<br>
+          <blockquote>
+            <pre>&gt;&gt; <font color="#3366ff">disp</font>(d)		% displays details about the object
+&gt;&gt; <font color="#3366ff">methods</font>(d)		% lists all methods that can be used with iData objects
+&gt;&gt; <font color="#3366ff">help iData</font>		% help about the class definition
+&gt;&gt; <font color="#3366ff">doc</font>(iData)		% main web help about the class
+&gt;&gt; <font color="#3366ff">doc</font>(iData,<font color="#cc33cc">'Math'</font>)	% help about mathematical operators<br>&gt;&gt; <font color="#3366ff">help</font> iData/&lt;method&gt;	% explains how to use a given method<br></pre>
+          </blockquote>
+          Finally, the whole Matlab documentation is available <a href="http://www.mathworks.com/help/techdoc/">on-line</a>
+          for free, especially to complement the standalone limited help
+          system.<br>
+        </blockquote>
+        <ul>
+          <li><b>github, contributing, email list</b><br>
+          </li>
+        </ul>
+        <blockquote>Last, you can access the iFit source code at <a href="https://github.com/McStasMcXtrace/iFit">https://github.com/McStasMcXtrace/iFit</a>,
+          follow the changes and get the cutting-edge version. The
+          'Issues' tab lists all current bugs and enhancement requests
+          (so called 'tickets'). <br>
+          <br>
+          You can declare a new ticket by first registering at <a href="https://github.com/">github</a>.
+          Once registered, if you ever <i>find a bug</i> and wish to
+          correct it, do so by editing the relevant iFit source code
+          from the github page, and commit it. A 'pull request', that is
+          a request for a modification, will be created. After
+          discussion via the merge request tracking and email, your
+          modification will be approved and included in the iFit
+          'master' code, to be part of the next release.<br>
+          <br>
+          Last, if you are lost, do not hesitate to register at to the <a href="http://mail.mccode.org/cgi-bin/mailman/listinfo/ifit-users" style="font-family: &quot;Times New Roman&quot;; font-size:
+            medium; font-style: normal; font-variant-ligatures: normal;
+            font-variant-caps: normal; font-weight: normal;
+            letter-spacing: normal; orphans: 2; text-align: start;
+            text-indent: 0px; text-transform: none; white-space: normal;
+            widows: 2; word-spacing: 0px; -webkit-text-stroke-width:
+            0px;">ifit-users</a> list and send an email at<meta http-equiv="content-type" content="text/html; charset=windows-1252"> <a href="mailto:ifit-users@mccode.org" style="font-family: &quot;Times New Roman&quot;; font-size:
+            medium; font-style: normal; font-variant-ligatures: normal;
+            font-variant-caps: normal; font-weight: normal;
+            letter-spacing: normal; orphans: 2; text-align: start;
+            text-indent: 0px; text-transform: none; white-space: normal;
+            widows: 2; word-spacing: 0px; -webkit-text-stroke-width:
+            0px;">ifit-users@mccode.org</a>.<br></blockquote><br><hr width="100%" size="2">
+        <h3><a name="mozTocId182819" class="mozTocH3"></a>Calculator
+          options</h3>
+        <ul>
+          </ul><h4><a name="mozTocId300601" class="mozTocH4"></a>Choosing the DFT calculator</h4><blockquote><p>It is usually not an easy task to choose the 'right' DFT calculator, as there are many on the market. However, following the benchmarks below, as well as feedback from 'phonon' specialists, the best calculators would be:<br></p><ul><li><b>VASP:</b> a rock solid solution, using validated pseudo-potentials for all elements. Requires a valid license.</li><li><b>QuantumEspresso (QE):</b> when used with the <a href="http://materialscloud.org/">SSSP pseudo-potentials</a>, is a very nice (free) alternative to VASP, and computes faster for similar settings.</li><li><b>Elk:</b> often provides reasonable results, but is much slower that VASP and QE (by factor e.g. 10).</li></ul>Some other calculators exist but are not as efficient as the list above for phonon calculations, in our view:<br><ul><li><i>ABINIT:</i> quite difficult to have converging and stable results, but very fast when it does. iFit/Phonons supports PAW(GBRV), PAWXML(JTH), FHI, HGH and TM pseudo potentials (see below).<br></li><li><i>GPAW:</i> is slow compared to VASP and QE.</li><li><i>NWChem and Dacapo calculators are not supported as they do not provide reliable results for phonon calculations.</i><br></li></ul>We are continuously testing new calculators, and will report for their capabilities in the future (Octopus, Siesta, bigDFT, CP2K, Gulp, ...).<br><br>You may read the DFT code cross comparison study available at&nbsp; <a href="https://molmod.ugent.be/deltacodesdft">https://molmod.ugent.be/deltacodesdft</a> to get an idea of the software accuracy.<br><br>The calculator, once chosen, is specified using the <i>'calculator'</i> field in the options, or writing the calculator as an argument to sqw_phonons:<br><ul><li><font color="#3366ff">sqw_phonons</font>(..., <font color="#cc33cc">'calculator=qe'</font>, ...)</li><li><font color="#3366ff">sqw_phonons</font>(..., <font color="#cc33cc">'qe'</font>, ...) <i>% 'quantumespresso', 'vasp','elk', 'abinit' ... also work</i><br></li></ul>Depending on the DFT code chosen, the lattice complexity, and the computer capabilities, the calculation may take from minutes to days/weeks. See below for examples.<br></blockquote><ul>
+          </ul><h4><a name="mozTocId493804" class="mozTocH4"></a>Energy cut-off<br></h4><ul>
+        </ul><blockquote>
+        In most DFT codes, the plane wave energy cut-off is determined from the pseudo potential default. We recommend then to <i><b>not</b></i> specify any energy cut-off and let the DFT calculator find suitable settings. <br><br>In case you still wish to specify a cut-off value (in eV), you should use the <i>'ecut'</i> field in the options:<br><ul><li><font color="#3366ff">sqw_phonons</font>(..., <font color="#cc33cc">'ecut=1500'</font>, ...)</li></ul>The recommended values from the <a href="http://materialscloud.org/sssp/">MaterialsCloud SSSP</a> convergence tests indicate e.g. 100 Ry=1300-1500 eV. The <a href="https://www.materialsproject.org/docs/calculations#Total_Energy_Calculation_Details">MaterialsProject recommendation</a> is around 520 eV. Remember that 1 Ha = 27.2 eV and 1 Ry=Ha/2=13.6 eV.<br><br>The computation time increases approximately (and phenomenologically) as the energy cut-off to the power 1.6. So using an energy cut-off of 520 eV is about 5 times faster than using a 1500 eV cut-off.<br></blockquote><h4><a name="mozTocId630847" class="mozTocH4"></a>Smearing</h4><blockquote><p>The 'smearing' is used when the electronic bands are very sharp, e.g. in metallic-type systems. The smearing avoids the discontinuity around the electronic band gaps, and highly improves the convergence of the DFT cycles. For this reason, setting a smearing value is highly recommended, even for non-metallic systems when the convergence gets difficult. Recommended values (see <a href="http://materialscloud.org/sssp/bands.html">SSSP</a>) are e.g. 0.01-0.02 Ry = 0.1-0.3 eV. The default is to set a 0.13 eV smearing, except for Elk which has an automatic determination mechanism. <br></p><p>In case you wish to manually set the smearing, use the 'occupations' or 'smearing' option (in eV):<br></p><ul><li><font color="#3366ff">sqw_phonons</font>(..., <font color="#cc33cc">'smearing=0.1'</font>, ...)</li></ul><p>We recommend the following values:<br></p><ul><li>for metals: use 0.27 eV</li><li>for semi-conductors: use a very small value, e.g. 0.01 eV</li><li>for insulators: use a negative value (e.g. -1) to suppress the smearing. This is usually equivalent to setting a 0 smearing.</li></ul>In practice, the smearing can also be given with arguments <font color="#cc33cc">'metal'</font>,<font color="#cc33cc">'semiconductor'</font>, and <font color="#cc33cc">'insulator' </font>which correspond with the settings above.<br></blockquote><ul>
+          </ul><h4><a name="mozTocId671646" class="mozTocH4"></a>Supercell/k-mesh</h4><blockquote><p>The size of the system influences the stability and accuracy of the computation. In short, a small system will have a tendency to result in unstable (negative/imaginary) modes, especially close to the Brillouin zone centers. <br></p><p>Let us consider a crystal with a lattice spacing <i>a</i>. The corresponding momentum norm is <i>k<sub>1</sub>=2pi/a</i> corresponds with 1 reciprocal lattice unit [rlu]. For a system containing a total of [N N N] supercells, the equivalent lattice parameter is increased by a factor <i>N</i>, and the minimum <i>k</i> vector is reduced by the same factor. The reduced lattice unit minimal <i>k</i> norm is then <i>k = 1/N</i> in [rlu] per atom in the unit cell. Now, by dividing the k-grid into a [K K K] Monkhorst-Pack mesh, the minimal <i>k</i> value that can be accurately estimated is again divided by <i>K</i>. We then get a minimal k-vector norm of <i>1/NK</i> in [rlu]. Typically, for a supercell [3 3 3] and a MP grid [4 4 4], this results in a <i>k<sub>min</sub></i>=1/4/3=0.08. The K-points density per atom is then (1/<i>k<sub>min</sub></i>)<sup>3</sup>&nbsp; =1728 per atom in the cell.<br></p><p>The conclusion is that increasing either the supercell or the K-grid mesh are equivalent. This also determines the accuracy at small k-vectors (e.g. zone centers). <br></p><p>In practice, using the above values ensures a k-point density higher than (NK)<sup>3</sup> = 1000/atom in the cell, which is usually enough to get reasonable results:<br></p><ul><li>kpoints=4</li><li>supercell=3</li><li>k<sub>min</sub>=0.08 rlu<br></li></ul><p>More demanding settings could be to use a k-points density of  (NK)<sup>3</sup> = 8000/atom:<br></p><ul><li>kpoints=5</li><li>supercell=4</li><li>k<sub>min</sub>=0.05 rlu<br></li></ul><p>The <i>sqw_phonons</i> model automatically determines the best kpoints and supercell grid in order to achieve a k-points density higher than 1000/atom, which is usually satisfactory. However, some codes may then locally produce unstable (negative/imaginary) modes, especially close to the zone-center or high symmetry points. In this case, you may wish to use an other k-points/supercell set, with the <i>'kpoints'</i> and <i>'supercell'</i> options:<br></p><ul><li><font color="#3366ff">sqw_phonons</font>(..., <font color="#cc33cc">'kpoints=5; supercell=4'</font>, ...)</li></ul>Remember that the calculation time is proportional to the k-points density. So using the kpoints=4; supercell=3 is about 5 times faster as using kpoints=5; supercell=4.<br></blockquote><ul>
+          </ul><h4><a name="mozTocId99928" class="mozTocH4"></a><b>Pseudo-potential specification (XC/PPS)</b></h4><blockquote>Most DFT codes come with their own set of pseudo-potentials. The rationale for sqw_phonons is to prefer a set with a GGA/PBE exchange-correlation (XC) functional. You can select the XC using the <b><i>'xc'</i></b> option:<br><ul><li><font color="#3366ff">sqw_phonons</font>(..., <font color="#cc33cc">'xc=PBE'</font>, ...)</li></ul>The possible values for <i>xc</i> depend on the DFT calculator, but all support 'LDA','GGA','PBE'. Some support 'RPBE','PBEsol'.<br><br>In all cases, GGA (generalised gradient approximation) should be preferred over LDA ( local density approximation). Among the GGA, the PW91, PBE or RPBE are recommended when available.<br><br>It is also possible to select among different pseudo-potential sets (setups) using the <b><i>'pps'</i></b> option. This option highly depends on the calculator. Some calculators such as VASP, QuantumEspresso, Octopus and ABINIT allow vast choices, specifying either the file format and/or the origin of the pseudo-potential. Typical values can be:<br><ul><li>'NC' (norm conserving), </li><li>'PAW' (Abinit PAW format, e.g. <a href="http://www.physics.rutgers.edu/gbrv/">GBRV</a>),</li><li>'PAWXML' (GPAW unified format, e.g. <a href="http://www.abinit.org/downloads/PAW2">JTH</a>)</li><li>'FHI' (<span class="st">Fritz-Haber-Institute)</span></li><li>'HGH' (<span class="st">Hartwigsen-Goedeker-Hutter)</span></li><li>'TM' (<span class="st">Troullier-Martins)</span></li></ul><span class="st">We recommend you to refer to the <a href="Models.html#mozTocId913674">Models</a> page for more details.<br></span></blockquote><meta http-equiv="content-type" content="text/html; charset=windows-1252"><meta http-equiv="content-type" content="text/html; charset=windows-1252"><ul>
+          </ul><h4><a name="mozTocId179994" class="mozTocH4"></a>Tolerance criteria and max number of iterations for SCF
+            convergence (toldfe/nsteps)</h4><blockquote><p>The criteria for stopping the DFT calculation is to study the convergence of the total energy during the SCF cycles. The usual criteria to stop each calculation is when the difference in energy gets smaller than a threshold <i>'toldfe'</i>. This value is often set to 10<sup>-6</sup> or  10<sup>-7</sup> [eV]. For faster calculations (relaxed convergence criteria), we use 10<sup>-5</sup> [eV] as default value, which helps convergence but may result more often in unstable modes.<br></p><p>The maximum number of SCF cycles is usually around 30-50. However, some codes and pseudo-potential choices may result in a longer pathway to energy convergence. Then the default value (set by each DFT calculator) should be increased by mean of the <i>'nsteps'</i> option:<br></p><ul><li><font color="#3366ff">sqw_phonons</font>(..., <font color="#cc33cc">'toldfe=1e-5; nsteps=100'</font>, ...)</li></ul><p>For a longer, but potentially more accurate, calculation, use:<br></p><ul><li><font color="#3366ff">sqw_phonons</font>(..., <font color="#cc33cc">'toldfe=1e-6; nsteps=300'</font>, ...)</li></ul></blockquote><ul>
+          </ul><h4><a name="mozTocId16442" class="mozTocH4"></a>Initial optimisation (optimize)</h4><blockquote><p>In principle, the initial structure given to the calculator for the force constants estimate is at the equilibrium (minimum energy as a function of e.g. lattice cell parameters or atom positions). This usually means that the forces for the equilibrium structure (when no additional displacement have been done yet) should not exceed e.g. 3 10<sup>-4</sup> eV/Angs. In case these forces are larger, there are more chances that the force estimates get wrong and unstable modes appear.<br></p><p>In order to handle this case, it is highly preferable to optimize the structure before starting the phonon calculation. This can be done manually using your preferred DFT code, but we also provide an automatic procedure for this, using:</p><ul><li><font color="#3366ff">sqw_phonons</font>(..., <font color="#cc33cc">'optimize'</font>, ...)</li><li><font color="#3366ff">sqw_phonons</font>(..., <font color="#cc33cc">'optimizer=BFGS'</font>, ...)</li></ul><p>which will then move atoms in the lattice, in order to minimize the total energy, keeping the lattice parameters constant. The <a href="https://wiki.fysik.dtu.dk/ase/ase/optimize.html">optimizer</a> can be chosen among <meta http-equiv="content-type" content="text/html; charset=windows-1252">'BFGS' (default), 'LBFGS', 'MDMin' and 'FIRE'.</p><p><font color="#ff0000">A warning is in place here</font> as this optimization may change the space group. We thus do <b><i>not</i></b> recommend to optimize the structure systematically.<br></p></blockquote><h4><a name="mozTocId84638" class="mozTocH4"></a>Other options</h4><blockquote><p>Many other options, not detailed here, are explained in the <font color="#ff0000"><b><a href="Models.html#mozTocId990577">sqw_phonons</a></b></font> documentation of the Models page.<br></p></blockquote><ul>
+          </ul><h4><a name="mozTocId379680" class="mozTocH4"></a>Report generation during/after the calculation</h4><blockquote><p>It is possible to generate an automatic report (in HTML) while computing the lattice dynamics model, by specifying the 'report' option:<br></p><ul><li><font color="#3366ff">sqw_phonons</font>(..., <font color="#cc33cc">'report'</font>, ...)</li></ul>This report contains all information regarding the calculation itself, but also generates nice images of the structure, the dispersion curves along principal axes, the density of states, the powder average, etc. This is an HTML document with attached images and files, which can be viewed with any web-browser.<br><br>This report can also be generated any time from an existing model <i>'s'</i>, using:<br>
+<ul><li><font color="#3366ff">sqw_phonons</font>( s , <font color="#cc33cc">'report'</font>)</li></ul>
+Once done, open the report following the link printed in the command window, or using e.g.:<br><ul><li><font color="#3366ff">web</font>( s.UserData.options.report )</li></ul></blockquote><h4><a name="mozTocId191576" class="mozTocH4"></a>Using multicore-machines and clusters</h4><p>By default, the calculation runs on the computer you are using. When MPI is available, all CPU's/cores are used. As stated above, a machine with at least 8 cores is recommended, with about 2-4 Gb per core (e.g. 16 Gb minimum). If you wish to specify manually the number of cores, use e.g. (here 16 cores requested):<br></p><ul><li><b>s=</b><font color="#3366ff">sqw_phonons</font>(<font color="#cc33cc">'POSCAR_Al'</font>,<font color="#cc33cc">'qe'</font>,<font color="#cc33cc">'<b>mpi</b>=16'</font>)</li></ul><p>If you wish to launch this calculation on a distant machine, you need to have the required infrastructure (see <a href="#mozTocId406805">above</a>) installed on the cluster. In addition to the number of MPI slots to use, you may forward the list of machines to use with the syntax:<br></p><ul><li><b>s=</b><font color="#3366ff">sqw_phonons</font>(<font color="#cc33cc">'POSCAR_Al'</font>,<font color="#cc33cc">'qe'</font>,<font color="#cc33cc">'mpi=16; <b>machines</b>=file_machine_list'</font>)</li></ul><p>where the specified text file is a list with one machine/core per line, as used by e.g. mpirun.<br></p><p>Then assemble as usual a job submission script running e.g. (here for OpenPBS, all in one line):<br></p><blockquote>ifit -nodesktop <font color="#cc33cc">"try; s=<font color="#3366ff">sqw_phonons</font>('POSCAR_SrTiO3','qe','mpi=<font color="#009900">$PBS_NP</font>','machines=<font color="#009900">$PBS_NODEFILE</font>'); catch ME; disp('Error using sqw_phonons'); disp(getReport(ME)); end; save; exit"<br></font></blockquote>The 'ifit' command will by itself request mpirun/mpiexec, so that it is not required to specify it in the job.<br><ul>
+        </ul>
+        <h3><a name="mozTocId438325" class="mozTocH3"></a>First example. Getting
+          results<br></h3><blockquote><p>Once a model has been created using the <i>sqw_phonons </i>call, it is possible to derive a number of physical quantities to estimate the quality of the lattice dynamics model. In the following, we assume the model has been transferred into a variable <i>'s'</i>.</p><p>For instance you may use:</p><ul><li><b>s=</b><font color="#3366ff">sqw_phonons</font>(<font color="#cc33cc">'POSCAR_Al'</font>,<font color="#cc33cc">'emt'</font>,<font color="#cc33cc">'metal'</font>)</li></ul>The result is a model of type <a href="iFunc.html">iFunc</a>, which has model parameters. As DFT models are <i>ab-initio</i>, they have very few adjustable parameters. The model evaluates the neutron scattering intensity, and has the following parameters:<br><blockquote>p(&nbsp;
+      1)=&nbsp; <b>Amplitude</b><br>p(&nbsp;
+      2)=&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      <b>Gamma</b>&nbsp; Damped Harmonic Oscillator width in energy
+      [meV]<br>p(&nbsp;
+      3)=&nbsp; <b>Background</b><br>p(&nbsp;
+      4)=&nbsp; <b>Temperature</b>&nbsp;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      [K] used to compute the Bose factor <i>n(w)</i><br>
+p(&nbsp; 5)=&nbsp; <b>Energy_scaling</b><br></blockquote>The model energy width '<b>Gamma</b>' is the same for all modes. Any imaginary part in the mode frequencies is added to the width. The '<b>Energy_scaling</b>' parameter allows to <i>scale</i> the phonon spectrum in order to e.g. adapt it to measurements. All frequencies are then scaled by the same factor.<br><br>The object contains a lot of information in it's <i>UserData</i> area, such as:<br><ul><li><b>s.UserData.properties</b>: is a structure with many systematic quantities extracted from the DFT calculation: energies, magnetic moment, chemical stuff, structure, ...</li><li><b>s.UserData.configuration</b>: holds the initial configuration used</li><li><b>s.UserData.options</b>: the 'options' used for the calculation (e.g. DFT stuff)<br></li><li><b>s.UserData.FORCES</b>: a dump of the force constants</li></ul>and as soon as the model is being used, other quantities get available:<br><ul><li><b>s.UserData.maxFreq</b>: the maximal energy of the phonon modes</li><li><b>s.UserData.DOS</b>: the vibrational density of states (see below, iData object)</li><li><b>s.UserData.FREQ</b>: mode frequencies from the last evaluation (limited to 10<sup>5</sup> HKL locations)</li><li><b>s.UserData.POLAR</b>: mode polarisation vectors (limited to 10<sup>5</sup> HKL locations)</li><li><b>s.UserData.HKL</b>: the HKL locations used for the last evaluation (limited to 10<sup>5</sup> HKL locations)</li></ul></blockquote>
+        <h4><a name="mozTocId370236" class="mozTocH4"></a>Vibrational density of states (vDOS)</h4><blockquote>The coherent vibrational density of states (aka phonon or frequency spectrum) is defined as, for each mode energy <i>&#969;</i>, the number of phonon modes lying
+    within a frequency [<i>&#969;</i>-d<i>&#969;</i> : <i>&#969;</i>+d<i>&#969;</i>] for
+    all wavevectors. The density of states is normalised to the total number of modes:<br><div align="center">
+    &#8747;g(<i>&#969;</i>) d<i>&#969;</i> = 3N<br></div>This computation is done with:<br><ul><li><font color="#3366ff">sqw_phonon_dos</font>(s)</li></ul>which also returns an <a href="iData.html">iData</a> object. When no output argument is specified (such as in the example above), a plot is shown.<br></blockquote><h4><a name="mozTocId964599" class="mozTocH4"></a><a href="images/phonons/Models_Phonons_MgO_qe_thermo.png"><img src="images/phonons/Models_Phonons_MgO_qe_thermo.png" title="MgO_qe_thermo" alt="MgO_qe_thermo" border="0" align="right" width="200" height="150"></a>Thermo-chemistry basic quantities (vDOS,F,U,S,Cv)</h4><blockquote>In a similar way as for the vDOS above, the:<br><ul><li><font color="#3366ff">sqw_thermochemistry</font>(s)</li></ul>call computes the internal energy U, entropy S, Helmholtz_energy F, heat
+                capacity Cv, and also returns the DOS.These are returned in a structure. When no output argument is specified (such as in the example above), a multi-panel plot is shown.<br></blockquote><h4><a name="mozTocId216396" class="mozTocH4"></a>Phonon dispersion along principal axes</h4><ul>
+          </ul><blockquote><a href="images/phonons/Models_Phonons_MgO_qe_kpath.png"><img src="images/phonons/Models_Phonons_MgO_qe_kpath.png" title="MgO_qe_kpath" alt="MgO_qe_kpath" border="0" align="right" width="200" height="150"></a>It is possible to evaluate and plot the phonon frequencies evaluated along the high symmetry directions in the Brillouin zone (BZ). In addition, the neutron intensity is also calculated with:<br><ul><li><font color="#3366ff">sqw_kpath</font>(s)</li></ul>When no output argument is specified (such as in the example above), a multi-panel plot is shown.<br>By default, the space group of the crystal is used to determine the high symmetry points of the BZ. <br><br>In case you wish to change the space group setting for the automatic BZ points determination, assign a new value, e.g.:<br><ul><li>s.UserData.properties.spacegroup_number = 225;</li></ul>Moreover, you may specify the k-points to use as second argument, e.g.:<br><ul><li>a Bravais lattice type such as any of 'Cubic', 'Hexagonal','Trigonal', 'Tetragonal','Orthorhombic', 'Monoclinic','Triclinic', 'fcc','bcc' will then use a default path for these structure<br></li><li>a set of high symmetry points for the lattice space group (see <a href="https://en.wikipedia.org/wiki/Brillouin_zone">here</a>), such as {'Gamma' 'K' 'M' 'Gamma' 'A' 'H' 'L' 'A' }, which uses the space group to define these points<br></li><li>a Bragg point (which changes the neutron intensity), such as [0 0 1]. By default the [0 0 0] BZ centre is used, so that in principle transverse modes have a null neutron intensity</li><li>a set of HKL locations which define lines to follow in between, such as [0 0 0 ; 1 1 1 ; 1 1 0 ; 0 0 0 ; 0 0 1]. This allows any path in the BZ.<br></li></ul>A typical example with a more precise k-path specification would be:<br><ul><li><font color="#3366ff">sqw_kpath</font>(s,&nbsp; [0 0 0 ; 1 1 1 ; 1 1 0 ; 0 0 0 ; 0 0 1]/2 + [ 1 1 1 ])</li></ul>where the '/2 + [ 1 1 1]' indicate that we go from the [ 1 1 1 ]&nbsp; zone centre to the BZ half width along the given directions.<br></blockquote><h4><a name="mozTocId890089" class="mozTocH4"></a>Report generation after the calculation</h4><blockquote>As explained <a href="#mozTocId379680">above</a>, it is possible to generate a human readable document containing most of the results, using e.g.:<br>
+<ul><li><font color="#3366ff">sqw_phonons</font>( s , <font color="#cc33cc">'report'</font>)</li></ul>
+Once done, open the report following the link printed in the command window, or using e.g.:<br><ul><li><font color="#3366ff">web</font>( s.UserData.options.report )</li></ul></blockquote><h4><a name="mozTocId401231" class="mozTocH4"></a>Phonon dispersion rendering in 3D</h4><blockquote>In order to render the vibrational modes in an HKL volume, e.g. a full block of the Brillouin zone, it is necessary to first evaluate the model on an area. This requires in principle to define ranges along the H,K,L (in rlu) and energy (in meV) axes which define the 4D space where phonons dispersions exist.<br><br>The type of evaluation depends on how the HKLE locations are given:<br>
+<ul><li>When all axes are given as vectors of same orientation <i>and</i>
+        same length, the HKLE set is assumed to be list of 'events'.</li><li>When the H K L axes are vectors of same length/orientation,
+        the HKL locations is assumed to be a q-path in the BZ, but the E
+        (energy) axis can be of different length/orientation to compute
+        the Model along (q,E) path, resulting in a 2D object which corresponds with a q-cut. Typically,
+        the <b>sqw_kpath</b> function does this, to provide the phonon
+        dispersion curve along principal directions.</li><li>When the H K L E axes are given as mixed orientations/length,
+        as vectors or matrices, the Model evaluation is done on a HKLE
+        cube, which is well suited to visualize the whole dispersion
+        surfaces. <b>In the example below</b>, <i>ql</i> has a
+        different orientation (it is transposed) as <i>qh</i> and <i>qk</i>,
+        which triggers a 4D HKLE cube evaluation. <br></li></ul>
+The HKL range is usually specified as a vector in reciprocal lattice units [rlu] spanning over 0.5 or 1 unit. It can be centered around 0, or shifted towards a specific BZ center (Bragg point). <br><br>In the following example, we define such vectors, and make sure the energy one hasn't the same number of points as the HKL ones. Also, we transpose one of the HKL vectors when used so that a cube volume grid is built. For instance from -0.5 to 0.5 rlu on all reciprocal axes, and up to 50 meV energy, all with a binning of 50 steps (51 for the energy):<br><ul><li><b>qh</b>=<font color="#3366ff">linspace</font>(-0.5, .5, 50); <b>qk</b>=qh; <b>ql</b>=qh; <b>w</b>=<font color="#3366ff">linspace</font>(0.01, 50, 51);</li></ul>Then we evaluate the model, transposing the L axis (we then write <b>ql'</b> where <b>'</b> is the transpose operator) so that we have mixed orientations and define a 'cube':<br><ul><li>f=<font color="#3366ff">iData</font>(s, [], qh,qk,<b>ql'</b>, w);<i>% evaluate model into an iData</i>.</li></ul>The [] stands for the model parameters, which are requested to be used as is (automatic). One could specify as well a vector with the 5 values for the model parameters. The evaluation usually takes a few seconds per 10<sup>5</sup> HKL locations, but this of course depends on the number of phonon modes.<br><br>The resulting variable 'f' is a data set of type <a href="iData.html">iData</a>. It can be rendered as a volumetric plot in 3D, but still requires to reduce the dimensionality from 4D to 3D for this purpose. In this example, we wish to select the QH=0 plane, and plot the 0KLE cube. <br><br>As the <b>qh</b> variable is centered around 0, and has 50 values, we shall plot a slice of 'f' with the <b>25-th</b> value for qh (in the middle from -0.5 to 0.5 as defined above). The other axes are used as is, specified using the <b>:</b> symbol (whole range). And we use the simple 'plot' command using the log of the intensity:<br><ul><li><font color="#3366ff">plot</font>(<font color="#3366ff">log</font>(f(25,:,:,:)))<a href="images/phonons/Models_Phonons_Al_emt_plot3.png"><img src="images/phonons/Models_Phonons_Al_emt_plot3.png" title="Al_emt_plot3" alt="Al_emt_plot3" border="0" align="right" width="200" height="150"></a></li></ul>To rotate the volume, use the 'rotate' icon in the toolbar (an arrow on a circle). Other <a href="Plot.html">plot</a> types can be used, such as:<br><ul><li>the <font color="#3366ff">plot3</font> method which shows a filled volume with colors, e.g. <font color="#3366ff">plot3</font>(<font color="#3366ff">log</font>(f(25,:,:,:)))</li><li>the <font color="#3366ff">slice</font> method which allows an interactive volume exploration (<a href="https://fr.mathworks.com/matlabcentral/fileexchange/764-sliceomatic">sliceomatic</a>), e.g. <font color="#3366ff">slice</font>(<font color="#3366ff">log</font>(f(25,:,:,:))). Click and move the mouse over the lower color scale to change the equi-intensity value, and click on the side axes to select a volume cut. Defined iso-surfaces and cuts can be moved and stacked. De-select the rotate tool in order to act on iso-surfaces and cuts.<br></li></ul></blockquote><h3><a name="mozTocId362621" class="mozTocH3"></a>Loading/saving
+          your work</h3>
+        <ul>
+          </ul><h4><a name="mozTocId365079" class="mozTocH4"></a>Loading an initial structure (file)</h4><blockquote><p>We have seen above that you may use any crystal structure stored as a file (POSCAR, CIF, PDB, Yaml, ... see all <a href="https://wiki.fysik.dtu.dk/ase/ase/io/io.html">available formats</a>), such as:<br></p><ul><li><b>s=</b><font color="#3366ff">sqw_phonons</font>(<font color="#cc33cc">'POSCAR_SrTiO3'</font>,<font color="#cc33cc">'quantumespresso</font><font color="#cc33cc">'</font>)</li></ul><p>which automatically starts the DFT calculation.<br></p></blockquote><ul>
+          </ul><h4><a name="mozTocId696596" class="mozTocH3"></a>Loading a previous iFit computation (directory/mat)</h4><blockquote><p>Similarly, it is possible to rebuild a model from a directory containing information from a past sqw_phonons calculation. Simply use:<br></p><ul><li><b>s=</b><font color="#3366ff">sqw_phonons</font>(<font color="#cc33cc">'directory</font><font color="#cc33cc">'</font>)</li></ul>to recover the <a href="iFunc.html">iFunc</a> model. The reconstruction searches for any file such as:<br><ul><li>Phonon_Model.mat<br></li><li>atoms.pkl</li><li>POSCAR*</li><li>SPOSCAR*</li><li>*_POSCAR</li><li>phonon*.pkl</li><li>phonopy.yaml</li><li>phonon.yaml</li><li>INPHON</li><li>quasiharmonic_phonon.yaml</li><li>band.yaml</li><li>FORCE_SETS</li><li>disp.yaml<br></li></ul>If you have saved the model as a Matlab (.mat, such as Phonon_Model.mat) file, import it back using e.g. any of:<br><ul><li><font color="#3366ff">load</font> model.mat</li><li>s=<font color="#3366ff">iFunc</font>(<font color="#cc33cc">'model.mat'</font>)</li></ul></blockquote><ul>
+          </ul><h4><a name="mozTocId146436" class="mozTocH3"></a>Loading a previous PhonoPy computation (directory)</h4><blockquote><p>It is possible to build a sqw_phonons model from an existing PhonoPy directory, such as available as archives at &lt;<a href="http://phonondb.mtl.kyoto-u.ac.jp/">http://phonondb.mtl.kyoto-u.ac.jp/</a>&gt;. This location should contain e.g. files:</p><ul><li>FORCE_SETS</li><li>disp.yaml</li></ul>A few DFT additional calculation (usually rather short) may be needed. All atom displacement and force constants are used as obtained from the PhonoPy directory. In case the PhonoPy directory contains many sub-directories, search for a phonon calculation directory (e.g. phonon-XX or gruneisen-XX).<br><ul>
+          
+          </ul></blockquote><h4><a name="mozTocId71649" class="mozTocH3"></a>Saving the model: MAT, YAML, JSON, XML, M<br></h4><blockquote><p>After having built an sqw_phonon model, you can export it into a file for later use. The corresponding file contains everything needed, and reconstructs all missing files whenever the directory used for the calculation would not be available anymore.</p><p>The available formats are:<br></p><ul><li>MAT: a Matlab binary file (usually HDF5)</li><li>JSON: a text JSON format</li><li>XML: a text XML format</li><li>YAML: a text YAML format</li><li>M: a Matlab script</li></ul>and can be given as a filename extension, or as 3rd argument to 'save'. We recommend using the MAT-file format (binary, much faster to read/write and compact).<br><p>For instance,:<br></p><ul><li><b>s=</b><font color="#3366ff">sqw_phonons</font>(<font color="#cc33cc">'POSCAR_SrTiO3'</font>,<font color="#cc33cc">'quantumespresso</font><font color="#cc33cc">'</font>)</li><li><font color="#3366ff">save</font>(s, <font color="#cc33cc">'model'</font>, <font color="#cc33cc">'mat'</font>)</li><li><font color="#3366ff">save</font>(s, <font color="#cc33cc">'model.</font><font color="#cc33cc">mat'</font>) <i>% same as above</i><br></li><li><font color="#3366ff">save</font>(s, <font color="#cc33cc">'model.</font><font color="#cc33cc">xml'</font>)</li><li><font color="#3366ff">save</font>(s, <font color="#cc33cc">'model.</font><font color="#cc33cc">json'</font>)</li><li><font color="#3366ff">save</font>(s, <font color="#cc33cc">'model.</font><font color="#cc33cc">m'</font>)</li><li><font color="#3366ff">save</font>(s, <font color="#cc33cc">'model.yaml</font><font color="#cc33cc">'</font>)</li></ul><p>You can of course re-import these files later to re-generate the model using:<br></p><ul><li>s=<font color="#3366ff">iFunc</font>(<font color="#cc33cc">'model.mat'</font>)</li><li>s=<font color="#3366ff">iFunc</font>(<font color="#cc33cc">'model.json'</font>)</li><li>s=<font color="#3366ff">iFunc</font>(<font color="#cc33cc">'model.xml'</font>)</li><li>s=<font color="#3366ff">iFunc</font>(<font color="#cc33cc">'model.yaml'</font>)</li><li>s=<font color="#3366ff">iFunc</font>(<font color="#cc33cc">'model.m'</font>)</li></ul></blockquote><h4><a name="mozTocId49582" class="mozTocH3"></a>Generating a report (during / after)</h4><blockquote><p>As seen <a href="#mozTocId379680">above</a>, it is possible to generate a human readable report of a Phonon calculation, either during the model creation:<br></p><ul><li><b>s=</b><font color="#3366ff">sqw_phonons</font>(<font color="#cc33cc">'POSCAR_SrTiO3'</font>,<font color="#cc33cc">'quantumespresso</font><font color="#cc33cc">'</font>,<b><font color="#cc33cc">'report'</font></b>)</li><li><font color="#3366ff">web</font>( s.UserData.options.report )<i>% to open from matlab/iFit</i><br></li></ul><p>or afterwards:<br></p><ul><li><b>s=</b><font color="#3366ff">sqw_phonons</font>(<font color="#cc33cc">'POSCAR_SrTiO3'</font>,<font color="#cc33cc">'quantumespresso</font><font color="#cc33cc">'</font>)</li><li><font color="#3366ff">sqw_phonons</font>(s,<font color="#cc33cc"> <b>'report</b>'</font>)</li><li><font color="#3366ff">web</font>( s.UserData.options.report )</li></ul><p>The generated report (an HTML document) is stored into a temporary folder, which location is printed, and stored into <i>s.UserData.options.report</i></p><p>The report contains all type of information (crystal structure, physical properties, vDOS, thermo-chemostry, BZ view, ...) as well as plenty of generated files in numerous usual formats for later use.<br></p></blockquote><hr width="100%" size="2"><ul>
+        </ul>
+        <h3><a name="mozTocId131712" class="mozTocH3"></a>Phonons in Al</h3>
+        The atom confiiguration '<a href="../Data/POSCAR_Al">POSCAR_Al'</a>
+        is given within iFit Data directory. It is thus not required to
+        specify its full path, and sqw_phonons will find it.<br><br>
+        The automatic configuration uses:<br>
+        <ul>
+          <li>Space group: F m-3m (225), cubic fcc.<br>
+          </li>
+          <li>supercell=3</li>
+          <li>kpoints=4</li>
+          <li>kpoints_density= 1728</li>
+          <li>equilibrium and 1 displacement (Al) computations</li>
+          <li>energy cut-off: use default calculator settings. ABINIT
+            uses 1500 eV.</li></ul>To obtain these results, use e.g.:<br><ul><li><b>s=</b><font color="#3366ff">sqw_phonons</font>(<font color="#cc33cc">'POSCAR_Al'</font>,<font color="#cc33cc">'quantumespresso</font><font color="#cc33cc">'</font>,<font color="#cc33cc">'metal'</font>)</li><li><font color="#3366ff">sqw_kpath</font>(s)</li><li><font color="#3366ff">sqw_thermochemistry</font>(s)</li><li>qh=0.01:0.5:1.5; qk=qh; ql=qh;
+                  w=0.01:0.5:51; f=s([], qh,qk,ql<b>'</b>,w);</li><li><font color="#3366ff">plot3</font>(<font color="#3366ff">log10</font>(f(1,:,:,:)))<i>&nbsp; % qh ~ 0 plane</i><br></li></ul><ul>
+        </ul>
+        <i><b>Outcome</b></i>: all calculators give similar results. The
+        phonon dispersions are in agreement in all cases. The
+        QuantumEspresso and AbInit calculators are the fastest.<br>
+        <br>
+        Results with different DFT codes<br>
+        <table border="1" width="1102" cellspacing="2" cellpadding="2" height="541">
+          <tbody>
+            <tr>
+              <td bgcolor="#ffffcc" valign="top"><b>Code</b><br>
+              </td>
+              <td bgcolor="#ffffcc" valign="top"><b>computation time <br>
+                  (24 cores, 2.7 GHz)</b><br>
+                <br>
+              </td>
+              <td bgcolor="#ffffcc" valign="top"><b>sqw_kpath(s)</b></td>
+              <td bgcolor="#ffffcc" valign="top"><b>sqw_thermochemistry(s)</b><b><br>
+                </b></td>
+              <td bgcolor="#ffffcc" valign="top"><b>plot3(log10(f(1,:,:,:)))
+
+
+
+
+
+
+
+
+
+
+                </b>with <i>qh=0.01:0.5:1.5;qk=qh; ql=qh;
+                  w=0.01:0.5:51;</i><i><br>
+                </i><i>f=s([], qh,qk,ql',w);</i></td>
+              <td bgcolor="#ffffcc" valign="top"><b>command:<br>
+                  s=</b><font color="#3366ff">sqw_phonons</font>(<font color="#cc33cc">'POSCAR_Al',</font></td>
+            </tr>
+            <tr>
+              <td valign="top">Reference from <a href="http://www.computingformaterials.com/phoncfm/3fig/Xal.html">Phonon/Parlinski
+
+
+
+
+                  Al</a><br>
+                <br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><a href="http://www.computingformaterials.com/phoncfm/3fig/refer/al1.gif"><img alt="al1" title="al1" src="http://www.computingformaterials.com/phoncfm/3fig/refer/al1.gif" border="0" width="200" height="133"></a><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+            </tr>
+            <tr>
+              <td bgcolor="#ffcccc" valign="top"><b>QuantumEspresso</b><b>
+                  / SSSP</b></td>
+              <td valign="top">87<br>
+              </td>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_qe_kpath.png"><img alt="Al_qe_kpath" title="Al_qe_kpath" src="images/phonons/Models_Phonons_Al_qe_kpath.png" border="0" width="200" height="150"></a><br>
+              </td>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_qe_thermo.png"><img alt="Al_qe_thermo" title="Al_qe_thermo" src="images/phonons/Models_Phonons_Al_qe_thermo.png" border="0" width="200" height="150"></a><br>
+              </td>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_qe_plot3.png"><img alt="Al_qe_plot3" title="Al_qe_plot3" src="images/phonons/Models_Phonons_Al_qe_plot3.png" border="0" width="200" height="150"></a><br>
+              </td>
+              <td valign="top"><font color="#cc33cc">'qe','metal'</font>)</td>
+            </tr>
+            <tr>
+              <td bgcolor="#ffcccc" valign="top"><b>VASP (4.6)</b><b> /
+                  PAW PBE</b></td>
+              <td valign="top">525<br>
+              </td>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_vasp_kpath.png"><img alt="Al_vasp_kpath" title="Al_vasp_kpath" src="images/phonons/Models_Phonons_Al_vasp_kpath.png" border="0" width="200" height="150"></a><br>
+              </td>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_vasp_thermo.png"><img alt="Al_vasp_thermo" title="Al_vasp_thermo" src="images/phonons/Models_Phonons_Al_vasp_thermo.png" border="0" width="200" height="150"></a><br>
+              </td>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_vasp_plot3.png"><img alt="Al_vasp_plot3" title="Al_vasp_plot3" src="images/phonons/Models_Phonons_Al_vasp_plot3.png" border="0" width="200" height="150"></a><br>
+              </td>
+              <td valign="top"><font color="#cc33cc">'vasp','metal'</font>)</td>
+            </tr>
+            <tr>
+              <td bgcolor="#ffcccc" valign="top"><b>Elk</b><b><br>
+                </b> </td>
+              <td valign="top">9820<br>
+              </td>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_elk_kpath.png"><img alt="Al_elk_kpath" title="Al_elk_kpath" src="images/phonons/Models_Phonons_Al_elk_kpath.png" border="0" width="200" height="150"></a><br>
+              </td>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_elk_thermo.png"><img alt="Al_emlk_thermo" title="Al_elk_thermo" src="images/phonons/Models_Phonons_Al_elk_thermo.png" border="0" width="200" height="150"></a><br>
+              </td>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_elk_plot3.png"><img alt="Al_elk_plot3" title="Al_elk_plot3" src="images/phonons/Models_Phonons_Al_elk_plot3.png" border="0" width="200" height="150"></a><br>
+              </td>
+              <td valign="top"><font color="#cc33cc">'elk','metal'</font>)</td>
+            </tr>
+            <tr>
+              <td bgcolor="#ffcccc" valign="top"><b>EMT</b><b><br>
+                </b> </td>
+              <td valign="top">1<br>
+              </td>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_emt_kpath.png"><img alt="Al_emt_kpath" title="Al_emt_kpath" src="images/phonons/Models_Phonons_Al_emt_kpath.png" border="0" width="200" height="150"></a><br>
+              </td>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_emt_thermo.png"><img alt="Al_emt_thermo" title="Al_emt_thermo" src="images/phonons/Models_Phonons_Al_emt_thermo.png" border="0" width="200" height="150"></a><br>
+              </td>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_emt_plot3.png"><img alt="Al_emt_plot3" title="Al_emt_plot3" src="images/phonons/Models_Phonons_Al_emt_plot3.png" border="0" width="200" height="150"></a><br>
+              </td>
+              <td valign="top"><font color="#cc33cc">'emt','metal'</font>)<br>
+                only for limited elements<br>
+              </td>
+            </tr>
+            <tr>
+              <td bgcolor="#ffcccc" valign="top"><b>ABINIT&nbsp; / GGA
+                  FHI</b><b><br>
+                </b> </td>
+              <td valign="top">78<br>
+              </td>
+              <td valign="top"> <a href="images/phonons/Models_Phonons_Al_abinit_kpath.png"><img alt="Al_abinit_kpath" title="Al_abinit_kpath" src="images/phonons/Models_Phonons_Al_abinit_kpath.png" border="0" width="200" height="150"></a><br>
+              </td>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_thermo.png"><img alt="Al_abinit_thermo" title="Al_abinit_thermo" src="images/phonons/Models_Phonons_Al_abinit_thermo.png" border="0" width="200" height="150"></a><br>
+              </td>
+              <td valign="top"> <a href="images/phonons/Models_Phonons_Al_abinit_plot3.png"><img alt="Al_abinit_plot3" title="Al_abinit_plot3" src="images/phonons/Models_Phonons_Al_abinit_plot3.png" border="0" width="200" height="150"></a><br>
+              </td>
+              <td valign="top"><font color="#cc33cc">'abinit','metal'</font>)
+                <i><br>
+                  pps=fhi is the default</i><br>
+              </td>
+            </tr>
+            <tr>
+              <td bgcolor="#ffcccc" valign="top"><b>ABINIT / PAW (GBRV)</b><b><br>
+                </b> </td>
+              <td valign="top">87<br>
+              </td>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_paw_kpath.png"><img alt="Al_abinit_paw_kpath" title="Al_abinit_paw_kpath" src="images/phonons/Models_Phonons_Al_abinit_paw_kpath.png" border="0" width="200" height="150"></a><br>
+              </td>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_paw_thermo.png"><img alt="Al_abinit_paw_thermo" title="Al_abinit_paw_thermo" src="images/phonons/Models_Phonons_Al_abinit_paw_thermo.png" border="0" width="200" height="150"></a><br>
+              </td>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_paw_plot3.png"><img alt="Al_abinit_paw_plot3" title="Al_abinit_paw_plot3" src="images/phonons/Models_Phonons_Al_abinit_paw_plot3.png" border="0" width="200" height="150"></a><br>
+              </td>
+              <td valign="top"><font color="#cc33cc">'abinit','metal','pps=paw'</font>)</td>
+            </tr>
+            <tr>
+              <td bgcolor="#ffcccc" valign="top"><b>ABINIT / PAWXML
+                  (JTH)</b><b><br>
+                </b> </td>
+              <td valign="top">84<br>
+              </td>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_pawxml_kpath.png"><img alt="Al_abinit_pawxml_kpath" title="Al_abinit_pawxml_kpath" src="images/phonons/Models_Phonons_Al_abinit_pawxml_kpath.png" border="0" width="200" height="150"></a><br>
+              </td>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_pawxml_thermo.png"><img alt="Al_abinit_pawxml_thermo" title="Al_abinit_pawxml_thermo" src="images/phonons/Models_Phonons_Al_abinit_pawxml_thermo.png" border="0" width="200" height="150"></a><br>
+              </td>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_pawxml_plot3.png"><img alt="Al_abinit_pawxml_plot3" title="Al_abinit_pawxml_plot3" src="images/phonons/Models_Phonons_Al_abinit_pawxml_plot3.png" border="0" width="200" height="150"></a><br>
+              </td>
+              <td valign="top"><font color="#cc33cc">'abinit','metal','pps=pawxml'</font>)</td>
+            </tr>
+            <tr>
+              <td bgcolor="#ffcccc" valign="top"><b>ABINIT / HGH</b><b><br>
+                </b> </td>
+              <td valign="top">64<br>
+              </td>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_hgh_kpath.png"><img alt="Al_abinit_hgh_kpath" title="Al_abinit_hgh_kpath" src="images/phonons/Models_Phonons_Al_abinit_hgh_kpath.png" border="0" width="200" height="150"></a> </td>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_hgh_thermo.png"><img alt="Al_abinit_hgh_thermo" title="Al_abinit_hgh_thermo" src="images/phonons/Models_Phonons_Al_abinit_hgh_thermo.png" border="0" width="200" height="150"></a><br>
+              </td>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_hgh_plot3.png"><img alt="Al_abinit_hgh_plot3" title="Al_abinit_hgh_plot3" src="images/phonons/Models_Phonons_Al_abinit_hgh_plot3.png" border="0" width="200" height="150"></a> </td>
+              <td valign="top"><font color="#cc33cc">'abinit','metal','pps=hgh'</font>)</td>
+            </tr>
+            <tr>
+              <td bgcolor="#ffcccc" valign="top"><b>ABINIT / TM</b><b><br>
+                </b> </td>
+              <td valign="top">73<br>
+              </td>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_tm_kpath.png"><img alt="Al_abinit_tm_kpath" title="Al_abinit_tm_kpath" src="images/phonons/Models_Phonons_Al_abinit_tm_kpath.png" border="0" width="200" height="150"></a><br>
+              </td>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_tm_thermo.png"><img alt="Al_abinit_tm_thermo" title="Al_abinit_tm_thermo" src="images/phonons/Models_Phonons_Al_abinit_tm_thermo.png" border="0" width="200" height="150"></a><br>
+              </td>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_tm_plot3.png"><img alt="Al_abinit_tm_plot3" title="Al_abinit_tm_plot3" src="images/phonons/Models_Phonons_Al_abinit_tm_plot3.png" border="0" width="200" height="150"></a><br>
+              </td>
+              <td valign="top"><font color="#cc33cc">'abinit','metal','pps=tm'</font>)</td>
+            </tr><tr><td bgcolor="#ffccff" valign="top"><b>GPAW</b><br></td><td valign="top">465<br></td><td valign="top">same as others<br></td><td valign="top">same as others</td><td valign="top">same as others</td><td valign="top"><font color="#cc33cc">'gpaw','metal','mode=fd'</font>)</td></tr>
+          </tbody>
+        </table><div align="center"><i>iFit: </i><i>Sqw_Phonons: Aluminium</i><br></div>
+        <h3><a name="mozTocId526943" class="mozTocH3"></a>Phonons in MgO</h3>
+        <p>The atom confiiguration '<a href="../Data/POSCAR_MgO">POSCAR_MgO</a>'
+          is given within iFit Data directory. It is thus not required
+          to specify its full path, and sqw_phonons will find it.<br>
+          The automatic configuration uses:<br>
+        </p>
+        <ul>
+          <li>Space group: F m -3 m (225), cubic fcc.<br>
+          </li>
+          <li>supercell=2</li>
+          <li>kpoints=4</li>
+          <li>kpoints_density= 1024</li>
+          <li>equilibrium and 2 displacements (Mg, O) computations</li>
+          <li>energy cut-off: use default calculator settings. ABINIT
+            uses 1500 eV.</li>
+          <li>COD <a href="http://www.crystallography.net/cod/1000053.html">1000053.cif</a></li></ul>To obtain these results, use e.g.:<ul><li><b>s=</b><font color="#3366ff">sqw_phonons</font>(<font color="#cc33cc">'POSCAR_MgO'</font>,<font color="#cc33cc">'quantumespresso</font><font color="#cc33cc">'</font>,<font color="#cc33cc">'insulator'</font>)</li><li><font color="#3366ff">sqw_kpath</font>(s)</li><li><font color="#3366ff">sqw_thermochemistry</font>(s)</li><li><i>qh=0.01:0.5:1.5;qk=qh; ql=qh;
+                  w=0.01:0.5:51;</i><i> f=s([], qh,qk,ql',w);</i></li><li><font color="#3366ff">plot3</font>(<font color="#3366ff">log10</font>(f(1,:,:,:)))<i>&nbsp; % qh ~ 0 plane</i></li></ul><ul>
+        </ul>
+        <i><b>Outcome</b></i>: Only QuantumEspresso, Elk and VASP
+        provide sensible results. QuantumEspresso is also very fast. Elk
+        also provides reasonable results, including a fair density of
+        states, but with a higher proportion of unstable modes, and is
+        much slower. Unfortunatly, ABINIT and other codes do not provide reliable results or fail.<br>
+        <ul>
+        </ul>
+        <table border="1" width="1102" cellspacing="2" cellpadding="2" height="541">
+          <tbody>
+            <tr>
+              <td bgcolor="#ffffcc" valign="top"><b>Code</b><br>
+              </td>
+              <td bgcolor="#ffffcc" valign="top"><b>computation time <br>
+                  (24 cores, 2.7 GHz)</b><br>
+                <br>
+              </td>
+              <td bgcolor="#ffffcc" valign="top"><b>sqw_kpath(s)</b></td>
+              <td bgcolor="#ffffcc" valign="top"><b>sqw_thermochemistry(s)</b><b><br>
+                </b></td>
+              <td bgcolor="#ffffcc" valign="top"><b>plot3(log10(f(1,:,:,:)))
+
+
+
+
+
+
+
+
+
+
+                </b>with <i>qh=0.01:0.5:1.5;qk=qh; ql=qh;
+                  w=0.01:0.5:90;</i><i><br>
+                </i><i>f=s([], qh,qk,ql',w);</i></td>
+              <td bgcolor="#ffffcc" valign="top"><b>command:<br>
+                  s=</b><font color="#3366ff">sqw_phonons</font>(<font color="#cc33cc">'POSCAR_MgO',</font></td>
+            </tr>
+            <tr>
+              <td valign="top">Reference from PhononDB<br>
+                <a href="http://phonondb.mtl.kyoto-u.ac.jp/ph20170621/d001/mp-1265.html">MgO
+
+
+
+
+
+                  mp-1265</a><br>
+                using VASP<br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><a href="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-1265-band.png"><img alt="mp-1265-band" title="mp-1265-band" src="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-1265-band.png" border="0" width="200" height="103"></a><br>
+              </td>
+              <td valign="top"><a href="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-1265-tprops1.png"><img alt="mp-1265-tprops1" title="mp-1265-tprops1" src="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-1265-tprops1.png" border="0" width="200" height="133"></a><br>
+              </td>
+              <td valign="top"><a href="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-1265-dos1.png"><img alt="mp-1265-dos1" title="mp-1265-dos1" src="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-1265-dos1.png" border="0" width="200" height="112"></a></td>
+              <td valign="top"><br>
+              </td>
+            </tr>
+            <tr><td valign="top">Reference from p50 in <a href="http://dx.doi.org/10.1007/978-3-642-81347-4">Biltz &amp; Kress, Springer Series 10 (1979)</a><br></td><td valign="top"><br></td><td valign="top"><a href="/images/phonons/Models_Phonons_MgO_Bilz_kpath.png"><img src="images/phonons/Models_Phonons_MgO_Bilz_kpath.png" title="MgO_Bilz_kpat" alt="MgO_Bilz_kpat" border="0" width="200" height="152"></a><br></td><td valign="top"><br></td><td valign="top"><a href="images/phonons/Models_Phonons_MgO_Biltz_dos.png"><img src="images/phonons/Models_Phonons_MgO_Biltz_dos.png" title="MgO_Biltz_dos" alt="MgO_Biltz_dos" border="0" width="200" height="118"></a><br></td><td valign="top"><br></td></tr><tr>
+              <td bgcolor="#ffcccc" valign="top"><b>QuantumEspresso</b><b>
+                  / SSSP</b></td>
+              <td valign="top">408<br>
+              </td>
+              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_qe_kpath.png"><img alt="MgO_qe_kpath" title="MgO_qe_kpath" src="images/phonons/Models_Phonons_MgO_qe_kpath.png" border="0" width="200" height="150"></a><br>
+              </td>
+              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_qe_thermo.png"><img alt="MgO_qe_thermo" title="MgO_qe_thermo" src="images/phonons/Models_Phonons_MgO_qe_thermo.png" border="0" width="200" height="150"></a><br>
+              </td>
+              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_qe_plot3.png"><img alt="MgO_qe_plot3" title="MgO_qe_plot3" src="images/phonons/Models_Phonons_MgO_qe_plot3.png" border="0" width="200" height="150"></a><br>
+              </td>
+              <td valign="top"><font color="#cc33cc">'qe'</font>)</td>
+            </tr>
+            <tr>
+              <td bgcolor="#ffcccc" valign="top"><b>VASP (4.6)</b><b> /
+                  PAW PBE</b></td>
+              <td valign="top">636<br>
+              </td>
+              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_vasp_kpath.png"><img alt="MgO_vasp_kpath" title="MgO_vasp_kpath" src="images/phonons/Models_Phonons_MgO_vasp_kpath.png" border="0" width="200" height="150"></a><br>
+              </td>
+              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_vasp_thermo.png"><img alt="MgO_vasp_thermo" title="MgO_vasp_thermo" src="images/phonons/Models_Phonons_MgO_vasp_thermo.png" border="0" width="200" height="150"></a><br>
+              </td>
+              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_vasp_plot3.png"><img alt="MgO_vasp_plot3" title="MgO_vasp_plot3" src="images/phonons/Models_Phonons_MgO_vasp_plot3.png" border="0" width="200" height="150"></a><br>
+              </td>
+              <td valign="top"><font color="#cc33cc">'vasp'</font>)</td>
+            </tr>
+            <tr>
+              <td bgcolor="#ffcccc" valign="top"><b>Elk</b><b><br><br><i>wrong at small q, </i><i>near Gamma.</i><br>
+                </b></td>
+              <td valign="top">2408<br>
+              </td>
+              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_elk_kpath.png"><img alt="MgO_elk_kpath" title="MgO_elk_kpath" src="images/phonons/Models_Phonons_MgO_elk_kpath.png" border="0" width="200" height="150"></a><br>
+              </td>
+              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_elk_thermo.png"><img alt="MgO_elk_thermo" title="MgO_elk_thermo" src="images/phonons/Models_Phonons_MgO_elk_thermo.png" border="0" width="200" height="150"></a><br>
+              </td>
+              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_elk_plot3.png"><img alt="MgO_elk_plot3" title="MgO_elk_plot3" src="images/phonons/Models_Phonons_MgO_elk_plot3.png" border="0" width="200" height="150"></a><br>
+              </td>
+              <td valign="top"><font color="#cc33cc">'elk'</font>)</td>
+            </tr>
+            
+            <tr>
+              <td bgcolor="#ffcccc" valign="top">ABINIT / PAW (GBRV)<br><br><i><b>wrong</b></i><br>
+              </td>
+              <td valign="top">181<br>
+              </td>
+              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_abinit_paw_kpath.png"><img alt="MgO_abinit_paw_kpath" title="MgO_abinit_paw_kpath" src="images/phonons/Models_Phonons_MgO_abinit_paw_kpath.png" border="0" width="200" height="150"></a><br>
+              </td>
+              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_abinit_paw_thermo.png"><img alt="MgO_abinit_paw_thermo" title="MgO_abinit_paw_thermo" src="images/phonons/Models_Phonons_MgO_abinit_paw_thermo.png" border="0" width="200" height="150"></a><br>
+              </td>
+              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_abinit_paw_plot3.png"><img alt="MgO_abinit_paw_plot3" title="MgO_abinit_paw_plot3" src="images/phonons/Models_Phonons_MgO_abinit_paw_plot3.png" border="0" width="200" height="150"></a><br>
+              </td>
+              <td valign="top"><font color="#cc33cc">'abinit','pps=paw'</font>)</td>
+            </tr>
+            
+            
+            
+          </tbody>
+        </table>
+        <h3><a name="mozTocId339109" class="mozTocH3"></a>Phonons in
+          SrTiO3</h3>
+        <p>The atom confiiguration '<a href="../Data/POSCAR_SrTiO3">POSCAR_SrTiO3</a>'
+          is given within iFit Data directory. It is thus not required
+          to specify its full path, and sqw_phonons will find it.<br>
+        </p>
+        <ul>
+          <li>Spacegroup: P m -3 m, cubic.<br>
+          </li>
+          <li>supercell=2</li>
+          <li>kpoints=3</li>
+          <li>kpoints_density=&nbsp; 1080<br>
+          </li>
+          <li>energy cut-off: use default calculator settings. ABINIT
+            uses 1500 eV.</li></ul>To obtain these results, use e.g.:
+<ul><li><b>s=</b><font color="#3366ff">sqw_phonons</font>(<font color="#cc33cc">'POSCAR_SrTiO3'</font>,<font color="#cc33cc">'quantumespresso</font><font color="#cc33cc">'</font>,<font color="#cc33cc">'insulator'</font>)</li><li><font color="#3366ff">sqw_kpath</font>(s)</li><li><font color="#3366ff">sqw_thermochemistry</font>(s)</li><li><i>qh=0.01:0.5:1.5;qk=qh; ql=qh;
+                  w=0.01:0.5:51;</i><i> f=s([], qh,qk,ql',w);</i></li><li><font color="#3366ff">plot3</font>(<font color="#3366ff">log10</font>(f(1,:,:,:)))<i>&nbsp; % qh ~ 0 plane</i></li></ul>
+<ul>
+        </ul>
+        <i><b>Outcome</b></i>: VASP and QE give similar results. QE is
+        faster. Unfortunatly, ABINIT does not provide reliable results. Other calculators provide questionable results or fail.<br>
+        <ul>
+        </ul>
+        <table border="1" width="1102" cellspacing="2" cellpadding="2" height="541">
+          <tbody>
+            <tr>
+              <td bgcolor="#ffffcc" valign="top"><b>Code</b><br>
+              </td>
+              <td bgcolor="#ffffcc" valign="top"><b>computation time <br>
+                  (24 cores, 2.7 GHz)</b><br>
+                <br>
+              </td>
+              <td bgcolor="#ffffcc" valign="top"><b>sqw_kpath(s)</b></td>
+              <td bgcolor="#ffffcc" valign="top"><b>sqw_thermochemistry(s)</b><b><br>
+                </b></td>
+              <td bgcolor="#ffffcc" valign="top"><b>plot3(log10(f(1,:,:,:))
+
+
+
+
+
+
+
+
+
+
+                </b>with <i>qh=0.01:0.5:1.50;qk=qh; ql=qh;
+                  w=0.01:0.5:110;</i><i><br>
+                </i><i>f=s([], qh,qk,ql',w);</i></td>
+              <td bgcolor="#ffffcc" valign="top"><b>command:<br>
+                  s=</b><font color="#3366ff">sqw_phonons</font>(<font color="#cc33cc">'POSCAR_SrTiO3',</font></td>
+            </tr>
+            <tr>
+              <td valign="top">Reference from PhononDB<br>
+                <a href="http://phonondb.mtl.kyoto-u.ac.jp/ph20170621/d005/mp-5229.html">SrTiO3
+
+
+
+
+
+                  mp-5229</a><br>
+                using VASP<br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><a href="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-5229-band.png"><img alt="mp-5229-band" title="mp-5229-band" src="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-5229-band.png" border="0" width="200" height="83"></a><br>
+              </td>
+              <td valign="top"><a href="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-5229-tprops.png"><img alt="mp-5229-tprops." title="mp-5229-tprops." src="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-5229-tprops.png" border="0" width="200" height="133"></a><br>
+              </td>
+              <td valign="top"><a href="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-5229-dos1.png"><img alt="mp-5229-dos1" title="mp-5229-dos1" src="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-5229-dos1.png" border="0" width="200" height="112"></a><br>
+              </td>
+              <td valign="top"><br>
+              </td>
+            </tr>
+            <tr><td valign="top">Reference from p147 in <a href="http://dx.doi.org/10.1007/978-3-642-81347-4">Biltz &amp; Kress, Springer Series 10 (1979)</a></td><td valign="top"><br></td><td valign="top"><a href="images/phonons/Models_Phonons_SrTiO3_Biltz_kpath.png"><img src="images/phonons/Models_Phonons_SrTiO3_Biltz_kpath.png" title="SrTiO3_Biltz_kpath" alt="SrTiO3_Biltz_kpath" border="0" width="200" height="176"></a><br></td><td valign="top"><br></td><td valign="top"><a href="images/phonons/Models_Phonons_SrTiO3_Biltz_dos.png"><img src="images/phonons/Models_Phonons_SrTiO3_Biltz_dos.png" title="SrTiO3_Biltz_dos" alt="SrTiO3_Biltz_dos" border="0" width="200" height="116"></a><br></td><td valign="top"><br></td></tr><tr>
+              <td bgcolor="#ffcccc" valign="top"><b>QuantumEspresso</b><b>
+                  / SSSP</b></td>
+              <td valign="top">1410<br>
+              </td>
+              <td valign="top"><a href="images/phonons/Models_Phonons_SrTiO3_qe_kpath.png"><img alt="SrTiO3_qe_kpath" title="SrTiO3_qe_kpath" src="images/phonons/Models_Phonons_SrTiO3_qe_kpath.png" border="0" width="200" height="150"></a><br>
+              </td>
+              <td valign="top"><a href="images/phonons/Models_Phonons_SrTiO3_qe_thermo.png"><img alt="SrTiO3_qe_thermo" title="SrTiO3_qe_thermo" src="images/phonons/Models_Phonons_SrTiO3_qe_thermo.png" border="0" width="200" height="150"></a><br>
+              </td>
+              <td valign="top"><a href="images/phonons/Models_Phonons_SrTiO3_qe_plot3.png"><img alt="SrTiO3_qe_plot3" title="SrTiO3_qe_plot3" src="images/phonons/Models_Phonons_SrTiO3_qe_plot3.png" border="0" width="200" height="150"></a><br>
+              </td>
+              <td valign="top"><font color="#cc33cc">'qe'</font>)</td>
+            </tr>
+            <tr>
+              <td bgcolor="#ffcccc" valign="top"><b>VASP (4.6)</b><b> /
+                  PAW PBE</b></td>
+              <td valign="top">2560<br>
+              </td>
+              <td valign="top"><a href="images/phonons/Models_Phonons_SrTiO3_vasp_kpath.png"><img alt="SrTiO3_vasp_kpath" title="SrTiO3_vasp_kpath" src="images/phonons/Models_Phonons_SrTiO3_vasp_kpath.png" border="0" width="200" height="150"></a><br>
+              </td>
+              <td valign="top"><a href="images/phonons/Models_Phonons_SrTiO3_vasp_thermo.png"><img alt="SrTiO3_vasp_thermo" title="SrTiO3_vasp_thermo" src="images/phonons/Models_Phonons_SrTiO3_vasp_thermo.png" border="0" width="200" height="150"></a><br>
+              </td>
+              <td valign="top"><a href="images/phonons/Models_Phonons_SrTiO3_vasp_plot3.png"><img alt="SrTiO3_vasp_plot3" title="SrTiO3_vasp_plot3" src="images/phonons/Models_Phonons_SrTiO3_vasp_plot3.png" border="0" width="200" height="150"></a><br>
+              </td>
+              <td valign="top"><font color="#cc33cc">'vasp'</font>)</td>
+            </tr>
+            
+            
+            
+            
+            
+            
+          </tbody>
+        </table>
+        <h3><a name="mozTocId884775" class="mozTocH3"></a>Phonons in
+          Tb2SeO2 (mp-755340)</h3>
+        For this material, we re-use a previously computed set of force
+        constants, available at the <a href="http://phonondb.mtl.kyoto-u.ac.jp/">PhononDB</a> web
+        site. The calculator is set to VASP. Only the final steps of the
+        calculation are performed (equilibrium energy, momentum, stress,
+        magnetic moment, ...).<br>
+        <br>
+        We get the data at id <a href="http://phonondb.mtl.kyoto-u.ac.jp/ph20151124/d755/mp-755340.html">755340
+
+          / Tb2SeO2</a> (<a href="http://phonondb.mtl.kyoto-u.ac.jp/_downloads/mp-755340.tar.lzma">lzma</a>):<br>
+        <ul>
+          <li>Spacegroup: P -3 m 1 (164)</li>
+          <li>supercell: [3 3 2]</li>
+          <li>kpoints: [2 2 1]</li>
+        </ul>
+        Then we use the phonon-05 step:<br>
+        <ul>
+          <li>s=<font color="#3366ff">sqw_phonons</font>(<font color="#cc33cc">'mp-755340/phonon-05'</font>);</li><li><font color="#3366ff">sqw_kpath</font>(s)</li><li><font color="#3366ff">sqw_thermochemistry</font>(s)</li><li><i>qh=0.01:0.5:1.5;qk=qh; ql=qh;
+                  w=0.01:0.5:51;</i><i> f=s([], qh,qk,ql',w);</i></li><li><font color="#3366ff">plot3</font>(<font color="#3366ff">log10</font>(f(1,:,:,:)))<i>&nbsp; % qh ~ 0 plane</i></li></ul><i><b>
+        Outcome: </b></i>The computation reconstruction provides the same results as
+        PhonoPy.<br>
+        <br>
+        <table border="1" width="1102" cellspacing="2" cellpadding="2" height="541">
+          <tbody>
+            <tr>
+              <td bgcolor="#ffffcc" valign="top"><b>Code</b><br>
+              </td>
+              <td bgcolor="#ffffcc" valign="top"><b>computation time <br>
+                  (24 cores, 2.7 GHz)</b><br>
+                <br>
+              </td>
+              <td bgcolor="#ffffcc" valign="top"><b>sqw_kpath(s)</b></td>
+              <td bgcolor="#ffffcc" valign="top"><b>sqw_thermochemistry(s)</b><b><br>
+                </b></td>
+              <td bgcolor="#ffffcc" valign="top"><b>plot3(log10(f(1,:,:,:))
+
+
+
+
+
+
+
+
+
+
+                </b>with <i>qh=0.01:0.5:1.50;qk=qh; ql=qh;
+                  w=0.01:0.5:110;</i><i><br>
+                </i><i>f=s([], qh,qk,ql',w);</i></td>
+            </tr>
+            <tr>
+              <td valign="top">Reference from PhononDB<br>
+                <meta http-equiv="content-type" content="text/html; charset=windows-1252">
+                <a href="http://phonondb.mtl.kyoto-u.ac.jp/ph20151124/d755/mp-755340.html">Tb2SeO2<br>
+                  mp-755340</a><br>
+                using VASP<br>
+              </td>
+              <td valign="top"><br>
+              </td>
+              <td valign="top"><a href="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-755340-band.png"><img alt="mp-755340-band" title="mp-755340-band" src="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-755340-band.png" border="0" width="206" height="79"></a><br>
+              </td>
+              <td valign="top"><a href="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-755340-tprops1.png"><img alt="mp-755340-tprop" title="mp-755340-tprop" src="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-755340-tprops1.png" border="0" width="200" height="133"></a><br>
+              </td>
+              <td valign="top"><a href="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-755340-dos1.png"><img alt="mp-755340-dos1" title="mp-755340-dos1" src="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-755340-dos1.png" border="0" width="200" height="112"></a> </td>
+            </tr>
+            <tr>
+              <td bgcolor="#ffcccc" valign="top"><b>VASP (4.6)</b><b> /
+                  PAW PBE</b></td>
+              <td valign="top">300 (reconstruction)<br>
+              </td>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Tb2SeO2_vasp_kpath.png"><img alt="Tb2SeO2_vasp_kpath" title="Tb2SeO2_vasp_kpath" src="images/phonons/Models_Phonons_Tb2SeO2_vasp_kpath.png" border="0" width="200" height="150"></a><br>
+              </td>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Tb2SeO2_vasp_thermo.png"><img alt="Tb2SeO2_vasp_thermo" title="Tb2SeO2_vasp_thermo" src="images/phonons/Models_Phonons_Tb2SeO2_vasp_thermo.png" border="0" width="200" height="150"></a><br>
+              </td>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Tb2SeO2_vasp_plot3.png"><img alt="Tb2SeO2_vasp_plot3" title="Tb2SeO2_vasp_plot3" src="images/phonons/Models_Phonons_Tb2SeO2_vasp_plot3.png" border="0" width="200" height="150"></a><br>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <br>
+        <h3><a name="mozTocId894568" class="mozTocH3"></a>Creating more
+          complex models</h3>
+        The models are <a href="iFunc.html">iFunc</a> objects, which have a large number of <a href="iFunc.html#mozTocId443357">mathematical operators</a>. For instance, it is possible to add models together (here a phonon and a spin-wave):<br><ul><li>s1 = <font color="#3366ff">sqw_phonons</font>(<font color="#cc33cc">'POSCAR_Al'</font>,<font color="#cc33cc">'emt'</font>);</li><li>sq = <font color="#3366ff">sw_model</font>(<font color="#cc33cc">'squareAF'</font>,2,0);&nbsp; <i>% create a <a href="https://github.com/tsdev/spinw%3E">SpinW</a> object</i><br></li><li>s2 = <font color="#3366ff">sqw_spinw</font>(sq);</li><li>s3 = s1 <b>+</b> s2;</li></ul>However, do not expect to be able to handle mode interactions this way (e.g. splitting and degeneracy lifting). The objects are assumed to be independent. The resulting objects is indeed the summed value, and the parameter list is the concatenation of the initial models.<br>
+        <br>
+        <hr style="width: 100%; height: 2px;"> <span style="font-style:
+          italic;">E. Farhi - iFit/Phonon model - </span><span style="font-style: italic;"> $Date$ $Revision$ </span><span style="font-style: italic;"> </span>- back to <a href="index.html">Main iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France
+            &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL,
+            Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px
+            solid ; width: 53px; height: 50px;" border="0" align="right" width="182" height="171"></a><br>
+        <br>
+      </div>
+    </div>
+  
+
+
+
+</body></html>
