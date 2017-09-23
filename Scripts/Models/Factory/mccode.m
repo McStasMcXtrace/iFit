@@ -382,6 +382,8 @@ y.ParameterValues = y.Guess;
 
 % create the iFunc model
 y = iFunc(y);
+% make it an iFunc sub-class
+y = iFunc_McCode(y);
 
 % evaluate the model to get its monitors, and derive the dimensionality
 % all parameters must be defined to get execute with default values
