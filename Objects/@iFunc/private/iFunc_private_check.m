@@ -1,6 +1,15 @@
 function a = iFunc_private_check(a)
 % iFunc_private_checkexpr: check the function expression/object
 
+  if numel(a) > 1
+    b = [];
+    for index=1:numel(a)
+      b = [ b iFunc_private_check(a(index)) ];
+    end
+    b = reshape(a, size(a));
+    return
+  end
+
   nb_pars             = 0;
   dim                 = 0;
   

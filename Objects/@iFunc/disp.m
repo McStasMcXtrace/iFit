@@ -24,7 +24,7 @@ if numel(s_in) > 1
   eval([ 'display(' iname ');' ]); % makes sure the variable name is sent to 'display'.
 else
   if isdeployed || ~usejava('jvm'), id='iFunc';
-  else           id=[ '<a href="matlab:doc iFunc">iFunc</a> (<a href="matlab:methods iFunc">methods</a>,<a href="matlab:doc(iFunc)">doc</a>,<a href="matlab:figure;subplot(' iname ');">plot</a>,<a href="matlab:char(' iname ')">code</a>)' ];
+  else           id=[ '<a href="matlab:doc iFunc">' class(s_in) '</a> (<a href="matlab:methods iFunc">methods</a>,<a href="matlab:doc(iFunc)">doc</a>,<a href="matlab:figure;subplot(' iname ');">plot</a>,<a href="matlab:char(' iname ')">code</a>)' ];
   end
   u = s_in.Name; u(~isstrprop(u,'print'))=' '; u=strtrim(u); 
   if length(u) > 40, u = [ u(1:38) '...' ]; end

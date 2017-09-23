@@ -26,7 +26,7 @@ if numel(s_in) > 1
   d = [ d sprintf(' array [%s]',num2str(size(s_in))) ];
 end
 if isdeployed || ~usejava('jvm') || ~usejava('desktop'), id='iFunc';
-else           id=[ '<a href="matlab:doc iFunc">iFunc</a> (<a href="matlab:methods iFunc">methods</a>,<a href="matlab:doc(iData,''iFunc'')">doc</a>,<a href="matlab:figure;subplot(' iname ');">plot</a>,<a href="matlab:disp(' iname ');">more...</a>)' ];
+else           id=[ '<a href="matlab:doc iFunc">' class(s_in) '</a> (<a href="matlab:methods iFunc">methods</a>,<a href="matlab:doc(iData,''iFunc'')">doc</a>,<a href="matlab:figure;subplot(' iname ');">plot</a>,<a href="matlab:disp(' iname ');">more...</a>)' ];
 end
 if length(s_in) == 0
     d = [ d sprintf(' %s model: empty\n',id) ];

@@ -146,6 +146,7 @@ end
     has_signal = 0;
     for index=1:length(e)
       d = strtrim(e{index});
+      if isempty(d), continue; end
       if d(end) ~= ';', d = [ d '; ' ]; end
       if ~isempty(regexp(d, '\<signal\>\s*=')), has_signal = 1; end
       if index == length(e) && ~has_signal
