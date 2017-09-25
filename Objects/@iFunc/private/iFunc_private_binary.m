@@ -57,6 +57,14 @@ if isFa
   if isa(a.Expression, 'function_handle')
     a.Expression = { sprintf('signal = feval(%s, p, %s);', func2str(a.Expression), ax(1:(end-1))) };
   end
+  if ~isstruct(a.Constraint)
+      a.Constraint.eval=[];
+      a.Constraint.fixed = [];
+      a.Constraint.min = [];
+      a.Constraint.max = [];
+      a.Constraint.set = [];
+  end
+  if ~iscellstr(a.Expression), a.Expression = cellstr(a.Expression); end
   if isa(a.Constraint.eval, 'function_handle')
     a.Constraint.eval = sprintf('p = feval(%s, p, %s);', func2str(a.Constraint.eval), ax(1:(end-1)));
   end
@@ -74,6 +82,14 @@ if isFb
   if isa(b.Expression, 'function_handle')
     b.Expression = { sprintf('signal = feval(%s, p, %s);', func2str(b.Expression), ax(1:(end-1))) };
   end
+  if ~isstruct(b.Constraint)
+      b.Constraint.eval=[];
+      b.Constraint.fixed = [];
+      b.Constraint.min = [];
+      b.Constraint.max = [];
+      b.Constraint.set = [];
+  end
+  if ~iscellstr(b.Expression), b.Expression = cellstr(b.Expression); end
   if isa(b.Constraint.eval, 'function_handle')
     b.Constraint.eval = { sprintf('p = feval(%s, p, %s);', func2str(b.Constraint.eval), ax(1:(end-1))) };
   end
@@ -202,8 +218,10 @@ if isFa && isFb
   end
   
   % append Constraint ==========================================================
-  if     isempty(a.Constraint.eval), c.Constraint.eval = b.Constraint.eval;
-  elseif isempty(b.Constraint.eval), c.Constraint.eval = a.Constraint.eval;
+  if     isempty(a.Constraint.eval), 
+      c.Constraint.eval = b.Constraint.eval;
+  elseif isempty(b.Constraint.eval), 
+      c.Constraint.eval = a.Constraint.eval;
   else
     % append Constraint: 1st
     c.Constraint.eval = [ ...

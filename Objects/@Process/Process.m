@@ -42,7 +42,7 @@ classdef Process < timer
     % Process has stopped. To remove it, use delete(pid), then clear(pid).
     % The UserData field of the object is used by the external command. In case
     % you need to store something, do NOT directly allocate obj.UserData, but 
-    % rather store anything with:
+    % rather store anything with set and get calls:
     %    ud=get(pid,'UserData');
     %    ud.UserData = <your stuff>;
     %    set(pid, 'UserData', ud);
