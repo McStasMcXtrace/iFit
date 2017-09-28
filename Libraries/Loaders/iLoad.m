@@ -201,16 +201,16 @@ function [data, format] = iLoad(filename, loader, varargin)
   % end configuration stuff
   % ------------------------------------------------------------------------------
 
-  % multiple file handling
+  % multiple file handling (directories, etc)
   if iscellstr(filename) & length(filename) > 1 & ~isempty(filename)
-    data  = cell(1,numel(filename));
+    data  = {};
     format= data;
     for index=1:numel(filename)
       [this_data, this_format] = iLoad(filename{index}, loader, varargin{:});
       if ~iscell(this_data),   this_data  ={ this_data }; end
       if ~iscell(this_format), this_format={ this_format }; end
-      data{index}  = this_data{:};
-      format{index}= this_format{:};
+      data  = [ data ; this_data(:) ];
+      format= [ format ; this_format(:) ];
       % clear this_data this_format can not clear in for
     end
     return

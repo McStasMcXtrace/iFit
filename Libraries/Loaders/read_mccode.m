@@ -427,7 +427,11 @@ function data = mcplot_check_data(structure)
   end
   
   if isempty(structure.size)
-    structure.size = size(structure.data);
+    if isfield(structure,'data')
+      structure.size = size(structure.data);
+    else
+      structure.size = [0 0];
+    end
   end
 
   % reshape data block from 'type'
