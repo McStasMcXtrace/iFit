@@ -69,7 +69,7 @@ def isfile(filename):
       isf = os.path.isfile(filename)
     else:
       isf = 0
-    # Syncronize:
+    # Synchronize:
     return world.sum(isf)
 
 # TODO: should go into ase.spacegroup
@@ -96,7 +96,7 @@ def get_spacegroup(atoms, symprec=1e-5, method='phonopy'):
     """
 
     # use spglib when it is available (and return)
-    if has_spglib and method is 'phonopy':
+    if has_spglib and method in ('phonopy','spglib'):
         sg    = spglib.get_spacegroup(atoms)
         sg_no = int(sg[sg.find("(")+1:sg.find(")")])
         atoms.info["spacegroup"] = Spacegroup(sg_no)
