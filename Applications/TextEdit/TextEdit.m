@@ -41,7 +41,8 @@ centerfig();
 hMA=uimenu(hF,'Label','File');
 uimenu(hMA,'Label','New','Callback','TextEdit', 'Accelerator','n');
 uimenu(hMA,'Label','Open...','Callback',@textedit_open, 'Accelerator','o');
-uimenu(hMA,'Label','Save...','Callback',@textedit_save, 'Accelerator','s');
+uimenu(hMA,'Label','Save','Callback',@textedit_save);
+uimenu(hMA,'Label','Save as...','Callback',@textedit_saveas, 'Accelerator','s');
 uimenu(hMA,'Label','Evaluate selection','Callback',@textedit_eval, 'Accelerator','e');
 
 % Menu Edit
@@ -150,10 +151,12 @@ if nargin
   end
 end
 
+options.filename = '';
 if nargin && ischar(filename)
   try
       if size(filename,1) == 1 && ~isempty(dir(filename))
         textedit_load(filename);
+        options.filename = filename;
       else
         textedit_setText(options.display_pane, filename)
       end
@@ -188,25 +191,52 @@ end
         set(hF,'Name', [ 'TextEdit: ' filename ]);
     end
 
-% Save content into a text file
+% Save content into an existing text file
     function textedit_save(~,~)
+      if isempty(options.filename) || ~ischar(options.filename)
+        textedit_saveas;
+        return;
+      else
         txt = textedit_getText(options.display_pane);
-        [filename, pathname] = uiputfile( ...
-          {'*.txt','Text files (*.txt)'; ...
-           '*.m','Matlab script (*.m)'; ...
-           '*.*','All files'}, 'TextEdit: Save as:');
+        fid=fopen(options.filename,'wt');
+        if fid == -1
+          error([ mfilename ': Could not open file ' options.filename ' for saving.' ]);
+        end
+        for i=1:size(txt,1)
+            fprintf(fid,'%s\n',char(txt(i,:)));
+        end
+        fclose(fid);
+        set(hF,'Name', [ 'TextEdit: ' options.filename ]);
+      end
+    end
+    
+% Save content into a (new) text file
+    function textedit_saveas(~,~)
+        txt = textedit_getText(options.display_pane);
+        if ~isempty(options.filename) && ischar(options.filename)
+          [filename, pathname] = uiputfile( ...
+            {'*.txt','Text files (*.txt)'; ...
+             '*.m','Matlab script (*.m)'; ...
+             '*.*','All files'}, 'TextEdit: Save as:', options.filename);
+        else
+          [filename, pathname] = uiputfile( ...
+            {'*.txt','Text files (*.txt)'; ...
+             '*.m','Matlab script (*.m)'; ...
+             '*.*','All files'}, 'TextEdit: Save as:');
+        end
         if isequal(filename,0) || isequal(pathname,0)
             return;
         else
             fid=fopen(fullfile(pathname,filename),'wt');
             if fid == -1
-              error([ mfilename ': Could not open file ' fullfile(pathname,filename) ]);
+              error([ mfilename ': Could not open file ' fullfile(pathname,filename) ' for saving.' ]);
             end
             for i=1:size(txt,1)
                 fprintf(fid,'%s\n',char(txt(i,:)));
             end
             fclose(fid);
             set(hF,'Name', [ 'TextEdit: ' fullfile(pathname,filename) ]);
+            options.filename = fullfile(pathname,filename);
         end
     end
     
