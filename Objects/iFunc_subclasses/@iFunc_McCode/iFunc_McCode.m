@@ -59,6 +59,10 @@ classdef iFunc_McCode < iFunc
     
     % overloaded feval which prefers to use 'nan' when axes are undefined
     function [signal, model, ax, name] = feval(self, varargin)
+      % Evaluate an McCode model value using given parameters and axes.
+      % When no axis is given, the raw monitor values are returned.
+      % To get the result as iData objects, use: iData(model, ...)
+      %   or get model.UserData.monitors after the calculation.
       if numel(varargin) == 0
         [signal, model, ax, name] = feval@iFunc(self, [], nan);
       elseif numel(varargin) == 1 && isvector(varargin{1})
@@ -72,14 +76,18 @@ classdef iFunc_McCode < iFunc
     % overloaded inputdlg to display the instrument parameters in a dialogue
     % calls private/mccode_run
     function [v,self] = inputdlg(self)
+    % run a McCode instrument model and request instrument parameters in a dialogue
       [v,self] = dialog(self);
     end
     function [v,self] = uitable(self)
+    % run a McCode instrument model and request instrument parameters in a dialogue
       [v,self] = dialog(self);
     end
     
     % overloaded edit to edit the instrument code
     function self = edit(self)
+      % edit the instrument source description, and re-build the model when modified.
+      
       % we display the instrument source code (when not 'out') in TextEdit
       % as a temporary file. We wait for TextEdit to close.
       
