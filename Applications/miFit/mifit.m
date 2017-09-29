@@ -1,9 +1,11 @@
 function varargout = mifit(varargin)
 % miFit: a user interface to iFit
 %
-% data = mifit('data')      retrieves all data sets from the interface
-% data = mifit('pull')      retrieves the selected data sets
+% data  = mifit('data')      retrieves all data sets from the interface
+% models= mifit('models')    retrieves user models from the interface
+% data  = mifit('pull')      retrieves only selected data sets
 % mifit('push', datasets)   replace existing data sets and append new ones
+% mifit('push', models)     replace existing models and append new ones
 % mifit('filename')         imports the file into a new Data set/Model
 % mifit(iData_object)       add the iData object into the interface Data stack
 % mifit(iFunc_object)       add the iFunc Model into the interface Models menu
@@ -94,6 +96,8 @@ function varargout = mifit(varargin)
           if any(strcmpi(action,{'data'}))
             % get the full data list
             out = getappdata(fig, 'Data');
+          elseif any(strcmpi(action,{'models'}))
+            out = mifit_Models_GetList();
           elseif any(strcmpi(action,{'pull','selection'}))
             % get the selected data sets
             out = mifit_List_Data_pull();
@@ -801,14 +805,15 @@ function mifit_Models_Export(varargin)
   % get the list of 'static' iFunc models (which have been created and stored in the Models menu)
   [ifuncs, labels,indices] = mifit_Models_GetList();
   if isempty(indices), return; end
-  % pop-up a dialogue box to select those to export, with select all button
-  [selection, ok] = listdlg('ListString', labels, 'SelectionMode', 'multiple', ...
-    'Name','miFit: Select Models to Export', 'ListSize',[400 160]);
-  if isempty(selection) || ok ~= 1, return; end
+
   % pop-up the iFunc.save export dialogue
   if numel(ifuncs) == 1
     save(ifuncs,'gui');
   else
+    % pop-up a dialogue box to select those to export, with select all button
+    [selection, ok] = listdlg('ListString', labels, 'SelectionMode', 'multiple', ...
+      'Name','miFit: Select Models to Export', 'ListSize',[400 160]);
+    if isempty(selection) || ok ~= 1, return; end
     save(ifuncs(selection),'gui');
   end
   

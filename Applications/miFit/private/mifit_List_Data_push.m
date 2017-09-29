@@ -8,7 +8,10 @@ function mifit_List_Data_push(d, flag_replace)
     end
     return
   end
-  if ~isa(d, 'iData')
+  if isa(d, 'iFunc')
+    mifit_List_Model_push(d, flag_replace);
+    return
+  elseif ~isa(d, 'iData')
     try
       mifit_disp(evalc('disp(d)'));
     end
