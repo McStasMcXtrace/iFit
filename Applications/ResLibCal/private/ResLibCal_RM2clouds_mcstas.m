@@ -147,15 +147,12 @@ if ~isempty(dir(fullfile(d,'resolution.dat')))
   p = p(index);
 
   % compute the resolution matrix on the central part (FWHM), starting from [ABC]
-  index=find(p > max(p)*.65);
+  % index  = find(p > max(p)*.65);
   HKLE   = [ resolution.ABC.cloud{:} ];
-  try
-    RM_U = MinVolEllipse(HKLE(index,:)'); % in [ABC]
-  catch ME
-    disp([ mfilename ': WARNING: not enough points in cloud to compute the resolution matrix (currently ' num2str(NMC) ')' ])
-    disp([ '*** Using all points ***' ]);
-    RM_U = MinVolEllipse(HKLE(index,:)'); % in [ABC]
-  end
+  % there is an issue with the apparent ellipsoids when we switch randomly from 
+  % the 'try' (few points) or 'catch' (all points). So now we use the full set.
+  RM_U = MinVolEllipse(HKLE'); % in [ABC]
+  
   % now we convert to [rlu]
   % RM_U = T'*RM_Q*T
   % T=diag([0 0 0 1]); T(1:3,1:3)=Q'*U;

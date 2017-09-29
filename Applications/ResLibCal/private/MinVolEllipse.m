@@ -43,6 +43,10 @@ function [A , c] = MinVolEllipse(P, tolerance)
 % https://fr.mathworks.com/matlabcentral/fileexchange/9542-minimum-volume-enclosing-ellipsoid
 % by Nima Moshtagh 06 Jan 2006 (Updated 20 Jan 2009)
 % http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.116.7691
+%
+% a similar routine is:
+% lowner by Anye Li (li.anye.0@gmail.com) 2008
+% https://fr.mathworks.com/matlabcentral/fileexchange/21930-approximate-lowner-ellipsoid
 
 if nargin < 2
   tolerance = 0.01;
