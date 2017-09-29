@@ -75,10 +75,10 @@ function y = mccode(instr, options, parameters)
 %
 % MODEL GEOMETRY
 % ------------------------------------------------------------------------------
-% To view the model geometry, use the mccode_display routine:
+% To view the model geometry, use the plot routine:
 %   model = mccode('templateDIFF');
-%   mccode_display(model)
-%   mccode_display(model, parameters)
+%   plot(model)
+%   plot(model, parameters)
 %
 % MODEL PARAMETER SCAN
 % ------------------------------------------------------------------------------
