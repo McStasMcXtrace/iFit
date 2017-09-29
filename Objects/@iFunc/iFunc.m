@@ -135,6 +135,7 @@ properties  % create the empty iFunc object structure
   Eval        = ''; % code to evaluate for the model value
   UserData    = '';
   Duration    = 0;
+  class       = mfilename;
 end % properties  
 
 methods
