@@ -147,6 +147,7 @@ methods
     elseif ischar(varargin{1}) % filename -> iData
     % iData('filename', ...)
       out = load(iData, varargin{:});        % load file(s) with additional arguments. Check included.
+      if isempty(out), out = iData; end
       return
     elseif isa(varargin{1}, 'iData')
       % iData(iData single)

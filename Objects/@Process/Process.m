@@ -28,7 +28,7 @@ classdef Process < timer
     %   refresh(pid)  force the pid to be refreshed, i.e check if it is running
     %                 and get its stdout/stderr.
     %   silent(pid)   set the process to silent mode (do not print stdout/stderr).
-    %   verbose(pid)  set the process to verbose mode (do not print stdout/stderr).
+    %   verbose(pid)  set the process to verbose mode (print stdout/stderr).
     %   disp(pid)     display full Process information.
     %   pid           display short Process information. Same as display(pid).
     %   stdout(pid)   get the stdout stream from the Process (normal output).
@@ -250,10 +250,12 @@ classdef Process < timer
     end
     
     function ud = getUserData(obj)
+      % get the UserData of the Process
       ud = obj.jobject.UserData;
     end
     
     function setUserData(obj, ud)
+      % set the UserData of the Process
       obj.jobject.UserData=ud;
     end
 
