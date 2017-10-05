@@ -6,9 +6,10 @@ function status = sqw_phonons_requirements
 % returns a structure with a field for each MD software being 1 when available.
 status = [];
 
-if ismac,  precmd = 'DYLD_LIBRARY_PATH= ;';
-elseif isunix, precmd = 'LD_LIBRARY_PATH= ; '; 
-else precmd=''; end
+% required to avoid Matlab to use its own libraries
+if ismac,      precmd = 'DYLD_LIBRARY_PATH= ; DISPLAY= ; ';
+elseif isunix, precmd = 'LD_LIBRARY_PATH= ; DISPLAY= ; '; 
+else           precmd=''; end
 
 disp('Available packages:');
 

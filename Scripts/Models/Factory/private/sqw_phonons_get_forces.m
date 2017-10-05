@@ -11,9 +11,10 @@ function [options, sav] = sqw_phonons_get_forces(options, decl, calc)
     return
   end
   
-  if ismac,      precmd = 'DYLD_LIBRARY_PATH= ;';
-  elseif isunix, precmd = 'LD_LIBRARY_PATH= ; '; 
-  else           precmd = ''; end
+  % required to avoid Matlab to use its own libraries
+  if ismac,      precmd = 'DYLD_LIBRARY_PATH= ; DISPLAY= ; ';
+  elseif isunix, precmd = 'LD_LIBRARY_PATH= ; DISPLAY= ; '; 
+  else           precmd=''; end
 
   % init calculator
   if strcmpi(options.calculator, 'GPAW')

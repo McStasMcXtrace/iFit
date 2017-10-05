@@ -22,9 +22,10 @@ function result = cif2hkl(varargin)
 persistent compiled
 
 result = [];
-if ismac,  precmd = 'DYLD_LIBRARY_PATH= ;';
-elseif isunix, precmd = 'LD_LIBRARY_PATH= ; '; 
-else precmd=''; end
+% required to avoid Matlab to use its own libraries
+if ismac,      precmd = 'DYLD_LIBRARY_PATH= ; DISPLAY= ; ';
+elseif isunix, precmd = 'LD_LIBRARY_PATH= ; DISPLAY= ; '; 
+else           precmd=''; end
 
 % check if we use the cif2hkl executable, or need to compile
 if isempty(compiled) || (nargin >0 && (strcmp(varargin{1}, 'compile') || strcmp(varargin{1}, 'check')))
@@ -125,8 +126,9 @@ function compiled=cif2hkl_check_compile(compile)
 
   compiled = '';
   this_path = fileparts(which(mfilename));
-  if ismac,  precmd = 'DYLD_LIBRARY_PATH= ;';
-  elseif isunix, precmd = 'LD_LIBRARY_PATH= ; '; 
+  % required to avoid Matlab to use its own libraries
+  if ismac,  precmd = 'DYLD_LIBRARY_PATH= ; DISPLAY= ; ';
+  elseif isunix, precmd = 'LD_LIBRARY_PATH= ; DISPLAY= ; '; 
   else precmd=''; end
   
   

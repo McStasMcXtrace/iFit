@@ -12,9 +12,10 @@ if ~isempty(dir(fullfile(target, 'atoms.pkl')))
   disp([ mfilename ': re-using ' fullfile(target, 'atoms.pkl') ]);
 end
 
-if ismac,      precmd = 'DYLD_LIBRARY_PATH= ;';
-elseif isunix, precmd = 'LD_LIBRARY_PATH= ; '; 
-else           precmd = ''; end
+% required to avoid Matlab to use its own libraries
+if ismac,      precmd = 'DYLD_LIBRARY_PATH= ; DISPLAY= ; ';
+elseif isunix, precmd = 'LD_LIBRARY_PATH= ; DISPLAY= ; '; 
+else           precmd=''; end
 
 config_dir         = [];
 % handle import of full directory: search POSCAR, forces, past pickles, ...

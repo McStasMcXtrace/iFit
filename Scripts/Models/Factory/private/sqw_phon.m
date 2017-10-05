@@ -225,9 +225,10 @@ signal.UserData.options   = options;
 signal.UserData.potentials= potentials;
 signal.UserData.DOS       = [];
 
-if ismac,  precmd = 'DYLD_LIBRARY_PATH= ;';
-elseif isunix, precmd = 'LD_LIBRARY_PATH= ; '; 
-else precmd=''; end
+% required to avoid Matlab to use its own libraries
+if ismac,      precmd = 'DYLD_LIBRARY_PATH= ; DISPLAY= ; ';
+elseif isunix, precmd = 'LD_LIBRARY_PATH= ; DISPLAY= ; '; 
+else           precmd=''; end
 
 % for the evauation, in order to use ASE, we need to:
 % * create a Phonons object, with qe_ase calculator when available, or None
@@ -567,9 +568,10 @@ if isempty(strfind(lower(geom1.comment),'supercell'))
   if ~strcmp(f,'POSCAR')
     copyfile(poscar, fullfile(p,'POSCAR'),'f');
   end
-  if ismac,  precmd = 'DYLD_LIBRARY_PATH= ;';
-  elseif isunix, precmd = 'LD_LIBRARY_PATH= ; '; 
-  else precmd=''; end
+  % required to avoid Matlab to use its own libraries
+  if ismac,      precmd = 'DYLD_LIBRARY_PATH= ; DISPLAY= ; ';
+  elseif isunix, precmd = 'LD_LIBRARY_PATH= ; DISPLAY= ; '; 
+  else           precmd=''; end
   
   % call phon in path 'p'. It also provides DISP
   if ~isempty(options.phon)
@@ -826,9 +828,10 @@ function force = sqw_phon_forces_pwscf(displaced, options)
   fclose(fid);
 
   % EXEC: we run QE/pw.x and collect stdout
-  if ismac,  precmd = 'DYLD_LIBRARY_PATH= ;';
-  elseif isunix, precmd = 'LD_LIBRARY_PATH= ; '; 
-  else precmd=''; end
+  % required to avoid Matlab to use its own libraries
+  if ismac,      precmd = 'DYLD_LIBRARY_PATH= ; DISPLAY= ; ';
+  elseif isunix, precmd = 'LD_LIBRARY_PATH= ; DISPLAY= ; '; 
+  else           precmd=''; end
   disp([ options.command ' < ' fullfile(p,'pw.d') ' > ' fullfile(p, 'pw.out') ]);
   pw = pwd;
   cd(p);

@@ -454,8 +454,9 @@ function options = instrument_parse_options(options)
 function present = mccode_check(options)
 % check if McCode (mcstas or mcxtrace) is present
 
-  if ismac,      precmd = 'DYLD_LIBRARY_PATH= ;';
-  elseif isunix, precmd = 'LD_LIBRARY_PATH= ; '; 
+  % required to avoid Matlab to use its own libraries
+  if ismac,      precmd = 'DYLD_LIBRARY_PATH= ; DISPLAY= ; ';
+  elseif isunix, precmd = 'LD_LIBRARY_PATH= ;  DISPLAY= ; '; 
   else           precmd = ''; end
   
   present.mccode = '';
@@ -598,8 +599,8 @@ function [info, exe] = instrument_get_info(executable)
   % parse the output and return a structure.
   
   info = ''; exe = '';
-  if ismac,      precmd = 'DYLD_LIBRARY_PATH= ;';
-  elseif isunix, precmd = 'LD_LIBRARY_PATH= ; '; 
+  if ismac,      precmd = 'DYLD_LIBRARY_PATH= ; DISPLAY= ; ';
+  elseif isunix, precmd = 'LD_LIBRARY_PATH= ; DISPLAY= ; '; 
   else           precmd = ''; end
   
   [p,f,e] = fileparts(executable);
@@ -622,8 +623,8 @@ function [info, exe] = instrument_get_info(executable)
 function result = instrument_compile(options)
 
   % compile the instrument using McCode
-  if ismac,      precmd = 'DYLD_LIBRARY_PATH= ;';
-  elseif isunix, precmd = 'LD_LIBRARY_PATH= ; '; 
+  if ismac,      precmd = 'DYLD_LIBRARY_PATH= ; DISPLAY= ; ';
+  elseif isunix, precmd = 'LD_LIBRARY_PATH= ; DISPLAY= ; '; 
   else           precmd = ''; end
   
   disp([ mfilename ': Compiling instrument from ' options.instrument ...

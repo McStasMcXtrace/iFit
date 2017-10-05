@@ -285,11 +285,7 @@ function signal=sqw_phonons(configuration, varargin)
 %   sqw_phonons_build.py:     compute the FORCES
 %   sqw_phonons_eval.py:      evaluate the Model at given HKLE locations
 
-persistent status ld_library_path
-
-if ~exist('ld_library_path') || isempty(ld_library_path) || ~ischar(ld_library_path)
-  ld_library_path = getenv('LD_LIBRARY_PATH');
-end
+persistent status
 
 if ~exist('status') || isempty(status) || ~isstruct(status)
   status = sqw_phonons_requirements;
@@ -416,8 +412,9 @@ end
 
 t = clock();
 
-if ismac,      precmd = 'DYLD_LIBRARY_PATH= ;';
-elseif isunix, precmd = 'LD_LIBRARY_PATH= ; '; 
+% required to avoid Matlab to use its own libraries
+if ismac,      precmd = 'DYLD_LIBRARY_PATH= ; DISPLAY= ; ';
+elseif isunix, precmd = 'LD_LIBRARY_PATH= ; DISPLAY= ; '; 
 else           precmd = ''; end
 
 % handle compatibility fields
