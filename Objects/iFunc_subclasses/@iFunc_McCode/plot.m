@@ -1,21 +1,19 @@
 function [comps, fig, model]=plot(model, p, options)
-% mccode_display: runs the model in --trace mode and capture the output
+% iFunc_McCode/plot: runs the model in --trace mode and capture the output
 % grab all MCDISPLAY lines, and render the TRACE information into a figure.
 %
-%  mccode_display
-%     alone displays the default mccode model view (diffractometer)
-%  mccode_display(path_to_mccode_instr)
-%     compiles the given mccode instrument and displays it
-%  mccode_display(model)
+%  plot(model)
 %     displays the given McCode model with its defaults/current parameters.
-%  mccode_display(model, parameters)
+%  plot(model, parameters)
 %     same as above, but uses the given parameters (vector, structure, cell)
-%  [comps, fig] = mccode_display(...)
+%  plot(iFunc_McCode)
+%     displays the default instrument geometry (templateDIFF)
+%  [comps, fig] = plot(...)
 %     returns the list of components, figure used for display and updated model.
 %     
 % Example:
 %   model = mccode('instrument_file')
-%   mccode_display(model)
+%   plot(model)
 %     a figure is generated, which shows the instrument geometry.
 %
 % input:
@@ -32,22 +30,22 @@ function [comps, fig, model]=plot(model, p, options)
 %
 % See also: mccode, iFunc, iFunc/feval, http://www.mcstas.org
 
-  if nargin == 0
+  if nargin == 0 || isempty(model)
     model = mccode('defaults');
   end
   if nargin < 2, p=[]; end
   if nargin < 3, options=''; end
 
-  % check if we have an iFunc  McCode object
+  % check if we have an iFunc McCode object
   if ischar(model) && ~isempty(dir(model))
     model = mccode(model);
   end
   
   if ~isa(model, 'iFunc')
-    error([ mfilename ': ERROR: Usage: mccode_display(model) with model=path_to_mccode_instr or mccode(path_to_mccode_instr)' ]);
+    error([ mfilename ': ERROR: Usage: plot(model) with model=path_to_mccode_instr or mccode(path_to_mccode_instr)' ]);
   end
   if ~isfield(model.UserData, 'options') || ~isfield(model.UserData,'instrument_executable')
-    error([ mfilename ': ERROR: Usage: mccode_display(model) with model=mccode(path_to_mccode_instr)' ]);
+    error([ mfilename ': ERROR: Usage: plot(model) with model=mccode(path_to_mccode_instr)' ]);
   end
   
   % read monitors as iData
@@ -198,7 +196,7 @@ function [comps, fig, model]=plot(model, p, options)
   title(t ,'Interpreter','None');
   model.UserData.title = t;
 
-  mccode_display_contextmenu(gca, model.Name, t, monitors);
+  plot_contextmenu(gca, model.Name, t, monitors);
   [~,filename] = fileparts(strtok(model.Name));
   if isempty(filename), filename = 'instrument'; end
   if isdir(model.UserData.options.dir)
@@ -211,8 +209,8 @@ function [comps, fig, model]=plot(model, p, options)
     t(t=='>')=']';
     figure2xhtml(filename, fig, ...
       struct('title', model.Name, 'Description',t,'interactive',true));
-    mccode_display_exportmessage([ filename '.xhtml' ])
-    mccode_display_exportmessage([ filename '.x3d' ])
+    plot_exportmessage([ filename '.xhtml' ])
+    plot_exportmessage([ filename '.x3d' ])
   end
   
   % add the model value in a small insert (statistics will be limited as ncount=1e3)
@@ -240,14 +238,14 @@ function [comps, fig, model]=plot(model, p, options)
     if ~isempty(strfind(options, f{1}))
       try
         saveas(fig, [ filename '.' f{1} ], f{1});
-        mccode_display_exportmessage([ filename '.' f{1} ])
+        plot_exportmessage([ filename '.' f{1} ])
       catch ME
         disp(getReport(ME))
       end
     end
   end
 
-end % mccode_display
+end % plot
 
 
 
@@ -330,12 +328,12 @@ function [X,Y,Z]=circle(plane, x0,y0,z0, radius)
   X=X+x0; Y=Y+y0; Z=Z+z0;
 end
 
-function mccode_display_contextmenu(a, name, pars, monitors)
+function plot_contextmenu(a, name, pars, monitors)
   % install a context menu on the axis object of the figure
   
   % build the contextual menu
   if iscell(pars), pars = sprintf('%s ', pars{:}); end
-  uicm = uicontextmenu('Tag','mccode_display_contextmenu_gca');
+  uicm = uicontextmenu('Tag','plot_contextmenu_gca');
   uimenu(uicm, 'Label', [ 'About ' name '...' ], ...
            'Callback', [ 'helpdlg(''' pars ''',''' name ''')' ]);
   if ~isempty(monitors)
@@ -388,7 +386,7 @@ function mccode_display_contextmenu(a, name, pars, monitors)
     
 end
 
-function mccode_display_exportmessage(filename)
+function plot_exportmessage(filename)
   if ~isdeployed
     disp([ mfilename ': exported instrument view as: <a href="' filename '">' filename '</a>'])
   else

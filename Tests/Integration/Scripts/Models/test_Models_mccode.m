@@ -5,7 +5,7 @@ function result = test_Models_mccode
   % set a specific monitor file name
   y.UserData.options.monitor='Diff_BananaTheta*';
   % create 3D view
-  [~,fig]=mccode_display(y);
+  [~,fig]=plot(y);
   % then evaluate the model with raw McCode data
   f = iData(y, [], nan);
   % check dimension and integral
