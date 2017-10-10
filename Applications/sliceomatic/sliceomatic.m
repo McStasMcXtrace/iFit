@@ -257,7 +257,7 @@ function sliceomatic(p1,p2,xmesh,ymesh,zmesh)
           Y=pt(1,2);
           newa=arrow(gcbo,'right',[0 Y]);
           set(gcf,'currentaxes',d.axmain);
-          new=localslice(d.data, [], Y, [])
+          new=localslice(d.data, [], Y, []);
           setappdata(new,'controlarrow',newa);
           setappdata(newa(2),'arrowslice',new);
           set(new,'alphadata',get(new,'cdata'),'alphadatamapping','scaled');
