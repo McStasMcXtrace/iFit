@@ -86,7 +86,6 @@ function a=load_mcstas_dat(a)
 
 % inline: load_mcstas_param
 
-
 % Find proper labels for Signal and Axis
 
 xlab=''; ylab=''; zlab='';

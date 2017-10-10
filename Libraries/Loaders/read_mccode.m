@@ -603,7 +603,7 @@ function data = mcplot_split_multiarray(structure)
   
   data = {};
   % first check if this is a multiarray
-  if ~~isempty(strmatch('multiarray_1d',structure.type)), return; end
+  if isempty(strmatch('multiarray_1d',structure.type)), return; end
   
   disp([ 'Loading ' structure.filename ' (extracting McCode scan steps)' ]);
   
@@ -632,7 +632,7 @@ function data = mcplot_split_multiarray(structure)
   else
     xvars          = structure.data(:,xvars);
   end
-  % gerenate monitor entries from the scanned data
+  % generate monitor entries from the scanned data
   for index=1:length(monitor_I)
     this_monitor = fliplr(column_labels{monitor_I(index)});
     this_data = structure;   % initiate single monitor data set from the scan structure
