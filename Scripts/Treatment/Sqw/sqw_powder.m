@@ -27,7 +27,7 @@ function r=sqw_powder(a, p, x,y)
 % (c) E.Farhi, ILL. License: EUPL.
 r=[];
 if nargin == 0
-  doc(iData,'Treatment.html#mozTocId260980');  % doc for sqw_powder
+  doc(iData,'Neutron_Scattering.html#mozTocId260980');  % doc for sqw_powder
   % What is the default GUI entry ? should enter an iFunc object in the dialogue...
   r = sqw_powder(sqw_phonons);
   return

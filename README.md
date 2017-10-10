@@ -26,7 +26,7 @@ Purpose
   It also includes specific 'applications' for neutron scattering:
   * instrument simulation and optimisation using McStas <http://www.mcstas.org>
   * neutron scattering triple-axis spectrometer (TAS) resolution calculation 'ResLibCal' <http://ifit.mccode.org/Applications/ResLibCal/doc/ResLibCal.html>
-  * neutron scattering time-of-flight spectroscopy S(q,w) analysis. See <http://ifit.mccode.org/Treatment.html>
+  * neutron scattering time-of-flight spectroscopy S(q,w) analysis. See <http://ifit.mccode.org/Neutron_Scattering.html>
   * lattice dynamics 4D S(q,w) computation using ASE and DFT codes, which can be coupled to ResLibCal. See <http://ifit.mccode.org/Models.html#mozTocId990577>
 
 Requirements
