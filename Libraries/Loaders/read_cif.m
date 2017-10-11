@@ -2,6 +2,16 @@ function [data, this] = read_cif(file)
 % read_cif Wrapper to read CIF files
 %   data = read_cif(file)
 %
+% When the argument is a chemical formulae (elements separated with spaces), a
+% search in the crystallography open database is made.
+%
+% this requires proxy settings to be set (when behind a firewall)
+%   java.lang.System.setProperty('http.proxyHost', ProxyHost); 
+%   com.mathworks.mlwidgets.html.HTMLPrefs.setUseProxy(true);
+%   com.mathworks.mlwidgets.html.HTMLPrefs.setProxyHost(ProxyHost);
+%   java.lang.System.setProperty('http.proxyPort', num2str(ProxyPort));
+%   com.mathworks.mlwidgets.html.HTMLPrefs.setProxyPort(num2str(ProxyPort));
+%
 % References: 
 % CrysFML by Juan Rodriguez-Carvajal and Javier Gonzalez-Platas, ILL and ULL, Tenerife, Spain
 %   used to build a powder/Laue Rietveld model, GPL3
@@ -9,8 +19,29 @@ function [data, this] = read_cif(file)
 
   data = []; this = [];
   
+  % test if the given file is a chemical formulae, in which case we make a query to COD
+  if isempty(isdir(file))
+    % not a file, we query COD at http://wiki.crystallography.net/howtoquerycod/
+    % this requires proxy settings to be set (when behind a firewall), e.g. using miFit Preference
+    %   ProxyHost Proxy address if you are behind a proxy [e.g. myproxy.mycompany.com or empty]
+    %   ProxyPort Proxy port if you are behind a proxy [8888 or 0 or empty]
+    %
+    %   java.lang.System.setProperty('http.proxyHost', ProxyHost); 
+    %   com.mathworks.mlwidgets.html.HTMLPrefs.setUseProxy(true);
+    %   com.mathworks.mlwidgets.html.HTMLPrefs.setProxyHost(ProxyHost);
+    %   java.lang.System.setProperty('http.proxyPort', num2str(ProxyPort));
+    %   com.mathworks.mlwidgets.html.HTMLPrefs.setProxyPort(num2str(ProxyPort));
+    %
+    % example: 
+    %   urlread('http://www.crystallography.net/cod/result.php?formula=Mg%20O')
+    %   curl http://www.crystallography.net/cod/result.php?formula=Mg%20O
+    % then search lines with CIF and get number (single or dialogue), then retrieve:
+    %   curl -s http://www.crystallography.net/cod/2002926.cif
+    
+  end
+  
   if exist('cif2hkl') == 3 || exist('cif2hkl') == 7 || exist('cif2hkl') == 2
-    % use MeX in verbose and no-output-files mode ('-')
+    % use cif2hkl in verbose and no-output-files mode ('-')
     
     if nargin == 0, return; end
     
