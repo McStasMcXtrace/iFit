@@ -61,13 +61,15 @@ end
 
 if isempty(cache) || isempty(strfind(option, 'cache'))
 
+  warning off MATLAB:structOnObject
+  
   struct_s=struct(s);
   struct_s=rmfield(struct_s,'Alias');
   struct_s=rmfield(struct_s,'Command');
   struct_s=rmfield(struct_s,'Tag');
   % add the Aliases
   aliases=getalias(s);
-  warning off MATLAB:structOnObject
+
   for index=1:numel(aliases)
       alias=aliases{index};
       value = get(s,alias);
