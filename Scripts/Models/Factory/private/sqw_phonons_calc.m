@@ -367,11 +367,31 @@ case 'OCTOPUS'
 
 
 % ==============================================================================
-case 'QUANTUMESPRESSO_ASE'
+case 'QUANTUMESPRESSO'
+  % best potentials for QE: SSSP http://materialscloud.org/sssp/
   
   
-  decl = 'from qeutil import QuantumEspresso';
-  calc = [ 'calc = QuantumEspresso(use_symmetry=True, tstress=True, nspin=2,  label=atoms.get_chemical_formula(), wdir="' options.target '"' ]; % because small displacement breaks symmetry
+  if ~isempty(status.qease)
+    % ASE >= 3.15. QE requires a pseudopotential dict argument giving file names per element.
+    dict = sqw_qe_potentials(options.target);
+    
+    decl = 'from ase.calculators.espresso import Espresso as QuantumEspresso';  
+    % use_symmetry=False mendatory because small displacement breaks symmetry
+    calc = [ 'calc = QuantumEspresso(use_symmetry=False, tstress=True, ' ...
+             'tprnfor=True, nspin=2,  label=atoms.get_chemical_formula(), wdir="' options.target '"' ...
+             'pseudo_dir="' options.target '", pseudopotentials=' dict ]; 
+  elseif ~isempty(status.qeutil)
+    % using QEutil which finds pseudopotentials by itself
+    decl = 'from qeutil import QuantumEspresso';
+    % use_symmetry=False mendatory because small displacement breaks symmetry
+    calc = [ 'calc = QuantumEspresso(use_symmetry=False, tstress=True, ' ...
+             'tprnfor=True, nspin=2,  label=atoms.get_chemical_formula(), wdir="' options.target '"' ]; 
+  else
+    error([ mfilename ': no ASE interface to control QuantumEspresso.' ])
+  end
+  % use_symmetry=False mendatory because small displacement breaks symmetry
+  calc = [ 'calc = QuantumEspresso(use_symmetry=False, tstress=True, ' ...
+             'tprnfor=True, nspin=2,  label=atoms.get_chemical_formula(), wdir="' options.target '"' ]; 
   
   if isscalar(options.occupations) && options.occupations>=0 % smearing in eV
     calc=[ calc sprintf(', occupations="smearing", smearing="methfessel-paxton", degauss=%g', options.occupations/Ry) ];
@@ -426,59 +446,6 @@ case 'QUANTUMESPRESSO_ASE'
     calc = [ calc sprintf(', %s', options.raw) ];
   end
   calc = [ calc ')' ];
-  
-
-% ==============================================================================
-case {'QUANTUMESPRESSO','QUANTUMESPRESSO_PHON'}
-  % best potentials for QE: SSSP http://materialscloud.org/sssp/
-
-  
-  poscar = fullfile(options.target, 'configuration_POSCAR');  % this is a POSCAR file
-  
-% QE specific options:
-%   options.mixing_ndim=scalar             number of iterations used in mixing
-%     default=8. If you are tight with memory, you may reduce it to 4. A larger
-%     value will improve the SCF convergence, and use more memory.
-%   options.mixing_beta=scalar             mixing factor for self-consistency
-%     default=0.7. use 0.3 to improve convergence
-%   options.ecutrho=scalar                 kinetic energy cutoff (Ry) for charge
-%     density and potential. Default=4*ecutwfc, suitable for PAW. Larger value
-%     improves convergence, especially for ultra-soft PP (use 8-12*ecutwfc).
-%   options.electron_maxstep=scalar        max number of iterations for SCF.
-%     default=100. Larger value improves convergence.
-%   options.toldfe=scalar                Convergence threshold for 
-%     selfconsistency. default=1e-6.
-%   options.mpi    =scalar                 number of CPUs to use for PWSCF
-%     this option requires MPI to be installed (e.g. openmpi).
-%
-  if options.nbands && ~isfield(options,'nbnd')
-    options.nbnd=options.nbands; end
-  if options.ecut > 0 && ~isfield(options,'ecutwfc')
-    options.ecutwfc=options.ecut/Ry; end % in Ry
-  if options.nsteps, options.electron_maxstep=options.nsteps; end
-  
-  if isscalar(options.occupations), options.occupations=options.occupations/Ry; end
-
-  decl = [ 'sqw_phon(''' poscar ''', options); % QuantumEspresso/PHON wrapper' ];
-  % sqw_phonons_htmlreport(fullfile(options.target, 'sqw_phonons.html'), 'init', options, decl);
-  
-  % MAIN CALL to PHON <<<<<<<<<<<<<<<<<<<<<<<<
-  signal=sqw_phon(poscar, options);
-  
-  if isempty(signal), decl=[]; return; end
-  
-  % get 'atoms' back from python
-  if ~isempty(dir(fullfile(options.target, 'properties.mat')))
-    signal.UserData.properties = load(fullfile(options.target, 'properties.mat'));
-    if isfield(signal.UserData.properties, 'chemical_symbols')
-      b_coh = sqw_phonons_b_coh(signal.UserData.properties.chemical_symbols);
-      signal.UserData.properties.b_coh = b_coh;
-    end
-  else
-    signal.UserData.properties = [];
-  end
-  signal.UserData.calc = 'quantumespresso';
-  signal.UserData.configuration = fileread(poscar);
   
 % ==============================================================================
 case 'SIESTA'
@@ -656,3 +623,87 @@ end
 % ------------------------------------------------------------------------------
 % end of specific parts for calculators
 
+% find QuantumEspresso potentials for the ASE/Espresso native calculator
+function dict = sqw_qe_potentials(target)
+
+  dict = '';
+  % get the list of elements for which a potential should be found
+  properties = load(fullfile(target, 'properties.mat'));
+  symbols = cellstr(properties.chemical_symbols);
+
+  % get QE default potential locations
+  potentials_dir = {};
+  potentials_dir{end+1} = fullfile(getenv('HOME'),'espresso','pseudo');
+  potentials_dir{end+1} = getenv('PSEUDO_DIR');
+  potentials_dir{end+1} = getenv('ESPRESSO_PSEUDO');
+  potentials_dir{end+1} = pwd;
+  potentials_dir{end+1} = target;
+  if isunix
+    potentials_dir{end+1} = '/usr/share/espresso/pseudo';
+    potentials_dir{end+1} = '/usr/local/espresso/pseudo';
+  end
+
+  % potential elements given as path: we get all potentials there in
+  potentials_full = {}; potentials = {};
+  for index=1:numel(potentials_dir)
+    if isdir(potentials_dir{index})
+      % add the full content of the directory
+      d = dir(potentials_dir{index});
+      for i=1:numel(d)
+        if ~d(i).isdir && ~any(strcmp(d(i).name, potentials))
+          [p,f,e] = fileparts(fullfile(potentials_dir{index},d(i).name));
+          if strcmp(lower(e),'.upf')
+            potentials_full{end+1} = fullfile(potentials_dir{index},d(i).name);
+            potentials{end+1}      = d(i).name; 
+          end
+        end
+      end
+    else
+      this = dir(potentials_dir{index});
+      if ~isempty(this) && ~any(strcmp(this.name, potentials)) % must exist
+        potentials_full{end+1} = potentials_dir{index};
+        potentials{end+1}      = this.name; 
+      end
+    end
+  end
+
+
+  % search for a suitable potential
+  for index=1:numel(symbols)
+    % identify element in the list of potentials
+    match = strcmpi(symbols{index}, strtok(potentials,'._-'));
+    match_full = potentials_full(match); match = potentials(match);
+    if isempty(match)
+      disp([ mfilename ': no suitable pseudo-potential found for atom ' symbols{index} ])
+      disp('  Get such potentials at <http://www.quantum-espresso.org/pseudopotentials/>')
+      disp([ '  and copy them in ' pwd ' or ' fullfile(getenv('HOME'),'espresso','pseudo') ]);
+      if isempty(getenv('PSEUDO_DIR'))
+        disp('  or define environment variable PSEUDO_DIR, and put PP in this location.');
+      else
+        disp([ '  or in ' getenv('PSEUDO_DIR') ]);
+      end
+      if ~isempty(potentials)
+        disp('Available potentials are:')
+        disp(potentials_full(:));
+      end
+      error([ mfilename ': pseudo-potential missing for atom ' symbols{index} ]);
+    elseif numel(match) > 1
+      % more than one match: select PBE-PAW if possible
+      pbe = find(~cellfun('isempty', strfind(lower(match), 'pbe')));
+      paw = find(~cellfun('isempty', strfind(lower(match), 'paw')));
+      if ~isempty(pbe)
+        select = pbe(1);
+      elseif ~isempty(paw)
+        select = paw(1);
+      else select=1;
+      end
+    end
+    % copy the potential files to the target
+    copyfile(match_full{1}, target);
+    if index==1,  dict = '{';
+    else          dict = [ dict ', ' ];
+    end
+    dict = [ '"', dict symbols{index} '", "' match{1} '"' ];
+  end
+  dict = [ dict '}' ];
+  

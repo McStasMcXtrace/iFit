@@ -118,38 +118,28 @@ else
     if any(st == 0:2)
         status.quantumespresso=calc{1};
         st = 0;
+        disp([ '  QuantumEspresso (http://www.quantum-espresso.org/) as "' status.quantumespresso '"' ]);
         break;
     end
   end
   
-  % test for QE/ASE
-  status.quantumespresso_ase = '';
-  if ~isempty(status.quantumespresso)
-    [st, result] = system([ precmd status.python ' -c "from qeutil import QuantumEspresso"' ]);
-    if any(st == 0:2)
-      status.quantumespresso_ase='qeutil';
-      disp([ '  QEutil          (https://jochym.github.io/qe-doc/) as "' status.quantumespresso_ase '"' ]);
-    else
-      status.quantumespresso_ase='';
-    end
+  % test for QE/ASE from QEutil
+  status.qeutil = '';
+  [st, result] = system([ precmd status.python ' -c "from qeutil import QuantumEspresso"' ]);
+  if any(st == 0:2)
+    status.qeutil='qeutil';
+    disp([ '  QEutil          (https://jochym.github.io/qe-doc/) as "' status.qeutil '"' ]);
+  else
+    status.qeutil='';
   end
   
-  % test for PHON
-  [st, result] = system([ precmd 'phon' ]);
-  try
-    delete('CRASH');
-    delete('input_tmp.in');
-  end
-  if any(st == 0:2)
-    status.phon = 'phon';
+  % test for QE/ASE native (ASE >= 3.15)
+  status.qease = '';
+  [st, result] = system([ precmd status.python ' -c "from ase.calculators.espresso import Espresso"' ]);
+  if any(st == 0)
+    status.qease='ase.calculators.espresso';
   else
-    status.phon = '';
-    if isempty(status.quantumespresso_ase)
-      status.quantumespresso = '';  % no PHON, nor QEutil
-    end
-  end
-  if ~isempty(status.quantumespresso)
-    disp([ '  QuantumEspresso (http://www.quantum-espresso.org/) as "' status.quantumespresso '"' ]);
+    status.qease='';
   end
   
   % test for VASP
