@@ -378,7 +378,7 @@ case 'QUANTUMESPRESSO'
     decl = 'from ase.calculators.espresso import Espresso as QuantumEspresso';  
     % use_symmetry=False mendatory because small displacement breaks symmetry
     calc = [ 'calc = QuantumEspresso(use_symmetry=False, tstress=True, ' ...
-             'tprnfor=True, nspin=2,  label=atoms.get_chemical_formula(), wdir="' options.target '"' ...
+             'tprnfor=True, nspin=2,  label=atoms.get_chemical_formula(), wdir="' options.target '", ' ...
              'pseudo_dir="' options.target '", pseudopotentials=' dict ]; 
   elseif ~isempty(status.qeutil)
     % using QEutil which finds pseudopotentials by itself
@@ -389,9 +389,6 @@ case 'QUANTUMESPRESSO'
   else
     error([ mfilename ': no ASE interface to control QuantumEspresso.' ])
   end
-  % use_symmetry=False mendatory because small displacement breaks symmetry
-  calc = [ 'calc = QuantumEspresso(use_symmetry=False, tstress=True, ' ...
-             'tprnfor=True, nspin=2,  label=atoms.get_chemical_formula(), wdir="' options.target '"' ]; 
   
   if isscalar(options.occupations) && options.occupations>=0 % smearing in eV
     calc=[ calc sprintf(', occupations="smearing", smearing="methfessel-paxton", degauss=%g', options.occupations/Ry) ];
@@ -703,7 +700,7 @@ function dict = sqw_qe_potentials(target)
     if index==1,  dict = '{';
     else          dict = [ dict ', ' ];
     end
-    dict = [ '"', dict symbols{index} '", "' match{1} '"' ];
+    dict = [ dict '"' symbols{index} '", "' match{1} '"' ];
   end
   dict = [ dict '}' ];
   
