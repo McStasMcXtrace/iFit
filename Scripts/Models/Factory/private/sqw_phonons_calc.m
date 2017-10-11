@@ -370,6 +370,17 @@ case 'OCTOPUS'
 case 'QUANTUMESPRESSO'
   % best potentials for QE: SSSP http://materialscloud.org/sssp/
   
+  if isfield(options,'mpi') && ~isempty(options.mpi) && options.mpi > 1
+    if isempty(options.command) options.command=status.(lower(options.calculator)); end
+    options.command = [ options.mpirun ' ' options.command ]; 
+  end
+  if ~isempty(options.command)
+    cmd = options.command;
+    if isempty(strfind(cmd, 'PREFIX.files'))
+      cmd = [ cmd ' -in PREFIX.pwi > PREFIX.pwo' ];
+    end
+    setenv('ASE_ESPRESSO_COMMAND', cmd);
+  end
   
   if ~isempty(status.qease)
     % ASE >= 3.15. QE requires a pseudopotential dict argument giving file names per element.
@@ -700,7 +711,7 @@ function dict = sqw_qe_potentials(target)
     if index==1,  dict = '{';
     else          dict = [ dict ', ' ];
     end
-    dict = [ dict '"' symbols{index} '", "' match{1} '"' ];
+    dict = [ dict '"' symbols{index} '": "' match{1} '"' ];
   end
   dict = [ dict '}' ];
   
