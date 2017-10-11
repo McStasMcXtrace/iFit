@@ -137,7 +137,8 @@ if isempty(fig) || ~ishandle(fig)
     if ~(exist('MLDropTarget','class') == 8)
       dndcontrol.initJava;
     end
-    dndcontrol(hObject,@mifit,@mifit);
+    dnd = dndcontrol(hObject,@mifit,@mifit);
+    setappdata(fig, 'DnDControl', dnd);
 
     % activate Drag-n-Drop from the List to other Matlab windows
     % set(fig,'windowbuttonupfcn',  'disp(''up in:''); get(0,''pointerwindow'')')

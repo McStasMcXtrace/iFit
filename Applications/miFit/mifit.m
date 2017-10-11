@@ -329,6 +329,7 @@ function mifit_File_Exit(varargin)
   end
   mifit_disp([ '[Exit] Exiting miFit. Bye bye.' ]);
   delete(mifit_fig('mifit_View_Parameters'));
+  delete(getappdata(mifit_fig, 'DnDControl'));
   delete(mifit_fig);
   
 function mifit_File_Reset(varargin)
@@ -364,7 +365,7 @@ function mifit_File_Reset_Factory(ButtonName)
     mifit_Preferences_Load();
     % mifit_Preferences_Save();
     if ~isempty(mifit_fig)
-      setappdata(mifit_fig, 'Models',[]);
+      setappdata(mifit_fig, 'Models',{});
       setappdata(mifit_fig, 'Optimizers',[]);
     end
   end
