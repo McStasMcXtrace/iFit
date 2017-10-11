@@ -21,8 +21,6 @@
           <li><a href="#mozTocId913674"> Specific options for ABINIT</a></li>
           <li><a href="#mozTocId486503">Specific options for GPAW</a></li>
           <li><a href="#mozTocId269170">Specific options for Octopus</a></li>
-          <li><a href="#mozTocId902505">Specific options for
-              QuantumEspresso/PHON</a></li>
           <li><a href="#mozTocId227008">Specific options for Siesta</a></li>
           <li><a href="#mozTocId294368">Specific options for VASP</a></li>
         </ul>
@@ -273,7 +271,7 @@
       href="http://wolf.ifj.edu.pl/phonon/">PHONON</a>, <a
       href="https://wiki.fysik.dtu.dk/ase">ASE</a> and <a
       href="http://phonopy.sourceforge.net/">PhonoPy</a>. We here use
-    ASE together with PhonoPy or PHON (when available).<br>
+    ASE together with PhonoPy (when available).<br>
     <br>
     In addition, once the phonon spectrum is known, we can compute the
     coherent vibrational density of states <i>g(</i><i><i>&#969;</i>)</i>
@@ -887,13 +885,7 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/ifit-web-
           </td>
           <td valign="top">SSSP: <font color="#33cc00">0.3</font></td>
         </tr>
-        <tr><td valign="top"><b><img alt="qe" title="qe" src="images/logo_qe.jpg" align="middle" width="80" height="34"><a href="http://www.quantum-espresso.org/">QuantumEspresso</a></b></td><td valign="top">Density-functional theory, plane waves, and
-            pseudopotentials based code for electronic-structure
-            calculations and materials modeling. Same as above, but uses <a href="http://chianti.geol.ucl.ac.uk/%7Edario">PHON</a>. <i>This calculator can not
-              compute the mode intensity/polarisation vectors.</i><br>
-          </td><td valign="top"><b><font color="#33cc00">90</font></b><br>
-          </td><td valign="top">SSSP: <font color="#33cc00">0.3</font><br>
-          </td></tr><tr><td valign="top"><a href="http://elk.sourceforge.net/"><img alt="elk" title="elk" src="images/elk.png" border="0" align="middle" width="81" height="47"></a><a href="http://elk.sourceforge.net/">&nbsp;<b>ELK</b></a></td><td valign="top">Full Potential-All Electrons LAPW code. <i>A
+        <tr><td valign="top"><a href="http://elk.sourceforge.net/"><img alt="elk" title="elk" src="images/elk.png" border="0" align="middle" width="81" height="47"></a><a href="http://elk.sourceforge.net/">&nbsp;<b>ELK</b></a></td><td valign="top">Full Potential-All Electrons LAPW code. <i>A
               very efficient all-electrons code. Slow but reliable.</i><br>
           </td><td valign="top"><font color="#ff0000">9820</font><br>
           </td><td valign="top"><font color="#33cc00">0.3</font></td></tr><tr>
@@ -979,7 +971,7 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/ifit-web-
     <br>
     Benchmarks indicate that, for phonon dispersions:<br>
     <ul><li><a href="http://www.quantum-espresso.org/">Quantum Espresso</a>
-        (PHON) is the fastest, with excellent parallelization and
+        is the fastest, with excellent parallelization and
         accuracy.</li><li><a href="http://www.abinit.org/">ABINIT</a>, <a href="https://www.vasp.at/">VASP</a> and <a href="http://wiki.fysik.dtu.dk/gpaw">GPAW</a> are also very
         efficient codes. VASP is solid rock. Results with ABINIT and GPAW may be unstable.<br></li><li>The all-electrons <a href="Elk">ELK</a> code is about 10
         times slower than QuantumEspresso, but provides reasonable results.<br></li><li>Using <b>k-points=4</b> is both fast and ensures a reasonable
@@ -1089,52 +1081,6 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/ifit-web-
     <ul>
       <li><b> occupations</b>: For metallic and insulator systems, the <i>electron
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
           state occupations</i> should be set by using argument <font color="#cc33cc">'metal' </font>(0.3 eV)<font color="#cc33cc">
           'semiconductor'</font> (0.1meV) or <font color="#cc33cc">'insulator'</font>,
         or <font color="#cc33cc">'occupations=smearing'</font> or<font color="#cc33cc"> 'occupations=fixed'</font>. You can also
@@ -1200,117 +1146,13 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/ifit-web-
     <ul>
       <li><b>mode</b>: GPAW <a href="https://wiki.fysik.dtu.dk/gpaw/documentation/manual.html#manual-mode">computation
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
           mode</a> as Plane-Wave, Finite Difference, or LCAO (linear
         combination of atomic orbitals). Can be <font color="#cc33cc">'pw','fd',</font>
         or <font color="#cc33cc">'lcao'</font>. Default is <font color="#cc33cc">'pw'</font>. The <a href="https://wiki.fysik.dtu.dk/gpaw/documentation/lcao/lcao.html#lcao"><font color="#cc33cc">'lcao'</font></a> mode is fast for large
-        systems, and requires less memory.</li></ul><h4><a name="mozTocId269170" class="mozTocH5"></a><u>Specific options for Octopus</u></h4><ul><li><b>pps</b>: Type of pseudo potential database, any of <br></li><ul><li><font color="#cc33cc">'standard' </font>LDA only for H, Li, C, N, O, Na, Si, S, Ti, Se, Cd<font color="#cc33cc"><br></font></li><li><font color="#cc33cc">'hscv_pbe' </font>Hamann-Schlueter-Chiang-Vanderbilt</li><li><font color="#cc33cc">'hscv_lda' </font>Hamann-Schlueter-Chiang-Vanderbilt</li><li><font color="#cc33cc">'hgh_lda' </font>(Hartwigsen-Goedecker-Hutter LDA pseudopotentials for elements from H to Rn)<font color="#cc33cc"><br></font></li><li><font color="#cc33cc">'sg15'</font> (Optimized Norm-Conserving Vanderbilt PBE up to Bi, no Lanthanides)</li></ul></ul><h4><a class="mozTocH5" name="mozTocId902505"></a><u>Specific
-        options for QuantumEspresso/PHON</u></h4>
-    <p>The <i>pseudopotentials</i><i> </i>are given as many
-      filenames/directories (UPF format) suitable for QuantumEspresso.
-      When not given, available potentials will be searched in current
-      location, the Home directory, and the standard QuantumEspresso
-      locations (PSEUDO_DIR, $HOME/espresso/pseudo). When more than one
-      potential is available for an atom type, a list selector is
-      displayed to request which one to choose. The PBE-PAW potentials
-      are preferred and pre-selected. Pseudo-potential can be obtained
-      at <a href="http://www.quantum-espresso.org/pseudopotentials/">QuantomEspresso
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        PP selector</a>. We recommend the <a href="http://materialscloud.org/">SSSP library</a>, which is
-      very accurate.<br>
-    </p>
-    <ul><li><b>disp</b>: The generation of the supercell and the forces
-        can be tuned by choosing the <i>initial atom displacement</i>,
-        or a random one. Use e.g. <font color="#cc33cc">'disp=[ 1 -1
-          1]' </font>or <font color="#cc33cc">'disp=random'</font> or
-        <font color="#cc33cc">'random'</font> as argument. </li><li><b>potential_auto</b>: when set to 1, a 'good'
-        pseudo-potential will automatically be chosen (e.g. PBE/PAW).</li><li><b>potentials</b>: a list (cell) of UPF potential files to
-        use. You may also specify a directory. If not specified, the
-        user will be prompted for a list of sensible potentials, to
-        select one per atom. The <b>potential_auto=1</b> skips the
-        potential selection dialog, and selects a 'good' potential (PBE
-        PAW). A typical location is '/usr/share/espresso/pseudo'.</li><li><b>mixing_ndim</b>: number of iterations used in mixing,
-        default=8. If you are tight with memory, you may reduce it to 4.
-        A larger value will improve the SCF convergence, and use more
-        memory.</li><li><b>mixing_beta</b>: mixing factor for self-consistency,
-        default=0.7. use 0.3 to improve convergence.</li></ul>
-    <blockquote> If you have difficulties in the model SCF convergence,
-      you may use e.g:<br>
-      <pre>  &gt;&gt; s=<font color="#3366ff">sqw_phonons</font>(POSCAR,<font color="#cc33cc">'QuantumEspresso'</font>, <font color="#cc33cc">'nsteps=200; toldfe=1e-6; occupations=smearing; ecut=500; mixing_ndim=12; </font><font color="#cc33cc"><font color="#cc33cc">miximg_beta=0.3;</font>'</font>);</pre>
-      If you are tight on the memory (e.g. the system is large), you may
-      try (but it may not converge):<br>
-      <pre>  &gt;&gt; s=<font color="#3366ff">sqw_phonons</font>(POSCAR,<font color="#cc33cc"><font color="#cc33cc">'QuantumEspresso', </font></font><font color="#cc33cc">'ecut=15; mixing_ndim=4; diagonalization=cg'</font>);<br></pre></blockquote><h4><a name="mozTocId227008" class="mozTocH5"></a><u>Specific options for Siesta</u></h4><ul><li>
+        systems, and requires less memory.</li></ul>
+        <h4><a name="mozTocId269170" class="mozTocH5"></a><u>Specific options for Octopus</u></h4><ul><li><b>pps</b>: Type of pseudo potential database, any of <br></li><ul><li><font color="#cc33cc">'standard' </font>LDA only for H, Li, C, N, O, Na, Si, S, Ti, Se, Cd<font color="#cc33cc"><br></font></li><li><font color="#cc33cc">'hscv_pbe' </font>Hamann-Schlueter-Chiang-Vanderbilt</li><li><font color="#cc33cc">'hscv_lda' </font>Hamann-Schlueter-Chiang-Vanderbilt</li><li><font color="#cc33cc">'hgh_lda' </font>(Hartwigsen-Goedecker-Hutter LDA pseudopotentials for elements from H to Rn)<font color="#cc33cc"><br></font></li><li><font color="#cc33cc">'sg15'</font> (Optimized Norm-Conserving Vanderbilt PBE up to Bi, no Lanthanides)</li></ul></ul>
+        
+      <h4><a name="mozTocId227008" class="mozTocH5"></a><u>Specific options for Siesta</u></h4><ul><li>
     <b>potentials</b>: should be defined as a path to a directory containing the pseudo-potentials, e.g. <font color="#cc33cc">'/usr/share/siesta/pseudo/'</font> </li><li><b>pps</b>: Type of pseudo potential database, any of <br></li><ul><li><font color="#cc33cc">'fhi' </font><span class="st">Fritz-Haber-Institute (from ABINIT)</span><span class="st">.<br></span></li><li><font color="#cc33cc">'tm' </font><span class="st"></span><span class="st">Troullier-Martins (from NNIN). <br></span></li></ul></ul><ul>
     </ul>
     <h4><a name="mozTocId294368" class="mozTocH5"></a><u>Specific options for VASP</u></h4>
@@ -1389,6 +1231,7 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/ifit-web-
     The <b>plot (surf), plot3, scatter3</b>, and <b>slice</b> methods
     for plotting all provide nice looking rendering of volume data. See
     <a href="Plot.html#mozTocId734523">Plot/3D</a> page.<br>
+    
     <h3><a class="mozTocH5" name="mozTocId168620"></a> <u><i><b>References</b></i></u></h3>
     <ul>
       <li> <a href="https://wiki.fysik.dtu.dk/ase">Atomic Simulation
@@ -1409,25 +1252,6 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/ifit-web-
         (2009). <a href="http://www.abinit.org/downloads/psp-links/pseudopotentials">Pseudo-potentials
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
           (JTH)</a>.Debiab packages: <a href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/abinit-psp_2_all.deb">abinit-psp</a>
         <a href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/abinit-psp-jth_1.0_all.deb">abinit-psp-jth</a>
         <a href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/abinit-psp-gbrv_1.5_all.deb">abinit-psp-gbrv</a>.<a href="http://www.abinit.org/downloads/psp-links/pseudopotentials"><br>
@@ -1439,179 +1263,17 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/ifit-web-
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         (2009) [<a href="http://www.homepages.ucl.ac.uk/%7Eucfbdxa/pubblicazioni/cpc09_phon.pdf">pdf</a>].
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         &lt;<a href="http://chianti.geol.ucl.ac.uk/%7Edario">http://chianti.geol.ucl.ac.uk/~dario</a>&gt;.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         <br>
       </li>
       <li><a href="http://www.quantum-espresso.org/">Quantum Espresso</a>:
         P. Giannozzi, et al, <i>J.Phys.:Condens.Matter,</i> <b>21</b>,
         395502 (2009). &lt;<a href="http://www.quantum-espresso.org/">http://www.quantum-espresso.org/</a>&gt;.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

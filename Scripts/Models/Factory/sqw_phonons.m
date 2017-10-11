@@ -33,8 +33,7 @@ function signal=sqw_phonons(configuration, varargin)
 %     See https://wiki.fysik.dtu.dk/ase/ase/calculators/calculators.html
 %
 %   Benchmarks indicate that, for phonon dispersions:
-%   * QuantumEspresso/PHON is the fastest, with excellent parallelization and accuracy.
-%   * QuantumEspresso/ASE is excellent.
+%   * QuantumEspresso, with excellent parallelization and accuracy.
 %   * ABINIT, VASP are also fast codes.
 %   * The all-electrons Elk code is about 10 times slower than QuantumEspresso.
 %   * Using k-points=3 is both fast and ensures a reasonable accuracy in phonons
@@ -468,7 +467,6 @@ if isempty(decl) && isempty(signal), return; end
 %                                   sqw_phonons_get_forces
 %                               sqw_phonons_forces_iterate.py
 %                               sqw_phonons_forces_finalize.py
-%                                    not for QE/PHON case
 % ==============================================================================
 
 % the QE case has been done prior to optimize when calling sqw_phonons_calc()

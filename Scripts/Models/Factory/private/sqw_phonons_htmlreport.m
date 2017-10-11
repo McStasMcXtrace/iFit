@@ -4,7 +4,7 @@ function filename = sqw_phonons_htmlreport(filename, step, options, data)
 % sections:
 % * calculator and system informations (from configuration, exported files, options)
 % * optimisation status
-% * on-going calculation status (when possible, e.g. QE/PHON will write ETA)
+% * on-going calculation status (when possible will write ETA)
 % * status at end of forces: success/failure, properties
 % * success:
 %     estimate max spectrum energy with coarse grid.        write Emax to report
