@@ -16,11 +16,12 @@ function [data, this] = read_cif(file)
 % CrysFML by Juan Rodriguez-Carvajal and Javier Gonzalez-Platas, ILL and ULL, Tenerife, Spain
 %   used to build a powder/Laue Rietveld model, GPL3
 %   <http://www.ill.eu/sites/fullprof/php/programs24b7.html>
+% Crystallography Open Database <http://www.crystallography.net/>
 
   data = []; this = [];
   
   % test if the given file is a chemical formulae, in which case we make a query to COD
-  if isempty(isdir(file))
+  if iscellstr(file) || isempty(isdir(file))
     % not a file, we query COD at http://wiki.crystallography.net/howtoquerycod/
     % this requires proxy settings to be set (when behind a firewall), e.g. using miFit Preference
     %   ProxyHost Proxy address if you are behind a proxy [e.g. myproxy.mycompany.com or empty]
@@ -37,6 +38,42 @@ function [data, this] = read_cif(file)
     %   curl http://www.crystallography.net/cod/result.php?formula=Mg%20O
     % then search lines with CIF and get number (single or dialogue), then retrieve:
     %   curl -s http://www.crystallography.net/cod/2002926.cif
+    
+    if iscellstr(file), file = sprintf('%s ', file{:}); end
+    file = strrep(strtrim(file), ' ', '%20');  % remove spaces from formula
+    
+    % query COD
+    cod   = urlread([ 'http://www.crystallography.net/cod/result.php?formula=' file ]);
+    cod   = textscan(cod, '%s','Delimiter',sprintf('\n\r'));
+    cod   = cod{1};
+    cod   = cod(find(~cellfun(@isempty, strfind(cod, 'CIF'))));
+    % have to read lines until '</tr>'
+    index = strfind(cod, '</tr>');
+    cod   = cod(find(~cellfun(@isempty, index)));
+    index = cell2mat(index);
+    for l=1:numel(cod)
+      this = cod{l};
+      this = this(1:(index(l)-1));
+      % remove some of the links '<a href="result.php
+      i1 = strfind(this, '<a href="result.php?spacegroup');
+      i2 = strfind(this, '</a>');
+      if ~isempty(i1) && ~isempty(i2)
+        i1 = i1(1); i2=i2(find(i2 > i1, 1));
+        this(i1:(i2+3)) = [];
+      end
+      i3 = strfind(this, '<a href="result.php?journal');
+      if ~isempty(i3)
+        i3 = i3(1);
+        this(i3:end) = [];
+      end
+      this = strrep(this, '<a href="', '');
+      % clean up each CIF line: remove <td> </td> <br/> <i> </i> <b> </b> ...
+      for tok={'<td>', '</td>', '<br/>', '<i>', '</i>', '<b>', '</b>', '%20','</a>', '<a href="', '">'}
+        this = strrep(this, tok{1}, ' ');
+      end
+      % the first token in each line is now the COD number
+      cod(l) = this;
+    end
     
   end
   
