@@ -1,11 +1,17 @@
 function [data, this] = read_cif(file)
 % read_cif Wrapper to read CIF files
 %   data = read_cif(file)
+% the data is a simplified representation of the crystal structure, generated using cif2hkl.
+%
+% You may as well plot the CIF structure using SpinW with e.g.:
+%  plot(sw(data.file)); % plot the structure using SpinW
 %
 % When the argument is a chemical formulae (elements separated with spaces), a
-% search in the crystallography open database is made.
+% search in the Crystallography Open Database is made.
 %
-% this requires proxy settings to be set (when behind a firewall)
+%  data = read_cif('Mg O');
+%
+% This requires proxy settings to be set (when behind a firewall)
 %   java.lang.System.setProperty('http.proxyHost', ProxyHost); 
 %   com.mathworks.mlwidgets.html.HTMLPrefs.setUseProxy(true);
 %   com.mathworks.mlwidgets.html.HTMLPrefs.setProxyHost(ProxyHost);
@@ -19,9 +25,9 @@ function [data, this] = read_cif(file)
 % Crystallography Open Database <http://www.crystallography.net/>
 
   data = []; this = [];
-  
+
   % test if the given file is a chemical formulae, in which case we make a query to COD
-  if iscellstr(file) || isempty(isdir(file))
+  if (iscellstr(file) || ischar(file)) && isempty(dir(file))
     % not a file, we query COD at http://wiki.crystallography.net/howtoquerycod/
     % this requires proxy settings to be set (when behind a firewall), e.g. using miFit Preference
     %   ProxyHost Proxy address if you are behind a proxy [e.g. myproxy.mycompany.com or empty]
@@ -40,10 +46,11 @@ function [data, this] = read_cif(file)
     %   curl -s http://www.crystallography.net/cod/2002926.cif
     
     if iscellstr(file), file = sprintf('%s ', file{:}); end
-    file = strrep(strtrim(file), ' ', '%20');  % remove spaces from formula
+    formula = strrep(strtrim(file), ' ', '%20');  % change spaces from formula to cope with COD query
     
     % query COD
-    cod   = urlread([ 'http://www.crystallography.net/cod/result.php?formula=' file ]);
+    disp([ mfilename ': querying COD at http://www.crystallography.net/cod/result.php?formula=' formula ]);
+    cod   = urlread([ 'http://www.crystallography.net/cod/result.php?formula=' formula ]);
     cod   = textscan(cod, '%s','Delimiter',sprintf('\n\r'));
     cod   = cod{1};
     cod   = cod(find(~cellfun(@isempty, strfind(cod, 'CIF'))));
@@ -72,9 +79,34 @@ function [data, this] = read_cif(file)
         this = strrep(this, tok{1}, ' ');
       end
       % the first token in each line is now the COD number
-      cod(l) = this;
+      cod{l} = this;
     end
-    
+    % pop-up  dialogue to choose when more than one entry
+    if isempty(cod), return; end
+    if numel(cod) > 1
+      selection = listdlg('ListString', cod, 'ListSize', [ 300 160 ], ...
+        'Name', [ mfilename ': Crystallography Open Database entries for ' file ], ...
+        'PromptString', { [ 'Here are the entries for ' file ]; ...
+        'from the Crystallography Open Database (COD) <http://www.crystallography.net>.'; ...
+        'Each entry shows the COD ID, spacegroup, cell parameters (a,b,c,alpha,beta,gamma) and title.'; ...
+        'Please choose one of them.' });
+      if isempty(selection),    return; end % cancel
+    else selection = 1; end
+    if numel(cod) && iscellstr(cod)
+      cod = cod{selection};
+    end
+    cod_id = strtok(cod);
+    disp([ mfilename ': getting http://www.crystallography.net/cod/' cod_id ]);
+    file = urlread([ 'http://www.crystallography.net/cod/' cod_id ]);
+    % copy that file locally in temp dir
+    try
+      d = tempname;
+      mkdir(d);
+      fid=fopen(fullfile(d, cod_id), 'w');
+      if fid==-1, disp([ mfilename ': could not write ' cod_id ]); end
+      fwrite(fid, file); fclose(fid);
+      file = fullfile(d, cod_id);
+    end
   end
   
   if exist('cif2hkl') == 3 || exist('cif2hkl') == 7 || exist('cif2hkl') == 2
@@ -85,7 +117,8 @@ function [data, this] = read_cif(file)
     if ischar(file) && ~isempty(dir(file))
       this = cif2hkl(file,[],[],'-',1);
       this = str2struct(this);
-      this.file = file;
+      this.file   = file;
+      this.source = fileread(file);
     else
       this = file;
     end
@@ -118,6 +151,8 @@ function [data, this] = read_cif(file)
         data.title = strrep(this.(f{j}),'''','"'); remove_me = 1;
       elseif strcmpi(f{j}, 'file')
         data.file = this.(f{j}); remove_me = 1;
+      elseif strcmpi(f{j}, 'source')
+        data.source = this.(f{j}); remove_me = 1;
       elseif any(strcmp(at, atoms)) && (isempty(nb) || ~isempty(str2num(nb))) && length(this.(f{j})) >= 3 && length(this.(f{j})) <= 7
         % the name of the field is <atom> optionally followed by a number, and value length is 3-7
         data.structure.(f{j}) = this.(f{j}); remove_me = 1;
@@ -126,8 +161,9 @@ function [data, this] = read_cif(file)
     end
   else
     disp('cif2hkl is missing: compile it with e.g: ')
-    disp('  gfortran -O2 -fPIC -c cif2hkl.f90')
-    disp('  mex -O cif2hkl_mex.c cif2hkl.o -o cif2hkl -lgfortran')
+    disp('    cif2hkl(''compile'')')
+    disp('which does e.g.:')
+    disp([ '    gfortran -O2 -ffree-line-length-0 cif2hkl.F90 -o cif2hkl_' lower(computer) ] )
     error('Missing cif2hkl MeX')
   end
 
