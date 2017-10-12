@@ -6,38 +6,56 @@ function status = sqw_phonons_requirements
 % returns a structure with a field for each MD software being 1 when available.
 status = [];
 
-% required to avoid Matlab to use its own libraries
-if ismac,      precmd = 'DYLD_LIBRARY_PATH= ; DISPLAY= ; ';
-elseif isunix, precmd = 'LD_LIBRARY_PATH= ; DISPLAY= ; '; 
-else           precmd=''; end
+% set-up a temporary directory for the tests
+d = tempname;
+p = pwd;
+mkdir(d);
 
-disp('Available packages:');
+try
+  cd(d)
+  status = sqw_phonons_requirements_safe;
+catch
+  disp([ mfilename ': error analysing installed software' ]);
+  status = [];
+end
 
-% test for python
-status.python = '';
-for calc={'python'}
-  % now test executable
-  [st,result]=system([ precmd 'echo "0" | ' calc{1} ]);
-  if any(st == 0:2)
-      status.python=calc{1};
-      st = 0;
-      disp([ '  Python          (http://www.python.org) as "' status.python '"' ]);
-      break;
+cd(p);
+rmdir(d, 's');
+
+function status = sqw_phonons_requirements_safe
+
+  % required to avoid Matlab to use its own libraries
+  if ismac,      precmd = 'DYLD_LIBRARY_PATH= ; DISPLAY= ; ';
+  elseif isunix, precmd = 'LD_LIBRARY_PATH= ; DISPLAY= ; '; 
+  else           precmd=''; end
+
+  disp('Available packages:');
+
+  % test for python
+  status.python = '';
+  for calc={'python'}
+    % now test executable
+    [st,result]=system([ precmd 'echo "0" | ' calc{1} ]);
+    if any(st == 0:2)
+        status.python=calc{1};
+        st = 0;
+        disp([ '  Python          (http://www.python.org) as "' status.python '"' ]);
+        break;
+    end
   end
-end
-if isempty(status.python)
-  error([ mfilename ': Python not installed. This is required.' ]);
-end
+  if isempty(status.python)
+    error([ mfilename ': Python not installed. This is required.' ]);
+  end
 
-% test for ASE in Python
-
-[status.ase, result] = system([ precmd status.python ' -c "import ase"' ]);
-if status.ase ~= 0
-  disp([ mfilename ': error: requires ASE to be installed.' ])
-  disp('  Get it at <https://wiki.fysik.dtu.dk/ase>.');
-  disp('  Packages exist for Debian/Mint/Ubuntu, RedHat/Fedora/SuSE, MacOSX and Windows.');
-  error([ mfilename ': ASE not installed. This is required.' ]);
-else
+  % test for ASE in Python
+  [status.ase, result] = system([ precmd status.python ' -c "import ase"' ]);
+  if status.ase ~= 0
+    disp([ mfilename ': error: requires ASE to be installed.' ])
+    disp('  Get it at <https://wiki.fysik.dtu.dk/ase>.');
+    disp('  Packages exist for Debian/Mint/Ubuntu, RedHat/Fedora/SuSE, MacOSX and Windows.');
+    error([ mfilename ': ASE not installed. This is required.' ]);
+  end
+    
   disp([ mfilename ': using ASE ' result ]);
   status.emt='ase-run';
   status.ase=sscanf(result,'%d.%d');
@@ -200,11 +218,10 @@ else
   if ~isempty(status.siesta)
     disp([ '  SIESTA          (https://departments.icmab.es/leem/siesta/) as "' status.siesta '"' ]);
   end
-  
-end
-% disp('Calculator executables can be specified as ''options.command=exe'' when building a model.');
 
-%  lj (lenard-jones)
-%  morse
-%  eam
+  % disp('Calculator executables can be specified as ''options.command=exe'' when building a model.');
+
+  %  lj (lenard-jones)
+  %  morse
+  %  eam
 
