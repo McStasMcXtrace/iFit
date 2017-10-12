@@ -162,7 +162,9 @@ end
 
 symOp(nNew,:,nOp) = vNew;
 symOp = symOp(:,:,1:nOp);
-symTr = symTr(:,1:nOp);
+for index=size(symTr, 2):(nOp-1)
+  symTr(:,end+1) = vNew;
+end
 
 % cut trailing spaces from symName
 if isnan(symName)

@@ -1,28 +1,44 @@
-function cifdat = importcif(~, path)
-% imports .cif file
+function [cifdat] = importcif(~, dataStr)
+% imports .cif data from file, web or string
 
-% $Name: SpinW$ ($Version: 2.1$)
-% $Author: S. Toth$ ($Contact: sandor.toth@psi.ch$)
-% $Revision: 238 $ ($Date: 07-Feb-2015 $)
-% $License: GNU GENERAL PUBLIC LICENSE$
+% if exist(dataStr,'file') == 2
+%     % get the name of the file
+%     fid = fopen(dataStr);
+%     source = fopen(fid);
+%     fclose(fid);
+%     
+%     cifStr = regexp(fileread(dataStr), ['(?:' sprintf('\n') ')+'], 'split');
+%     isfile = true;
+%     
+% elseif numel(dataStr) < 200
+%     % try to load it from the web
+%     try
+%         %cifStr = char(webread(dataStr)');
+%         cifStr = urlread(dataStr);
+%     catch
+%         error('cif:importcif:WrongInput','The requested data cannot be found!')
+%     end
+%     cifStr = strsplit(cifStr,'\n');
+%     
+%     source = dataStr;
+%     isfile = false;
+% else
+%     % take it as a string storing the .cif file content
+%     cifStr = strsplit(char(dataStr(:))','\n');
+%     %cifStr = mat2cell(cifStr,ones(size(cifStr,1),1));
+%     source = '';
+%     isfile = false;
+% end
 
-fid = fopen(path);
+cifStr = fileread(dataStr);
+% [cifStr,info] = ndbase.source(dataStr);
+% isfile = info.isfile;
+% source = info.source;
 
-%loop = false;
-%loopvar = {};
+% split the string
+cifStr = textscan(cifStr,'%s','Delimiter',sprintf('\n\r'));
+cifStr = cifStr{1};
 
-
-idx = 1;
-cifStr = {};
-
-if fid < 0
-    error('cif:importcif:FileNotFound','.cif file cannot be found!');
-end
-% read in all lines
-while ~feof(fid)
-    cifStr{idx} = fgetl(fid);
-    idx = idx + 1;
-end
 % unite broken lines
 bLine = double(cellfun(@(x)numel(x)>0 && x(1)==';',cifStr));
 
@@ -158,7 +174,9 @@ for ii = 1:numel(strout)
                 else
                     filled = ~cellfun(@(x)isempty(x),lpVal(end,:));
                     if all(filled)
+                        try
                         lpVal(end+1,:) = [strLine(2,:) cell(1,numel(lpVar)-numel(strLine(2,:)))];
+                        end
                     else
                         emptyIdx = find(~filled);
                         lpVal(end,emptyIdx(1:numel(strLine(2,:)))) = strLine(2,:);
@@ -195,7 +213,6 @@ for ii = 1:numel(strout)
     end
 end
 
-fclose(fid);
 cifdat = cifdat(2:end);
 
 end
