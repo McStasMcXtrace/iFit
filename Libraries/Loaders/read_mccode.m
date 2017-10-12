@@ -259,7 +259,7 @@ function structure=mcplot_load_mccode(filename)
   if fid == -1, return; end % also returns when filename is empty
   
   % read header
-  header = textscan(fid,'#%s','endOfLine','\n','delimiter','\n');
+  header = textscan(fid,'#%s','endOfLine','\n','delimiter',sprintf('\n'));
 
   if iscellstr(header{1}) && length(header)==1
     header = header{1};

@@ -69,7 +69,7 @@ end
 
   if ischar(str) && ~isempty(strfind(str, 'Title (max.60 characters)'))
     % legacy ResTrax configuration file. Very partial set of parameters.
-    lines = textscan(str, '%s', 'delimiter', '\n'); % split all lines
+    lines = textscan(str, '%s', 'delimiter', sprintf('\n')); % split all lines
     lines = lines{1};
     digit = '\<[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?\>'; % [+-] 0-9 . 0-9 eE +- 0-9 as a word
     ResTrax.Source      = str2double(regexp(lines{4},  digit, 'match'));
@@ -108,7 +108,7 @@ end
       nums = nums((end-45):end)
     end
     % get spectrometer ID
-    lines = textscan(str, '%s', 'delimiter', '\n'); % split all lines
+    lines = textscan(str, '%s', 'delimiter', sprintf('\n')); % split all lines
     lines = lines{1};
     % convert to ResCal parameters
     to_read = {'WB',1,'HB',2,'L1',3,...

@@ -79,7 +79,7 @@ function [comps, fig, model]=plot(model, p, options)
   end
 
   output_mcdisplay_init = output(1:index_start);
-  output_mcdisplay_init = textscan(output_mcdisplay_init, '%s','Delimiter','\n\r');
+  output_mcdisplay_init = textscan(output_mcdisplay_init, '%s','Delimiter',sprintf('\n\r'));
   output_mcdisplay_init = output_mcdisplay_init{1};
 
   % initiate component structures

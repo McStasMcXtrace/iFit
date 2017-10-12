@@ -85,7 +85,7 @@ function varargout = mifit(varargin)
                   mifit(deblank(evt.Data{n}));
               end
           case 'string'
-              lines = textscan(evt.Data, '%s','Delimiter','\n');
+              lines = textscan(evt.Data, '%s','Delimiter',sprintf('\n'));
               mifit(deblank(lines{1}));
           end
         elseif ischar(varargin{1}) && isempty(dir(varargin{1})) ...
