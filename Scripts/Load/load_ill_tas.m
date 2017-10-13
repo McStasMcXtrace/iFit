@@ -32,31 +32,35 @@ try
 catch
   columns_header = findstr(a, 'DATA_:','case');
 end
-if iscell(columns_header)
-  [dummy, sorti] = sort(cellfun('prodofsize', columns_header)); 
-  
-  columns_header = columns_header{sorti(end)};
-end
-% Find spaces and determine proper aliases for the columns
-columns = strread(columns_header,'%s','delimiter',' ;');
-% remove invalid names
-% restrict to the number of columns in DataBlock
-c       = size(a, 2);
 
-columns = columns(~cellfun('isempty', columns) & cellfun(@(c) isstrprop(c(1),'alphanum'), columns));
-if c < numel(columns)
-    columns = columns((end-c+1):end);
+if ~isempty(columns_header)
+  if iscell(columns_header)
+    [dummy, sorti] = sort(cellfun('prodofsize', columns_header)); 
+    
+    columns_header = columns_header{sorti(end)};
+  end
+  % Find spaces and determine proper aliases for the columns
+  columns = strread(columns_header,'%s','delimiter',' ;');
+  
+  % remove invalid names
+  % restrict to the number of columns in DataBlock
+  c       = size(a, 2);
+
+  columns = columns(~cellfun('isempty', columns) & cellfun(@(c) isstrprop(c(1),'alphanum'), columns));
+  if c < numel(columns)
+      columns = columns((end-c+1):end);
+  end
+end
+
+if isempty(columns_header) || isempty(columns)
+  warning([ mfilename ': The loaded data set ' a.Tag ' ' a.Title ' is not an ILL TAS data format.' ]);
+  return; 
 end
 
 % determine if this is a standard TAS or MULTI-detector file
 MULTI = findfield(a,'MULTI'); % this is where we store MULTI-detector scans
 if ~isempty(MULTI) && iscell(MULTI)
   MULTI = get(a, MULTI{1});
-end
-
-if isempty(columns_header) || isempty(columns)
-  warning([ mfilename ': The loaded data set ' a.Tag ' is not an ILL TAS data format.' ]);
-  return; 
 end
 
 % get the normal TAS data: stored as the last column name (looktxt)

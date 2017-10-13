@@ -11,6 +11,7 @@ end
 if iscell(in), in = in{1}; end
 
 if ~isa(in, 'iData')
+  disp([ mfilename ': input is not not an iData object.' ]);
   disp(in)
   whos in
   in=[]; return; 
@@ -125,7 +126,7 @@ if ~isempty(in.Data) && (isempty(in.Alias.Values{1}) || isempty(in.Alias.Axis))
         select = [];
         % do we have an 'error' which has same dimension ?
         for index=find(dims(:)' == dims(1))
-          if index==1, continue; end % not the signal itself
+          if index==1, select=1; continue; end % not the signal itself
           if ~isempty(strfind(lower(fields{index}), 'error')) || ...
               strcmpi(fields{index}, 'e')
             error_id = fields{index};

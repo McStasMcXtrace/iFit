@@ -16,7 +16,9 @@ if numel(out) > 1
     out(index) = feval(mfilename, out(index));
   end
 else
-  out.Data.parameters = str2struct(out.Data.header);
+  if isfield(out.Data, 'header')
+    out.Data.parameters = str2struct(out.Data.header);
+  end
 end
 
 if ~nargout

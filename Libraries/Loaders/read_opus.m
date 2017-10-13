@@ -16,13 +16,9 @@ function data = read_opus(filename)
       try
         this=opus_read(filename, index);
         if isempty(this), return;
-        else data{index}=this; end
-     
-        index = index +1;
-      catch ME
-        disp(ME)
-        break;
-    end
+        else data{end+1}=this; end
+      end
+      index = index +1;
   end
   
   

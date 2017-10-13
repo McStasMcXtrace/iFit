@@ -95,7 +95,7 @@ methods
     if nargin == 0, return; end
 
     if isa(varargin{1}, 'iData') && numel(varargin{1}) > 1
-    % iData(iData array)
+      % iData(iData array)
       out = varargin{1};
       for index=1:numel(out)
         out(index) = iData(out(index));        % check all elements
@@ -104,6 +104,9 @@ methods
         assignin('caller',inputname(1),out)
       end
       return
+    elseif isa(varargin{1}, 'iData')
+      % iData(iData single)
+      out = varargin{1};                     % just makes a check
     elseif ~isa(varargin{1}, 'iData') && isnumeric(varargin{1}) && length(varargin) > 1  % array -> iData
       % iData(x,y,..., signal)
       index = length(varargin);
@@ -144,14 +147,15 @@ methods
       end
 
       return
+    elseif ~isa(varargin{1}, 'iData') && isempty(varargin{1})
+      % iData([])
+      out = iData;
+      return
     elseif ischar(varargin{1}) % filename -> iData
     % iData('filename', ...)
       out = load(iData, varargin{:});        % load file(s) with additional arguments. Check included.
       if isempty(out), out = iData; end
       return
-    elseif isa(varargin{1}, 'iData')
-      % iData(iData single)
-      out = varargin{1};                     % just makes a check
     elseif isstruct(varargin{1})
       % iData(struct)
       out = iData_struct2iData(varargin{1}); % convert struct to iData
@@ -172,6 +176,7 @@ methods
       out = iData_cell2iData(varargin{1});   % convert cell/cellstr to cell(iData)
       return
     elseif isa(varargin{1}, 'iFunc')
+      % iData(iFunc)
       in = varargin{1};
       axes_in = varargin(3:end);
       out = [];
@@ -197,7 +202,7 @@ methods
       iData_private_warning(mfilename, [ 'import of ' inputname(1) ' of class ' class(varargin{1}) ' length ' mat2str(size(varargin{1})) ' is not supported. Ignore.' ]);
       out = [];
     end
-      
+
     % check the object
     if ~isa(varargin{1}, 'iData')
       if ~isempty(inputname(1)), in_name=[ inputname(1) ' ' ]; else in_name=''; end
@@ -212,9 +217,12 @@ methods
         end
       end
     end
-    
+
+    if ~isa(out, 'iData') && isempty(out)
+      out = iData;
+    end
     out = iData_check(out); % private function
-    
+
     if isa(varargin{1}, 'iData') && nargout == 0 && ~isempty(inputname(1))
       assignin('caller',inputname(1),out);
     end
