@@ -24,6 +24,8 @@ function [data, this] = read_cif(file)
 %   <http://www.ill.eu/sites/fullprof/php/programs24b7.html>
 % Crystallography Open Database <http://www.crystallography.net/>
 
+  persistent isreachable
+
   data = []; this = [];
 
   % test if the given file is a chemical formulae, in which case we make a query to COD
@@ -45,13 +47,16 @@ function [data, this] = read_cif(file)
     % then search lines with CIF and get number (single or dialogue), then retrieve:
     %   curl -s http://www.crystallography.net/cod/2002926.cif
     
-    % we first test for the network access as an asynchronous Process
-    
+    % we first test for the network access (only once)
     if usejava('jvm') % we need Java to access the net with urlread
       try
         % test for the network
         n=java.net.InetAddress.getByName('www.crystallography.net');
+        isreachable = true;
       catch
+        isreachable = false;
+      end
+      if ~isreachable
         % network is unreachable. Request Proxy settings
         prompt = {'ProxyHost [e.g. proxy.ill.fr]. Then Click OK to try again, or Cancel to abort', ...
                   'ProxyPort [e.g. 8888 or empty]'};
@@ -88,7 +93,12 @@ function [data, this] = read_cif(file)
           end
         end
       end
+    end % test reachable
+    
+    if ~isreachable
+      error([ mfilename ': Network seems unreachable.' ]);
     end
+    
     if iscellstr(file), file = sprintf('%s ', file{:}); end
     formula = strrep(strtrim(file), ' ', '%20');  % change spaces from formula to cope with COD query
     
