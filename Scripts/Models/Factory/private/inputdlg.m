@@ -1,5 +1,5 @@
 function Answer =inputdlg(Prompt, Title, NumLines, DefAns, Resize)
-%INPUTDLG Input dialog box.
+%INPUTDLG Input dialog box (with non-modal support).
 %  ANSWER = INPUTDLG(PROMPT) creates a modal dialog box that returns user
 %  input for multiple prompts in the cell array ANSWER. PROMPT is a cell
 %  array containing the PROMPT strings.
@@ -50,15 +50,15 @@ function Answer =inputdlg(Prompt, Title, NumLines, DefAns, Resize)
 %  answer=inputdlg(prompt,name,numlines,defaultanswer);
 %
 %  an example using a non-modal dialogue which displays its status/answer:
-%  options.Resize='on';
-%  options.WindowStyle='non-modal';
-%  options.Interpreter='tex';
-%  options.CloseRequestFcn='disp(getfield(get(gcbf,''UserData''),''Answer'')); delete(gcbf)';
+%   options.Resize='on';
+%   options.WindowStyle='non-modal';
+%   options.Interpreter='tex';
+%   options.CloseRequestFcn='disp(getfield(get(gcbf,''UserData''),''Answer'')); delete(gcbf)';
 %
-%  [h]=inputdlg(prompt,name,numlines,defaultanswer,options);
-%  (...)
-%  getfield(get(h, 'UserData'),'Answer')
-%  delete(h)
+%   [h]=inputdlg(prompt,name,numlines,defaultanswer,options);
+%   (...)
+%   getfield(get(h, 'UserData'),'Answer')
+%   delete(h)
 %
 %  See also DIALOG, ERRORDLG, HELPDLG, LISTDLG, MSGBOX,
 %    QUESTDLG, TEXTWRAP, UIWAIT, WARNDLG .

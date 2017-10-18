@@ -38,6 +38,8 @@ function structure = uitable(structure,options)
 % output:
 %   structure: the modified structure in 'modal' mode (default),
 %     or the dialogue information structure in 'non-modal' mode.
+%     In non-modal mode, the dialogue information can be obtained from
+%       Data = getappdata(0,structure.tmp_storage);
 %
 % Example: 
 %   a.Test=1; a.Second='blah'; uitable(a)

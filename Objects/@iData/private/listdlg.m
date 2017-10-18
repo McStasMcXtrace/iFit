@@ -1,5 +1,5 @@
 function [selection,value] = listdlg(varargin)
-%LISTDLG_nonmodal  List selection dialog box.
+%LISTDLG  List selection dialog box (with non-modal support).
 %   [SELECTION,OK] = LISTDLG('ListString',S) creates a modal dialog box
 %   which allows you to select a string or multiple strings from a list.
 %   SELECTION is a vector of indices of the selected strings (length 1 in
@@ -11,6 +11,26 @@ function [selection,value] = listdlg(varargin)
 %   selected has the same effect as clicking the OK button.  Pressing <CR>
 %   is the same as clicking the OK button. Pressing <ESC> is the same as
 %   clicking the Cancel button.
+%
+%   In 'modal' window style (default), the dialogue keeps focus until it is closed.
+%
+%   When used in 'normal' 'non-modal' windowstyle, command returns immediately and
+%   the window is kept visible. The content of the dialogue can be retrieved
+%   after closing it using:
+%     [s,v] = listdlg(..., 'WindowStyle','normal'); % returns immediately
+%     ...
+%     ad        = getappdata(0,v.tag);
+%     selection = ad.selection;
+%     value     = ad.value;
+%   the appdata 'ad' is a structure which contains the dialogue information.
+%
+%   You may as well use the 'CloseRequestFcn' parameter to define what to do when
+%   closing, e.g. ('ad' is predefined as the dialogue information structure):
+%     [s,v] = listdlg(..., 'WindowStyle','normal', ...
+%                          'CloseRequestFcn','disp closing; disp(ad);');
+%   a function handle can also be used in the form @(tag, appdata)fcn, e.g.
+%     [s,v] = listdlg(..., 'WindowStyle','normal',...
+%                          'CloseRequestFcn',@(tag,ad)disp(ad));
 %
 %   Inputs are in parameter,value pairs:
 %
@@ -30,6 +50,9 @@ function [selection,value] = listdlg(varargin)
 %   'Resize'        string: can be 'on' (default) or 'off'.
 %   'WindowStyle'   string: can be 'normal' or 'modal' (default).
 %   'FontSize'      scalar: the Font size for texts.
+%   'CloseRequestFcn' string or function_handle: executed when the dialogue is 
+%                   closed e.g.: 'disp(ad)' where 'ad' is predefined as the dialogue
+%                   content.
 %
 %   A 'Select all' button is provided in the multiple selection case.
 %
@@ -78,6 +101,7 @@ resize = 'on';
 windowstyle = 'modal';
 fontsize = get(0,'DefaultUicontrolFontSize');
 [~,tag] = fileparts(tempname); tag = [ 'ListDialogAppData_' tag ];
+closerequestfcn = [];
 
 if mod(length(varargin),2) ~= 0
     % input args have not com in pairs, woe is me
@@ -118,6 +142,8 @@ for i=1:2:length(varargin)
       windowstyle = varargin{i+1};
      case 'tag'
       tag = varargin{i+1};
+     case 'closerequestfcn'
+      closerequestfcn = varargin{i+1};
      otherwise
       error('MATLAB:listdlg:UnknownParameter', 'Unknown parameter name passed to LISTDLG.  Name was %s', varargin{i})
     end
@@ -225,6 +251,7 @@ ad.selectionString='';
 ad.ok_btn  = ok_btn;
 ad.cancel_btn=cancel_btn;
 ad.tag = tag;
+ad.closerequestfcn = closerequestfcn;
 set(fig, 'UserData', ad);
 setappdata(0,tag, ad);
 
@@ -275,6 +302,7 @@ ad.selectionString = string(ad.selection);
 ad.button = 'OK';
 set(fig,'UserData',ad);
 setappdata(0,ad.tag,ad);
+doCloseRequestFcn(ad);
 close(gcbf);
 
 %% Cancel callback
@@ -291,6 +319,7 @@ ad.selectionString = string(ad.selection);
 ad.button = 'Cancel';
 set(fig,'UserData',ad);
 setappdata(0,ad.tag,ad)
+doCloseRequestFcn(ad);
 close(gcbf);
 
 %% SelectAll callback
@@ -310,3 +339,22 @@ elseif nargin == 3
         set(selectall_btn,'enable','on')
     end
 end
+
+%% closerequestfcn
+function doCloseRequestFcn(ad)
+
+  if ~isempty(ad.closerequestfcn)
+  try
+    if ischar(ad.closerequestfcn)
+      eval(ad.closerequestfcn);
+    elseif isa(ad.closerequestfcn, 'function_handle')
+      n = nargin(ad.closerequestfcn);
+      args = { ad.tag, ad };
+      feval(ad.closerequestfcn, args{1:min(2,n)} );
+    end
+  catch ME
+    disp(getReport(ME))
+    warning([ mfilename ': error evaluating CloseRequestFcn ' func2str(ad.closerequestfcn) ]);
+  end
+end
+  
