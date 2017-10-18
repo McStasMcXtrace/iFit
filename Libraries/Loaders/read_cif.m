@@ -45,6 +45,50 @@ function [data, this] = read_cif(file)
     % then search lines with CIF and get number (single or dialogue), then retrieve:
     %   curl -s http://www.crystallography.net/cod/2002926.cif
     
+    % we first test for the network access as an asynchronous Process
+    
+    if usejava('jvm') % we need Java to access the net with urlread
+      try
+        % test for the network
+        n=java.net.InetAddress.getByName('www.crystallography.net');
+      catch
+        % network is unreachable. Request Proxy settings
+        prompt = {'ProxyHost [e.g. proxy.ill.fr]. Then Click OK to try again, or Cancel to abort', ...
+                  'ProxyPort [e.g. 8888 or empty]'};
+        name [ mfilename ': network is unreachable' ];
+        answer = inputdlg(prompt, name);
+        if isempty(answer)
+          disp([ mfilename ': It seems I can not reach www.crystallography.net !' ]);
+
+          disp('>>> if you are behind a Proxy, you MUST set from the Matlab/iFit prompt e.g.:');
+          disp('  ProxyHost=''proxy.ill.fr'' % no need for "http://" there');
+          disp('  ProxyPort=8888');
+          disp('  java.lang.System.setProperty(''http.proxyHost'', ProxyHost); ')
+          disp('  com.mathworks.mlwidgets.html.HTMLPrefs.setUseProxy(true);');
+          disp('  com.mathworks.mlwidgets.html.HTMLPrefs.setProxyHost(ProxyHost);');
+          disp('  java.lang.System.setProperty(''http.proxyPort'', num2str(ProxyPort));');
+          disp('  com.mathworks.mlwidgets.html.HTMLPrefs.setProxyPort(num2str(ProxyPort));');
+          error([ mfilename ': Network seems unreachable. Check connection or Proxy settings.' ]);
+        else  % retry with the specified Proxy
+          if ~isempty(answer{1})
+            ProxyHost = answer{1};
+            disp([ mfilename ': setting ProxyHost=' ProxyHost ]);
+            java.lang.System.setProperty('http.proxyHost', ProxyHost); 
+            com.mathworks.mlwidgets.html.HTMLPrefs.setUseProxy(true);
+            com.mathworks.mlwidgets.html.HTMLPrefs.setProxyHost(ProxyHost);
+            if ~isempty(answer{2}) && ~isnan(str2double(answer{2}))
+              ProxyPort = answer{2}
+              disp([ mfilename ': setting ProxyPort=' ProxyPort ]);
+              java.lang.System.setProperty('http.proxyPort', num2str(ProxyPort));
+              com.mathworks.mlwidgets.html.HTMLPrefs.setProxyPort(num2str(ProxyPort));
+            end
+            % we try again
+            [data, this] = read_cif(file);
+            return
+          end
+        end
+      end
+    end
     if iscellstr(file), file = sprintf('%s ', file{:}); end
     formula = strrep(strtrim(file), ' ', '%20');  % change spaces from formula to cope with COD query
     
