@@ -246,7 +246,7 @@ classdef Process < timer
     function stop(pid, action)
       stop@timer(pid);
       if nargin < 2, action='kill'; end
-      exit_Process(pid,action);
+      feval(@exit_Process, pid,action);
     end
     
     function ud = getUserData(obj)
@@ -272,11 +272,11 @@ function refresh_fcn(obj, event, string_arg)
   if ~UserData.isActive
     % Process has ended by itself or aborted externally
     disp([ mfilename ': Process ' get(obj,'Name') ' has ended.' ])
-    stop(pid, 'end');
+    feval(@exit_Process, obj, 'end');
     
   elseif ~isempty(UserData.TimeOut) && UserData.TimeOut > 0 ...
     && etime(clock, datevec(UserData.creationDate)) > UserData.TimeOut
-    stop(pid, 'timeout');
+    feval(@exit_Process,obj, 'timeout');
   end
 
 end
@@ -287,15 +287,9 @@ function exit_fcn(obj, event, string_arg)
 
   UserData = get(obj, 'UserData');
   if UserData.isActive && strcmp(get(obj,'Running'),'on')
-    stop@timer(pid);
+    stop@timer(obj);
     exit_Process(obj, 'kill');  % kill
   end
 
 end
-
-
-
-
-
-
 
