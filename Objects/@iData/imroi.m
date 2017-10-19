@@ -62,6 +62,9 @@ function [b, mask, f] = imroi(a, options)
   for index=[ 1:ndims(a) 0 ]
     ax_signal{end+1} = getaxis(a, index);
   end
+  if ndims(a) > 2
+    ax_signal([1 2]) = ax_signal([2 1]);  % swap X and Y for used for the plotting
+  end
   
   % then we request the selection (private imroi1 below)
   [select, xselect, yselect, zselect, cselect, h] = imroi1(h, ax_signal{:});
@@ -235,7 +238,7 @@ function s = selectpoints()
       set(r, 'Enable','on');
       waitfor(r, 'Enable','off');
     end
-    if ~isempty(this)
+    if ~isempty(this) && isfield(this, 'XV')
       disp([ mfilename ': adding new polygon ' num2str(numel(s)+1) ]);
       s{end+1} = this; 
     end
