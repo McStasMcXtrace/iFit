@@ -100,7 +100,9 @@
     <br>
     The way all of these are used is listed below:<br>
     <ul>
-      <li>All mathematical methods <a href="http://en.wikipedia.org/wiki/Propagation_of_error">propagate
+      <li>All mathematical methods <a
+          href="http://en.wikipedia.org/wiki/Propagation_of_error">propagate
+
 
 
 
@@ -112,6 +114,7 @@
 
           the <span style="font-style: italic;">Error</span></a>
         together with the <span style="font-style: italic;">Signal, </span>assuming
+
 
 
 
@@ -136,22 +139,29 @@
 
 
 
+
         <span style="font-style: italic;">Monitor</span> is usually a
         value larger than 1<span style="font-style: italic;">. </span>When
-        set to 0 (or empty), no weighting is used.<span style="font-style: italic;"><br>
+
+        set to 0 (or empty), no weighting is used.<span
+          style="font-style: italic;"><br>
         </span></li>
       <li>The <span style="font-style: italic;">Axes</span> are used in
-        binary operators to determine intersection of <span style="font-style: italic;">Signal</span> ranges. A rebinning
-        of objects is automatically performed when the <span style="font-style: italic;">Axes</span> sampling do not match.<br>
+        binary operators to determine intersection of <span
+          style="font-style: italic;">Signal</span> ranges. A rebinning
+        of objects is automatically performed when the <span
+          style="font-style: italic;">Axes</span> sampling do not match.<br>
       </li>
     </ul>
     <h3><a class="mozTocH3" name="mozTocId566959"></a>Unary operators</h3>
     All unary operators apply on a single object, element-by-element.
     The <span style="font-style: italic;">Error</span> for an operator
-    <span style="font-style: italic;">f</span> is usually is <span style="font-style: italic;"><br>
+    <span style="font-style: italic;">f</span> is usually is <span
+      style="font-style: italic;"><br>
       <br>
     </span>
     <div style="margin-left: 40px;"><span style="font-style: italic;">new
+
 
 
 
@@ -177,13 +187,19 @@
 
 
 
-        Error = f(Signal + ½Error) - f(Signal - </span><span style="font-style: italic;">½Error</span><span style="font-style: italic;">)</span>.<br>
+
+        Error = f(Signal + ½Error) - f(Signal - </span><span
+        style="font-style: italic;">½Error</span><span
+        style="font-style: italic;">)</span>.<br>
     </div>
     <br>
     <span style="color: rgb(255, 0, 0);">Warning:</span> all the
-    operators work on<span style="font-style: italic;"></span> the <span style="font-style: italic;">normalised Signal/Monitor</span> and <span style="font-style: italic;">Error/Monitor</span>.<br>
+    operators work on<span style="font-style: italic;"></span> the <span
+      style="font-style: italic;">normalised Signal/Monitor</span> and <span
+      style="font-style: italic;">Error/Monitor</span>.<br>
     <br>
-    <table style="text-align: left; width: 100%;" border="1" cellspacing="2" cellpadding="2">
+    <table style="text-align: left; width: 100%;" border="1"
+      cellpadding="2" cellspacing="2">
       <tbody>
         <tr>
           <td style="vertical-align: top; font-weight: bold; font-style:
@@ -262,7 +278,8 @@
           <td style="vertical-align: top;"><span style="font-style:
               italic;">cos</span>(Signal)<br>
           </td>
-          <td style="vertical-align: top;">-Error*<span style="font-style: italic;">sin</span>(Signal)<br>
+          <td style="vertical-align: top;">-Error*<span
+              style="font-style: italic;">sin</span>(Signal)<br>
           </td>
           <td style="vertical-align: top;"><br>
           </td>
@@ -276,7 +293,8 @@
           <td style="vertical-align: top;"><span style="font-style:
               italic;">sin</span>(Signal)<br>
           </td>
-          <td style="vertical-align: top;">Error*<span style="font-style: italic;">cos</span>(Signal)<br>
+          <td style="vertical-align: top;">Error*<span
+              style="font-style: italic;">cos</span>(Signal)<br>
           </td>
           <td style="vertical-align: top;"><br>
           </td>
@@ -289,7 +307,8 @@
           <td style="vertical-align: top;"><span style="font-style:
               italic;">tan</span>(Signal)<br>
           </td>
-          <td style="vertical-align: top;">Error/<span style="font-style: italic;">cos</span>²(Signal)<br>
+          <td style="vertical-align: top;">Error/<span
+              style="font-style: italic;">cos</span>²(Signal)<br>
           </td>
           <td style="vertical-align: top;"><br>
           </td>
@@ -328,7 +347,8 @@
           <td style="vertical-align: top;"><span style="font-style:
               italic;">e</span><sup>Signal</sup><br>
           </td>
-          <td style="vertical-align: top;">Error*<span style="font-style: italic;">e</span><sup>Signal</sup></td>
+          <td style="vertical-align: top;">Error*<span
+              style="font-style: italic;">e</span><sup>Signal</sup></td>
           <td style="vertical-align: top;"><br>
           </td>
           <td style="vertical-align: top;">Exponential<br>
@@ -355,7 +375,8 @@
           <td style="vertical-align: top;"><span style="font-style:
               italic;">log</span><sub>10</sub>(Signal)<br>
           </td>
-          <td style="vertical-align: top;">Error/(<span style="font-style: italic;">ln</span>(10)*Signal)<br>
+          <td style="vertical-align: top;">Error/(<span
+              style="font-style: italic;">ln</span>(10)*Signal)<br>
           </td>
           <td style="vertical-align: top;"><br>
           </td>
@@ -373,7 +394,8 @@
         </tr>
         <tr>
           <td style="vertical-align: top; font-weight: bold;
-            background-color: rgb(255, 255, 204);">ctranspose <span style="font-style: italic; font-weight: normal;">and</span>
+            background-color: rgb(255, 255, 204);">ctranspose <span
+              style="font-style: italic; font-weight: normal;">and</span>
             ' <br>
           </td>
           <td style="vertical-align: top;">Signal'<br>
@@ -386,7 +408,8 @@
         </tr>
         <tr>
           <td style="vertical-align: top; font-weight: bold;
-            background-color: rgb(255, 255, 204);">transpose <span style="font-style: italic; font-weight: normal;">and</span>
+            background-color: rgb(255, 255, 204);">transpose <span
+              style="font-style: italic; font-weight: normal;">and</span>
             .'<br>
           </td>
           <td style="vertical-align: top;">Signal.'<br>
@@ -460,7 +483,8 @@
           </td>
         </tr>
         <tr>
-          <td style="vertical-align: top; font-weight: bold;">uminus <span style="font-style: italic; font-weight: normal;">and</span>
+          <td style="vertical-align: top; font-weight: bold;">uminus <span
+              style="font-style: italic; font-weight: normal;">and</span>
             -<br>
           </td>
           <td style="vertical-align: top;">-Signal<br>
@@ -498,15 +522,19 @@
         </tr>
         <tr>
           <td style="vertical-align: top; background-color: rgb(255,
-            255, 204);"><a href="#mozTocId222123"><span style="font-weight: bold;">fft</span></a><br>
+            255, 204);"><a href="#mozTocId222123"><span
+                style="font-weight: bold;">fft</span></a><br>
           </td>
           <td style="vertical-align: top;">FFT(Signal)<br>
           </td>
-          <td style="vertical-align: top;">FFT(Error)<span style="font-style: italic;"></span><br>
+          <td style="vertical-align: top;">FFT(Error)<span
+              style="font-style: italic;"></span><br>
           </td>
           <td style="vertical-align: top;"><br>
           </td>
-          <td style="vertical-align: top;"><a href="http://en.wikipedia.org/wiki/Fourier_transform">Fourier
+          <td style="vertical-align: top;"><a
+              href="http://en.wikipedia.org/wiki/Fourier_transform">Fourier
+
 
 
 
@@ -523,14 +551,16 @@
           <td style="vertical-align: top; background-color: rgb(255,
             255, 204);"><span style="font-weight: bold;">ifft</span></td>
           <td style="vertical-align: top;">FFT<sup>-1</sup>(Signal)</td>
-          <td style="vertical-align: top;">FFT<sup>-1</sup>(Error)<span style="font-style: italic;"></span></td>
+          <td style="vertical-align: top;">FFT<sup>-1</sup>(Error)<span
+              style="font-style: italic;"></span></td>
           <td style="vertical-align: top;"><br>
           </td>
           <td style="vertical-align: top;">inverse Fourier transform</td>
         </tr>
         <tr>
           <td style="vertical-align: top; background-color: rgb(255,
-            255, 204);"><a href="#mozTocId663052"><span style="font-weight: bold;">cwt</span></a><br>
+            255, 204);"><a href="#mozTocId663052"><span
+                style="font-weight: bold;">cwt</span></a><br>
           </td>
           <td style="vertical-align: top;">Wavelet(Signal)<br>
           </td>
@@ -538,7 +568,9 @@
           </td>
           <td style="vertical-align: top;"><br>
           </td>
-          <td style="vertical-align: top;"><a href="http://en.wikipedia.org/wiki/Continuous_wavelet_transform">Continuous
+          <td style="vertical-align: top;"><a
+              href="http://en.wikipedia.org/wiki/Continuous_wavelet_transform">Continuous
+
 
 
 
@@ -553,33 +585,38 @@
         </tr>
         <tr>
           <td style="vertical-align: top; background-color: rgb(255,
-            255, 204);"><a href="#mozTocId52399"><span style="font-weight: bold;">del2</span></a><br>
+            255, 204);"><a href="#mozTocId52399"><span
+                style="font-weight: bold;">del2</span></a><br>
           </td>
           <td style="vertical-align: top;">&#8711;<sup>2</sup>(Signal)<br>
           </td>
           <td style="vertical-align: top;">&#8711;<sup>2</sup>(Error)</td>
           <td style="vertical-align: top;"><br>
           </td>
-          <td style="vertical-align: top;"><a href="http://en.wikipedia.org/wiki/Laplacian">Laplacian</a>
+          <td style="vertical-align: top;"><a
+              href="http://en.wikipedia.org/wiki/Laplacian">Laplacian</a>
             &#8721;<sub>i</sub> &#8706;<sup>2</sup>Signal/&#8706;<sup>2</sup>X<sub>i</sub></td>
         </tr>
         <tr>
           <td style="vertical-align: top; background-color: rgb(255,
-            255, 204);"><a href="#mozTocId52399"><span style="font-weight: bold;">gradient</span></a><br>
+            255, 204);"><a href="#mozTocId52399"><span
+                style="font-weight: bold;">gradient</span></a><br>
           </td>
           <td style="vertical-align: top;">&#8711;(Signal)<br>
           </td>
           <td style="vertical-align: top;">&#8711;(Error)</td>
           <td style="vertical-align: top;"><br>
           </td>
-          <td style="vertical-align: top;"><a href="http://en.wikipedia.org/wiki/Gradient">Gradient</a>
+          <td style="vertical-align: top;"><a
+              href="http://en.wikipedia.org/wiki/Gradient">Gradient</a>
             (partial derivatives). See also the '<b>jacobian</b>'
             operator for coordinate changes.<br>
           </td>
         </tr>
         <tr>
           <td style="vertical-align: top; background-color: rgb(255,
-            255, 204);"><a href="#mozTocId52399"><span style="font-weight: bold;">diff</span></a><br>
+            255, 204);"><a href="#mozTocId52399"><span
+                style="font-weight: bold;">diff</span></a><br>
           </td>
           <td style="vertical-align: top;">&#8711;<sub>1</sub>(Signal)</td>
           <td style="vertical-align: top;">&#8711;<sub>1</sub>(Error)</td>
@@ -613,13 +650,15 @@
         </tr>
         <tr>
           <td style="vertical-align: top; background-color: rgb(255,
-            204, 204);"><a href="#mozTocId439767"><span style="font-weight: bold;">trapz</span></a><br>
+            204, 204);"><a href="#mozTocId439767"><span
+                style="font-weight: bold;">trapz</span></a><br>
           </td>
           <td style="vertical-align: top;">&#8747;(Signal)</td>
           <td style="vertical-align: top;">&#8730;&#8747;(Error²)</td>
           <td style="vertical-align: top;"><br>
           </td>
-          <td style="vertical-align: top;">Trapezoidal <a href="http://en.wikipedia.org/wiki/Integral">integration</a><br>
+          <td style="vertical-align: top;">Trapezoidal <a
+              href="http://en.wikipedia.org/wiki/Integral">integration</a><br>
           </td>
         </tr>
         <tr>
@@ -635,14 +674,17 @@
 
 
 
+
           </td>
           <td style="vertical-align: top;"><br>
           </td>
-          <td style="vertical-align: top;"><a href="http://en.wikipedia.org/wiki/Primitive_function">Primitive</a><br>
+          <td style="vertical-align: top;"><a
+              href="http://en.wikipedia.org/wiki/Primitive_function">Primitive</a><br>
           </td>
         </tr>
         <tr>
-          <td style="vertical-align: top;"><a href="#mozTocId439767"><span style="font-weight: bold;">smooth</span></a><br>
+          <td style="vertical-align: top;"><a href="#mozTocId439767"><span
+                style="font-weight: bold;">smooth</span></a><br>
           </td>
           <td style="vertical-align: top;">Smoothed(Signal)<br>
           </td>
@@ -654,7 +696,8 @@
           </td>
         </tr>
         <tr>
-          <td style="vertical-align: top;"><a href="#mozTocId77311"><span style="font-weight: bold;">kmeans</span></a><br>
+          <td style="vertical-align: top;"><a href="#mozTocId77311"><span
+                style="font-weight: bold;">kmeans</span></a><br>
           </td>
           <td style="vertical-align: top;">Partition indices<br>
           </td>
@@ -662,7 +705,8 @@
           </td>
           <td style="vertical-align: top;"><br>
           </td>
-          <td style="vertical-align: top;"><a href="http://en.wikipedia.org/wiki/Image_segmentation">Data
+          <td style="vertical-align: top;"><a
+              href="http://en.wikipedia.org/wiki/Image_segmentation">Data
 
 
 
@@ -672,11 +716,14 @@
 
 
 
-              segmentation</a> (<a href="http://en.wikipedia.org/wiki/K-means_clustering">k-means</a>)<br>
+
+              segmentation</a> (<a
+              href="http://en.wikipedia.org/wiki/K-means_clustering">k-means</a>)<br>
           </td>
         </tr>
         <tr>
-          <td style="vertical-align: top;"><a href="#mozTocId77311"><span style="font-weight: bold;">pca</span></a><br>
+          <td style="vertical-align: top;"><a href="#mozTocId77311"><span
+                style="font-weight: bold;">pca</span></a><br>
           </td>
           <td style="vertical-align: top;">Principal component
             coordinates<br>
@@ -685,7 +732,9 @@
           </td>
           <td style="vertical-align: top;"><br>
           </td>
-          <td style="vertical-align: top;"><a href="http://en.wikipedia.org/wiki/Principal_component_analysis">Principal
+          <td style="vertical-align: top;"><a
+              href="http://en.wikipedia.org/wiki/Principal_component_analysis">Principal
+
 
 
 
@@ -699,7 +748,8 @@
           </td>
         </tr>
         <tr>
-          <td style="vertical-align: top;"><a href="#mozTocId447291"><span style="font-weight: bold;">resize</span></a><br>
+          <td style="vertical-align: top;"><a href="#mozTocId447291"><span
+                style="font-weight: bold;">resize</span></a><br>
           </td>
           <td style="vertical-align: top;">Resized signal<br>
           </td>
@@ -712,7 +762,8 @@
           </td>
         </tr>
         <tr>
-          <td style="vertical-align: top;"><a href="#mozTocId628538"><span style="font-weight: bold;">reducevolume</span></a><br>
+          <td style="vertical-align: top;"><a href="#mozTocId628538"><span
+                style="font-weight: bold;">reducevolume</span></a><br>
           </td>
           <td style="vertical-align: top;">smaller Signal<br>
           </td>
@@ -724,7 +775,8 @@
           </td>
         </tr>
         <tr>
-          <td style="vertical-align: top;"><a href="#mozTocId628538"><span style="font-weight: bold;">sort</span></a><br>
+          <td style="vertical-align: top;"><a href="#mozTocId628538"><span
+                style="font-weight: bold;">sort</span></a><br>
           </td>
           <td style="vertical-align: top;">sorted Signal<br>
           </td>
@@ -746,8 +798,10 @@
     The <span style="font-weight: bold;">sqr</span> operator is a short
     cut for <span style="font-weight: bold;">power</span> 2.<br>
     <h4><a class="mozTocH4" name="mozTocId222123"></a>Fourier transform</h4>
-    <a href="images/iData_fft.png"><img alt="iData/fft" title="iData/fft" src="images/iData_fft.png" style="border: 0px
-        solid ; width: 200px; height: 177px;" align="right"></a>The <a href="http://en.wikipedia.org/wiki/Fourier_transform">Fourier
+    <a href="images/iData_fft.png"><img alt="iData/fft"
+        title="iData/fft" src="images/iData_fft.png" style="border: 0px
+        solid ; width: 200px; height: 177px;" align="right"></a>The <a
+      href="http://en.wikipedia.org/wiki/Fourier_transform">Fourier
       Transform</a> operators <span style="font-weight: bold;">fft</span>
     and 'inverse' <span style="font-weight: bold;">ifft</span> perform
     a Discrete FFT computation from an N-dimensional object. The axes
@@ -766,6 +820,7 @@
 
 
 
+
     is indeed the initial signal (within the computation
     approximations).<br>
     <br>
@@ -776,7 +831,9 @@
       <br>
     </h4>
     Going further than the FFT, the <span style="font-weight: bold;">cwt</span>
-    method computes the <a href="http://en.wikipedia.org/wiki/Continuous_wavelet_transform">continuous
+    method computes the <a
+      href="http://en.wikipedia.org/wiki/Continuous_wavelet_transform">continuous
+
 
 
 
@@ -790,13 +847,15 @@
     decomposition of the signal along a wavelet basis function set, that
     is a multi-scale analysis of the signal along an axis. In the
     following example, we analyse a 2D powder neutron diffractogram with
-    the <span style="font-style: italic;">cwt</span> and the <span style="font-style: italic;">slice</span> methods.<br>
+    the <span style="font-style: italic;">cwt</span> and the <span
+      style="font-style: italic;">slice</span> methods.<br>
     <pre style="margin-left: 40px;">&gt;&gt; a=<span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">[ ifitpath 'Data/Diff_BananaPSD_1314088587.th_y'</span>);<br>&gt;&gt; w=<span style="color: rgb(51, 102, 255);">cwt</span>(a, 2);	<span style="font-style: italic;">% the cwt along the axis rank 2 (scattering angle)</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot<span style="color: rgb(0, 0, 0);">(a); </span>slice</span><span style="color: rgb(51, 102, 255);"></span>(<span style="color: rgb(51, 102, 255);">log</span>(<span style="color: rgb(51, 102, 255);">abs</span>(w).^2))	% plot the initial data set and its cwt power spectrum<br></pre>
     The resulting plot shows the sharp features (peaks) for small
     'periods', and the broad features (background) for large periods.
     The period axis is here shown in log10 scale of the initial axis
     (degrees) and corresponds to the width of the wavelet. <br>
     <span style="text-decoration: underline;">Reference: </span>Grinsted,
+
 
 
 
@@ -813,14 +872,20 @@
     doi:10.5194/npg-11-561-2004.<br>
     <br>
     <br>
-    <div style="text-align: center;"><a href="images/iData_cwt.png"><img alt="iData:cwt" title="iData:cwt" src="images/iData_cwt.png" style="border: 0px solid; width: 451px; height: 200px;"></a><br>
+    <div style="text-align: center;"><a href="images/iData_cwt.png"><img
+          alt="iData:cwt" title="iData:cwt" src="images/iData_cwt.png"
+          style="border: 0px solid; width: 451px; height: 200px;"></a><br>
     </div>
     <h4><a class="mozTocH4" name="mozTocId52399"></a>Derivatives and
       variable change (Jacobian)<br>
     </h4>
-    <a href="images/iData_gradient.png"><img alt="iData/gradient" title="iData/gradient" src="images/iData_gradient.png" style="border: 0px solid ; width: 200px; height: 272px;" align="right"></a>The <span style="font-weight: bold;">gradient</span>
+    <a href="images/iData_gradient.png"><img alt="iData/gradient"
+        title="iData/gradient" src="images/iData_gradient.png"
+        style="border: 0px solid ; width: 200px; height: 272px;"
+        align="right"></a>The <span style="font-weight: bold;">gradient</span>
     operator computes the partial <span style="font-style: italic;">derivatives</span>
-    &#8711; of an object. (see <a href="http://en.wikipedia.org/wiki/Gradient">Gradient definition</a>)<br>
+    &#8711; of an object. (see <a
+      href="http://en.wikipedia.org/wiki/Gradient">Gradient definition</a>)<br>
     <br>
     <div style="text-align: center;">&#8711;a = (&#8706;a/&#8706;Y<sub> </sub>&#8706;a/&#8706;X<sub>
       </sub>&#8706;a/&#8706;Z<sub> ...</sub>)<br>
@@ -836,11 +901,15 @@
     The <span style="font-weight: bold;">diff</span> method computes
     the gradient for the rows only (1st axis).<br>
     The <span style="font-weight: bold;">del2</span> operator computes
-    the Laplacian &#916;=&#8711;<sup>2 </sup>of an object (see <a href="http://en.wikipedia.org/wiki/Laplacian">Laplacian definition</a>)<br>
+    the Laplacian &#916;=&#8711;<sup>2 </sup>of an object (see <a
+      href="http://en.wikipedia.org/wiki/Laplacian">Laplacian definition</a>)<br>
     <br>
-    <div style="text-align: center;"><span style="font-style: italic;">&#8711;</span><sup style="font-style: italic;">2</sup><span style="font-style:
-        italic;">a = &#8721;</span><sub style="font-style: italic;">i</sub><span style="font-style: italic;"> (&#8706;</span><sup style="font-style:
-        italic;">2</sup><span style="font-style: italic;">a/&#8706;X</span><sub style="font-style: italic;">i</sub><sup style="font-style:
+    <div style="text-align: center;"><span style="font-style: italic;">&#8711;</span><sup
+        style="font-style: italic;">2</sup><span style="font-style:
+        italic;">a = &#8721;</span><sub style="font-style: italic;">i</sub><span
+        style="font-style: italic;"> (&#8706;</span><sup style="font-style:
+        italic;">2</sup><span style="font-style: italic;">a/&#8706;X</span><sub
+        style="font-style: italic;">i</sub><sup style="font-style:
         italic;">2</sup><span style="font-style: italic;">)</span><br>
     </div>
     <br>
@@ -858,11 +927,13 @@ In
 
 
 
+
     case the axis sampling/binning is not regular, a rebinning is
     automatically performed.<br>
     <br>
     Finally the <span style="font-weight: bold;">jacobian</span>
     operator (see <a href="http://en.wikipedia.org/wiki/Jacobian">Jacobian
+
 
 
 
@@ -896,8 +967,11 @@ X,
 
 
 
-        Y) = [ dY</span><sub style="font-style: italic;">i</sub><span style="font-style: italic;">/dX</span><sub style="font-style:
-        italic;">i</sub><span style="font-style: italic;"> ]</span><sub style="font-style: italic;">ij</sub> <br>
+
+        Y) = [ dY</span><sub style="font-style: italic;">i</sub><span
+        style="font-style: italic;">/dX</span><sub style="font-style:
+        italic;">i</sub><span style="font-style: italic;"> ]</span><sub
+        style="font-style: italic;">ij</sub> <br>
     </div>
     <br>
     The new object <span style="font-style: italic;">b</span>
@@ -915,12 +989,14 @@ X,
 
 
 
+
         a | dY/dX |</span><br>
     </div>
     <br>
     which requires to estimate the Jacobian determinant for each
     pixel/bin in the initial object <span style="font-style: italic;">a</span>.
-    As the Signal holds a single scalar value in each bin, <span style="font-style: italic;">J</span> is the division of the
+    As the Signal holds a single scalar value in each bin, <span
+      style="font-style: italic;">J</span> is the division of the
     gradient of <span style="font-style: italic;">Y</span> over the
     gradient of <span style="font-style: italic;">X</span> for the
     whole Signal.<br>
@@ -929,6 +1005,7 @@ X,
     operator, element-by-element. In the following we use the notations:<br>
     <ul>
       <li>s1, e1 and m1 are the <span style="font-style: italic;">Signal,
+
 
 
 
@@ -950,9 +1027,11 @@ X,
 
 
 
+
           Error</span> and <span style="font-style: italic;">Monitor</span>
         of the 2nd object, resp.</li>
       <li>s3, e3 and m3 are the <span style="font-style: italic;">Signal,
+
 
 
 
@@ -973,7 +1052,8 @@ X,
     binary operator result has the other object's Monitor (which may
     also be 0).<br>
     <br>
-    <table style="text-align: left; width: 100%;" border="1" cellspacing="2" cellpadding="2">
+    <table style="text-align: left; width: 100%;" border="1"
+      cellpadding="2" cellspacing="2">
       <tbody>
         <tr>
           <td style="vertical-align: top; font-weight: bold; font-style:
@@ -993,12 +1073,15 @@ X,
           </td>
         </tr>
         <tr>
-          <td style="vertical-align: top; font-weight: bold;">plus <span style="font-style: italic; font-weight: normal;">and</span>
+          <td style="vertical-align: top; font-weight: bold;">plus <span
+              style="font-style: italic; font-weight: normal;">and</span>
             +<br>
           </td>
           <td style="vertical-align: top;">m3*(s1/m1+s2/m2)<br>
           </td>
-          <td style="vertical-align: top;">&#8730;[(e1/m1)<span style="font-style: italic;"></span>²+(e2/m2)<span style="font-style: italic;"></span>²]<br>
+          <td style="vertical-align: top;">&#8730;[(e1/m1)<span
+              style="font-style: italic;"></span>²+(e2/m2)<span
+              style="font-style: italic;"></span>²]<br>
           </td>
           <td style="vertical-align: top;">m1+m2<br>
           </td>
@@ -1006,24 +1089,29 @@ X,
           </td>
         </tr>
         <tr>
-          <td style="vertical-align: top; font-weight: bold;">minus <span style="font-style: italic; font-weight: normal;">and</span>
+          <td style="vertical-align: top; font-weight: bold;">minus <span
+              style="font-style: italic; font-weight: normal;">and</span>
             -<br>
           </td>
           <td style="vertical-align: top;">m3*(s1/m1 - s2/m2)</td>
-          <td style="vertical-align: top;">&#8730;[(e1/m1)<span style="font-style: italic;"></span>²+(e2/m2)<span style="font-style: italic;"></span>²]</td>
+          <td style="vertical-align: top;">&#8730;[(e1/m1)<span
+              style="font-style: italic;"></span>²+(e2/m2)<span
+              style="font-style: italic;"></span>²]</td>
           <td style="vertical-align: top;">m1+m2</td>
           <td style="vertical-align: top;">subtraction<br>
           </td>
         </tr>
         <tr>
-          <td style="vertical-align: top; font-weight: bold;">times <span style="font-style: italic; font-weight: normal;">and</span>
+          <td style="vertical-align: top; font-weight: bold;">times <span
+              style="font-style: italic; font-weight: normal;">and</span>
             .*<br>
           </td>
           <td style="vertical-align: top;">s1 * s2</td>
           <td style="vertical-align: top;">s3*[(e1/s1)²+(e2/s2)²]</td>
           <td style="vertical-align: top;">m1*m2<br>
           </td>
-          <td style="vertical-align: top;">multiplication (<span style="font-style: italic;">element by element</span>).
+          <td style="vertical-align: top;">multiplication (<span
+              style="font-style: italic;">element by element</span>).
             When object orientations are complementary (orthogonal), the
             final object is built with dimensionality expansion.<br>
           </td>
@@ -1042,13 +1130,15 @@ X,
           </td>
         </tr>
         <tr>
-          <td style="vertical-align: top; font-weight: bold;">rdivide <span style="font-style: italic; font-weight: normal;">and</span>
+          <td style="vertical-align: top; font-weight: bold;">rdivide <span
+              style="font-style: italic; font-weight: normal;">and</span>
             ./<br>
           </td>
           <td style="vertical-align: top;">m2²*(s1/s2)</td>
           <td style="vertical-align: top;">s3*[(e1/s1)²+(e2/s2)²]</td>
           <td style="vertical-align: top;">m1*m2</td>
-          <td style="vertical-align: top;">division <span style="font-style: italic;">(element by element)</span>.
+          <td style="vertical-align: top;">division <span
+              style="font-style: italic;">(element by element)</span>.
             When object orientations are complementary (orthogonal), the
             final object is built with dimensionality expansion. </td>
         </tr>
@@ -1067,7 +1157,8 @@ X,
           </td>
         </tr>
         <tr>
-          <td style="vertical-align: top; font-weight: bold;">combine <span style="font-style: italic; font-weight: normal;">and</span>
+          <td style="vertical-align: top; font-weight: bold;">combine <span
+              style="font-style: italic; font-weight: normal;">and</span>
             \<br>
           </td>
           <td style="vertical-align: top;">s1+s2<br>
@@ -1082,11 +1173,13 @@ X,
           </td>
         </tr>
         <tr>
-          <td style="vertical-align: top; font-weight: bold;">power <span style="font-weight: normal;">and</span> .^<br>
+          <td style="vertical-align: top; font-weight: bold;">power <span
+              style="font-weight: normal;">and</span> .^<br>
           </td>
           <td style="vertical-align: top;">m3*(s1/m1)<sup>(s2/m2)</sup><br>
           </td>
-          <td style="vertical-align: top;">s3*[s2*e1/s1+e2*<span style="font-style: italic;">ln</span>(s1)]<br>
+          <td style="vertical-align: top;">s3*[s2*e1/s1+e2*<span
+              style="font-style: italic;">ln</span>(s1)]<br>
           </td>
           <td style="vertical-align: top;">m1<sup>m2</sup><br>
           </td>
@@ -1101,21 +1194,26 @@ X,
           </td>
           <td style="vertical-align: top;">comparison(s1, s2)<br>
           </td>
-          <td style="vertical-align: top;">&#8730;[(e1/m1)<span style="font-style: italic;"></span>²+(e2/m2)<span style="font-style: italic;"></span>²]/[s1/m1+s2/m2]</td>
+          <td style="vertical-align: top;">&#8730;[(e1/m1)<span
+              style="font-style: italic;"></span>²+(e2/m2)<span
+              style="font-style: italic;"></span>²]/[s1/m1+s2/m2]</td>
           <td style="vertical-align: top;">1<br>
           </td>
           <td style="vertical-align: top;">binary comparisons<br>
           </td>
         </tr>
         <tr>
-          <td style="vertical-align: top;"><a href="#mozTocId121035"><span style="font-weight: bold;">conv</span></a><br>
+          <td style="vertical-align: top;"><a href="#mozTocId121035"><span
+                style="font-weight: bold;">conv</span></a><br>
           </td>
           <td style="vertical-align: top;">FFT<sup>-1</sup>(FFT(s1)*FFT(s2))<br>
           </td>
-          <td style="vertical-align: top;">s3*[(e1/s1)²+(e2/s2)²] <span style="font-style: italic;"> (this may be inappropriate)</span></td>
+          <td style="vertical-align: top;">s3*[(e1/s1)²+(e2/s2)²] <span
+              style="font-style: italic;"> (this may be inappropriate)</span></td>
           <td style="vertical-align: top;">m1*m2<br>
           </td>
-          <td style="vertical-align: top;"><a href="http://en.wikipedia.org/wiki/Convolution">convolution</a>
+          <td style="vertical-align: top;"><a
+              href="http://en.wikipedia.org/wiki/Convolution">convolution</a>
             (see <a href="#mozTocId880437">below)</a><br>
           </td>
         </tr>
@@ -1128,16 +1226,20 @@ X,
           </td>
           <td valign="top"><br>
           </td>
-          <td valign="top">iterative deconvolution (see <a href="Math.html#mozTocId880437">below)</a></td>
+          <td valign="top">iterative deconvolution (see <a
+              href="Math.html#mozTocId880437">below)</a></td>
         </tr>
         <tr>
           <td style="vertical-align: top;"><span style="font-weight:
               bold;">xcorr</span><br>
           </td>
           <td style="vertical-align: top;">FFT<sup>-1</sup>(FFT(s1)*FFT<sup>*</sup>(s2))</td>
-          <td style="vertical-align: top;">s3*[(e1/s1)²+(e2/s2)²] <span style="font-style: italic;"> (this may be inappropriate)</span></td>
+          <td style="vertical-align: top;">s3*[(e1/s1)²+(e2/s2)²] <span
+              style="font-style: italic;"> (this may be inappropriate)</span></td>
           <td style="vertical-align: top;">m1*m2</td>
-          <td style="vertical-align: top;"><a href="http://en.wikipedia.org/wiki/Cross-correlation">cross
+          <td style="vertical-align: top;"><a
+              href="http://en.wikipedia.org/wiki/Cross-correlation">cross
+
 
 
 
@@ -1150,7 +1252,8 @@ X,
               correlation</a> (see&nbsp;<a href="#mozTocId880437">below)</a></td>
         </tr>
         <tr>
-          <td style="vertical-align: top;"><a href="#mozTocId43577"><span style="font-weight: bold;">interp</span></a><br>
+          <td style="vertical-align: top;"><a href="#mozTocId43577"><span
+                style="font-weight: bold;">interp</span></a><br>
           </td>
           <td style="vertical-align: top;"><span style="font-style:
               italic;">s1</span> onto <span style="font-style: italic;">s2</span>
@@ -1179,7 +1282,9 @@ X,
           </td>
           <td style="vertical-align: top;"><br>
           </td>
-          <td style="vertical-align: top;"><a href="http://en.wikipedia.org/wiki/Pearson_product-moment_correlation_coefficient">Pearson
+          <td style="vertical-align: top;"><a
+href="http://en.wikipedia.org/wiki/Pearson_product-moment_correlation_coefficient">Pearson
+
 
 
 
@@ -1205,7 +1310,8 @@ X,
     <br>
     <a href="images/iData_plus_extend_dims.png"><img alt="iData plus 1D
         and 2D: intserction, extend and monitor" title="iData plus 1D
-        and 2D: intserction, extend and monitor" src="images/iData_plus_extend_dims.png" style="border: 0px solid
+        and 2D: intserction, extend and monitor"
+        src="images/iData_plus_extend_dims.png" style="border: 0px solid
         ; width: 200px; height: 362px;" align="right"></a>The following
     example adds a 2D data set with a 1D data set, which is extended.
     The intersection selects only the positive axis values from the 1D
@@ -1246,6 +1352,7 @@ intersection
 
 
 
+
     may be empty, or the corresponding <span style="font-style:
       italic;">Signal</span> weighting may be wrong.<br>
     <br>
@@ -1264,13 +1371,17 @@ intersection
     method to compute the convolution of one iData with anything else.
     In the background it uses the <span style="font-weight: bold;
       font-style: italic;">fconv</span> and <span style="font-weight:
-      bold; font-style: italic;">fconvn</span> function (see <a href="Models.html#mozTocId937554">Models</a>), which can be called
+      bold; font-style: italic;">fconvn</span> function (see <a
+      href="Models.html#mozTocId937554">Models</a>), which can be called
     directly when building fit functions.<br>
     <br>
     The convolution operator can be given additional options in order to
     control the accuracy and the size of the returned object<br>
     <pre style="margin-left: 40px;">&gt;&gt; c = <span style="color: rgb(51, 102, 255);">conv</span>(a,b);	<span style="font-style: italic;">	% returned convoluted object with size which is size(a)+size(b)+1</span><br>&gt;&gt; c = <span style="color: rgb(51, 102, 255);">conv</span>(a,b, <span style="color: rgb(204, 51, 204);">'same'</span>);<span style="font-style: italic;">	% returned convoluted object </span><span style="font-style: italic;">with</span><span style="font-style: italic;"> size which is size(a)<br></span>&gt;&gt; c = <span style="color: rgb(51, 102, 255);">conv</span>(a,b, <span style="color: rgb(204, 51, 204);">'valid'</span>);<span style="font-style: italic;">	% returned convoluted object </span><span style="font-style: italic;">with</span><span style="font-style: italic;"> size which is size(a)</span>-size(b)+1<br>&gt;&gt; c = <span style="color: rgb(51, 102, 255);">conv</span>(a,b, <span style="color: rgb(204, 51, 204);">'pad'</span>);<span style="font-style: italic;">	% pads 'a' with starting/ending values to minimize border effects<br></span>&gt;&gt; c = <span style="color: rgb(51, 102, 255);">conv</span>(a,b, <span style="color: rgb(204, 51, 204);">'center'</span>);<span style="font-style: italic;">	% centers 'b' so that convolution does not shift 'a' axes<br></span>&gt;&gt; c = <span style="color: rgb(51, 102, 255);">conv</span>(a,b, <span style="color: rgb(204, 51, 204);">'norm'</span>);<span style="font-style: italic;">	% normalizes</span><span style="font-style: italic;"> 'b' so that convolution does not change 'a' integral<br></span>&gt;&gt; c = <span style="color: rgb(51, 102, 255);">conv</span>(a,b, <span style="color: rgb(204, 51, 204);">'background'</span>);<span style="font-style: italic;">	% subtracts</span><span style="font-style: italic;"> minimal value in 'b' so that convolution does not change 'a' integra</span>l<br>&gt;&gt; c = <span style="color: rgb(51, 102, 255);">conv</span>(a,b, <span style="color: rgb(204, 51, 204);">'deconv'</span>);	<span style="font-style: italic;">% deconvolution, but very sensitive to noise (use with caution)</span><br></pre>
-    <a href="images/iData_conv.png"><img alt="iData/convolution" title="iData/convolution" src="images/iData_conv.png" style="border: 0px solid ; width: 200px; height: 272px;" align="right"></a>When the 1st object has to be convoluted with
+    <a href="images/iData_conv.png"><img alt="iData/convolution"
+        title="iData/convolution" src="images/iData_conv.png"
+        style="border: 0px solid ; width: 200px; height: 272px;"
+        align="right"></a>When the 1st object has to be convoluted with
     a response function (<span style="font-style: italic;">e.g.</span>
     instrument resolution function), the usual options to use should be:<br>
     <pre style="margin-left: 40px;">&gt;&gt; c = <span style="color: rgb(51, 102, 255);">conv</span>(a,b, <span style="color: rgb(204, 51, 204);">'same pad background center norm'</span>);<br>&gt;&gt; c = <span style="color: rgb(51, 102, 255);">convn</span>(a,b);	<span style="font-style: italic;">% same as above in a shorter call</span><br></pre>
@@ -1285,7 +1396,8 @@ intersection
     <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">global</span> b;	<span style="font-style: italic;">		% holds the convolution function as a single vector/matrix or iData object</span><br>&gt;&gt; h = <span style="color: rgb(51, 102, 255);">convn(</span><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);"></span></span><span style="color: rgb(204, 51, 204);"><span style="color: rgb(51, 102, 255);"></span></span><span style="color: rgb(204, 51, 204);"><span style="color: rgb(51, 102, 255);">gauss, <span style="color: rgb(204, 51, 204);">'</span></span><span style="color: rgb(0, 0, 0);"><span style="color: rgb(204, 51, 204);">double(b)'</span>);	</span></span><span style="color: rgb(204, 51, 204);"><span style="color: rgb(0, 0, 0);"><span style="font-style: italic;">% creates a fit function with convolution</span></span></span><span style="color: rgb(204, 51, 204);"><span style="color: rgb(0, 0, 0);"></span><br><span style="color: rgb(0, 0, 0);">&gt;&gt; h.Constraint=<span style="color: rgb(0, 0, 0);"> </span><span style="color: rgb(204, 51, 204);">'global b'</span>; <span style="font-style: italic;">	% declares b as an external global variable</span><br></span></span>&gt;&gt; p = <span style="color: rgb(51, 102, 255);">fits</span>(a, h);</pre>
     where the vector/matrix<span style="font-style: italic;"> 'b'</span>
     holds the response function (filter) <span style="font-style:
-      italic;">with the same axis binning</span> as the object <span style="font-style: italic;">'a'</span>. A way to force the right
+      italic;">with the same axis binning</span> as the object <span
+      style="font-style: italic;">'a'</span>. A way to force the right
     binning is to use:<br>
     <pre style="margin-left: 40px;">&gt;&gt; c = <span style="color: rgb(51, 102, 255);">interp</span>(b, a);</pre>
     if the axes of <span style="font-style: italic;">'b'</span> match
@@ -1298,11 +1410,15 @@ intersection
     FFT's or with an iterative method.<br>
     <br>
     Similarly, the <span style="font-weight: bold;">xcorr</span>
-    operator computes the <a href="http://en.wikipedia.org/wiki/Cross-correlation">cross
-      correlation</a> of two signals. The auto-correlation is simply <span style="font-style: italic;">xcorr(a)</span>.<br>
+    operator computes the <a
+      href="http://en.wikipedia.org/wiki/Cross-correlation">cross
+      correlation</a> of two signals. The auto-correlation is simply <span
+      style="font-style: italic;">xcorr(a)</span>.<br>
     <br>
     Last, the <span style="font-weight: bold;">corrcoef</span> method
-    returns the <a href="http://en.wikipedia.org/wiki/Pearson_product-moment_correlation_coefficient">Pearson
+    returns the <a
+href="http://en.wikipedia.org/wiki/Pearson_product-moment_correlation_coefficient">Pearson
+
 
 
 
@@ -1317,7 +1433,8 @@ intersection
     -1=anti-correlated).<br>
     <br>
     <span style="color: rgb(255, 0, 0);"> Warning: </span>The accuracy
-    of the <span style="font-style: italic;">conv</span> and <span style="font-style: italic;">xcorr</span> operators depends on the
+    of the <span style="font-style: italic;">conv</span> and <span
+      style="font-style: italic;">xcorr</span> operators depends on the
     axis sampling. A coarse axis sampling (that is a reduced number of
     points under a peak, e.g. less than 5) must be avoided. A rebinning
     of the objects using e.g. <span style="font-style: italic;">interp(objects,
@@ -1330,8 +1447,10 @@ intersection
 
 
 
+
       5)</span> may solve such issue.<br>
-    <h4><a class="mozTocH4" name="mozTocId759562"></a><span style="font-weight: bold;">Comparisons</span></h4>
+    <h4><a class="mozTocH4" name="mozTocId759562"></a><span
+        style="font-weight: bold;">Comparisons</span></h4>
     The usual comparison binary operators<br>
     <ul>
       <li>greater: gt &gt;</li>
@@ -1344,13 +1463,15 @@ intersection
     are also implemented. They compares the Signals, taking the Monitor
     weighting into account. The associated error bar is normalized to
     the mean signal.<br>
-    <h3><a class="mozTocH3" name="mozTocId779059"></a><span style="font-weight: bold;">Statistics, fitting and peak
+    <h3><a class="mozTocH3" name="mozTocId779059"></a><span
+        style="font-weight: bold;">Statistics, fitting and peak
         searching, segmentation (k-means)<br>
       </span></h3>
     A few methods have been written to analyze the Signal from objects.
     This includes peak searching, first and second moment distributions,
     and model fitting.<br>
-    <h4><a class="mozTocH4" name="mozTocId480132"></a><span style="font-weight: bold; font-style: italic;">Statistics</span></h4>
+    <h4><a class="mozTocH4" name="mozTocId480132"></a><span
+        style="font-weight: bold; font-style: italic;">Statistics</span></h4>
     The usual <span style="font-weight: bold;">min, max, mean</span>,
     and <span style="font-weight: bold;">median</span> methods can be
     applied onto iData objects, and return the corresponding statistics
@@ -1369,17 +1490,22 @@ intersection
     which is about the same as the 1st and 2nd moment estimates. Here,
     the <span style="font-style: italic;">Amplitude</span> fit
     parameter is the one for <span style="font-style: italic;">Signal/Monitor</span>,
-    which is indeed different from the value returned by <span style="font-weight: bold;">max</span> when <span style="font-style: italic;">Monitor</span> is not 1. Use <span style="font-style: italic;">setalias(object, 'Monitor',1)</span>
+    which is indeed different from the value returned by <span
+      style="font-weight: bold;">max</span> when <span
+      style="font-style: italic;">Monitor</span> is not 1. Use <span
+      style="font-style: italic;">setalias(object, 'Monitor',1)</span>
     to get similar values from <span style="font-weight: bold;">fits</span>
     and <span style="font-weight: bold;">max</span> in this example.<br>
     <br>
     <span style="color: rgb(255, 0, 0);">Note:</span> If you get an
     imaginary width from <span style="font-weight: bold;">std</span>
-    you may use a negative dimension specification, e.g. <span style="font-style: italic;">std(a, -1)</span>, in order to
+    you may use a negative dimension specification, e.g. <span
+      style="font-style: italic;">std(a, -1)</span>, in order to
     subtract automatically the minimum value from the object, and get a
     better estimate.<br>
     <br>
-    To get the <span style="font-style: italic;">width</span> and <span style="font-style: italic;">centroid</span> of a multi-dimensional
+    To get the <span style="font-style: italic;">width</span> and <span
+      style="font-style: italic;">centroid</span> of a multi-dimensional
     object, you can use an array of dimension specification, e.g.:<br>
     <pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(peaks);<br>&gt;&gt; [w, x] = <span style="color: rgb(51, 102, 255);">std</span>(a, -(1:<span style="color: rgb(51, 102, 255);">ndims</span>(a))); <span style="font-style: italic;">% we subtract the minimum value (negative dimension spec.)</span><br></pre>
     It is also possible to compute with the <b>corrcoef</b> method the
@@ -1387,9 +1513,15 @@ intersection
     vector, an <a href="iFunc.html"> iFunc</a> model or a single vector
     of same length as the object signal.<br>
     <br>
-    These operators apply iteratively on object arrays. The <span style="font-style: italic;">mean</span> and <span style="font-style: italic;">median</span> then point to the <span style="font-style: italic;">combine</span> operator, the <span style="font-style: italic;">min</span> and <span style="font-style: italic;">max</span> return the minimum and
+    These operators apply iteratively on object arrays. The <span
+      style="font-style: italic;">mean</span> and <span
+      style="font-style: italic;">median</span> then point to the <span
+      style="font-style: italic;">combine</span> operator, the <span
+      style="font-style: italic;">min</span> and <span
+      style="font-style: italic;">max</span> return the minimum and
     maximum along all objects.<br>
-    <h4><a class="mozTocH4" name="mozTocId93361"></a><span style="font-weight: bold; font-style: italic;">Peak searching
+    <h4><a class="mozTocH4" name="mozTocId93361"></a><span
+        style="font-weight: bold; font-style: italic;">Peak searching
         and model fitting</span></h4>
     The <span style="font-weight: bold;">peaks</span> method makes an
     automatic analysis of a vectorial Signal (that is projected along
@@ -1397,10 +1529,13 @@ intersection
     baseline (background), apparent peak position and width, based on a
     shifting Gaussian estimate [see Slavic, <span style="font-style:
       italic;">Nucl. Inst. Meth.</span> <span style="font-weight:
-      bold;">112</span> (1973) 253 ; M. Morhac, <span style="font-style: italic;">Nucl. Inst. Meth.</span> <span style="font-weight: bold;">A</span> <span style="font-weight:
+      bold;">112</span> (1973) 253 ; M. Morhac, <span
+      style="font-style: italic;">Nucl. Inst. Meth.</span> <span
+      style="font-weight: bold;">A</span> <span style="font-weight:
       bold;">600</span> (2009) 478].&nbsp; <br>
     <br>
-    <a href="images/iData_peaks.png"><img alt="iData_peaks" title="iData_peaks" src="images/iData_peaks.png" style="border:
+    <a href="images/iData_peaks.png"><img alt="iData_peaks"
+        title="iData_peaks" src="images/iData_peaks.png" style="border:
         0px solid ; width: 300px; height: 266px;" align="right"></a>This
     method works remarkably for signals with sharp peaks. The following
     example displays the automatically found peaks on top of the object
@@ -1414,28 +1549,39 @@ intersection
     number of point forming a peak (default is about 5).<br>
     <br>
     As opposed to the <span style="font-weight: bold;">std</span>
-    method shown above, which only provides one Gaussian estimate, the <span style="font-weight: bold;">peaks</span> method can handle as many
+    method shown above, which only provides one Gaussian estimate, the <span
+      style="font-weight: bold;">peaks</span> method can handle as many
     peaks as necessary, and is very fast. It also works with iData
     object arrays. This method is also used as a basis to determine some
-    starting parameters for most fit functions (see the <a href="Fit.html">Fitting</a> and the <a href="Optimizers.html">Optimizers</a>
+    starting parameters for most fit functions (see the <a
+      href="Fit.html">Fitting</a> and the <a href="Optimizers.html">Optimizers</a>
     pages).<br>
     <br>
     In the case where a better peak estimate is required, or any other
-    advanced model parameter determination, the <a href="Fit.html"><span style="font-weight: bold;">fits</span></a> method can be used.
+    advanced model parameter determination, the <a href="Fit.html"><span
+        style="font-weight: bold;">fits</span></a> method can be used.
     This latter makes use of the <span style="font-weight: bold;">eval</span>
     method, which evaluates a model function onto the object axes.<br>
     <h4><a class="mozTocH4" name="mozTocId77311"></a>Data segmentation
       (partitioning/clustering, k-means)</h4>
     It is possible to perform a statistical analysis of a data set in
     order to classify it into a number of categories. This is called
-    segmentation, and a usual method to achieve it is the <a href="http://en.wikipedia.org/wiki/K-means_clustering">k-means</a>
-    algorithm. The corresponding iData method is <span style="font-weight: bold;">kmeans</span> :<a href="images/iData_kmeans.png"><img alt="k-means segmentation" title="k-means segmentation" src="images/iData_kmeans.png" style="border: 0px solid; width: 200px; height: 178px;" align="right"></a><br>
+    segmentation, and a usual method to achieve it is the <a
+      href="http://en.wikipedia.org/wiki/K-means_clustering">k-means</a>
+    algorithm. The corresponding iData method is <span
+      style="font-weight: bold;">kmeans</span> :<a
+      href="images/iData_kmeans.png"><img alt="k-means segmentation"
+        title="k-means segmentation" src="images/iData_kmeans.png"
+        style="border: 0px solid; width: 200px; height: 178px;"
+        align="right"></a><br>
     <pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span><span style="color: rgb(0, 0, 0);">(peaks);<br>&gt;&gt; b = <span style="color: rgb(51, 102, 255);">kmeans</span>(a, 3);	<span style="font-style: italic;">% request segmentation in 3 groups</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(a, b+5);	<span style="font-style: italic;">% overlay data set and segmentation result</span><br></span></pre>
     The wavelet transform <span style="font-weight: bold;">cwt</span>
     may also be used to perform a peak analysis, separating sharp
     features from broad ones (see <a href="#mozTocId663052">above</a>).<br>
     <br>
-    The <a href="http://en.wikipedia.org/wiki/Principal_component_analysis">principal
+    The <a
+      href="http://en.wikipedia.org/wiki/Principal_component_analysis">principal
+
 
 
 
@@ -1447,10 +1593,13 @@ intersection
 
       component analysis</a> (PCA) methodology consists in finding
     similarities between data sets. Groups of 'close' data sets can then
-    be defined. The corresponding iData method is <span style="font-weight: bold;">pca</span> .<br>
-    <h3><a class="mozTocH3" name="mozTocId439767"></a><span style="font-weight: bold;">Projection, integration and sum</span></h3>
+    be defined. The corresponding iData method is <span
+      style="font-weight: bold;">pca</span> .<br>
+    <h3><a class="mozTocH3" name="mozTocId439767"></a><span
+        style="font-weight: bold;">Projection, integration and sum</span></h3>
     <a href="images/iData_sum_camproj.png"><img alt="iData: sum and
-        projection" title="iData: sum and projection" src="images/iData_sum_camproj.png" style="border: 0px solid ;
+        projection" title="iData: sum and projection"
+        src="images/iData_sum_camproj.png" style="border: 0px solid ;
         width: 200px; height: 408px;" align="right"></a>There are a
     number of methods used to extract projected and summed objects.
     Technically, the projection on one axis is the sum along all other
@@ -1466,12 +1615,15 @@ intersection
     </div>
     <br>
     In the following example, the imported object is assigned two axes,
-    and we then display the difference between the <span style="font-weight: bold;">sum</span> and the projection with <span style="font-weight: bold;">camproj, </span>onto the 1st axis (y).
+    and we then display the difference between the <span
+      style="font-weight: bold;">sum</span> and the projection with <span
+      style="font-weight: bold;">camproj, </span>onto the 1st axis (y).
     Of course this can be changed by specifying explicitly the desired
     axis rank used for operation as the second argument.<br>
     <pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">[ ifitpath 'Data/ILL_IN6.dat' ]</span>);<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">xlabel</span>(a, <span style="color: rgb(204, 51, 204);">'Time channel'</span>); <span style="font-style: italic;">% 2nd axis</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">ylabel</span>(a, <span style="color: rgb(204, 51, 204);">'Angle channel'</span>);<span style="font-style: italic;">% 1st axis</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">subplot</span>([ <span style="color: rgb(51, 102, 255);">log</span>(a) <span style="color: rgb(51, 102, 255);">log</span>(<span style="color: rgb(51, 102, 255);">camproj</span>(a)) <span style="color: rgb(51, 102, 255);">log</span>(<span style="color: rgb(51, 102, 255);">sum</span>(a)) ],<span style="color: rgb(204, 51, 204);">'tight'</span>);<br></pre>
     The <span style="font-weight: bold;">camproj</span> method always
-    returns a 1D result (or a single value). The <span style="font-weight: bold;">sum</span> reduces the dimensionality
+    returns a 1D result (or a single value). The <span
+      style="font-weight: bold;">sum</span> reduces the dimensionality
     of the object by the number of axes summed. Similarly, the prod
     method compute the multiplication along a given axis:<br>
     <br>
@@ -1497,10 +1649,14 @@ intersection
 
 
 
+
       axis) <span style="font-style: italic;">dx</span><br>
     </div>
     <br>
-    <a href="images/iData_cumsum.png"><img alt="iData: cumulated sum" title="iData: cumulated sum" src="images/iData_cumsum.png" style="border: 0px solid ; width: 200px; height: 272px;" align="right"></a>which will reduce the dimensionality, and be
+    <a href="images/iData_cumsum.png"><img alt="iData: cumulated sum"
+        title="iData: cumulated sum" src="images/iData_cumsum.png"
+        style="border: 0px solid ; width: 200px; height: 272px;"
+        align="right"></a>which will reduce the dimensionality, and be
     roughly equivalent to <span style="font-weight: bold;">sum</span>
     when <span style="font-style: italic;">dx</span>=1.<br>
     <br>
@@ -1518,7 +1674,8 @@ intersection
     elastic line, is gradually summed over all angle channels, showing
     inelastic contribution on its shoulders.<br>
     <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">subplot</span>([ (a) <span style="color: rgb(51, 102, 255);">cumsum</span>(a) ] ,<span style="color: rgb(204, 51, 204);">'tight'</span>)</pre>
-    The <span style="font-weight: bold;">cumtrapz</span> is the <span style="font-style: italic; color: rgb(255, 0, 0);">primitive</span>
+    The <span style="font-weight: bold;">cumtrapz</span> is the <span
+      style="font-style: italic; color: rgb(255, 0, 0);">primitive</span>
     of the <span style="font-style: italic;">Signal, </span>which is
     equal to <span style="font-style: italic;">cumsum</span> when the
     axis step is <span style="font-style: italic;">dx</span>=1.<br>
@@ -1537,7 +1694,8 @@ intersection
     coupled with a more general Cartesian to spherical coordinate
     transformation with <span style="font-weight: bold;">cart2sph</span>
     :<a href="images/iData_radial.png"><img alt="iData: radial
-        integration" title="iData: radial integration" src="images/iData_radial.png" style="border: 0px solid; width:
+        integration" title="iData: radial integration"
+        src="images/iData_radial.png" style="border: 0px solid; width:
         200px; height: 279px;" align="right"></a><br>
     <pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">[ ifitpath 'Data/*.cbf' ]</span>);<br>&gt;&gt; b = <span style="color: rgb(51, 102, 255);">camproj</span>(a,<span style="color: rgb(204, 51, 204);">'radial'</span>); <span style="font-style: italic;">% returns a distribution to be transformed into an histogram</span><br>&gt;&gt; c = <span style="color: rgb(51, 102, 255);">cart2sph</span>(a);<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">subplot</span>(log(a), hist(b,500), log(c))<br></pre>
     To efficiently and quickly reduce the dimensionality of an object,
@@ -1551,18 +1709,22 @@ intersection
       and combining data sets</h3>
     <h4><a class="mozTocH4" name="mozTocId258971"></a>Cutting and
       selecting portions of a data set</h4>
-    A way to select a subset of an object from its axis rang is to use <span style="font-weight: bold;">xlim, ylim, zlim, clim</span> for
+    A way to select a subset of an object from its axis rang is to use <span
+      style="font-weight: bold;">xlim, ylim, zlim, clim</span> for
     respectively 2nd (X is 1st for 1D objects), 1st, 3rd and 4th
-    dimensions. It is also possible to directly use <span style="font-weight: bold;">find</span>:<br>
+    dimensions. It is also possible to directly use <span
+      style="font-weight: bold;">find</span>:<br>
     <pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">[ ifitpath 'Data/ILL_IN6.dat' ]</span>);<br>&gt;&gt; b = <span style="color: rgb(51, 102, 255);">xlim</span>(a, [100 200]);					<span style="font-style: italic;">% selects the object with X axis ranging from 100 to 200</span><br>&gt;&gt; b = a(<span style="color: rgb(51, 102, 255);">:, find</span>(  100 &lt;= a{2} &amp; a{2} &lt;= 200 ));				<span style="font-style: italic;">% same as above: X is rank 2</span>(columns)<br>&gt;&gt; c = a(<span style="color: rgb(51, 102, 255);">find</span>(50 &lt;= a{1} &amp; a{1} &lt;= 150),<span style="color: rgb(51, 102, 255);">find</span>(100 &lt;= a{2} &amp; a{2} &lt;= 200)<span style="color: rgb(51, 102, 255);"></span>);	<span style="font-style: italic;">% cuts along X(rank2) and Y axes(rank1, rows)</span><br></pre>
     <pre style="margin-left: 40px;"><a href="images/iData_plus_combine.png"><img style="border: 0px solid ; width: 300px; height: 255px;" src="images/iData_plus_combine.png" title="iData: Math: Plus and Combine compared" alt="iData: Math: Plus and Combine compared" align="right"></a></pre>
-    <h4><a class="mozTocH4" name="mozTocId256645"></a><span style="font-weight: bold;">The difference between addition and
+    <h4><a class="mozTocH4" name="mozTocId256645"></a><span
+        style="font-weight: bold;">The difference between addition and
         combination</span></h4>
     The <span style="font-weight: bold;">combine</span> operation
     performs an addition of the <span style="font-style: italic;">Signal</span>
     and the <span style="font-style: italic;">Monitor</span>. This is
     of great use when merging results from similar experiments, possibly
-    performed in slightly different configurations (<span style="font-style: italic;">e.g.</span> counting time, statistics,
+    performed in slightly different configurations (<span
+      style="font-style: italic;">e.g.</span> counting time, statistics,
     ...). This means that combining two data sets is usually more
     complex than just adding the two <span style="font-style: italic;">Signals,
 
@@ -1573,13 +1735,22 @@ intersection
 
 
 
-    </span>especially when axes are not exactly the same and <span style="font-style: italic;">Monitors</span> are not equivalent.<br>
+
+    </span>especially when axes are not exactly the same and <span
+      style="font-style: italic;">Monitors</span> are not equivalent.<br>
     <br>
-    Suppose we perform a measurement providing a <span style="font-style: italic;">Signal S</span>1 for a given
-    acquisition time <span style="font-style: italic;">M1</span> (<span style="font-style: italic;">Monitor</span>). The data to be used
+    Suppose we perform a measurement providing a <span
+      style="font-style: italic;">Signal S</span>1 for a given
+    acquisition time <span style="font-style: italic;">M1</span> (<span
+      style="font-style: italic;">Monitor</span>). The data to be used
     in mathematical operations is <span style="font-style: italic;">S1/M1</span>.
-    Then we repeat that same measurement, providing <span style="font-style: italic;">Signal S2</span> and <span style="font-style: italic;">Monitor M2</span>. If, for this
-    example, <span style="font-style: italic;">S2</span> and <span style="font-style: italic;">M2</span> are similar to <span style="font-style: italic;">S1</span> and <span style="font-style: italic;">M1</span>, then the combination of the
+    Then we repeat that same measurement, providing <span
+      style="font-style: italic;">Signal S2</span> and <span
+      style="font-style: italic;">Monitor M2</span>. If, for this
+    example, <span style="font-style: italic;">S2</span> and <span
+      style="font-style: italic;">M2</span> are similar to <span
+      style="font-style: italic;">S1</span> and <span
+      style="font-style: italic;">M1</span>, then the combination of the
     two data sets should produce a similar signal as any of the two
     measurements, but with better statistics. But the addition should
     produce about twice any of the measurements. In short the rules for
@@ -1591,7 +1762,10 @@ intersection
     as listed in the <a href="#mozTocId714232">binary operators</a>
     Table. The <span style="font-weight: bold;">addition</span>
     performs the operation <span style="font-style: italic;">per
-      Monitor</span> value (weighted), whereas the <span style="font-weight: bold;">combine</span> operation adds raw <span style="font-style: italic;">Signals</span> and <span style="font-style: italic;">Monitors</span> (unweighted). Changing
+      Monitor</span> value (weighted), whereas the <span
+      style="font-weight: bold;">combine</span> operation adds raw <span
+      style="font-style: italic;">Signals</span> and <span
+      style="font-style: italic;">Monitors</span> (unweighted). Changing
     the <span style="font-style: italic;">Monitor</span> of the objects
     affects the relative weight used for the summation during the
     addition operation, but not the combine operation. <br>
@@ -1626,6 +1800,7 @@ intersection
 
 
 
+
     that <span style="font-style: italic;">combine(a,b)</span> is the
     same as <span style="font-style: italic;">a\b</span>.<br>
     <h4><a class="mozTocH4" name="mozTocId872121"></a>Gluing an object
@@ -1643,17 +1818,28 @@ intersection
     also referred as <span style="font-style: italic;">concatenation</span>,
     may be performed along an existing dimension (one after the other),
     or along a new dimension (side by side), which then increases the
-    object dimensionality. The operator used here is <span style="font-weight: bold; font-style: italic;">cat</span>. <br>
+    object dimensionality. The operator used here is <span
+      style="font-weight: bold; font-style: italic;">cat</span>. <br>
     <br>
-    <a href="images/iData_cat.png"><img alt="iData cat (append)" title="iData cat (append)" src="images/iData_cat.png" style="border: 0px solid ; width: 164px; height: 300px;" align="right"></a>In the following example, the object <span style="font-style: italic;">d</span> is the concatenation of 4
+    <a href="images/iData_cat.png"><img alt="iData cat (append)"
+        title="iData cat (append)" src="images/iData_cat.png"
+        style="border: 0px solid ; width: 164px; height: 300px;"
+        align="right"></a>In the following example, the object <span
+      style="font-style: italic;">d</span> is the concatenation of 4
     objects<span style="font-style: italic;"> [a b c d]</span>,
-    sequentially. The concatenation of the 4 axes in '<span style="font-style: italic;">d</span>' is the repetition of the
+    sequentially. The concatenation of the 4 axes in '<span
+      style="font-style: italic;">d</span>' is the repetition of the
     initial axis. We then create an '<span style="font-style: italic;">f</span>'
     object for which the axis is reset to the default, showing indeed
     the concatenation of objects. Last, we assemble the same data set
-    side by side onto a new dimension, creating a surface '<span style="font-style: italic;">g</span>'.<br>
+    side by side onto a new dimension, creating a surface '<span
+      style="font-style: italic;">g</span>'.<br>
     <pre style="margin-left: 40px;">&gt;&gt; x=-pi:0.01:pi; a=<span style="color: rgb(51, 102, 255);">iData</span>(x,x); <br>&gt;&gt; a.Error=0;                         <span style="font-style: italic;">% replace default Error=sqrt(Signal) by no-error.</span><br>&gt;&gt; b=<span style="color: rgb(51, 102, 255);">sin</span>(a); c=<span style="color: rgb(51, 102, 255);">cos</span>(a); d=<span style="color: rgb(51, 102, 255);">exp</span>(-a.*a);  <span style="font-style: italic;">% create new objects by applying operator on the initial linear one</span><br>&gt;&gt; e=<span style="color: rgb(51, 102, 255);">cat</span>(1, [a b c d ]);              <span style="font-style: italic;">% catenate along all X axes, result is a single vector</span><br>&gt;&gt; f=<span style="color: rgb(51, 102, 255);">copyobj</span>(e);<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">rmaxis</span>(f,1);                       <span style="font-style: italic;">% reset object axis to the default</span><br>&gt;&gt; g=<span style="color: rgb(51, 102, 255);">cat</span>(2, [a b c d]);               <span style="font-style: italic;">% append objects side-by-side onto new dimension</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">subplot</span>([e f g],<span style="color: rgb(204, 51, 204);">'tight'</span>)           <span style="font-style: italic;">% plot all</span><br>&gt;&gt; h=<span style="color: rgb(51, 102, 255);">dog</span>(2, g);                       <span style="font-style: italic;">% back to [a b c d] with 'dog'</span><br></pre>
-    <a href="images/Baby-Pluto.jpg"><img alt="iData: cat and dog" title="iData: cat and dog" src="images/Baby-Pluto.jpg" style="border: 0px solid ; width: 100px; height: 75px;" align="left"></a>Similarly to the cat, the <span style="font-weight: bold; font-style: italic;">dog</span> operator
+    <a href="images/Baby-Pluto.jpg"><img alt="iData: cat and dog"
+        title="iData: cat and dog" src="images/Baby-Pluto.jpg"
+        style="border: 0px solid ; width: 100px; height: 75px;"
+        align="left"></a>Similarly to the cat, the <span
+      style="font-weight: bold; font-style: italic;">dog</span> operator
     splits an object into slices along a given dimension, returning an
     array with as many elements as the length of this dimension. This is
     the opposite to the <span style="font-style: italic;">cat</span>
@@ -1661,9 +1847,25 @@ intersection
     <br>
     To extract a slice out of an object, the usual array indices
     selection is effective:<br>
-    <pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(51, 102, 255);">peaks</span>);<br>&gt;&gt; b = a(10, :);	<i>	</i><i>% row 10</i><br>&gt;&gt; c = a([ 5 7 ], 1:2:end);	<i>% rows 5 and 7, one every 2 columns</i><br></pre><h4>Graphical user interface to explore data sets and slices <a href="images/Sliceomatic.png"><img alt="Sliceomatic: slice(a)" title="Sliceomatic: slice(a)" src="images/Sliceomatic.png" style="border: 0px solid ; width:
-        200px; height: 188px;" border="0" align="right" width="568" height="533"></a></h4>The 'slice' method displays a plot rendering of a 3D object. This interactive tool provides a powerful data set exploration interface. See details in the <a href="Plot.html#mozTocId633428">Plot</a> help.<br><h4>Graphical user interface to select regions-of-interest (ROI)</h4>
-    <br>
+    <pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(51, 102, 255);">peaks</span>);<br>&gt;&gt; b = a(10, :);	<i>	</i><i>% row 10</i><br>&gt;&gt; c = a([ 5 7 ], 1:2:end);	<i>% rows 5 and 7, one every 2 columns</i><br></pre>
+    <h4>Graphical user interface to explore data sets and slices <a
+        href="images/Sliceomatic.png"><img alt="Sliceomatic: slice(a)"
+          title="Sliceomatic: slice(a)" src="images/Sliceomatic.png"
+          style="border: 0px solid ; width: 200px; height: 188px;"
+          border="0" height="533" width="568" align="right"></a></h4>
+    The '<a href="Plot.html#mozTocId633428"><b>slice</b></a>' method
+    displays a plot rendering of a 2D and 3D objects. This interactive
+    tool provides a powerful data set exploration interface. See details
+    in the <a href="Plot.html#mozTocId633428">Plot</a> help.<br>
+    <h4><a href="images/iData_plot_imroi.png"><img
+          src="images/iData_plot_imroi.png" title="iData_plot_imroi"
+          alt="iData_plot_imroi" border="0" height="180" width="200"
+          align="left"></a>Graphical user interface to select
+      regions-of-interest (ROI)</h4>
+    The imroi method displays a data set and allows to define
+    interactively polygon areas used to select portions of the initial
+    data set. See details in the <a href="Plot.html#mozTocId313946">Plot</a>
+    help.
     <h3><a class="mozTocH3" name="mozTocId831526"></a>Creating arrays of
       objects</h3>
     The iData methods include a set of operators that generate arrays of
@@ -1675,18 +1877,23 @@ intersection
     takes an iData object and a dimension as arguments. The result is an
     array made by duplicating the object.<br>
     <pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">zeros</span>(<span style="color: rgb(51, 102, 255);">iData</span>, [5 3]);    <span style="font-style: italic;">% creates a 5x3 empty iData array</span><br>&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(51, 102, 255);">peaks</span>);<br>&gt;&gt; b = <span style="color: rgb(51, 102, 255);">zeros</span>(a, 5, 3);         <span style="font-style: italic;">% creates a 5x3 constant array of 'peaks' (2D surface)</span><br></pre>
-    The <span style="font-weight: bold;">linspace</span> and <span style="font-weight: bold;">logspace</span> binary operators create
+    The <span style="font-weight: bold;">linspace</span> and <span
+      style="font-weight: bold;">logspace</span> binary operators create
     a linearly and logarithmically spaced array of objects, by gradually
     moving from one object to the other. This way, it may be considered
     as a<span style="font-style: italic;"> 'morphing' </span>operator.<br>
     <pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(51, 102, 255);">peaks</span>);<br>&gt;&gt; b = <span style="color: rgb(51, 102, 255);">linspace</span>(a, <span style="color: rgb(51, 102, 255);">cos</span>(a), 5);<br>&gt;&gt; c = <span style="color: rgb(51, 102, 255);">logspace</span>(a, <span style="color: rgb(51, 102, 255);">sin</span>(a), 5);<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">subplot</span>([b c],[2 5])<br></pre>
-    <div style="text-align: center;"><a href="images/iData_linlogspace.png"><img alt="iData linspace
-          logspace" title="iData linspace logspace" src="images/iData_linlogspace.png" style="border: 0px solid ;
+    <div style="text-align: center;"><a
+        href="images/iData_linlogspace.png"><img alt="iData linspace
+          logspace" title="iData linspace logspace"
+          src="images/iData_linlogspace.png" style="border: 0px solid ;
           width: 522px; height: 200px;" align="middle"></a><br>
       Linspace (first row) and logspace (2nd row)<br>
     </div>
     <br>
-    The <span style="font-weight: bold;">colon</span> operator <span style="font-weight: bold;">a:b</span> is the same as <span style="font-weight: bold;">linspace</span> with a number of steps
+    The <span style="font-weight: bold;">colon</span> operator <span
+      style="font-weight: bold;">a:b</span> is the same as <span
+      style="font-weight: bold;">linspace</span> with a number of steps
     which is the integer difference between the objects mean value.<br>
     <h3><a class="mozTocH3" name="mozTocId208686"></a>Interpolation,
       smoothing, intersection and union</h3>
@@ -1694,15 +1901,19 @@ intersection
     axes prior to applying the mathematical operation. The common axes
     may be obtained from intersection or union of object axes.<br>
     <br>
-    The interpolation method used is based on a <a href="http://en.wikipedia.org/wiki/Delaunay_tessellation">Delaunay</a>
-    triangular multidimensional tessellation (using the <a href="http://www.cgal.org/">Computational Geometry Algorithms
+    The interpolation method used is based on a <a
+      href="http://en.wikipedia.org/wiki/Delaunay_tessellation">Delaunay</a>
+    triangular multidimensional tessellation (using the <a
+      href="http://www.cgal.org/">Computational Geometry Algorithms
       Library</a>, <acronym title="Computational Geometry Algorithms
       Library">CGAL</acronym>).<br>
     <h4><a class="mozTocH4" name="mozTocId261708"></a> Intersection and
       union</h4>
-    The <span style="font-weight: bold;">intersect</span> and <span style="font-weight: bold;">union</span> binary operators determine
+    The <span style="font-weight: bold;">intersect</span> and <span
+      style="font-weight: bold;">union</span> binary operators determine
     the minimum and maximum axes bounds, as well as a axes binning. The
-    <span style="font-style: italic;">inner</span> and <span style="font-style: italic;">outer</span> values are returned by
+    <span style="font-style: italic;">inner</span> and <span
+      style="font-style: italic;">outer</span> values are returned by
     the intersect and union methods resp. Resulting objects are
     interpolated, using the <span style="font-weight: bold;">interp</span>
     operator, onto this new axis system, so that binary operators are
@@ -1711,8 +1922,10 @@ intersection
     value, and then show the intersection and union. Extrapolated
     values, for union, are set to 0.<br>
     <pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(51, 102, 255);">peaks</span>);<br>&gt;&gt; b = <span style="color: rgb(51, 102, 255);">copyobj</span>(a);<br>&gt;&gt; a{1} = a{1}+10; a{2} = a{2}+10;  <span style="font-style: italic;">% shift along X and Y</span><br>&gt;&gt; a.Signal=a.Signal+5;             <span style="font-style: italic;">% shift along Z</span><br>&gt;&gt; [ai,bi]=<span style="color: rgb(51, 102, 255);">intersect</span>(a,b);<br>&gt;&gt; [au,bu]=<span style="color: rgb(51, 102, 255);">union</span>(a,b);<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">subplot</span>(1,3,1); <span style="color: rgb(51, 102, 255);">plot</span>([a  b ],<span style="color: rgb(204, 51, 204);">'transparent tight'</span>)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">subplot</span>(1,3,2); <span style="color: rgb(51, 102, 255);">plot</span>([ai bi],<span style="color: rgb(204, 51, 204);">'transparent tight'</span>)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">subplot</span>(1,3,3); <span style="color: rgb(51, 102, 255);">plot</span>([au bu],<span style="color: rgb(204, 51, 204);">'transparent tight'</span>)<br></pre>
-    <div style="text-align: center;"><a href="images/iData_interp_union.png"><img alt="iData intersect
-          union" title="iData intersect union" src="images/iData_interp_union.png" style="border: 0px solid ;
+    <div style="text-align: center;"><a
+        href="images/iData_interp_union.png"><img alt="iData intersect
+          union" title="iData intersect union"
+          src="images/iData_interp_union.png" style="border: 0px solid ;
           width: 396px; height: 200px;" align="middle"></a><br>
     </div>
     <br>
@@ -1725,7 +1938,9 @@ intersection
       51, 204);">linear</span> (default), <span style="color: rgb(204,
       51, 204);">cubic, spline, nearest</span>.<br>
     <pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(51, 102, 255);">peaks<span style="color: rgb(0, 0, 0);">(10)</span></span>)+2<br>&gt;&gt; b = <span style="color: rgb(51, 102, 255);">interp</span>(a,2)	<span style="font-style: italic;">% doubled binning, but we rather recommend the 'resize' method (see below)</span><br>&gt;&gt; c = <span style="color: rgb(51, 102, 255);">interp</span>(a,1:.25:15,3:.25:12)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">subplot</span>([a b c],[1 3],<span style="color: rgb(204, 51, 204);">'mesh tight'</span>)<br></pre>
-    <div style="text-align: center;"><a href="images/iData_interp.png"><img alt="iData interp" title="iData interp" src="images/iData_interp.png" style="border: 0px solid ;
+    <div style="text-align: center;"><a href="images/iData_interp.png"><img
+          alt="iData interp" title="iData interp"
+          src="images/iData_interp.png" style="border: 0px solid ;
           width: 444px; height: 200px;" align="middle"></a><br>
       <div style="text-align: left;"><br>
         <h4><a class="mozTocH4" name="mozTocId621133"></a> Event data
@@ -1753,14 +1968,19 @@ intersection
         <h4><a class="mozTocH4" name="mozTocId447291"></a> Re-binning
           and resizing</h4>
         To compress an object and reduce its binning, that is the number
-        of elements on each dimension, you can use the <span style="font-weight: bold;">reducevolume</span> method. Without
+        of elements on each dimension, you can use the <span
+          style="font-weight: bold;">reducevolume</span> method. Without
         argument, it reduces the number of elements to less than 1e6.
         Additional arguments indicate the compression factor on each
         dimension. This method is automatically used when plotting large
-        objects (except if the plot options contains a<span style="font-style: italic;"> 'full' </span>or<span style="font-style: italic;"> 'whole' </span>word).<br>
+        objects (except if the plot options contains a<span
+          style="font-style: italic;"> 'full' </span>or<span
+          style="font-style: italic;"> 'whole' </span>word).<br>
         <br>
         In a similar manner, the <span style="font-weight: bold;">resize</span>
-        method is a very fast yet accurate algorithm (<a href="http://en.wikipedia.org/wiki/Discrete_cosine_transform">discrete
+        method is a very fast yet accurate algorithm (<a
+          href="http://en.wikipedia.org/wiki/Discrete_cosine_transform">discrete
+
 
 
 
@@ -1778,7 +1998,9 @@ intersection
         a data set:
         <pre style="margin-left: 40px;">&gt;&gt; b = <span style="color: rgb(51, 102, 255);">iData</span>(flow);<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">resize</span>(b, [25 50 1]);	<span style="font-style: italic;">% makes a 2D object from a 3D one</span><br></pre>
         <span style="text-decoration: underline;">Reference:</span>
-        Narasimha M. et al, <a href="http://ieeexplore.ieee.org/xpl/freeabs_all.jsp?arnumber=1094144">On
+        Narasimha M. et al, <a
+          href="http://ieeexplore.ieee.org/xpl/freeabs_all.jsp?arnumber=1094144">On
+
 
 
 
@@ -1791,7 +2013,8 @@ intersection
           the computation of the discrete cosine transform</a>, IEEE
         Trans Comm, 26, 6, 1978, pp 934-936. <br>
         <h4><a class="mozTocH4" name="mozTocId539072"></a>Smoothing</h4>
-        To explicitly smooth a data set, you can use the '<span style="font-weight: bold;">smooth</span>' method, which makes
+        To explicitly smooth a data set, you can use the '<span
+          style="font-weight: bold;">smooth</span>' method, which makes
         use of a discrete cosine transform filter spline smoothing
         (shape preserving):<br>
         <pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(51, 102, 255);">peaks<span style="color: rgb(0, 0, 0);">(40).*(1+0.1*randn(40)</span></span>));<br>&gt;&gt; b = <font color="#3366ff">smooth</font>(a);<br>&gt;&gt; <font color="#3366ff">subplot</font>(a,b);<br></pre>
@@ -1801,17 +2024,21 @@ intersection
           italic;">Computational Statistics &amp; Data Analysis</span>,
         2010.<br>
         <br>
-        The smoothing can also use a <a href="http://en.wikipedia.org/wiki/Savitzky%E2%80%93Golay_filter_for_smoothing_and_differentiation">Savitsky-Golay</a>
+        The smoothing can also use a <a
+href="http://en.wikipedia.org/wiki/Savitzky%E2%80%93Golay_filter_for_smoothing_and_differentiation">Savitsky-Golay</a>
         moving average, but may lead to significant sharp features
         modifications (be cautious).<br>
         <pre style="margin-left: 40px;">&gt;&gt; b = <font color="#3366ff">smooth</font>(a, <span style="color: rgb(204, 51, 204);">'sgolay'</span>);<br>&gt;&gt; b = <font color="#3366ff">smooth</font>(a, span, <span style="color: rgb(204, 51, 204);">'sgolay'</span>, degree); <span style="font-style: italic;">% Savitsky Golay degree and span (length) specified</span><br></pre>
-        &nbsp;Last, you can use a <i>nD</i> <a href="http://en.wikipedia.org/wiki/Gaussian_blur">Gaussian
+        &nbsp;Last, you can use a <i>nD</i> <a
+          href="http://en.wikipedia.org/wiki/Gaussian_blur">Gaussian
           blur</a> <br>
         <pre style="margin-left: 40px;">&gt;&gt; b = <font color="#3366ff">smooth</font>(a, <span style="color: rgb(204, 51, 204);">'gauss'</span>,1);		<i>% Gaussian smoothing, all width=1</i><br>&gt;&gt; b = <font color="#3366ff">smooth</font>(a, <span style="color: rgb(204, 51, 204);">'gauss'</span>,[ 1 10 ]);	<i>% idem, with specific width, here for a 2D smoothing</i><br></pre>
         Last, in the case a data set contains NaN (Not-a-Number) values
         (that is missing values), you can fill these values with a fast
         interpolation on neighboring elements using the <b>fill</b>
-        method (based on a <a href="http://en.wikipedia.org/wiki/Discrete_cosine_transform">discrete
+        method (based on a <a
+          href="http://en.wikipedia.org/wiki/Discrete_cosine_transform">discrete
+
 
 
 
@@ -1851,13 +2078,14 @@ Farhi
 
 
 
+
         - iFit/Math operators -&nbsp;</span><span style="font-style:
         italic;"> </span><span style="font-style: italic;"> $Date$
         $Revision$ </span><span style="font-style: italic;"> </span>-
-      back to <a href="index.html">Main iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France
+      back to <a href="index.html">Main iFit Page </a><a
+        href="http://www.ill.eu/"><img title="ILL, Grenoble, France
           &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL,
           Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid
           ; width: 53px; height: 50px;" align="right"></a> </div>
-  
-
-</body></html>
+  </body>
+</html>
