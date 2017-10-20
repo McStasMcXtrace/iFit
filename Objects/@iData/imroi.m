@@ -2,14 +2,31 @@ function [b, mask, f] = imroi(a, options)
 % imroi: define a region of interest on a data set
 % 
 % b = imroi(a)
-%  This function allows to select a region-of-interest (ROI) over an existing 
-%    data set, which defines an area where data points are selected. The selected 
+%  This function allows to select regions-of-interest (ROI) over an existing 
+%    data set, which defines areas where data points are selected. The selected 
 %    data set is returned, with NaN's elsewhere.
 %
-% The mouse is used to define points/lines in the data set. These vertices are used
-%   as a polygon shape which intersection with the data set defined the selection.
-% When used with surfaces and volumes, you may orient the view (using the Rotate 
-%   icon from the toolbar or Tools menu) prior the ROI selection.
+% The mouse is used to define points/lines in the data set. Click on the plot to 
+%   define the limits of the selection. These vertices are used as a polygon
+%   shape which intersection with the data set defines the selection.
+%
+% You may undo (remove) previous points/lines from the active polygon by pressing
+%   the mouse right-button or the BackSpace key. To clear the current ROI and start
+%   over, press the 'c' or DEL key.
+%
+% It is possible to define as many separate ROI's by pressing the 'a' key to add
+%   to store the current polygon, and start a new one.
+%
+% When used with surfaces and volumes, you may rotate the view (using the Rotate 
+%   icon from the toolbar or Tools menu) by pressing the 'r' key over the figure.
+%   This stores the current polygon definition, and switch to the rotate mode.
+%   Once the view is properly oriented, disable the Rotate tool (click again on 
+%   the rotate icon) to enter a new polygon definition.
+%
+% Once all ROI's are defined, press the middle mouse button or the Return key to
+%   end the ROI selection and compute the intersection with the data set.
+%
+% To abort (cancel) and exit the ROI tool, use the Escape key.
 %
 % [b, mask] = imroi(a)
 %  Same as above, but returns the mask data set, which contains 0 and 1.
@@ -24,7 +41,9 @@ function [b, mask, f] = imroi(a, options)
 %     mouse left-click           add a point/line
 %     right-click or BACKSPACE   removes last point
 %     DEL or "c"                 removes all points
-%     return or "q" or middle-click: terminate input
+%     return or "q" or middle-click: terminate input and compute intersections
+%     a                          start a new separate polygon (add)
+%     r                          change orientation (2D/3D). Disable rotation to continue ROI.
 %     ESC                        abort
 %     h                          display a help dialogue
 %
@@ -62,7 +81,7 @@ function [b, mask, f] = imroi(a, options)
   for index=[ 1:ndims(a) 0 ]
     ax_signal{end+1} = getaxis(a, index);
   end
-  if ndims(a) > 2
+  if ndims(a) >= 2
     ax_signal([1 2]) = ax_signal([2 1]);  % swap X and Y for used for the plotting
   end
   
@@ -191,10 +210,10 @@ function [select, xselect, yselect, zselect, cselect, h] = imroi1(h, xdata, ydat
     hold on
     if ~isempty(zd1) && ~isempty(s.ZV)
       zsel = zd1(in);
-      plot3(xsel, ysel, zsel,'ro');
+      plot3(xsel, ysel, zsel,'mo');
     else
       zsel = [];
-      plot(xsel, ysel, 'ro');
+      plot(xsel, ysel, 'mo');
     end
     csel = [];
     if ~isempty(cd1)
