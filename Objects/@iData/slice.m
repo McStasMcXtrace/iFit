@@ -1,5 +1,5 @@
 function h = slice(a, method)
-% slice(s) : Plot a 3D object with slice rendering
+% slice(s) : Plot a 2D/3D object with slice rendering
 %
 %   @iData/slice function to view slices in 3D object
 %     The plot is obtained with Matlab Central sliceomatic
@@ -12,7 +12,18 @@ function h = slice(a, method)
 % Version: $Date$
 % See also iData, iData/plot, sliceomatic
 
-if ndims(a) < 3
+if ndims(a) == 2
+  
+  fig = figure; h = plot(a);
+  cuthandles = linecut(h);
+  % we move the cuts on the right and bottom sides
+  ax = get(cuthandles(1),'Parent'); fx = get(ax,'Parent');
+  ay = get(cuthandles(2),'Parent'); fy = get(ay,'Parent');
+  p = get(fig, 'Position');
+  set(fx, 'Position', [ p(1)+p(3) p(2) p(3:4)/2 ]);
+  set(fy, 'Position', [ p(1) p(2)-p(4)/2 p(3:4)/2 ]);
+  return
+elseif ndims(a) < 3
   iData_private_warning(mfilename, [ 'Slice-o-matic is only available for 3D objects, but ' a.Tag ' ' a.Title '" is ' num2str(ndims(a)) '-th dimensions. Using plot instead.' ]);
   h = plot(a);
   return
