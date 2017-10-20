@@ -188,9 +188,10 @@ if(ind==3 | is3DTexture )
   for n = 1:size(cdata,3)
 
    slice = double(squeeze(cdata(:,:,n)));
+   ad = double(slice); ad(find(isnan(slice))) = 0;
    h(handle_ind) = surface(x,y,z,'Parent',ax);
    set(h(handle_ind),'cdatamapping','scaled','facecolor','texture','cdata',slice,...
-	 'edgealpha',0,'alphadata',double(slice),'facealpha','texturemap','tag','vol3d');
+	 'edgealpha',0,'alphadata',ad,'facealpha','texturemap','tag','vol3d');
    z = z + delta;
    handle_ind = handle_ind + 1;
   end
@@ -207,9 +208,10 @@ if (ind==1 | is3DTexture )
   for n = 1:size(cdata,2)
 
    slice = double(squeeze(cdata(:,n,:)));
+   ad = double(slice); ad(find(isnan(slice))) = 0;
    h(handle_ind) = surface(x,y,z,'Parent',ax);
    set(h(handle_ind),'cdatamapping','scaled','facecolor','texture','cdata',slice,...
-	 'edgealpha',0,'alphadata',double(slice),'facealpha','texturemap','tag','vol3d');
+	 'edgealpha',0,'alphadata',ad,'facealpha','texturemap','tag','vol3d');
    x = x + delta;
    handle_ind = handle_ind + 1;
   end
@@ -226,9 +228,10 @@ if (ind==2 | is3DTexture)
   for n = 1:size(cdata,1)
 
    slice = double(squeeze(cdata(n,:,:)));
+   ad = double(slice); ad(find(isnan(slice))) = 0;
    h(handle_ind) = surface(x,y,z,'Parent',ax);
    set(h(handle_ind),'cdatamapping','scaled','facecolor','texture','cdata',slice,...
-	 'edgealpha',0,'alphadata',double(slice),'facealpha','texturemap','tag','vol3d');
+	 'edgealpha',0,'alphadata',ad,'facealpha','texturemap','tag','vol3d');
    y = y + delta;
    handle_ind = handle_ind + 1;
   end

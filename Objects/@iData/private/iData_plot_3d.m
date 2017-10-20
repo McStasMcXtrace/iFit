@@ -40,7 +40,7 @@ end
       if ~isempty(strfind(method, 'plot3')) % vol3d: does not require meshgrid
         h = hggroup;
         h3 = vol3d('cdata',c,'texture','3D','xdata',x,'ydata',y,'zdata',z);
-        alphamap('vdown'); % make object transparent on borders and solid in center
+        alphamap('rampdown'); % make object transparent on borders and solid in center
         % h3 = vol3d(h3);
         set(h3.handles,'Parent',h);
       elseif ~isempty(strfind(method, 'waterfall')) || ~isempty(strfind(method, 'contour'))

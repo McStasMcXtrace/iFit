@@ -54,9 +54,14 @@
     </h3>
     <span style="font-weight: bold;"></span>
     <ul>
-      <li><b>2.0</b>: new iData and iFunc storage class. See <a
+      <li><b>2.0</b>: new iData and iFunc storage classes. The object
+        usage is not modified, but sub-classes are now possible,
+        allowing more specialized methods for specific use. See <a
           href="#mozTocId16941">here</a> if you experience load/save
-        crashes.<br>
+        crashes. New <a href="Plot.html#mozTocId313946">iData/imroi</a>
+        interactive region-of-interest and mask selection. New <a
+          href="Plot.html#mozTocId633428">iData.slice</a> for 2D objects
+        (only worked so far for 3D).<br>
       </li>
       <li><b>1.10</b>: new <a href="McStas.html">mccode</a> model
         maker, replacing the 'mcstas' function. New mccode_mcdisplay
@@ -74,6 +79,7 @@
 href="https://github.com/McStasMcXtrace/iFit/issues?q=is%3Aissue+is%3Aclosed+label%3A%22release+1.10%22">List
 
 
+
           of tickets</a> for this release. (Aug 22nd 2017)<br>
       </li>
       <li><small><b>1.9</b>: added structure optimisation step before
@@ -83,6 +89,7 @@ href="https://github.com/McStasMcXtrace/iFit/issues?q=is%3Aissue+is%3Aclosed+lab
             href="https://jochym.github.io/qe-doc/">QE/ASE</a> interface
           to Model Sqw. Faster phonon calculation using crystal
           symmetries. Improvements in <a href="Neutron_Scattering.html">S(q,w)
+
             treatment</a> scripts. <a href="Loaders.html">Data loaders</a>
           for Mass Spectroscopy formats, <a
             href="https://www.oecd-nea.org/dbdata/data/manual-endf/endf102.pdf">ENDF</a>
@@ -99,6 +106,7 @@ href="https://github.com/McStasMcXtrace/iFit/issues?q=is%3Aissue+is%3Aclosed+lab
             href="McStas.html">McStas</a> templateTAS. (March 21st
           2017). <a
 href="https://github.com/McStasMcXtrace/iFit/issues?q=is%3Aissue+is%3Aclosed+label%3A%22release+1.9%22">List
+
 
 
 
@@ -141,20 +149,22 @@ href="https://www.ill.eu/instruments-support/instruments-groups/instruments/cycl
 
 
 
+
             Cyclops</a> HBIN and <a
             href="https://en.wikipedia.org/wiki/IDL_%28programming_language%29">IDL</a>
           SAV files. Iterative deconvolution as <i>deconv</i> method.
           Major upgrade of <a href="Models.html#mozTocId990577"><i>ab-initio</i>
             DFT phonon dispersion</a> Model, which now supports EMT,
           GPAW, ABINIT, Elk, Dacapo, NWChem, QuantumEspresso and VASP
-          when installed. <a href="Neutron_Scattering.html">S(q,w) treatment</a>
-          scripts to compare MD and measured dynamic structure factor,
-          compute dynamic range, generalized density of states, total
-          scattering cross sections, characteristic frequencies, powder
-          average from 4D S(hkl,w). Full compatibility with Matlab
-          releases &gt;= R2014b<i> (April 7th 2016)</i>. <b>Upgrade
-            1.8-3</b>: Fix <i>read_anytext</i> to only use external
-          'looktxt': no more MeX <i>(April 19th 2016).</i></small><br>
+          when installed. <a href="Neutron_Scattering.html">S(q,w)
+            treatment</a> scripts to compare MD and measured dynamic
+          structure factor, compute dynamic range, generalized density
+          of states, total scattering cross sections, characteristic
+          frequencies, powder average from 4D S(hkl,w). Full
+          compatibility with Matlab releases &gt;= R2014b<i> (April 7th
+            2016)</i>. <b>Upgrade 1.8-3</b>: Fix <i>read_anytext</i>
+          to only use external 'looktxt': no more MeX <i>(April 19th
+            2016).</i></small><br>
       </li>
       <li><small><b>1.7</b>: <a
 href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectroscopy/opus-software/overview.html">OPUS</a>
@@ -163,6 +173,7 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
             href="http://www.ni.com/white-paper/3727/en/">TDMS</a> file
           format import. Fixed curvature in <a
             href="../Applications/ResLibCal/doc/ResLibCal.html">ResLibCal</a>/Rescal5/Popovici
+
 
 
 
@@ -240,6 +251,7 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
           NetCDF/CDF/NeXus/HDF support, import/export of <a
             href="http://www.mantidproject.org">Mantid</a> workspaces
           (HDF/NeXus), import of <a href="http://www.wavemetrics.com/">Igor
+
 
 
 
@@ -387,6 +399,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
 
 
 
+
             Computing Toolbox</a> (when available), improved
           interpolation, added <span style="font-style: italic;">meshgrid</span>,
           <span style="font-style: italic;">rotate, </span>radial
@@ -394,6 +407,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
               style="font-style: italic;">cart2sph</span></a>), better
           support for event files, save of iFunc models to m-files.
           Added simple models for <a href="Models.html#mozTocId285330">small
+
 
 
 
@@ -506,6 +520,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
 
 
 
+
           fix of the <a href="Optimizers.html">Levenberg-Marquardt
             optimizer</a>, improved Error propagation for unary
           operators, support for <a href="Loaders.html">import</a> of
@@ -515,6 +530,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
           &gt;= 2010, added many <a href="Models.html">fit models</a>
           including 2D functions <span style="font-style: italic;">signal=f(x,y)</span>.
           Improved speed by e.g. +25% <span style="font-style: italic;">(Feb
+
 
 
 
@@ -617,6 +633,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
 
 
 
+
             6th, 2011</span>). Added correlation function method, plus a
           number of minor improvements (esp. in plot contextual menus),
           and bug fix for McStas 1D data set import <span
@@ -624,6 +641,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
         <span style="font-weight: bold;"></span></li>
       <li><small><span style="font-weight: bold;">1.0</span>: First
           official iFit release <span style="font-style: italic;">(August
+
 
 
 
@@ -768,6 +786,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
 
 
 
+
       3)</span> to triple the number of points along axes.<br>
     <h4><a class="mozTocH4" name="mozTocId473369"></a>Too many warnings
       displayed</h4>
@@ -775,6 +794,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
     reduce the level of verbosity with:<br>
     <pre style="margin-left: 80px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">warning off backtrace	<span style="font-style: italic; color: rgb(0, 0, 0);">% reduce the warning message length</span><br><span style="color: rgb(0, 0, 0);">&gt;&gt; </span>warning off			<span style="color: rgb(0, 0, 0); font-style: italic;">% suppress all warnings (not recommended)</span><br></span></pre>
     <h4><a class="mozTocH4" name="mozTocId556618"></a>Execution/compilation
+
 
 
 
@@ -816,9 +836,17 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
       <li>use the matlab <i>mex</i> command (requires a valid C
         compiler supported by Matlab) ;<br>
       </li>
-      <li>use of any other C compiler such as <a href="https://gcc.gnu.org/">gcc</a>, <a href="https://software.intel.com/en-us/intel-compilers">ifc</a>,
-        <a href="http://www.pgroup.com/">pgcc</a>, <a href="http://clang.llvm.org/">clang/llvm</a>, <a href="http://bellard.org/tcc/">tcc</a>;</li>
-      <li>use any Fortran compiler such as <a href="https://gcc.gnu.org/fortran/">gfortran</a>, <a href="http://www.g95.org/">g95</a>, <a href="http://www.pgroup.com/">pgfc</a>, <a href="https://software.intel.com/en-us/fortran-compilers">ifort</a>.</li>
+      <li>use of any other C compiler such as <a
+          href="https://gcc.gnu.org/">gcc</a>, <a
+          href="https://software.intel.com/en-us/intel-compilers">ifc</a>,
+        <a href="http://www.pgroup.com/">pgcc</a>, <a
+          href="http://clang.llvm.org/">clang/llvm</a>, <a
+          href="http://bellard.org/tcc/">tcc</a>;</li>
+      <li>use any Fortran compiler such as <a
+          href="https://gcc.gnu.org/fortran/">gfortran</a>, <a
+          href="http://www.g95.org/">g95</a>, <a
+          href="http://www.pgroup.com/">pgfc</a>, <a
+          href="https://software.intel.com/en-us/fortran-compilers">ifort</a>.</li>
     </ol>
     Most systems provide a default C compiler. <br>
     <ul>
@@ -868,13 +896,15 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
 
 
 
+
     </span>directory, and issue:<br>
     <blockquote>
       <pre># gcc -O2 -o looktxt looktxt.c -lm</pre>
     </blockquote>
     A Fortran compiler is required when using <span style="font-style:
       italic;">cif2hkl</span> (CIF,CFL,PCR,ShelX files), especially for
-    the Rietveld model function. Navigate to the <span style="font-style: italic;">iFit/Scripts/Models/scattering/powder_diffraction</span>
+    the Rietveld model function. Navigate to the <span
+      style="font-style: italic;">iFit/Scripts/Models/scattering/powder_diffraction</span>
     directory and issue:<br>
     <pre style="margin-left: 40px;"># gfortran -O2 -o cif2hkl cif2hkl.F90 -lm<br></pre>
     which creates a <i>cif2hkl</i> executable file, used by iFit.
@@ -882,13 +912,15 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
     <br>
     Once done, check from iFit:<br>
     <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">iLoad</span>(<span style="color: rgb(204, 51, 204);">'force'<font color="#000000">)	% checks and possibly re-compiles text and CBF importers</font></span></pre>
-    Refer to the related item in the <a href="Install.html#mozTocId359173">Install</a> page.<br>
+    Refer to the related item in the <a
+      href="Install.html#mozTocId359173">Install</a> page.<br>
     <h4><a class="mozTocH4" name="mozTocId63182"></a>Limitations in the
       standalone (binary) package</h4>
     When running the standalone version (binary), new Matlab functions
     can <span style="font-weight: bold; font-style: italic;">not</span>
     be defined, except anonymous functions (inline). You may use iFunc
     models as a substitute. Also, the <span style="font-style: italic;">doc,
+
 
 
 
@@ -934,7 +966,8 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
     The following issue may show-up for any external program launched
     from Matlab/iFit, e.g. <a href="http://www.mcstas.org">McStas</a>,
     <a href="http://www.homepages.ucl.ac.uk/%7Eucfbdxa/phon/">PHON</a>,
-    <a href="http://www.quantum-espresso.org/">Quantum Espress</a>, <a href="https://wiki.fysik.dtu.dk/ase/">ASE</a>. We detail the case
+    <a href="http://www.quantum-espresso.org/">Quantum Espress</a>, <a
+      href="https://wiki.fysik.dtu.dk/ase/">ASE</a>. We detail the case
     of 'mcstas'.<br>
     <br>
     To diagnose this issue, open a Terminal, and test if e.g. 'mcstas'
@@ -961,7 +994,8 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
     </p>
     <pre>./run_ifit: error while loading shared libraries: libmwmclmcrrt.so: cannot open shared object file: No such file or directory</pre>
     <p>This message indicates that the Matlab Runtime Library has not
-      been found. Instal the MCR as indicated in the <a href="Install.html">Install</a> page. You may have to edit the
+      been found. Instal the MCR as indicated in the <a
+        href="Install.html">Install</a> page. You may have to edit the
       'ifit' command and set the location of the MCR. Alternatively, you
       can set the MCRROOT environment variable to point to it, e.g.
       under <i>bash</i> (Linux/Mac OSX):<br>
@@ -975,7 +1009,8 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
       can be used from the prompt/command line, within a terminal.
       However, the Matlab <i>readline</i> library can not handle
       properly localised characters (e.g. with accents, for specific
-      languages) [<a href="http://www.mathworks.com/support/bugreports/624817">bug
+      languages) [<a
+        href="http://www.mathworks.com/support/bugreports/624817">bug
         624817</a>]. <br>
     </p>
     <p>You thus have to be cautious when typing, to avoid e.g. à, ä, ø,
@@ -986,24 +1021,30 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
     <ul>
     </ul>
     <h4><a class="mozTocH4" name="mozTocId267093"></a>iFit fails with a
-      message such as '<font color="#800000">version</font><font color="#800000"> `GFORTRAN_1.4' not found'<font color="#000000">
+      message such as '<font color="#800000">version</font><font
+        color="#800000"> `GFORTRAN_1.4' not found'<font color="#000000">
           or</font> 'version `GCC_4.3.0' not found'<br>
       </font></h4>
     Matlab comes with its own C and Fortran libraries (e.g. in
-    MATLABROOT/<font color="#800000"><span style="color: rgb(0, 0, 0);">sys/os/&lt;arch&gt;/)</span><span style="color: rgb(51, 102, 255);"></span></font>. Some of these
+    MATLABROOT/<font color="#800000"><span style="color: rgb(0, 0, 0);">sys/os/&lt;arch&gt;/)</span><span
+        style="color: rgb(51, 102, 255);"></span></font>. Some of these
     may not match those from the running system (seen on Linux systems).
     <br>
     <br>
     The following issue may show-up for any external program launched
     from Matlab/iFit, e.g. <a href="http://www.mcstas.org">McStas</a>,
     <a href="http://www.homepages.ucl.ac.uk/%7Eucfbdxa/phon/">PHON</a>,
-    <a href="http://www.quantum-espresso.org/">Quantum Espress</a>, <a href="https://wiki.fysik.dtu.dk/ase/">ASE</a>, looktxt, cif2hkl.<br>
+    <a href="http://www.quantum-espresso.org/">Quantum Espress</a>, <a
+      href="https://wiki.fysik.dtu.dk/ase/">ASE</a>, looktxt, cif2hkl.<br>
     In this case, as e.g. McStas runs from a Matlab environment that
     overloads libraries on top of the normal libraries from the system -
-    used by external programs - you may get a message such as (here <span style="font-style: italic; color: rgb(51, 102, 255);">libgfortran.so</span>
+    used by external programs - you may get a message such as (here <span
+      style="font-style: italic; color: rgb(51, 102, 255);">libgfortran.so</span>
     is faulty) :<br>
     <pre style="margin-left: 40px;"><font color="#800000">Can't load '/usr/local/lib/perl/5.12.4/auto/PGPLOT/PGPLOT.so' for module</font> <font color="#800000">PGPLOT: <br>/usr/local/MATLAB/R2012a/sys/os/glnxa64/<span style="color: rgb(51, 102, 255);">libgfortran.so.3</span>: version</font> <font color="#800000">`GFORTRAN_1.4' not found <br>(required by /usr/lib/libpgplot.so.5) at</font> <font color="#800000">/usr/lib/perl/5.12/DynaLoader.pm line 192.</font> <br><font color="#800000">at /usr/local/lib/mcstas/tools/perl/mcstas_config.perl line 123</font></pre>
-    A similar message has also been reported for the <font color="#3366ff">libgcc_s.so</font> library with error e.g. '<font color="#cc0000">version&nbsp;`GCC_4.3.0'&nbsp;not&nbsp;found</font>'.<br>
+    A similar message has also been reported for the <font
+      color="#3366ff">libgcc_s.so</font> library with error e.g. '<font
+      color="#cc0000">version&nbsp;`GCC_4.3.0'&nbsp;not&nbsp;found</font>'.<br>
     <br>
     On an Apple Mac OS X system, the faulty library is e.g.<br>
     <blockquote>/Applications/MATLAB_R2010a.app/sys/os/maci64/libgfortran.3.dylib<br>
@@ -1024,8 +1065,11 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
     Then restart Matlab/iFit to check if the issue is solved.<br>
     <br>
     <b>If this is still not solved</b>, we then look for locations of
-    the faulty library in the system (requires package <span style="font-style: italic;">locate</span> or <span style="font-style: italic;">mlocate</span> to be installed -
+    the faulty library in the system (requires package <span
+      style="font-style: italic;">locate</span> or <span
+      style="font-style: italic;">mlocate</span> to be installed -
     alternatively you can use <span style="font-style: italic;">ldconfig
+
 
 
 
@@ -1106,8 +1150,49 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
     one:<br>
     <blockquote>
       <pre>% sudo ln -s /usr/lib/libmpi_f90.so.1 /usr/lib/libmpi_f77.so.0</pre>
-    </blockquote><font color="#ff0000">
-    Warning: </font>We do not recommend using Dacapo/Jacapo, as this software is not maintained anymore.<br><h4><a name="mozTocId62902" class="mozTocH3"></a>Matlab crashes when displaying 3D plots</h4>Since Matlab R2014b, the underlying infrastructure for display of plots has been fully revamped. As a consequence, displays are much nicer, but also much slower to render. Also, depending on the graphics card/driver installed on the computer, Matlab may crash with messages such as:<br><blockquote><pre>Nativewindow X11 IOError: Display 0x7f44e040e8b0 (:0.0): Bad address</pre><pre>MATLAB: javainit.cpp:1411: void {anonymous}::mwJavaAbort(): Assertion `Fatal Java Exception.&nbsp; See Java Crash Report for details.' failed.</pre></blockquote>A way to get things fixed is to switch to the software OpenGL rendering. Start Matlab and type immediately:<br><ul><li><font color="#3366ff">opengl</font> <font color="#cc33cc">save software</font></li></ul>then exit Matlab and restart it.<br><br>The immediate consequence is that all works (good), but also it gets even slower (!!!). Calculations are not affected.<br><h4><a name="mozTocId16941" class="mozTocH4"></a>miFit/matlab crashes when starting/loading/saving</h4>The storage class for iData and iFunc has changed. This makes old '.mat' files crash when imported. To solve this issue, you should start a previous version of iFit (e.g. 1.10) and export your objects into e.g. HDF5 files. Then, with the new iFit version, import back this files to recreate the same iData objects.<br><br>With miFit, you may reset the application with:<br><ul><li><font color="#3366ff">mifit</font> <font color="#cc33cc">reset</font><br></li></ul>which fully resets its configuration and data to the factory settings. Your existing data stored in miFit will be lost. Alternatively, you may start an older iFit version (e.g. 1.10), and export the workspace items into e.g. HDF5. Then start the new miFit interface (from iFit 2.x), and load the HDF5 files in the workspace.<br><br>
+    </blockquote>
+    <font color="#ff0000"> Warning: </font>We do not recommend using
+    Dacapo/Jacapo, as this software is not maintained anymore.<br>
+    <h4><a name="mozTocId62902" class="mozTocH3"></a>Matlab crashes when
+      displaying 3D plots</h4>
+    Since Matlab R2014b, the underlying infrastructure for display of
+    plots has been fully revamped. As a consequence, displays are much
+    nicer, but also much slower to render. Also, depending on the
+    graphics card/driver installed on the computer, Matlab may crash
+    with messages such as:<br>
+    <blockquote>
+      <pre>Nativewindow X11 IOError: Display 0x7f44e040e8b0 (:0.0): Bad address</pre>
+      <pre>MATLAB: javainit.cpp:1411: void {anonymous}::mwJavaAbort(): Assertion `Fatal Java Exception.&nbsp; See Java Crash Report for details.' failed.</pre>
+    </blockquote>
+    A way to get things fixed is to switch to the software OpenGL
+    rendering. Start Matlab and type immediately:<br>
+    <ul>
+      <li><font color="#3366ff">opengl</font> <font color="#cc33cc">save
+          software</font></li>
+    </ul>
+    then exit Matlab and restart it.<br>
+    <br>
+    The immediate consequence is that all works (good), but also it gets
+    even slower (!!!). Calculations are not affected.<br>
+    <h4><a name="mozTocId16941" class="mozTocH4"></a>miFit/matlab
+      crashes when starting/loading/saving</h4>
+    The storage class for iData and iFunc has changed. This makes old
+    '.mat' files crash when imported. To solve this issue, you should
+    start a previous version of iFit (e.g. 1.10) and export your objects
+    into e.g. HDF5 files. Then, with the new iFit version, import back
+    this files to recreate the same iData objects.<br>
+    <br>
+    With miFit, you may reset the application with:<br>
+    <ul>
+      <li><font color="#3366ff">mifit</font> <font color="#cc33cc">reset</font><br>
+      </li>
+    </ul>
+    which fully resets its configuration and data to the factory
+    settings. Your existing data stored in miFit will be lost.
+    Alternatively, you may start an older iFit version (e.g. 1.10), and
+    export the workspace items into e.g. HDF5. Then start the new miFit
+    interface (from iFit 2.x), and load the HDF5 files in the workspace.<br>
+    <br>
     <hr style="width: 100%; height: 2px;">
     <div style="text-align: center;">
       <div style="text-align: center;"><span style="font-style: italic;">E.
@@ -1122,13 +1207,14 @@ Farhi
 
 
 
+
           - iFit/Changes - </span><span style="font-style: italic;">
           $Date$ $Revision$ </span><span style="font-style: italic;"> </span>-
-        back to <a href="index.html">Main iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France
+        back to <a href="index.html">Main iFit Page </a><a
+          href="http://www.ill.eu/"><img title="ILL, Grenoble, France
             &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL,
             Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px
             solid ; width: 53px; height: 50px;" align="right"></a> </div>
     </div>
-  
-
-</body></html>
+  </body>
+</html>
