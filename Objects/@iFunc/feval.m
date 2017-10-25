@@ -425,6 +425,7 @@ catch ME
   end
   disp(getReport(ME,'basic'))
   save iFunc_feval_error
+  whos
   error([ 'iFunc:' mfilename ], [ 'Failed model evaluation. Saved state in ' fullfile(pwd,'iFunc_feval_error') ]);
 end
 
