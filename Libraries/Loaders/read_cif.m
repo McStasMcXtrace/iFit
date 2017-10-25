@@ -76,10 +76,10 @@ function [data, this] = read_cif(file)
       this = this(1:(index(l)-1));
       % remove some of the links '<a href="result.php
       i1 = strfind(this, '<a href="result.php?spacegroup');
-      i2 = strfind(this, '</a>');
+      i2 = strfind(this, '>');
       if ~isempty(i1) && ~isempty(i2)
         i1 = i1(1); i2=i2(find(i2 > i1, 1));
-        this(i1:(i2+3)) = [];
+        this(i1:(i2)) = [];
       end
       i3 = strfind(this, '<a href="result.php?journal');
       if ~isempty(i3)
