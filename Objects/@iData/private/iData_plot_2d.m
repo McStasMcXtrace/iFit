@@ -81,6 +81,9 @@ end
       set(h3,'Parent',h);
     elseif (strfind(method,'waterfall'))
       h=waterfall(x,y,z);
+    elseif (strfind(method,'slice'))
+      h=slice(a);
+      return
     else
       h=surf(x,y,z); set(h,'Edgecolor','none');
     end

@@ -22,6 +22,7 @@ if ndims(a) == 2
   p = get(fig, 'Position');
   set(fx, 'Position', [ p(1)+p(3) p(2) p(3:4)/2 ]);
   set(fy, 'Position', [ p(1) p(2)-p(4)/2 p(3:4)/2 ]);
+  figure(fig);
   return
 elseif ndims(a) < 3
   iData_private_warning(mfilename, [ 'Slice-o-matic is only available for 3D objects, but ' a.Tag ' ' a.Title '" is ' num2str(ndims(a)) '-th dimensions. Using plot instead.' ]);

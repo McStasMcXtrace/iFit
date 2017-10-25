@@ -542,27 +542,27 @@ function mifit_Data_PlotAs_Overlay(varargin)
   mifit_Data_PlotAs(varargin, '');
   
 function mifit_Data_PlotAs_Contour(varargin)
-% Data/Plot: Overlay
+% Data/Plot: Contour
   mifit_Data_PlotAs(varargin, 'contour3 light transparent grid tight replace');
   
 function mifit_Data_PlotAs_Waterfall(varargin)
-% Data/Plot: Overlay
+% Data/Plot: Waterfall
   mifit_Data_PlotAs(varargin, 'waterfall light transparent grid tight replace');
   
 function mifit_Data_PlotAs_Surface(varargin)
-% Data/Plot: Overlay
+% Data/Plot: Surface
   mifit_Data_PlotAs(varargin, 'surfc light transparent grid tight replace');
   
 function mifit_Data_PlotAs_ScatterPlot(varargin)
-% Data/Plot: Overlay
+% Data/Plot: Scatter
   mifit_Data_PlotAs(varargin, 'scatter3 light transparent grid tight replace');
   
 function mifit_Data_PlotAs_Plot3(varargin)
-% Data/Plot: Overlay
+% Data/Plot: Plot3
   mifit_Data_PlotAs(varargin, 'plot3 grid tight replace');
   
 function mifit_Data_PlotAs_Slice(varargin)
-% Data/Plot: Overlay
+% Data/Plot: Slice (2D/3D)
   mifit_Data_PlotAs(varargin, 'slice');
   
 function mifit_Data_Eval_Model(varargin)

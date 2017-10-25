@@ -17,7 +17,7 @@ function [cuthandles] = linecut(plothandle)
 % https://fr.mathworks.com/matlabcentral/fileexchange/47766-linecut
 
  % test if this is an object with XData
-   has_xdata = false
+   has_xdata = false;
    while ~has_xdata
     try
       get(plothandle,'Xdata');
@@ -129,14 +129,20 @@ function KeyPress(src,EventData)
           hand.yindex = hand.yindex+yindinc;
       case 'downarrow'
           hand.yindex = hand.yindex-yindinc;
-      case 'return'
-          delete(hand.lx);
-          delete(hand.ly);
-          if isfield(hand,'lintersect'), delete(hand.lintersect); end
+      case {'q','x','return','escape'}
+          try delete(hand.lx); end
+          try delete(hand.ly); end
+          if isfield(hand,'lintersect'), try delete(hand.lintersect); end; end
           set(hand.mainfig,'WindowButtonDownFcn',{},'KeyPressFcn',{});       
-          set(hand.xcutfig,'KeyPressFcn',{});
-          set(hand.ycutfig,'KeyPressFcn',{});
-          return;        
+          try; set(hand.xcutfig,'KeyPressFcn',{}); end
+          try; set(hand.ycutfig,'KeyPressFcn',{}); end
+          return;     
+      case 'h'
+          helpdlg({[ mfilename ': Show cuts' ], ...
+          ' ', ...
+          '  mouse left-click: display cuts at indicated coordinates', ...
+          '  return or "q":    terminate input (quit)', ...
+          }, [ mfilename ': Show cuts' ]);
   end
   %make sure indices aren't out of bounds
   hand.xindex=max(hand.xindex,1); hand.xindex=min(hand.xindex,length(hand.Xdata));
@@ -179,8 +185,8 @@ function cuthandles=updatecuts(mainfig)
       set(hand.lintersect,'XData',[hand.Xdata(hand.xindex) hand.Xdata(hand.xindex)],'YData',[hand.Ydata(hand.yindex) hand.Ydata(hand.yindex)]);
   end
 
-  set(get(hand.ycutax,'Title'),'String',[hand.mainax_title ' y=' num2str(hand.Ydata(hand.yindex)) ' (index #' num2str(hand.yindex) ')']);
-  set(get(hand.xcutax,'Title'),'String',[hand.mainax_title ' x=' num2str(hand.Xdata(hand.xindex)) ' (index #' num2str(hand.xindex) ')']);
+  set(get(hand.ycutax,'Title'),'String',[char(hand.mainax_title) ' y=' num2str(hand.Ydata(hand.yindex)) ' (index #' num2str(hand.yindex) ')']);
+  set(get(hand.xcutax,'Title'),'String',[char(hand.mainax_title) ' x=' num2str(hand.Xdata(hand.xindex)) ' (index #' num2str(hand.xindex) ')']);
   guidata(hand.mainplot, hand);
   %return cut plot handles
   cuthandles=[hand.xcutplot hand.ycutplot];
@@ -190,9 +196,9 @@ function CloseRequestFcn(src,EventData)
   hand=guidata(src);
   hand=guidata(hand.mainfig);
   % close all
-  delete(hand.lx);
-  delete(hand.ly);
-  delete(hand.xcutfig);
-  delete(hand.ycutfig);
+  try delete(hand.lx); end
+  try delete(hand.ly); end
+  try delete(hand.xcutfig); end
+  try delete(hand.ycutfig); end
   delete(hand.mainfig);
 end % CloseRequestFcn
