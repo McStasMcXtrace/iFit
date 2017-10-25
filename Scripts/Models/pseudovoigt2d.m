@@ -7,7 +7,7 @@ function signal=pseudovoigt2d(varargin)
 %     b =-sin(2*theta)/4/sx/sx + sin(2*theta)/4/sy/sy;
 %     c = sin(theta)^2/2/sx/sx + cos(theta)^2/2/sy/sy;
 %     signal = (a*(x-x0).^2+2*b*(x-x0).*(y-y0)+c*(y-y0).^2);
-%     signal = p(1) * (p(8) * (1./(1+signal)) + (1-p(8)) * exp(-0.5 * signal)) + p(7);
+%     signal = p(1) * (p(8) * (1./(1+signal)) + (1-p(8)) * exp(-0.5 * 2.355* signal)) + p(7);
 %
 % pseudovoigt2d([w1 w2])        creates a model with specified widths
 % pseudovoigt2d([ parameters ]) creates a model with specified model parameters
@@ -42,7 +42,7 @@ signal.Expression     = {'x0=p(2); y0=p(3); sx=p(4); sy=p(5);', ...
   'bb =-sin(2*theta)/4/sx/sx + sin(2*theta)/4/sy/sy;', ...
   'cc = sin(theta)^2/2/sx/sx + cos(theta)^2/2/sy/sy;', ...
   'signal = (aa*(x-x0).^2+2*bb*(x-x0).*(y-y0)+cc*(y-y0).^2);', ...
-  'signal = p(1) * (p(8) * (1./(1+signal)) + (1-p(8)) * exp(-0.5 * signal)) + p(7);' };
+  'signal = p(1) * (p(8) * (1./(1+signal)) + (1-p(8)) * exp(-0.5 * 2.355 * signal)) + p(7);' };
 
 signal=iFunc(signal);
 

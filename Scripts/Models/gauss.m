@@ -26,7 +26,7 @@ function y=gauss(varargin)
 
 y.Name      = [ 'Gaussian (1D) [' mfilename ']' ];
 y.Description='1D Gaussian model';
-y.Parameters={'Amplitude','Centre','HalfWidth half Sigma','Background'};
+y.Parameters={'Amplitude','Centre','HalfWidth half Sigma RMS','Background'};
 y.Expression= @(p,x) p(1)*exp(-0.5*((x-p(2))/p(3)).^2) + p(4);
 
 % moments of distributions

@@ -26,7 +26,7 @@ function y=pseudovoigt(varargin)
 y.Name      = [ 'Pseudo-Voigt (1D) [' mfilename ']' ];
 y.Parameters={'Amplitude','Centre','HalfWidth','Background','LorentzianRatio'};
 y.Description='Single 1D Pseudo Voigt model (convolution of gauss and lorz approx.). Ref: P. Thompson, D.E. Cox, J.B. Hastings, J. Appl. Cryst. 1987, 20, 79.';
-y.Expression= @(p,x) p(1) * (p(5) * (1./(1+ ((x-p(2))/p(3)).^2 )) + (1-p(5)) * exp(-0.5 * ((x-p(2))/p(3)).^2 ));
+y.Expression= @(p,x) p(1) * (p(5) * (1./(1+ ((x-p(2))/p(3)).^2 )) + (1-p(5)) * exp(-0.5 * (2.355*(x-p(2))/p(3)).^2 ));
 
 m1 = @(x,s) sum(s(:).*x(:))/sum(s(:));
 m2 = @(x,s) sqrt(abs( sum(x(:).*x(:).*s(:))/sum(s(:)) - m1(x,s).^2 ));
