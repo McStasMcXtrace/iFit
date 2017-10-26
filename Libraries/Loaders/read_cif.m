@@ -10,6 +10,10 @@ function [data, this] = read_cif(file)
 % search in the Crystallography Open Database is made.
 %
 %  data = read_cif('Mg O');
+%  data = read_cif('O3 Sr Ti');
+%
+% The formulae should be given in Hill notation, e.g. C, then H, then other
+% elements in alphabetical order.
 %
 % This requires proxy settings to be set (when behind a firewall)
 %   java.lang.System.setProperty('http.proxyHost', ProxyHost); 
