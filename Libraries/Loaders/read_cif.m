@@ -6,11 +6,12 @@ function [data, this] = read_cif(file)
 % You may as well plot the CIF structure using SpinW with e.g.:
 %  plot(sw(data.file)); % plot the structure using SpinW
 %
-% When the argument is a chemical formulae (elements separated with spaces), a
-% search in the Crystallography Open Database is made.
+% When the argument is a chemical formulae (elements separated with spaces), or 
+% a COD ID, a search in the Crystallography Open Database is made.
 %
 %  data = read_cif('Mg O');
 %  data = read_cif('O3 Sr Ti');
+%  data = read_cif('1532356');
 %
 % The formulae should be given in Hill notation, e.g. C, then H, then other
 % elements in alphabetical order.
@@ -50,68 +51,84 @@ function [data, this] = read_cif(file)
     %   curl -s http://www.crystallography.net/cod/2002926.cif
     
     if iscellstr(file), file = sprintf('%s ', file{:}); end
-    formula = strrep(strtrim(file), ' ', '%20');  % change spaces from formula to cope with COD query
     
-    % query COD
-    disp([ mfilename ': querying COD at http://www.crystallography.net/cod/result.php?formula=' formula ]);
-    try
-      cod   = urlread([ 'http://www.crystallography.net/cod/result.php?formula=' formula ]);
-    catch
-      disp([ mfilename ': It seems I can not reach www.crystallography.net !' ]);
-      disp('>>> if you are behind a Proxy, you MUST set from the Matlab/iFit prompt e.g.:');
-      disp('  ProxyHost=''proxy.ill.fr'' % no need for "http://" there');
-      disp('  ProxyPort=8888');
-      disp('  java.lang.System.setProperty(''http.proxyHost'', ProxyHost); ')
-      disp('  com.mathworks.mlwidgets.html.HTMLPrefs.setUseProxy(true);');
-      disp('  com.mathworks.mlwidgets.html.HTMLPrefs.setProxyHost(ProxyHost);');
-      disp('  java.lang.System.setProperty(''http.proxyPort'', num2str(ProxyPort));');
-      disp('  com.mathworks.mlwidgets.html.HTMLPrefs.setProxyPort(num2str(ProxyPort));');
-      error([ mfilename ': Network seems unreachable. Check connection or Proxy settings.' ]);
+    if strncmp(file, 'cod:', 4)
+      file = file(5:end);
     end
-    cod   = textscan(cod, '%s','Delimiter',sprintf('\n\r'));
-    cod   = cod{1};
-    cod   = cod(find(~cellfun(@isempty, strfind(cod, 'CIF'))));
-    % have to read lines until '</tr>'
-    index = strfind(cod, '</tr>');
-    cod   = cod(find(~cellfun(@isempty, index)));
-    index = cell2mat(index);
-    for l=1:numel(cod)
-      this = cod{l};
-      this = this(1:(index(l)-1));
-      % remove some of the links '<a href="result.php
-      i1 = strfind(this, '<a href="result.php?spacegroup');
-      i2 = strfind(this, '>');
-      if ~isempty(i1) && ~isempty(i2)
-        i1 = i1(1); i2=i2(find(i2 > i1, 1));
-        this(i1:(i2)) = [];
+    
+    file = strtrim(file);
+    
+    % is this a COD ID ?
+    if ~isnan(str2double(file))
+      cod = [ file '.cif' ];
+    else
+    
+      formula = strrep(strtrim(file), ' ', '%20');  % change spaces from formula to cope with COD query
+      
+      % query COD
+      disp([ mfilename ': querying COD at http://www.crystallography.net/cod/result.php?formula=' formula ]);
+      try
+        cod   = urlread([ 'http://www.crystallography.net/cod/result.php?formula=' formula ]);
+      catch
+        disp([ mfilename ': It seems I can not reach www.crystallography.net !' ]);
+        disp('>>> if you are behind a Proxy, you MUST set from the Matlab/iFit prompt e.g.:');
+        disp('  ProxyHost=''proxy.ill.fr'' % no need for "http://" there');
+        disp('  ProxyPort=8888');
+        disp('  java.lang.System.setProperty(''http.proxyHost'', ProxyHost); ')
+        disp('  com.mathworks.mlwidgets.html.HTMLPrefs.setUseProxy(true);');
+        disp('  com.mathworks.mlwidgets.html.HTMLPrefs.setProxyHost(ProxyHost);');
+        disp('  java.lang.System.setProperty(''http.proxyPort'', num2str(ProxyPort));');
+        disp('  com.mathworks.mlwidgets.html.HTMLPrefs.setProxyPort(num2str(ProxyPort));');
+        error([ mfilename ': Network seems unreachable. Check connection or Proxy settings.' ]);
       end
-      i3 = strfind(this, '<a href="result.php?journal');
-      if ~isempty(i3)
-        i3 = i3(1);
-        this(i3:end) = [];
+      cod   = textscan(cod, '%s','Delimiter',sprintf('\n\r'));
+      cod   = cod{1};
+      cod   = cod(find(~cellfun(@isempty, strfind(cod, 'CIF'))));
+      % have to read lines until '</tr>'
+      index = strfind(cod, '</tr>');
+      cod   = cod(find(~cellfun(@isempty, index)));
+      index = cell2mat(index);
+      for l=1:numel(cod)
+        this = cod{l};
+        this = this(1:(index(l)-1));
+        % remove some of the links '<a href="result.php
+        i1 = strfind(this, '<a href="result.php?spacegroup');
+        i2 = strfind(this, '>');
+        if ~isempty(i1) && ~isempty(i2)
+          i1 = i1(1); i2=i2(find(i2 > i1, 1));
+          this(i1:(i2)) = [];
+        end
+        i3 = strfind(this, '<a href="result.php?journal');
+        if ~isempty(i3)
+          i3 = i3(1);
+          this(i3:end) = [];
+        end
+        this = strrep(this, '<a href="', '');
+        % clean up each CIF line: remove <td> </td> <br/> <i> </i> <b> </b> ...
+        for tok={'<td>', '</td>', '<br/>', '<i>', '</i>', '<b>', '</b>', '%20','</a>', '<a href="', '">'}
+          this = strrep(this, tok{1}, ' ');
+        end
+        % the first token in each line is now the COD number
+        cod{l} = this;
       end
-      this = strrep(this, '<a href="', '');
-      % clean up each CIF line: remove <td> </td> <br/> <i> </i> <b> </b> ...
-      for tok={'<td>', '</td>', '<br/>', '<i>', '</i>', '<b>', '</b>', '%20','</a>', '<a href="', '">'}
-        this = strrep(this, tok{1}, ' ');
+      % pop-up  dialogue to choose when more than one entry
+      if isempty(cod), return; end
+      if numel(cod) > 1
+        selection = listdlg('ListString', cod, 'ListSize', [ 300 160 ], ...
+          'Name', [ mfilename ': Crystallography Open Database entries for ' file ], ...
+          'SelectionMode', 'single', ...
+          'PromptString', { [ 'Here are the entries for ' file ]; ...
+          'from the Crystallography Open Database (COD) <http://www.crystallography.net>.'; ...
+          'Each entry shows the COD ID, spacegroup, cell parameters (a,b,c,alpha,beta,gamma) and title.'; ...
+          'Please choose one of them.' });
+        if isempty(selection),    return; end % cancel
+      else selection = 1; end
+      if numel(cod) && iscellstr(cod)
+        cod = cod{selection};
       end
-      % the first token in each line is now the COD number
-      cod{l} = this;
     end
-    % pop-up  dialogue to choose when more than one entry
-    if isempty(cod), return; end
-    if numel(cod) > 1
-      selection = listdlg('ListString', cod, 'ListSize', [ 300 160 ], ...
-        'Name', [ mfilename ': Crystallography Open Database entries for ' file ], ...
-        'PromptString', { [ 'Here are the entries for ' file ]; ...
-        'from the Crystallography Open Database (COD) <http://www.crystallography.net>.'; ...
-        'Each entry shows the COD ID, spacegroup, cell parameters (a,b,c,alpha,beta,gamma) and title.'; ...
-        'Please choose one of them.' });
-      if isempty(selection),    return; end % cancel
-    else selection = 1; end
-    if numel(cod) && iscellstr(cod)
-      cod = cod{selection};
-    end
+    
+    % get the COD entry (first token from 'cod' string)
     cod_id = strtok(cod);
     disp([ mfilename ': getting http://www.crystallography.net/cod/' cod_id ]);
     file = urlread([ 'http://www.crystallography.net/cod/' cod_id ]);

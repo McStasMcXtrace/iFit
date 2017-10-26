@@ -21,7 +21,7 @@
       <li><a href="#mozTocId333190">Phonon computation syntax:
           sqw_phonons</a></li>
       <li><a href="#mozTocId280436">Getting help</a></li>
-      <li><b><a href="#mozTocId182819">Calculator options</a></b>
+      <li><a href="#mozTocId182819">Calculator options</a>
         <ol>
           <li><a href="#mozTocId300601">Choosing the DFT calculator</a></li>
           <li><a href="#mozTocId493804">Energy cut-off</a></li>
@@ -39,7 +39,7 @@
               clusters</a></li>
         </ol>
       </li>
-      <li><b><a href="#mozTocId438325">First example. Getting results</a></b>
+      <li><a href="#mozTocId438325">First example. Getting results</a>
         <ol>
           <li><a href="#mozTocId370236">Vibrational density of states
               (vDOS)</a></li>
@@ -57,15 +57,18 @@
         <ol>
           <li><a href="#mozTocId365079">Loading an initial structure
               (file)</a></li>
+          <li><a href="#mozTocId250682">Loading from Crystallography
+              Open Database (COD)</a></li>
+          <li><a href="#mozTocId696596">Loading a previous iFit
+              computation (directory/mat)</a></li>
+          <li><a href="#mozTocId146436">Loading a previous PhonoPy
+              computation (directory)</a></li>
+          <li><a href="#mozTocId71649">Saving the model: MAT, YAML,
+              JSON, XML, M</a></li>
+          <li><a href="#mozTocId49582">Generating a report (during /
+              after)</a></li>
         </ol>
       </li>
-      <li><a href="#mozTocId696596">Loading a previous iFit computation
-          (directory/mat)</a></li>
-      <li><a href="#mozTocId146436">Loading a previous PhonoPy
-          computation (directory)</a></li>
-      <li><a href="#mozTocId71649">Saving the model: MAT, YAML, JSON,
-          XML, M</a></li>
-      <li><a href="#mozTocId49582">Generating a report (during / after)</a></li>
       <li><a href="#mozTocId131712">Phonons in Al</a></li>
       <li><a href="#mozTocId526943">Phonons in MgO</a></li>
       <li><a href="#mozTocId339109">Phonons in SrTiO3</a></li>
@@ -180,6 +183,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
             Live DVD</a> ready-to-run system with <i>Phonons</i>, <span
             style="font-style: italic;">McStas</span> and <i>iFit</i>
           (standalone) all pre-installed.<br>
@@ -187,6 +191,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
           Then you can either build a bootable USB key using e.g. <a
             href="https://unetbootin.github.io/">Unetbootin</a> (or
           simply a command in the style "<i>dd if=iso of=usbkey bs=1m</i>"),
+
 
 
 
@@ -266,6 +271,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
           <li><b>Other Linux distributions</b></li>
         </ul>
         <blockquote>Use your package manager (e.g. <i>yum</i> and <i>dnf</i>),
+
 
 
 
@@ -477,8 +483,8 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
           input to iFit-Phonon. The force constants do not need to be
           calculated, which saves a lot of time. Only the final DFT
           steps will be computed (to get e.g. the stress tensor,
-          moments, and other physical quantities). </blockquote>
-        <ul>
+          moments, and other physical quantities).<br><br></blockquote><ul><li><b>COD</b> &lt;<a href="http://www.crystallography.net">Crystallography Open Database</a>&gt; now contains nearly 400 000 structures, free access. <br></li></ul><blockquote>As shown <a href="file:///home/farhi/dev/iFit/Docs/Models_Phonons_Tutorial.html#mozTocId250682">below,</a> it is possible to retrieve a COD entry giving as configuration <font color="#cc33cc">'cod: ID' </font>or its chemical formulae <font color="#cc33cc">'cod: formulae'</font> (<a href="https://en.wikipedia.org/wiki/Hill_formula">Hill notation</a>).<br>
+        </blockquote><ul>
           <li><b>NoMaD</b> repository &lt;<a href="http://nomad-repository.eu/cms/">http://nomad-repository.eu/cms/</a>&gt;
 
 
@@ -526,7 +532,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
             can store any computational result from e.g. ABINIT,
             QuantumEspresso, VASP, and others.</li>
           <li><b>ICSD</b> Inorganic Crystal Structure Database &lt;<a href="http://icsd.ill.fr">http://icsd.ill.fr</a>&gt; with
-            plenty of CIFs.</li>
+            plenty of CIFs. requires a license.</li>
           <li><b>AflowLib</b> &lt;<a href="http://aflowlib.org/">http://aflowlib.org/</a>&gt;
 
 
@@ -546,8 +552,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
             a calculation service using ICSD materials.</li>
-          <li><b>COD</b> <a href="http://www.crystallography.net/cod/">Crystallography
-              Open Database</a> <br>
+          <li><br>
           </li>
           <li><b>CCDC </b><a href="https://www.ccdc.cam.ac.uk/">The
               Cambridge Crystallographic Data Centre</a><br>
@@ -921,7 +926,7 @@ Once done, open the report following the link printed in the command window, or 
 The HKL range is usually specified as a vector in reciprocal lattice units [rlu] spanning over 0.5 or 1 unit. It can be centered around 0, or shifted towards a specific BZ center (Bragg point). <br><br>In the following example, we define such vectors, and make sure the energy one hasn't the same number of points as the HKL ones. Also, we transpose one of the HKL vectors when used so that a cube volume grid is built. For instance from -0.5 to 0.5 rlu on all reciprocal axes, and up to 50 meV energy, all with a binning of 50 steps (51 for the energy):<br><ul><li><b>qh</b>=<font color="#3366ff">linspace</font>(-0.5, .5, 50); <b>qk</b>=qh; <b>ql</b>=qh; <b>w</b>=<font color="#3366ff">linspace</font>(0.01, 50, 51);</li></ul>Then we evaluate the model, transposing the L axis (we then write <b>ql'</b> where <b>'</b> is the transpose operator) so that we have mixed orientations and define a 'cube':<br><ul><li>f=<font color="#3366ff">iData</font>(s, [], qh,qk,<b>ql'</b>, w);<i>% evaluate model into an iData</i>.</li></ul>The [] stands for the model parameters, which are requested to be used as is (automatic). One could specify as well a vector with the 5 values for the model parameters. The evaluation usually takes a few seconds per 10<sup>5</sup> HKL locations, but this of course depends on the number of phonon modes.<br><br>The resulting variable 'f' is a data set of type <a href="iData.html">iData</a>. It can be rendered as a volumetric plot in 3D, but still requires to reduce the dimensionality from 4D to 3D for this purpose. In this example, we wish to select the QH=0 plane, and plot the 0KLE cube. <br><br>As the <b>qh</b> variable is centered around 0, and has 50 values, we shall plot a slice of 'f' with the <b>25-th</b> value for qh (in the middle from -0.5 to 0.5 as defined above). The other axes are used as is, specified using the <b>:</b> symbol (whole range). And we use the simple 'plot' command using the log of the intensity:<br><ul><li><font color="#3366ff">plot</font>(<font color="#3366ff">log</font>(f(25,:,:,:)))<a href="images/phonons/Models_Phonons_Al_emt_plot3.png"><img src="images/phonons/Models_Phonons_Al_emt_plot3.png" title="Al_emt_plot3" alt="Al_emt_plot3" border="0" align="right" width="200" height="150"></a></li></ul>To rotate the volume, use the 'rotate' icon in the toolbar (an arrow on a circle). Other <a href="Plot.html">plot</a> types can be used, such as:<br><ul><li>the <font color="#3366ff">plot3</font> method which shows a filled volume with colors, e.g. <font color="#3366ff">plot3</font>(<font color="#3366ff">log</font>(f(25,:,:,:)))</li><li>the <font color="#3366ff">slice</font> method which allows an interactive volume exploration (<a href="https://fr.mathworks.com/matlabcentral/fileexchange/764-sliceomatic">sliceomatic</a>), e.g. <font color="#3366ff">slice</font>(<font color="#3366ff">log</font>(f(25,:,:,:))). Click and move the mouse over the lower color scale to change the equi-intensity value, and click on the side axes to select a volume cut. Defined iso-surfaces and cuts can be moved and stacked. De-select the rotate tool in order to act on iso-surfaces and cuts.<br></li></ul></blockquote><h3><a name="mozTocId362621" class="mozTocH3"></a>Loading/saving
           your work</h3>
         <ul>
-          </ul><h4><a name="mozTocId365079" class="mozTocH4"></a>Loading an initial structure (file)</h4><blockquote><p>We have seen above that you may use any crystal structure stored as a file (POSCAR, CIF, PDB, Yaml, ... see all <a href="https://wiki.fysik.dtu.dk/ase/ase/io/io.html">available formats</a>), such as:<br></p><ul><li><b>s=</b><font color="#3366ff">sqw_phonons</font>(<font color="#cc33cc">'POSCAR_SrTiO3'</font>,<font color="#cc33cc">'quantumespresso</font><font color="#cc33cc">'</font>)</li></ul><p>which automatically starts the DFT calculation.<br></p></blockquote><ul>
+          </ul><h4><a name="mozTocId365079" class="mozTocH4"></a>Loading an initial structure (file)</h4><blockquote><p>We have seen above that you may use any crystal structure stored as a file (POSCAR, CIF, PDB, Yaml, ... see all <a href="https://wiki.fysik.dtu.dk/ase/ase/io/io.html">available formats</a>), such as:<br></p><ul><li><b>s=</b><font color="#3366ff">sqw_phonons</font>(<font color="#cc33cc">'POSCAR_SrTiO3'</font>)</li></ul><p>which automatically starts the DFT calculation.<br></p></blockquote><h4><a name="mozTocId250682" class="mozTocH4"></a>Loading from Crystallography Open Database (COD)</h4><blockquote><p>It is possible to retrieve a <a href="http://www.crystallography.net">Crystallography Open Database</a> entry by specifying a COD ID using the syntax:<br></p><ul><li><b>s=</b><font color="#3366ff">sqw_phonons</font>(<font color="#cc33cc">'cod:&nbsp;</font><font color="#cc33cc"><meta http-equiv="content-type" content="text/html; charset=windows-1252">1512124'</font>);&nbsp; <i>% access </i><i><a href="http://www.crystallography.net/cod/1512124.html">SrTiO3</a></i><i> at COD, giving ID<br></i></li></ul>The COD ID are unique identifiers corresponding to available structures.<br><br>It is also possible to specify the chemical formulae, in <a href="https://en.wikipedia.org/wiki/Hill_formula">Hill notation</a>, i.e C and H first, then other elements in alphabetical order. In this case a search is made on COD, and when multiple matches are found, a dialogue box pops-up to choose a structure from a list:<br><ul><li><b>s=</b><font color="#3366ff">sqw_phonons</font>(<font color="#cc33cc">'cod: </font><font color="#cc33cc">O3 Sr Ti'</font>);&nbsp; <i>% access </i><i><a href="http://www.crystallography.net/cod/1512124.html">SrTiO3</a></i><i> at COD, giving chemical formulae<br></i></li></ul></blockquote><ul>
           </ul><h4><a name="mozTocId696596" class="mozTocH3"></a>Loading a previous iFit computation (directory/mat)</h4><blockquote><p>Similarly, it is possible to rebuild a model from a directory containing information from a past sqw_phonons calculation. Simply use:<br></p><ul><li><b>s=</b><font color="#3366ff">sqw_phonons</font>(<font color="#cc33cc">'directory</font><font color="#cc33cc">'</font>)</li></ul>to recover the <a href="iFunc.html">iFunc</a> model. The reconstruction searches for any file such as:<br><ul><li>Phonon_Model.mat<br></li><li>atoms.pkl</li><li>POSCAR*</li><li>SPOSCAR*</li><li>*_POSCAR</li><li>phonon*.pkl</li><li>phonopy.yaml</li><li>phonon.yaml</li><li>INPHON</li><li>quasiharmonic_phonon.yaml</li><li>band.yaml</li><li>FORCE_SETS</li><li>disp.yaml<br></li></ul>If you have saved the model as a Matlab (.mat, such as Phonon_Model.mat) file, import it back using e.g. any of:<br><ul><li><font color="#3366ff">load</font> model.mat</li><li>s=<font color="#3366ff">iFunc</font>(<font color="#cc33cc">'model.mat'</font>)</li></ul></blockquote><ul>
           </ul><h4><a name="mozTocId146436" class="mozTocH3"></a>Loading a previous PhonoPy computation (directory)</h4><blockquote><p>It is possible to build a sqw_phonons model from an existing PhonoPy directory, such as available as archives at &lt;<a href="http://phonondb.mtl.kyoto-u.ac.jp/">http://phonondb.mtl.kyoto-u.ac.jp/</a>&gt;. This location should contain e.g. files:</p><ul><li>FORCE_SETS</li><li>disp.yaml</li></ul>A few DFT additional calculation (usually rather short) may be needed. All atom displacement and force constants are used as obtained from the PhonoPy directory. In case the PhonoPy directory contains many sub-directories, search for a phonon calculation directory (e.g. phonon-XX or gruneisen-XX).<br><ul>
           
@@ -940,7 +945,7 @@ The HKL range is usually specified as a vector in reciprocal lattice units [rlu]
           <li>kpoints_density= 1728</li>
           <li>equilibrium and 1 displacement (Al) computations</li>
           <li>energy cut-off: use default calculator settings. ABINIT
-            uses 1500 eV.</li></ul>To obtain these results, use e.g.:<br><ul><li><b>s=</b><font color="#3366ff">sqw_phonons</font>(<font color="#cc33cc">'POSCAR_Al'</font>,<font color="#cc33cc">'quantumespresso</font><font color="#cc33cc">'</font>,<font color="#cc33cc">'metal'</font>)</li><li><font color="#3366ff">sqw_kpath</font>(s)</li><li><font color="#3366ff">sqw_thermochemistry</font>(s)</li><li>qh=0.01:0.5:1.5; qk=qh; ql=qh;
+            uses 1500 eV.</li><li>COD <meta http-equiv="content-type" content="text/html; charset=windows-1252"> <a href="http://www.crystallography.net/cod/1502689.html">1502689.cif</a><br></li></ul>To obtain these results, use e.g.:<br><ul><li><b>s=</b><font color="#3366ff">sqw_phonons</font>(<font color="#cc33cc">'POSCAR_Al'</font>,<font color="#cc33cc">'quantumespresso</font><font color="#cc33cc">'</font>,<font color="#cc33cc">'metal'</font>)</li><li><font color="#3366ff">sqw_kpath</font>(s)</li><li><font color="#3366ff">sqw_thermochemistry</font>(s)</li><li>qh=0.01:0.5:1.5; qk=qh; ql=qh;
                   w=0.01:0.5:51; f=s([], qh,qk,ql<b>'</b>,w);</li><li><font color="#3366ff">plot3</font>(<font color="#3366ff">log10</font>(f(1,:,:,:)))<i>&nbsp; % qh ~ 0 plane</i><br></li></ul><ul>
         </ul>
         <i><b>Outcome</b></i>: all calculators give similar results. The
@@ -1268,7 +1273,7 @@ The HKL range is usually specified as a vector in reciprocal lattice units [rlu]
           <li>kpoints_density=&nbsp; 1080<br>
           </li>
           <li>energy cut-off: use default calculator settings. ABINIT
-            uses 1500 eV.</li></ul>To obtain these results, use e.g.:
+            uses 1500 eV.</li><li>COD <a href="http://www.crystallography.net/cod/1512124.html">1512124.cif</a><br></li></ul>To obtain these results, use e.g.:
 <ul><li><b>s=</b><font color="#3366ff">sqw_phonons</font>(<font color="#cc33cc">'POSCAR_SrTiO3'</font>,<font color="#cc33cc">'quantumespresso</font><font color="#cc33cc">'</font>,<font color="#cc33cc">'insulator'</font>)</li><li><font color="#3366ff">sqw_kpath</font>(s)</li><li><font color="#3366ff">sqw_thermochemistry</font>(s)</li><li><i>qh=0.01:0.5:1.5;qk=qh; ql=qh;
                   w=0.01:0.5:51;</i><i> f=s([], qh,qk,ql',w);</i></li><li><font color="#3366ff">plot3</font>(<font color="#3366ff">log10</font>(f(1,:,:,:)))<i>&nbsp; % qh ~ 0 plane</i></li></ul>
 <ul>

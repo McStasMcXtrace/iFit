@@ -4,7 +4,9 @@ function signal=sqw_phonons(configuration, varargin)
 %   iFunc/sqw_phonons: computes phonon dispersions using the ASE.
 %   A model which computes phonon dispersions from the Hellmann-Feynman forces acting 
 %     between atoms. The input argument is any configuration file describing the
-%     material, e.g. CIF, PDB, POSCAR, ... supported by ASE.
+%     material, e.g. CIF, PDB, POSCAR, ... supported by ASE. Alternatively, a
+%     Crystallography Open Database ID or chemical formulae can be entered.
+%
 %   This models can compute the coherent inelastic phonons dispersions for
 %     any crystalline (powder or single crystal) material, in the harmonic and
 %     adiabatic approxiimation.
@@ -72,6 +74,13 @@ function signal=sqw_phonons(configuration, varargin)
 %          cellpar=[5.64, 5.64, 5.64, 90, 90, 90])'
 %     See <https://wiki.fysik.dtu.dk/ase/ase/structure.html>
 %         <https://wiki.fysik.dtu.dk/ase/tutorials/spacegroup/spacegroup.html>
+%   Alternatively, the structure can be entered as a COD ID such as
+%       'cod: 1532356' will fetch ID on Crystallography Open Database.
+%   Alternatively, the structure can be entered as a chemical formulae in Hill
+%   notation (C, H and then alpha order) on Crystallography Open Database. When
+%   multiple matches, a dialogue will pop-up to select structure.
+%       'cod: O7 Se2 Tb2'
+%    
 %
 % 'metal','insulator','semiconductor': indicates the type of occupation for 
 %    electronic states, which sets smearing.
@@ -401,6 +410,32 @@ end % GUI
 % make sure we find the 'configuration' also from ifitpath
 if isempty(dir(configuration)) && ~isempty(dir(fullfile(ifitpath,'Data',configuration)))
   configuration = fullfile(ifitpath,'Data',configuration);
+end
+
+% check distant resource (http, https, ftp)
+if strncmp(configuration, 'http://', length('http://')) ...
+ | strncmp(configuration, 'https://',length('https://')) ...
+ | strncmp(configuration, 'ftp://',  length('ftp://'))
+  if (~usejava('mwt'))
+      fprintf(1, '%s: Reading from a URL requires a Java Virtual Machine.\n\tSkipping...\n', mfilename);
+      return
+  end
+  % access the net. Proxy settings must be set (if any).
+  try
+    % write to temporary file
+    disp([ mfilename ': Getting ' configuration ]);
+    configuration = urlwrite(configuration, [ tempname '.cif' ]);
+  catch ME
+    fprintf(1, '%s: Can''t read URL "%s".\n', mfilename, configuration);
+    disp(ME.mesage)
+    return
+  end
+end
+
+% check cod: entry by formula or ID
+if strncmp(configuration, 'cod:', length('cod:'))
+  cod = read_cif(configuration);
+  configuration = cod.file;
 end
 
 % ==============================================================================
