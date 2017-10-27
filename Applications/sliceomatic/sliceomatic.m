@@ -751,7 +751,7 @@ function sliceomatic(p1,p2,xmesh,ymesh,zmesh)
         % Camera toolbar Toggling
         %
        case 'cameratoolbar'
-        cameratoolbar('Toggle');
+        cameratoolbar(d.figure, 'Toggle');
        case 'annotationtoolbar'
         if propcheck(d.toolbar,'visible','on')
           set(d.toolbar,'vis','off');

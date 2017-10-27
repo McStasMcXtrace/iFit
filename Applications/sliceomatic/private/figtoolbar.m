@@ -3,7 +3,7 @@ function outd = figtoolbar(d)
 
 % Copyright 2000, 2001, 2002, 2003, 2004, 2005 The MathWorks Inc
 
-  set(gcf,'toolbar','none');
+  set(d.figure,'toolbar','none');
   
   if exist('uitoolfactory') == 2
     
@@ -21,15 +21,15 @@ function outd = figtoolbar(d)
     uitoolfactory(d.toolbar, 'Exploration.Pan');
     uitoolfactory(d.toolbar, 'Exploration.Rotate');
     
-    cameratoolbar('show');
-    cameratoolbar('togglescenelight');
+    cameratoolbar(d.figure, 'show');
+    cameratoolbar(d.figure, 'togglescenelight');
     
   else
 
     % We are in R13 or earlier
     try
-      cameratoolbar('show');
-      cameratoolbar('togglescenelight');
+      cameratoolbar(d.figure, 'show');
+      cameratoolbar(d.figure, 'togglescenelight');
       %cameratoolbar('setmode','orbit');
     catch
       disp('Could not display the camera toolbar.');

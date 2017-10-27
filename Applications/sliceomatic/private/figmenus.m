@@ -185,7 +185,7 @@ function controlmenu(fig, action)
   
   d=getappdata(gcf,'sliceomatic');
 
-  if cameratoolbar('getvisible')
+  if cameratoolbar(d.figure, 'getvisible')
     set(d.camtoolbar,'checked','on');
   else
     set(d.camtoolbar,'checked','off');

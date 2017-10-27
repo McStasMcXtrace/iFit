@@ -10,7 +10,7 @@ function appdata=sliceomaticfigure(d,xmesh,ymesh,zmesh)
 % error(nargchk(1,4,nargin))
 
 % Init sliceomatic
-  figure('name','Sliceomatic','toolbar','none');
+  d.figure = figure('name','Sliceomatic','toolbar','none');
   lim=[min(min(min(d.data))) max(max(max(d.data)))];
   if nargin==4
       % Reorder vectors: make them horizontal (prepare to flipdim)
@@ -136,10 +136,10 @@ function appdata=sliceomaticfigure(d,xmesh,ymesh,zmesh)
 
   % Set up our motion function before cameratoolbar is active.
   d.motionmetaslice = [];
-  set(gcf,'windowbuttonmotionfcn',@sliceomaticmotion);
+  set(d.figure,'windowbuttonmotionfcn',@sliceomaticmotion);
   
   % Try setting up the camera toolbar
-  d=figtoolbar(d);
+  d = figtoolbar(d);
   
   d = figmenus(d);
   
