@@ -6,14 +6,14 @@ function [data, this] = read_cif(file)
 % You may as well plot the CIF structure using SpinW with e.g.:
 %  plot(sw(data.file)); % plot the structure using SpinW
 %
-% When the argument is a chemical formulae (elements separated with spaces), or 
+% When the argument is a chemical formula (elements separated with spaces), or 
 % a COD ID, a search in the Crystallography Open Database is made.
 %
-%  data = read_cif('Mg O');
-%  data = read_cif('O3 Sr Ti');
-%  data = read_cif('1532356');
+%  data = read_cif('cod: Mg O');
+%  data = read_cif('cod: O3 Sr Ti');
+%  data = read_cif('cod: 1532356');
 %
-% The formulae should be given in Hill notation, e.g. C, then H, then other
+% The formula should be given in Hill notation, e.g. C, then H, then other
 % elements in alphabetical order.
 %
 % This requires proxy settings to be set (when behind a firewall)
@@ -31,7 +31,7 @@ function [data, this] = read_cif(file)
 
   data = []; this = [];
 
-  % test if the given file is a chemical formulae, in which case we make a query to COD
+  % test if the given file is a chemical formula, in which case we make a query to COD
   if (iscellstr(file) || ischar(file)) && isempty(dir(file))
     % not a file, we query COD at http://wiki.crystallography.net/howtoquerycod/
     % this requires proxy settings to be set (when behind a firewall), e.g. using miFit Preference
@@ -52,6 +52,20 @@ function [data, this] = read_cif(file)
     
     if iscellstr(file), file = sprintf('%s ', file{:}); end
     
+    if strcmpi(file, 'gui')
+      % pops-up a dialogue to enter a chemical formula
+      prompt={'Enter a {\color{red}chemical formula} in Hill notation (C, then H, then other elements in alpha order, separated with spaces) or {\color{red}COD ID} to search on {\color{blue}crystallography.net} or a {\color{red}file name}:'};
+      name=[ mfilename ': Input chemical formula/COD ID' ];
+      numlines=1;
+      defaultanswer={'O3 Sr Ti'};
+      options.Resize='on';
+      options.WindowStyle='normal';
+      options.Interpreter = 'tex';
+
+      file=inputdlg(prompt,name,numlines,defaultanswer,options);
+      if isempty(file), return; else file = char(file); end
+    end
+    
     if strncmp(file, 'cod:', 4)
       file = file(5:end);
     end
@@ -62,7 +76,6 @@ function [data, this] = read_cif(file)
     if ~isnan(str2double(file))
       cod = [ file '.cif' ];
     else
-    
       formula = strrep(strtrim(file), ' ', '%20');  % change spaces from formula to cope with COD query
       
       % query COD

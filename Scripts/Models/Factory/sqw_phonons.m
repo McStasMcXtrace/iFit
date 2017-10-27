@@ -405,6 +405,7 @@ end
 if ~isempty(options.gui) && ~any(isnan(options.gui))
   options = sqw_phonons_gui(configuration, options, status);
   if isempty(options), return; end
+  configuration = options.configuration;
 end % GUI
 
 % make sure we find the 'configuration' also from ifitpath
@@ -435,7 +436,12 @@ end
 % check cod: entry by formula or ID
 if strncmp(configuration, 'cod:', length('cod:'))
   cod = read_cif(configuration);
+  if isempty(cod), return; end  % cancelled
   configuration = cod.file;
+end
+
+if strncmp(configuration, 'file://', length('file://'))
+  configuration = configuration(8:end);
 end
 
 % ==============================================================================
