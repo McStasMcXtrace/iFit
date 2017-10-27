@@ -102,8 +102,9 @@ function handle = mifit_Models_Add_Entry(model)
     children = findobj(submenu_handle, 'UserData', callback);
   end
   if ~isempty(children)
-    mifit_disp([ '[Models_Add_Entry] ' label ' is already in the list of usable Models. Skipping.' ]);
-    return; 
+    mifit_disp([ '[Models_Add_Entry] ' label ' is already in the list of usable Models. Updating.' ]);
+    set(children, 'UserData', callback);
+    return
   end
 
   handle = uimenu(submenu_handle, 'Label', label, 'UserData', callback, ...
