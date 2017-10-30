@@ -17,6 +17,8 @@ function [data, this] = read_cif(file)
 % elements in alphabetical order.
 %
 % This requires proxy settings to be set (when behind a firewall)
+%   ProxyHost='proxy.ill.fr'; % Proxy address if you are behind a proxy [e.g. myproxy.mycompany.com or empty]
+%   ProxyPort=8888;           % Proxy port if you are behind a proxy [8888 or 0 or empty]
 %   java.lang.System.setProperty('http.proxyHost', ProxyHost); 
 %   com.mathworks.mlwidgets.html.HTMLPrefs.setUseProxy(true);
 %   com.mathworks.mlwidgets.html.HTMLPrefs.setProxyHost(ProxyHost);
