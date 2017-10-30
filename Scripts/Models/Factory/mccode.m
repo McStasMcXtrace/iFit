@@ -631,7 +631,7 @@ function result = instrument_compile(options)
     ' using ' options.mccode]);
   % assemble the command line: compile, no particle generated
   cmd = [ options.mccode ' --force-compile ' options.instrument ' --ncount=0' ];  
-  if isfield(options,'mpi')
+  if isfield(options,'mpi') && options.mpi > 1
     cmd = [ cmd ' --mpi=1' ];
   end
   disp(cmd)

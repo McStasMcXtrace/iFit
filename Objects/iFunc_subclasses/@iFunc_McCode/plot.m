@@ -63,7 +63,6 @@ function [comps, fig, model]=plot(model, p, options)
   disp([ mfilename ': running instrument ' strtok(model.Name) ' in Trace mode...' ])
   output = evalc('[val,model]=feval(model,[],nan);');
   model.UserData.options.trace = 0;
-  
   if isempty(monitors)
     monitors       = model.UserData.monitors;
   end
@@ -71,6 +70,7 @@ function [comps, fig, model]=plot(model, p, options)
 
   % first extract the portion 'start':'end'
   disp([ mfilename ': rendering geometry...' ])
+  
   index_start = strfind(output, 'MCDISPLAY: start');
   index_end   = strfind(output, 'MCDISPLAY: end');
   if numel(index_start) ~= 1 || numel(index_end) ~= 1
@@ -105,7 +105,7 @@ function [comps, fig, model]=plot(model, p, options)
       ': WARNING: not the same number of declared components (' num2str(numel(comps)) ...
       ') and MCDISPLAY sections ' num2str(numel(index_mcdisplay_comp)) ])
   end
-  
+
   % extract the multiline and circle stuff in each component mcdisplay section
   for index=1:numel(index_mcdisplay_comp)
     if index < numel(index_mcdisplay_comp), 
@@ -123,9 +123,9 @@ function [comps, fig, model]=plot(model, p, options)
     end
   end
   clear output_mcdisplay_section
-  
+
   % PLOTTING: transform the points and plot them
-  fig = figure('Name',[ 'Instrument: ' model.Name ]);
+  fig = gcf; set(fig, 'Name',[ 'Instrument: ' model.Name ]);
   colors='bgrcmk';
   for index=1:numel(comps)
     comp = comps(index);
@@ -335,7 +335,7 @@ function plot_contextmenu(a, name, pars, monitors)
   if iscell(pars), pars = sprintf('%s ', pars{:}); end
   uicm = uicontextmenu('Tag','plot_contextmenu_gca');
   uimenu(uicm, 'Label', [ 'About ' name '...' ], ...
-           'Callback', [ 'helpdlg(''' pars ''',''' name ''')' ]);
+           'Callback', [ 'helpdlg(''' strrep(pars, sprintf('\n'),' ') ''',''' name ''')' ]);
   if ~isempty(monitors)
     uimenu(uicm, 'Label', 'Plot monitors...', ...
       'UserData',monitors, ...
