@@ -214,6 +214,14 @@ function [comps, fig, model]=plot(model, p, options)
   end
   
   % add the model value in a small insert (statistics will be limited as ncount=1e3)
+  % we get the monitor values (which may be with higher statistics)
+  if ~isempty(model.UserData.options.monitor) && isnumeric(model.UserData.options.monitor) && numel(monitors) > 1
+    monitors=monitors(model.UserData.options.monitor);
+  end
+  if isa(monitors, 'iData')
+    if numel(monitors) > 1, monitors = monitors(end); end
+    val=double(monitors);
+  end
   if ~isempty(val)
     if isvector(val)
       a=axes('Parent',fig,'position',[.8 .05 .15 .15]);

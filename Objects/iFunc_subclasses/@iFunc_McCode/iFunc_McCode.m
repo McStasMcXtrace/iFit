@@ -58,17 +58,20 @@ classdef iFunc_McCode < iFunc
     end
     
     % overloaded feval which prefers to use 'nan' when axes are undefined
-    function [signal, model, ax, name] = feval(self, varargin)
+    function [signal, self, ax, name] = feval(self, varargin)
       % Evaluate an McCode model value using given parameters and axes.
       % When no axis is given, the raw monitor values are returned.
       % To get the result as iData objects, use: iData(model, ...)
       %   or get model.UserData.monitors after the calculation.
       if numel(varargin) == 0
-        [signal, model, ax, name] = feval@iFunc(self, [], nan);
+        [signal, self, ax, name] = feval@iFunc(self, [], nan);
       elseif numel(varargin) == 1 && isvector(varargin{1})
-        [signal, model, ax, name] = feval@iFunc(self, varargin{1}, nan);
+        [signal, self, ax, name] = feval@iFunc(self, varargin{1}, nan);
       else  
-        [signal, model, ax, name] = feval@iFunc(self, varargin{:});
+        [signal, self, ax, name] = feval@iFunc(self, varargin{:});
+      end
+      if ~isempty(inputname(1))
+        assignin('caller',inputname(1),self); % update in original object
       end
     end % feval (override iFunc)
     
