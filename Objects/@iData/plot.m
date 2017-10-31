@@ -452,7 +452,7 @@ if (strfind(method,'legend'))
 end
 
 % display model value if available
-if isa(mv, 'iData') && ~isempty(mv) && (ndims(mv) <= 2 || isvector(mv) > 1)
+if isa(mv, 'iData') && ~isempty(mv) && ~all(all(isnan(mv))) && (ndims(mv) <= 2 || isvector(mv) > 1)
   hold on
   axis(axis); % fix plot limits
   h2 = [];
