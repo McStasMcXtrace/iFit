@@ -328,7 +328,9 @@ function mifit_File_Exit(varargin)
     if ~isempty(dir(file)), delete(file); end
   end
   mifit_disp([ '[Exit] Exiting miFit. Bye bye.' ]);
-  close(mifit_fig('mifit_View_Parameters'))
+  if ishandle(mifit_fig('mifit_View_Parameters'))
+    delete(mifit_fig('mifit_View_Parameters'))
+  end
   % delete(getappdata(mifit_fig, 'DnDControl'));
   delete(mifit_fig);
   

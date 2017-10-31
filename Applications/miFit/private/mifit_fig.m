@@ -1,6 +1,7 @@
 function f=mifit_fig(tag)
 % [internal] mifit_fig: search for a given Tag in Application or main Figure if ommitted.
-  persistent fig handles
+  persistent fig
+  persistent handles
   
   if ~ishandle(fig), fig=[]; end
   if isempty(fig)
@@ -21,7 +22,7 @@ function f=mifit_fig(tag)
     if isempty(handles.(tag))
       handles.(tag) = findall(fig, 'Tag', tag);
       if isempty(handles.(tag))
-        handles.(tag) = findall(0,'Tag', tag);
+        handles.(tag) = findall(0, 'Tag', tag);
       end
     end
     f = handles.(tag);
