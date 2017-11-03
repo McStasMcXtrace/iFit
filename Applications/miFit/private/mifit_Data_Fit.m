@@ -50,9 +50,9 @@ function mifit_Data_Fit(varargin)
   % update Data list with fit results (and History)
   D = getappdata(mifit_fig, 'Data');
   if numel(D) == 1
-    D = d;
+    D = { d };
   else
-    D(index_selected) = d;
+    D{index_selected} = d;
   end
   setappdata(mifit_fig, 'Data',D);
   mifit_History_push;

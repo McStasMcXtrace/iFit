@@ -97,7 +97,7 @@ if ~isempty(d)
   
   D     = getappdata(mifit_fig, 'Data');  % all data sets
   if numel(D) > 1 && getappdata(mifit_fig, 'CurrentDataSetIndex') <= numel(D)
-    D(getappdata(mifit_fig, 'CurrentDataSetIndex')) = d;
+    D{getappdata(mifit_fig, 'CurrentDataSetIndex')} = d;
     
     val = val(event.Indices(1));  % only the modified value is forwarded
     pars=model.Parameters;
@@ -109,7 +109,7 @@ if ~isempty(d)
     for index=index_selected(:)'
       % not the current data set (already updated)
       if getappdata(mifit_fig, 'CurrentDataSetIndex') == index, continue; end
-      if numel(D) > 1, this_d = D(index); else this_d = D; end
+      this_d = D{index};
       this_ = [];
       if isfield(this_d, 'Model')
         this_model = get(this_d, 'Model');
@@ -141,10 +141,10 @@ if ~isempty(d)
         end
       end
       set(this_d, 'Model', this_model);
-      if numel(D) > 1, D(index) = this_d; else D = this_d; end
+      D{index} = this_d;
     end  
   else
-    D = d;
+    D = { d };
   end
   setappdata(mifit_fig, 'Data', D);
   setappdata(mifit_fig, 'CurrentDataSet',d);

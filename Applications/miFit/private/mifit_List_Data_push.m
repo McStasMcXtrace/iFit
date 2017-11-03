@@ -21,17 +21,18 @@ function mifit_List_Data_push(d, flag_replace)
 
   % update AppData Stack
   if numel(d) > 1, d = d(:); end
-  Data = getappdata(fig, 'Data');
+  Data = getappdata(fig, 'Data'); % should be a cell
 
   if strcmp(flag_replace,'replace')
     % we search for data sets that have the same Tag, and replace them
     d0 = [];
-    Tags = get(Data, 'Tag');
+    Tags = cellfun(@(c)get(c, 'Tag'), Data, 'UniformOutput',false);
+    
     for index=1:numel(d)
       match = find(strcmp(get(d(index),'Tag'), Tags));
       if ~isempty(match)
-        if numel(Data) == 1, Data = d(index); 
-        else Data(match) = d(index); % replace existing elements
+        if numel(Data) == 1, Data = { d(index) }; 
+        else Data{match} = d(index); % replace existing elements
         end
       else
         d0 = [ d0 ; d(index) ];      % append new elements
@@ -40,7 +41,7 @@ function mifit_List_Data_push(d, flag_replace)
     d = d0;
   end
   
-  Data = [ Data ; d ];  % a column of iData set
+  Data = { Data{:} d };  % a cell of iData set
   setappdata(fig, 'Data', Data);
   
   % update the List labels by appending the Name at the end

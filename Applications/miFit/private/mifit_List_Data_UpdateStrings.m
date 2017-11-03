@@ -8,11 +8,11 @@ function mifit_List_Data_UpdateStrings
   list           = {};
   if numel(Data) > 1
     for index=1:numel(Data)
-      [~,label] = strtok(char(Data(index)));
+      [~,label] = strtok(char(Data{index}));
       % we remove the initial 'iData' word
       list{end+1} = strtrim(label);
     end
   else
-    list{end+1} = char(Data);
+    list{end+1} = char(Data{1});
   end
   set(hObject,'String', list, 'Value', []);

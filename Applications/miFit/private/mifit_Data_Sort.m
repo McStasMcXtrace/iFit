@@ -20,7 +20,7 @@ function mifit_Data_Sort(varargin)
     'Move data sets at the end', ...
     'Invert selection (select those unselected)', ...
     'Revert order (first goes to last)'};
-  PromptString = cellstr(char(d));
+  PromptString = cellstr(char([ d{:} ]));
   if numel(PromptString) > 3
     PromptString=[ PromptString(1:3) ; ' ...' ];
   end
@@ -43,6 +43,8 @@ function mifit_Data_Sort(varargin)
     d=D;
     index_selected=1:numel(D);
   end
+  
+  if iscell(d), d=[ d{:} ]; end
   
   % sort
   switch selection
@@ -72,7 +74,7 @@ function mifit_Data_Sort(varargin)
     index(index_selected) = 0;
     index         = find(index);
     not_selected  = D(index);
-    D = [ not_selected ; selected ];
+    D = { not_selected{:} selected{:} };
     setappdata(mifit_fig, 'Data',D);
     mifit_List_Data_UpdateStrings;
     mifit_Edit_Select_All([], (numel(not_selected)+1):numel(D));
@@ -84,7 +86,7 @@ function mifit_Data_Sort(varargin)
     index(index_selected) = 0;
     index         = find(index);
     not_selected  = D(index);
-    D = [ selected ; not_selected ];
+    D = { selected{:} not_selected{:} };
     setappdata(mifit_fig, 'Data',D);
     mifit_List_Data_UpdateStrings;
     mifit_Edit_Select_All([], 1:numel(selected));

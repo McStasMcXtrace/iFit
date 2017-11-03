@@ -52,12 +52,12 @@ function mifit_Data_AssignModel(varargin)
   mifit_disp([ 'Assigning Model "' model.Name '" to ' num2str(numel(index_selected)) ' Data set(s):' ]);
   mifit_History_push();
   for index=index_selected(:)'
-    if numel(D) > 1, this_d = D(index); else this_d = D; end
+    this_d = D{index});
     this_d = setalias(this_d, 'Model', model, model.Name);
     this_d = setalias(this_d, 'ModelValue', []);
     this_d = setalias(this_d, 'ModelParameters', []);
     mifit_disp(char(this_d));
-    if numel(D) > 1, D(index) = this_d; else D = this_d; end
+    D{index} = this_d;
     if index==index_selected(1), 
       setappdata(mifit_fig, 'CurrentDataSet', this_d); 
     end

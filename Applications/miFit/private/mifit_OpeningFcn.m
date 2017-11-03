@@ -17,7 +17,7 @@ if isempty(fig) || ~ishandle(fig)
     config=mifit_Preferences_Apply;
 
     % create the AppData default values
-    setappdata(fig, 'Data',    []);
+    setappdata(fig, 'Data',    {});
     setappdata(fig, 'History', {});
     setappdata(fig, 'Models',  {});
     setappdata(fig, 'CurrentOptimizer',   []);

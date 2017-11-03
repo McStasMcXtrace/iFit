@@ -268,6 +268,7 @@ function mifit_File_Print(varargin)
 % File/Print: print the interface. 
 % generate an HTML report and display in browser for printing.
   d=mifit_List_Data_pull(); % get selected objects
+  d = { d{:} };
   if all(isempty(d)), return; end
   dirname  = tempname;
   filename = fullfile(dirname,'index.html');
@@ -377,7 +378,7 @@ function mifit_File_Reset_Factory(ButtonName)
   if ~isempty(mifit_fig)
     hObject        = mifit_fig('List_Data_Files');
     set(hObject, 'String',[],'Value',[]);
-    setappdata(mifit_fig, 'Data',[]);
+    setappdata(mifit_fig, 'Data',{});
     setappdata(mifit_fig, 'CurrentDataSet', []);
     setappdata(mifit_fig, 'CurrentDataSetIndex', []);
     setappdata(mifit_fig, 'History', []);
@@ -407,7 +408,7 @@ function mifit_Edit_Undo(varargin)
   mifit_List_Data_UpdateStrings();
   [d, index_selected]=mifit_List_Data_pull(); % get selected objects
   if ~isempty(index_selected)
-    if numel(d) > 1, d=d(1); end
+    d=d{1};
     setappdata(mifit_fig, 'CurrentDataSet', d);
     setappdata(mifit_fig, 'CurrentDataSetIndex', index_selected);
     if ~isempty(mifit_fig('mifit_View_Parameters'))
@@ -431,7 +432,7 @@ function mifit_Edit_Copy(varargin)
   x = {};
   for index=1:numel(d)
     % we create a cell which contains the Signal and Axes
-    if numel(d) == 1, this = d; else this=d(index); end
+    this=d{index};
     for dim = 1:ndims(this)
       x{end+1} = getaxis(this, dim);
     end
@@ -491,7 +492,10 @@ function mifit_Edit_Paste(varargin)
 function mifit_Edit_Duplicate(varargin)
 % Edit/Duplicate: copy and paste selected. Update the history (in Paste).
   d=mifit_List_Data_pull();
-  mifit_List_Data_push(copyobj(d));
+  for index=1:numel(d)
+    d{index} = copyobj(d{index});
+  end
+  mifit_List_Data_push(d);
 
 function mifit_Edit_Delete(varargin)
 % Edit/Delete: delete selected
@@ -526,6 +530,7 @@ function mifit_Data_Plot(style, varargin)
     else style = ''; end
   elseif nargin > 1 && isa(varargin{1}, 'iData'), d=varargin{1};
   else d = mifit_List_Data_pull; end
+  if iscell(d), d= [ d{:} ]; end
   if ~nargin || isempty(style) || ~ischar(style), style=''; end
   if all(isempty(d)), return; end
   set(mifit_fig,'Pointer','watch');
@@ -543,6 +548,7 @@ function mifit_Data_PlotAs(style, varargin)
     else style = ''; end
   elseif nargin > 1 && isa(varargin{1}, 'iData'), d=varargin{1};
   else d = mifit_List_Data_pull; end
+  if iscell(d), d= [ d{:} ]; end
   if ~nargin || isempty(style) || ~ischar(style), style=''; end
   if nargin < 2 || ~ischar(style), style=''; end
   if all(isempty(d)), return; end
@@ -590,16 +596,16 @@ function mifit_Data_Eval_Model(varargin)
   model = {};
   if numel(d) == 1
     if isfield(d, 'Model')
-      model = { get(d, 'Model') };
+      model = { get(d{1}, 'Model') };
     elseif ~isempty(findfield(d, 'Model'))
-      model = { get(d, findfield(d, 'Model', 'cache first')) };
+      model = { get([ d{1} ], findfield(d, 'Model', 'cache first')) };
     end
   else
-    model = getalias(d, 'Model');
+    model = getalias([ d{:} ], 'Model');
   end
   mifit_disp([ '[Data Eval Model] evaluating Model value for data sets ...' ]);
   for index=1:numel(d)
-    if numel(d) == 1, this = d; else this = d(index); end
+    this = d{index};
     if iscell(model) && index <= numel(model) && ~isempty(model{index})
       this_model = model{index};
       modelValue = this(this_model);  % eval iFunc
@@ -608,7 +614,7 @@ function mifit_Data_Eval_Model(varargin)
       setappdata(mifit_fig, 'CurrentModel', modelValue.Model);
       mifit_disp(char(this))
       mifit_disp([ '  [ ' num2str(modelValue.Model.ParameterValues(:)') ' ]' ]);
-      if numel(d) == 1, d=this; else d(index) = this; end
+      d{index} = this;
     end
   end
   mifit_List_Data_push(d, 'replace');  % replace existing data sets
@@ -625,7 +631,7 @@ function mifit_Data_Saveas(varargin)
 % Data/Saveas: export selected data sets
   d = mifit_List_Data_pull;
   if numel(d)
-    save(d, 'gui');
+    save([ d{:} ], 'gui');
   end
   
 function mifit_Data_Table(varargin)
@@ -634,7 +640,7 @@ function mifit_Data_Table(varargin)
   config = getappdata(mifit_fig, 'Preferences');
   
   for index=1:numel(d)
-    handle = edit(d(index), 'editable');
+    handle = edit(d{index}, 'editable');
     set(handle, 'FontSize', config.FontSize);
     set(handle, 'DeleteFcn', @mifit);
   end
@@ -643,9 +649,9 @@ function mifit_Data_View(varargin)
 % Data/view Source: edit source file when exists
   d = mifit_List_Data_pull;
   for index=1:numel(d)  
-    if ~isempty(d(index).Source) && ~isdir(d(index).Source)
+    if ~isempty(d{index}.Source) && ~isdir(d{index}.Source)
       try
-        edit(d(index).Source)
+        edit(d{index}.Source)
       end
     end
   end
@@ -653,7 +659,7 @@ function mifit_Data_View(varargin)
 function mifit_Data_Properties(varargin)
 % Data/Properties: display dialogue about data sets
   d = mifit_List_Data_pull;
-  help(d);  % this is very basic. Not edit there.
+  help([ d{:} ]);  % this is very basic. No edit there.
 
 function mifit_Data_Search(varargin)
 % Data/Search: search all Data sets for a token
@@ -664,7 +670,7 @@ function mifit_Data_Search(varargin)
   if isempty(answer),    return; end  % cancel
   if isempty(answer{1}), return; end  % empty pattern
   
-  D=getappdata(mifit_fig, 'Data');
+  D=getappdata(mifit_fig, 'Data'); D = [ D{:} ];
   
   mifit_disp([ '[Data search] Data sets mentioning "' answer{1} '" ...' ]);
   set(mifit_fig,'Pointer','watch');
@@ -692,7 +698,7 @@ function mifit_Data_History(varargin)
 % Data/History: show Data sets command history
   d = mifit_List_Data_pull();
   for index=1:numel(d)
-    [c,fig]=commandhistory(d(index));
+    [c,fig]=commandhistory(d{index});
   end
   
 function mifit_Data_Math_Unary(varargin)
@@ -755,7 +761,7 @@ function mifit_Data_Operator(op)
   op = sort(op); % alpha order sort
     
   % show operator selection dialogue
-  PromptString = cellstr(char(d));
+  PromptString = cellstr(char([ d{:} ]));
   if numel(PromptString) > 3
     PromptString=[ PromptString(1:3) ; ' ...' ];
   end
@@ -769,17 +775,17 @@ function mifit_Data_Operator(op)
  
   % apply operator on Datasets
   mifit_disp([ 'Applying operator "' op '" on data set(s):' ]);
-  mifit_disp(char(d))
+  mifit_disp(char([ d{:} ]))
   set(mifit_fig,'Pointer','watch');
   
   try
     [op, arg] = strtok(op);
     arg = str2num(strtok(arg));
     if isempty(arg)
-      d = feval(op, d);
+      d = feval(op, [ d{:} ]);
     else
       % special case for operators with 2nd numeric argument
-      d   = feval(op, arg, d);
+      d = feval(op, arg, [ d{:} ]);
     end
   catch ME
     mifit_disp([ '[Data operation] Failed applying operator "' op '"' ]);
@@ -1021,7 +1027,7 @@ function mifit_List_Data_Files(varargin)
 
   if ~isempty(obj)
     if strcmp(get(gcbf,'SelectionType'), 'open')  % double-click
-      mifit_Data_Plot(d);  % plot every time we change the data set selection
+      mifit_Data_Plot([ d{:} ]);  % plot every time we change the data set selection
     end
   end
   
@@ -1032,7 +1038,7 @@ function mifit_List_Data_Files(varargin)
     D     = getappdata(mifit_fig, 'Data');  % all data sets
     model_assignments = 0;
     for index=index_selected(:)'
-      if numel(D) > 1, this_d = D(index); else this_d = D; end
+      this_d = D{index};
       if isempty(this_d) || ~isa(this_d,'iData'), continue; end
       previous_model = [];
       % get the Model stored in the Dataset (after fit)
@@ -1045,7 +1051,7 @@ function mifit_List_Data_Files(varargin)
         this_d = setalias(this_d, 'Model', model);
         model_assignments = model_assignments+1;
       end
-      if numel(D) > 1, D(index) = this_d; else D = this_d; end
+      D{index} = this_d;
     end
     if model_assignments
       setappdata(mifit_fig, 'Data', D);

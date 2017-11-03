@@ -17,7 +17,7 @@ function mifit_Edit_Select_All(hObject, select)
   set(hObject,'Value', index_selected);
   D     = getappdata(mifit_fig, 'Data');
   if numel(D) && ~isempty(index_selected)
-    setappdata(mifit_fig, 'CurrentDataSet', D(index_selected(1)));
+    setappdata(mifit_fig, 'CurrentDataSet',    D{index_selected(1)});
     setappdata(mifit_fig, 'CurrentDataSetIndex', index_selected(1));
   else
     setappdata(mifit_fig, 'CurrentDataSet', []);
