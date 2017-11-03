@@ -22,10 +22,10 @@
               neutron scattering instrument ray-tracing)</a></li>
           <li><a href="#mozTocId387565">Lattice-dynamics (optional, DFT
               ab-initio)</a></li>
+          <li><a href="#mozTocId94216">Nuclear engineering (optional)</a></li>
         </ol>
       </li>
-      <li><b><a href="#mozTocId480203">Obtaining the package / Download
-          </a></b></li>
+      <li><a href="#mozTocId480203">Obtaining the package / Download </a></li>
       <li><a href="#mozTocId890374">Installation - stand-alone
           distribution</a>
         <ol>
@@ -58,6 +58,10 @@
     <div style="text-align: center;"><br>
     </div>
     <h3><a class="mozTocH3" name="mozTocId780492"></a>Requirements</h3>
+    <p>In short, you do not need many dependencies. Basic usage only
+      requires a running system, and to install the iFit package.
+      Further add-ons can be installed later.<br>
+    </p>
     <h4><a class="mozTocH4" name="mozTocId870880"></a>Stand-alone /
       run-time release / no Matlab license required<br>
     </h4>
@@ -80,6 +84,7 @@
       However, you can not define new functions. <br>
       <span style="font-weight: bold; font-style: italic;">Refer to the
       </span><a style="font-weight: bold;" href="iFit.html">'stand-alone'
+
 
 
 
@@ -131,6 +136,7 @@
 
 
 
+
       can be compiled (usually this is done automatically). We supply
       these executable files in the Download/binary section of the iFit
       web site. In principle, you do not need this. This is not required
@@ -166,15 +172,25 @@
       computations to estimate the phonon dispersion relations in solid
       state materials, you will need to install at least the ASE. Please
       read the <a href="Models.html#mozTocId183326">Models/Phonons</a>
-      and our <a href="Models_Phonons.html">Phonons documentation</a>.<br>
+      and our <a href="Models_Phonons.html">Phonons documentation</a>.
+      <font color="#ff0000">Warning: </font>Most of the DFT codes are
+      designed to run on Linux systems. We thus recommend you start from
+      a Debian-class system, or use a Virtual machine.<br>
     </blockquote>
+    <h4><a class="mozTocH4" name="mozTocId94216"></a>Nuclear engineering
+      (optional)</h4>
+    <blockquote>To facilitate the handling of e.g. ENDF and ACE files,
+      the <a href="http://pyne.io/">PyNE</a> environment may be
+      installed.<br>
+    </blockquote>
+    <blockquote> </blockquote>
     <a href="http://www.ubuntu.com/"><img alt="Ubuntu Linux"
         title="Ubuntu Linux" src="images/ubuntu.png" style="border: 0px
         solid ; width: 118px; height: 27px;" align="right"></a>We prefer
     Linux systems, such as <a href="http://ubuntu.com">Ubuntu</a>, when
     handling large data sets, and performing <a
       href="http://www.mcstas.org/">McStas</a> optimizations, so that we
-    fully use multi-core systems (e.g. though threads and MPI). You may
+    fully use multi-core systems (e.g. through threads and MPI). You may
     use our <a
 href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/illcs-livedvd/">ILL/CS
 
@@ -188,9 +204,10 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
       Live DVD</a> ready-to-run system with <i>Phonons</i>, <span
       style="font-style: italic;">McStas</span> and <i>iFit</i>
-    (standalone) all pre-installed.<br>
+    (standalone) all pre-installed, to try-out.<br>
     <br>
     <h3><a class="mozTocH3" name="mozTocId480203"></a>Obtaining the
       package / Download<br>
@@ -223,13 +240,14 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
           Live DVD</a> ready-to-run system with <i>Phonons</i>, <span
           style="font-style: italic;">McStas</span> and <i>iFit</i>
         (standalone) all pre-installed.</li>
     </ul>
     <br>
     <table style=" text-align: left; width: 100%;" border="1"
-      cellspacing="2" cellpadding="2">
+      cellpadding="2" cellspacing="2">
       <tbody>
         <tr>
           <td style="vertical-align: top;"><a
@@ -265,26 +283,14 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
                   bits</a>:</span></span><span style="font-weight:
               bold;"> </span><br>
-            <span style="font-style: italic;">Debian: </span>[<a
-href="http://ifit.mccode.org/Downloads/binary/glnx64/mcrinstaller-7.13-2010a-amd64.deb">MCR</a>
-            then iFit] or use <a
-              href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/"><b>Debian
-
-
-
-
-
-
-
-
-
-
-
-                repository</b></a> (see below).<br>
+            <span style="font-style: italic;">Debian: </span><b>see </b><b><a
+                href="#mozTocId73823">below</a></b>.<br>
             <span style="font-style: italic;">Other: </span>Use the <a
 href="http://ifit.mccode.org/Downloads/binary/glnx64/MCRInstaller-amd64.bin">MCR
+
 
 
 
@@ -308,6 +314,7 @@ href="http://ifit.mccode.org/Downloads/binary/glnx64/MCRInstaller-amd64.bin">MCR
           <td style="vertical-align: top;"><span style="font-weight:
               bold;"><span style="color: rgb(204, 51, 204);"><a
                   href="http://ifit.mccode.org/Downloads/binary/win64">64
+
 
 
 
@@ -348,6 +355,7 @@ href="http://ifit.mccode.org/Downloads/binary/glnx64/MCRInstaller-amd64.bin">MCR
 
 
 
+
                   bits</a>:</span></span><span style="font-weight:
               bold;"> </span>Use the iFit.app, which <b><i>includes</i></b>
             the MCR (no need to install it separately). Use
@@ -358,20 +366,32 @@ href="http://ifit.mccode.org/Downloads/binary/glnx64/MCRInstaller-amd64.bin">MCR
           <td valign="top"><a
 href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/illcs-livedvd/"><img
                 src="images/cd-to-usb-icon-120x120.png" title="iso-usb"
-                alt="iso-usb" border="2" align="middle" width="50"
-                height="50"></a> ISO/USB<br>
+                alt="iso-usb" border="2" height="50" width="50"
+                align="middle"></a> ISO/USB<br>
           </td>
           <td valign="top">For all computers and virtual machines. Get
             it <a
-href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/illcs-livedvd/">HERE</a>.<br>
+href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/illcs-livedvd/">HERE</a>.
+            This is for tutorials and testing.<br>
             <br>
             use from a virtual machine e.g. <a
               href="https://www.virtualbox.org/">VirtualBox</a> <br>
-            or
+            or <a href="https://www.qemu.org/">QEmu</a>
             <meta http-equiv="content-type" content="text/html;
               charset=windows-1252">
             <span style="color: rgb(51, 51, 51); font-family: Consolas, Menlo, Monaco, &quot;Lucida Console&quot;, &quot;Liberation Mono&quot;, &quot;DejaVu Sans Mono&quot;, &quot;Bitstream Vera Sans Mono&quot;, &quot;Courier New&quot;, monospace; font-size: 14.4px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; white-space: pre; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; background-color: rgb(248, 248, 248); text-decoration-style: initial; text-decoration-color: initial; display: inline !important; float: none;">qemu-system-x86_64 -boot d -cdrom ubuntu-ifit.iso -m <i>8192</i></span><i><br>
             </i></td>
+        </tr>
+        <tr>
+          <td valign="top">VirtualBox appliance (OVA)<br>
+          </td>
+          <td valign="top">For all computers using <a
+              href="https://www.virtualbox.org/">VirtualBox</a>. Get it
+            <a
+href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/illcs-livedvd/">HERE</a>.
+            Assign at least 4 Gb mem, 30 Gb disk, all your CPU cores.
+            Login 'lambda' with 'illill'.<br>
+          </td>
         </tr>
       </tbody>
     </table>
@@ -391,23 +411,23 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
     </ul>
     <h3><a class="mozTocH3" name="mozTocId890374"></a>Installation -
       stand-alone distribution</h3>
-    <p>Install the Matlab Compiler Runtime (MCR 7.13 R2010a) for your
-      system if it has not been installed previously. This is not
-      required if you only wish to upgrade iFit.<br>
-    </p>
+    <p>Debian-class systems (e.g. Ubuntu, Mint, Debian, etc...) are our
+      best choice. To get a complete new system, first install e.g.
+      Ubuntu (see <a href="https://www.ubuntu.com/download/desktop">here</a>),
+      then apply the following procedure to add iFit. </p>
     <h4><a name="mozTocId73823" class="mozTocH4"></a><span
         style="font-weight: bold;">On Debian Linux systems</span><span
         style="font-weight: bold;"></span></h4>
     <blockquote>
-      <p>An easy way to install packages it to make use of the <a
+      <p>An easy way to install packages on an already installed
+        Debian-class system is to make use of the <a
           href="http://packages.mccode.org">mccode.org repository</a>.
         Use e.g. for Ubuntu 16.04 Xenial:<br>
       </p>
     </blockquote>
     <blockquote>
       <blockquote>
-        <pre><meta http-equiv="content-type" content="text/html; charset=windows-1252">% cd /etc/apt/sources.list.d<br>% sudo wget <a href="http://packages.mccode.org/debian/mccode-xenial.list">http://packages.mccode.org/debian/mccode-xenial.list</a><br></pre>or for Ubuntu 14.04 Trusty/Debian 8 Jessie<br><meta http-equiv="content-type" content="text/html; charset=windows-1252"><pre>% sudo wget <a href="http://packages.mccode.org/debian/mccode.list">http://packages.mccode.org/debian/mccode.list</a><br></pre>then:<br><pre>% sudo apt-get update<br>% sudo apt-get install ifit mcrinstaller libxp6
-</pre><p>This can also be done from e.g. <i>Synaptic</i> (menu
+        <pre><meta http-equiv="content-type" content="text/html; charset=windows-1252">% cd /etc/apt/sources.list.d<br>% sudo wget <a href="http://packages.mccode.org/debian/mccode-xenial.list">http://packages.mccode.org/debian/mccode-xenial.list</a><br></pre>or for Ubuntu 14.04 Trusty/Debian 8 Jessie<br><meta http-equiv="content-type" content="text/html; charset=windows-1252"><pre>% sudo wget <a href="http://packages.mccode.org/debian/mccode.list">http://packages.mccode.org/debian/mccode.list</a><br></pre>then:<br><pre>% sudo apt-get update<br>% sudo apt-get install ifit mcrinstaller libxp6<br></pre>and for <a href="Models_Phonons.html">Phonons</a>, <a href="McStas.html">McStas</a> and nuclear engineering stuff<br><pre>% sudo apt-get install ifit-phonons pyne mcstas-suite</pre></blockquote><p>This can also be done from e.g. <i>Synaptic</i> (menu
       Settings/repositories) and <i>Ubuntu Software Center</i> (menu
       Edit/Software Sources) ; tab Other Software/Add... Then select
       packages <i>ifit</i> and <i>mcrinstaller</i> and install them.<br>
@@ -428,7 +448,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
       to use iFit as a replacement, then will automatically create a
       link:<br>
     </p>
-    <pre style="margin-left: 40px;">% sudo ln -s /usr/local/ifit/ifit /usr/local/bin/matlab</pre></blockquote></blockquote>
+    <pre style="margin-left: 40px;">% sudo ln -s /usr/local/ifit/ifit /usr/local/bin/matlab</pre></blockquote>
     <h4><a name="mozTocId220105" class="mozTocH4"></a><span style="font-weight: bold;">On Other Linux systems</span><span style="font-weight: bold;"></span> <br></h4><blockquote><p>We recommend to install the
       MCR in<span style="font-style: italic;"> /opt/MATLAB</span>
       (requires administrative privileges).<br>
@@ -463,7 +483,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
     Recent MacOSX systems (El capitan, Sierra) provide a Java 7 or 8
     version, whereas the standalone requires a Java 6. Install the Java
     6 from <a href="http://ifit.mccode.org/Downloads/binary/mac64/javaforosx.dmg">here</a>,
-    then install iFit standalone.<br>
+    then install iFit standalone.<br><br><font color="#ff0000">Warning</font>: install all DFT codes for Phonons is not easy under Mac OSX. We then recommend you run a VirtualBox machine (see below).<br>
     </blockquote><div style="margin-left: 40px;"> </div>
     <h4><a name="mozTocId719276" class="mozTocH4"></a><span style="font-weight: bold;">On Windows systems</span><br></h4><blockquote><p>Install the MCR by double-clicking the corresponding <span style="font-style: italic;">MCRInstaller.exe</span>. The install
       location defaults to <span style="font-style: italic;">C:\Program
@@ -474,10 +494,10 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
       the iFit icon to directly import data files and plot them (Linux
       and Windows systems). This also works when using the operators
       short cuts included in the iFit standalone directory (under
-      Linux).<br></p></blockquote><h3><a name="mozTocId903368" class="mozTocH3"></a>Installation - ISO / USB / DVD<br></h3><p>It is possible to use an ISO distribution containing <i>iFit,</i> <i>Phonons</i> and <i>McStas,</i> all pre-installed.<br></p><h4><a name="mozTocId117671" class="mozTocH4"></a>Using the ISO with a Virtual machine<br></h4><blockquote><p>Install e.g. <a href="http://virtualbox.org/">VirtualBox</a> or an other virtual machine software (e.g. <a href="https://www.vmware.com/products/personal-desktop-virtualization.html">VMware</a> <a href="https://www.vmware.com/products/fusion/fusion-evaluation.html">Fusion</a> or <a href="https://www.vmware.com/go/downloadplayer">Player</a>, <a href="http://www.parallels.com/">Parallels</a>,&nbsp; ...). Then create a new virtual machine. Make sure you prepare a virtual hard disk at least 20 Gb in size. If you wish to perform <a href="Models_Phonons.html">Phonon</a> or neutron ray-tracing <a href="McStas.html">McCode</a> calculations, allocate many cores and a lot of memory. Attach the ISO as a boot disk, and start the virtual machine. This way you use the host computer without any risk to interfere with the physical system. However, the data you generate is temporary, so make sure you get it back (on USB, through email or network) before switching off the virtual machine, or all will be lost. There is an 'Install' icon on the Desktop in case you wish to install the distribution into the virtual machine hard disk. There is no need to create a new partition. Just use the entire disk as installation target. All remains within the virtual machine, without interaction with he host computer. See below.<br></p></blockquote><h4><a name="mozTocId673490" class="mozTocH4"></a>Using the ISO to burn a DVD</h4><blockquote><p>Even though many computers do not have anymore DVD slots, you may still use a DVD on some machines. Use right-click on the ISO file and select "Burn disk" (on Windows and Debian/Ubuntu), or Disk Utility (on Mac OSX, Image menu). Then restart your computer and select the DVD as booting media (usually Esc, F1 or F12 key, or Alt/EFI menu on MacOSX). This way you use the host computer without any risk to interfere 
+      Linux).<br></p><p><font color="#ff0000">Warning</font>: install all DFT codes for Phonons is not easy under Windows. We then recommend you run a VirtualBox machine (see below).</p></blockquote><h3><a name="mozTocId903368" class="mozTocH3"></a>Installation - ISO / USB / DVD / VirtualMachine<br></h3><p>It is possible to use an ISO distribution containing <i>iFit,</i> <i>Phonons</i> and <i>McStas,</i> all pre-installed. Get it <a href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/illcs-livedvd/">HERE</a>. <br></p><h4><a name="mozTocId117671" class="mozTocH4"></a>Using a Virtual machine<br></h4><blockquote><p>Install e.g. <a href="http://virtualbox.org/">VirtualBox</a>. Then import <a href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/illcs-livedvd/">our VirtualBox Appliance</a> (OVA). This is a pre-installed Virtual machine with iFit, Phonons, McStas and PyNE. Assign it e.g. 4 Gb memory, 30 Gb disk, and all your CPU cores.<br></p></blockquote><h4><a name="mozTocId673490" class="mozTocH4"></a>Using the ISO to burn a DVD</h4><blockquote><p>Even though many computers do not have anymore DVD slots, you may still use a DVD on some machines. Use right-click on the ISO file and select "Burn disk" (on Windows and Debian/Ubuntu), or Disk Utility (on Mac OSX, Image menu). Then restart your computer and select the DVD as booting media (usually Esc, F1 or F12 key, or Alt/EFI menu on MacOSX). This way you use the host computer without any risk to interfere 
 with the physical system. However, the data you generate is temporary, 
 so make sure you get it back (on USB, through email or network) before 
-switching off the virtual machine, or all will be lost. There is an 'Install' icon on the Desktop in case you wish to install the distribution physically on your machine. You will probably need to create a new partition. See below.</p></blockquote><h4><a name="mozTocId339823" class="mozTocH4"></a>Using the ISO to create a bootable USB</h4><blockquote><p>You may write the ISO file into a USB key (8 Gb or more). Then use e.g. <a href="https://rufus.akeo.ie/">Rufus</a> (for Windows) or use the command <i>dd if=iso of=usbkey bs=1m</i> (for Linux and MacOSX). The USB key should then be bootable. Then restart your computer and select the USB key as booting media (usually Esc, F1, F2 or F12 key, or Alt/EFI menu on MacOSX, or install <a href="http://www.rodsbooks.com/refind/installing.html">rEFInd</a>). There is an 'Install' icon on the Desktop in case you wish to install the distribution physically on your machine. You will probably need to create a new partition. See below.</p></blockquote><h4><a name="mozTocId377839" class="mozTocH4"></a>Installing the system from the ISO/DVD/USB key<br></h4><blockquote><p>Once you have started the ISO distribution, there is an Install icon on the Desktop. When clicked, you are proposed to install the system on your hard disk. Follow the instructions. A new partition will most probably be created on your disk. Have a look at the dedicated <a href="https://tutorials.ubuntu.com/tutorial/tutorial-install-ubuntu-desktop#0">Tutorial</a>.<font color="#ff0000"><br><b>Warning:</b></font> we do not take <i>any</i> responsibility in case you loose data or make your computer un-bootable.<br></p></blockquote>
+switching off the virtual machine, or all will be lost. <i>This system does not install properly, so it is reserved for testing and training.<br></i></p></blockquote><h4><a name="mozTocId339823" class="mozTocH4"></a>Using the ISO to create a bootable USB</h4><blockquote><p>You may write the ISO file into a USB key (8 Gb or more). Then use e.g. <a href="https://rufus.akeo.ie/">Rufus</a> (for Windows) or use the command <i>dd if=iso of=usbkey bs=1m</i> (for Linux and MacOSX). The USB key should then be bootable. Then restart your computer and select the USB key as booting media (usually Esc, F1, F2 or F12 key, or Alt/EFI menu on MacOSX, or install <a href="http://www.rodsbooks.com/refind/installing.html">rEFInd</a>). <i>This system does not install properly, so it is reserved for testing and training.</i></p></blockquote><h4><a name="mozTocId377839" class="mozTocH4"></a>Installing a new system from the ISO/DVD/USB key<br></h4><blockquote><p>We recommend you get an official <a href="http://ubuntu.com">Ubuntu</a> ISO distribution. Once you have started it, there is an <i>Install</i> icon on the Desktop. When clicked, you are proposed to install the system on your hard disk. Follow the instructions. A new partition will most probably be created on your disk. Have a look at the dedicated <a href="https://tutorials.ubuntu.com/tutorial/tutorial-install-ubuntu-desktop#0">Tutorial</a>.<font color="#ff0000"><font color="#000000"> Then add our <a href="http://packages.mccode.org">Debian repository</a> and e.g. packages <i>ifit-phonons</i>, <i>mcstas-suite</i> and <i>pyne</i>.</font><br><b>Warning:</b></font> we do not take <i>any</i> responsibility in case you loose data or make your computer un-bootable. Installing in a VirtualBox machine is safe.<br></p></blockquote>
     <h3><a class="mozTocH3" name="mozTocId952907"></a>Installation -
       source distribution<br>
     </h3><blockquote>

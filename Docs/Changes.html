@@ -82,6 +82,7 @@ href="https://github.com/McStasMcXtrace/iFit/issues?q=is%3Aissue+is%3Aclosed+lab
 
 
 
+
           of tickets</a> for this release. (Aug 22nd 2017)<br>
       </li>
       <li><small><b>1.9</b>: added structure optimisation step before
@@ -91,6 +92,7 @@ href="https://github.com/McStasMcXtrace/iFit/issues?q=is%3Aissue+is%3Aclosed+lab
             href="https://jochym.github.io/qe-doc/">QE/ASE</a> interface
           to Model Sqw. Faster phonon calculation using crystal
           symmetries. Improvements in <a href="Neutron_Scattering.html">S(q,w)
+
 
 
             treatment</a> scripts. <a href="Loaders.html">Data loaders</a>
@@ -117,10 +119,12 @@ href="https://github.com/McStasMcXtrace/iFit/issues?q=is%3Aissue+is%3Aclosed+lab
 
 
 
+
             of Tickets</a> for this release.</small><br>
       </li>
       <li><small><b>1.8</b>: read <a
 href="https://www.ill.eu/instruments-support/instruments-groups/instruments/cyclops/description/instrument-layout/">ILL
+
 
 
 
@@ -223,6 +227,7 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
 
 
 
+
           method. Added predefined TAS configurations in <a
             href="../Applications/ResLibCal/doc/ResLibCal.html">ResLibCal</a>
           and cross-checked computation methods. Fix TAS angles in 3D
@@ -257,6 +262,7 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
           NetCDF/CDF/NeXus/HDF support, import/export of <a
             href="http://www.mantidproject.org">Mantid</a> workspaces
           (HDF/NeXus), import of <a href="http://www.wavemetrics.com/">Igor
+
 
 
 
@@ -408,6 +414,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
 
 
 
+
             Computing Toolbox</a> (when available), improved
           interpolation, added <span style="font-style: italic;">meshgrid</span>,
           <span style="font-style: italic;">rotate, </span>radial
@@ -415,6 +422,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
               style="font-style: italic;">cart2sph</span></a>), better
           support for event files, save of iFunc models to m-files.
           Added simple models for <a href="Models.html#mozTocId285330">small
+
 
 
 
@@ -531,6 +539,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
 
 
 
+
           fix of the <a href="Optimizers.html">Levenberg-Marquardt
             optimizer</a>, improved Error propagation for unary
           operators, support for <a href="Loaders.html">import</a> of
@@ -540,6 +549,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
           &gt;= 2010, added many <a href="Models.html">fit models</a>
           including 2D functions <span style="font-style: italic;">signal=f(x,y)</span>.
           Improved speed by e.g. +25% <span style="font-style: italic;">(Feb
+
 
 
 
@@ -646,6 +656,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
 
 
 
+
             6th, 2011</span>). Added correlation function method, plus a
           number of minor improvements (esp. in plot contextual menus),
           and bug fix for McStas 1D data set import <span
@@ -653,6 +664,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
         <span style="font-weight: bold;"></span></li>
       <li><small><span style="font-weight: bold;">1.0</span>: First
           official iFit release <span style="font-style: italic;">(August
+
 
 
 
@@ -755,6 +767,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
     inaccurate results. One solution is to re-sample the signals with
     more points. For <a href="iData.html">iData</a> objects, this can
     be achieved with e.g. the <span style="font-style: italic;">interp(object,
+
 
 
 
@@ -1166,7 +1179,7 @@ href="http://www.msg.ucsf.edu/local/programs/ono/manuals/ofaq/Q.803.html">EZD</a
     then exit Matlab and restart it.<br>
     <br>
     The immediate consequence is that all works (good), but also it gets
-    even slower (!!!). Calculations are not affected.<br><h4><a class="mozTocH4" name="mozTocId879739"></a>Matlab rendering is poor</h4>If you get messages such as:<br><blockquote><b>Warning:</b> OpenGL appears to be installed incorrectly.<br></blockquote>or<br><blockquote><b>libGL error</b>: unable to load driver: radeonsi_dri.so<br></blockquote>and the rendering is not so nice (e.g. slow and no transparency), then you may overcome this issue by launching the <i>matlab</i> and <i>ifit</i> commands with e.g.:<br><blockquote>LD_PRELOAD='/usr/$LIB/libstdc++.so.6' ifit<br></blockquote>and<br><blockquote>LD_PRELOAD='/usr/$LIB/libstdc++.so.6' matlab<br></blockquote>This overrides the C library shipped with Matlab/iFit in order to use the system one (which e.g. works better with the installed graphics cards).<br>
+    even slower (!!!). Calculations are not affected.<br><h4><a class="mozTocH4" name="mozTocId879739"></a>Matlab rendering is poor</h4>If you get messages such as:<br><blockquote><b>Warning:</b> OpenGL appears to be installed incorrectly.<br></blockquote>or<br><blockquote><b>libGL error</b>: unable to load driver: radeonsi_dri.so<br></blockquote>and the rendering is not so nice (e.g. slow and no transparency), then you may overcome this issue by launching the <i>matlab</i> and <i>ifit</i> commands with e.g.:<br><blockquote>LD_PRELOAD='/usr/$LIB/libstdc++.so.6' ifit<br></blockquote>and<br><blockquote>LD_PRELOAD='/usr/$LIB/libstdc++.so.6' matlab<br></blockquote>This overrides the C library shipped with Matlab/iFit in order to use the system one (which e.g. works better with the installed graphics cards).<br><br>The iFit / Matlab launchers (e.g. <i>/usr/share/applications/ifit.desktop</i>) should be updated accordingly at the line 'Exec':<br><blockquote><pre>[Desktop Entry]<br>...<br>Exec=env LD_PRELOAD='/usr/$LIB/libstdc++.so.6' ifit -nodesktop %F</pre></blockquote>
     <h4><a name="mozTocId16941" class="mozTocH4"></a>miFit/matlab
       crashes when starting/loading/saving</h4>
     The storage class for iData and iFunc has changed. This makes old
