@@ -10,6 +10,8 @@ function config = mifit_Preferences_Load(file)
       content = fileread(file);
       evalc(content);% this should make a 'config' variable
       mifit_disp([ '[Load_Preferences] Loading Preferences from ' file ]);
+    catch
+      mifit_disp([ '[Load_Preferences] Error loading ' file ]);
     end
   end
   if isempty(config) && nargin == 0

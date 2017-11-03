@@ -12,6 +12,7 @@ function varargout = mifit(varargin)
 % config = mifit('config')  retrieves the miFit configuration
 % mifit('exit')             closes miFit
 % mifit('reset')            reset miFit to its Factory settings
+% mifit('handles')          retrieves the miFit GUI handles
 %
 % Version: $Date$
 % (c) E.Farhi, ILL. License: EUPL.
@@ -315,10 +316,13 @@ function mifit_File_Preferences(varargin)
 function mifit_File_Exit(varargin)
 % File/Exit: Quit and Save Data
   config = getappdata(mifit_fig, 'Preferences');
+  % make sure we do not got into infinite loop/crash
+  fig = mifit_fig;
+  set(fig, 'CloseRequestFcn','closereq');  % sets to default
   
   % save the window size and location
-  set(mifit_fig,'Units','pixels');
-  config.Position = get(mifit_fig,'Position');
+  set(fig,'Units','pixels');
+  config.Position = get(fig,'Position');
   mifit_Preferences_Save(config);
   
   if isfield(config, 'Save_Data_On_Exit') && strcmp(config.Save_Data_On_Exit, 'yes')
@@ -331,8 +335,7 @@ function mifit_File_Exit(varargin)
   if ishandle(mifit_fig('mifit_View_Parameters'))
     delete(mifit_fig('mifit_View_Parameters'))
   end
-  % delete(getappdata(mifit_fig, 'DnDControl'));
-  delete(mifit_fig);
+  close(fig);
   
 function mifit_File_Reset(varargin)
 % File/Reset: clear data sets, user models and Preferences
@@ -514,58 +517,69 @@ function mifit_Edit_Delete(varargin)
   
 % Data menu ********************************************************************
 
-function mifit_Data_Plot(varargin, style)
+function mifit_Data_Plot(style, varargin)
 % Data/Sub Plot (Overview)
-  if nargin && isa(varargin{1}, 'iData'), d=varargin{1}; 
+  % get the Data from either 'style' as 1st arg or further varargin
+  if    ~nargin, style = ''; end
+  if     nargin     && isa(style, 'iData'),       d=style;
+    if nargin > 1   && ischar(varargin{1}),   style=varargin{1}; 
+    else style = ''; end
+  elseif nargin > 1 && isa(varargin{1}, 'iData'), d=varargin{1};
   else d = mifit_List_Data_pull; end
-  if nargin < 2 || ~ischar(style), style=''; end
+  if ~nargin || isempty(style) || ~ischar(style), style=''; end
   if all(isempty(d)), return; end
   set(mifit_fig,'Pointer','watch');
   f=figure('Visible','off');
-  subplot(d,[ style ' light transparent grid tight replace' ]);
+  subplot(d,[ style ' grid tight replace' ]);
   if f~=gcf, close(f); else set(f,'Visible','on'); end
   set(mifit_fig,'Pointer','arrow');
   
-function mifit_Data_PlotAs(varargin, style)
+function mifit_Data_PlotAs(style, varargin)
 % Data/Plot
-  if nargin && isa(varargin{1}, 'iData'), d=varargin{1}; 
+  % get the Data from either 'style' as 1st arg or further varargin
+  if    ~nargin, style = ''; end
+  if     nargin     && isa(style, 'iData'),       d=style;
+    if nargin > 1   && ischar(varargin{1}),   style=varargin{1}; 
+    else style = ''; end
+  elseif nargin > 1 && isa(varargin{1}, 'iData'), d=varargin{1};
   else d = mifit_List_Data_pull; end
-  if nargin < 2 || ~ischar(style), style='light transparent grid tight replace'; end
+  if ~nargin || isempty(style) || ~ischar(style), style=''; end
+  if nargin < 2 || ~ischar(style), style=''; end
   if all(isempty(d)), return; end
   set(mifit_fig,'Pointer','watch');
   f=figure('Visible','off'); hold on
-  plot(d, style);
+  subplot(d,[ style ' grid tight replace' ]);
   hold off
   if f~=gcf, close(f); else set(f,'Visible','on'); end
   set(mifit_fig,'Pointer','arrow');
   
 function mifit_Data_PlotAs_Overlay(varargin)
 % Data/Plot: Overlay
-  mifit_Data_PlotAs(varargin, '');
+  mifit_Data_PlotAs('', varargin{:});
   
 function mifit_Data_PlotAs_Contour(varargin)
 % Data/Plot: Contour
-  mifit_Data_PlotAs(varargin, 'contour3 light transparent grid tight replace');
+  mifit_Data_PlotAs('contour3 light transparent grid tight replace', varargin{:});
   
 function mifit_Data_PlotAs_Waterfall(varargin)
 % Data/Plot: Waterfall
-  mifit_Data_PlotAs(varargin, 'waterfall light transparent grid tight replace');
+  mifit_Data_PlotAs('waterfall light transparent grid tight replace', varargin{:});
   
 function mifit_Data_PlotAs_Surface(varargin)
 % Data/Plot: Surface
-  mifit_Data_PlotAs(varargin, 'surfc light transparent grid tight replace');
+  mifit_Data_PlotAs('surfc light transparent grid tight replace', varargin{:});
   
 function mifit_Data_PlotAs_ScatterPlot(varargin)
 % Data/Plot: Scatter
-  mifit_Data_PlotAs(varargin, 'scatter3 light transparent grid tight replace');
+  mifit_Data_PlotAs('scatter3 light transparent grid tight replace', varargin{:});
   
 function mifit_Data_PlotAs_Plot3(varargin)
 % Data/Plot: Plot3
-  mifit_Data_PlotAs(varargin, 'plot3 grid tight replace');
+  mifit_Data_PlotAs('plot3 grid tight replace', varargin{:});
   
 function mifit_Data_PlotAs_Slice(varargin)
 % Data/Plot: Slice (2D/3D)
-  mifit_Data_PlotAs(varargin, 'slice');
+  mifit_Data_PlotAs('slice', varargin{:});
   
 function mifit_Data_Eval_Model(varargin)
 % Data/Evaluate Model
