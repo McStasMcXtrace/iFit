@@ -1,9 +1,9 @@
 function varargout = mifit(varargin)
 % miFit: a user interface to iFit
 %
-% data  = mifit('data')      retrieves all data sets from the interface
-% models= mifit('models')    retrieves user models from the interface
-% data  = mifit('pull')      retrieves only selected data sets
+% data  = mifit('data')     retrieves all data sets from the interface
+% models= mifit('models')   retrieves user models from the interface
+% data  = mifit('pull')     retrieves only selected data sets
 % mifit('push', datasets)   replace existing data sets and append new ones
 % mifit('push', models)     replace existing models and append new ones
 % mifit('filename')         imports the file into a new Data set/Model

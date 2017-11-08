@@ -65,7 +65,8 @@ properties
   
   % hidden fields
   Data         = [];          % Data storage area
-  Alias        = {}
+  Alias        = {};
+  class = mfilename;
   
 end % properties
   

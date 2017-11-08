@@ -5,10 +5,13 @@ classdef iFunc_McCode < iFunc
 
   methods
     function obj = iFunc_McCode(varargin)
-      % create the subclass
+      % create the iFunc_McCode subclass
+      %
+      % input:
+      %   can be an iFunc or any set of parameters to generate a McCode object
       obj = obj@iFunc;
       if nargin == 0
-        return
+        m = mccode('defaults');
       elseif nargin == 1 && isa(varargin{1}, mfilename)
         % already an iFunc_McCode
         m = varargin{1};
