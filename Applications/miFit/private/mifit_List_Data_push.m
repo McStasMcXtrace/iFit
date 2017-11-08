@@ -61,6 +61,5 @@ function mifit_List_Data_push(d, flag_replace)
   % Update the History with the new stack
   mifit_History_push;
   if numel(d) 
-    mifit_disp('Importing into List:')
     mifit_disp(char(d))
   end

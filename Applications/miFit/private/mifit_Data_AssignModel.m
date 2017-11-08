@@ -52,7 +52,7 @@ function mifit_Data_AssignModel(varargin)
   mifit_disp([ 'Assigning Model "' model.Name '" to ' num2str(numel(index_selected)) ' Data set(s):' ]);
   mifit_History_push();
   for index=index_selected(:)'
-    this_d = D{index});
+    this_d = D{index};
     this_d = setalias(this_d, 'Model', model, model.Name);
     this_d = setalias(this_d, 'ModelValue', []);
     this_d = setalias(this_d, 'ModelParameters', []);

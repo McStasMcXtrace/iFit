@@ -51,9 +51,10 @@ function stop=mifit_Models_View_Parameters(varargin)
   else
     [d, index_selected] = mifit_List_Data_pull(); % get selected objects
     if numel(d)>1 && ~isempty(index_selected)
-      d=d(1); index_selected=index_selected(1);
+      d=d{1}; index_selected=index_selected(1);
     end
   end
+  if iscell(d), d=d{1}; end
   
   % get the Model to use.
   % if a Data set selection exists, get the first data set Model, or left empty

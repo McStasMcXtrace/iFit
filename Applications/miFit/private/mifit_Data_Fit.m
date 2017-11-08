@@ -2,7 +2,8 @@ function mifit_Data_Fit(varargin)
 % Data/Fit: fit selected data sets with their attached Model
   [d, index_selected] = mifit_List_Data_pull;
   if isempty(index_selected) || numel(d) == 0, return; end
-  if all(isempty(d)), return; end
+  id = [ d{:} ]; % a single iData array
+  if all(isempty(id)), return; end
   
   % get the Optimizer configuration
   CurrentOptimizer = getappdata(mifit_fig,'CurrentOptimizer');
@@ -35,12 +36,12 @@ function mifit_Data_Fit(varargin)
   
   % [pars,criteria,message,output] = fits(a, model, pars, options, constraints, ...)
   mifit_disp([ 'Starting fit of data set(s) with "' CurrentOptimizer '"' ]);
-  mifit_disp(char(d))
+  mifit_disp(char(id))
   
   % ********* THE FIT *********
   % the initial Dataset array 'd' is updated after the fit.
   try
-    [p,c,m,o]=fits(d, '', 'current', options);  % with assigned models or gaussians
+    [p,c,m,o]=fits(id, '', 'current', options);  % with assigned models or gaussians
   catch ME
     disp(getReport(ME))
     set(mifit_fig,'Pointer','arrow');
@@ -48,11 +49,19 @@ function mifit_Data_Fit(varargin)
   end
 
   % update Data list with fit results (and History)
+  if numel(id) == 1
+    d = { id };
+  else
+    for index=1:numel(id)
+      d{index} = id(index);
+    end
+  end
+  
   D = getappdata(mifit_fig, 'Data');
   if numel(D) == 1
-    D = { d };
+    D = d;
   else
-    D{index_selected} = d;
+    D(index_selected) = d;
   end
   setappdata(mifit_fig, 'Data',D);
   mifit_History_push;
@@ -60,10 +69,11 @@ function mifit_Data_Fit(varargin)
   % log fit results to the miFit log file
   for index=1:numel(d)
     
-    if numel(d) == 1, 
-      this_d=d; output = o; this_p     = p;
+    this_d = d{index}; 
+    if numel(d) == 1
+      output = o; this_p     = p;
     else 
-      this_d = d(index); output = o{index}; this_p     = p{index};
+      output = o{index}; this_p     = p{index};
     end
     mifit_disp([ '** Final fit results for ' char(this_d) ], true);
     sigma = output.parsHistoryUncertainty;
@@ -106,12 +116,11 @@ function mifit_Data_Fit(varargin)
     end
   end
   
-  % show results for the 1st fit/dataset
-  index_selected = index_selected(1); 
-  d=d(1);
+  % show results for the last fit/dataset
+  index_selected = index_selected(end); 
   
   setappdata(mifit_fig, 'CurrentDataSetIndex', index_selected);
-  setappdata(mifit_fig, 'CurrentDataSet', d);
+  setappdata(mifit_fig, 'CurrentDataSet', this_d);
   
   % update Parameter Window content
   handle = mifit_Models_View_Parameters('update');
