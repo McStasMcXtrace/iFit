@@ -6,10 +6,13 @@ classdef iFunc_Sqw4D < iFunc
   methods
   
     function obj = iFunc_Sqw4D(varargin)
-      % create the iFunc_Sqw4D subclass
+      % create an iFunc_Sqw4D from e.g. an iFunc 4D object
       %
       % input:
-      %   can be an iFunc or any set of parameters to generate a Sqw4D object
+      %   can be an iFunc or any set of parameters to generate a Sqw4D object.
+      %   when not given an iFunc, the parameters to sqw_phonons are expected.
+      %
+      % See also: sqw_phonons, sqw_cubic_monoatomic
       obj = obj@iFunc;
       
       if nargin == 0
@@ -48,8 +51,74 @@ classdef iFunc_Sqw4D < iFunc
         obj.(p{1}) = m.(p{1});
       end
       obj.class = mfilename;
+    end % iFunc_Sqw4D constructor
+    
+    function [fig, s, k]=plot(self)
+      % iFunc_Sqw4D: plot3: plot dispersions along principal axes and vDOS
+      [s,k,fig]=sqw_kpath(self, 'plot meV');
+      if ~isempty(inputname(1))
+        assignin('caller',inputname(1),self); % update in original object
+      end
+    end % plot
+    
+    function h=plot3(s)
+      % iFunc_Sqw4D: plot: plot a 3D view of the dispersions in H=0 plane
+      s = maxfreq(s);
+      % evaluate the 4D model onto a mesh filling the Brillouin zone [-0.5:0.5 ]
+      s.UserData.DOS     = [];  % make sure we re-evaluate again on a finer grid
+      s.UserData.maxFreq = max(s.UserData.maxFreq(:));
+      qk=linspace(0,0.5,50); qh=0; ql=qk; 
+      w =linspace(0.01,s.UserData.maxFreq*1.2,51);
+      f =iData(s,[],qh,qk,ql',w);
+      % plot in 3D
+      h = plot3(log(f(1,:, :,:))); % h=0
+      if ~isempty(inputname(1))
+        assignin('caller',inputname(1),s); % update in original object
+      end
+    end % plot3
+    
+    function d=dos(self, varargin)
+      % iFunc_Sqw4D: dos: compute the vibrational density of states
+      d = sqw_phonon_dos(self, varargin{:});
     end
-  end % iFunc_Sqw4D constructor
+    
+    function d=gdos(self)
+    
+    end
   
+  % methods for Sqw 4D
   
+    
+  % kpath
+  % thermochemistry   
+  % bosify
+  % debosify
+  % gdos
+  % powder
+  % sq
+  % publish -> report
+  end % methods
+  
+end % classdef
+  
+
+% private functions used in the class ----------------------------------------
+
+function s = maxfreq(s)
+  % get a quick estimate of the max frequency
+  if  ~isfield(s.UserData,'maxFreq') || isempty(s.UserData.maxFreq) ...
+    || all(s.UserData.maxFreq <= 0)
+    qh=linspace(-.5,.5,10);qk=qh; ql=qh; w=linspace(0.01,50,11);
+    f=iData(s,[],qh,qk,ql',w);
+    if isfield(s.UserData, 'FREQ') && ~isempty(s.UserData.FREQ)
+      s.UserData.maxFreq = max(s.UserData.FREQ(:));
+      disp([ mfilename ': maximum phonon energy ' num2str(max(s.UserData.maxFreq)) ' [meV] in ' s.Name ]);
+    end
+    if ~isfield(s.UserData, 'maxFreq') || isempty(s.UserData.maxFreq) ...
+      || ~isfinite(s.UserData.maxFreq) || s.UserData.maxFreq <= 0
+      s.UserData.maxFreq = 100;
+    end
+    
+  end
 end
+
