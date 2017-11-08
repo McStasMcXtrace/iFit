@@ -77,11 +77,6 @@ classdef iFunc_Sqw4D < iFunc
       end
     end % plot3
     
-    function d=dos(self, varargin)
-      % iFunc_Sqw4D: dos: compute the vibrational density of states
-      d = sqw_phonon_dos(self, varargin{:});
-    end
-    
     function d=gdos(self)
     
     end
