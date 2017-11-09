@@ -52,7 +52,7 @@ function [DOS, DOS_partials] = dos(s, n)
   end
   
   % plot
-  if nargout == 0 
+  if nargout == 0 && ~isempty(DOS)
     fig=figure;
     DOS = s.UserData.DOS;
     xlabel(DOS,[ 'Energy' ]);
@@ -125,7 +125,7 @@ function [DOS, DOS_partials, s] = sqw_phonon_dos_4D(s, n)
     end
     index= find(imag(s.UserData.FREQ) == 0);
     dos_e = s.UserData.FREQ(index);
-    omega_e = linspace(0,max(dos_e(:))*1.2, n);
+    omega_e = linspace(min(dos_e(:)),max(dos_e(:))*1.2, n);
     [dos_e,omega_e]=hist(dos_e,omega_e);
     dos_factor = size(s.UserData.FREQ,2) / trapz(omega_e(:), dos_e(:));
     dos_e = dos_e * dos_factor ; % 3n modes per unit cell

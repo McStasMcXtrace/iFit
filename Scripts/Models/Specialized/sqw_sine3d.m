@@ -116,6 +116,7 @@ script_hkl{:}, ...
 script_dho{:} };
 
 signal=iFunc(signal);
+signal = iFunc_Sqw4D(signal); % overload Sqw4D flavour
 
 if nargin == 0
   signal.ParameterValues=[ 4 6 8 0  0 0 0  .5 .5 .5  0.04  50  1 0 ];

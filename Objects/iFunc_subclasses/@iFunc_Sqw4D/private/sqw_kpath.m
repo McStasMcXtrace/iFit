@@ -94,7 +94,7 @@ function [S, qLim, fig] = sqw_kpath(f, qLim, E, options)
     % this also computes the DOS when not there yet. In case it was not there before, we remove it.
     is_dos_there = isfield(f.UserData,'DOS') && ~isempty(f.UserData.DOS) ...
       && isa(f.UserData.DOS, 'iData') && prod(size(f.UserData.DOS)) > 10000;
-    [S,f] = feval(f, f.p, qh,qk,ql',w);
+    [S,f] = feval(f, get(f,'ParameterValues'), qh,qk,ql',w);
     if ~is_dos_there, f.UserData.DOS=[]; end
     % search for maxFreq if exists
     if isfield(f.UserData, 'maxFreq')
@@ -225,7 +225,7 @@ function [S, qLim, fig] = sqw_kpath(f, qLim, E, options)
     f.UserData.properties.b_coh = 0; 
   end
 
-  [S, f, ax, name] = feval(f, f.p, h,k,l,E);
+  [S, f, ax, name] = feval(f, get(f,'ParameterValues'), h,k,l,E);
   if isfield(f.UserData,'properties')
     f.UserData.properties.b_coh = b_coh;
   end

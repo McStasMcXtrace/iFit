@@ -83,6 +83,7 @@ signal.UserData.properties.spacegroup        = 'Cubic (230)';
 signal.UserData.properties.spacegroup_number = 230;
 
 signal=iFunc(signal);
+signal = iFunc_Sqw4D(signal); % overload Sqw4D flavour
 
 if nargin == 0
   varargin{1} = [2 3];

@@ -72,6 +72,7 @@ signal.Guess          = @(x,signal)[ ...
   m2(x,signal)/10 m2(x,signal) median(signal(:)) 1 30 ];        % default parameters
 
 signal=iFunc(signal);
+signal = iFunc_Sqw4D(signal); % overload Sqw4D flavour
 
 if nargin == 1 && isnumeric(varargin{1})
   y.ParameterValues = varargin{1};

@@ -53,16 +53,22 @@ classdef iFunc_Sqw4D < iFunc
       obj.class = mfilename;
     end % iFunc_Sqw4D constructor
     
-    function [fig, s, k]=plot(self)
-      % iFunc_Sqw4D: plot3: plot dispersions along principal axes and vDOS
-      [s,k,fig]=sqw_kpath(self, 'plot meV');
+    function [fig, s, k]=plot(self, varargin)
+      % iFunc_Sqw4D: plot: plot dispersions along principal axes and vDOS
+      if isempty(varargin) || (numel(varargin) == 1 && ischar(varargin{1}))
+        if isempty(varargin), varargin{1} = 'plot meV'; end
+        [s,k,fig]=sqw_kpath(self, varargin{1});
+      else
+        fig = figure;
+        fig = plot@iFunc(self, varargin{:});
+      end
       if ~isempty(inputname(1))
         assignin('caller',inputname(1),self); % update in original object
       end
     end % plot
     
-    function h=plot3(s)
-      % iFunc_Sqw4D: plot: plot a 3D view of the dispersions in H=0 plane
+    function h=plot3(s, varargin)
+      % iFunc_Sqw4D: plot3: plot a 3D view of the dispersions in H=0 plane
       s = maxfreq(s);
       % evaluate the 4D model onto a mesh filling the Brillouin zone [-0.5:0.5 ]
       s.UserData.DOS     = [];  % make sure we re-evaluate again on a finer grid
@@ -71,27 +77,39 @@ classdef iFunc_Sqw4D < iFunc
       w =linspace(0.01,s.UserData.maxFreq*1.2,51);
       f =iData(s,[],qh,qk,ql',w);
       % plot in 3D
-      h = plot3(log(f(1,:, :,:))); % h=0
+      h = plot3(log(f(1,:, :,:)), varargin{:}); % h=0
       if ~isempty(inputname(1))
         assignin('caller',inputname(1),s); % update in original object
       end
     end % plot3
     
-    function d=gdos(self)
-    
-    end
+    function h=scatter3(s, varargin)
+      % iFunc_Sqw4D: scatter3: plot a 3D scatter view of the dispersions in H=0 plane
+      s = maxfreq(s);
+      % evaluate the 4D model onto a mesh filling the Brillouin zone [-0.5:0.5 ]
+      s.UserData.DOS     = [];  % make sure we re-evaluate again on a finer grid
+      s.UserData.maxFreq = max(s.UserData.maxFreq(:));
+      qk=linspace(0,0.5,50); qh=0; ql=qk; 
+      w =linspace(0.01,s.UserData.maxFreq*1.2,51);
+      f =iData(s,[],qh,qk,ql',w);
+      % plot in 3D
+      h = scatter3(log(f(1,:, :,:)), varargin{:}); % h=0
+      if ~isempty(inputname(1))
+        assignin('caller',inputname(1),s); % update in original object
+      end
+    end % scatter3
   
-  % methods for Sqw 4D
-  
+    % methods for Sqw 4D
     
-  % kpath
-  % thermochemistry   
-  % bosify
-  % debosify
-  % gdos
-  % powder
-  % sq
-  % publish -> report
+      
+    % kpath
+    % thermochemistry   
+    % bosify
+    % debosify
+    % gdos
+    % powder
+    % sq
+    % publish -> report
   end % methods
   
 end % classdef
