@@ -1,7 +1,7 @@
-function [S, qLim, fig] = sqw_kpath(f, qLim, E, options)
-% sqw_kpath: evaluates a 4D S(q,w) model along specified k-path / bands
+function [S, qLim, fig] = band_structure(f, qLim, E, options)
+% band_structure: evaluates a 4D S(q,w) model along specified k-path / bands
 %
-%    sqw_kpath(f, kpath, w, options)
+%    band_structure(f, kpath, w, options)
 %      The k-path can be given as a cell containing 3-values (HKL) vectors, or
 %        a n x 3 matrix, each row being a HKL location.
 %      The energy range can be entered as a vector, or a [min max] pair.
@@ -15,19 +15,19 @@ function [S, qLim, fig] = sqw_kpath(f, qLim, E, options)
 %      To get the proper band intensity around a given Bragg peak G, the k-path
 %        should be shifted by G.
 %
-%    sqw_kpath(f);
+%    band_structure(f);
 %      plots the dispersion curves following the BZ points for the 
 %      crystal spacegroup, and using the maximum excitation energy.
 %
-%    [S,k] = sqw_kpath(...)
+%    [S,k] = band_structure(...)
 %      returns the dispersion curves data set (iData), and the k-path used.
 %
 %    When the command is followed by ';' or options contains 'plot', a plot is 
 %    generated.
 %
 % Example:
-%   S = sqw_kpath(sqw_cubic_monoatomic, '', [0 10]); plot(log10(S));
-%   S = sqw_phonons('POSCAR_Al','emt','metal'); sqw_kpath(S);
+%   S = band_structure(sqw_cubic_monoatomic, '', [0 10]); plot(log10(S));
+%   S = sqw_phonons('POSCAR_Al','emt','metal'); band_structure(S);
 %
 % input:
 %   f:    a 4D HKLE model S(q,w) (iFunc)
@@ -49,10 +49,12 @@ function [S, qLim, fig] = sqw_kpath(f, qLim, E, options)
 %         when not given or empty, the maximum excitation energy is used.
 %   options: plotting option (string). Can contain 'plot' 'THz','cm-1','meV'.
 %         The 'plot' option also displays the density of states, when available.
+%         The 'newplot' option does the same but opens a new figure instead of
+%         re-using an existing one.
 %
 % output:
 %   S:    the dispersion W(HKL) computed along the path (iData)
-%   k:    the k-path used to generate the dispersion curves (matrix)
+%   k:    the k-path used to generate the dispersion curves (matrix, HKL list)
 %   fig:  figure handle generated when options contains 'plot' or no output.
 %
 % Version: $Date$
@@ -69,7 +71,7 @@ function [S, qLim, fig] = sqw_kpath(f, qLim, E, options)
   % handle input array
   if numel(f) > 1
     for index=1:numel(f)
-      S = [ S sqw_kpath(f(index), qLim, E, options) ];
+      S = [ S band_structure(f(index), qLim, E, options) ];
     end
     return
   end
@@ -153,7 +155,7 @@ function [S, qLim, fig] = sqw_kpath(f, qLim, E, options)
   
   % define default path and BZ points
   if isempty(crystalsystem), crystalsystem = 'orthorhombic'; end
-  [qLim0,lab, points]=sqw_kpath_crystalsystem(crystalsystem);
+  [qLim0,lab, points]=band_structure_crystalsystem(crystalsystem);
   
   % set default qLim path according to space group/crystal system
   xticks=[];
@@ -283,7 +285,7 @@ function [S, qLim, fig] = sqw_kpath(f, qLim, E, options)
   % plot results when no output
 
   if nargout == 0 || ~isempty(strfind(options, 'plot'))
-    fig = figure; 
+    if ~isempty(strfind(options, 'newplot')) fig = figure; else fig = gcf; end
     if isfinite(max(S)) && max(S), plot(log10(S/max(S)),'view2'); 
     else plot(log10(S),'view2'); end
     axis tight
@@ -329,6 +331,7 @@ function [S, qLim, fig] = sqw_kpath(f, qLim, E, options)
       xlabel(''); ylabel('DOS'); title('');
       xlim(y);
       view([90 -90]);
+      set(fig, 'NextPlot','new');
     end
     hold off
   else fig = [];
@@ -339,7 +342,7 @@ function [S, qLim, fig] = sqw_kpath(f, qLim, E, options)
   end
   
 % ----------------------------------------------------------------------------
-function [qLim,lab, points]=sqw_kpath_crystalsystem(crystalsystem)
+function [qLim,lab, points]=band_structure_crystalsystem(crystalsystem)
   % set a path depending on the crystal system
   % may be given from spacegroup, or as a string:
   %   'Cubic','Hexagonal','Trigonal','Tetragonal','Orthorhombic','Monoclinic';

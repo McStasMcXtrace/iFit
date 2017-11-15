@@ -21,10 +21,15 @@ function [t, fig]=thermochemistry(s, T, options)
 %   s: a 4D sqw_phonons model [K,H,L,Energy] (iFunc)
 %   T: temperature range. When not given, T=1:500 [K]
 %   options: can be 'plot' to display the results.
+%         The 'newplot' option does the same but opens a new figure instead of
+%         re-using an existing one.
 %
 % output:
 %   t: structure with [DOS, DOS_partials, S U F Cv ]
 %   fig: figure handle
+%
+% Reference: https://wiki.fysik.dtu.dk/ase/ase/thermochemistry/thermochemistry.html#background
+%            D.A. McQuarrie. Statistical Mechanics. University Science Books, 2000.
 
 t=[]; fig=[];
 % test the input object
@@ -115,7 +120,7 @@ t.helmholtz_energy=s.UserData.helmholtz_energy;   % F = U-TS
 t.heat_capacity   =s.UserData.heat_capacity;      % Cv = dU/dT
 
 if nargout == 0 || ~isempty(strfind(options, 'plot'))
-  fig = figure;
+  if ~isempty(strfind(options, 'newplot')) fig = figure; else fig = gcf; end
   subplot([ t.entropy t.internal_energy t.helmholtz_energy t.heat_capacity ], [3 2]);
   hold on
   if isfield(s.UserData,'DOS') && ~isempty(s.UserData.DOS)
@@ -139,6 +144,7 @@ if nargout == 0 || ~isempty(strfind(options, 'plot'))
       % plot total DOS and rotate
       h=plot(DOS); set(h,'LineWidth',2);
     end
+    set(fig, 'NextPlot','new');
 end
 
 

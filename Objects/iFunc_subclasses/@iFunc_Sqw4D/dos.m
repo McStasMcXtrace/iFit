@@ -17,18 +17,18 @@ function [DOS, DOS_partials] = dos(s, n)
 %
 % input:
 %   s: S(q,w) 4D model (iFunc_Sqw4D)
-%   n: number of low-angle values to integrate (integer). Default is 10 when omitted.
+%   n: number of energy values (integer). Optional. Default is to nmodes*10
 %
 % output:
 %   DOS:   DOS(w)   (1D iData versus energy)
 %
+% Example: Sqw=sqw_cubic_monoatomic; D=dos(Sqw);
+% (c) E.Farhi, ILL. License: EUPL.
+
 % conventions:
 % omega = Ei-Ef = energy lost by the neutron
 %    omega > 0, neutron looses energy, can not be higher than Ei (Stokes)
 %    omega < 0, neutron gains energy, anti-Stokes
-%
-% Example: Sqw=sqw_cubic_monoatomic; D=dos(Sqw);
-% (c) E.Farhi, ILL. License: EUPL.
 
   DOS=[]; DOS_partials=[];
   if nargin == 0, return; end
@@ -37,7 +37,7 @@ function [DOS, DOS_partials] = dos(s, n)
   % handle array of objects
   if numel(s) > 1
     for index=1:numel(s)
-      DOS = [ DOS feval(mfilename, s(index), method, n) ];
+      DOS = [ DOS feval(mfilename, s(index), n) ];
     end
     if ~isempty(inputname(1))
       assignin('caller',inputname(1),s);
@@ -53,7 +53,7 @@ function [DOS, DOS_partials] = dos(s, n)
   
   % plot
   if nargout == 0 && ~isempty(DOS)
-    fig=figure;
+    fig=figure; 
     DOS = s.UserData.DOS;
     xlabel(DOS,[ 'Energy' ]);
     % plot any partials first
@@ -71,6 +71,7 @@ function [DOS, DOS_partials] = dos(s, n)
     end
     % plot total DOS and rotate
     h=plot(DOS); set(h,'LineWidth',2);
+    set(fig, 'NextPlot','new');
   end
   
 % ------------------------------------------------------------------------------
@@ -99,21 +100,11 @@ function [DOS, DOS_partials, s] = sqw_phonon_dos_4D(s, n)
   
   % first get a quick estimate of the max frequency
   if  ~isfield(s.UserData,'DOS') || isempty(s.UserData.DOS) || (~isempty(n) && prod(size(s.UserData.DOS)) ~= n)
-    qh=linspace(-.5,.5,10);qk=qh; ql=qh; w=linspace(0.01,50,11);
-    f=iData(s,[],qh,qk,ql',w);
-    if isfield(s.UserData, 'FREQ') && ~isempty(s.UserData.FREQ)
-      s.UserData.maxFreq = max(s.UserData.FREQ(:));
-      disp([ mfilename ': maximum phonon energy ' num2str(max(s.UserData.maxFreq)) ' [meV] in ' s.Name ]);
-    end
-    if ~isfield(s.UserData, 'maxFreq') || isempty(s.UserData.maxFreq) ...
-      || ~isfinite(s.UserData.maxFreq) || s.UserData.maxFreq <= 0
-      s.UserData.maxFreq = 100;
-    end
+    maxFreq = max(s);
     
     % evaluate the 4D model onto a mesh filling the Brillouin zone [-0.5:0.5 ]
     s.UserData.DOS     = [];  % make sure we re-evaluate again on a finer grid
-    s.UserData.maxFreq = max(s.UserData.maxFreq(:));
-    qh=linspace(-0.5,.5,50);qk=qh; ql=qh; w=linspace(0.01,s.UserData.maxFreq*1.2,51);
+    qh=linspace(-0.5,.5,50);qk=qh; ql=qh; w=linspace(0.01,maxFreq*1.2,51);
     f=iData(s,[],qh,qk,ql',w);
   end
   
