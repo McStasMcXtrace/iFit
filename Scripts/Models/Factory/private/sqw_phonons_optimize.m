@@ -17,11 +17,6 @@ if ismac,      precmd = 'DYLD_LIBRARY_PATH= ; DISPLAY= ; ';
 elseif isunix, precmd = 'LD_LIBRARY_PATH= ; DISPLAY= ; '; 
 else           precmd=''; end
 
-if ~isempty(options.optimizer) && strcmpi(options.calculator, 'QUANTUMESPRESSO') ...
-  && ~strcmpi(options.calculator, 'QUANTUMESPRESSO_ASE')
-  options.optimizer = [];
-end
-
 if ~isempty(options.optimizer)
   switch lower(options.optimizer)
   case 'lbfgs'  % fast, low on memory

@@ -1,4 +1,4 @@
-function status = sqw_phonons_requirements
+function [status, link] = sqw_phonons_requirements
 % sqw_phonons_requirements: check for availability of ASE and MD codes
 %
 % MPI, EMT, GPAW, Abinit, Elk, QE, VASP
@@ -11,18 +11,35 @@ d = tempname;
 p = pwd;
 mkdir(d);
 
+link.python = 'http://www.python.org';
+link.mpirun = 'http://www.openmpi.org';
+link.ase    = 'https://wiki.fysik.dtu.dk/ase';
+link.emt    = link.ase;
+link.phonopy= 'https://atztogo.github.io';
+link.gpaw   = 'http://wiki.fysik.dtu.dk/gpaw';
+link.elk    = 'http://elk.sourceforge.net';
+link.abinit = 'http://www.abinit.org/';
+link.quantumespresso = 'http://www.quantum-espresso.org/';
+link.qeutil = 'https://jochym.github.io/qe-doc/';
+link.vasp   = 'http://www.vasp.at/';
+link.octopus= 'http://octopus-code.org/';
+link.cp2k   = 'http://www.cp2k.org/';
+link.siesta = 'https://departments.icmab.es/leem/siesta/';
+
 try
   cd(d)
-  status = sqw_phonons_requirements_safe;
-catch
+  status = sqw_phonons_requirements_safe(link);
+catch ME
   disp([ mfilename ': error analysing installed software' ]);
+  disp(getReport(ME));
   status = [];
 end
 
 cd(p);
 rmdir(d, 's');
 
-function status = sqw_phonons_requirements_safe
+% ==============================================================================
+function status = sqw_phonons_requirements_safe(link)
 
   % required to avoid Matlab to use its own libraries
   if ismac,      precmd = 'DYLD_LIBRARY_PATH= ; DISPLAY= ; ';
@@ -39,7 +56,7 @@ function status = sqw_phonons_requirements_safe
     if any(st == 0:2)
         status.python=calc{1};
         st = 0;
-        disp([ '  Python          (http://www.python.org) as "' status.python '"' ]);
+        disp([ '  Python          (' link.python ') as "' status.python '"' ]);
         break;
     end
   end
@@ -51,7 +68,7 @@ function status = sqw_phonons_requirements_safe
   [status.ase, result] = system([ precmd status.python ' -c "import ase"' ]);
   if status.ase ~= 0
     disp([ mfilename ': error: requires ASE to be installed.' ])
-    disp('  Get it at <https://wiki.fysik.dtu.dk/ase>.');
+    disp([ '  Get it at <' link.ase '>.' ]);
     disp('  Packages exist for Debian/Mint/Ubuntu, RedHat/Fedora/SuSE, MacOSX and Windows.');
     error([ mfilename ': ASE not installed. This is required.' ]);
   end
@@ -69,7 +86,7 @@ function status = sqw_phonons_requirements_safe
     if any(st == 0:2)
         status.mpirun=calc{1};
         st = 0;
-        disp([ '  MPI             (http://www.openmpi.org) as "' status.mpirun '"' ]);
+        disp([ '  MPI             (' link.mpirun ') as "' status.mpirun '"' ]);
         break;
     end
   end
@@ -78,7 +95,7 @@ function status = sqw_phonons_requirements_safe
   [st, result] = system([ precmd status.python ' -c "from phonopy import Phonopy"' ]);
   if any(st == 0)
     status.phonopy = 'phonopy';
-    disp([ '  PhonoPy         (https://atztogo.github.io) as "' status.phonopy '"' ]);
+    disp([ '  PhonoPy         (' link.phonopy ') as "' status.phonopy '"' ]);
   else
     status.phonopy = '';
   end
@@ -87,7 +104,7 @@ function status = sqw_phonons_requirements_safe
   [st, result] = system([ precmd status.python ' -c "from gpaw import GPAW"' ]);
   if any(st == 0:2)
     status.gpaw='gpaw-python';
-    disp([ '  GPAW            (http://wiki.fysik.dtu.dk/gpaw) as "' status.gpaw '"' ]);
+    disp([ '  GPAW            (' link.gpaw ') as "' status.gpaw '"' ]);
   else
     status.gpaw='';
   end
@@ -107,7 +124,7 @@ function status = sqw_phonons_requirements_safe
     end
   end
   if ~isempty(status.elk)
-    disp([ '  Elk             (http://elk.sourceforge.net) as "' status.elk '"' ]);
+    disp([ '  Elk             (' link.elk ') as "' status.elk '"' ]);
   end
   
   % test for ABINIT
@@ -125,7 +142,7 @@ function status = sqw_phonons_requirements_safe
     end
   end
   if ~isempty(status.abinit)
-    disp([ '  ABINIT          (http://www.abinit.org/) as "' status.abinit '"' ]);
+    disp([ '  ABINIT          (' link.abinit ') as "' status.abinit '"' ]);
   end
   
   % test for QuantumEspresso
@@ -136,7 +153,7 @@ function status = sqw_phonons_requirements_safe
     if any(st == 0:2)
         status.quantumespresso=calc{1};
         st = 0;
-        disp([ '  QuantumEspresso (http://www.quantum-espresso.org/) as "' status.quantumespresso '"' ]);
+        disp([ '  QuantumEspresso (' link.quantumespresso ') as "' status.quantumespresso '"' ]);
         break;
     end
   end
@@ -146,7 +163,7 @@ function status = sqw_phonons_requirements_safe
   [st, result] = system([ precmd status.python ' -c "from qeutil import QuantumEspresso"' ]);
   if any(st == 0:2)
     status.qeutil='qeutil';
-    disp([ '  QEutil          (https://jochym.github.io/qe-doc/) as "' status.qeutil '"' ]);
+    disp([ '  QEutil          (' link.qeutil ') as "' status.qeutil '"' ]);
   else
     status.qeutil='';
   end
@@ -168,7 +185,7 @@ function status = sqw_phonons_requirements_safe
     status.vasp = '';
   end
   if ~isempty(status.vasp)
-    disp([ '  VASP            (http://www.vasp.at/) as "' status.vasp '"' ]);
+    disp([ '  VASP            (' link.vasp ') as "' status.vasp '"' ]);
   end
   % must set:
   % VASP_COMMAND=vasp
@@ -186,7 +203,7 @@ function status = sqw_phonons_requirements_safe
     end
   end
   if ~isempty(status.octopus)
-    disp([ '  Octopus         (http://octopus-code.org/) as "' status.octopus '"' ]);
+    disp([ '  Octopus         (' link.octopus ') as "' status.octopus '"' ]);
   end
   
   % test for CP2K
@@ -201,7 +218,7 @@ function status = sqw_phonons_requirements_safe
     end
   end
   if ~isempty(status.cp2k)
-    disp([ '  CP2K            (http://www.cp2k.org/) as "' status.cp2k '"' ]);
+    disp([ '  CP2K            (' link.cp2k ') as "' status.cp2k '"' ]);
   end
   
   % test for SIESTA
@@ -216,7 +233,7 @@ function status = sqw_phonons_requirements_safe
     end
   end
   if ~isempty(status.siesta)
-    disp([ '  SIESTA          (https://departments.icmab.es/leem/siesta/) as "' status.siesta '"' ]);
+    disp([ '  SIESTA          (' link.siesta ') as "' status.siesta '"' ]);
   end
 
   % disp('Calculator executables can be specified as ''options.command=exe'' when building a model.');

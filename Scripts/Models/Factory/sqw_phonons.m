@@ -293,9 +293,10 @@ function signal=sqw_phonons(configuration, varargin)
 %   sqw_phonons_eval.py:      evaluate the Model at given HKLE locations
 
 persistent status
+persistent link
 
 if ~exist('status') || isempty(status) || ~isstruct(status)
-  status = sqw_phonons_requirements;
+  [status, link] = sqw_phonons_requirements;
 end
 
 signal = [];
@@ -311,11 +312,12 @@ options= sqw_phonons_argin(configuration, varargin{:});
 options.available = status;
 % check if we re-use an existing iFunc Model
 if isa(configuration, 'iFunc') && configuration.Dimension == 4
-  signal = configuration;
+  signal   = configuration;
+  UserData = signal.UserData;
   if ~options.htmlreport, return; end
 
-  if isfield(configuration.UserData,'options')
-    options = configuration.UserData.options;
+  if isfield(UserData,'options')
+    options = UserData.options;
   end
   options.htmlreport = 1;
   % cope with other phonon models
@@ -336,8 +338,9 @@ if isa(configuration, 'iFunc') && configuration.Dimension == 4
   sqw_phonons_htmlreport('', 'results', options);
   filename = sqw_phonons_htmlreport('', 'download', options);
 
-  signal.UserData.options.report = filename;
-  signal.UserData.options.target = options.target;
+  UserData.options.report = filename;
+  UserData.options.target = options.target;
+  signal.UserData = UserData;
   if ~isempty(inputname(1))
     assignin('caller',inputname(1),signal);
   end
@@ -492,6 +495,36 @@ options.report = sqw_phonons_htmlreport('', 'create_atoms', options);
 [decl, calc, signal,options] = sqw_phonons_calc(options, status, options.calculator, read);
 % return directly is the signal=iFunc has been created (QE case)
 if isempty(decl) && isempty(signal), return; end
+
+cite = { ' * Atomic Simulation Environment', ...
+  '           S. R. Bahn and K. W. Jacobsen, Comput. Sci. Eng., Vol. 4, 56-66, 2002.', ...
+  ' * iFit:   E. Farhi et al, J. Neut. Res., 17 (2013) 5.' };
+  
+switch upper(options.calculator)
+case 'GPAW'
+  cite{end+1} = ' * GPAW:   J. J. Mortensen et al, Phys Rev B, Vol. 71, 035109 (2005).';
+case 'ELK'
+  cite{end+1} = ' * ELK:    http://elk.sourceforge.net';
+case 'ABINIT'
+  cite{end+1} = ' * ABINIT: X. Gonze et al, Computer Physics Communications 180, 2582-2615 (2009).';
+case 'EMT'
+  cite{end+1} = ' * EMT:    K.W. Jacobsen et al, Surf. Sci. 366, 394-402 (1996).';
+case {'QUANTUMESPRESSO','QE','QUANTUMESPRESSO_ASE','QE_ASE'}
+  cite{end+1} = ' * Quantum Espresso: P. Giannozzi, et al J.Phys.:Condens.Matter, 21, 395502 (2009).';
+  if ~isempty(status.qeutil)
+    cite{end+1} = ' * QE-util:Pawel T. Jochym, https://jochym.github.io/qe-doc/ (2015).';
+  end
+case 'VASP'
+  cite{end+1} = ' * VASP:   G. Kresse and J. Hafner. Phys. Rev. B, 47:558, 1993.';
+case 'OCTOPUS'
+  cite{end+1} = ' * OCTOPUS:X. Andrade et al, Phys Chem Chem Phys 17 (2015) 31371.';
+end
+
+if options.use_phonopy && ~isempty(status.phonopy)
+  cite{end+1} = ' * PhonoPy:   A. Togo and I. Tanaka, Scr. Mater., 108, 1-5 (2015)';
+end
+options.cite     = cite;
+options.link     = link;
 
 % ==============================================================================
 %                               BUILD MODEL (optimize or pass)
@@ -702,37 +735,8 @@ signal.Expression = { ...
 signal = iFunc(signal);
 signal = iFunc_Sqw4D(signal); % overload Sqw4D flavour
 
-cite = { ' * Atomic Simulation Environment', ...
-  '           S. R. Bahn and K. W. Jacobsen, Comput. Sci. Eng., Vol. 4, 56-66, 2002.', ...
-  ' * iFit:   E. Farhi et al, J. Neut. Res., 17 (2013) 5.' };
-  
-switch upper(options.calculator)
-case 'GPAW'
-  cite{end+1} = ' * GPAW:   J. J. Mortensen et al, Phys Rev B, Vol. 71, 035109 (2005).';
-case 'ELK'
-  cite{end+1} = ' * ELK:    http://elk.sourceforge.net';
-case 'ABINIT'
-  cite{end+1} = ' * ABINIT: X. Gonze et al, Computer Physics Communications 180, 2582-2615 (2009).';
-case 'EMT'
-  cite{end+1} = ' * EMT:    K.W. Jacobsen et al, Surf. Sci. 366, 394-402 (1996).';
-case {'QUANTUMESPRESSO','QE','QUANTUMESPRESSO_ASE','QE_ASE'}
-  cite{end+1} = ' * Quantum Espresso: P. Giannozzi, et al J.Phys.:Condens.Matter, 21, 395502 (2009).';
-  if ~isempty(status.qeutil)
-    cite{end+1} = ' * QE-util:Pawel T. Jochym, https://jochym.github.io/qe-doc/ (2015).';
-  end
-case 'VASP'
-  cite{end+1} = ' * VASP:   G. Kresse and J. Hafner. Phys. Rev. B, 47:558, 1993.';
-case 'OCTOPUS'
-  cite{end+1} = ' * OCTOPUS:X. Andrade et al, Phys Chem Chem Phys 17 (2015) 31371.';
-end
-
-if options.use_phonopy && ~isempty(status.phonopy)
-  cite{end+1} = ' * PhonoPy:   A. Togo and I. Tanaka, Scr. Mater., 108, 1-5 (2015)';
-end
-
 signal.UserData.duration = etime(clock, t);
 options.duration = signal.UserData.duration;
-options.cite     = cite;
 signal.UserData.options   = orderfields(options);
 signal.UserData  = orderfields(signal.UserData);
 

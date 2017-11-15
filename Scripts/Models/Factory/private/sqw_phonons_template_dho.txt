@@ -21,7 +21,7 @@ else
 end
 
 % test for unstable modes
-wrong_w = numel(find(FREQ(:) < 0 | ~isreal(FREQ(:)) | ~isfinite(FREQ(:))));
+wrong_w = numel(find(FREQ(:) < 0 | imag(FREQ(:)) | ~isfinite(FREQ(:))));
 if wrong_w, 
   disp([ 'WARNING: found ' num2str(wrong_w) ...
          ' negative/imaginary phonon frequencies (' ...

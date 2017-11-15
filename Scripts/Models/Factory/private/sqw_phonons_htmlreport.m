@@ -93,7 +93,7 @@ function sqw_phonons_htmlreport_create_atoms(fid, options)
   % introduction
   fprintf(fid, '<p>This page presents the results of the estimate of phonon dispersions (lattice dynamics) in a single crystal, using a DFT code (the "calculator"). From the initial atomic configuration (geometry), each atom in the lattice cell is displaced by a small quantity. The displaced atom then sustains a, so called Hellmann-Feynman, restoring force to come back to the stable structure. The dynamical matrix is obtained from these forces, and its eigen-values are the energies of the vibrational modes in the crystal.</p>\n');
   fprintf(fid, '<p>This computational resource is provided by <a href="http://ifit.mccode.org">iFit</a>, with the <a href="http://ifit.mccode.org/Models.html#mozTocId990577"<b>sqw_phonon</b> Model</a>, which itself makes use of the <a href="https://wiki.fysik.dtu.dk/ase">Atomic Simulation Environment (ASE)</a>.\n');
-  if options.use_phonopy
+  if isfield(options, 'use_phonopy') && options.use_phonopy
     fprintf(fid, ' In addition, the <a href="https://atztogo.github.io/phonopy/">PhonoPy</a> package is used to compute force constants (faster, more accurate).\n');
   end
   fprintf(fid, '<p>This report summarizes the initial crystal geometry and the calculator configuration. When the simulation ends successfully, the lower part presents the S(hkl,w) dispersion curves as plots and data sets, the model used (as a Matlab object), and the density of states. These results correspond to the coherent inelastic part of the dynamic structure factor S(hkl,w), for vibrational modes in the harmonic approximation. In the following, we use energy unit in meV = 241.8 GHz = 11.604 K = 0.0965 kJ/mol, and momentum is given in reduced lattice units.</p>\n');
@@ -133,7 +133,7 @@ function sqw_phonons_htmlreport_toc(fid, options)
   fprintf(fid, '<hr>Table of contents:<br><ul>\n');
   fprintf(fid, '<li><a href="#atom">Crystallographic information</a></li>\n');
   fprintf(fid, '<li><a href="#calc">Calculator configuration</a></li>\n');
-  if ~isempty(options.optimizer)
+  if isfield(options, 'optimizer') && ~isempty(options.optimizer)
   fprintf(fid, '<li><a href="#optimize">The optimized structure</a></li>\n');
   end
   fprintf(fid, '<li><a href="#results">Results</a><ul>\n');
@@ -249,7 +249,9 @@ function [logo, link, op] = sqw_phonons_htmlreport_init(options)
     
   % clean 'options' from empty and 0 members
   op           = options;
-  op           = rmfield(op, 'available');
+  if isfield(op, 'available')
+    op           = rmfield(op, 'available');
+  end
   op.htmlreport= 0;
   for f=fieldnames(op)'
     if isempty(op.(f{1})) ...
@@ -359,8 +361,8 @@ function Phonon_Model = sqw_phonons_htmlreport_model(fid, options)
 % ==============================================================================
 function Phonon_DOS = sqw_phonons_htmlreport_dos(fid, options, object)
   % display the vDOS. Model must have been evaluated once to compute DOS
-  Phonon_DOS = sqw_phonon_dos(object);
-  [thermo, fig] = sqw_thermochemistry(object, 1:1000, 'plot');
+  Phonon_DOS = dos(object);
+  [thermo, fig] = thermochemistry(object, 1:1000, 'plot');
   if isfield(object.UserData, 'DOS') && ~isempty(object.UserData.DOS)
     Phonon_DOS = object.UserData.DOS;
     if isfield(thermo, 'entropy'),          Thermo_S = thermo.entropy; end
@@ -430,7 +432,8 @@ function Phonon_kpath = sqw_phonons_htmlreport_kpath(fid, options, object, maxFr
   is_dos_there = isfield(object.UserData,'DOS') && ~isempty(object.UserData.DOS) ...
       && isa(object.UserData.DOS, 'iData') && prod(size(object.UserData.DOS)) > 10000;
   if ~is_dos_there, object.UserData.DOS = []; end
-  [Phonon_kpath,kpath,fig] = sqw_kpath(object, 0, [0.01 maxFreq],'plot');
+  whos object
+  [Phonon_kpath,kpath,fig] = kpath(object, 0, [0.01 maxFreq],'plot');
   if isfinite(max(Phonon_kpath)) && max(Phonon_kpath)
     Phonon_kpath = log10(Phonon_kpath/max(Phonon_kpath)); 
   else Phonon_kpath = log10(Phonon_kpath); end
