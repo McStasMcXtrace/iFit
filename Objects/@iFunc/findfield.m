@@ -59,7 +59,7 @@ if ~isempty(cache) && ~strcmp(cache.Tag , s.Tag)
 end
 
 if isempty(cache) || isempty(strfind(option, 'cache'))
-
+  warning off MATLAB:structOnObject
   struct_s=struct(s);
   struct_s=rmfield(struct_s,'Tag');
 

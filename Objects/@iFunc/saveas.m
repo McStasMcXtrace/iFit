@@ -183,7 +183,7 @@ case 'hdf4'
   formatShort='hdf';
 end
 
-% remove NaN values, which are usually not well supported by text based formats
+warning off MATLAB:structOnObject
 
 % ==============================================================================
 % handle specific format actions
@@ -256,11 +256,13 @@ case 'mat'  % single mat-file Matlab output (binary), with the full object descr
 case 'epsc' % color encapsulated postscript file format, with TIFF preview
   f=figure('visible','off');
   plot(a,options);
+  set(f,'Renderer','zbuffer')
   print(f, '-depsc', '-tiff', filename);
   close(f);
 case {'png','tiff','jpeg','psc','pdf','ill','gif','bmp','pbm','pcx','pgm','pnm','ppm','ras','xwd','hdf'}  % bitmap and vector graphics formats (PDF, ...)
   f=figure('visible','off');
   plot(a,options);
+  set(f,'Renderer','zbuffer')
   if strcmp(formatShort,'hdf4'), formatShort='hdf'; end
   print(f, [ '-d' formatShort ], filename);
   close(f);
@@ -272,7 +274,7 @@ case 'fig'  % Matlab figure format
 case 'json'
   mat2json(struct(a), filename );    % in private
 case {'html','htm'}
-  iFunc_saveas_html(a, filename);
+  publish(a, filename);
 case {'yaml','yml'}
   if usejava('jvm')
     YAML.write( filename, struct(a) ); % YAML object is in iFit/Objects
@@ -286,122 +288,4 @@ end
 
 % end of iFunc/saveas
 
-function iFunc_saveas_html(a, filename)
-  if isempty(dir(filename))
-    mode = 'w+';
-  else 
-    mode = 'a+';
-  end
-  [Path, name, ext] = fileparts(filename);
-  target = Path;
-  titl = a.Name;
-  titl(titl=='<')='[';
-  titl(titl=='>')=']';
-  % Open and write the HTML header
-  fid = fopen(filename, mode);  % create or append to file
-  if fid == -1, filename = []; return; end
-  if ~isdir(fullfile(target,'img')), mkdir(fullfile(target,'img')); end
-  
-  % The Header *****************************************************************
-  if strcmp(mode, 'w+')
-    fprintf(fid, '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">\n');
-    fprintf(fid, '<html>\n<head>\n<title>%s</title>\n</head>\n', ...
-        titl);
-    fprintf(fid, '<body>\n');
-  end
-  fprintf(fid, '<h1>Model: %s</h1></div>\n%s\n', titl, a.Description);
-  % get the parameter values as a struct
-  fprintf(fid,'<h2>Parameters</h2>\n');
-  if ~isempty(a.ParameterValues)
-    mp = cell2struct(num2cell(a.ParameterValues(:)),strtok(a.Parameters(:)));
-    desc = evalc('disp(mp)');
-    fprintf(fid, 'Model parameters<br>\n');
-    fprintf(fid, [ '<pre> ' desc ' </pre>\n' ]);
-  else
-    mp = a.Parameters;
-    fprintf(fid,'%s<br>\n', mp{:});
-    desc = ''; 
-  end
-  % Model plot **************************************************
-  f = figure('Visible','off', 'Name', [ 'iFit_Model_' a.Tag ]);
-  h=plot(a); axis tight;
-  % add text with parameters onto plot
-  if ~isempty(desc)
-    desc = sprintf('%s\n%s', a.Name, desc);
-    h = text(0,0, desc, 'Unit','normalized','Interpreter','none', ...
-      'BackgroundColor',[0.9 0.9 0.9],'FontName','FixedWidth');
-  end
-  
-  
-  % create output from the figure: png pdf fig
-  basename     = fullfile(target, 'img', [ 'iFit_Model_' a.Tag ]);
-  basename_img = fullfile('img', [ 'iFit_Model_' a.Tag ]);
-  saveas(f, basename, 'png');
-  saveas(f, basename, 'fig');
-  saveas(f, basename, 'pdf');
-  close(f);
-  
-  % export object into a number of usable formats
-  export       = {'mat','dat',' hdf4', 'json','xml','yaml'};
-  export_label = { ...
-  'Matlab binary file. Open with Matlab or <a href="http://ifit.mccode.org">iFit</a>.', ...
-  'Flat text file which contains axes and the data set. You will have to reshape the matrix after reading the contents. View with any text editor.', ...
-  '<a href="http://www.hdfgroup.org/">HDF4</a> image, to be opened with e.g. <a href="http://www.hdfgroup.org/hdf-java-html/hdfview">hdfview</a> or <a href="http://ifit.mccode.org">iFit</a>.', ...
-  '<a href="http://en.wikipedia.org/wiki/JSON">JavaScript Object Notation</a>, to be opened with e.g. JSONView Chrome/Firefox plugin and text editors.', ...
-  '<a href="http://www.w3.org/XML/">Extensible Markup Language</a> file, to be opened with e.g. Chrome/Firefox and text editors.', ...
-  '<a href="http://en.wikipedia.org/wiki/YAML">YAML</a> interchange format, to be viewed with e.g. text editors.', ...
-  'Scalable Vector Graphics image, to be viewed with Chrome/Firefox, <a href="http://inkscape.org/">Inkscape</a>, <a href="http://www.gimp.org/>GIMP.</a>, <a href="http://projects.gnome.org/evince/">Evince</a>.' };
-  
-  for index=1:numel(export)
-    f = export{index};
-    switch f
-    case 'mat'
-      builtin('save', basename, 'a');
-    otherwise
-      save(a, basename, f);
-    end
-  end
-  export = [ export 'png' 'fig' 'pdf' ];
-  export_label = [ export_label, ...
-    'PNG image for <a href="http://www.gimp.org/">GIMP</a> or <a href="http://projects.gnome.org/evince/">Evince</a>', ...
-    'Matlab figure to be opened with Matlab or <a href="http://ifit.mccode.org">iFit</a>. Use <i>set(gcf,''visible'',''on'')</i> after loading.', ...
-    'Portable Document File to be viewed with <a href="http://get.adobe.com/fr/reader/">Acrobat Reader</a> or <a href="http://projects.gnome.org/evince/">Evince</a>.' ];
-  
-  % add image and links to exported files
-  if ~isempty(dir([ basename '.png' ]))
-    fprintf(fid, '<div style="text-align: center;"><a href="%s"><img src="%s" align="middle"></a><br>\n<i>Model: %s</i><br></div>\n', ...
-      [ basename_img '.png' ], ...
-      [ basename_img '.png' ], titl);
-  end
-  
-  % display list of available formats, as well as suggested software to use
- fprintf(fid, '<p>Exported to: <br><ul>\n');
-  for index=1:numel(export)
-    if ~isempty(dir([ basename '.' export{index} ]))
-      fprintf(fid, [ '<li><b><a href="' basename_img '.' export{index} '">' export{index} '</a></b>: ' ...
-        export_label{index} '</li>\n' ]);
-    end
-  end
-  fprintf(fid, '</ul></p>\n');
-  
-  % Model expression (details)
-  fprintf(fid,'<h2>Model Expression</h2>\n<pre>');
-  t = cellstr(a);
-  fprintf(fid, '%s\n', t{:});
-  fprintf(fid, '</pre>\n');
-  
-  % The Footer *****************************************************************
-  if strcmp(mode, 'w+')
-    % display a 'footer' below the object description
-    
-    fprintf(fid,[ '<b>' datestr(now) '</b> - ' version(iData) '<br>\n' ]);
-    
-    fprintf(fid,[ '<a href="http://ifit.mccode.org">Powered by iFit ' ...
-      '<img src="http://ifit.mccode.org/images/iFit-logo.png" width=35 height=32></a> \n' ...
-      '<a href="http://www.ill.eu">(c) ILL ' ...
-      '<img title="ILL, Grenoble, France www.ill.eu" src="http://ifit.mccode.org/images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France www.ill.eu" style="width: 33px; height: 32px;"></a><hr>\n' ]);
-  end
-  
-  fprintf(fid,'<p><!-- pagebreak --></p>\n'); % force page break in case we append new stuff
-  fclose(fid);
 

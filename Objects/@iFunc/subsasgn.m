@@ -112,6 +112,15 @@ else
             error(['iFunc:' mfilename ], [mfilename ': the model Constraint should be a char or cellstr, function_handle, struct, scalar or Parameter-length vector, but not a ' ...
         class(val) '.' ]);
           end
+        elseif strcmp(f{index},'Parameters') && isnumeric(val)
+          if isscalar(val), b.ParameterValues = val*ones(size(b.ParameterValues));
+          elseif isempty(val)
+            b.ParameterValues = [];
+          elseif numel(val) == numel(b.ParameterValues)
+            b.ParameterValues = val;
+          else
+            error(['iFunc:' mfilename ], [mfilename ': can not set ParameterValues as ' class(val) ' with ' mat2str(size(val)) ' values.' ]);
+          end
         else
           b.(f{index}) = val;
         end
@@ -178,7 +187,8 @@ else
           elseif numel(val) == 3, pmin=val(1); pmax=val(3); val=val(2); end
           if ~isempty(pmin), b.Constraint.min(index) = pmin; end
           if ~isempty(pmax), b.Constraint.max(index) = pmax; end
-          if ~isempty(val), b.ParameterValues(index) = val; end
+          if ~isempty(val), b.ParameterValues(index) = val; 
+          elseif isempty(val), b.ParameterValues     = []; end
         elseif ischar(val)
           if any(strncmp(val, {'fix','loc'}, 3))
             b.Constraint.fixed(index) = 1; val = 'skip';
