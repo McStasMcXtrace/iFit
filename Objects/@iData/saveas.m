@@ -282,7 +282,7 @@ if numel(a) > 1
     for index=1:numel(a)
       if ~strcmpi(formatShort, 'html') && ~strcmpi(formatShort, 'mat')
         [Path, name, ext] = fileparts(filename_base);
-        this_filename = [ Path name '_' num2str(index,'%04d') ext ];
+        this_filename = fullfile(Path, [ name '_' num2str(index,'%04d') ext ]);
       else
         if index == 1 && ~isempty(dir(filename_base))
           delete(filename_base);
