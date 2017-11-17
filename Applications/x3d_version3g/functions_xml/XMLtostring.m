@@ -17,7 +17,10 @@ for i=1:nl
     end
     if(isfieldempty(data(i),'property'))
                 for k=1:length(data(i).property)
-                    nc=nc+1; strcell{nc}=[' ' data(i).property(k).name '="' data(i).property(k).value '"'];
+                    val = data(i).property(k).value;
+                    if ischar(val) && size(val,1) > 1, val = cellstr(val); end
+                    if iscellstr(val) val = sprintf('%s ', val{:}); end
+                    nc=nc+1; strcell{nc}=[' ' data(i).property(k).name '="' val '"'];
                 end
                 if((~isfieldempty(data(i),'node'))&&(~isfieldempty(data(i),'string')))
                     nc=nc+1; strcell{nc}='/>';
