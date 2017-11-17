@@ -289,17 +289,17 @@ function [S, qLim, fig] = band_structure(f, qLim, E, options)
     if isfinite(max(S)) && max(S), plot(log10(S/max(S)),'view2'); 
     else plot(log10(S),'view2'); end
     axis tight
-    add_contextmenu(gca)
+    add_contextmenu(gca);
+    a0 = gca;
     hold on
-    if isfield(f.UserData,'FREQ')
+    if isfield(f.UserData,'FREQ') % overlay bare frequencies
       FREQ = f.UserData.FREQ*factor;
       if ~isempty(FREQ), plot(x, FREQ); end
     end
-    % evaluate DOS if not done yet
+
+    % plot DOS
     if ~isfield(f.UserData,'DOS') || isempty(f.UserData.DOS)
-      qh=linspace(-.5,.5,30);qk=qh; ql=qh; w=linspace(0.01,50,11);
-      F=iData(f,[],qh,qk,ql',w);
-      clear F
+      [DOS, DOS_partials] = dos(f);
     end
     if isfield(f.UserData,'DOS') && ~isempty(f.UserData.DOS)
       figure(fig);
@@ -333,6 +333,7 @@ function [S, qLim, fig] = band_structure(f, qLim, E, options)
       view([90 -90]);
       set(fig, 'NextPlot','new');
     end
+    axes(a0);
     hold off
   else fig = [];
   end
