@@ -1,4 +1,45 @@
 classdef iFunc_Sqw4D < iFunc
+  % iFunc_Sqw4D: create an iFunc_Sqw4D from e.g. an iFunc 4D object
+  %
+  % The iFunc_Sqw4D class is a 4D model holding a S(q,w) dynamic structure factor.
+  %
+  % Example: s=sqw_cubic_monoatomic
+  %
+  % Useful methods for this iFunc flavour:
+  %
+  % methods(iFunc_Sqw4D)
+  %   all iFunc methods can be used.
+  % iFunc_Sqw4D(a)
+  %   convert a 4D model [a=iFunc class] into an iFunc_Sqw4D to give access to
+  %   the methods below.
+  % plot(a)
+  %   plot the band structure and density of states
+  % plot3(a)
+  %   plot the S(q,w) dispersion in the QH=0 plane in 3D
+  % scatter3(a)
+  %   plot the S(q,w) dispersion in the QH=0 plane in 3D as coloured points
+  % slice(a)
+  %   Slice and isosurface volume exploration of the S(q,w) dispersion in the QH=0 plane
+  % b = band_structure(a)
+  %   Compute the band structure
+  % d = dos(a)
+  %   Compute the density of states
+  % m = max(a)
+  %   Evaluate the maximum S(q,w) dispersion energy
+  % powder(a)
+  %   Compute the powder average of the 4D S(q,w) dispersion
+  % publish(a)
+  %   Generate a readable document with all results
+  % t = thermochemistry(a)
+  %   Compute and display thermochemistry quantities
+  %
+  % input:
+  %   can be an iFunc or struct or any set of parameters to generate a Sqw4D object.
+  %   when not given an iFunc, the parameters to sqw_phonons are expected.
+  %
+  % output: an iFunc_Sqw4D object
+  %
+  % See also: sqw_phonons, sqw_cubic_monoatomic, iFunc
 
   properties
   end
@@ -6,13 +47,7 @@ classdef iFunc_Sqw4D < iFunc
   methods
   
     function obj = iFunc_Sqw4D(varargin)
-      % create an iFunc_Sqw4D from e.g. an iFunc 4D object
-      %
-      % input:
-      %   can be an iFunc or any set of parameters to generate a Sqw4D object.
-      %   when not given an iFunc, the parameters to sqw_phonons are expected.
-      %
-      % See also: sqw_phonons, sqw_cubic_monoatomic
+      
       obj = obj@iFunc;
       
       if nargin == 0
@@ -55,6 +90,25 @@ classdef iFunc_Sqw4D < iFunc
       obj.class = mfilename;
     end % iFunc_Sqw4D constructor
     
+    function f = iFunc(self)
+      % iFunc_Sqw4D: convert a single iFunc_Sqw4D back to iFunc
+      f = iFunc;
+      for p = fieldnames(self)'
+        f.(p{1}) = self.(p{1});
+      end
+      f.class = 'iFunc';
+    end
+    
+    function f = iData(self, varargin)
+      % iFunc_Sqw4D: iData: evaluate a 4D Sqw into an iData object
+      f =iData(iFunc(self),varargin{:});
+      xlabel(f, 'QH [rlu]');
+      ylabel(f, 'QK [rlu]');
+      zlabel(f, 'QL [rlu]');
+      clabel(f, 'Energy [meV]');
+      title(f, self.Name);
+    end
+    
     function [fig, s, k] = plot(self, varargin)
       % iFunc_Sqw4D: plot: plot dispersions along principal axes and vDOS
       if isempty(varargin), varargin = { 'plot meV' }; end
@@ -66,13 +120,9 @@ classdef iFunc_Sqw4D < iFunc
     
     function [h, f] = plot3(s, varargin)
       % iFunc_Sqw4D: plot3: plot a 3D view of the dispersions in H=0 plane
-      maxFreq = max(s);
-      % evaluate the 4D model onto a mesh filling the Brillouin zone [0:0.5 ]
-      qk=linspace(0,0.95,50); qh=0; ql=qk; 
-      w =linspace(0.01,maxFreq*1.2,51);
-      f =iData(s,[],qh,qk,ql',w);
+      f = feval_fast(s);
       % plot in 3D
-      h = plot3(log(f(1,:, :,:)), varargin{:}); % h=0
+      h = plot3(f, varargin{:}); % h=0
       if ~isempty(inputname(1))
         assignin('caller',inputname(1),s); % update in original object
       end
@@ -80,13 +130,9 @@ classdef iFunc_Sqw4D < iFunc
     
     function [h, f] = scatter3(s, varargin)
       % iFunc_Sqw4D: scatter3: plot a 3D scatter view of the dispersions in H=0 plane
-      maxFreq = max(s);
-      % evaluate the 4D model onto a mesh filling the Brillouin zone [0:0.5 ]
-      qk=linspace(0,0.95,50); qh=0; ql=qk; 
-      w =linspace(0.01,maxFreq*1.2,51);
-      f =iData(s,[],qh,qk,ql',w);
+      f = feval_fast(s);
       % plot in 3D
-      h = scatter3(log(f(1,:, :,:)), varargin{:}); % h=0
+      h = scatter3(f, varargin{:}); % h=0
       if ~isempty(inputname(1))
         assignin('caller',inputname(1),s); % update in original object
       end
@@ -94,28 +140,20 @@ classdef iFunc_Sqw4D < iFunc
     
     function [h, f] = slice(s, varargin)
       % iFunc_Sqw4D: slice: plot an editable 3D view of the dispersions in H=0 plane
-      maxFreq = max(s);
-      % evaluate the 4D model onto a mesh filling the Brillouin zone [0:0.5 ]
-      qk=linspace(0,0.95,50); qh=0; ql=qk; 
-      w =linspace(0.01,maxFreq*1.2,51);
-      f =iData(s,[],qh,qk,ql',w);
+      f = feval_fast(s);
       % plot in 3D
-      h = slice(log(f(1,:, :,:)), varargin{:}); % h=0
+      h = slice(f, varargin{:}); % h=0
       if ~isempty(inputname(1))
         assignin('caller',inputname(1),s); % update in original object
       end
-    end % scatter3
+    end % slice
   
     % methods for Sqw 4D
     
-      
-    % kpath = plot = band_structure
     % bosify
     % debosify
     % gdos
-    % powder
     % sq
-    % publish -> report
   end % methods
   
 end % classdef
