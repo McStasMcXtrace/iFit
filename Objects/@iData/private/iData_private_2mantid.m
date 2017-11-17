@@ -41,12 +41,19 @@ function b = iData_private_2mantid(a)
 %     values: [signal=1; axes=axis1,axis2...;long_name=label]
 %
 
+if numel(a) > 1
+    b = [];
+    for index=1:numel(a)
+      b = [ b iData_private_2mantid(a(index)) ];
+    end
+    return
+end
+
 % root level attributes for HDF/NeXus
 [majnum minnum relnum] = H5.get_libversion;
 
-b = copyobj(a);
-
 % set the new object empty
+b = copyobj(a);
 b=rmaxis(b);
 b=rmalias(b);
 b.Data = [];
@@ -226,9 +233,9 @@ end
 if ~isfield(b.Data.mantid_workspace_1.process, 'iFitCommands')
   b.Data.mantid_workspace_1.process.iFitCommands = sprintf('%s\n', a.Command{:});
 else
-  b.Data.mantid_workspace_1.process.iFitCommands = ...
-   [ b.Data.mantid_workspace_1.process.iFitCommands 
-     sprintf('%s\n', a.Command{:}) ];
+  b.Data.mantid_workspace_1.process.iFitCommands = sprintf('%s\n%s', ...
+      char(b.Data.mantid_workspace_1.process.iFitCommands), ...
+      sprintf('%s\n', a.Command{:}) );
 end
 
 % create NXdata 'workspace' in 'mantid_workspace_1' ----------------------------
