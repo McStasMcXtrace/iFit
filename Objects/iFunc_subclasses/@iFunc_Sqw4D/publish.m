@@ -2,19 +2,28 @@ function filename = publish(self, filename, section, message)
 % iFunc_Sqw4D: publish: generate a readable HTML document and export results to
 % many file formats
 %
+%  publish(s)
+%    generates a readable report for a 4D S(q,w) object
+%  publish(s,'force')
+%    same as above, but make sure any existing report is overwritten
+%  publish(s,filename)
+%    explicitly write the report into given file
+
+
 % section defaults to {'header','crystal','calculator','properties',
-%   'plot','export','thermochemistry','download','footer'};
+%   'plot','thermochemistry','download','footer'};
 % other possible sections are: 'status', 'error','optimize'
 
   
-  section_all  = {'header',...
+  section_all  = {'header', 'toc', 'parameters', ...
       'crystal', ...
       'calculator', ...
+      'optimize', ...
       'properties', ...
-      'model', ...
-      'export', ...
+      'plot','model', ...
       'thermochemistry', ...
       'plot3', ...
+      'powder', ...
       'download', ...
       'footer'}; 
 
@@ -52,49 +61,57 @@ function filename = publish(self, filename, section, message)
     end
   
     switch strtok(lower(section{index}))
-    case {'header','model','download','footer','message','force'}
+    case {'header','plot','model','parameters','download','footer','message','force'}
       % these are supported by the iFunc/publish method
       %   this should e.g. be the first call with section='header'
       %   which creates the file and its 'img' directory
       filename = publish@iFunc(self, filename, section{index});
+    case 'table'
+      if ischar(message)
+        dummy = publish@iFunc(self, filename, 'table', message);
+        message = [];
+      end
+    case 'toc'
       
-    case {'atoms','crystal'}
+      % add the list of tags
+      publish_toc(section, fid, options);
+      
+    case 'crystal'
     
       publish_crystal(self, fid, options);
     
-    case {'calculator','options'}
+    case 'calculator'
     
       publish_calculator(self, fid, options);
       
-    case {'optimise','optimize'}
+    case 'optimize'
     
       publish_optimize(self, fid, options);
     
-    case {'status'}
+    case 'status'
     
       % display the current status of the computation (start, ETA, percentage...)
       if isfield(options, 'status')
         if ~ischar(options.status) options.status = num2str(options.status); end
-        publish@iFunc(self, filename, 'message', ...
+        dummy = publish@iFunc(self, filename, 'message', ...
           sprintf('<br>[%s] %s %s\n', datestr(now), options.status));
       end
     
-    case {'properties','physics'}
+    case 'properties'
     
       publish_properties(self, fid, options);
     
-    case {'dos','thermochemistry'}
+    case 'dos','thermochemistry'
     
       publish_dos(self, fid, options);
     
-    case {'plot3'}
+    case 'plot3'
     
-      self = publish_eval_3D(self, fid, options)
+      self = publish_eval_3D(self, fid, options);
     
-    case {'powder'}
+    case 'powder'
     
-      %publish_eval_powder(self, fid, options)
-      %publish_table(self, 'powder')
+      publish_eval_powder(self, fid, options)
       
     case 'error'
       % display error message
@@ -104,10 +121,11 @@ function filename = publish(self, filename, section, message)
       else calculator=[]; end
       publish(self, filename, 'status', ...
         sprintf('<hr><h2>ERROR: %s %s FAILED</h2>\n', calculator, configuration) );
-    
+    otherwise
+      disp([ mfilename ': INFO: ignoring section ' section{index} ]);
     end % switch
     if fid ~= -1, fclose(fid);
-    if ~isempty(message), publish@iFunc(self, filename, 'message', message); end
+    if ~isempty(message), dummy = publish@iFunc(self, filename, 'message', message); end
     
     % only one custom message per call
     if numel(section) > 1 && ~isempty(message), message = []; end
@@ -123,7 +141,7 @@ function filename = publish(self, filename, section, message)
     if strcmp(strtok(lower(section{index})),'error')
       return; % abort on error
     end
-    disp([ mfilename ': Generating section ' filename '#' strtok(lower(section{index})) ]);
+    disp([ mfilename ': Generated section ' filename '#' strtok(lower(section{index})) ]);
     
   end % for (section)
   
@@ -132,13 +150,14 @@ function filename = publish(self, filename, section, message)
   end
   
   % last, open web browser when no output requested ------------------------------
-  if nargout == 0
+  if nargout == 0 && numel(section) > 1
     webbrowser(filename, 'system');
   end
 
   
 % ==============================================================================
 function publish_crystal(self, fid, options)
+  % introduction, general information
   
   if fid == -1, return; end
 
@@ -176,8 +195,7 @@ function publish_crystal(self, fid, options)
     fprintf(fid, '<br>\n');
     % look for exported 'configuration' (structure) files
     if isfield(options, 'target')
-      publish_table(fid, options.target, '', 'configuration');  % the 'configuration' files are generated in-place
-      publish_table(fid, options.target, 'img', 'configuration');  % also search in 'img' sub-dir.
+      publish(self, '', 'table', 'configuration');
       
       if ~isempty(dir(fullfile(options.target, 'sqw_phonons_check.py')))
         fprintf(fid, 'The python/ASE script used to import the initial material description is:\n<br>');
@@ -190,6 +208,7 @@ function publish_crystal(self, fid, options)
 function publish_calculator(self, fid, options)
   
   % tag=calc: append calculator configuration
+  
   if fid == -1, return; end
 
   if isfield(options, 'calculator')
@@ -236,11 +255,10 @@ function publish_optimize(self, fid, options)
   if ~isfield(options, 'optimizer') || isempty(options.optimizer), return; end
   if ~isfield(options, 'target') || isempty(dir(options.target)), return; end
   
-  fprintf(fid, '<h2><a name="optimized"></a>Optimized atom/molecule configuration</h2>\n');
+  fprintf(fid, '<h2><a name="optimize"></a>Optimized atom/molecule configuration</h2>\n');
   fprintf(fid, '<p>In this section, we present the results of the optimization procedure, of the initial structure. The lattice parameters are kept constant. The optimized structure is used further for the force estimate.</p>\n');
   fprintf(fid, '<br>\n');
-  publish_table(fid, options.target, '', 'optimized');
-  publish_table(fid, options.target, 'img','optimized');
+  publish(self, '', 'table', 'optimized');
   
   if ~isempty(dir(fullfile(options.target, 'sqw_phonons_optimize.py')))
     fprintf(fid, 'The python/ASE script used to optimize the initial material structure is\n');
@@ -253,12 +271,13 @@ function publish_optimize(self, fid, options)
 function publish_properties(self, fid, options)
 
   if fid == -1, return; end
-  fprintf(fid, '<p>Here is some additional information about the atom/molecule physical properties\n');
+  
   % display some information about the system (energy, structure, etc...)
   if isfield(self.UserData, 'properties')
+    fprintf(fid, '<h2><a name="properties">Physical properties</h2>\n');
     properties = self.UserData.properties;
     toadd = fieldnames(properties);
-    fprintf(fid, '<table style="text-align: left; width: 50%%;" border="1" cellpadding="2" cellspacing="2">\n');
+    fprintf(fid, '<table style="text-align: left; width: 80%%;" border="1" cellpadding="2" cellspacing="2">\n');
     for index=1:numel(toadd)
       this = properties.(toadd{index});
       if isnumeric(this) && ndims(this) <= 2
@@ -311,7 +330,7 @@ function publish_dos(self, fid, options)
     if isfield(thermo, 'heat_capacity'),    Sqw4D_Thermo_Cv= thermo.heat_capacity;  
     else                                    Sqw4D_Thermo_Cv=[]; end
     
-    fprintf(fid, '<h3><a name="dos"></a>The vibrational density of states (vDOS)</h3>\n');
+    fprintf(fid, '<h3><a name="thermochemistry"></a>The vibrational density of states (vDOS)</h3>\n');
     fprintf(fid, '<p>The <a href="https://en.wikipedia.org/wiki/Density_of_states">vibrational density of states</a> (aka phonon spectrum) can be defined as the velocity auto-correlation function (VACF) of the particles. ');
     if ~isempty(Sqw4D_Thermo_S)
       fprintf(fid, 'The <a href="https://wiki.fysik.dtu.dk/ase/ase/thermochemistry/thermochemistry.html#background">Thermodynamic quantities</a> have also been computed.');
@@ -325,7 +344,7 @@ function publish_dos(self, fid, options)
       print(fig,  fullfile(options.target,  'img', 'Sqw4D_ThermoChem.png'),'-dpng');
       print(fig,  fullfile(options.target,  'img', 'Sqw4D_ThermoChem.pdf'),'-dpdf');
       
-      publish_table(fid, options.target, 'img','Sqw4D_ThermoChem');
+      publish(self, '', 'table', 'Sqw4D_ThermoChem');
       close(fig); fig=[];
     end
     
@@ -354,7 +373,7 @@ function publish_dos(self, fid, options)
       case 'Sqw4D_Thermo_Cv'
         fprintf(fid, 'The molar specific heat at constant volume Cv=dU/dT [J/K/mol] is available below:</p><br>\n');
       end
-      publish_table(fid, options.target,'img', name);
+      publish(self, '', 'table', name);
     
     end
     fprintf(fid, '<hr>\n');
@@ -363,16 +382,17 @@ function publish_dos(self, fid, options)
   
 % ==============================================================================
 function self = publish_eval_3D(self, fid, options)
-
-  if fid == -1, return; end
   % the S(0kl,w)
+  
+  if fid == -1, return; end
+  
   maxFreq = max(self);
   % evaluate the 4D model onto a 3D mesh filling the Brillouin zone [0:0.5 ] at QH=0
   qk=linspace(0,1.5,50); qh=0; ql=qk; 
   w =linspace(0.01,maxFreq*1.2,51);
   Sqw4D_0KLE =iData(self,[],qh,qk,ql',w); Sqw4D_0KLE = squeeze(Sqw4D_0KLE);
 
-  fprintf(fid, '<h3><a name="grid3d"></a>The dispersion in 3D S(h=0,k,l,w)</h3>\n');
+  fprintf(fid, '<h3><a name="plot3"></a>The dispersion in 3D S(h=0,k,l,w)</h3>\n');
   fprintf(fid, '<p>In order to view this 4D data set, we represent it on the QH~0 plane as a 3D volume data set. The intensity level is set as log10[S(QH=%g,QK,QL,w)].<br>\n', qh(1));
     
   fprintf(fid, '<ul><li>qh=%g (QH in rlu)</li>\n', qh(1)); % axis1
@@ -380,10 +400,12 @@ function self = publish_eval_3D(self, fid, options)
   fprintf(fid, '<li>ql=[%g:%g] with %i values (QL in rlu)</li>\n', ylim(Sqw4D_0KLE), size(Sqw4D_0KLE,3));
   fprintf(fid, '<li>w=[%g:%g] with %i values (energy in meV, vertical)</li></ul></p>\n', zlim(Sqw4D_0KLE), size(Sqw4D_0KLE,4));
     
-    fprintf(fid, '<p>The QH=%g data set is available in the folowing formats (log10 of the data set except for DAT and MAT files):<br>\n', qh(1));
+    fprintf(fid, '<p>The QH=%g data set is available in the folowing formats (log10 of the data set except for DAT, HDF5 and MAT files):<br>\n', qh(1));
     
-  builtin('save', fullfile(options.target, 'img', 'Sqw4Dn_0KLE.mat'), 'Sqw4D_0KLE');
+  builtin('save',    fullfile(options.target, 'img', 'Sqw4D_0KLE.mat'), 'Sqw4D_0KLE');
   saveas(Sqw4D_0KLE, fullfile(options.target, 'img', 'Sqw4D_0KLE.dat'), 'dat data');
+  saveas(Sqw4D_0KLE, fullfile(options.target, 'img', 'Sqw4D_0KLE.h5'), 'mantid');
+  
   Sqw4D_0KLE = log10(Sqw4D_0KLE);
   saveas(Sqw4D_0KLE, fullfile(options.target, 'img', 'Sqw4D_0KLE.png'), 'png', 'tight');
   saveas(Sqw4D_0KLE, fullfile(options.target, 'img', 'Sqw4D_0KLE.fig'), 'fig', 'plot3 tight');
@@ -394,13 +416,12 @@ function self = publish_eval_3D(self, fid, options)
   if ~isdeployed
     saveas(Sqw4D_0KLE, fullfile(options.target, 'img', 'Sqw4D_0KLE.pdf'), 'pdf', 'tight');
   end
-  saveas(Sqw4D_0KLE, fullfile(options.target, 'img', 'Sqw4D_0KLE.h5'), 'mantid');
   
   % modify aspect ratio to fit in a cube for X3D/XHTML
   saveas(Sqw4D_0KLE, fullfile(options.target, 'img', 'Sqw4D_0KLE.xhtml'), 'xhtml','axes auto');
   saveas(Sqw4D_0KLE, fullfile(options.target, 'img', 'Sqw4D_0KLE.x3d'), 'x3d','axes auto');
   
-  publish_table(fid, options.target, 'img', 'Sqw4D_0KLE');
+  publish(self, '', 'table', 'Sqw4D_0KLE');
   
   if ~isempty(dir(fullfile(options.target, 'sqw_phonons_eval.py')))
     fprintf(fid, 'The python/ASE script used to evaluate the HKLE dispersion is:\n<br>');
@@ -408,122 +429,55 @@ function self = publish_eval_3D(self, fid, options)
   end
  
 % ==============================================================================
-function Phonon_powder = publish_eval_powder(fid, options, object, maxFreq)
+function Phonon_powder = publish_eval_powder(self, fid, options)
+
+  if fid == -1, return; end
   % the S(hklw) radial average
-  Phonon_powder = powder(object, [], [], [0 maxFreq]); 
-  log_Phonon_powder=log(Phonon_powder);
+  Sqw2D_Powder = powder(self); % a 2D iFunc
+  Sqw2D_Powder_eval = iData(Sqw2D_Powder,[],linspace(0,4,30),linspace(0,max(self)*1.2,51));
+  log_Sqw2D_Powder = log10(Sqw2D_Powder_eval);
   
   fprintf(fid, '<h3><a name="powder"></a>The powder average S(q,w)</h3>\n');
   fprintf(fid, 'The powder average S(q,w) is shown below:<br>\n');
     
-  builtin('save', fullfile(options.target, 'Phonon_powder.mat'), 'Phonon_powder');
-  saveas(log_Phonon_powder, fullfile(options.target, 'Phonon_powder.png'),'png data');
-  saveas(log_Phonon_powder, fullfile(options.target, 'Phonon_powder.fits'),'fits');
-  saveas(log_Phonon_powder, fullfile(options.target, 'Phonon_powder.tiff'),'tiff');
-  saveas(log_Phonon_powder, fullfile(options.target, 'Phonon_powder.fig'), 'fig', 'tight');
-  saveas(Phonon_powder, fullfile(options.target, 'Phonon_powder.dat'), 'dat data');
-  saveas(log_Phonon_powder, fullfile(options.target, 'Phonon_powder.pdf'), 'pdf', 'tight view2');
-  saveas(log_Phonon_powder, fullfile(options.target, 'Phonon_powder.svg'), 'svg', 'view2 tight');
-  saveas(log_Phonon_powder, fullfile(options.target, 'Phonon_powder.x3d'), 'x3d', 'tight auto');
-  saveas(Phonon_powder, fullfile(options.target, 'Phonon_powder.h5'), 'mantid');
+  builtin('save', fullfile(options.target, 'img', 'Sqw2D_Powder.mat'), 'Sqw2D_Powder');
+  saveas(Sqw2D_Powder_eval, fullfile(options.target, 'img', 'Sqw2D_Powder.dat'), 'dat data');
+  saveas(Sqw2D_Powder_eval, fullfile(options.target, 'img', 'Sqw2D_Powder.h5'), 'mantid');
   
-  publish_table(fid, options.target, 'img','Phonon_powder');
+  saveas(log_Sqw2D_Powder, fullfile(options.target, 'img', 'Sqw2D_Powder.png'),'png data');
+  saveas(log_Sqw2D_Powder, fullfile(options.target, 'img', 'Sqw2D_Powder.fits'),'fits');
+  saveas(log_Sqw2D_Powder, fullfile(options.target, 'img', 'Sqw2D_Powder.tiff'),'tiff');
+  saveas(log_Sqw2D_Powder, fullfile(options.target, 'img', 'Sqw2D_Powder.fig'), 'fig', 'tight');
+  saveas(log_Sqw2D_Powder, fullfile(options.target, 'img', 'Sqw2D_Powder.pdf'), 'pdf', 'tight view2');
+  saveas(log_Sqw2D_Powder, fullfile(options.target, 'img', 'Sqw2D_Powder.svg'), 'svg', 'view2 tight');
+  saveas(log_Sqw2D_Powder, fullfile(options.target, 'img', 'Sqw2D_Powder.x3d'), 'x3d', 'axes auto');
+  
+  publish(self, '', 'table','Sqw2D_Powder');
   
 
 % ==============================================================================
-function publish_toc(fid, options)
+function publish_toc(section, fid, options)
   % table of contents
+  if fid == -1, return; end
+  if ~iscellstr(section) || numel(section) <= 1, return; end
+  
   fprintf(fid, '<hr>Table of contents:<br><ul>\n');
-  fprintf(fid, '<li><a href="#atom">Crystallographic information</a></li>\n');
-  fprintf(fid, '<li><a href="#calc">Calculator configuration</a></li>\n');
-  if isfield(options, 'optimizer') && ~isempty(options.optimizer)
-  fprintf(fid, '<li><a href="#optimize">The optimized structure</a></li>\n');
+  for index=1:numel(section)
+    if any(strcmp(section{index}, {'header','footer','toc','plot'})), continue; end
+    if ~strcmp(section{index},'optimize') || ...
+       ~strcmp(section{index},'optimize') || ...
+       (strcmp(section{index},'optimize') && isfield(options, 'optimizer') && ...
+       ~isempty(options.optimizer)) || ...
+       (strcmp(section{index},'calculator') && isfield(options, 'calculator') && ...
+       ~isempty(options.calculator))
+      fprintf(fid, '<li><a href="#%s">%s</a></li>\n', section{index}, section{index});
+    end
   end
-  fprintf(fid, '<li><a href="#results">Results</a><ul>\n');
-  fprintf(fid, '  <li><a href="#model">The Phonon Model S(hkl,w)</a></li>\n');
-  fprintf(fid, '  <li><a href="#dos">The Phonon spectrum (vDOS)</a></li>\n');
-  fprintf(fid, '  <li><a href="#kpath">The dispersion along principal directions</a></li>\n');
-  fprintf(fid, '  <li><a href="#grid4d">The Model evaluated onto a 4D grid</a></li>\n');
-  fprintf(fid, '  <li><a href="#grid3d">The Model evaluated onto a 3D grid (QH~0)</a></li>\n');
-  fprintf(fid, '  <li><a href="#powder">The Powder average S(q,w)</a></li></ul></li>\n');
-  fprintf(fid, '<li><a href="#zip">Download</a></li>\n');
   fprintf(fid, '</ul><hr>\n');
 
 
 % ==============================================================================
-function publish_table(fid, target, img, name)
-% write a Table which displays available exported 'configuration' files
-  
-  if isempty(name), name = 'configuration'; end
-  if isempty(img),  img = ''; end
-  % append links to configuration files and images
-  flag_table = 0;
-  for index={ ...
-    '.html You can rotate the object (left mouse button), zoom (right mouse button), and pan (middle mouse button)', ...
-  '.png', ...
-  '.cif Crystallographic Information File (<a href="https://en.wikipedia.org/wiki/Crystallographic_Information_File">CIF</a>) which you can view with <a href="http://jmol.sourceforge.net/">JMol</a>, <a href="http://www.ks.uiuc.edu/Research/vmd/">VMD</a>, <a href="http://www.cgl.ucsf.edu/chimera/">Chimera</a>, <a href="http://rasmol.org/">RasMol</a>, ...', ...
-  '.etsf <a href="http://www.etsf.eu/fileformats">European Theoretical Spectroscopy Facility</a> file format for DFT codes', ...
-  '.pdb Protein Data Bank (<a href="http://www.rcsb.org/pdb/">PDB</a>) which you can view with <a href="http://jmol.sourceforge.net/">JMol</a>, <a href="http://www.ks.uiuc.edu/Research/vmd/>"VMD</a>, <a href="http://www.cgl.ucsf.edu/chimera/">Chimera</a>, <a href="http://rasmol.org/">RasMol</a>, ...', ...
-  '_POSCAR POSCAR geometry file for <a href="https://www.vasp.at/">VASP</a>', ...
-  '_SHELX.res <a href="http://shelx.uni-ac.gwdg.de/SHELX/">ShelX</a> file format', ...
-  '.eps Encapsulated postscript', ...
-  '.pov Scene for <a href="http://www.povray.org/">Pov-Ray</a>', ...
-  '.x3d Geometry Scene for <a href="http://castle-engine.sourceforge.net/view3dscene.php">view3dscene</a>, <a href="http://www.instantreality.org/">InstantPlayer</a>, <a href="http://freewrl.sourceforge.net/">FreeWRL</a>' ...
-  '.json <a href="http://en.wikipedia.org/wiki/JSON">JavaScript Object Notation</a>, to be opened with e.g. JSONView Chrome/Firefox plugin and text editors.' ...
-  '.xml <a href="http://www.w3.org/XML/">Extensible Markup Language</a> file, to be opened with e.g. Chrome/Firefox and text editors.' ...
-  '.yaml <a href="http://en.wikipedia.org/wiki/YAML">YAML</a> interchange format, to be viewed with e.g. text editors.' ...
- [ '.mat Matlab binary file. Load the Model/Data set under <a href="http://ifit.mccode.org">Matlab/iFit</a> with (this also works with the <a href="http://ifit.mccode.org/Install.html">standalone version of iFit</a> which does <b>not</b> require any Matlab license and installs on most systems): load(''<a href="' name '.mat">' name '.mat</a>'') <i></i></li></ul>' ] ...
-  '.m Matlab script/function' ...
-  '.dat Flat text file. You may have to reshape the data set. View with any text editor (gedit).' ...
-  '.h5 a NeXus/HDF5 data file to be opened with e.g. <a href="http://www.mantidproject.org/Main_Page">Mantid</a>, <a href="http://www.hdfgroup.org/hdf-java-html/hdfview">hdfview</a>, <a href="http://vitables.org/">ViTables</a> or <a href="http://ifit.mccode.org">iFit</a>' ...
-  '.fig a Matlab figure for Matlab or <a href="http://ifit.mccode.org">iFit</a>. Use </i>figure(gcf)</i> after loading' ...
-  '.pdf an Adobe PDF, to be viewed with <a href="http://get.adobe.com/fr/reader/">Acrobat Reader</a> or <a href="http://projects.gnome.org/evince/">Evince</a>' ...
-  '.svg a <a href="https://fr.wikipedia.org/wiki/Scalable_Vector_Graphics">Scalable Vector Graphics</a> image, to be viewed with Chrome/Firefox, <a href="http://inkscape.org/">Inkscape</a>, <a href="http://www.gimp.org/>GIMP.</a>, <a href="http://projects.gnome.org/evince/">Evince</a>' ...
-  '.vtk Visualization Toolkit (VTK) file which can be viewed with <a href="http://www.paraview.org/">ParaView</a>, <a href="http://code.enthought.com/projects/mayavi/">Mayavi2</a>, <a href="https://wci.llnl.gov/simulation/computer-codes/visit/executables">VisIt</a>, <a href="https://www.slicer.org/">Slicer4</a>' ...
-  '.mrc MRC Electron density map, to be visualized with <a href="http://www.pymol.org/">PyMol</a>, <a href="http://www.ks.uiuc.edu/Research/vmd/">VMD</a>, <a href="http://www.cgl.ucsf.edu/chimera/">Chimera</a>, <a href="http://www.yasara.org/">Yasara</a>, <a href="http://mem.ibs.fr/VEDA/">VEDA</a>' ...
-  '.xhtml Extensible Web page. You can rotate the object (left mouse button), zoom (right mouse button), and pan (middle mouse button).', ...
-  '.fits Flexible Image Transport System (<a href="https://fits.gsfc.nasa.gov/fits_home.html">FITS</a>) image, which can be viewed with e.g. <a href="http://rsb.info.nih.gov/ij/">ImageJ</a>, <a href="http://www.gimp.org/">GIMP.</a>.', ...
-  '.tiff <a href="https://en.wikipedia.org/wiki/TIFF">TIFF</a> image file, to be viewed with e.g. <a href="http://rsb.info.nih.gov/ij/">ImageJ</a>, <a href="http://www.gimp.org/">GIMP.</a>.' ...
-    }
-    
-    [index1, index2] = strtok([ name index{1} ]);
-    if ~isempty(dir(fullfile(target,img,index1)))
-      % the file exists
-      if strcmp(index1, [ name '.png' ]) && ~isempty(dir(fullfile(target,img,[ name '.tiff' ])))
-        fprintf(fid, [ '<div style="text-align:center">' ...
-          '<a href="%s"><img src="%s" align="middle" title="%s">' ...
-          '</a><br>(try the <a href="%s">TIFF file</a>' ...
-          ' in case the axes are not shown)</div><br>\n' ], ...
-          fullfile(img,index1), fullfile(img,index1), fullfile(img,index1), [ name '.tiff' ]);
-      elseif strcmp(index1, [ name '.png' ])  % only the PNG, but not the TIFF
-        fprintf(fid, [ '<div style="text-align:center">' ...
-          '<a href="%s"><img src="%s" align="middle" title="%s">' ...
-          '</a></div><br>\n' ], fullfile(img,index1), fullfile(img,index1), fullfile(img,index1));
-      elseif strcmp(index1, [ name '.html' ])
-        % embed a frame
-        fprintf(fid, [ '<div style="text-align:center">' ...
-          '<iframe src="%s" align="middle" width="480" height="480">' ...
-          '</iframe><br>%s<br>' ...
-          '(<a href="%s" target=_blank>open in external window</a>)<br></div><br>\n' ], ...
-          fullfile(img,index1), index2, fullfile(img,index1));
-      elseif strcmp(index1, [ name '.xhtml' ])
-        % embed an x3dom frame
-        fprintf(fid, [ '<div style="text-align:center"><iframe src="%s" align="middle" width="700" height="850"></iframe><br>\n' ...
-        '%s<br>(<a href="%s" target=_blank>open in external window</a>)<br>\n' ...
-        'The <font color="blue">blue</font> axis is the Energy (meV), the <font color="red">red</font> axis is QK (rlu), the <font color="green">green</font> axis is QL (rlu).<br>\n' ...
-        'You can rotate the model (left mouse button), zoom (right mouse button), and pan (middle mouse button).<br>\n' ], fullfile(img,index1), index2, fullfile(img,index1));
-      else
-        if flag_table == 0
-          flag_table = 1;
-          fprintf(fid, '<table style="text-align: left; width: 100%%;" border="1" cellpadding="2" cellspacing="2">\n');
-        end
-        fprintf(fid, '  <tr><td><a href="%s">%s</a></td><td>%s</td></tr>\n', fullfile(img,index1), index1, index2);
-      end
-    end
-  end
-  if flag_table
-    fprintf(fid, '</table><br>\n');
-  end
+
 
   
 
