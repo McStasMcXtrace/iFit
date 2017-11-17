@@ -70,7 +70,7 @@
       </p>
       <pre style="margin-left: 40px;">&gt;&gt; model = <span style="color: rgb(51, 102, 255);">mccode</span>(<span style="color: rgb(204, 51, 204);">'instrument'</span>);	<i>% uses the given instrument file (*.instr)</i><br>&gt;&gt; model = <span style="color: rgb(51, 102, 255);">mccode</span>(<span style="color: rgb(204, 51, 204);">'gui'</span>);		<i>% lists all available instruments to select one</i><br>&gt;&gt; model = <span style="color: rgb(51, 102, 255);">mccode</span>(<span style="color: rgb(204, 51, 204);">''</span>);			<i>% pop-up a file selector to select an *.instr file</i><br>&gt;&gt; model = <span style="color: rgb(51, 102, 255);">mccode</span>(<span style="color: rgb(204, 51, 204);">'defaults'</span>);		<i>% uses the templateDIFF instrument as example <br></i></pre>
       which compile the instrument, and create an <a href="iFunc.html">iFunc</a>
-      model (in fact an <i>iFunc_McCode</i> flavour). <br>
+      model (in fact an <b><i>iFunc_McCode</i></b> flavour). <br>
       When the instrument is not found in the current directory, it is
       searched in the McStas library (may be specified with the MCSTAS
       and MCXTRACE environment variables), and eventually copied
@@ -82,15 +82,15 @@
       You may even assemble these models as iFunc arrays to iteratively
       perform series of simulations, or use arithmetic operations to
       combine models (see the <a href="iFunc.html#mozTocId443357">iFunc</a>
-      documentation).<br><br>The resulting 'model' object can be converted into an iFunc_McCode one (in case its flavour was lost) with:<br><ul><li>model = <font color="#3366ff">iFunc_McCode</font>(model)</li></ul>
+      documentation).<br><br>The resulting 'model' object can be forced into an <b>iFunc_McCode</b> one (in case its flavour was lost) with:<br><ul><li>model = <font color="#3366ff">iFunc_McCode</font>(model)</li></ul>
       
-      This type of sub-class (derived from iFunc), provides all iFunc methods, but also specific methods adapted to McCode simulations:<br><ul><li><font color="#3366ff">plot</font>(model)</li></ul><blockquote><blockquote>plot the model geometry in 3D.<br></blockquote></blockquote><ul><li><font color="#3366ff">feval</font>(model)</li></ul><blockquote><blockquote>evaluate the model using its current parameter values and settings. The returned data is array for the selected or last Monitor value. Other monitors are available as iData objects in <i>model.UserData.monitors</i><br></blockquote></blockquote><ul><li><font color="#3366ff">edit</font>(model)</li></ul><blockquote><blockquote>edit the instrument source code. Do not forget to save the file before closing the editor. If changes are done, the object is updated.<br></blockquote></blockquote><ul><li><font color="#3366ff">dialog</font>(model)</li></ul><blockquote><blockquote>displays a table where you can change the parameter/configuration values. Instrument parameters (scalars) can be given as a single scalar, or a vector (for scans). The calculation starts when you close the table. To <i><b>Cancel</b></i> the computation, select the contextual menu (right mouse button) CANCEL item, or press <i>Ctrl-C</i> at the prompt.<br></blockquote></blockquote>It is also possible to finely tune the instrument configuration
+      This type of sub-class (derived from <a href="iFunc.html">iFunc</a>), provides all <a href="iFunc.html">iFunc</a> methods, but also specific methods adapted to McCode simulations:<br><ul><li><font color="#3366ff">plot</font>(model)</li></ul><blockquote><blockquote>plot the model geometry in 3D.<br></blockquote></blockquote><ul><li><font color="#3366ff">feval</font>(model)</li></ul><blockquote><blockquote>evaluate the model using its current parameter values and settings. The returned data is array for the selected or last Monitor value. Other monitors are available as iData objects in <i>model.UserData.monitors</i><br></blockquote></blockquote><ul><li><font color="#3366ff">edit</font>(model)</li></ul><blockquote><blockquote>edit the instrument source code. Do not forget to save the file before closing the editor. If changes are done, the object is updated, and the instrument is re-compiled.<br></blockquote></blockquote><ul><li><font color="#3366ff">dialog</font>(model)</li></ul><blockquote><blockquote>displays a table where you can change the parameter/configuration values. Instrument parameters (scalars) can be given as a single scalar, or a vector (for scans). The calculation starts when you close the table. To <i><b>Cancel</b></i> the computation, select the contextual menu (right mouse button) CANCEL item, or press <i>Ctrl-C</i> at the prompt. The resulting monitors are displayed when the simulation end.<br></blockquote></blockquote>It is also possible to finely tune the instrument configuration
       using standard McStas/McXtrace options with the syntax:<br>
       <blockquote>
         <pre>&gt;&gt;  <span style="color: rgb(51, 102, 255);">mccode</span>(<span style="color: rgb(204, 51, 204);">'instrument'</span>, options)</pre>
       </blockquote>
       and the following options:<br>
-      <table border="1" width="100%" cellspacing="2" cellpadding="2">
+      <table border="1" cellpadding="2" cellspacing="2" width="100%">
         <tbody>
           <tr>
             <td valign="top"><b>options.dir</b></td>
@@ -186,9 +186,8 @@
       overhead time is increased due to more data handling compared to a
       single/restricted monitor name selection.<br>
       <ul>
-        <li>model=<font color="#3366ff">mccode</font>(<font color="#cc33cc">'templateDIFF'</font>);</li>
-      </ul>
-      In order to improve the computational efficiency, it is advised to
+        <li>model=<font color="#3366ff">mccode</font>(<font color="#cc33cc">'templateDIFF'</font>);&nbsp; <i>% </i><i>same as mccode('defaults')</i></li>
+      </ul>In order to improve the computational efficiency, it is advised to
       specify which files have to be imported to define the model value
       by giving a file name or pattern (wildcard patterns can be used).
       This specification can be done either when building the model:<br>
@@ -196,7 +195,7 @@
         <li>model=<font color="#3366ff">mccode</font>(<font color="#cc33cc">'templateDIFF'</font>,<font color="#cc33cc">'monitor=Diff_BananaPSD*'</font>);<a href="images/iFit_McStas_Monitor_scan.png"><img title="iFit:
               McStas: evolution of a monitor" src="images/iFit_McStas_Monitor_scan.png" alt="iFit:
               McStas: evolution of a monitor" style="border: 0px solid ;
-              width: 200px; height: 177px;" border="0" align="right" width="568" height="503"></a></li>
+              width: 200px; height: 177px;" border="0" height="503" width="568" align="right"></a></li>
       </ul>
       or afterwards:<br>
       <ul>
@@ -318,7 +317,7 @@
         <ul>
           <li><font color="#3366ff">plot</font>(value, <font color="#cc33cc">'view2 tight'</font>)<a href="images/iFit_McStas_Monitor_scan.png"><img title="iFit: McStas: evolution of a monitor" src="images/iFit_McStas_Monitor_scan.png" alt="iFit:
                 McStas: evolution of a monitor" style="border: 0px solid
-                ; width: 200px; height: 177px;" border="0" align="right" width="568" height="503"></a></li>
+                ; width: 200px; height: 177px;" border="0" height="503" width="568" align="right"></a></li>
           <li>model.UserData.monitors<br>
           </li>
         </ul>
@@ -326,7 +325,7 @@
           <pre>model.UserData.monitors =&nbsp; array [5&nbsp; 1] iData (methods,doc,plot,plot(log),values,more...) object:<br><br>Index&nbsp;&nbsp;&nbsp;&nbsp; [Tag] [Dimension]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Title] [Last command]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Label/DisplayName]<br>&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp; iD61449&nbsp;&nbsp;&nbsp;&nbsp; [40 40] 'mccode.sim McCode sim file ... "Data ..."' iD61449=load(iData,'... Diff_Mono_XY<br>&nbsp;&nbsp;&nbsp; 2&nbsp;&nbsp; iD61457&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [40 1] 'mccode.sim McCode sim file ... "Inten..."' iD61457=load(iData,'... Diff_Mono_Lambda<br>&nbsp;&nbsp;&nbsp; 3&nbsp;&nbsp; iD61459&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [40 1] 'mccode.sim McCode sim file ... "Inten..."' iD61459=load(iData,'... Diff_Sample_Lambda<br>&nbsp;&nbsp;&nbsp; 4&nbsp;&nbsp; iD61461&nbsp;&nbsp;&nbsp;&nbsp; [340 1] 'mccode.sim McCode sim file ... "Inten..."' iD61461=load(iData,'... Diff_BananaTheta<br>&nbsp;&nbsp;&nbsp; 5&nbsp;&nbsp; iD61463&nbsp;&nbsp;&nbsp; [25 170] 'mccode.sim McCode sim file ... "Data ..."' iD61463=load(iData,'... Diff_BananaPSD</pre>
         </blockquote>
         <ul>
-          <li><font color="#3366ff">subplot</font>(model.UserData.monitors)<a href="images/iFit_McStas_simulate.png"><img alt="iFit_McStas_simulate" title="iFit_McStas_simulate" src="images/iFit_McStas_simulate.png" border="0" align="right" width="200" height="186"></a></li>
+          <li><font color="#3366ff">subplot</font>(model.UserData.monitors)<a href="images/iFit_McStas_simulate.png"><img alt="iFit_McStas_simulate" title="iFit_McStas_simulate" src="images/iFit_McStas_simulate.png" border="0" height="186" width="200" align="right"></a></li>
         </ul>
         You can equally set the non numerical scalar parameters (e.g.
         strings and integers):<br>
@@ -347,8 +346,8 @@
         documentation). <br>
         <h3><a class="mozTocH3" name="mozTocId124981"></a>Getting
           instrument information and Displaying the instrument geometry</h3>
-        To display the instrument geometry, use the syntax:<br>
-        <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(model<span style="color: rgb(204, 51, 204);"></span>);</pre>
+        To display the instrument geometry, use the syntax:<a href="images/iFit_McStas_plot_geometry.png"><img alt="McStas_plot_geometry" title="McStas_plot_geometry" src="images/iFit_McStas_plot_geometry.png" border="0" height="180" width="200" align="right"></a><br>
+        <pre style="margin-left: 40px;">&gt;&gt; model = <font color="#3366ff">mccode</font>(<font color="#cc33cc">'defaults'</font>)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(model<span style="color: rgb(204, 51, 204);"></span>);</pre>
         which open a geometrical representation of the instrument. The
         current model parameters are used. It can be given as well a set
         of parameter values:<br>
@@ -407,7 +406,7 @@
         <pre>&gt;&gt; catenated = <font color="#3366ff">cat</font>(scan, 2);</pre>
       </blockquote>
       <pre style="margin-left: 40px;"><a href="images/iFit_McStas_scan2D_integral.png"><img title="iFit:          MsCtas scan: ploting the integral monitor value" src="images/iFit_McStas_scan2D_integral.png" alt="iFit: MsCtas          scan: ploting the integral monitor value" style="border: 0px
-          solid ; width: 200px; height: 177px;" border="0" align="right" width="568" height="503"></a></pre>
+          solid ; width: 200px; height: 177px;" border="0" height="503" width="568" align="right"></a></pre>
       Multidimensional scans are also possible. In the following
       example, we launch a quick 2D scan with parameters specified as a
       structure:<br>
@@ -642,7 +641,7 @@ of
     </ul>
     You may as well bound a parameter with:<a href="images/iFit_McStas_optimize.png"><img src="images/iFit_McStas_optimize.png" alt="iFit: McStas wrapper:
         dynamic optimization evolution" style="border: 0px solid ;
-        width: 200px; height: 190px;" border="0" align="right" width="508" height="483"></a>
+        width: 200px; height: 190px;" border="0" height="483" width="508" align="right"></a>
     <ul>
       <li><font color="#3366ff">xlim</font>(model, <font color="#cc33cc">'par'</font>, [min max])</li>
       <li>model.par = [ min max]</li>
