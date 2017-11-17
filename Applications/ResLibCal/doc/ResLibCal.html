@@ -9,7 +9,7 @@
         name="mozTocId841636"></a>ResLibCal: a tool to compute
       triple-axis neutron spectrometer resolution</h1>
     <div align="center"><img alt="ResLibCal" title="ResLibCal"
-        src="ResLibCal-logo.png" width="164" height="165"><br>
+        src="ResLibCal-logo.png" height="165" width="164"><br>
     </div>
     <br>
     <div style="text-align: center;">E. Farhi, <span style="font-style:
@@ -70,6 +70,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
     spectrometer (TAS). ResLibCal is based on <a
       href="http://www.mathworks.com/">Matlab</a>. The Cooper-Nathans
     and Popovici methods are proposed [<a href="#mozTocId811100">1-7</a>],
+
 
 
 
@@ -349,7 +350,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
         All items have contextual help. When the </span>View/Auto-update<span style="font-style: italic;"> menu item is checked, any change in
         the interface triggers a re-computation of the resolution, and
         an update of opened plots.</span><br>
-      <div align="left"><br>The collimations are given in [arcmin], but are bound between 0 and the geometrical angular aperture defined by the distances and dimensions of the spectrometer parts. The source-monochromator collimations (ALF1 and BET1) can be defined as a wavelength dependent divergence when given a negative value '-m' for a guide m-coating reading: <i>0.1
+      <div align="left"><br>The collimations are given in [arcmin i.e. 1/60 degree], but are bound between 0 and the geometrical angular aperture defined by the distances and dimensions of the spectrometer parts. The source-monochromator collimations (ALF1 and BET1) can be defined as a wavelength dependent divergence when given a negative value '-m' for a guide m-coating reading: <i>0.1
 
 
 
@@ -381,7 +382,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
         <h4><a class="mozTocH4" name="mozTocId3394"></a> The lattice and
           spectrometer coordinate frames</h4>
         The resolution can be obtained and displayed in 2 coordinate
-        frames:<a href="ResLibCal_Coordinate_frames.png"><img src="ResLibCal_Coordinate_frames.png" title="coordinate frames" alt="coordinate frames" width="263" height="471" align="right" border="0"></a><br><ul><li><u>Lattice / User</u> [x // A, <i>ABC]</i> is relative to the user-defined A and B vectors
+        frames:<a href="ResLibCal_Coordinate_frames.png"><img src="ResLibCal_Coordinate_frames.png" title="coordinate frames" alt="coordinate frames" border="0" height="471" width="263" align="right"></a><br><ul><li><u>Lattice / User</u> [x // A, <i>ABC]</i> is relative to the user-defined A and B vectors
             which define the scattering plane ([U] matrix). These
             vectors are specified in <i>rlu</i> from the main
             interface. The vector A is normalised [to get Angs<sup>-1</sup>],
@@ -525,7 +526,7 @@ the sample orientation in the spectrometer.</li><li><u>Spectrometer</u><i> [spec
         </blockquote>
         <br>
       </div>
-      <img alt="The TAS geometry view" title="The TAS geometry view" src="ResLibCal_Geometry.png" width="642" height="564"><br>
+      <img alt="The TAS geometry view" title="The TAS geometry view" src="ResLibCal_Geometry.png" height="564" width="642"><br>
       <span style="font-style: italic;">The 3D plot of the TAS geometry.</span>
       <span style="font-style: italic;">The axis has a contextual menu
         allowing to change the plot rendering.<br><br></span><div align="left">Last, it is possible to generate a full report<span style="font-style: italic;"></span> with all views and configuration parameters as an HTML document via the File:Print menu item, or the Save as... HTML document.<br><span style="font-style: italic;"></span></div>
@@ -730,7 +731,7 @@ the sample orientation in the spectrometer.</li><li><u>Spectrometer</u><i> [spec
     package documentation.<br>
     <br>
     The following ResLibCal actions are available:<br>
-    <table width="100%" cellspacing="2" cellpadding="2" border="1">
+    <table border="1" cellpadding="2" cellspacing="2" width="100%">
       <tbody>
         <tr>
           <td valign="top" align="center"><i><b>ResLibCal('action')</b></i><i><b><br>
@@ -934,7 +935,7 @@ resolution function is directly obtained from the resolution matrix <a href="#mo
     models. More information about these models can be found in the <a href="http://ifit.mccode.org/Models.html#mozTocId677670">iFit/Models</a>
     page.<br>
     <br>
-    <table style="text-align: left;" width="1016" height="316" cellspacing="2" cellpadding="2" border="1">
+    <table style="text-align: left;" border="1" cellpadding="2" cellspacing="2" height="316" width="1016">
       <tbody>
         <tr>
           <td style="vertical-align: top; font-weight: bold; font-style:
@@ -961,7 +962,7 @@ resolution function is directly obtained from the resolution matrix <a href="#mo
             wave in HKL (3D) with a damped harmonic oscillator energy
             dispersion&nbsp; </td>
           <td style="vertical-align: top;"><font color="#33cc00">4D (HKL<i>w</i>)</font><br>
-            <a href="http://ifit.mccode.org/images/Models_sqw_sine3d.png"><img alt="sqw_sine3d" title="sqw_sine3d" src="http://ifit.mccode.org/images/Models_sqw_sine3d.png" width="100" height="73" align="middle" border="0"></a> </td>
+            <a href="http://ifit.mccode.org/images/Models_sqw_sine3d.png"><img alt="sqw_sine3d" title="sqw_sine3d" src="http://ifit.mccode.org/images/Models_sqw_sine3d.png" border="0" height="73" width="100" align="middle"></a> </td>
           <td valign="top">zone center, energy gaps, periodicity</td>
         </tr>
         <tr>
@@ -969,7 +970,7 @@ resolution function is directly obtained from the resolution matrix <a href="#mo
           <td valign="top">Phonon dispersions in perovskite cubic
             crystals using the Vaks parameterisation&nbsp; </td>
           <td valign="top"><font color="#33cc00">4D (HKLw)</font><br>
-            <a href="http://ifit.mccode.org/images/Models_sqw_vaks.png"><img alt="sqw_vaks" title="sqw_vaks" src="http://ifit.mccode.org/images/Models_sqw_vaks.png" width="100" height="75" align="middle" border="0"></a></td>
+            <a href="http://ifit.mccode.org/images/Models_sqw_vaks.png"><img alt="sqw_vaks" title="sqw_vaks" src="http://ifit.mccode.org/images/Models_sqw_vaks.png" border="0" height="75" width="100" align="middle"></a></td>
           <td valign="top">acoustic and optical , coupling parameters,
             soft mode frequency<br>
           </td>
@@ -979,7 +980,7 @@ resolution function is directly obtained from the resolution matrix <a href="#mo
           <td valign="top">Phonon dispersions in a monoatomic cubic
             crystal using the Dynamical matrix. </td>
           <td valign="top"><font color="#33cc00">4D (HKLw)</font><br>
-            <a href="http://ifit.mccode.org/images/Models_sqw_cubic_mono.png"><img alt="sqw_cubic_mono" title="sqw_cubic_mono" src="http://ifit.mccode.org/images/Models_sqw_cubic_mono.png" width="100" height="76" align="middle" border="0"></a></td>
+            <a href="http://ifit.mccode.org/images/Models_sqw_cubic_mono.png"><img alt="sqw_cubic_mono" title="sqw_cubic_mono" src="http://ifit.mccode.org/images/Models_sqw_cubic_mono.png" border="0" height="76" width="100" align="middle"></a></td>
           <td valign="top">acoustic force constant ratio and scaling
             energy<br>
           </td>
@@ -1025,7 +1026,7 @@ resolution function is directly obtained from the resolution matrix <a href="#mo
               selection of DFT codes (EMT, GPAW, ABINIT, Elk, Dacapo,
               NWChem, QuantumEspresso, VASP).</span><i></i> </td>
           <td valign="top"><font color="#33cc00">4D (HKLw)</font><br>
-            <a href="http://ifit.mccode.org/images/Models_sqw_sine3d.png"><img src="http://ifit.mccode.org/images/Models_sqw_sine3d.png" title="sqw_phonons Al fcc" alt="sqw_phonons Al fcc" width="100" height="74" align="left" border="0"></a></td>
+            <a href="http://ifit.mccode.org/images/Models_sqw_sine3d.png"><img src="http://ifit.mccode.org/images/Models_sqw_sine3d.png" title="sqw_phonons Al fcc" alt="sqw_phonons Al fcc" border="0" height="74" width="100" align="left"></a></td>
           <td valign="top">Creation: <a href="http://cms.mpi.univie.ac.at/vasp/guide/node59.html">POSCAR</a>,
             <a href="http://en.wikipedia.org/wiki/Crystallographic_Information_File">CIF</a>,
             or <a href="http://www.rcsb.org/pdb/">PDB</a>, ...<br>
@@ -1036,7 +1037,7 @@ resolution function is directly obtained from the resolution matrix <a href="#mo
           <td valign="top"><a href="http://ifit.mccode.org/Models.html#mozTocId908192"><b>sqw_spinw</b></a></td>
           <td valign="top">Spin-wave dispersion in HKL using <a href="https://www.psi.ch/spinw/">SpinW</a>. Ann initial SpinW object must be given, or defaults to the 'squareAF' with J1=2, J2=0<br></td>
           <td valign="top"><font color="#33cc00">4D (HKLw)</font><br>
-            <a href="http://ifit.mccode.org/images/Models_sqw_sine3d.png"><img alt="sw" title="sw" src="http://ifit.mccode.org/images/Models_sqw_spinw.png" width="100" height="73" align="middle" border="0"></a></td>
+            <a href="http://ifit.mccode.org/images/Models_sqw_sine3d.png"><img alt="sw" title="sw" src="http://ifit.mccode.org/images/Models_sqw_spinw.png" border="0" height="73" width="100" align="middle"></a></td>
           <td valign="top">energy broadening, Temperature, Amplitude,
             coupling parameters J...</td>
         </tr>
@@ -1047,12 +1048,12 @@ resolution function is directly obtained from the resolution matrix <a href="#mo
             describe an acoustic or optical mode. This model can be
             considered as a local expansion in series of any dispersion.</td>
           <td valign="top"><font color="#33cc00">4D (HKLw)<br></font>
-            <div align="left"><a href="http://ifit.mccode.org/images/Models_sqw_linquad.png"><img alt="sqw_linquad" title="sqw_linquad" src="http://ifit.mccode.org/images/Models_sqw_linquad.png" width="100" height="75" align="right" border="0"></a></div>
+            <div align="left"><a href="http://ifit.mccode.org/images/Models_sqw_linquad.png"><img alt="sqw_linquad" title="sqw_linquad" src="http://ifit.mccode.org/images/Models_sqw_linquad.png" border="0" height="75" width="100" align="right"></a></div>
           </td>
           <td valign="top">Energy and location of 'gap', slopes,
             directions of slopes, DHO width, temperature, background</td>
         </tr><tr><td valign="top"><a href="http://ifit.mccode.org/Models.html#mozTocId897311"><b>sqw_acoustopt</b></a><br></td><td valign="top">A phenomenological dispersion which can
-            describe an acoustic or optical mode.Acoustic slope and 'optical' minimum energy can be specified.<br></td><td valign="top"><font color="#33cc00">4D (HKLw)<br></font><div align="left"><a href="http://ifit.mccode.org/images/Models_sqw_acoustopt.png"><img alt="sqw_acoustopt" title="sqw_acoustopt" src="http://ifit.mccode.org/images/Models_sqw_acoustopt.png" width="100" height="75" align="right" border="0"></a></div><br></td><td valign="top">Energy and location of 'gap', slopes,
+            describe an acoustic or optical mode.Acoustic slope and 'optical' minimum energy can be specified.<br></td><td valign="top"><font color="#33cc00">4D (HKLw)<br></font><div align="left"><a href="http://ifit.mccode.org/images/Models_sqw_acoustopt.png"><img alt="sqw_acoustopt" title="sqw_acoustopt" src="http://ifit.mccode.org/images/Models_sqw_acoustopt.png" border="0" height="75" width="100" align="right"></a></div><br></td><td valign="top">Energy and location of 'gap', slopes,
             directions of slopes, DHO width, temperature, background</td></tr>
       </tbody>
     </table>
@@ -1068,7 +1069,7 @@ resolution function is directly obtained from the resolution matrix <a href="#mo
     The resulting signals are along the QH,QK,QL,W line, which is in 4D.
     To <font color="#3366ff"><i>squeeze</i></font> the singleton
     dimensions (which are constant) and generate 1D data sets along the
-    energy axis, we use:<a href="ResLibCal_conv4D_sine3d.png"><img alt="ResLibCal 4D convolution" title="ResLibCal 4D convolution" src="ResLibCal_conv4D_sine3d.png" width="300" height="218" align="right" border="0"></a><br>
+    energy axis, we use:<a href="ResLibCal_conv4D_sine3d.png"><img alt="ResLibCal 4D convolution" title="ResLibCal 4D convolution" src="ResLibCal_conv4D_sine3d.png" border="0" height="218" width="300" align="right"></a><br>
     <pre>    figure; <font color="#3366ff">plot</font>(<font color="#3366ff">squeeze</font>([signal0 signal1/100])); <i>% plot the dispersion and simulated measurement</i></pre>
     Then we can plot the whole dispersion curve and the simulated signal
     along the given scan trajectory.<br>
