@@ -18,7 +18,7 @@ function r=powder(a)
 % example:
 %  s=sqw_phonons([ ifitpath 'Data/POSCAR_Al'],'metal','EMT');
 %  pow=powder(s); % then plot [q=0:2 w=0:50]
-%  plot(log(iData(pow,[],linspace(0,2,30),linspace(0,50,51))))
+%  plot(log(iData(pow,[],linspace(0,4,30),linspace(0,50,51))))
 %
 % Version: $Date$
 % See also iData, iFunc/fits, iFunc/plot, gauss, sqw_phonons, sqw_cubic_monoatomic, sqw_vaks
@@ -118,4 +118,9 @@ r.Description = [ 'powder(' a.Description ')' ];
 r.Parameters = a.Parameters;
 r.Dimension = 2;
 r = iFunc(r);
+
+if nargout == 0
+  % plot the powder pattern when no output argument
+  plot(log(iData(r,[],linspace(0,4,30),linspace(0,max(a)*1.2,51))));
+end
 
