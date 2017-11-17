@@ -11,7 +11,7 @@
     </h1>
     <h1 style="text-align: center;"><img
         src="images/Models_sqw_phon.png" title="Sqw Phonons" alt="Sqw
-        Phonons" width="128" height="95"></h1>
+        Phonons" height="95" width="128"></h1>
     <ol id="mozToc">
       <!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6-->
       <li><a href="#mozTocId406805">Installation</a></li>
@@ -188,6 +188,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
             Live DVD</a> ready-to-run system with <i>Phonons</i>, <span
             style="font-style: italic;">McStas</span> and <i>iFit</i>
           (standalone) all pre-installed.<br>
@@ -195,6 +196,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
           Then you can either build a bootable USB key using e.g. <a
             href="https://unetbootin.github.io/">Unetbootin</a> (or
           simply a command in the style "<i>dd if=iso of=usbkey bs=1m</i>"),
+
 
 
 
@@ -278,6 +280,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
           <li><b>Other Linux distributions</b></li>
         </ul>
         <blockquote>Use your package manager (e.g. <i>yum</i> and <i>dnf</i>),
+
 
 
 
@@ -562,8 +565,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
             a calculation service using ICSD materials.</li>
-          <li><br>
-          </li>
+          <br>
           <li><b>CCDC </b><a href="https://www.ccdc.cam.ac.uk/">The
               Cambridge Crystallographic Data Centre</a><br>
           </li>
@@ -591,7 +593,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
           <a href="images/iFit_standalone.png"><img alt="iFit standalone
               window (no Matlab license required)" title="iFit
               standalone window (no Matlab license required)" src="images/iFit_standalone.png" style="border: 0px solid;
-              border: 0px solid; width: 300px; height: 198px;" border="0" align="right" width="747" height="492"></a>If
+              border: 0px solid; width: 300px; height: 198px;" border="0" height="492" width="747" align="right"></a>If
           you do not have a Matlab license, start the iFit standalone by
           either clicking on its icon, or start a Terminal and type <br>
           <blockquote>
@@ -631,7 +633,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
           <li><b>dialogue window</b></li>
         </ul>
         <blockquote>To use a very basic user interface, use the
-          procedure above and type in the ifit/Matlab prompt:<a href="images/Models_sqw_ph_ase_gui.png"><img alt="sqw_ph_ase_gui" title="sqw_ph_ase_gui" src="images/Models_sqw_ph_ase_gui.png" border="0" align="right" width="200" height="168"></a>
+          procedure above and type in the ifit/Matlab prompt:<a href="images/Models_sqw_ph_ase_gui.png"><img alt="sqw_ph_ase_gui" title="sqw_ph_ase_gui" src="images/Models_sqw_ph_ase_gui.png" border="0" height="168" width="200" align="right"></a>
           <blockquote>
             <pre>&gt;&gt; <font color="#3366ff"><font color="#000000">s=</font>sqw_phonons</font>(<font color="#cc33cc">'gui'</font>)<br></pre>
           </blockquote>
@@ -650,7 +652,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
           <li><b>TextEdit: an editor which allows to evaluate code</b><br>
           </li>
         </ul>
-        <blockquote>You can open a TextEdit window by typing:<a href="images/iFit_TextEdit.png"><img src="images/iFit_TextEdit.png" title="iFit_TextEdit" alt="iFit_TextEdit" border="0" align="right" width="250" height="190"></a>
+        <blockquote>You can open a TextEdit window by typing:<a href="images/iFit_TextEdit.png"><img src="images/iFit_TextEdit.png" title="iFit_TextEdit" alt="iFit_TextEdit" border="0" height="190" width="250" align="right"></a>
           <blockquote>
             <pre>&gt;&gt; <font color="#3366ff">TextEdit</font></pre>
           </blockquote>
@@ -792,7 +794,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
             letter-spacing: normal; orphans: 2; text-align: start;
             text-indent: 0px; text-transform: none; white-space: normal;
             widows: 2; word-spacing: 0px; -webkit-text-stroke-width:
-            0px;">ifit-users@mccode.org</a>.<br></blockquote><br><hr width="100%" size="2">
+            0px;">ifit-users@mccode.org</a>.<br></blockquote><br><hr size="2" width="100%">
         <h3><a name="mozTocId182819" class="mozTocH3"></a>Calculator
           options</h3>
         <ul>
@@ -806,7 +808,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
             convergence (toldfe/nsteps)</h4><blockquote><p>The criteria for stopping the DFT calculation is to study the convergence of the total energy during the SCF cycles. The usual criteria to stop each calculation is when the difference in energy gets smaller than a threshold <i>'toldfe'</i>. This value is often set to 10<sup>-6</sup> or  10<sup>-7</sup> [eV]. For faster calculations (relaxed convergence criteria), we use 10<sup>-5</sup> [eV] as default value, which helps convergence but may result more often in unstable modes.<br></p><p>The maximum number of SCF cycles is usually around 30-50. However, some codes and pseudo-potential choices may result in a longer pathway to energy convergence. Then the default value (set by each DFT calculator) should be increased by mean of the <i>'nsteps'</i> option:<br></p><ul><li><font color="#3366ff">sqw_phonons</font>(..., <font color="#cc33cc">'toldfe=1e-5; nsteps=100'</font>, ...)</li></ul><p>For a longer, but potentially more accurate, calculation, use:<br></p><ul><li><font color="#3366ff">sqw_phonons</font>(..., <font color="#cc33cc">'toldfe=1e-6; nsteps=300'</font>, ...)</li></ul></blockquote><ul>
           </ul><h4><a name="mozTocId16442" class="mozTocH4"></a>Initial optimisation (optimize)</h4><blockquote><p>In principle, the initial structure given to the calculator for the force constants estimate is at the equilibrium (minimum energy as a function of e.g. lattice cell parameters or atom positions). This usually means that the forces for the equilibrium structure (when no additional displacement have been done yet) should not exceed e.g. 3 10<sup>-4</sup> eV/Angs. In case these forces are larger, there are more chances that the force estimates get wrong and unstable modes appear.<br></p><p>In order to handle this case, it is highly preferable to optimize the structure before starting the phonon calculation. This can be done manually using your preferred DFT code, but we also provide an automatic procedure for this, using:</p><ul><li><font color="#3366ff">sqw_phonons</font>(..., <font color="#cc33cc">'optimize'</font>, ...)</li><li><font color="#3366ff">sqw_phonons</font>(..., <font color="#cc33cc">'optimizer=BFGS'</font>, ...)</li></ul><p>which will then move atoms in the lattice, in order to minimize the total energy, keeping the lattice parameters constant. The <a href="https://wiki.fysik.dtu.dk/ase/ase/optimize.html">optimizer</a> can be chosen among <meta http-equiv="content-type" content="text/html; charset=windows-1252">'BFGS' (default), 'LBFGS', 'MDMin' and 'FIRE'.</p><p><font color="#ff0000">A warning is in place here</font> as this optimization may change the space group. We thus do <b><i>not</i></b> recommend to optimize the structure systematically.<br></p></blockquote><h4><a name="mozTocId84638" class="mozTocH4"></a>Other options</h4><blockquote><p>Many other options, not detailed here, are explained in the <font color="#ff0000"><b><a href="Models.html#mozTocId990577">sqw_phonons</a></b></font> documentation of the Models page.<br></p></blockquote><ul>
           </ul><h4><a name="mozTocId379680" class="mozTocH4"></a>Report generation during/after the calculation</h4><blockquote><p>It is possible to generate an automatic report (in HTML) while computing the lattice dynamics model, by specifying the 'report' option:<br></p><ul><li><font color="#3366ff">sqw_phonons</font>(..., <font color="#cc33cc">'report'</font>, ...)</li></ul>This report contains all information regarding the calculation itself, but also generates nice images of the structure, the dispersion curves along principal axes, the density of states, the powder average, etc. This is an HTML document with attached images and files, which can be viewed with any web-browser.<br><br>This report can also be generated any time from an existing model <i>'s'</i>, using:<br>
-<ul><li><font color="#3366ff">sqw_phonons</font>( s , <font color="#cc33cc">'report'</font>)</li></ul>
+<ul><li><font color="#3366ff">publish</font>( s )</li></ul>
 Once done, open the report following the link printed in the command window, or using e.g.:<br><ul><li><font color="#3366ff">web</font>( s.UserData.options.report )</li></ul></blockquote><h4><a name="mozTocId191576" class="mozTocH4"></a>Using multicore-machines and clusters</h4><p>By default, the calculation runs on the computer you are using. When MPI is available, all CPU's/cores are used. As stated above, a machine with at least 8 cores is recommended, with about 2-4 Gb per core (e.g. 16 Gb minimum). If you wish to specify manually the number of cores, use e.g. (here 16 cores requested):<br></p><ul><li><b>s=</b><font color="#3366ff">sqw_phonons</font>(<font color="#cc33cc">'POSCAR_Al'</font>,<font color="#cc33cc">'qe'</font>,<font color="#cc33cc">'<b>mpi</b>=16'</font>)</li></ul><p>If you wish to launch this calculation on a distant machine, you need to have the required infrastructure (see <a href="#mozTocId406805">above</a>) installed on the cluster. In addition to the number of MPI slots to use, you may forward the list of machines to use with the syntax:<br></p><ul><li><b>s=</b><font color="#3366ff">sqw_phonons</font>(<font color="#cc33cc">'POSCAR_Al'</font>,<font color="#cc33cc">'qe'</font>,<font color="#cc33cc">'mpi=16; <b>machines</b>=file_machine_list'</font>)</li></ul><p>where the specified text file is a list with one machine/core per line, as used by e.g. mpirun.<br></p><p>Then assemble as usual a job submission script running e.g. (here for OpenPBS, all in one line):<br></p><blockquote>ifit -nodesktop <font color="#cc33cc">"try; s=<font color="#3366ff">sqw_phonons</font>('POSCAR_SrTiO3','qe','mpi=<font color="#009900">$PBS_NP</font>','machines=<font color="#009900">$PBS_NODEFILE</font>'); catch ME; disp('Error using sqw_phonons'); disp(getReport(ME)); end; save; exit"<br></font></blockquote>The 'ifit' command will by itself request mpirun/mpiexec, so that it is not required to specify it in the job.<br><ul>
         </ul>
         <h3><a name="mozTocId438325" class="mozTocH3"></a>First example. Getting
@@ -916,14 +918,14 @@ p(&nbsp; 5)=&nbsp; <b>Energy_scaling</b><br></blockquote>The model energy width 
         <h4><a name="mozTocId370236" class="mozTocH4"></a>Vibrational density of states (vDOS)</h4><blockquote>The coherent vibrational density of states (aka phonon or frequency spectrum) is defined as, for each mode energy <i>&#969;</i>, the number of phonon modes lying
     within a frequency [<i>&#969;</i>-d<i>&#969;</i> : <i>&#969;</i>+d<i>&#969;</i>] for
     all wavevectors. The density of states is normalised to the total number of modes:<br><div align="center">
-    &#8747;g(<i>&#969;</i>) d<i>&#969;</i> = 3N<br></div>This computation is done with:<br><ul><li><font color="#3366ff">sqw_phonon_dos</font>(s)</li></ul>which also returns an <a href="iData.html">iData</a> object. When no output argument is specified (such as in the example above), a plot is shown.<br></blockquote><h4><a name="mozTocId964599" class="mozTocH4"></a><a href="images/phonons/Models_Phonons_MgO_qe_thermo.png"><img src="images/phonons/Models_Phonons_MgO_qe_thermo.png" title="MgO_qe_thermo" alt="MgO_qe_thermo" border="0" align="right" width="200" height="150"></a>Thermo-chemistry basic quantities (vDOS,F,U,S,Cv)</h4><blockquote>In a similar way as for the vDOS above, the:<br><ul><li><font color="#3366ff">sqw_thermochemistry</font>(s)</li></ul>call computes the internal energy U, entropy S, Helmholtz_energy F, heat
+    &#8747;g(<i>&#969;</i>) d<i>&#969;</i> = 3N<br></div>This computation is done with:<br><ul><li><font color="#3366ff">dos</font>(s)</li></ul>which also returns an <a href="iData.html">iData</a> object. When no output argument is specified (such as in the example above), a plot is shown.<br></blockquote><h4><a name="mozTocId964599" class="mozTocH4"></a><a href="images/phonons/Models_Phonons_MgO_qe_thermo.png"><img src="images/phonons/Models_Phonons_MgO_qe_thermo.png" title="MgO_qe_thermo" alt="MgO_qe_thermo" border="0" height="150" width="200" align="right"></a>Thermo-chemistry basic quantities (vDOS,F,U,S,Cv)</h4><blockquote>In a similar way as for the vDOS above, the:<br><ul><li><font color="#3366ff">thermochemistry</font>(s)</li></ul>call computes the internal energy U, entropy S, Helmholtz_energy F, heat
                 capacity Cv, and also returns the DOS.These are returned in a structure. When no output argument is specified (such as in the example above), a multi-panel plot is shown.<br></blockquote><h4><a name="mozTocId394722" class="mozTocH4"></a><u>Powder average<br>
       </u></h4><blockquote>
     Once such a 4D S(hkl,w) <a href="iFunc.html">iFunc</a> model has
     been built, it is possible to compute the 2D powder average S(|q|,w)
-    using:<br>
-    <pre>	&gt;&gt; s=<font color="#3366ff">sqw_phonons</font>([ ifitpath <font color="#cc33cc">'Data/POSCAR_Al'</font>],<font color="#cc33cc">'metal','EMT'</font>); <a href="images/Models_sqw_powder.png"><img alt="sqw_powder" title="sqw_powder" src="images/Models_sqw_powder.png" border="0" align="right" width="200" height="153"></a><br>	&gt;&gt; pow=<font color="#3366ff">sqw_powder</font>(s); <font color="#3366ff">plot</font>(log(pow));<br></pre>
-    The same procedure can be applied on an evaluated <a href="iData.html"><i>iData</i></a> object out of the model.<br>
+    using the <b>powder</b> method:<br>
+    <pre>	&gt;&gt; s=<font color="#3366ff">sqw_phonons</font>([ ifitpath <font color="#cc33cc">'Data/POSCAR_Al'</font>],<font color="#cc33cc">'metal','EMT'</font>); <a href="images/Models_sqw_powder.png"><img alt="sqw_powder" title="sqw_powder" src="images/Models_sqw_powder.png" border="0" height="153" width="200" align="right"></a><br>	&gt;&gt; pow=<font color="#3366ff">powder</font>(s); <font color="#3366ff">plot</font>(log(pow));<br></pre>
+    The same procedure can be applied on an evaluated <a href="iData.html"><i>iData</i></a> object out of the model, using the <b>sqw_powder</b> function.<br>
     <pre>	&gt;&gt; qh=<font color="#3366ff">linspace</font>(0.01,3,50);qk=qh; ql=qh; w=<font color="#3366ff">linspace</font>(0.01,50,51);<br>	&gt;&gt; f=<font color="#3366ff">iData</font>(s,[],qh,qk,ql,w);<br>	&gt;&gt; pow=<font color="#3366ff">sqw_powder</font>(f); <font color="#3366ff">plot</font>(log(pow));
 </pre>
     In both cases, when the reciprocal lattice information is found in
@@ -931,8 +933,8 @@ p(&nbsp; 5)=&nbsp; <b>Energy_scaling</b><br></blockquote>The model energy width 
     2pi/a units) to 'Angs<sup>-1</sup>' is automatically done (and this
     information is stored in the Model upon creation).
     </blockquote><h4><a name="mozTocId216396" class="mozTocH4"></a>Phonon dispersion along principal axes</h4><ul>
-          </ul><blockquote><a href="images/phonons/Models_Phonons_MgO_qe_kpath.png"><img src="images/phonons/Models_Phonons_MgO_qe_kpath.png" title="MgO_qe_kpath" alt="MgO_qe_kpath" border="0" align="right" width="200" height="150"></a>It is possible to evaluate and plot the phonon frequencies evaluated along the high symmetry directions in the Brillouin zone (BZ). In addition, the neutron intensity is also calculated with:<br><ul><li><font color="#3366ff">sqw_kpath</font>(s)</li></ul>When no output argument is specified (such as in the example above), a multi-panel plot is shown.<br>By default, the space group of the crystal is used to determine the high symmetry points of the BZ. <br><br>In case you wish to change the space group setting for the automatic BZ points determination, assign a new value, e.g.:<br><ul><li>s.UserData.properties.spacegroup_number = 225;</li></ul>Moreover, you may specify the k-points to use as second argument, e.g.:<br><ul><li>a Bravais lattice type such as any of 'Cubic', 'Hexagonal','Trigonal', 'Tetragonal','Orthorhombic', 'Monoclinic','Triclinic', 'fcc','bcc' will then use a default path for these structure<br></li><li>a set of high symmetry points for the lattice space group (see <a href="https://en.wikipedia.org/wiki/Brillouin_zone">here</a>), such as {'Gamma' 'K' 'M' 'Gamma' 'A' 'H' 'L' 'A' }, which uses the space group to define these points<br></li><li>a Bragg point (which changes the neutron intensity), such as [0 0 1]. By default the [0 0 0] BZ centre is used, so that in principle transverse modes have a null neutron intensity</li><li>a set of HKL locations which define lines to follow in between, such as [0 0 0 ; 1 1 1 ; 1 1 0 ; 0 0 0 ; 0 0 1]. This allows any path in the BZ.<br></li></ul>A typical example with a more precise k-path specification would be:<br><ul><li><font color="#3366ff">sqw_kpath</font>(s,&nbsp; [0 0 0 ; 1 1 1 ; 1 1 0 ; 0 0 0 ; 0 0 1]/2 + [ 1 1 1 ])</li></ul>where the '/2 + [ 1 1 1]' indicate that we go from the [ 1 1 1 ]&nbsp; zone centre to the BZ half width along the given directions.<br></blockquote><h4><a name="mozTocId890089" class="mozTocH4"></a>Report generation after the calculation</h4><blockquote>As explained <a href="#mozTocId379680">above</a>, it is possible to generate a human readable document containing most of the results, using e.g.:<br>
-<ul><li><font color="#3366ff">sqw_phonons</font>( s , <font color="#cc33cc">'report'</font>)</li></ul>
+          </ul><blockquote><a href="images/phonons/Models_Phonons_MgO_qe_kpath.png"><img src="images/phonons/Models_Phonons_MgO_qe_kpath.png" title="MgO_qe_kpath" alt="MgO_qe_kpath" border="0" height="150" width="200" align="right"></a>It is possible to evaluate and plot the phonon frequencies evaluated along the high symmetry directions in the Brillouin zone (BZ). In addition, the neutron intensity is also calculated with:<br><ul><li><font color="#3366ff">band_structure</font>(s)</li></ul>When no output argument is specified (such as in the example above), a multi-panel plot is shown.<br>By default, the space group of the crystal is used to determine the high symmetry points of the BZ. <br><br>In case you wish to change the space group setting for the automatic BZ points determination, assign a new value, e.g.:<br><ul><li>s.UserData.properties.spacegroup_number = 225;</li></ul>Moreover, you may specify the k-points to use as second argument, e.g.:<br><ul><li>a Bravais lattice type such as any of 'Cubic', 'Hexagonal','Trigonal', 'Tetragonal','Orthorhombic', 'Monoclinic','Triclinic', 'fcc','bcc' will then use a default path for these structure<br></li><li>a set of high symmetry points for the lattice space group (see <a href="https://en.wikipedia.org/wiki/Brillouin_zone">here</a>), such as {'Gamma' 'K' 'M' 'Gamma' 'A' 'H' 'L' 'A' }, which uses the space group to define these points<br></li><li>a Bragg point (which changes the neutron intensity), such as [0 0 1]. By default the [0 0 0] BZ centre is used, so that in principle transverse modes have a null neutron intensity</li><li>a set of HKL locations which define lines to follow in between, such as [0 0 0 ; 1 1 1 ; 1 1 0 ; 0 0 0 ; 0 0 1]. This allows any path in the BZ.<br></li></ul>A typical example with a more precise k-path specification would be:<br><ul><li><font color="#3366ff">band_structure</font>(s,&nbsp; [0 0 0 ; 1 1 1 ; 1 1 0 ; 0 0 0 ; 0 0 1]/2 + [ 1 1 1 ])</li></ul>where the '/2 + [ 1 1 1]' indicate that we go from the [ 1 1 1 ]&nbsp; zone centre to the BZ half width along the given directions.<br></blockquote><h4><a name="mozTocId890089" class="mozTocH4"></a>Report generation after the calculation</h4><blockquote>As explained <a href="#mozTocId379680">above</a>, it is possible to generate a human readable document containing most of the results, using e.g.:<br>
+<ul><li><font color="#3366ff">publish</font>( s )</li></ul>
 Once done, open the report following the link printed in the command window, or using e.g.:<br><ul><li><font color="#3366ff">web</font>( s.UserData.options.report )</li></ul></blockquote><h4><a name="mozTocId401231" class="mozTocH4"></a>Phonon dispersion rendering in 3D</h4><blockquote>In order to render the vibrational modes in an HKL volume, e.g. a full block of the Brillouin zone, it is necessary to first evaluate the model on an area. This requires in principle to define ranges along the H,K,L (in rlu) and energy (in meV) axes which define the 4D space where phonons dispersions exist.<br><br>The type of evaluation depends on how the HKLE locations are given:<br>
 <ul><li>When all axes are given as vectors of same orientation <i>and</i>
         same length, the HKLE set is assumed to be list of 'events'.</li><li>When the H K L axes are vectors of same length/orientation,
@@ -946,14 +948,14 @@ Once done, open the report following the link printed in the command window, or 
         surfaces. <b>In the example below</b>, <i>ql</i> has a
         different orientation (it is transposed) as <i>qh</i> and <i>qk</i>,
         which triggers a 4D HKLE cube evaluation. <br></li></ul>
-The HKL range is usually specified as a vector in reciprocal lattice units [rlu] spanning over 0.5 or 1 unit. It can be centered around 0, or shifted towards a specific BZ center (Bragg point). <br><br>In the following example, we define such vectors, and make sure the energy one hasn't the same number of points as the HKL ones. Also, we transpose one of the HKL vectors when used so that a cube volume grid is built. For instance from -0.5 to 0.5 rlu on all reciprocal axes, and up to 50 meV energy, all with a binning of 50 steps (51 for the energy):<br><ul><li><b>qh</b>=<font color="#3366ff">linspace</font>(-0.5, .5, 50); <b>qk</b>=qh; <b>ql</b>=qh; <b>w</b>=<font color="#3366ff">linspace</font>(0.01, 50, 51);</li></ul>Then we evaluate the model, transposing the L axis (we then write <b>ql'</b> where <b>'</b> is the transpose operator) so that we have mixed orientations and define a 'cube':<br><ul><li>f=<font color="#3366ff">iData</font>(s, [], qh,qk,<b>ql'</b>, w);<i>% evaluate model into an iData</i>.</li></ul>The [] stands for the model parameters, which are requested to be used as is (automatic). One could specify as well a vector with the 5 values for the model parameters. The evaluation usually takes a few seconds per 10<sup>5</sup> HKL locations, but this of course depends on the number of phonon modes.<br><br>The resulting variable 'f' is a data set of type <a href="iData.html">iData</a>. It can be rendered as a volumetric plot in 3D, but still requires to reduce the dimensionality from 4D to 3D for this purpose. In this example, we wish to select the QH=0 plane, and plot the 0KLE cube. <br><br>As the <b>qh</b> variable is centered around 0, and has 50 values, we shall plot a slice of 'f' with the <b>25-th</b> value for qh (in the middle from -0.5 to 0.5 as defined above). The other axes are used as is, specified using the <b>:</b> symbol (whole range). And we use the simple 'plot' command using the log of the intensity:<br><ul><li><font color="#3366ff">plot</font>(<font color="#3366ff">log</font>(f(25,:,:,:)))<a href="images/phonons/Models_Phonons_Al_emt_plot3.png"><img src="images/phonons/Models_Phonons_Al_emt_plot3.png" title="Al_emt_plot3" alt="Al_emt_plot3" border="0" align="right" width="200" height="150"></a></li></ul>To rotate the volume, use the 'rotate' icon in the toolbar (an arrow on a circle). Other <a href="Plot.html">plot</a> types can be used, such as:<br><ul><li>the <font color="#3366ff">plot3</font> method which shows a filled volume with colors, e.g. <font color="#3366ff">plot3</font>(<font color="#3366ff">log</font>(f(25,:,:,:)))</li><li>the <font color="#3366ff">slice</font> method which allows an interactive volume exploration (<a href="https://fr.mathworks.com/matlabcentral/fileexchange/764-sliceomatic">sliceomatic</a>), e.g. <font color="#3366ff">slice</font>(<font color="#3366ff">log</font>(f(25,:,:,:))). Click and move the mouse over the lower color scale to change the equi-intensity value, and click on the side axes to select a volume cut. Defined iso-surfaces and cuts can be moved and stacked. De-select the rotate tool in order to act on iso-surfaces and cuts.<br></li></ul></blockquote><h3><a name="mozTocId362621" class="mozTocH3"></a>Loading/saving
+The HKL range is usually specified as a vector in reciprocal lattice units [rlu] spanning over 0.5 or 1 unit. It can be centered around 0, or shifted towards a specific BZ center (Bragg point). <br><br>In the following example, we define such vectors, and make sure the energy one hasn't the same number of points as the HKL ones. Also, we transpose one of the HKL vectors when used so that a cube volume grid is built. For instance from -0.5 to 0.5 rlu on all reciprocal axes, and up to 50 meV energy, all with a binning of 50 steps (51 for the energy):<br><ul><li><b>qh</b>=<font color="#3366ff">linspace</font>(-0.5, .5, 50); <b>qk</b>=qh; <b>ql</b>=qh; <b>w</b>=<font color="#3366ff">linspace</font>(0.01, 50, 51);</li></ul>Then we evaluate the model, transposing the L axis (we then write <b>ql'</b> where <b>'</b> is the transpose operator) so that we have mixed orientations and define a 'cube':<br><ul><li>f=<font color="#3366ff">iData</font>(s, [], qh,qk,<b>ql'</b>, w);<i>% evaluate model into an iData</i>.</li></ul>The [] stands for the model parameters, which are requested to be used as is (automatic). One could specify as well a vector with the 5 values for the model parameters. The evaluation usually takes a few seconds per 10<sup>5</sup> HKL locations, but this of course depends on the number of phonon modes.<br><br>The resulting variable 'f' is a data set of type <a href="iData.html">iData</a>. It can be rendered as a volumetric plot in 3D, but still requires to reduce the dimensionality from 4D to 3D for this purpose. In this example, we wish to select the QH=0 plane, and plot the 0KLE cube. <br><br>As the <b>qh</b> variable is centered around 0, and has 50 values, we shall plot a slice of 'f' with the <b>25-th</b> value for qh (in the middle from -0.5 to 0.5 as defined above). The other axes are used as is, specified using the <b>:</b> symbol (whole range). And we use the simple 'plot' command using the log of the intensity:<br><ul><li><font color="#3366ff">plot</font>(<font color="#3366ff">log</font>(f(25,:,:,:)))<a href="images/phonons/Models_Phonons_Al_emt_plot3.png"><img src="images/phonons/Models_Phonons_Al_emt_plot3.png" title="Al_emt_plot3" alt="Al_emt_plot3" border="0" height="150" width="200" align="right"></a></li></ul>To rotate the volume, use the 'rotate' icon in the toolbar (an arrow on a circle). Other <a href="Plot.html">plot</a> types can be used, such as:<br><ul><li>the <font color="#3366ff">plot3</font> method which shows a filled volume with colors, e.g. <font color="#3366ff">plot3</font>(<font color="#3366ff">log</font>(f(25,:,:,:)))</li><li>the <font color="#3366ff">slice</font> method which allows an interactive volume exploration (<a href="https://fr.mathworks.com/matlabcentral/fileexchange/764-sliceomatic">sliceomatic</a>), e.g. <font color="#3366ff">slice</font>(<font color="#3366ff">log</font>(f(25,:,:,:))). Click and move the mouse over the lower color scale to change the equi-intensity value, and click on the side axes to select a volume cut. Defined iso-surfaces and cuts can be moved and stacked. De-select the rotate tool in order to act on iso-surfaces and cuts.<br></li></ul></blockquote><h3><a name="mozTocId362621" class="mozTocH3"></a>Loading/saving
           your work</h3>
         <ul>
-          </ul><h4><a name="mozTocId365079" class="mozTocH4"></a>Loading an initial structure (file)</h4><blockquote><p>We have seen above that you may use any crystal structure stored as a file (POSCAR, CIF, PDB, Yaml, ... see all <a href="https://wiki.fysik.dtu.dk/ase/ase/io/io.html">available formats</a>), such as:<br></p><ul><li><b>s=</b><font color="#3366ff">sqw_phonons</font>(<font color="#cc33cc">'POSCAR_SrTiO3'</font>)</li></ul><p>which automatically starts the DFT calculation.<br></p></blockquote><h4><a name="mozTocId250682" class="mozTocH4"></a>Loading from Crystallography Open Database (COD)</h4><blockquote><p>It is possible to retrieve a <a href="http://www.crystallography.net">Crystallography Open Database</a> entry by specifying a COD ID using the syntax:<br></p><ul><li><b>s=</b><font color="#3366ff">sqw_phonons</font>(<font color="#cc33cc">'cod:&nbsp;</font><font color="#cc33cc"><meta http-equiv="content-type" content="text/html; charset=windows-1252">1512124'</font>);&nbsp; <i>% access </i><i><a href="http://www.crystallography.net/cod/1512124.html">SrTiO3</a></i><i> at COD, giving ID<br></i></li></ul>The COD ID are unique identifiers corresponding to available structures.<br><br>It is also possible to specify the chemical formula, in <a href="https://en.wikipedia.org/wiki/Hill_formula">Hill notation</a>, i.e C and H first, then other elements in alphabetical order. In this case a search is made on COD, and when multiple matches are found, a dialogue box pops-up to choose a structure from a list:<br><ul><li><b>s=</b><font color="#3366ff">sqw_phonons</font>(<font color="#cc33cc">'cod: </font><font color="#cc33cc">O3 Sr Ti'</font>);&nbsp; <i>% access </i><i><a href="http://www.crystallography.net/cod/1512124.html">SrTiO3</a></i><i> at COD, giving chemical formula</i></li></ul>This feature requires a valid network connection. In case you are behind a proxy, you need to set:<br><blockquote><pre><b>ProxyHost</b>=<font color="#cc33cc">'proxy.ill.fr</font>'; <i>% Proxy address if you are behind a proxy [e.g. myproxy.mycompany.com or empty]</i><br><b>ProxyPort</b>=8888;           <i>% Proxy port if you are behind a proxy [e.g. 8888]</i><br>java.lang.System.setProperty('http.proxyHost', <b>ProxyHost</b>); <br>com.mathworks.mlwidgets.html.HTMLPrefs.setUseProxy(true);<br>com.mathworks.mlwidgets.html.HTMLPrefs.setProxyHost(<b>ProxyHost</b>);<br>java.lang.System.setProperty('http.proxyPort', num2str(<b>ProxyPort</b>));<br>com.mathworks.mlwidgets.html.HTMLPrefs.setProxyPort(num2str(<b>ProxyPort</b>));<br></pre></blockquote>The system proxy settings are not used.<br></blockquote><ul>
+          </ul><h4><a name="mozTocId365079" class="mozTocH4"></a>Loading an initial structure (file)</h4><blockquote><p>We have seen above that you may use any crystal structure stored as a file (POSCAR, CIF, PDB, Yaml, ... see all <a href="https://wiki.fysik.dtu.dk/ase/ase/io/io.html">available formats</a>), such as:<br></p><ul><li><b>s=</b><font color="#3366ff">sqw_phonons</font>(<font color="#cc33cc">'POSCAR_SrTiO3'</font>)</li></ul><p>which automatically starts the DFT calculation. The file can be given as a URL starting with <i>'http://', 'https://'</i> and <i>'ftp://'</i> for distant access.<br></p></blockquote><h4><a name="mozTocId250682" class="mozTocH4"></a>Loading from Crystallography Open Database (COD)</h4><blockquote><p>It is possible to retrieve a <a href="http://www.crystallography.net">Crystallography Open Database</a> entry by specifying a COD ID using the syntax:<br></p><ul><li><b>s=</b><font color="#3366ff">sqw_phonons</font>(<font color="#cc33cc">'cod:&nbsp;</font><font color="#cc33cc"><meta http-equiv="content-type" content="text/html; charset=windows-1252">1512124'</font>);&nbsp; <i>% access </i><i><a href="http://www.crystallography.net/cod/1512124.html">SrTiO3</a></i><i> at COD, giving ID<br></i></li></ul>The COD ID are unique identifiers corresponding to available structures.<br><br>It is also possible to specify the chemical formula, in <a href="https://en.wikipedia.org/wiki/Hill_formula">Hill notation</a>, i.e C and H first, then other elements in alphabetical order. In this case a search is made on COD, and when multiple matches are found, a dialogue box pops-up to choose a structure from a list:<br><ul><li><b>s=</b><font color="#3366ff">sqw_phonons</font>(<font color="#cc33cc">'cod: </font><font color="#cc33cc">O3 Sr Ti'</font>);&nbsp; <i>% access </i><i><a href="http://www.crystallography.net/cod/1512124.html">SrTiO3</a></i><i> at COD, giving chemical formula</i></li></ul>This feature requires a valid network connection. In case you are behind a proxy, you need to set:<br><blockquote><pre><b>ProxyHost</b>=<font color="#cc33cc">'proxy.ill.fr</font>'; <i>% Proxy address if you are behind a proxy [e.g. myproxy.mycompany.com or empty]</i><br><b>ProxyPort</b>=8888;           <i>% Proxy port if you are behind a proxy [e.g. 8888]</i><br>java.lang.System.setProperty('http.proxyHost', <b>ProxyHost</b>); <br>com.mathworks.mlwidgets.html.HTMLPrefs.setUseProxy(true);<br>com.mathworks.mlwidgets.html.HTMLPrefs.setProxyHost(<b>ProxyHost</b>);<br>java.lang.System.setProperty('http.proxyPort', num2str(<b>ProxyPort</b>));<br>com.mathworks.mlwidgets.html.HTMLPrefs.setProxyPort(num2str(<b>ProxyPort</b>));<br></pre></blockquote>The system proxy settings are not used.<br></blockquote><ul>
           </ul><h4><a name="mozTocId696596" class="mozTocH3"></a>Loading a previous iFit computation (directory/mat)</h4><blockquote><p>Similarly, it is possible to rebuild a model from a directory containing information from a past sqw_phonons calculation. Simply use:<br></p><ul><li><b>s=</b><font color="#3366ff">sqw_phonons</font>(<font color="#cc33cc">'directory</font><font color="#cc33cc">'</font>)</li></ul>to recover the <a href="iFunc.html">iFunc</a> model. The reconstruction searches for any file such as:<br><ul><li>Phonon_Model.mat<br></li><li>atoms.pkl</li><li>POSCAR*</li><li>SPOSCAR*</li><li>*_POSCAR</li><li>phonon*.pkl</li><li>phonopy.yaml</li><li>phonon.yaml</li><li>INPHON</li><li>quasiharmonic_phonon.yaml</li><li>band.yaml</li><li>FORCE_SETS</li><li>disp.yaml<br></li></ul>If you have saved the model as a Matlab (.mat, such as Phonon_Model.mat) file, import it back using e.g. any of:<br><ul><li><font color="#3366ff">load</font> model.mat</li><li>s=<font color="#3366ff">iFunc</font>(<font color="#cc33cc">'model.mat'</font>)</li></ul></blockquote><ul>
           </ul><h4><a name="mozTocId146436" class="mozTocH3"></a>Loading a previous PhonoPy computation (directory)</h4><blockquote><p>It is possible to build a sqw_phonons model from an existing PhonoPy directory, such as available as archives at &lt;<a href="http://phonondb.mtl.kyoto-u.ac.jp/">http://phonondb.mtl.kyoto-u.ac.jp/</a>&gt;. This location should contain e.g. files:</p><ul><li>FORCE_SETS</li><li>disp.yaml</li></ul>A few DFT additional calculation (usually rather short) may be needed. All atom displacement and force constants are used as obtained from the PhonoPy directory. In case the PhonoPy directory contains many sub-directories, search for a phonon calculation directory (e.g. phonon-XX or gruneisen-XX).<br><ul>
           
-          </ul></blockquote><h4><a name="mozTocId71649" class="mozTocH3"></a>Saving the model: MAT, YAML, JSON, XML, M<br></h4><blockquote><p>After having built an sqw_phonon model, you can export it into a file for later use. The corresponding file contains everything needed, and reconstructs all missing files whenever the directory used for the calculation would not be available anymore.</p><p>The available formats are:<br></p><ul><li>MAT: a Matlab binary file (usually HDF5)</li><li>JSON: a text JSON format</li><li>XML: a text XML format</li><li>YAML: a text YAML format</li><li>M: a Matlab script</li></ul>and can be given as a filename extension, or as 3rd argument to 'save'. We recommend using the MAT-file format (binary, much faster to read/write and compact).<br><p>For instance,:<br></p><ul><li><b>s=</b><font color="#3366ff">sqw_phonons</font>(<font color="#cc33cc">'POSCAR_SrTiO3'</font>,<font color="#cc33cc">'quantumespresso</font><font color="#cc33cc">'</font>)</li><li><font color="#3366ff">save</font>(s, <font color="#cc33cc">'model'</font>, <font color="#cc33cc">'mat'</font>)</li><li><font color="#3366ff">save</font>(s, <font color="#cc33cc">'model.</font><font color="#cc33cc">mat'</font>) <i>% same as above</i><br></li><li><font color="#3366ff">save</font>(s, <font color="#cc33cc">'model.</font><font color="#cc33cc">xml'</font>)</li><li><font color="#3366ff">save</font>(s, <font color="#cc33cc">'model.</font><font color="#cc33cc">json'</font>)</li><li><font color="#3366ff">save</font>(s, <font color="#cc33cc">'model.</font><font color="#cc33cc">m'</font>)</li><li><font color="#3366ff">save</font>(s, <font color="#cc33cc">'model.yaml</font><font color="#cc33cc">'</font>)</li></ul><p>You can of course re-import these files later to re-generate the model using:<br></p><ul><li>s=<font color="#3366ff">iFunc</font>(<font color="#cc33cc">'model.mat'</font>)</li><li>s=<font color="#3366ff">iFunc</font>(<font color="#cc33cc">'model.json'</font>)</li><li>s=<font color="#3366ff">iFunc</font>(<font color="#cc33cc">'model.xml'</font>)</li><li>s=<font color="#3366ff">iFunc</font>(<font color="#cc33cc">'model.yaml'</font>)</li><li>s=<font color="#3366ff">iFunc</font>(<font color="#cc33cc">'model.m'</font>)</li></ul></blockquote><h4><a name="mozTocId49582" class="mozTocH3"></a>Generating a report (during / after)</h4><blockquote><p>As seen <a href="#mozTocId379680">above</a>, it is possible to generate a human readable report of a Phonon calculation, either during the model creation:<br></p><ul><li><b>s=</b><font color="#3366ff">sqw_phonons</font>(<font color="#cc33cc">'POSCAR_SrTiO3'</font>,<font color="#cc33cc">'quantumespresso</font><font color="#cc33cc">'</font>,<b><font color="#cc33cc">'report'</font></b>)</li><li><font color="#3366ff">web</font>( s.UserData.options.report )<i>% to open from matlab/iFit</i><br></li></ul><p>or afterwards:<br></p><ul><li><b>s=</b><font color="#3366ff">sqw_phonons</font>(<font color="#cc33cc">'POSCAR_SrTiO3'</font>,<font color="#cc33cc">'quantumespresso</font><font color="#cc33cc">'</font>)</li><li><font color="#3366ff">sqw_phonons</font>(s,<font color="#cc33cc"> <b>'report</b>'</font>)</li><li><font color="#3366ff">web</font>( s.UserData.options.report )</li></ul><p>The generated report (an HTML document) is stored into a temporary folder, which location is printed, and stored into <i>s.UserData.options.report</i></p><p>The report contains all type of information (crystal structure, physical properties, vDOS, thermo-chemostry, BZ view, ...) as well as plenty of generated files in numerous usual formats for later use.<br></p></blockquote><hr width="100%" size="2"><ul>
+          </ul></blockquote><h4><a name="mozTocId71649" class="mozTocH3"></a>Saving the model: MAT, YAML, JSON, XML, M<br></h4><blockquote><p>After having built an sqw_phonon model, you can export it into a file for later use. The corresponding file contains everything needed, and reconstructs all missing files whenever the directory used for the calculation would not be available anymore.</p><p>The available formats are:<br></p><ul><li>MAT: a Matlab binary file (usually HDF5)</li><li>JSON: a text JSON format</li><li>XML: a text XML format</li><li>YAML: a text YAML format</li><li>M: a Matlab script</li></ul>and can be given as a filename extension, or as 3rd argument to 'save'. We recommend using the MAT-file format (binary, much faster to read/write and compact).<br><p>For instance,:<br></p><ul><li><b>s=</b><font color="#3366ff">sqw_phonons</font>(<font color="#cc33cc">'POSCAR_SrTiO3'</font>,<font color="#cc33cc">'quantumespresso</font><font color="#cc33cc">'</font>)</li><li><font color="#3366ff">save</font>(s, <font color="#cc33cc">'model'</font>, <font color="#cc33cc">'mat'</font>)</li><li><font color="#3366ff">save</font>(s, <font color="#cc33cc">'model.</font><font color="#cc33cc">mat'</font>) <i>% same as above</i><br></li><li><font color="#3366ff">save</font>(s, <font color="#cc33cc">'model.</font><font color="#cc33cc">xml'</font>)</li><li><font color="#3366ff">save</font>(s, <font color="#cc33cc">'model.</font><font color="#cc33cc">json'</font>)</li><li><font color="#3366ff">save</font>(s, <font color="#cc33cc">'model.</font><font color="#cc33cc">m'</font>)</li><li><font color="#3366ff">save</font>(s, <font color="#cc33cc">'model.yaml</font><font color="#cc33cc">'</font>)</li></ul><p>You can of course re-import these files later to re-generate the model using:<br></p><ul><li>s=<font color="#3366ff">iFunc</font>(<font color="#cc33cc">'model.mat'</font>)</li><li>s=<font color="#3366ff">iFunc</font>(<font color="#cc33cc">'model.json'</font>)</li><li>s=<font color="#3366ff">iFunc</font>(<font color="#cc33cc">'model.xml'</font>)</li><li>s=<font color="#3366ff">iFunc</font>(<font color="#cc33cc">'model.yaml'</font>)</li><li>s=<font color="#3366ff">iFunc</font>(<font color="#cc33cc">'model.m'</font>)</li></ul></blockquote><h4><a name="mozTocId49582" class="mozTocH3"></a>Generating a report (during / after)</h4><blockquote><p>As seen <a href="#mozTocId379680">above</a>, it is possible to generate a human readable report of a Phonon calculation, either during the model creation:<br></p><ul><li><b>s=</b><font color="#3366ff">sqw_phonons</font>(<font color="#cc33cc">'POSCAR_SrTiO3'</font>,<font color="#cc33cc">'quantumespresso</font><font color="#cc33cc">'</font>,<b><font color="#cc33cc">'report'</font></b>)</li><li><font color="#3366ff">web</font>( s.UserData.options.report )<i>% to open from matlab/iFit</i><br></li></ul><p>or afterwards:<br></p><ul><li><b>s=</b><font color="#3366ff">sqw_phonons</font>(<font color="#cc33cc">'POSCAR_SrTiO3'</font>,<font color="#cc33cc">'quantumespresso</font><font color="#cc33cc">'</font>)</li><li><font color="#3366ff">sqw_phonons</font>(s,<font color="#cc33cc"> <b>'report</b>'</font>)</li><li><font color="#3366ff">web</font>( s.UserData.options.report )</li></ul><p>The generated report (an HTML document) is stored into a temporary folder, which location is printed, and stored into <i>s.UserData.options.report</i></p><p>The report contains all type of information (crystal structure, physical properties, vDOS, thermo-chemostry, BZ view, ...) as well as plenty of generated files in numerous usual formats for later use.<br></p></blockquote><hr size="2" width="100%"><ul>
         </ul>
         <h3><a name="mozTocId131712" class="mozTocH3"></a>Phonons in Al</h3>
         The atom confiiguration '<a href="../Data/POSCAR_Al">POSCAR_Al'</a>
@@ -976,7 +978,7 @@ The HKL range is usually specified as a vector in reciprocal lattice units [rlu]
         QuantumEspresso and AbInit calculators are the fastest.<br>
         <br>
         Results with different DFT codes<br>
-        <table border="1" width="1102" cellspacing="2" cellpadding="2" height="541">
+        <table border="1" cellpadding="2" cellspacing="2" height="541" width="1102">
           <tbody>
             <tr>
               <td bgcolor="#ffffcc" valign="top"><b>Code</b><br>
@@ -1016,7 +1018,7 @@ The HKL range is usually specified as a vector in reciprocal lattice units [rlu]
               </td>
               <td valign="top"><br>
               </td>
-              <td valign="top"><a href="http://www.computingformaterials.com/phoncfm/3fig/refer/al1.gif"><img alt="al1" title="al1" src="http://www.computingformaterials.com/phoncfm/3fig/refer/al1.gif" border="0" width="200" height="133"></a><br>
+              <td valign="top"><a href="http://www.computingformaterials.com/phoncfm/3fig/refer/al1.gif"><img alt="al1" title="al1" src="http://www.computingformaterials.com/phoncfm/3fig/refer/al1.gif" border="0" height="133" width="200"></a><br>
               </td>
               <td valign="top"><br>
               </td>
@@ -1030,11 +1032,11 @@ The HKL range is usually specified as a vector in reciprocal lattice units [rlu]
                   / SSSP</b></td>
               <td valign="top">87<br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_Al_qe_kpath.png"><img alt="Al_qe_kpath" title="Al_qe_kpath" src="images/phonons/Models_Phonons_Al_qe_kpath.png" border="0" width="200" height="150"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_qe_kpath.png"><img alt="Al_qe_kpath" title="Al_qe_kpath" src="images/phonons/Models_Phonons_Al_qe_kpath.png" border="0" height="150" width="200"></a><br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_Al_qe_thermo.png"><img alt="Al_qe_thermo" title="Al_qe_thermo" src="images/phonons/Models_Phonons_Al_qe_thermo.png" border="0" width="200" height="150"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_qe_thermo.png"><img alt="Al_qe_thermo" title="Al_qe_thermo" src="images/phonons/Models_Phonons_Al_qe_thermo.png" border="0" height="150" width="200"></a><br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_Al_qe_plot3.png"><img alt="Al_qe_plot3" title="Al_qe_plot3" src="images/phonons/Models_Phonons_Al_qe_plot3.png" border="0" width="200" height="150"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_qe_plot3.png"><img alt="Al_qe_plot3" title="Al_qe_plot3" src="images/phonons/Models_Phonons_Al_qe_plot3.png" border="0" height="150" width="200"></a><br>
               </td>
               <td valign="top"><font color="#cc33cc">'qe','metal'</font>)</td>
             </tr>
@@ -1043,11 +1045,11 @@ The HKL range is usually specified as a vector in reciprocal lattice units [rlu]
                   PAW PBE</b></td>
               <td valign="top">525<br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_Al_vasp_kpath.png"><img alt="Al_vasp_kpath" title="Al_vasp_kpath" src="images/phonons/Models_Phonons_Al_vasp_kpath.png" border="0" width="200" height="150"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_vasp_kpath.png"><img alt="Al_vasp_kpath" title="Al_vasp_kpath" src="images/phonons/Models_Phonons_Al_vasp_kpath.png" border="0" height="150" width="200"></a><br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_Al_vasp_thermo.png"><img alt="Al_vasp_thermo" title="Al_vasp_thermo" src="images/phonons/Models_Phonons_Al_vasp_thermo.png" border="0" width="200" height="150"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_vasp_thermo.png"><img alt="Al_vasp_thermo" title="Al_vasp_thermo" src="images/phonons/Models_Phonons_Al_vasp_thermo.png" border="0" height="150" width="200"></a><br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_Al_vasp_plot3.png"><img alt="Al_vasp_plot3" title="Al_vasp_plot3" src="images/phonons/Models_Phonons_Al_vasp_plot3.png" border="0" width="200" height="150"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_vasp_plot3.png"><img alt="Al_vasp_plot3" title="Al_vasp_plot3" src="images/phonons/Models_Phonons_Al_vasp_plot3.png" border="0" height="150" width="200"></a><br>
               </td>
               <td valign="top"><font color="#cc33cc">'vasp','metal'</font>)</td>
             </tr>
@@ -1056,11 +1058,11 @@ The HKL range is usually specified as a vector in reciprocal lattice units [rlu]
                 </b> </td>
               <td valign="top">9820<br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_Al_elk_kpath.png"><img alt="Al_elk_kpath" title="Al_elk_kpath" src="images/phonons/Models_Phonons_Al_elk_kpath.png" border="0" width="200" height="150"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_elk_kpath.png"><img alt="Al_elk_kpath" title="Al_elk_kpath" src="images/phonons/Models_Phonons_Al_elk_kpath.png" border="0" height="150" width="200"></a><br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_Al_elk_thermo.png"><img alt="Al_emlk_thermo" title="Al_elk_thermo" src="images/phonons/Models_Phonons_Al_elk_thermo.png" border="0" width="200" height="150"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_elk_thermo.png"><img alt="Al_emlk_thermo" title="Al_elk_thermo" src="images/phonons/Models_Phonons_Al_elk_thermo.png" border="0" height="150" width="200"></a><br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_Al_elk_plot3.png"><img alt="Al_elk_plot3" title="Al_elk_plot3" src="images/phonons/Models_Phonons_Al_elk_plot3.png" border="0" width="200" height="150"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_elk_plot3.png"><img alt="Al_elk_plot3" title="Al_elk_plot3" src="images/phonons/Models_Phonons_Al_elk_plot3.png" border="0" height="150" width="200"></a><br>
               </td>
               <td valign="top"><font color="#cc33cc">'elk','metal'</font>)</td>
             </tr>
@@ -1069,11 +1071,11 @@ The HKL range is usually specified as a vector in reciprocal lattice units [rlu]
                 </b> </td>
               <td valign="top">1<br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_Al_emt_kpath.png"><img alt="Al_emt_kpath" title="Al_emt_kpath" src="images/phonons/Models_Phonons_Al_emt_kpath.png" border="0" width="200" height="150"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_emt_kpath.png"><img alt="Al_emt_kpath" title="Al_emt_kpath" src="images/phonons/Models_Phonons_Al_emt_kpath.png" border="0" height="150" width="200"></a><br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_Al_emt_thermo.png"><img alt="Al_emt_thermo" title="Al_emt_thermo" src="images/phonons/Models_Phonons_Al_emt_thermo.png" border="0" width="200" height="150"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_emt_thermo.png"><img alt="Al_emt_thermo" title="Al_emt_thermo" src="images/phonons/Models_Phonons_Al_emt_thermo.png" border="0" height="150" width="200"></a><br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_Al_emt_plot3.png"><img alt="Al_emt_plot3" title="Al_emt_plot3" src="images/phonons/Models_Phonons_Al_emt_plot3.png" border="0" width="200" height="150"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_emt_plot3.png"><img alt="Al_emt_plot3" title="Al_emt_plot3" src="images/phonons/Models_Phonons_Al_emt_plot3.png" border="0" height="150" width="200"></a><br>
               </td>
               <td valign="top"><font color="#cc33cc">'emt','metal'</font>)<br>
                 only for limited elements<br>
@@ -1085,11 +1087,11 @@ The HKL range is usually specified as a vector in reciprocal lattice units [rlu]
                 </b> </td>
               <td valign="top">78<br>
               </td>
-              <td valign="top"> <a href="images/phonons/Models_Phonons_Al_abinit_kpath.png"><img alt="Al_abinit_kpath" title="Al_abinit_kpath" src="images/phonons/Models_Phonons_Al_abinit_kpath.png" border="0" width="200" height="150"></a><br>
+              <td valign="top"> <a href="images/phonons/Models_Phonons_Al_abinit_kpath.png"><img alt="Al_abinit_kpath" title="Al_abinit_kpath" src="images/phonons/Models_Phonons_Al_abinit_kpath.png" border="0" height="150" width="200"></a><br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_thermo.png"><img alt="Al_abinit_thermo" title="Al_abinit_thermo" src="images/phonons/Models_Phonons_Al_abinit_thermo.png" border="0" width="200" height="150"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_thermo.png"><img alt="Al_abinit_thermo" title="Al_abinit_thermo" src="images/phonons/Models_Phonons_Al_abinit_thermo.png" border="0" height="150" width="200"></a><br>
               </td>
-              <td valign="top"> <a href="images/phonons/Models_Phonons_Al_abinit_plot3.png"><img alt="Al_abinit_plot3" title="Al_abinit_plot3" src="images/phonons/Models_Phonons_Al_abinit_plot3.png" border="0" width="200" height="150"></a><br>
+              <td valign="top"> <a href="images/phonons/Models_Phonons_Al_abinit_plot3.png"><img alt="Al_abinit_plot3" title="Al_abinit_plot3" src="images/phonons/Models_Phonons_Al_abinit_plot3.png" border="0" height="150" width="200"></a><br>
               </td>
               <td valign="top"><font color="#cc33cc">'abinit','metal'</font>)
                 <i><br>
@@ -1101,11 +1103,11 @@ The HKL range is usually specified as a vector in reciprocal lattice units [rlu]
                 </b> </td>
               <td valign="top">87<br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_paw_kpath.png"><img alt="Al_abinit_paw_kpath" title="Al_abinit_paw_kpath" src="images/phonons/Models_Phonons_Al_abinit_paw_kpath.png" border="0" width="200" height="150"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_paw_kpath.png"><img alt="Al_abinit_paw_kpath" title="Al_abinit_paw_kpath" src="images/phonons/Models_Phonons_Al_abinit_paw_kpath.png" border="0" height="150" width="200"></a><br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_paw_thermo.png"><img alt="Al_abinit_paw_thermo" title="Al_abinit_paw_thermo" src="images/phonons/Models_Phonons_Al_abinit_paw_thermo.png" border="0" width="200" height="150"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_paw_thermo.png"><img alt="Al_abinit_paw_thermo" title="Al_abinit_paw_thermo" src="images/phonons/Models_Phonons_Al_abinit_paw_thermo.png" border="0" height="150" width="200"></a><br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_paw_plot3.png"><img alt="Al_abinit_paw_plot3" title="Al_abinit_paw_plot3" src="images/phonons/Models_Phonons_Al_abinit_paw_plot3.png" border="0" width="200" height="150"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_paw_plot3.png"><img alt="Al_abinit_paw_plot3" title="Al_abinit_paw_plot3" src="images/phonons/Models_Phonons_Al_abinit_paw_plot3.png" border="0" height="150" width="200"></a><br>
               </td>
               <td valign="top"><font color="#cc33cc">'abinit','metal','pps=paw'</font>)</td>
             </tr>
@@ -1115,11 +1117,11 @@ The HKL range is usually specified as a vector in reciprocal lattice units [rlu]
                 </b> </td>
               <td valign="top">84<br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_pawxml_kpath.png"><img alt="Al_abinit_pawxml_kpath" title="Al_abinit_pawxml_kpath" src="images/phonons/Models_Phonons_Al_abinit_pawxml_kpath.png" border="0" width="200" height="150"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_pawxml_kpath.png"><img alt="Al_abinit_pawxml_kpath" title="Al_abinit_pawxml_kpath" src="images/phonons/Models_Phonons_Al_abinit_pawxml_kpath.png" border="0" height="150" width="200"></a><br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_pawxml_thermo.png"><img alt="Al_abinit_pawxml_thermo" title="Al_abinit_pawxml_thermo" src="images/phonons/Models_Phonons_Al_abinit_pawxml_thermo.png" border="0" width="200" height="150"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_pawxml_thermo.png"><img alt="Al_abinit_pawxml_thermo" title="Al_abinit_pawxml_thermo" src="images/phonons/Models_Phonons_Al_abinit_pawxml_thermo.png" border="0" height="150" width="200"></a><br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_pawxml_plot3.png"><img alt="Al_abinit_pawxml_plot3" title="Al_abinit_pawxml_plot3" src="images/phonons/Models_Phonons_Al_abinit_pawxml_plot3.png" border="0" width="200" height="150"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_pawxml_plot3.png"><img alt="Al_abinit_pawxml_plot3" title="Al_abinit_pawxml_plot3" src="images/phonons/Models_Phonons_Al_abinit_pawxml_plot3.png" border="0" height="150" width="200"></a><br>
               </td>
               <td valign="top"><font color="#cc33cc">'abinit','metal','pps=pawxml'</font>)</td>
             </tr>
@@ -1128,10 +1130,10 @@ The HKL range is usually specified as a vector in reciprocal lattice units [rlu]
                 </b> </td>
               <td valign="top">64<br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_hgh_kpath.png"><img alt="Al_abinit_hgh_kpath" title="Al_abinit_hgh_kpath" src="images/phonons/Models_Phonons_Al_abinit_hgh_kpath.png" border="0" width="200" height="150"></a> </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_hgh_thermo.png"><img alt="Al_abinit_hgh_thermo" title="Al_abinit_hgh_thermo" src="images/phonons/Models_Phonons_Al_abinit_hgh_thermo.png" border="0" width="200" height="150"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_hgh_kpath.png"><img alt="Al_abinit_hgh_kpath" title="Al_abinit_hgh_kpath" src="images/phonons/Models_Phonons_Al_abinit_hgh_kpath.png" border="0" height="150" width="200"></a> </td>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_hgh_thermo.png"><img alt="Al_abinit_hgh_thermo" title="Al_abinit_hgh_thermo" src="images/phonons/Models_Phonons_Al_abinit_hgh_thermo.png" border="0" height="150" width="200"></a><br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_hgh_plot3.png"><img alt="Al_abinit_hgh_plot3" title="Al_abinit_hgh_plot3" src="images/phonons/Models_Phonons_Al_abinit_hgh_plot3.png" border="0" width="200" height="150"></a> </td>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_hgh_plot3.png"><img alt="Al_abinit_hgh_plot3" title="Al_abinit_hgh_plot3" src="images/phonons/Models_Phonons_Al_abinit_hgh_plot3.png" border="0" height="150" width="200"></a> </td>
               <td valign="top"><font color="#cc33cc">'abinit','metal','pps=hgh'</font>)</td>
             </tr>
             <tr>
@@ -1139,11 +1141,11 @@ The HKL range is usually specified as a vector in reciprocal lattice units [rlu]
                 </b> </td>
               <td valign="top">73<br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_tm_kpath.png"><img alt="Al_abinit_tm_kpath" title="Al_abinit_tm_kpath" src="images/phonons/Models_Phonons_Al_abinit_tm_kpath.png" border="0" width="200" height="150"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_tm_kpath.png"><img alt="Al_abinit_tm_kpath" title="Al_abinit_tm_kpath" src="images/phonons/Models_Phonons_Al_abinit_tm_kpath.png" border="0" height="150" width="200"></a><br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_tm_thermo.png"><img alt="Al_abinit_tm_thermo" title="Al_abinit_tm_thermo" src="images/phonons/Models_Phonons_Al_abinit_tm_thermo.png" border="0" width="200" height="150"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_tm_thermo.png"><img alt="Al_abinit_tm_thermo" title="Al_abinit_tm_thermo" src="images/phonons/Models_Phonons_Al_abinit_tm_thermo.png" border="0" height="150" width="200"></a><br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_tm_plot3.png"><img alt="Al_abinit_tm_plot3" title="Al_abinit_tm_plot3" src="images/phonons/Models_Phonons_Al_abinit_tm_plot3.png" border="0" width="200" height="150"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Al_abinit_tm_plot3.png"><img alt="Al_abinit_tm_plot3" title="Al_abinit_tm_plot3" src="images/phonons/Models_Phonons_Al_abinit_tm_plot3.png" border="0" height="150" width="200"></a><br>
               </td>
               <td valign="top"><font color="#cc33cc">'abinit','metal','pps=tm'</font>)</td>
             </tr><tr><td bgcolor="#ffccff" valign="top"><b>GPAW</b><br></td><td valign="top">465<br></td><td valign="top">same as others<br></td><td valign="top">same as others</td><td valign="top">same as others</td><td valign="top"><font color="#cc33cc">'gpaw','metal','mode=fd'</font>)</td></tr>
@@ -1174,7 +1176,7 @@ The HKL range is usually specified as a vector in reciprocal lattice units [rlu]
         much slower. Unfortunatly, ABINIT and other codes do not provide reliable results or fail.<br>
         <ul>
         </ul>
-        <table border="1" width="1102" cellspacing="2" cellpadding="2" height="541">
+        <table border="1" cellpadding="2" cellspacing="2" height="541" width="1102">
           <tbody>
             <tr>
               <td bgcolor="#ffffcc" valign="top"><b>Code</b><br>
@@ -1216,24 +1218,24 @@ The HKL range is usually specified as a vector in reciprocal lattice units [rlu]
               </td>
               <td valign="top"><br>
               </td>
-              <td valign="top"><a href="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-1265-band.png"><img alt="mp-1265-band" title="mp-1265-band" src="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-1265-band.png" border="0" width="200" height="103"></a><br>
+              <td valign="top"><a href="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-1265-band.png"><img alt="mp-1265-band" title="mp-1265-band" src="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-1265-band.png" border="0" height="103" width="200"></a><br>
               </td>
-              <td valign="top"><a href="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-1265-tprops1.png"><img alt="mp-1265-tprops1" title="mp-1265-tprops1" src="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-1265-tprops1.png" border="0" width="200" height="133"></a><br>
+              <td valign="top"><a href="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-1265-tprops1.png"><img alt="mp-1265-tprops1" title="mp-1265-tprops1" src="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-1265-tprops1.png" border="0" height="133" width="200"></a><br>
               </td>
-              <td valign="top"><a href="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-1265-dos1.png"><img alt="mp-1265-dos1" title="mp-1265-dos1" src="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-1265-dos1.png" border="0" width="200" height="112"></a></td>
+              <td valign="top"><a href="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-1265-dos1.png"><img alt="mp-1265-dos1" title="mp-1265-dos1" src="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-1265-dos1.png" border="0" height="112" width="200"></a></td>
               <td valign="top"><br>
               </td>
             </tr>
-            <tr><td valign="top">Reference from p50 in <a href="http://dx.doi.org/10.1007/978-3-642-81347-4">Biltz &amp; Kress, Springer Series 10 (1979)</a><br></td><td valign="top"><br></td><td valign="top"><a href="/images/phonons/Models_Phonons_MgO_Bilz_kpath.png"><img src="images/phonons/Models_Phonons_MgO_Bilz_kpath.png" title="MgO_Bilz_kpat" alt="MgO_Bilz_kpat" border="0" width="200" height="152"></a><br></td><td valign="top"><br></td><td valign="top"><a href="images/phonons/Models_Phonons_MgO_Biltz_dos.png"><img src="images/phonons/Models_Phonons_MgO_Biltz_dos.png" title="MgO_Biltz_dos" alt="MgO_Biltz_dos" border="0" width="200" height="118"></a><br></td><td valign="top"><br></td></tr><tr>
+            <tr><td valign="top">Reference from p50 in <a href="http://dx.doi.org/10.1007/978-3-642-81347-4">Biltz &amp; Kress, Springer Series 10 (1979)</a><br></td><td valign="top"><br></td><td valign="top"><a href="/images/phonons/Models_Phonons_MgO_Bilz_kpath.png"><img src="images/phonons/Models_Phonons_MgO_Bilz_kpath.png" title="MgO_Bilz_kpat" alt="MgO_Bilz_kpat" border="0" height="152" width="200"></a><br></td><td valign="top"><br></td><td valign="top"><a href="images/phonons/Models_Phonons_MgO_Biltz_dos.png"><img src="images/phonons/Models_Phonons_MgO_Biltz_dos.png" title="MgO_Biltz_dos" alt="MgO_Biltz_dos" border="0" height="118" width="200"></a><br></td><td valign="top"><br></td></tr><tr>
               <td bgcolor="#ffcccc" valign="top"><b>QuantumEspresso</b><b>
                   / SSSP</b></td>
               <td valign="top">408<br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_qe_kpath.png"><img alt="MgO_qe_kpath" title="MgO_qe_kpath" src="images/phonons/Models_Phonons_MgO_qe_kpath.png" border="0" width="200" height="150"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_qe_kpath.png"><img alt="MgO_qe_kpath" title="MgO_qe_kpath" src="images/phonons/Models_Phonons_MgO_qe_kpath.png" border="0" height="150" width="200"></a><br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_qe_thermo.png"><img alt="MgO_qe_thermo" title="MgO_qe_thermo" src="images/phonons/Models_Phonons_MgO_qe_thermo.png" border="0" width="200" height="150"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_qe_thermo.png"><img alt="MgO_qe_thermo" title="MgO_qe_thermo" src="images/phonons/Models_Phonons_MgO_qe_thermo.png" border="0" height="150" width="200"></a><br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_qe_plot3.png"><img alt="MgO_qe_plot3" title="MgO_qe_plot3" src="images/phonons/Models_Phonons_MgO_qe_plot3.png" border="0" width="200" height="150"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_qe_plot3.png"><img alt="MgO_qe_plot3" title="MgO_qe_plot3" src="images/phonons/Models_Phonons_MgO_qe_plot3.png" border="0" height="150" width="200"></a><br>
               </td>
               <td valign="top"><font color="#cc33cc">'qe'</font>)</td>
             </tr>
@@ -1242,11 +1244,11 @@ The HKL range is usually specified as a vector in reciprocal lattice units [rlu]
                   PAW PBE</b></td>
               <td valign="top">636<br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_vasp_kpath.png"><img alt="MgO_vasp_kpath" title="MgO_vasp_kpath" src="images/phonons/Models_Phonons_MgO_vasp_kpath.png" border="0" width="200" height="150"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_vasp_kpath.png"><img alt="MgO_vasp_kpath" title="MgO_vasp_kpath" src="images/phonons/Models_Phonons_MgO_vasp_kpath.png" border="0" height="150" width="200"></a><br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_vasp_thermo.png"><img alt="MgO_vasp_thermo" title="MgO_vasp_thermo" src="images/phonons/Models_Phonons_MgO_vasp_thermo.png" border="0" width="200" height="150"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_vasp_thermo.png"><img alt="MgO_vasp_thermo" title="MgO_vasp_thermo" src="images/phonons/Models_Phonons_MgO_vasp_thermo.png" border="0" height="150" width="200"></a><br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_vasp_plot3.png"><img alt="MgO_vasp_plot3" title="MgO_vasp_plot3" src="images/phonons/Models_Phonons_MgO_vasp_plot3.png" border="0" width="200" height="150"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_vasp_plot3.png"><img alt="MgO_vasp_plot3" title="MgO_vasp_plot3" src="images/phonons/Models_Phonons_MgO_vasp_plot3.png" border="0" height="150" width="200"></a><br>
               </td>
               <td valign="top"><font color="#cc33cc">'vasp'</font>)</td>
             </tr>
@@ -1255,11 +1257,11 @@ The HKL range is usually specified as a vector in reciprocal lattice units [rlu]
                 </b></td>
               <td valign="top">2408<br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_elk_kpath.png"><img alt="MgO_elk_kpath" title="MgO_elk_kpath" src="images/phonons/Models_Phonons_MgO_elk_kpath.png" border="0" width="200" height="150"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_elk_kpath.png"><img alt="MgO_elk_kpath" title="MgO_elk_kpath" src="images/phonons/Models_Phonons_MgO_elk_kpath.png" border="0" height="150" width="200"></a><br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_elk_thermo.png"><img alt="MgO_elk_thermo" title="MgO_elk_thermo" src="images/phonons/Models_Phonons_MgO_elk_thermo.png" border="0" width="200" height="150"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_elk_thermo.png"><img alt="MgO_elk_thermo" title="MgO_elk_thermo" src="images/phonons/Models_Phonons_MgO_elk_thermo.png" border="0" height="150" width="200"></a><br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_elk_plot3.png"><img alt="MgO_elk_plot3" title="MgO_elk_plot3" src="images/phonons/Models_Phonons_MgO_elk_plot3.png" border="0" width="200" height="150"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_elk_plot3.png"><img alt="MgO_elk_plot3" title="MgO_elk_plot3" src="images/phonons/Models_Phonons_MgO_elk_plot3.png" border="0" height="150" width="200"></a><br>
               </td>
               <td valign="top"><font color="#cc33cc">'elk'</font>)</td>
             </tr>
@@ -1269,11 +1271,11 @@ The HKL range is usually specified as a vector in reciprocal lattice units [rlu]
               </td>
               <td valign="top">181<br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_abinit_paw_kpath.png"><img alt="MgO_abinit_paw_kpath" title="MgO_abinit_paw_kpath" src="images/phonons/Models_Phonons_MgO_abinit_paw_kpath.png" border="0" width="200" height="150"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_abinit_paw_kpath.png"><img alt="MgO_abinit_paw_kpath" title="MgO_abinit_paw_kpath" src="images/phonons/Models_Phonons_MgO_abinit_paw_kpath.png" border="0" height="150" width="200"></a><br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_abinit_paw_thermo.png"><img alt="MgO_abinit_paw_thermo" title="MgO_abinit_paw_thermo" src="images/phonons/Models_Phonons_MgO_abinit_paw_thermo.png" border="0" width="200" height="150"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_abinit_paw_thermo.png"><img alt="MgO_abinit_paw_thermo" title="MgO_abinit_paw_thermo" src="images/phonons/Models_Phonons_MgO_abinit_paw_thermo.png" border="0" height="150" width="200"></a><br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_abinit_paw_plot3.png"><img alt="MgO_abinit_paw_plot3" title="MgO_abinit_paw_plot3" src="images/phonons/Models_Phonons_MgO_abinit_paw_plot3.png" border="0" width="200" height="150"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_MgO_abinit_paw_plot3.png"><img alt="MgO_abinit_paw_plot3" title="MgO_abinit_paw_plot3" src="images/phonons/Models_Phonons_MgO_abinit_paw_plot3.png" border="0" height="150" width="200"></a><br>
               </td>
               <td valign="top"><font color="#cc33cc">'abinit','pps=paw'</font>)</td>
             </tr>
@@ -1305,7 +1307,7 @@ The HKL range is usually specified as a vector in reciprocal lattice units [rlu]
         faster. Unfortunatly, ABINIT does not provide reliable results. Other calculators provide questionable results or fail.<br>
         <ul>
         </ul>
-        <table border="1" width="1102" cellspacing="2" cellpadding="2" height="541">
+        <table border="1" cellpadding="2" cellspacing="2" height="541" width="1102">
           <tbody>
             <tr>
               <td bgcolor="#ffffcc" valign="top"><b>Code</b><br>
@@ -1347,25 +1349,25 @@ The HKL range is usually specified as a vector in reciprocal lattice units [rlu]
               </td>
               <td valign="top"><br>
               </td>
-              <td valign="top"><a href="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-5229-band.png"><img alt="mp-5229-band" title="mp-5229-band" src="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-5229-band.png" border="0" width="200" height="83"></a><br>
+              <td valign="top"><a href="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-5229-band.png"><img alt="mp-5229-band" title="mp-5229-band" src="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-5229-band.png" border="0" height="83" width="200"></a><br>
               </td>
-              <td valign="top"><a href="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-5229-tprops.png"><img alt="mp-5229-tprops." title="mp-5229-tprops." src="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-5229-tprops.png" border="0" width="200" height="133"></a><br>
+              <td valign="top"><a href="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-5229-tprops.png"><img alt="mp-5229-tprops." title="mp-5229-tprops." src="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-5229-tprops.png" border="0" height="133" width="200"></a><br>
               </td>
-              <td valign="top"><a href="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-5229-dos1.png"><img alt="mp-5229-dos1" title="mp-5229-dos1" src="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-5229-dos1.png" border="0" width="200" height="112"></a><br>
+              <td valign="top"><a href="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-5229-dos1.png"><img alt="mp-5229-dos1" title="mp-5229-dos1" src="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-5229-dos1.png" border="0" height="112" width="200"></a><br>
               </td>
               <td valign="top"><br>
               </td>
             </tr>
-            <tr><td valign="top">Reference from p147 in <a href="http://dx.doi.org/10.1007/978-3-642-81347-4">Biltz &amp; Kress, Springer Series 10 (1979)</a></td><td valign="top"><br></td><td valign="top"><a href="images/phonons/Models_Phonons_SrTiO3_Biltz_kpath.png"><img src="images/phonons/Models_Phonons_SrTiO3_Biltz_kpath.png" title="SrTiO3_Biltz_kpath" alt="SrTiO3_Biltz_kpath" border="0" width="200" height="176"></a><br></td><td valign="top"><br></td><td valign="top"><a href="images/phonons/Models_Phonons_SrTiO3_Biltz_dos.png"><img src="images/phonons/Models_Phonons_SrTiO3_Biltz_dos.png" title="SrTiO3_Biltz_dos" alt="SrTiO3_Biltz_dos" border="0" width="200" height="116"></a><br></td><td valign="top"><br></td></tr><tr>
+            <tr><td valign="top">Reference from p147 in <a href="http://dx.doi.org/10.1007/978-3-642-81347-4">Biltz &amp; Kress, Springer Series 10 (1979)</a></td><td valign="top"><br></td><td valign="top"><a href="images/phonons/Models_Phonons_SrTiO3_Biltz_kpath.png"><img src="images/phonons/Models_Phonons_SrTiO3_Biltz_kpath.png" title="SrTiO3_Biltz_kpath" alt="SrTiO3_Biltz_kpath" border="0" height="176" width="200"></a><br></td><td valign="top"><br></td><td valign="top"><a href="images/phonons/Models_Phonons_SrTiO3_Biltz_dos.png"><img src="images/phonons/Models_Phonons_SrTiO3_Biltz_dos.png" title="SrTiO3_Biltz_dos" alt="SrTiO3_Biltz_dos" border="0" height="116" width="200"></a><br></td><td valign="top"><br></td></tr><tr>
               <td bgcolor="#ffcccc" valign="top"><b>QuantumEspresso</b><b>
                   / SSSP</b></td>
               <td valign="top">1410<br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_SrTiO3_qe_kpath.png"><img alt="SrTiO3_qe_kpath" title="SrTiO3_qe_kpath" src="images/phonons/Models_Phonons_SrTiO3_qe_kpath.png" border="0" width="200" height="150"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_SrTiO3_qe_kpath.png"><img alt="SrTiO3_qe_kpath" title="SrTiO3_qe_kpath" src="images/phonons/Models_Phonons_SrTiO3_qe_kpath.png" border="0" height="150" width="200"></a><br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_SrTiO3_qe_thermo.png"><img alt="SrTiO3_qe_thermo" title="SrTiO3_qe_thermo" src="images/phonons/Models_Phonons_SrTiO3_qe_thermo.png" border="0" width="200" height="150"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_SrTiO3_qe_thermo.png"><img alt="SrTiO3_qe_thermo" title="SrTiO3_qe_thermo" src="images/phonons/Models_Phonons_SrTiO3_qe_thermo.png" border="0" height="150" width="200"></a><br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_SrTiO3_qe_plot3.png"><img alt="SrTiO3_qe_plot3" title="SrTiO3_qe_plot3" src="images/phonons/Models_Phonons_SrTiO3_qe_plot3.png" border="0" width="200" height="150"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_SrTiO3_qe_plot3.png"><img alt="SrTiO3_qe_plot3" title="SrTiO3_qe_plot3" src="images/phonons/Models_Phonons_SrTiO3_qe_plot3.png" border="0" height="150" width="200"></a><br>
               </td>
               <td valign="top"><font color="#cc33cc">'qe'</font>)</td>
             </tr>
@@ -1374,11 +1376,11 @@ The HKL range is usually specified as a vector in reciprocal lattice units [rlu]
                   PAW PBE</b></td>
               <td valign="top">2560<br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_SrTiO3_vasp_kpath.png"><img alt="SrTiO3_vasp_kpath" title="SrTiO3_vasp_kpath" src="images/phonons/Models_Phonons_SrTiO3_vasp_kpath.png" border="0" width="200" height="150"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_SrTiO3_vasp_kpath.png"><img alt="SrTiO3_vasp_kpath" title="SrTiO3_vasp_kpath" src="images/phonons/Models_Phonons_SrTiO3_vasp_kpath.png" border="0" height="150" width="200"></a><br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_SrTiO3_vasp_thermo.png"><img alt="SrTiO3_vasp_thermo" title="SrTiO3_vasp_thermo" src="images/phonons/Models_Phonons_SrTiO3_vasp_thermo.png" border="0" width="200" height="150"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_SrTiO3_vasp_thermo.png"><img alt="SrTiO3_vasp_thermo" title="SrTiO3_vasp_thermo" src="images/phonons/Models_Phonons_SrTiO3_vasp_thermo.png" border="0" height="150" width="200"></a><br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_SrTiO3_vasp_plot3.png"><img alt="SrTiO3_vasp_plot3" title="SrTiO3_vasp_plot3" src="images/phonons/Models_Phonons_SrTiO3_vasp_plot3.png" border="0" width="200" height="150"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_SrTiO3_vasp_plot3.png"><img alt="SrTiO3_vasp_plot3" title="SrTiO3_vasp_plot3" src="images/phonons/Models_Phonons_SrTiO3_vasp_plot3.png" border="0" height="150" width="200"></a><br>
               </td>
               <td valign="top"><font color="#cc33cc">'vasp'</font>)</td>
             </tr>
@@ -1413,7 +1415,7 @@ The HKL range is usually specified as a vector in reciprocal lattice units [rlu]
         Outcome: </b></i>The computation reconstruction provides the same results as
         PhonoPy.<br>
         <br>
-        <table border="1" width="1102" cellspacing="2" cellpadding="2" height="541">
+        <table border="1" cellpadding="2" cellspacing="2" height="541" width="1102">
           <tbody>
             <tr>
               <td bgcolor="#ffffcc" valign="top"><b>Code</b><br>
@@ -1449,22 +1451,22 @@ The HKL range is usually specified as a vector in reciprocal lattice units [rlu]
               </td>
               <td valign="top"><br>
               </td>
-              <td valign="top"><a href="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-755340-band.png"><img alt="mp-755340-band" title="mp-755340-band" src="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-755340-band.png" border="0" width="206" height="79"></a><br>
+              <td valign="top"><a href="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-755340-band.png"><img alt="mp-755340-band" title="mp-755340-band" src="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-755340-band.png" border="0" height="79" width="206"></a><br>
               </td>
-              <td valign="top"><a href="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-755340-tprops1.png"><img alt="mp-755340-tprop" title="mp-755340-tprop" src="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-755340-tprops1.png" border="0" width="200" height="133"></a><br>
+              <td valign="top"><a href="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-755340-tprops1.png"><img alt="mp-755340-tprop" title="mp-755340-tprop" src="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-755340-tprops1.png" border="0" height="133" width="200"></a><br>
               </td>
-              <td valign="top"><a href="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-755340-dos1.png"><img alt="mp-755340-dos1" title="mp-755340-dos1" src="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-755340-dos1.png" border="0" width="200" height="112"></a> </td>
+              <td valign="top"><a href="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-755340-dos1.png"><img alt="mp-755340-dos1" title="mp-755340-dos1" src="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-755340-dos1.png" border="0" height="112" width="200"></a> </td>
             </tr>
             <tr>
               <td bgcolor="#ffcccc" valign="top"><b>VASP (4.6)</b><b> /
                   PAW PBE</b></td>
               <td valign="top">300 (reconstruction)<br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_Tb2SeO2_vasp_kpath.png"><img alt="Tb2SeO2_vasp_kpath" title="Tb2SeO2_vasp_kpath" src="images/phonons/Models_Phonons_Tb2SeO2_vasp_kpath.png" border="0" width="200" height="150"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Tb2SeO2_vasp_kpath.png"><img alt="Tb2SeO2_vasp_kpath" title="Tb2SeO2_vasp_kpath" src="images/phonons/Models_Phonons_Tb2SeO2_vasp_kpath.png" border="0" height="150" width="200"></a><br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_Tb2SeO2_vasp_thermo.png"><img alt="Tb2SeO2_vasp_thermo" title="Tb2SeO2_vasp_thermo" src="images/phonons/Models_Phonons_Tb2SeO2_vasp_thermo.png" border="0" width="200" height="150"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Tb2SeO2_vasp_thermo.png"><img alt="Tb2SeO2_vasp_thermo" title="Tb2SeO2_vasp_thermo" src="images/phonons/Models_Phonons_Tb2SeO2_vasp_thermo.png" border="0" height="150" width="200"></a><br>
               </td>
-              <td valign="top"><a href="images/phonons/Models_Phonons_Tb2SeO2_vasp_plot3.png"><img alt="Tb2SeO2_vasp_plot3" title="Tb2SeO2_vasp_plot3" src="images/phonons/Models_Phonons_Tb2SeO2_vasp_plot3.png" border="0" width="200" height="150"></a><br>
+              <td valign="top"><a href="images/phonons/Models_Phonons_Tb2SeO2_vasp_plot3.png"><img alt="Tb2SeO2_vasp_plot3" title="Tb2SeO2_vasp_plot3" src="images/phonons/Models_Phonons_Tb2SeO2_vasp_plot3.png" border="0" height="150" width="200"></a><br>
               </td>
             </tr>
           </tbody>
@@ -1478,7 +1480,7 @@ The HKL range is usually specified as a vector in reciprocal lattice units [rlu]
           italic;">E. Farhi - iFit/Phonon model - </span><span style="font-style: italic;"> $Date$ $Revision$ </span><span style="font-style: italic;"> </span>- back to <a href="index.html">Main iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France
             &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL,
             Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px
-            solid ; width: 53px; height: 50px;" border="0" align="right" width="182" height="171"></a><br>
+            solid ; width: 53px; height: 50px;" border="0" height="171" width="182" align="right"></a><br>
         <br>
       </div>
     </div>

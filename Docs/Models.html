@@ -121,6 +121,7 @@
 
 
 
+
         </a>fits(iData)</span>, <a href="iFunc.html">iFunc</a><br>
     </div>
     <br>
@@ -3520,16 +3521,15 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
     second axis is used to define an ortho-normal reciprocal coordinate
     frame. The 2nd and 3rd dispersion slopes apply into this frame.<br>
     <br>
-    The general dispersion relation has the form:<br>
+    The general dispersion relation has the form, with <i><b>q</b></i>=<i>[ q</i><i><sub>h</sub></i><i>, q</i><i><sub>k</sub></i><i>, q</i><i><sub>l</sub></i><i> ]</i> and <b>HKLE0</b> =<i>[q</i><i><sub>h0</sub></i><i>, q</i><i><sub>k0</sub></i><i>, q</i><i><sub>l0</sub></i><i>, E<sub>0</sub>]</i>&nbsp; in [rlu and meV]:<br>
     <br>
-    <div align="center">w(q) = <i>&#8730;</i>[ (Slope1*(q-HKL0)<sup><i> </i></sup>+
-      E0)<sup>2</sup> + Slope2<sup>2</sup>*(q-HKL0)<sup><i>2</i></sup> +
-      ... ]<br>
+    <div align="center">w(q)<sup>2</sup> = (Slope1*(q<sub>h</sub>-q<sub>h0</sub>)<sup><i> </i></sup>+
+      E<sub>0</sub>)<sup>2</sup> + Slope2<sup>2</sup>*(q<sub>k</sub>-q<sub>k0</sub>)<sup><i>2</i></sup> + Slope3<sup>2</sup>*(q<sub>l</sub>-q<sub>l0</sub>)<sup><i>2</i></sup><br>
     </div>
     <br>
-    where the <i>Slope</i> parameters are specified for 3 directions.
+    where the <i>Slope</i> parameters are specified for 3 directions. The <i>hkl</i> directions can be rotated by specifying the <i>dir1</i> and <i>dir2</i> frame vectors. The <i>dir3</i> is built as <i>dir1 x dir2</i>.
     Along <i>dir1</i> the dispersion is linear, along other directions
-    it is quadratic (becomes linear far from HKL0).<br>
+    it is quadratic (becomes linear far from HKL0). <br>
     <br>
     Such a model can be used to model an <b>acoustic/linear</b>
     dispersion (with a given slope/velocity), which has a given energy
@@ -3770,13 +3770,13 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
         used to define an ortho-normal reciprocal coordinate frame. The
         dispersion slopes apply into this frame.<br>
         <br>
-        The general dispersion relation has the form:<br>
+        The general dispersion relation has the form, with <i><b>q</b></i>=<i>[ q</i><i><sub>h</sub></i><i>, q</i><i><sub>k</sub></i><i>, q</i><i><sub>l</sub></i><i> ]</i> and <b>HKLE0</b> =<i>[q</i><i><sub>h0</sub></i><i>, q</i><i><sub>k0</sub></i><i>, q</i><i><sub>l0</sub></i><i>, E<sub>0</sub>]</i>&nbsp; in [rlu and meV]::<br>
       </p>
-      <div align="center">w(q) = <i>&#8730;</i>[ E0<sup>2</sup> + &#931;(Slope<sup>2</sup>*(q-HKL0)<sup>2</sup>
-        ]<br>
+      <div align="center">w(q)<sup>2</sup> = E<sub>0</sub><sup>2</sup> + Slope1<sup>2</sup>*(q<sub>h</sub>-q<sub>h0</sub>)<sup>2</sup> + Slope2<sup>2</sup>*(q<sub>k</sub>-q<sub>k0</sub>)<sup><i>2</i></sup> + Slope3<sup>2</sup>*(q<sub>l</sub>-q<sub>l0</sub>)<sup><i>2</i></sup><br><br>
       </div>
       <br>
-      where the Slope parameters are specified for 3 directions. Along
+      where the Slope parameters are specified for 3 directions. The <i>hkl</i> directions can be rotated by specifying the <i>dir1</i> and <i>dir2</i> frame vectors. The <i>dir3</i> is built as <i>dir1 x dir2</i>.&nbsp;
+Along
       given directions the dispersion is quadratic (becomes linear far
       from HKL0).<br>
       <br>
