@@ -1,11 +1,43 @@
 classdef iFunc_McCode < iFunc
 
+  % iFunc_McCode: create an iFunc_McCode from e.g. an instrument model
+  %
+  % The iFunc_McCode class is a model holding a ray-tracing instrument simulation.
+  %
+  % Example: s=mccode('defaults')
+  %
+  % Useful methods for this iFunc flavour:
+  %
+  % methods(iFunc_McCode)
+  %   all iFunc methods can be used.
+  % iFunc_McCode(a)
+  %   convert a 4D model [a=iFunc class] into an iFunc_McCode to give access to
+  %   the methods below.
+  % plot(a)
+  %   plot the instrument geometry
+  % subplot(a)
+  %   plot the instrument simulation results (monitors)
+  % publish(a)
+  %   Generate a readable document with all results
+  % edit(a)
+  %   Show the instrument code, and re-compile the instrument when modified
+  % dialog(a)
+  %   Display a simple dialogue window to run a single or series of simulations
+  %
+  % input:
+  %   can be an iFunc or struct or any set of parameters to generate a McCode object.
+  %   when not given an iFunc, the parameters to mccode are expected.
+  %
+  % output: an iFunc_McCode object
+  %
+  % See also: mccode, iFunc, iFunc_McCode/plot, iFunc_McCode/subplot, iFunc_McCode/dialog, iFunc_McCode/edit, iFunc_McCode/publish
+
   properties
   end
 
   methods
     function obj = iFunc_McCode(varargin)
-      % create the iFunc_McCode subclass
+      % iFunc_McCode: create the iFunc_McCode subclass
       %
       % input:
       %   can be an iFunc or any set of parameters to generate a McCode object
@@ -52,7 +84,7 @@ classdef iFunc_McCode < iFunc
     end % iFunc_McCode constructor
     
     function f = iFunc(self)
-      % convert a single iFunc_McCode back to iFunc
+      % iFunc_McCode: iFunc: convert a single iFunc_McCode back to iFunc
       f = iFunc;
       for p = fieldnames(self)'
         f.(p{1}) = self.(p{1});
@@ -62,7 +94,7 @@ classdef iFunc_McCode < iFunc
     
     % overloaded feval which prefers to use 'nan' when axes are undefined
     function [signal, self, ax, name] = feval(self, varargin)
-      % Evaluate an McCode model value using given parameters and axes.
+      % iFunc_McCode: feval: Evaluate an McCode model value using given parameters and axes.
       % When no axis is given, the raw monitor values are returned.
       % To get the result as iData objects, use: iData(model, ...)
       %   or get model.UserData.monitors after the calculation.
@@ -82,17 +114,17 @@ classdef iFunc_McCode < iFunc
     % overloaded inputdlg to display the instrument parameters in a dialogue
     % calls private/mccode_run
     function [v,self] = inputdlg(self)
-    % run a McCode instrument model and request instrument parameters in a dialogue
+    % iFunc_McCode: inputdlg: run a McCode instrument model and request instrument parameters in a dialogue
       [v,self] = dialog(self);
     end
     function [v,self] = uitable(self)
-    % run a McCode instrument model and request instrument parameters in a dialogue
+    % iFunc_McCode: uitable: run a McCode instrument model and request instrument parameters in a dialogue
       [v,self] = dialog(self);
     end
     
     % overloaded edit to edit the instrument code
     function self = edit(self)
-      % edit the instrument source description, and re-build the model when modified.
+      % iFunc_McCode: edit: edit the instrument source description, and re-build the model when modified.
       
       % we display the instrument source code (when not 'out') in TextEdit
       % as a temporary file. We wait for TextEdit to close.
@@ -134,7 +166,16 @@ classdef iFunc_McCode < iFunc
           assignin('caller',inputname(1),self);
         end
       end
-    end
+    end % edit
+    
+    % overloaded subplot
+    function h = subplot(self, varargin)
+      if numel(self) == 1
+        h = subplot(self.UserData.monitors, varargin{:});
+      else
+        h = subplot@iFunc(self, varargin{:});
+      end
+    end % subplot
     
   end
   

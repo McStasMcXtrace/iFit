@@ -173,6 +173,7 @@ function [comps, fig, model]=plot(model, p, options)
   zlabel('Y [m]');
   daspect([1 1 1]);
   box on;
+  a0 = gca;
   
   mp    = model.ParameterValues;
   names = model.Parameters;
@@ -252,6 +253,7 @@ function [comps, fig, model]=plot(model, p, options)
       end
     end
   end
+  axes(a0);
 
 end % plot
 
