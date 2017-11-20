@@ -35,7 +35,7 @@ function disp(s_in, name)
       if UserData.isActive, state='RUNNING'; else state='STOPPED'; end
       fprintf(1,'%s = %s object [%s]:\n',iname, id, state);
 
-      s.Command      = UserData.command;
+      s.Command      = num2str(UserData.command);
       s.creationDate = UserData.creationDate;
       s.terminationDate = UserData.terminationDate;
       s.exitValue    = UserData.exitValue;
@@ -44,7 +44,11 @@ function disp(s_in, name)
       
       if isnumeric(s.creationDate),    s.creationDate=datestr(s.creationDate); end
       if isnumeric(s.terminationDate), s.terminationDate=datestr(s.terminationDate); end
-      fprintf(1, '            process: %s\n', char(UserData.process));
+      if isjava(UserData.process)
+        fprintf(1, '            process: %s\n', char(UserData.process));
+      else
+        fprintf(1, '            process: %s\n', num2str(UserData.process));
+      end
       disp(s);
       % now display stdout/stderr tail
       if isdeployed || ~usejava('jvm') || ~usejava('desktop')
@@ -52,25 +56,26 @@ function disp(s_in, name)
       else
         fprintf(1, ['             <a href="matlab:stdout(' iname ')">stdout</a>: [%s char]\n'], num2str(numel(stdout)));
       end
-      if numel(stdout), fprintf(1, Process_disp_out(stdout)); end
+      if numel(stdout), fprintf(1, '%s\n', Process_disp_out(stdout)); end
       if isdeployed || ~usejava('jvm') || ~usejava('desktop')
         fprintf(1, '             stderr: [%s char]\n', num2str(numel(stderr)));
       else
-        fprintf(1,[ '             <a href="matlab:stderr(' iname ')">stderr</a>: [%s char]\n'], num2str(numel(stdout)));
+        fprintf(1,[ '             <a href="matlab:stderr(' iname ')">stderr</a>: [%s char]\n'], num2str(numel(stderr)));
       end
-      if numel(stderr), fprintf(1, Process_disp_out(stderr)); end
+      if numel(stderr), fprintf(1, '%s\n', Process_disp_out(stderr)); end
     end
   end
 end
 
 % ------------------------------------------------------------------------------
 function out =  Process_disp_out(str)
+  if isempty(str), out=''; return; end
   lines = strread(str,'%s','delimiter','\n\r');
-  out = sprintf('                     %s\n', lines{1});
-  if numel(lines) > 2, 
-    out = [ out sprintf('                     ...\n') ];
+  if numel(lines) < 5
+    out = sprintf('%s\n', lines{:});
+  else
+    out = sprintf('%s\n', lines{(end-4):end});
   end
-  if numel(lines) > 1, 
-    out = [ out sprintf('                     %s\n', lines{end}) ];
-  end
+  if numel(out) > 80, out = [ '...' out((end-75):end) ]; end
+  out = deblank(out);
 end

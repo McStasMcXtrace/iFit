@@ -44,15 +44,16 @@ function d = display(s_in, name)
     % now build the output string
 
     UserData = get(s_in, 'UserData');
-    if length(s_in) > 1
-      d = [ d sprintf('%5i ',index) ];                       % ID
+    if isjava(UserData.process)
+      c = char(UserData.process);
+    else c = num2str(UserData.process);
     end
-    c = char(UserData.process); if numel(c)>9, c=c((end-8):end); end
+    if numel(c)>9, c=c((end-8):end); end
     d = [ d sprintf('%8s ', c) ];
     if iscellstr(UserData.command), c=sprintf('%s ', UserData.command{:});
     else c = char(UserData.command); end
     if numel(c)>30, c=[ c(1:27) '...' ]; end
-    d = [ d sprintf('%30s ', UserData.command) ];                   % cmd;
+    d = [ d sprintf('%30s ', num2str(UserData.command)) ];                   % cmd;
 
     if UserData.isActive
       d = [ d 'Run    ' ];
@@ -77,8 +78,12 @@ end
 function out = Process_display_out(str)
   if isempty(str), out=''; return; end
   lines = strread(str,'%s','delimiter','\n\r');
-  out = sprintf('%s', lines{end});
-  if numel(out) > 40, out = [ out(1:40) '...' ]; end
+  if numel(lines) < 5
+    out = sprintf('%s ', lines{:});
+  else
+    out = sprintf('%s ', lines{(end-4):end});
+  end
+  if numel(out) > 40, out = [ '...' out((end-35):end) ]; end
   out = deblank(out);
 end
 
