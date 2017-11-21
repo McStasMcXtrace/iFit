@@ -21,7 +21,14 @@ if isobject(pid)
 end
 
 if isempty(pid), return; end
-if isnumeric(pid) pid = pid(end); end
+if isnumeric(pid) && numel(pid) > 1
+  for index=1:numel(pid)
+    [this_PID, this_command] = get_command(pid(index));
+    if ~isempty(this_PID), PID(end+1) = this_PID; end
+    if ~isempty(this_command), command{end+1} = sprintf('%s', this_command{:}); end
+  end
+  return
+end
 
 if ispc
   [response, tasks] = system('tasklist');
@@ -33,7 +40,7 @@ end
 % split as lines
 tasks = textscan(tasks, '%s', 'Delimiter',sprintf('\n')); tasks = tasks{1};
 
-% should skip empty liens, those with 'PID' or '========'
+% should skip empty lines, those with 'PID' or '========'
 if ispc
   % windows: processes are listed from line {4}. Lines {1:3} are comments.
   %   command is 1:25, PID is word following

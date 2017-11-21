@@ -72,17 +72,23 @@ function kill_external(pid)
 % kill an external PID
   if ~isempty(pid)
     if isnumeric(pid)
-      if ispc
-        system(sprintf('taskkill /PID %i /F', pid));
-      else
-        system(sprintf('skill -p %i', pid));
+      for index=1:numel(pid)
+        if ispc
+          cmd=sprintf('taskkill /PID %i /F', pid(index));
+        else
+          cmd=sprintf('skill -p %i', pid(index));
+        end
+        disp(cmd)
+        system(cmd);
       end
     elseif ischar(UserData.process)
       if ispc
-        system(sprintf('taskkill /im /f %s', pid));
+        cmd=sprintf('taskkill /im /f %s', pid);
       else
-        system(sprintf('skill -c %s', pid));
+        cmd=sprintf('skill -c %s', pid);
       end
+      disp(cmd)
+      system(cmd);
     end
   end
 end

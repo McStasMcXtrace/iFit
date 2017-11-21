@@ -30,41 +30,43 @@ function d = display(s_in, name)
       d = [ d sprintf(' %s: empty\n',id) ];
   elseif length(s_in) == 1 && ~isvalid(s_in)
       d = [ d sprintf(' %s: invalid\n',id) ];
-  elseif length(s_in) == 1
-    if ~isempty(inputname(1))
-      refresh_Process(s_in);
-      assignin('caller', inputname(1), s_in);
+  elseif length(s_in) >= 1
+    % print header lines
+    if length(s_in) == 1
+      d = [ d sprintf(' %s:\n\n', id) ];
+    else
+      d = [ d id sprintf(' array [%s]',num2str(size(s_in))) sprintf('\n') ];
     end
-    d = [ d sprintf(' %s:\n\n', id) ];
     if length(s_in) > 1
       d = [ d sprintf('Index ') ];
     end
     d = [ d sprintf('     [ID] [Command]                     [State] [output]\n') ];
 
     % now build the output string
+    for index=1:length(s_in)
+      if length(s_in) > 1, d = [ d sprintf('%5i ', index) ]; end
+      this = get_index(s_in, index);
+      refresh_Process(this);
+      UserData = get(this, 'UserData');
+      if isjava(UserData.process)
+        c = char(UserData.process);
+      else c = num2str(UserData.process);
+      end
+      if numel(c)>9, c=c((end-8):end); end
+      d = [ d sprintf('%8s ', c) ];
+      if iscellstr(UserData.command), c=sprintf('%s ', UserData.command{:});
+      else c = char(UserData.command); end
+      if numel(c)>30, c=[ c(1:27) '...' ]; end
+      d = [ d sprintf('%30s ', num2str(UserData.command)) ];                   % cmd;
 
-    UserData = get(s_in, 'UserData');
-    if isjava(UserData.process)
-      c = char(UserData.process);
-    else c = num2str(UserData.process);
+      if UserData.isActive
+        d = [ d 'Run    ' ];
+      else
+        d = [ d 'Stop   ' ];
+      end
+      if ~isempty(UserData.stderr), d=[ d '[ERR]' ]; end
+      d = [ d sprintf('%s\n', Process_display_out(UserData.stdout)) ];
     end
-    if numel(c)>9, c=c((end-8):end); end
-    d = [ d sprintf('%8s ', c) ];
-    if iscellstr(UserData.command), c=sprintf('%s ', UserData.command{:});
-    else c = char(UserData.command); end
-    if numel(c)>30, c=[ c(1:27) '...' ]; end
-    d = [ d sprintf('%30s ', num2str(UserData.command)) ];                   % cmd;
-
-    if UserData.isActive
-      d = [ d 'Run    ' ];
-    else
-      d = [ d 'Stop   ' ];
-    end
-    if ~isempty(UserData.stderr), d=[ d '[ERR]' ]; end
-    d = [ d sprintf('%s\n', Process_display_out(UserData.stdout)) ];
-  else
-    d = [ d id sprintf(' array [%s]',num2str(size(s_in))) ];
-    d = [ d sprintf('\n') ];
   end
 
   if nargout == 0
@@ -85,5 +87,10 @@ function out = Process_display_out(str)
   end
   if numel(out) > 40, out = [ '...' out((end-35):end) ]; end
   out = deblank(out);
+end
+
+function obj = get_index(pid, index)
+  S.type='()'; S.subs = {index};
+  obj = subsref(pid, S);
 end
 
