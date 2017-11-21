@@ -139,8 +139,8 @@ for index=1:length(fields)
   p_name = strtok(f{1});
   for f_index=1:numel(f)
     name   = strtok(f{f_index});
-    if     isfield(s, name)   val0=s.(name);
-    elseif isfield(s, p_name) val0=s.(p_name);
+    if     isfield(s, name)   val0=get(s, name);
+    elseif isfield(s, p_name) val0=get(s, p_name);
     else val0=[]; end
     if index==1 && f_index==1
       links    = findfield(s,strtok(f{f_index}),'exact');

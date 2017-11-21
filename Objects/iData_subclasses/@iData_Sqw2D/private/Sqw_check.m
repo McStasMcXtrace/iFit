@@ -72,7 +72,7 @@ function s = Sqw_check(s)
   
   % search for Sqw parameters for further conversions
   if ~isfield(s, 'parameters')
-    s = Sqw_parameters(s, 'Sqw');
+    s = Sqw_parameters(s);
   end
   if ~w_present && t_present
     % convert from S(xx,t) to S(xx,w): t2e requires L2=Distance

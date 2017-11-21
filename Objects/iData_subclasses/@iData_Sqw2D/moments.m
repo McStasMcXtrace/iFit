@@ -1,5 +1,5 @@
-function sigma=Sqw_moments(data, M, T, classical)
-% moments=Sqw_moments(sqw, M, T, classical): compute Sqw moments (harmonic frequencies)
+function sigma=moments(data, M, T, classical)
+% moments=moments(sqw, M, T, classical): compute Sqw moments (harmonic frequencies)
 %
 %   Compute the structure factor (moment 0), recoil energy (moment 1) and the
 %     collective, harmonic and mean energy transfer dispersions.
@@ -31,25 +31,23 @@ function sigma=Sqw_moments(data, M, T, classical)
 %   Lovesey, Theory of Neutron Scattering from Condensed Matter, Vol 1, p180 eq. 5.38 (w0)
 %   J-P.Hansen and I.R.McDonald, Theory of simple liquids Academic Press New York 2006.
 %
-% Example: moments = sqw_moments(iData(fullfile(ifitpath,'Data','SQW_coh_lGe.nc')))
+% Example: m = moments(iData_Sqw2D('SQW_coh_lGe.nc')))
 % (c) E.Farhi, ILL. License: EUPL.
 
   sigma = [];
-  if nargin == 0, return; end
-  if ~isa(data, 'iData'), data=iData(data); end
   if nargin < 2, M = []; end
-  if nargin < 3, classical = []; end
-  if nargin < 4, T = []; end
+  if nargin < 3, T = []; end
+  if nargin < 4, classical = []; end
   
-  data = Sqw_check(data);
   if isempty(data), sigma=[]; return; end
+  data = iData(data);
   
   % guess when omitted arguments
   if isempty(classical) && (isfield(data,'classical') || ~isempty(findfield(data, 'classical')))
-    classical = data.classical;
+    classical = get(data,'classical');
   end
   if isempty(M) && isfield(data, 'weight')
-    M       = data.weight;               % mass
+    M       = get(data,'weight');               % mass
   end
   if isempty(T)
     T = Sqw_getT(data);
@@ -59,19 +57,19 @@ function sigma=Sqw_moments(data, M, T, classical)
   if isempty(classical)
     disp([ mfilename ': ERROR: The data set ' data.Tag ' ' data.Title ' from ' data.Source ])
     disp('   does not provide information about classical/quantum data set.');
-    disp('   Use Sqw_moments(data, M, T, classical=0 or 1)');
+    disp('   Use moments(data, M, T, classical=0 or 1)');
     return
   end
   
   if isempty(T) || T<=0
     disp([ mfilename ': ERROR: Temperature undefined: The data set ' data.Tag ' ' data.Title ' from ' data.Source ]);
-    disp('    does not have any temperature defined. Use Sqw_moments(data, M, T, classical).' );
+    disp('    does not have any temperature defined. Use moments(data, M, T, classical).' );
     return
   end
   
   kT      = T/11.604;   % kbT in meV;
-  q       = data{2};
-  w       = data{1}; 
+  q       = getaxis(data,2);
+  w       = getaxis(data,1);
   
   % clean low level data
   i=find(log(data) < -15);
