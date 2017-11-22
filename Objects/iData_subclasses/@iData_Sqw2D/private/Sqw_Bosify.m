@@ -1,4 +1,4 @@
-function s = Sqw_Bosify(s, T, type, options)
+function s = Sqw_Bosify(s, T, type)
 % Sqw_Bosify: apply the 'Bose' factor (detailed balance) to a classical data set.
 %   The initial data set should obey S(q,w) = S(q,-w), i.e. be 'classical'.
 %
@@ -55,7 +55,6 @@ function s = Sqw_Bosify(s, T, type, options)
   if ~isa(s, 'iData'), s=iData(s); end
   if nargin < 2, T = []; end
   if nargin < 3, type=''; end
-  if nargin < 4, options=''; end
 
   % handle array of objects
   if numel(s) > 1
@@ -67,24 +66,24 @@ function s = Sqw_Bosify(s, T, type, options)
     s = sqw;
     return
   end
-
-  if ~strcmp(options, 'checked')
-    s = Sqw_check(s); % in private
-  end
-
+  
   if isempty(s), return; end
+
+  s = iData(s); % back to iData
   
   if isempty(T),  T = Sqw_getT(s); end
   if isempty(type), type='standard'; end
   
   if isempty(T) || T == 0
-    return
+    disp([ mfilename ': WARNING: Using Temperature=300 [K] as it is not found in data set ' s.Tag ' ' s.Title ' from ' s.Source ]);
+    T = 300;
   end
 
   % test if classical
   if isfield(s,'classical') || ~isempty(findfield(s, 'classical'))
     if s.classical == 0
-      disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' does not seem to be classical. It may already contain the Bose factor in which case the detailed balance may be wrong.' ]);
+      disp([ mfilename ': WARNING: Not "classical/symmetric": The data set ' s.Tag ' ' s.Title ' from ' s.Source ' does not seem to be classical.' ]);
+      disp([ mfilename ':   It may ALREADY contain the Bose factor in which case the detailed balance will be wrong.' ]);
     end
   end
   
@@ -126,3 +125,5 @@ function s = Sqw_Bosify(s, T, type, options)
   setalias(s, 'Temperature', T);
   setalias(s, 'QuantumCorrection',type,[ 'Quantum correction applied in ' mfilename ]);
   setalias(s, 'classical', 0);
+  
+  s = iData_Sqw2D(s); % final Sqw2D object

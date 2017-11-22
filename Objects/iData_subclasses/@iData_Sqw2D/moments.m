@@ -1,5 +1,5 @@
 function sigma=moments(data, M, T, classical)
-% moments=moments(sqw, M, T, classical): compute Sqw moments (harmonic frequencies)
+% moments=moments(sqw, M, T, classical): compute Sqw moments/sum rules (harmonic frequencies)
 %
 %   Compute the structure factor (moment 0), recoil energy (moment 1) and the
 %     collective, harmonic and mean energy transfer dispersions.
@@ -24,14 +24,14 @@ function sigma=moments(data, M, T, classical)
 %     when omitted or empty, this is guessed from the data set when possible
 %
 % output:
-%   moments=[ sq M1 wc wl wq M2 M3 M4 ] as iData array
+%   moments=[ sq M1 wc wl wq M2 M3 M4 ] as an iData array
 %
 % Reference: 
 %   Helmut Schober, Journal of Neutron Research 17 (2014) pp. 109
 %   Lovesey, Theory of Neutron Scattering from Condensed Matter, Vol 1, p180 eq. 5.38 (w0)
 %   J-P.Hansen and I.R.McDonald, Theory of simple liquids Academic Press New York 2006.
 %
-% Example: m = moments(iData_Sqw2D('SQW_coh_lGe.nc')))
+% Example: m = moments(iData_Sqw2D('SQW_coh_lGe.nc'))); subplot(m);
 % (c) E.Farhi, ILL. License: EUPL.
 
   sigma = [];

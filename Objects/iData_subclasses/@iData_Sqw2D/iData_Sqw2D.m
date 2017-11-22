@@ -43,7 +43,7 @@ classdef iData_Sqw2D < iData
       if ~nargin, return; end  % empty object
       
       % convert/test
-      m = Sqw_check(s);  
+      if ~isa(s, mfilename), m = Sqw_check(s); else m=s; end
       if ~isa(m, 'iData') || isempty(m) || ndims(m) ~= 2
         error([ mfilename ': the given input ' class(s) ' does not seem to be convertible to iData_Sqw2D.' ])
       end
@@ -61,12 +61,29 @@ classdef iData_Sqw2D < iData
     
     % parameters (search for parameters in iData)
     function parameters = parseparams(s)
-      % iData_Sqw2D: parseparams: search for physical quantities in object
+      % iData_Sqw2D: parseparams: search for physical quantities in object.
       % This search is also done when creating iData_Sqw2D objects.
       [s,parameters,fields] = Sqw_parameters(s);
     end
-    % bosify
+    
+    % bosify: apply Bose factor
+    function sb = Bosify(s, varargin)
+      % iData_Sqw2D: bosify: apply the Bose factor, which adds the temperature effect.
+      sb = Sqw_Bosify(s, varargin{:});
+    end
+    
     % debosify
+    function sdb = deBosify(s, varargin)
+      % iData_Sqw2D: bosify: cancel the Bose factor effect, which removes most of the temperature effect.
+      sdb = Sqw_deBosify(s, varargin{:});
+    end
+    
+    % density of states
+    function d = dos(s, method, n)
+      % iData_Sqw2D: dos: compute the generalised density of states (gDOS)
+      d = sqw_phonon_dos(s, method, n);
+    end
+    
     % structure_factor (sq)
     
     % symmetrize (+/-)

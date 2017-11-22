@@ -89,8 +89,6 @@ function s = Sqw_check(s)
   if ~w_present || ~q_present
     disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ]);
     disp('    does not seem to be an isotropic S(|q|,w) 2D object. Ignoring.');
-disp(' ndims alpha  beta     q     w     t angle')
-disp([ ndims(s) alpha_present beta_present q_present w_present t_present a_present ]);
     s = [];
     return
   end
