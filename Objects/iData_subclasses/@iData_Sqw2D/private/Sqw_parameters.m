@@ -1,5 +1,8 @@
 function  [s,parameters,fields] = Sqw_parameters(s, fields)
-% [s,p,fields] = Sqw_parameters(s,type): search for parameter values in a Sqw/Sab data set
+% [s,p,fields] = Sqw_parameters(s,type): search for parameter values in a S(q,w) data set
+%
+% iData_Sqw2D: Sqw_parameters: search for physical quantities in object.
+%   This search is also done when creating iData_Sqw2D objects.
 %
 % input:
 %   s: any iData object, including S(q,w) and S(alpha,beta) ones.

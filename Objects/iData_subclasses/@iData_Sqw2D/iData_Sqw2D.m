@@ -65,25 +65,7 @@ classdef iData_Sqw2D < iData
       % This search is also done when creating iData_Sqw2D objects.
       [s,parameters,fields] = Sqw_parameters(s);
     end
-    
-    % bosify: apply Bose factor
-    function sb = Bosify(s, varargin)
-      % iData_Sqw2D: bosify: apply the Bose factor, which adds the temperature effect.
-      sb = Sqw_Bosify(s, varargin{:});
-    end
-    
-    % debosify
-    function sdb = deBosify(s, varargin)
-      % iData_Sqw2D: bosify: cancel the Bose factor effect, which removes most of the temperature effect.
-      sdb = Sqw_deBosify(s, varargin{:});
-    end
-    
-    % density of states
-    function d = dos(s, method, n)
-      % iData_Sqw2D: dos: compute the generalised density of states (gDOS)
-      d = sqw_phonon_dos(s, method, n);
-    end
-    
+
     % structure_factor (sq)
     
     % symmetrize (+/-)

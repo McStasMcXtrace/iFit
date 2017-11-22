@@ -4,6 +4,9 @@ function [s,fig] = commandhistory(a, fig)
 %   @iData/commandhistory shows the list of commands that have been used to
 %   produce the current iData object.
 %
+% a=commandhistory(a, message)
+%   adds a message to the command history and update the current object
+%
 % input:  s: object or array (iData)
 % output: b: command history (char/cell)
 % ex:     b=commandhistory(a);
@@ -15,6 +18,13 @@ function [s,fig] = commandhistory(a, fig)
 if nargin == 2 && ishandle(fig)
   s=commandhistory_export(fig);
   return
+elseif ischar(fig)
+  % add a command to the history
+  a = iData_private_history(a, fig);
+  s = a;
+  if ~isempty(inputname(1))
+    assignin('caller',inputname(1),a); % update in original object
+  end
 end
 
 % handle input iData arrays

@@ -1,10 +1,9 @@
-function s = Sqw_Bosify(s, T, type)
-% Sqw_Bosify: apply the 'Bose' factor (detailed balance) to a classical data set.
+function s = Bosify(s, T, type)
+% Bosify: apply the 'Bose' factor (detailed balance) to a classical data set.
+%
+% iData_Sqw2D: bosify: apply the Bose factor, which adds a temperature effect.
 %   The initial data set should obey S(q,w) = S(q,-w), i.e. be 'classical'.
-%
-%  The S(q,w) is a dynamic structure factor aka scattering function.
-%
-%  Sqw_Bosify(Sqw, 0) makes a check of the input data set and returns.
+%   The S(q,w) is a dynamic structure factor aka scattering function.
 %
 % input:
 %   s: Sqw data set (classical, symmetric in energy, no T Bose factor)
@@ -17,7 +16,7 @@ function s = Sqw_Bosify(s, T, type)
 % omega = Ei-Ef = energy lost by the neutron, given in [meV]
 %    omega > 0, neutron looses energy, can not be higher than Ei (Stokes)
 %    omega < 0, neutron gains energy, anti-Stokes
-% Egelstaff, Eq (9.25) p189
+% Egelstaff, Eq (9.25) p189,  where Q(w) is defined below:
 %    S(q,-w) = exp(-hw/kT) S(q,w)
 %    S(q,w)  = exp( hw/kT) S(q,-w)
 %    S(q,w)  = Q(w) S*(q,w) with S*=classical limit
@@ -46,13 +45,11 @@ function s = Sqw_Bosify(s, T, type)
 %    Monographs on Atomic, Molecular, and Chemical Physics, Vol. 2,
 %    Cambridge Univ. Press: London (1993).
 %
-% Example: s = Sqw_Bosify(s, 300);
+% Example: s=iData_Sqw2D('SQW_coh_lGe.nc'); sb=Bosify(s, 300);
 %
-% See also: Sqw_deBosify, Sqw_symmetrize, Sqw_dynamic_range, Sqw_scatt_xs
+% See also: deBosify, symmetrize, Sqw_dynamic_range, Sqw_scatt_xs
 % (c) E.Farhi, ILL. License: EUPL.
 
-  if nargin == 0, return; end
-  if ~isa(s, 'iData'), s=iData(s); end
   if nargin < 2, T = []; end
   if nargin < 3, type=''; end
 
@@ -68,7 +65,6 @@ function s = Sqw_Bosify(s, T, type)
   end
   
   if isempty(s), return; end
-
   s = iData(s); % back to iData
   
   if isempty(T),  T = Sqw_getT(s); end

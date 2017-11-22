@@ -82,13 +82,14 @@ function s=Sqw_symmetrize(s)
       end
     end
     clear m
-    
-    return
+  else
+    % create a new object with an opposite energy axis
+    s     = combine(s, setaxis(s, 1, -s{1}));
   end
   
-  % create a new object with an opposite energy axis
+  
 
   % final object (and merge common area)
-  s     = combine(s, setaxis(s, 1, -s{1}));
-  s     = iData(Sqw2D(s);
+  
+  s     = iData_Sqw2D(s);
   

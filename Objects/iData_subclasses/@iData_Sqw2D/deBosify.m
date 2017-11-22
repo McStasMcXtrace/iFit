@@ -1,8 +1,10 @@
-function s = Sqw_deBosify(s, T, type)
-% Sqw_deBosify: remove Bose factor (detailed balance) from an 'experimental' data set.
-%  In principle the resulting data set is 'classical' that is S(q,w) = S(q,-w)
+function s = deBosify(s, T, type)
+% deBosify: remove Bose factor (detailed balance) from an 'experimental' data set.
 %
-%  The S(q,w) is a dynamic structure factor aka scattering function.
+% iData_Sqw2D: bosify: cancel the Bose factor effect, which removes most of the 
+%   temperature effect. In principle the resulting data set is 'classical' that 
+%   is S(q,w) = S(q,-w)
+% The S(q,w) is a dynamic structure factor aka scattering function.
 %
 % input:
 %   s: Sqw data set (non classical, including T Bose factor e.g from experiment)
@@ -34,19 +36,17 @@ function s = Sqw_deBosify(s, T, type)
 %  Bose factor: n(w) = 1./(exp(w*11.605/T) -1) ~ exp(-w*11.605/T)
 %               w in [meV], T in [K]
 %
-% Example: s = Sqw_deBosify(s, 300);
+% Example: s=iData_Sqw2D('SQW_coh_lGe.nc'); sb=Bosify(s, 300); s0=deBosify(sb);
 %
-% See also: Sqw_Bosify, Sqw_symmetrize, Sqw_dynamic_range, Sqw_scatt_xs
+% See also: Bosify, symmetrize, Sqw_dynamic_range, Sqw_scatt_xs
 % (c) E.Farhi, ILL. License: EUPL.
-
-  if nargin == 0, return; end
-  if ~isa(s, 'iData'), s=iData(s); end
   
   if nargin < 2, T = []; end
   if nargin < 3, type=''; end
   if isempty(type), type='standard'; end
   
-  s = Sqw_Bosify(s, -T, type);
   setalias(s, 'classical', 1);
+  s = Bosify(s, -T, type);
+  
 
   

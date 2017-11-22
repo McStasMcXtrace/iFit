@@ -1,5 +1,5 @@
-function DOS = sqw_phonon_dos(s, method, n)
-% sqw_phonon_dos: compute the generalised density of states (gDOS)
+function DOS = dos(s, method, n)
+% iData_Sqw2D: dos: compute the generalised density of states (gDOS)
 %
 %  The routine can be used for 2D data sets.
 %    when used on 2D data sets and models S(|q|,w), the gDOS is computed.
@@ -16,9 +16,9 @@ function DOS = sqw_phonon_dos(s, method, n)
 %    taken with great care, as this formalism then does not fully hold.
 %
 %  The method to use in the gDOS computation can be given as 2nd argument
-%       gDOS = sqw_phonon_dos(Sqw, 'Carpenter')
-%       gDOS = sqw_phonon_dos(Sqw, 'Bellisent')
-%       gDOS = sqw_phonon_dos(Sqw, 'Bredov') better for coherent scatterers
+%       gDOS = dos(Sqw, 'Carpenter')
+%       gDOS = dos(Sqw, 'Bellisent')
+%       gDOS = dos(Sqw, 'Bredov') better for coherent scatterers
 %
 % input:
 %   s: Sqw data set e.g. 2D data set with w as 1st axis (rows, meV), q as 2nd axis (Angs-1).
