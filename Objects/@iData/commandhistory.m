@@ -15,16 +15,17 @@ function [s,fig] = commandhistory(a, fig)
 % See also iData, iData/disp, iData/display
 
 % syntax for CloseRequest callback from the listdlg
-if nargin == 2 && ishandle(fig)
-  s=commandhistory_export(fig);
-  return
-elseif ischar(fig)
+if nargin == 2 && ischar(fig)
   % add a command to the history
   a = iData_private_history(a, fig);
   s = a;
   if ~isempty(inputname(1))
     assignin('caller',inputname(1),a); % update in original object
   end
+  return
+elseif nargin == 2 && ishandle(fig)
+  s=commandhistory_export(fig);
+  return
 end
 
 % handle input iData arrays

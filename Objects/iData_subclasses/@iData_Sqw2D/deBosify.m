@@ -45,7 +45,6 @@ function s = deBosify(s, T, type)
   if nargin < 3, type=''; end
   if isempty(type), type='standard'; end
   
-  setalias(s, 'classical', 1);
   s = Bosify(s, -T, type);
   
 
