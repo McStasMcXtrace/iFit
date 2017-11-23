@@ -78,39 +78,34 @@ function s = Bosify(s0, T, type)
   
   if isempty(s0), return; end
   s = copyobj(iData(s0)); % back to iData
+  if strfind(lower(type),'debosify')
+       do_bosify=0;
+       type = strtrim(strrep(lower(type), 'debosify','')); % remove debosify occurence
+  else do_bosify=1; end
 
-% define the fallback Temperature to use
-  if isempty(T),    T0 = Sqw_getT(s); else T0=T; end  
-  if isempty(T) && (isempty(T0) || T0 == 0)
-    T0 = 300;
-  end
-  
-  % adapt the Temperature to the type of classical/quantum
-  if ~isempty(T0) && ...
-    (isfield(s,'classical') || ~isempty(findfield(s, 'classical')))
-    if     s.classical == 1,     T0= abs(T0);
-    elseif s.classical == 0,     T0=-abs(T0); end
-  end
+  % define the fallback Temperature to use
+  if isempty(T) || T == 0
+    T0 = Sqw_getT(s); 
+    if (isempty(T0) || T0 == 0)
+      T0 = 300;
+    end
+    disp([ mfilename ': WARNING: Using Temperature=' num2str(T0) ' [K] for data set ' s.Tag ' ' s.Title ' from ' s.Source ]);
+    T=T0;
+  else T0=T; end  
   
   % when not given use the T from the data set.
-  if isempty(T)
-    T=T0; 
-    if isfield(s,'classical') || ~isempty(findfield(s, 'classical'))
-      if s.classical, t='classical'; else t='quantum'; end
-      if T0<0, d='de'; else d=''; end
-      disp([ d mfilename ': WARNING: Using Temperature=' num2str(abs(T0)) ' [K] for ' t ' data set ' s.Tag ' ' s.Title ' from ' s.Source ]);
-    end
-  end
   if isempty(T) || T == 0
-    error([ mfilename ': WARNING: Undefined Temperature in data set ' s.Tag ' ' s.Title ' from ' s.Source ]);
+    error([ mfilename ': ERROR: Undefined Temperature in data set ' s.Tag ' ' s.Title ' from ' s.Source ]);
   end
 
-  % test if classical and T agree: 
+  % test if classical/quantum and bosify/debosify agree
   if isfield(s,'classical') || ~isempty(findfield(s, 'classical'))
-    if (s.classical == 0 && T > 0)
+    % Bosify   must be applied on classical
+    % deBosify must be applied on quantum
+    if (s.classical == 0 && do_bosify)
       disp([ mfilename ': WARNING: Not "classical/symmetric": The data set ' s.Tag ' ' s.Title ' from ' s.Source ' does not seem to be classical (classical=0).' ]);
       disp([ mfilename ':   It may ALREADY contain the Bose factor in which case the detailed balance will be wrong.' ]);
-    elseif (s.classical == 1 && T < 0)
+    elseif (s.classical == 1 && ~do_bosify)
       disp([ 'de' mfilename ': WARNING: Not "quantum": The data set ' s.Tag ' ' s.Title ' from ' s.Source ' seems to be classical/symmetric (classical=1).' ]);
       disp([ 'de' mfilename ':   The Bose factor may NOT NEED to be removed in which case the detailed balance will be wrong.' ]);
     end
@@ -136,11 +131,11 @@ function s = Bosify(s0, T, type)
   if strcmpi(type, 'Schofield') || strcmpi(type, 'exp') || strcmpi(type, 'Boltzmann') 
     % P. Schofield. Phys. Rev. Lett., 4, 239 (1960).
     Q  = exp(hw_kT/2);          
-  elseif strcmpi(type, 'harmonic') || strcmpi(type, 'Bader')
+  elseif strcmpi(type, 'Harmonic') || strcmpi(type, 'Bader')
     % J. S. Bader and B. J. Berne. J. Chem. Phys., 100, 8359 (1994).
     % T. D. Hone and G. A. Voth. J. Chem. Phys., 121, 6412 (2004).
     Q  = hw_kT./(1-exp(-hw_kT));  % w*(1+n(w))
-  elseif strcmpi(type, 'standard') || strcmpi(type, 'Frommhold')
+  elseif strcmpi(type, 'Standard') || strcmpi(type, 'Frommhold')
     % L. Frommhold. Collision-induced absorption in gases, 1 st ed., Cambridge
     %   Monographs on Atomic, Molecular, and Chemical Physics, Vol. 2,
     %   Cambridge Univ. Press: London (1993).
@@ -149,16 +144,17 @@ function s = Bosify(s0, T, type)
     error([ mfilename 'Unknown semi-classical correction ' type ]);
   end
   Q(find(s{1}==0)) = 1;
+  if ~do_bosify, Q = 1./Q; end
   s         = s .* Q;  % apply detailed balance with the selected correction
   
   setalias(s, 'Temperature', abs(T));
   setalias(s, 'QuantumCorrection',type,[ 'Quantum correction applied in ' mfilename ]);
-  if T> 0 % Bosify
+  if do_bosify % Bosify
     setalias(s, 'classical', 0, 'This is a quantum S(q,w) with Bose factor');
     s = commandhistory(s, sprintf('Bosify(%s,%g,''%s'')', s0.Tag,T,type));
-  elseif T< 0 % deBosify
+  elseif ~do_bosify % deBosify
     setalias(s, 'classical', 1, 'This is a classical/symmetric S(q,w) without Bose factor');
-    s = commandhistory(s, sprintf('deBosify(%s,%g,''%s'')', s0.Tag, -T,type));
+    s = commandhistory(s, sprintf('deBosify(%s,%g,''%s'')', s0.Tag, T,type));
   end
   
   s = iData_Sqw2D(s); % final Sqw2D object

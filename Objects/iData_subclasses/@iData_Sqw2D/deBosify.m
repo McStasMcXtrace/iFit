@@ -45,7 +45,7 @@ function s = deBosify(s, T, type)
   if nargin < 3, type=''; end
   if isempty(type), type='standard'; end
   
-  s = Bosify(s, -T, type);
+  s = Bosify(s, T, [ type ' debosify' ]);
   
 
   
