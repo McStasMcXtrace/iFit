@@ -87,7 +87,7 @@ function s = Bosify(s0, T, type)
   if isempty(T) || T == 0
     T0 = Sqw_getT(s); 
     if (isempty(T0) || T0 == 0)
-      T0 = 300;
+      T0 = 293;
     end
     disp([ mfilename ': WARNING: Using Temperature=' num2str(T0) ' [K] for data set ' s.Tag ' ' s.Title ' from ' s.Source ]);
     T=T0;

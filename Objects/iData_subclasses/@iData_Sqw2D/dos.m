@@ -66,20 +66,28 @@ function DOS = dos(s, method, n)
   if isfield(s,'classical') || ~isempty(findfield(s, 'classical'))
     if s.classical == 1
       disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' seems to be classical.' ])
-      disp('  The gDOS computation may be wrong. Apply bosify first.');
+      disp('  The gDOS computation may be wrong. Now using method=''Bellisent'', or apply Bosify first.');
+      method = 'Bellisent';
     end
   end
   
   % compute g(q,w) aka P(alpha,beta) -------------------------------------------
   yl=getaxis(s, '1');
   xl=getaxis(s, '2');
-  w= s{1}; 
+  w= s{1};
+  
+  T = Sqw_getT(s);
+  if isempty(T) && isempty(strfind(method, 'Bellisent'))
+    disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source  ])
+    disp(['    has no Temperature defined. Using method=''Bellisent''' ])
+    method = 'Bellisent';
+  end
   
   switch lower(method)
-  case {'carpenter','price'}
-    g = sqw_phonon_dos_Carpenter(s);
+  case {'carpenter','price'}          
+    g = sqw_phonon_dos_Carpenter(s, T);  % requires Temperature 
   case 'bredov'
-    g = sqw_phonon_dos_Bredov(s);
+    g = sqw_phonon_dos_Bredov(s, T);     % requires Temperature (call Carpenter)
   otherwise % 'bellisent'
     method = 'Bellisent';
     g = sqw_phonon_dos_Bellisent(s);
@@ -120,7 +128,7 @@ function DOS = dos(s, method, n)
   DOS.Label=[ 'gDOS ' method ];
 
 % ------------------------------------------------------------------------------
-function g = sqw_phonon_dos_Carpenter(s)
+function g = sqw_phonon_dos_Carpenter(s, T)
 % See e.g.: Boatner et al, PRB 56 (1997) 11584
 %           Price J. et al, Non Cryst Sol 92 (1987) 153
 %           J. M. Carpenter and C. A. Pelizarri, Phys. Rev. B 12, 2391 (1975)
@@ -133,12 +141,6 @@ function g = sqw_phonon_dos_Carpenter(s)
 
   hw= s{1}; 
   q = s{2};
-  T = Sqw_getT(s);
-  if isempty(T)
-    T = 293;
-    disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source  ])
-    disp(['    has no temperature defined. Using T=' num2str(T) ' K' ])
-  end
   beta    = -11.605*hw/T;
   n = 1./(exp(beta) - 1);
   n(~isfinite(n)) = 0;
@@ -157,14 +159,14 @@ function g = sqw_phonon_dos_Bellisent(s)
   
   g = s.*hw.^2./q.^2;
 
-function g = sqw_phonon_dos_Bredov(s)
+function g = sqw_phonon_dos_Bredov(s, T)
 % See e.g.: Suck et al, Journal of Alloys and Compounds 342 (2002) 314
 %           M. M. Bredov et al., Sov. Phys. Solid State 9, 214 (1967).
 %
 % g(w) = Ei w./(n(w)+1)/(q_max^4-q_min^4)
 %        * \int_{theta_min -> theta_max} exp(2*W) kf/ki S(q,w) sin(theta) dtheta
 
-  g = sqw_phonon_dos_Carpenter(s);
+  g = sqw_phonon_dos_Carpenter(s,T);
   q = s{2};
   % for each energy, we get the min and max which can be measured
   % requires to know the incident energy.
@@ -226,7 +228,6 @@ function sqw_phonon_dos_test4D(s)
     end
     return
   end
-end
 
 
 function [DOS, DOS_partials, gDOS, s] = sqw_phonon_dos_4D(s, n)
