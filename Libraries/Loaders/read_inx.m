@@ -44,12 +44,12 @@ FID = fopen(filename);
 
 if FID == -1, 
   error([mfilename ': ERROR: File: ',filename,' not found!']);
-end,
+end
 %----------store-parameters-and-matrix-in-variables----------------
 kk=1;
 while (1)
    if feof(FID), break;end,
-   Dummy      = fgetl(FID);
+   Dummy      = fgetl(FID); % line 1
    header     = Dummy;
    Dummy      = str2num(Dummy);
    if isempty(Dummy)
@@ -57,12 +57,12 @@ while (1)
      return
    end
    Npoints    = Dummy(length(Dummy));
-   Dummy      = fgetl(FID);
+   Dummy      = fgetl(FID); % line 2= title
    header     = strvcat(header,Dummy);
-   Dummy      = fgetl(FID);
+   Dummy      = fgetl(FID); % line 3
    header     = strvcat(header,Dummy);
    Dummy      = str2num(Dummy);
-   Dummy2     = fgetl(FID);   
+   Dummy2     = fgetl(FID); % line 4
    header     = strvcat(header,Dummy2);
    s.header(:,:,kk)  =  header; 
    s.Par(kk,:)    = [Dummy,str2num(Dummy2)];
