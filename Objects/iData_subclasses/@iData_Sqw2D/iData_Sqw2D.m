@@ -9,21 +9,31 @@ classdef iData_Sqw2D < iData
   %
   % methods(iFunc_Sqw4D)
   %   all iFunc methods can be used.
-  % iData_Sqw2D(a)
+  % iData_Sqw2D(s)
   %   convert input [e.g. a 2D iData object] into an iData_Sqw2D to give access to
   %   the methods below.
-  % d = dos(a)
-  %   Compute the generalized vibrational density of states (gDOS)
-  % t = thermochemistry(a)
-  %   Compute and display thermochemistry quantities
+  % d = dos(s)
+  %   Compute the generalized vibrational density of states (gDOS).
+  % t = thermochemistry(s)
+  %   Compute and display thermochemistry quantities.
+  % m = moments(s)
+  %   Compute the S(q,w) moments/sum rules (harmonic frequencies).
+  % sym = symmetrize(s)
+  %   Extend the S(|q|,w) in both energy sides.
+  % sb = Bosify(s)
+  %   Apply the 'Bose' factor (detailed balance) to a classical data set.
+  % s  = deBosify(sb)
+  %   Remove Bose factor (detailed balance) from an 'experimental/quantum' data set.
+  % p = parseparams(s)
+  %   Search for physical quantities in S(q,w) data set.
   %
   % input:
   %   can be an iFunc or struct or any set of parameters to generate a Sqw4D object.
   %   when not given an iFunc, the parameters to sqw_phonons are expected.
   %
-  % output: an iFunc_Sqw4D object
+  % output: an iData_Sqw2D object
   %
-  % See also: sqw_phonons, sqw_cubic_monoatomic, iFunc
+  % See also: iData
 
   properties
   end
@@ -82,7 +92,7 @@ classdef iData_Sqw2D < iData
     % g(r) pdf
     
     function f = iData(self)
-      % iData_Sqw2D: convert a single iData_Sqw2D back to iData
+      % iData_Sqw2D: iData: convert a single iData_Sqw2D back to iData
       f = iData;
       self = struct(self);
       w = warning('query','iData:subsasgn');
@@ -91,6 +101,38 @@ classdef iData_Sqw2D < iData
         f.(p{1}) = self.(p{1}); % generates a warning when setting Alias
       end
       warning(w);
+    end
+    
+    function spe = q2phi(self)
+      % iData_Sqw2D: q2phi: convert a S(q,w) into a S(phi,w) iData
+      spe = Sqw_q2phi(self);
+    end
+    
+    function f = saveas(self, varargin)
+      % iData_Sqw2D: saveas: save S(q,w) into a file.
+      % all iData.saveas formats are available, and in addition:
+      %
+      %   McStas (for Isotropic_Sqw component)
+      %   INX (MuPhoCor)
+      %   SPE (MSlice)
+      %
+      if numel(varargin) >= 2
+        switch lower(varargin{2})
+        case {'mcstas','sqw'}
+          f = Sqw_McStas(self, varargin{1});
+        case 'inx'
+          spe = Sqw_q2phi(self);  % S(phi, w)
+          f = write_inx(spe, varargin{1});
+        case 'spe'
+          spe = Sqw_q2phi(self);  % S(phi, w)
+          f = write_spe(spe, varargin{1});
+        otherwise
+          f = saveas@iData(self, varargin{:});
+        end
+      else
+        f = saveas@iData(self, varargin{:});
+      end
+      
     end
     
   end

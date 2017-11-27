@@ -150,7 +150,7 @@ function s = Bosify(s0, T, type)
   setalias(s, 'Temperature', abs(T));
   setalias(s, 'QuantumCorrection',type,[ 'Quantum correction applied in ' mfilename ]);
   if do_bosify % Bosify
-    setalias(s, 'classical', 0, 'This is a quantum S(q,w) with Bose factor');
+    setalias(s, 'classical', 0, 'This is a experimental/quantum S(q,w) with Bose factor');
     s = commandhistory(s, sprintf('Bosify(%s,%g,''%s'')', s0.Tag,T,type));
   elseif ~do_bosify % deBosify
     setalias(s, 'classical', 1, 'This is a classical/symmetric S(q,w) without Bose factor');
