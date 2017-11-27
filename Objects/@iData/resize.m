@@ -19,7 +19,7 @@ dims = [];
 for index=1:length(varargin)
   dims = [ dims varargin{index} ];
 end
-if isempty(dims), return; end
+if isempty(dims), dims=size(a); end
 
 % handle iData array: use built-in reshape
 if numel(a) > 1

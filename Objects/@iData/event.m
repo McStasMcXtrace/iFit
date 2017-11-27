@@ -50,10 +50,30 @@ if ndims(a) > 2 || size(a, 2) > 20
   % case: we have an histogram (not a single vector)
   
   % create an object with meshgrid type axes plus Signal
-  b = meshgrid(a);
+  
+  % we test if the axes are all grids with same size as the signal.
+  % In this case we just need to reshape all of the stuf as long vectors
+  sig = getaxis(a, 0); sig = numel(sig);
+  flag = false;
   for index=1:ndims(a)
-    x = getaxis(b, index);
-    b = setaxis(b, index, x(:));
+    x = getaxis(a, index);
+    if numel(x) ~= sig
+      flag = true;  % need to meshgrid
+      break
+    end
+  end
+  
+  if flag % need to meshgrid
+    b = meshgrid(a,'grid');
+  else
+    b = copyobj(a);
+  end
+  for index=1:ndims(a)
+    x = getaxis(a, index);
+    xl= a.Alias.Axis{index};
+    if ~ischar(xl), xl = sprintf('Axis_%i', index); end
+    b = setalias(b, [ xl '_event' ], x(:));
+    setaxis(b, index, [ xl '_event' ]);
   end
   % handle Signal, Error and Monitor
   x = get(b, 'Signal'); 
