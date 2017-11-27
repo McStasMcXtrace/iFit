@@ -42,6 +42,7 @@ function [filename,format] = save(a, varargin)
 %           'hdf4' save as an HDF4 image
 %           'hdr'  save as HDR/IMG Analyze MRI volume (3D/4D)
 %           'html' save as Hypertext Markup Language document, appended to any existing document.
+%           'inx'  save as an ILL Inelastic Neutron Scattering data (only 2D neutron)
 %           'json' save as JSON JavaScript Object Notation, ascii
 %           'kml'  save as KML GoogleEarth model
 %           'mrc'  save as MRC map file (3/4D)
@@ -51,6 +52,8 @@ function [filename,format] = save(a, varargin)
 %           'ppm','pgm','pbm'
 %           'off'  save as Object File Format (geometry), ascii
 %           'ply'  save as PLY (geometry), ascii
+%           'spe'  save as ISIS SPE (Mslice/Horace)
+%           'sqw'  save as McStas SQW Isotropic S(q,w)
 %           'stl'  save as STL stereolithography (geometry), binary
 %           'stla' save as STL stereolithography (geometry), ascii
 %           'svg'  save as Scalable Vector Graphics (SVG) format
