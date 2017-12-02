@@ -35,45 +35,48 @@ if numel(a) > 1
 end
 % make sure axes are regularly binned
 a = interp(a);
+% compute the FFT
+s = get(a, 'Signal');
+e = get(a, 'Error');
+% rearrange frequency domain for iFFT op when axes are symmetric
+if strcmp(op, 'ifft')
+  flag = true;
+  for index=1:ndims(a)
+    x = getaxis(a, index); x=unique(x(:));
+    dx= mean(diff(x)); % step
+    if abs(max(x) + min(x)) > 2*dx
+      flag = false; break;
+    end
+  end
+  if flag
+    s = ifftshift(s);
+    e = ifftshift(e);
+  end
+end
 
 % Find smallest power of 2 that is > Ly
 Ly=size(a);
 for i=1:length(Ly)         
   NFFT(i)=pow2(nextpow2(Ly(i)));
 end
-% compute the FFT
-s = get(a, 'Signal');
-e = get(a, 'Error');
 
 % Fast Fourier transform (pads with zeros up to the next power of 2)
 if length(dim), dim=dim(1); end
-S = ftt_doop(s, Ly, dim, op, NFFT);
-if any(abs(e))
-  E = ftt_doop(e, Ly, dim, op, NFFT)
+S = ftt_doop(s, Ly, dim, op, NFFT); % also scales FFT
+if any(abs(e(:)))
+  E = ftt_doop(e, Ly, dim, op, NFFT);
 else
-  E=0;
+  E = 0;
 end
 
-% restrict to the first half (FFT is wrapped)
-R.type='()';
-for i=1:length(NFFT)
-  if strcmp(op, 'fft')
-    R.subs{i} = 1:ceil(NFFT(i)/2);
-  else
-    R.subs{i} = 1:ceil(NFFT(i));
-  end
-end
-S=subsref(S,R);
-if any(abs(e))
-  E=subsref(E,R);
-end
-if ~strcmp(op, 'fft')
-  S=S*2;
-  E=E*2;
+% rearrange frequency domain for FFT op
+if strcmp(op, 'fft')
+  S = fftshift(S);
+  E = fftshift(E);
 end
 
 % update object
-b = copyobj(a);
+b  = copyobj(a);
 cmd=a.Command;
 [dummy, sl] = getaxis(a, '0');
 Data = a.Data;
@@ -86,15 +89,36 @@ if ndims(a) == 1
 end
 % new axes
 for index=1:ndims(a)
-  x = getaxis(a, index);
-  x = unique(x);
-  x = mean(diff(x));
+  t = getaxis(a, index);
+  t = unique(t(:));
+  dt= mean(diff(t)); % = (max(x)-min(x))/(length(x)-1)
+  
   if strcmp(op, 'fft')
-    f = 1/x/2*linspace(0,1,NFFT(index)/2);
+    
+    f = (-NFFT(index)/2:NFFT(index)/2-1)/(length(t)-1)/dt; % reciprocal axis
+    % store the initial axis in case we need it for an ifft
+    Data=setfield(Data,[ 'axis_reciprocal' num2str(index) ], t);
   else
-    f = 1/x*linspace(0,1,NFFT(index));
+    % reconstructing the real axis is problematic from a frequency spectra, as
+    % the spectra does not depend on the initial axis. We can only recover the
+    % real axis sampling step.
+    %
+    % to solve this issue, we look in the object for some previously defined
+    % and then build the new axis from it.
+    if isfield(Data, [ 'axis_reciprocal' num2str(index) ])
+      f0 = getfield(Data, [ 'axis_reciprocal' num2str(index) ]);
+      N0 = length(f0);
+      Data=rmfield(Data,[ 'axis_reciprocal' num2str(index) ]);
+    else f0 = 0; N0 = length(t); end
+    f = (-NFFT(index)/2:NFFT(index)/2-1)/(N0-1)/dt; % reciprocal axis
+    % the ifft only provides the interval, not the starting axis value. We look if such a value has been stored there during any previous 'fft' step
+    f = f-f(1)+f0(1);
+    % rescale the ifft to the initial amplitude, as the length of the fft can
+    % be different from the inital data
+    S = S*N0/prod(NFFT(index));
   end
   Data=setfield(Data,[ 'axis' num2str(index) ], f);
+  
 end
 b.Data = Data;
 
