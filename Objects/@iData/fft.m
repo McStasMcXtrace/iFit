@@ -47,33 +47,9 @@ e = get(a, 'Error');
 
 % Fast Fourier transform (pads with zeros up to the next power of 2)
 if length(dim), dim=dim(1); end
-if strcmp(op, 'fft')
-  if dim ==0
-    S=fftn(s, NFFT)/prod(Ly);
-  else
-    S=fft(s, NFFT(dim), dim)/Ly(dim);
-  end
-else
-  if dim ==0
-    S=ifftn(s, NFFT)*prod(Ly);
-  else
-    S=ifft(s, NFFT(dim), dim)/Ly(dim);
-  end
-end
+S = ftt_doop(s, Ly, dim, op, NFFT);
 if any(abs(e))
-  if strcmp(op, 'fft')
-    if dim ==0
-      E=fftn(e, NFFT)*prod(Ly);
-    else
-      E=fft(e, NFFT(dim), dim)/Ly(dim);
-    end
-  else
-    if dim ==0
-      E=ifftn(e, NFFT)*prod(Ly);
-    else
-      E=ifft(e, NFFT(dim), dim)/Ly(dim);
-    end
-  end
+  E = ftt_doop(e, Ly, dim, op, NFFT)
 else
   E=0;
 end
@@ -132,13 +108,28 @@ b = setalias(b, 'Signal', S, [  op '(' sl ')' ]);
 rmaxis (b);
 for index=1:ndims(a)
   [def, lab]= getaxis(a, num2str(index));
-  if isempty(lab), lab=[ 'axis' num2str(index) ' frequency' ];
-  else
-    lab=[ lab ' frequency' ];
+  if isempty(lab), lab=[ '1/[axis' num2str(index) '] frequency' ];
+  else             lab=[ '1/[' lab '] frequency' ];
   end
   b=setalias(b,[ 'axis' num2str(index) ], [ 'Data.axis' num2str(index) ], lab);
   b=setaxis (b, index, [ 'axis' num2str(index) ]);
 end  
 b.Command=cmd;
 b = iData_private_history(b, op, a);  
+
+% ------------------------------------------------------------------------------
+function S = ftt_doop(s, Ly, dim, op, NFFT)
+  if strcmp(op, 'fft')
+    if dim ==0
+      S=fftn(s, NFFT)/prod(Ly);
+    else
+      S=fft(s, NFFT(dim), dim)/Ly(dim);
+    end
+  else  % ifft
+    if dim ==0
+      S=ifftn(s, NFFT)*prod(Ly);
+    else
+      S=ifft(s, NFFT(dim), dim)*Ly(dim);
+    end
+  end
 
