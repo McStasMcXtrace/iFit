@@ -1,38 +1,24 @@
-function [DOS, DOS_partials] = sqw_phonon_dos(s, method, n)
-% sqw_phonon_dos: compute the density of states (gDOS or vDOS)
+function DOS = dos(s, method, n)
+% iData_Sqw2D: dos: compute the generalised density of states (gDOS)
 %
-%  The routine can be used for 2D and 4D models and data sets.
-%    when used on 4D data sets and models S(HKL,w), the vDOS is computed.
+%  The routine can be used for 2D data sets.
 %    when used on 2D data sets and models S(|q|,w), the gDOS is computed.
 %
-%  ================================ 4D case ====================================
-%    DOS = sqw_phonon_dos(s)    returns the vibrational density of states (vDOS)
-%      the vDOS and the partials per mode are also stored in the UserData.
-%    DOS = sqw_phonon_dos(s, n) does the same with n-bins on the vDOS (n=100)
-%    when the DOS has already been computed, it is used as is. To force a
-%    recomputation, set:
-%      s.UserData.DOS=[];
-%    to smooth the resulting distribution, use:
-%      sDOS = smooth(DOS); plot(sDOS);
-%  
-%  ================================ 2D case ====================================
 %  The gDOS is an approximation of the vibrational spectra (DOS).
 %  This routine should be applied on an incoherent dynamic S(q,w) data set.
 %  The S(q,w) is a dynamic structure factor aka scattering function.
 %
-%       gDOS(q,w) = S(q,w) w/q2 [1 - exp(-hw/kT)] [Carpenter/Price]
+%       gDOS(q,w) = S(q,w) w/q^2 [1 - exp(-hw/kT)] [Carpenter/Price]
+%  and:
+%       gDOS(w)   = lim(q->0) [ gDOS(q,w) ]
 %
 %  The applicability to a coherent dynamic structure factor S(q,w) should be
-%    taken with great care, as this formalism then does not hold.
+%    taken with great care, as this formalism then does not fully hold.
 %
 %  The method to use in the gDOS computation can be given as 2nd argument
-%       gDOS = sqw_phonon_dos(Sqw, 'Carpenter')
-%       gDOS = sqw_phonon_dos(Sqw, 'Bellisent')
-%       gDOS = sqw_phonon_dos(Sqw, 'Bredov') better for coherent scatterers
-%
-%  The gDOS(w) is obtained by extracting the low momentum values out of gDOS(q,w).
-%  The syntax is:
-%       [g(w), g(q,w)]=sqw_phonon_dos(Sqw, method, n)
+%       gDOS = dos(Sqw, 'Carpenter')
+%       gDOS = dos(Sqw, 'Bellisent')
+%       gDOS = dos(Sqw, 'Bredov') better for coherent scatterers
 %
 % input:
 %   s: Sqw data set e.g. 2D data set with w as 1st axis (rows, meV), q as 2nd axis (Angs-1).
@@ -53,12 +39,10 @@ function [DOS, DOS_partials] = sqw_phonon_dos(s, method, n)
 %         Suck et al, Journal of Alloys and Compounds 342 (2002) 314
 %         Bredov et al., Sov. Phys. Solid State 9, 214 (1967)
 %
-% Example: Sqw=iData('SQW_coh_lGe.nc'); g = sqw_phonon_dos(Sqw_Bosify(Sqw_symmetrize(Sqw))); plot(g);
+% Example: Sqw=iData_Sqw2D('SQW_coh_lGe.nc'); g = dos(bosify(symmetrize(Sqw))); plot(g);
 % (c) E.Farhi, ILL. License: EUPL.
 
-  DOS=[]; DOS_partials=[];
-  if nargin == 0, return; end
-  
+  DOS=[];  
   if nargin < 2, method = []; end
   if nargin < 3, n=[]; end
   
@@ -73,61 +57,37 @@ function [DOS, DOS_partials] = sqw_phonon_dos(s, method, n)
     return
   end
   
-  if (isa(s,'iFunc') || isa(s,'iData')) && ndims(s) == 4
-    [DOS, DOS_partials, gDOS, s] = sqw_phonon_dos_4D(s, method);
-    if ~isempty(inputname(1))
-      assignin('caller',inputname(1),s);
-    end
-    if nargout == 0 % plot
-      fig=figure;
-      DOS = s.UserData.DOS;
-      DOS{1} = DOS{1}; % change energy unit
-      xlabel(DOS,[ 'Energy [meV]' ]);
-      % plot any partials first
-      if isfield(s.UserData,'DOS_partials') && numel(s.UserData.DOS_partials) > 0
-        d=s.UserData.DOS_partials;
-        for index=1:numel(d)
-          this_pDOS=d(index);
-          this_pDOS{1} = this_pDOS{1};
-          d(index) = this_pDOS;
-        end
-        h=plot(d);
-        if iscell(h), h=cell2mat(h); end
-        set(h,'LineStyle','--');
-        hold on
-      end
-      % plot total DOS and rotate
-      h=plot(DOS); set(h,'LineWidth',2);
-    end
-    return
-  end
-  
   if isempty(method), method = 'Carpenter'; end
   if isempty(n) || n <= 0, n=10; end
-
-  if ~isa(s, 'iData'), s=iData(s); end
-
-  s = Sqw_check(s);
   if isempty(s), return; end
+  s = iData(s);
 
   % test if classical
   if isfield(s,'classical') || ~isempty(findfield(s, 'classical'))
     if s.classical == 1
       disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' seems to be classical.' ])
-      disp('  The gDOS computation may be wrong. Apply Sqw_Bosify first.');
+      disp('  The gDOS computation may be wrong. Now using method=''Bellisent'', or apply Bosify first.');
+      method = 'Bellisent';
     end
   end
   
   % compute g(q,w) aka P(alpha,beta) -------------------------------------------
   yl=getaxis(s, '1');
   xl=getaxis(s, '2');
-  w= s{1}; 
+  w= s{1};
+  
+  T = Sqw_getT(s);
+  if isempty(T) && isempty(strfind(method, 'Bellisent'))
+    disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source  ])
+    disp(['    has no Temperature defined. Using method=''Bellisent''' ])
+    method = 'Bellisent';
+  end
   
   switch lower(method)
-  case {'carpenter','price'}
-    g = sqw_phonon_dos_Carpenter(s);
+  case {'carpenter','price'}          
+    g = sqw_phonon_dos_Carpenter(s, T);  % requires Temperature 
   case 'bredov'
-    g = sqw_phonon_dos_Bredov(s);
+    g = sqw_phonon_dos_Bredov(s, T);     % requires Temperature (call Carpenter)
   otherwise % 'bellisent'
     method = 'Bellisent';
     g = sqw_phonon_dos_Bellisent(s);
@@ -168,7 +128,7 @@ function [DOS, DOS_partials] = sqw_phonon_dos(s, method, n)
   DOS.Label=[ 'gDOS ' method ];
 
 % ------------------------------------------------------------------------------
-function g = sqw_phonon_dos_Carpenter(s)
+function g = sqw_phonon_dos_Carpenter(s, T)
 % See e.g.: Boatner et al, PRB 56 (1997) 11584
 %           Price J. et al, Non Cryst Sol 92 (1987) 153
 %           J. M. Carpenter and C. A. Pelizarri, Phys. Rev. B 12, 2391 (1975)
@@ -181,12 +141,6 @@ function g = sqw_phonon_dos_Carpenter(s)
 
   hw= s{1}; 
   q = s{2};
-  T = Sqw_getT(s);
-  if isempty(T)
-    T = 293;
-    disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source  ])
-    disp(['    has no temperature defined. Using T=' num2str(T) ' K' ])
-  end
   beta    = -11.605*hw/T;
   n = 1./(exp(beta) - 1);
   n(~isfinite(n)) = 0;
@@ -205,14 +159,14 @@ function g = sqw_phonon_dos_Bellisent(s)
   
   g = s.*hw.^2./q.^2;
 
-function g = sqw_phonon_dos_Bredov(s)
+function g = sqw_phonon_dos_Bredov(s, T)
 % See e.g.: Suck et al, Journal of Alloys and Compounds 342 (2002) 314
 %           M. M. Bredov et al., Sov. Phys. Solid State 9, 214 (1967).
 %
 % g(w) = Ei w./(n(w)+1)/(q_max^4-q_min^4)
 %        * \int_{theta_min -> theta_max} exp(2*W) kf/ki S(q,w) sin(theta) dtheta
 
-  g = sqw_phonon_dos_Carpenter(s);
+  g = sqw_phonon_dos_Carpenter(s,T);
   q = s{2};
   % for each energy, we get the min and max which can be measured
   % requires to know the incident energy.
@@ -235,7 +189,46 @@ function g = sqw_phonon_dos_Bredov(s)
   end
   g       = g.*q.^2./q4;
   
+  
+  
+  
+  
 % ------------------------------------------------------------------------------
+% the code below is NOT used any more, but is kept here in case an iData_Sqw4D 
+% class is built. 
+% Today [Nov 2017], the iFunc_Sqw4D and iData_Sqw2D methods are implemented.
+% ------------------------------------------------------------------------------
+
+function sqw_phonon_dos_test4D(s)
+  if (isa(s,'iFunc') || isa(s,'iData')) && ndims(s) == 4
+    [DOS, DOS_partials, gDOS, s] = sqw_phonon_dos_4D(s, method);
+    if ~isempty(inputname(1))
+      assignin('caller',inputname(1),s);
+    end
+    if nargout == 0 % plot
+      fig=figure;
+      DOS = s.UserData.DOS;
+      DOS{1} = DOS{1}; % change energy unit
+      xlabel(DOS,[ 'Energy [meV]' ]);
+      % plot any partials first
+      if isfield(s.UserData,'DOS_partials') && numel(s.UserData.DOS_partials) > 0
+        d=s.UserData.DOS_partials;
+        for index=1:numel(d)
+          this_pDOS=d(index);
+          this_pDOS{1} = this_pDOS{1};
+          d(index) = this_pDOS;
+        end
+        h=plot(d);
+        if iscell(h), h=cell2mat(h); end
+        set(h,'LineStyle','--');
+        hold on
+      end
+      % plot total DOS and rotate
+      h=plot(DOS); set(h,'LineWidth',2);
+    end
+    return
+  end
+
 
 function [DOS, DOS_partials, gDOS, s] = sqw_phonon_dos_4D(s, n)
   % sqw_phonon_dos_4D: compute the phonon/vibrational density of states (vDOS)

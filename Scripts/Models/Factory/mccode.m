@@ -204,10 +204,12 @@ if isempty(options.mccode)
   options.mccode = mccode_present.mccode;
 end
 % MPI: default to all available core (read from Java)
-if ~isempty(options.mpirun) && ~isfield(options,'mpi') && usejava('jvm')
-  r=java.lang.Runtime.getRuntime;
-  % mem_avail   = r.freeMemory;
-  options.mpi = r.availableProcessors;
+if ~isempty(options.mpirun) && ~isfield(options,'mpi')
+  if usejava('jvm')
+    r=java.lang.Runtime.getRuntime;
+    % mem_avail   = r.freeMemory;
+    options.mpi = r.availableProcessors;
+  else try; options.mpi = feature('NumCores'); end; end
 end
 
 % test if the given/found instrument is executable. Return empty if source code.

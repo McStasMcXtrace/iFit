@@ -1,5 +1,5 @@
 function s=Sqw_symmetrize(s)
-% Sqw_symmetrize(s): extend the S(|q|,w) in both energy sides
+% iData_Sqw2D: symmetrize(s): extend the S(|q|,w) in both energy sides
 %  The resulting S(q,w) is the combination of S(q,w) and S(q,-w), which
 %  is thus symmetric in energy:
 %     S(q,w) = S(q,-w)
@@ -9,7 +9,7 @@ function s=Sqw_symmetrize(s)
 %  The incoming data set should NOT contain the Bose factor, that is it
 %    should be 'classical'.
 %  To obtain a 'classical' S(q,w) from an experiment, use first:
-%    Sqw_deBosify(s, T)
+%    deBosify(s, T)
 %
 % The positive energy values in the S(q,w) map correspond to Stokes processes, 
 % i.e. material gains energy, and neutrons loose energy when scattered.
@@ -20,9 +20,9 @@ function s=Sqw_symmetrize(s)
 % output:
 %   s:  S(|q|,w) symmetrised in energy
 %
-% Example: Sqw_symmetrize(s, 300)
+% Example: Sqw=iData_Sqw2D('SQW_coh_lGe.nc'); symmetrize(s);
 %
-% See also: Sqw_Bosify, deBosify, Sqw_dynamic_range, Sqw_scatt_xs
+% See also: Bosify, deBosify, Sqw_dynamic_range, Sqw_scatt_xs
 % (c) E.Farhi, ILL. License: EUPL.
 
   if nargin == 0, return; end
@@ -39,13 +39,14 @@ function s=Sqw_symmetrize(s)
     return
   end
 
-  s = Sqw_check(s); % in private
   if isempty(s), return; end
+  s = iData(s);
 
   % test if classical
   if isfield(s,'classical') || ~isempty(findfield(s, 'classical'))
     if s.classical == 0
-      disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' does not seem to be classical. It may already contain the Bose factor in which case the symmetrisation may be wrong.' ]);
+      disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' does NOT seem to be classical.']);
+      disp([ mfilename ':   It may already contain the Bose factor in which case the symmetrisation will be wrong.' ]);
     end
   else
     s     = setalias(s,'classical', 1);
@@ -81,12 +82,14 @@ function s=Sqw_symmetrize(s)
       end
     end
     clear m
-    
-    return
+  else
+    % create a new object with an opposite energy axis
+    s     = combine(s, setaxis(s, 1, -s{1}));
   end
   
-  % create a new object with an opposite energy axis
+  
 
   % final object (and merge common area)
-  s     = combine(s, setaxis(s, 1, -s{1}));
+  
+  s     = iData_Sqw2D(s);
   

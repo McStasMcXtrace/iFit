@@ -42,6 +42,7 @@ function [filename,format] = saveas(a, filename, format, options)
 %           'hdf4' save as an HDF4 image
 %           'hdr'  save as HDR/IMG Analyze MRI volume (3D/4D)
 %           'html' save as Hypertext Markup Language document, appended to any existing document.
+%           'inx'  save as an ILL Inelastic Neutron Scattering data (only 2D neutron)
 %           'json' save as JSON JavaScript Object Notation, ascii
 %           'kml'  save as KML GoogleEarth model
 %           'mrc'  save as MRC map file (3/4D)
@@ -51,13 +52,14 @@ function [filename,format] = saveas(a, filename, format, options)
 %           'ppm','pgm','pbm'
 %           'off'  save as Object File Format (geometry), ascii
 %           'ply'  save as PLY (geometry), ascii
+%           'spe'  save as ISIS SPE (Mslice/Horace)
+%           'sqw'  save as McStas SQW Isotropic S(q,w)
 %           'stl'  save as STL stereolithography (geometry), binary
 %           'stla' save as STL stereolithography (geometry), ascii
 %           'svg'  save as Scalable Vector Graphics (SVG) format
 %           'vtk'  save as VTK ascii (<1e5 elements) or binary (3/4D)
 %           'wrl'  save as Virtual Reality VRML 2.0 file
 %           'x3d'  save as X3D (geometry) file, ascii
-%           'avi'  save as an AVI movie
 %           'xhtml' save as embedded HTML/X3D file (using Flash plugin for rendering)
 %           'xls'  save as an Excel sheet (requires Excel to be installed)
 %           'xml'  save as an XML file, ascii
@@ -107,6 +109,7 @@ if isempty(options) && any(ndims(a) >= 2), options='view2 axis tight'; end
 % supported format list
 filterspec = { ...
       '*.avi', 'Audio Video Interleave (AVI) movie (*.avi)'; ...
+      '*.cdf',  'CDF (*.cdf)'; ...
       '*.csv', 'Comma Separated Values (suitable for Excel, *.csv)'; ...
       '*.dae', 'Collada model (*.dae)'; ...
       '*.dat', 'Flat text file with comments (*.dat)'; ...
@@ -118,6 +121,7 @@ filterspec = { ...
       '*.hdf4;*.h4;*.nxs;*.n4', 'Hierarchical Data Format 4 image (*.hdf4)'; ...
       '*.hdr', 'Analyze volume (*.hdr+img)'; ...
       '*.html;*.htm','Hypertext Markup Language document (*.html)'; ...
+      '*.inx;*.ino','ILL Inelastic Neutron Scattering data (*.inx, *.ino)'; ...
       '*.jpg;*.jpeg', 'JPEG image (*.jpg)'; ...
       '*.json', 'JSON JavaScript Object Notation (*.json)'; ...
       '*.kml', 'GoogleEarth model (*.kml)'; ...
@@ -127,13 +131,14 @@ filterspec = { ...
       '*.nc;*.cdf',  'NetCDF (*.nc, *.cdf)'; ...
       '*.nii', 'NiFti volume (*.nii)'; ...
       '*.npy', 'Numpy array NPY (*.npy)'; ...
-      '*.cdf',  'CDF (*.cdf)'; ...
       '*.off', 'Object File Format geometry (*.off)'; ...
       '*.ply', 'PLY geometry (*.ply)'; ...
       '*.pdf', 'Portable Document Format (*.pdf)'; ...
       '*.ps',  'PostScript (color, *.ps)'; ...
       '*.png', 'Portable Network Graphics image (*.png)'; ...
       '*.ppm;*.pbm;*.pgm;*.pnm','Portable Anymap format (*.pnm)'; ...
+      '*.spe', 'ISIS SPE Mslice/Horace (*.spe)'; ...
+      '*.sqw', 'McStas SQW Isotropic S(q,w) (*.sqw)'; ...
       '*.stl;*.stla;*.stlb', 'Stereolithography geometry (*.stl)'; ...
       '*.svg', 'Scalable Vector Graphics (*.svg)'; ...
       '*.tiff;*.tif', 'TIFF image (*.tif)'; ...
@@ -317,29 +322,9 @@ try
   switch formatShort
   case 'avi'
     filename = iData_private_saveas_avi(a, filename, options);
-  case {'ppt','pptx'}
-    
-    f = figure('visible','off');
-    set(f,'renderer','zbuffer');
-    b = plot(a, options);
-    exportToPPTX('new');
-    exportToPPTX('addslide');
-    exportToPPTX('addtext', char(a));
-    exportToPPTX('addslide');
-    exportToPPTX('addpicture',f,'Scale','maxfixed');
-    close(f);
-    exportToPPTX('addnote',char(a));
-    exportToPPTX('save',filename);
-    exportToPPTX('close');
-  case 'kml'
-    if ndims(a) == 2
-      x = getaxis(a,1);
-      y = getaxis(a,2);
-      z = getaxis(a,0);
-      mesh2kml(x,y,z,filename, ...
-        'color','red','position',[-33.85622 151.21535 10],'alpha',0.7);
-    end
-  case 'dae'
+  case 'csv'  % Spreadsheet comma separated values file format
+    csvwrite(filename, double(a));
+  case 'dae'  % Collada DAE
     if ndims(a) == 2
       x = getaxis(a,1);
       y = getaxis(a,2);
@@ -347,41 +332,21 @@ try
       mesh2kml(x,y,z,filename, ...
         'color','red','alpha',0.7);
     end
-  case 'm'  % single m-file Matlab output (text), with the full object description
-    filename = iData_private_saveas_m(a, filename, name, options);
   case 'dat'  % flat text file with commented blocks, in the style of McStas/PGPLOT
     filename = iData_private_saveas_dat(a, filename);
-  case 'mat'  % single mat-file Matlab output (binary), with the full object description
-    % serialize for much faster save
-    a.Data = hlp_serialize(a.Data);
-    varg = { filename };
-    if ~isempty(inputname(1))
-      eval([ inputname(1) '= a;' ]);
-      varg{2} = inputname(1);
-    else
-      eval([ a.Tag '= a;' ]);
-      varg{2} = a.Tag;
-    end
-    if isempty(dir(filename))
-      disp([ mfilename ': The file ' filename ' has been serialized. You MUST import it with load(iData, ''' filename ''')' ])
-    else varg{3} = '-append';
-    end
-    save(varg{:});
-    
-  case {'hdf','hdf5','h5','nx','nxs','n5','nc','cdf'} % HDF5, CDF, NetCDF formats: converts fields to double and chars
-    filename = iData_private_saveas_hdfnc(a, filename, formatShort, root); % private function
   case 'edf'  % EDF ESRF format
     filename = medfwrite(a, filename); % in private
-  case 'vtk'  % VTK volume
-    filename = iData_private_saveas_vtk(a, filename);
-  case 'nii'  % NifTi volume
-    filename = iData_private_saveas_nii(a, filename);
-  case 'hdr'  % Analyze volume
-    filename = iData_private_saveas_analyze(a, filename);
-  case 'mrc'  % MRC map file
-    WriteMRC(getaxis(iData_private_cleannaninf(a),0),1,filename);  % in private
-  case 'npy'  % Numpy binary array NPY
-    writeNPY(getaxis(iData_private_cleannaninf(a),0),filename);
+  case 'epsc' % color encapsulated postscript file format, with TIFF preview
+    f=figure('visible','off');
+    plot(a,options);
+    set(f,'renderer','zbuffer');
+    print(f, '-depsc', filename); % tiff preview may be broken on some GPU
+    close(f);
+  case 'fig'  % Matlab figure format
+    f=figure('visible','off');
+    plot(a,options);
+    saveas(f, filename, 'fig');
+    close(f);
   case {'fits','fit','fts'} % FITS image
     if ndims(a) == 2
       b = real(double(iData_private_cleannaninf(a,1))); % Signal/Monitor
@@ -389,10 +354,6 @@ try
     else
       disp([ mfilename ': Export into ' format ' is only possible for 2D objects, not for ' num2str(ndims(a)) 'D. Use resize to change dimensionality. Ignoring.' ]) 
     end
-  case 'xls'  % Excel file format
-    xlswrite(filename, double(a), a.Title);
-  case 'csv'  % Spreadsheet comma separated values file format
-    csvwrite(filename, double(a));
   case {'gif','bmp','pbm','pcx','pgm','pnm','ppm','ras','xwd','hdf4','tiff','png','art'}  % bitmap images
     if ndims(a) == 2 && ~isempty(root) % 'data' option
       b = real(double(iData_private_cleannaninf(a,1)));
@@ -437,23 +398,71 @@ try
       saveas(f, filename, formatShort);
       close(f);
     end
-  case 'epsc' % color encapsulated postscript file format, with TIFF preview
-    f=figure('visible','off');
-    plot(a,options);
+  case {'hdf','hdf5','h5','nx','nxs','n5','nc','cdf'} % HDF5, CDF, NetCDF formats: converts fields to double and chars
+    filename = iData_private_saveas_hdfnc(a, filename, formatShort, root); % private function
+  case 'hdr'  % Analyze volume
+    filename = iData_private_saveas_analyze(a, filename);
+  case {'html','htm'}
+    % create a folder with the HTML doc, figures
+    filename = iData_private_saveas_html(a, filename, [ format ' ' root ' ' options ]);
+  case {'inx','mcstas','sqw','spe'}  % ILL INX / McStas / SPE
+      a = iData_Sqw2D(a);
+      filename = saveas(a, filename, formatShort);
+  case 'json'
+    mat2json(struct(a), filename );    % in private
+  case 'kml'  % Google KML
+    if ndims(a) == 2
+      x = getaxis(a,1);
+      y = getaxis(a,2);
+      z = getaxis(a,0);
+      mesh2kml(x,y,z,filename, ...
+        'color','red','position',[-33.85622 151.21535 10],'alpha',0.7);
+    end
+  case 'm'  % single m-file Matlab output (text), with the full object description
+    filename = iData_private_saveas_m(a, filename, name, options);
+  case 'mat'  % single mat-file Matlab output (binary), with the full object description
+    % serialize for much faster save
+    a.Data = hlp_serialize(a.Data);
+    varg = { filename };
+    if ~isempty(inputname(1))
+      eval([ inputname(1) '= a;' ]);
+      varg{2} = inputname(1);
+    else
+      eval([ a.Tag '= a;' ]);
+      varg{2} = a.Tag;
+    end
+    if isempty(dir(filename))
+      disp([ mfilename ': The file ' filename ' has been serialized. You MUST import it with load(iData, ''' filename ''')' ])
+    else varg{3} = '-append';
+    end
+    save(varg{:});
+  case 'mrc'  % MRC map file
+    WriteMRC(getaxis(iData_private_cleannaninf(a),0),1,filename);  % in private
+  case 'nii'  % NifTi volume
+    filename = iData_private_saveas_nii(a, filename);
+  case 'npy'  % Numpy binary array NPY
+    writeNPY(getaxis(iData_private_cleannaninf(a),0),filename);
+  case {'ppt','pptx'}
+    f = figure('visible','off');
     set(f,'renderer','zbuffer');
-    print(f, '-depsc', filename); % tiff preview may be broken on some GPU
+    b = plot(a, options);
+    exportToPPTX('new');
+    exportToPPTX('addslide');
+    exportToPPTX('addtext', char(a));
+    exportToPPTX('addslide');
+    exportToPPTX('addpicture',f,'Scale','maxfixed');
     close(f);
+    exportToPPTX('addnote',char(a));
+    exportToPPTX('save',filename);
+    exportToPPTX('close');
   case {'psc','pdf','ill','jpeg'}  % other bitmap and vector graphics formats (PDF, ...)
     f=figure('visible','off');
     plot(a,options);
     set(f,'Renderer','zbuffer')
     saveas(f, filename, formatShort);
     close(f);
-  case 'fig'  % Matlab figure format
-    f=figure('visible','off');
-    plot(a,options);
-    saveas(f, filename, 'fig');
-    close(f);
+  case {'stl','stla','stlb','off','ply'} % STL ascii, binary, PLY, OFF
+    filename = iData_private_saveas_stl(a, filename, formatShort);
   case 'svg'  % scalable vector graphics format (private function)
     f=figure('visible','off');
     plot(a,options);
@@ -464,6 +473,8 @@ try
       plot2svg(filename, f);
     end
     close(f);
+  case 'vtk'  % VTK volume
+    filename = iData_private_saveas_vtk(a, filename);
   case {'vrml','wrl'} % VRML format
     f=figure('visible','off');
     h = plot(a,options);
@@ -473,19 +484,14 @@ try
     close(f);
   case {'x3d','xhtml'} % X3D/XHTML format
     filename = iData_private_saveas_x3d(a, filename, formatShort, options);
-  case {'html','htm'}
-    % create a folder with the HTML doc, figures
-    filename = iData_private_saveas_html(a, filename, [ format ' ' root ' ' options ]);
-  case {'stl','stla','stlb','off','ply'} % STL ascii, binary, PLY, OFF
-    filename = iData_private_saveas_stl(a, filename, formatShort);
+  case 'xls'  % Excel file format
+    xlswrite(filename, double(a), a.Title);
+  case {'xml'}
+    struct2xml(struct(a), filename);   % in private
   case {'yaml','yml'}
     if usejava('jvm')
       YAML.write( filename, struct(a) ); % YAML object is in iFit/Objects
     end
-  case 'json'
-    mat2json(struct(a), filename );    % in private
-  case {'xml'}
-    struct2xml(struct(a), filename);   % in private
   otherwise
     iData_private_warning(mfilename,[ 'Export of object ' inputname(1) ' ' a.Tag ' into format ' format ' is not supported. Ignoring.' ]);
     filename = [];

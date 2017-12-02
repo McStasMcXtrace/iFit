@@ -36,17 +36,31 @@ if ~isa(this, 'iData')
 end
 
 % check object and orientation of Signal
-this = Sqw_check(this);
+% this = Sqw_check(this); % done in iData_Sqw2D
 if isempty(this), return; end
-
 if nargin < 2, filename = ''; end
 
-% call Sqw_parameters so that we have the final parameters and the comments
-[this,parameters,fields] = Sqw_parameters(this);
+% interpolate on a square regular grid
+w=getaxis(this,1); w=unique(w(:)); dw = diff(w);
+if std(dw) > mean(dw) % not a regular grid (std would be 0)
+  w = linspace(min(w), max(w), min(size(this, 1)*5, round((max(w)-min(w))/mean(dw))));
+end
+q=getaxis(this,2); q=unique(q(:)); dq = diff(q);
+if std(dq) > mean(dq) % not a regular grid (std would be 0)
+  q = linspace(min(q), max(q), min(size(this, 2)*5, round((max(q)-min(q))/mean(dq))));
+end
 
-sqw=this{0}; sqw(isnan(sqw))=0;
-w=this{1}; w=w(:)'; 
-q=this{2}; q=q(:)'; 
+parameters = get(this, 'parameters');
+% call Sqw_parameters so that we have the final parameters and the comments
+%[~,~,fields] = Sqw_parameters(this);
+
+thisE = event(this);
+thisE = hist(this, w, q);
+
+sqw=getaxis(thisE,0); sqw(isnan(sqw))=0;
+w=getaxis(thisE,1); w=w(:)'; 
+q=getaxis(thisE,2); q=q(:)'; 
+clear thisE
 
 % format filename
 if isempty(filename)
@@ -110,25 +124,25 @@ if isstruct(parameters)
   orderedfields=fieldnames(parameters);
   fprintf(fid,'# Physical parameters:\n');
   for index=1:length(orderedfields)
-    field_found=0;
-    for field_index=1:length(fields)
-      if strcmpi(orderedfields{index}, strtok(fields(field_index)))
-        field_found=1;
-        break;
-      end
-    end
-    if ~field_found, continue; end
-    [name, comment] = strtok(fields{field_index});
+
+    name    = orderedfields{index};
+    comment = label(this, name);
+    %[name, comment] = strtok(fields{field_index});
     comment = strtrim(comment);
     if isfield(parameters, name)
-      if isnumeric(parameters.(name))
-        if isfinite(parameters.(name))
-          fprintf(fid, '# %-13s %-8.3g %s\n', name, parameters.(name), comment);
+      try
+        val = get(this, name);
+      catch
+        val = parameters.(name);
+      end
+      if isnumeric(val)
+        if isfinite(val)
+          fprintf(fid, '# %-13s %-8.3g %s\n', name, val, comment);
           parameters.(name)=NaN;
         end
       else
-        t=parameters.(name); t(~isstrprop(t,'print')) = ' '; parameters.(name)=t;
-        fprintf(fid, '# %-13s %-s %s\n', name, parameters.(name), comment);
+        t=val; t(~isstrprop(t,'print')) = ' '; val=t;
+        fprintf(fid, '# %-13s %-s %s\n', name, val, comment);
         parameters.(name)=NaN;
       end
     end
@@ -154,10 +168,11 @@ fprintf(fid, '\n');
 fprintf(fid, '# matrix of S(q,w) values (m=%i rows x n=%i columns), one row per q value: sqw\n', ...
   length(q),length(w));
 % add sqw
-for k=1:length(q)
-  fprintf(fid, '%s', num2str(sqw(k,:)));
-  fprintf(fid, '\n');
-end
+str = num2str(sqw);
+str(:,end+1) = sprintf('\n');
+str = str';
+str = str(:)';
+fprintf(fid, '%s\n', str);
 fprintf(fid, '# end of Sqw file %s\n', filename);
 fclose(fid);
 fprintf(1,'DONE %s\n', filename);

@@ -84,6 +84,8 @@ classdef iFunc_Sqw4D < iFunc
       
       % transfer properties
       % this is a safe way to instantiate a subclass
+      warning off MATLAB:structOnObject
+      m = struct(m);
       for p = fieldnames(m)'
         obj.(p{1}) = m.(p{1});
       end
@@ -93,6 +95,7 @@ classdef iFunc_Sqw4D < iFunc
     function f = iFunc(self)
       % iFunc_Sqw4D: convert a single iFunc_Sqw4D back to iFunc
       f = iFunc;
+      self = struct(self);
       for p = fieldnames(self)'
         f.(p{1}) = self.(p{1});
       end

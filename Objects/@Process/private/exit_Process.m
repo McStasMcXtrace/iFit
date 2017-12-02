@@ -10,17 +10,20 @@ function ex=exit_Process(pid, action)
   
   if ~isvalid(pid), ex=nan; return; end
   
-  UserData = get(pid, 'UserData');
+  UserData = get(pid,'UserData');
   if UserData.isActive
     % stop the timer but leaves the object. 
     if strcmp(get(pid,'Running'),'on'); stop(pid); end 
   else ex = UserData.exitValue; return;
   end
   
-  UserData = get(pid, 'UserData');
-  if isjava(UserData.process)
+  UserData = get(pid,'UserData');
+  if isjava(UserData.process)                             % DESTROY / KILL here
     UserData.process.destroy;
     pause(1) % wait a little for process to abort
+  else
+    % kill an external PID
+    kill_external(UserData.process);  % private below
   end
   
   if isjava(UserData.process)
@@ -62,4 +65,30 @@ function ex=exit_Process(pid, action)
     set(pid, 'UserData',UserData);
   end
   istop = exec_Callback(pid, Callback, action);
+end
+
+% ------------------------------------------------------------------------------
+function kill_external(pid)
+% kill an external PID
+  if ~isempty(pid)
+    if isnumeric(pid)
+      for index=1:numel(pid)
+        if ispc
+          cmd=sprintf('taskkill /PID %i /F', pid(index));
+        else
+          cmd=sprintf('skill -p %i', pid(index));
+        end
+        disp(cmd)
+        system(cmd);
+      end
+    elseif ischar(UserData.process)
+      if ispc
+        cmd=sprintf('taskkill /im /f %s', pid);
+      else
+        cmd=sprintf('skill -c %s', pid);
+      end
+      disp(cmd)
+      system(cmd);
+    end
+  end
 end

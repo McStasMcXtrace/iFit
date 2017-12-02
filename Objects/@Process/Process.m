@@ -5,7 +5,16 @@ classdef Process < timer
     %
     % The Process class replaces the 'system' command. but is started asynchronously.
     % Matlab does not wait for the end of the Process to get back to interactive mode.
-    % The stdout and stderr are collected periodically.  
+    % The stdout and stderr are collected periodically. 
+    %
+    % You can as well monitor an existing external process by connecting to its PID (number)
+    % 
+    %   pid = process(1234);
+    %   pid = connect(Process, 1234);
+    %
+    % or by connecting to a running named process:
+    %
+    %   pid = connect(Process, 'ping');
     %
     % You can customize the Process with e.g. additional arguments such as:
     %   Process(..., 'TimeOut', value)  set a TimeOut (to kill Process after)
@@ -20,9 +29,15 @@ classdef Process < timer
     %   * a function handle with none to 2 arguments. The Callback will then 
     %     pass as 1st argument the Process object, and as 2nd the event
     %       in 'kill','timeout','end', or 'refresh'. 
-    %     Example @(p,a)disp([ 'Process ' p.Name ': event ' a ])
+    %     Example @(p,e)disp([ 'Process ' p.Name ': event ' e ])
     %   * the name of a function which takes none to 2 arguments. Same as above.
     % when a callback has a non-zero return value, it stops the Process.
+    %
+    % For instance:
+    %   to stop a Process when a file appears, use:
+    %     Process(..., 'TimerFcn', @(p,e)~isempty(dir('/path/file')) )
+    %   to stop a Process when a file disappears, use:
+    %     Process(..., 'TimerFcn', @(p,e)isempty(dir('/path/file')) )
     %
     % methods:
     %   refresh(pid)  force the pid to be refreshed, i.e check if it is running
@@ -36,12 +51,18 @@ classdef Process < timer
     %   exit(pid)     kill the Process (stop it). Same as stop(pid)
     %   delete(pid)   kill the Process and delete it from memory.
     %   waitfor(pid)  wait for the Process to end normally or on TimeOut.
+    %   isreal(pid)   check if the process is valid/running.
+    %   killall(Process) kill all running Process objects
+    %
+    % To get all running Process objects, use:
+    %   findall(Process)
     %
     % WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING
     % This class derives from 'timer'. As such, it remains in memory after the 
     % Process has stopped. To remove it, use delete(pid), then clear(pid).
+    %
     % The UserData field of the object is used by the external command. In case
-    % you need to store something, do NOT directly allocate obj.UserData, but 
+    % you need to store something, do NOT directly allocate pid.UserData, but 
     % rather store anything with set and get calls:
     %    ud=get(pid,'UserData');
     %    ud.UserData = <your stuff>;
@@ -49,6 +70,7 @@ classdef Process < timer
     % get your own data with:
     %    ud=get(pid,'UserData');
     %    <your stuff> = ud.UserData;
+    % WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING
     %
     % Example:
     %   pid=Process('ping 127.0.0.1'); silent(pid);
@@ -72,32 +94,44 @@ classdef Process < timer
       % should add: Display = 1 => show stdout while it comes
       if nargin == 0, command = ''; end
       
+      if isa(command, 'timer') || isa(command, 'Process')
+        name = get(command, 'Name');
+      else name = num2str(command); end
+      
       pid = pid@timer( ...
           'ExecutionMode', 'fixedSpacing', ...
-          'Name', command, ...
+          'Name', name, ...
           'UserData', [], ...
           'Period', 10.0);
           
       % Default properties
-      UserData.process = [];       % Java RunTime object
-      UserData.command = '';       % the command associated to the process
-      UserData.creationDate = now;  % Creation date (start)
-      UserData.terminationDate  = []; % end date
-      UserData.stdinStream   ='';
-      UserData.stdout=[];          % stores the stdout (yes!) from the process
+      UserData.process          = [];   % Java RunTime object
+      UserData.command          = '';   % the command associated to the process
+      UserData.creationDate     = now;  % Creation date (start)
+      UserData.terminationDate  = [];   % end date
+      UserData.stdinStream      = '';
+      UserData.stdout           = [];   % stores the stdout (yes!) from the process
 
-      UserData.stderrStream='';
-      UserData.stderr=[];          % stores the stderr from the process
+      UserData.stderrStream     = '';
+      UserData.stderr           = [];   % stores the stderr from the process
     
-      UserData.exitValue='';       % only valid at end of process
-      UserData.isActive=0;
-      UserData.TimerFcn='';        % executed everytime the refresh function is used
-      UserData.StopFcn='';         % executed when process is stopped/killed
-      UserData.EndFcn='';          % executed when process ends normally
-      UserData.Monitor=1;
-      UserData.UserData = [];      % if the User stores something it goes here with set/get overload
-      UserData.TimeOut = [];
-      UserData.Duration = 0;
+      UserData.exitValue        = '';   % only valid at end of process
+      UserData.isActive         = 0;
+      UserData.TimerFcn         = '';   % executed everytime the refresh function is used
+      UserData.StopFcn          = '';   % executed when process is stopped/killed
+      UserData.EndFcn           = '';   % executed when process ends normally
+      UserData.Monitor          = 1;
+      UserData.UserData         = [];   % if the User stores something it goes here with set/get overload
+      UserData.TimeOut          = [];
+      UserData.Duration         = 0;
+      UserData.PID              = [];   % for external processes (non Java)
+      
+      % use hidden features
+      try; UserData.NumCores    = feature('NumCores'); end
+      try; UserData.GetOS       = feature('GetOS'); end
+      try; UserData.MatlabPid   = feature('GetPid'); end
+      try; UserData.NumThreads  = feature('NumThreads'); end
+      UserData.UserPath = userpath;
       
       % search for specific options in varargin
       index = 1;
@@ -117,7 +151,7 @@ classdef Process < timer
             if ~isempty(val), UserData.TimerFcn = val; end
           case {'endfcn','callback'}
             if ~isempty(val), UserData.EndFcn = val; end
-          case {'StopFcn','killfcn'}
+          case {'stopfcn','killfcn'}
             if ~isempty(val), UserData.StopFcn = val; end
           case 'period'
             if ~isempty(val) && val > 0, set(pid, 'Period', val); end
@@ -134,12 +168,14 @@ classdef Process < timer
           'StopFcn', { @exit_fcn, 'Kill' });
 
       setUserData(pid, UserData);
-          
+      
+      % start Process/timer when given a command or PID
       if ischar(command) && ~isempty(command)
-        % create a timer object
+        % create a timer object for a given command to execute
         
         UserData.process = java.lang.Runtime.getRuntime().exec(command);
         UserData.command = command;
+        UserData.PID     = char(UserData.process);
         UserData.creationDate  = now;
         
         % I/O from process
@@ -152,14 +188,26 @@ classdef Process < timer
           disp([ datestr(now) ': Process ' get(pid,'Name') ' is starting.' ])
         end;
         start(pid);
+      elseif isnumeric(command) && ~isempty(command)
+        pid = connect(pid, command);  % external command given as PID
+      elseif isa(command, 'timer') || isa(command, 'Process') 
+        % transfer properties
+        % this is a safe way to instantiate a subclass
+        UserData = getUserData(pid);
+        if isfield(UserData,'process')
+          setUserData(pid, UserData);
+          set(pid, 'Name', get(command, 'Name'));
+          start(pid);
+        end
       end
     end
     
     % --------------------------------------------------------------------------
     function refresh(pid)
       % Process/refresh(pid): poke a Process and update its stdout/stderr.
-    
-      refresh_Process(pid);
+      for index=1:prod(size(pid))
+        refresh_Process(get_index(pid,index));
+      end
 
     end
     
@@ -167,11 +215,15 @@ classdef Process < timer
     function ex = exit(pid)
       % Process/exit(pid): end/kill a running Process and/or return its exit value.
       % stop@timer(pid);
-      if length(pid) == 1 && isvalid(pid) && any(strcmp(get(pid,'Running'),'on'))
-        refresh_Process(pid);
+      ex = [];
+      for index=1:prod(size(pid))
+        this = get_index(pid, index);
+        if isvalid(this) && any(strcmp(get(this,'Running'),'on'))
+          refresh_Process(this);
+        end
+        stop(this);
+        ex(end+1) = exit_Process(this, 'kill');
       end
-      stop(pid);
-      ex = exit_Process(pid, 'kill');
       
     end
     
@@ -180,14 +232,16 @@ classdef Process < timer
       % Process/delete(pid): completely remove the Process from memory. 
       % The Process is killed. Its stdout/err/value are lost.
       
-      if length(pid) ~= 1, return; end 
-      if isvalid(pid) && strcmp(get(pid,'Running'),'on')
-        exit(pid);
-      end
-      try
-        delete@timer(pid); % remove the timer
-      catch ME
-        disp(ME.message)
+      for index=1:prod(size(pid))
+        this = get_index(pid, index);
+        if isvalid(this) && strcmp(get(this,'Running'),'on')
+          exit(this);
+        end
+        try
+          delete@timer(this); % remove the timer
+        catch ME
+          disp(ME.message)
+        end
       end
 
     end
@@ -195,58 +249,90 @@ classdef Process < timer
     % i/o methods
     function s = stdout(pid)
       % Process/stdout(pid): return the standard output stream (stdout)
-      if ~isvalid(pid), s=nan; return; end
-      refresh(pid);
-      UserData = getUserData(pid);
-      s = UserData.stdout;
+      s = {};
+      for index=1:prod(size(pid))
+        this = get_index(pid, index);
+        if ~isvalid(this), s{end+1}=nan; continue; end
+        refresh(this);
+        UserData = getUserData(this);
+        s{end+1} = UserData.stdout;
+      end
+      if numel(s) == 1, s=s{1}; end
     end
     
     function s = stderr(pid)
       % Process/stderr(pid): return the standard error stream (stderr)
-      if ~isvalid(pid), s=nan; return; end
-      refresh(pid);
-      UserData = getUserData(pid);
-      s = UserData.stderr;
+      s = {};
+      for index=1:prod(size(pid))
+        this = get_index(pid, index);
+        if ~isvalid(this), s{end+1}=nan; continue; end
+        refresh(this);
+        UserData = getUserData(this);
+        s{end+1} = UserData.stderr;
+      end
+      if numel(s) == 1, s=s{1}; end
     end
     
     function s = isreal(pid)
       % Process/isreal(pid): return 1 when the process is running, 0 otherwise.
-      if ~isvalid(pid), s=0; return; end
-      refresh(pid);
-      UserData = getUserData(pid);
-      s = UserData.isActive;
+      s = [];
+      for index=1:prod(size(pid))
+        this = get_index(pid, index);
+        if ~isvalid(this), s(end+1)=0; continue; end
+        refresh(this);
+        UserData = getUserData(this);
+        s(end+1) = UserData.isActive;
+      end
     end
     
     function silent(pid)
       % Process/silent(pid): set the Process to silent mode.
-      if ~isvalid(pid), return; end
-      UserData = getUserData(pid);
-      UserData.Monitor = 0;
-      setUserData(pid, UserData);
+      for index=1:prod(size(pid))
+        this = get_index(pid, index);
+        if ~isvalid(this), return; end
+        UserData = getUserData(this);
+        UserData.Monitor = 0;
+        setUserData(this, UserData);
+      end
     end
     
     function verbose(pid)
       % Process/verbose(pid): set the Process to verbose mode, which displays its stdout.
-      if ~isvalid(pid), return; end
-      UserData = getUserData(pid);
-      UserData.Monitor = 1;
-      setUserData(pid, UserData);
+      for index=1:prod(size(pid))
+        this = get_index(pid, index);
+        if ~isvalid(this), return; end
+        UserData = getUserData(this);
+        UserData.Monitor = 1;
+        setUserData(this, UserData);
+      end
     end
     
     function waitfor(pid)
       % Process/waitfor(pid): wait for the Process to end normally or on TimeOut.
       % pressing Ctrl-C during the wait loop stops waiting, but does not kill the Process.
-      if ~isvalid(pid), return; end
-      period = get(pid, 'Period');
-      while isreal(pid)
-        pause(period);
+      for index=1:prod(size(pid))
+        this = get_index(pid, index);
+        if ~isvalid(this), return; end
+        period = get(this, 'Period');
+        while isreal(this)
+          pause(period);
+        end
       end
     end
     
+    function kill(obj)
+      % Process: kill : stop a running process
+      stop(obj);
+    end
+    
     function stop(pid, action)
-      stop@timer(pid);
+      % Process: kill : stop a running process
       if nargin < 2, action='kill'; end
-      feval(@exit_Process, pid,action);
+      for index=1:prod(size(pid))
+        this = get_index(pid, index);
+        stop@timer(this);
+        feval(@exit_Process, this, action);
+      end
     end
     
     function ud = getUserData(obj)
@@ -258,7 +344,58 @@ classdef Process < timer
       % set the UserData of the Process
       obj.jobject.UserData=ud;
     end
+    
+    function obj = connect(obj0, pid)
+      obj = Process;  % always use a new object for the connection
+      if isnumeric(pid) || ischar(pid)
+        [PID, command] = get_command(pid);
 
+        if ~isempty(PID) || ~isempty(command)
+          UserData = getUserData(obj);
+          % we have found a corresponding process. Connect to it.
+          if isempty(PID)
+            UserData.process = pid;  % initial request (num or char)
+          else 
+            UserData.process = PID;   % PID (list of ID's)
+          end
+          UserData.command       = pid;     % the initial request
+          UserData.creationDate  = now;
+          UserData.PID           = PID;
+          if UserData.Monitor
+            disp([ datestr(now) ': Process ' num2str(pid) ' is connected ' mat2str(PID) ])
+          end
+          set(obj, 'Name', num2str(pid));
+          setUserData(obj, UserData);
+          start(obj);
+        else
+          error([ datestr(now) ':  Process PID ' num2str(pid) ' does not exist.' ])
+        end
+      end
+    end % connect
+    
+    function pid = findall(obj)
+      if ~isreal(obj), obj = timerfindall; end
+      pid = [];
+      for index=1:prod(size(obj))
+        this = obj(index);
+        UserData = get(this, 'UserData');
+        if isfield(UserData, 'process') % this is a Process Timer
+          pid = [ pid this ];
+        end
+      end
+    end % findall
+    
+    function killall(obj)
+      if ~isreal(obj), obj = timerfindall; end
+      for index=1:prod(size(obj))
+        this = obj(index);
+        UserData = get(this, 'UserData');
+        if isfield(UserData, 'process') % this is a Process Timer
+          exit_Process(this, 'kill');  % kill
+        end
+      end
+    end % killall
+    
   end
 
 end
@@ -271,8 +408,9 @@ function refresh_fcn(obj, event, string_arg)
   UserData = get(obj, 'UserData');
   if ~UserData.isActive
     % Process has ended by itself or aborted externally
-    disp([ mfilename ': Process ' get(obj,'Name') ' has ended.' ])
+    disp([ datestr(now) ': Process ' get(obj,'Name') ' has ended.' ])
     feval(@exit_Process, obj, 'end');
+    stop(obj);
     
   elseif ~isempty(UserData.TimeOut) && UserData.TimeOut > 0 ...
     && etime(clock, datevec(UserData.creationDate)) > UserData.TimeOut
@@ -287,9 +425,13 @@ function exit_fcn(obj, event, string_arg)
 
   UserData = get(obj, 'UserData');
   if UserData.isActive && strcmp(get(obj,'Running'),'on')
-    stop@timer(obj);
+    stop(obj);
     exit_Process(obj, 'kill');  % kill
   end
+end
 
+function obj = get_index(pid, index)
+  S.type='()'; S.subs = {index};
+  obj = subsref(pid, S);
 end
 

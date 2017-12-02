@@ -1,5 +1,8 @@
 function  [s,parameters,fields] = Sqw_parameters(s, fields)
-% [s,p,fields] = Sqw_parameters(s,type): search for parameter values in a Sqw/Sab data set
+% [s,p,fields] = Sqw_parameters(s,type): search for parameter values in a S(q,w) data set
+%
+% iData_Sqw2D: Sqw_parameters: search for physical quantities in object.
+%   This search is also done when creating iData_Sqw2D objects.
 %
 % input:
 %   s: any iData object, including S(q,w) and S(alpha,beta) ones.
@@ -28,7 +31,7 @@ if isempty(fields) % default: search all parameters and assemble them
     parameters = struct(pairs{:,index});
     fields = [ fields1 fields2 ];
     fields = fields(index);
-    s.parameters=parameters(1);
+    setalias(s, 'parameters', parameters(1));
   end
   if nargout == 0 & length(inputname(1))
     assignin('caller',inputname(1),s);
@@ -69,7 +72,9 @@ if ischar(fields) && strcmpi(fields, 'sqw')
      {'classical [0=from measurement, with Bose factor included, 1=from MD, symmetric]' 'symmetry' } ...
       'multiplicity  [atoms/unit cell] number of atoms/molecules per scattering unit cell' ...
      {'IncidentEnergy [meV] neutron incident energy' 'fixed_energy' 'energy' 'ei' 'Ei'} ...
+     {'FinalEnergy [meV] neutron final energy' 'ef' 'Ef'} ...
      {'IncidentWavevector [Angs-1] neutron incident wavevector' 'ki' 'Ki'} ...
+     {'FinalWavevector [Angs-1] neutron final wavevector' 'kf' 'Kf'} ...
      {'Distance [m] Sample-Detector distance' 'distance' } ...
      {'ChannelWidth [time unit] ToF Channel Width' } ...
      {'V_rho [Angs^-3] atom density' 'rho' } ...
@@ -139,8 +144,12 @@ for index=1:length(fields)
   p_name = strtok(f{1});
   for f_index=1:numel(f)
     name   = strtok(f{f_index});
-    if     isfield(s, name)   val0=s.(name);
-    elseif isfield(s, p_name) val0=s.(p_name);
+    if     isfield(s, name)   val0=get(s, name);
+    elseif isfield(s, p_name) val0=get(s, p_name);
+    elseif isfield(s, 'parameters') && isfield(get(s, 'parameters'), name)
+      val0 = get(s, [ 'parameters.' name ]);
+    elseif isfield(s, 'parameters') && isfield(get(s, 'parameters'), p_name)
+      val0 = get(s, [ 'parameters.' p_name ]);  
     else val0=[]; end
     if index==1 && f_index==1
       links    = findfield(s,strtok(f{f_index}),'exact');
@@ -149,12 +158,14 @@ for index=1:length(fields)
     end
     if isfield(s.Data, name)
       links = [ 'Data.' name ];
+    elseif isfield(get(s, 'parameters'), name)
+      links = ['parameters.' name ];
     end
     if ~iscell(links), links = { links }; end
     for l_index=1:numel(links)
       link = links{l_index};
       try
-        val = s.(link);
+        val = get(s,link);
       catch
         link = []; val=[];
       end
@@ -168,7 +179,11 @@ for index=1:length(fields)
       end
       % make sure it makes sense to update the link. must not link to itself.
       if ~isempty(link) && ~isempty(val) && ~strcmp(p_name, link)
-        parameters.(p_name) = link;  % update/store the link/alias
+        if numel(val) < 100
+          parameters.(p_name) = val;   % update/store the value
+        else 
+          parameters.(p_name) = link;  % update/store the link/alias
+        end
       end
     end
 
@@ -176,8 +191,7 @@ for index=1:length(fields)
   fields{index} = f{1}; % store the parameter name, plus optional label
 end
 
-% now transfer parameters into the object, as alias values
-s=setalias(s, 'parameters', parameters, 'Material parameters');
+
 for index=1:numel(fields)
   [name, comment] = strtok(fields{index});
   if isfield(parameters, name)
@@ -189,6 +203,8 @@ for index=1:numel(fields)
     end
   end
 end
+% now transfer parameters into the object, as alias values
+s=setalias(s, 'parameters',       parameters, 'Material parameters');
 
 if nargout == 0 & length(inputname(1))
   assignin('caller',inputname(1),s);

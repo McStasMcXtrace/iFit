@@ -143,6 +143,8 @@ function [DOS, DOS_partials, s] = sqw_phonon_dos_4D(s, n)
     end
     s.UserData.DOS_partials=pDOS;
     clear f1 index dos_e omega_e dos_factor DOS pDOS
+  elseif ~isfield(s.UserData,'FREQ') || isempty(s.UserData.FREQ)
+    error([ mfilename ': Can not compute the density of states as the bare frequencies are not available (UserData.FREQ)' ]);
   end
   
   if ~isempty(inputname(1))

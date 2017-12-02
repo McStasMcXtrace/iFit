@@ -217,10 +217,12 @@ if isempty(dir(fullfile(target, 'ifit.py')))
 end
 
 % default to available core (read from Java)
-if ~isfield(options,'mpi') && usejava('jvm')
-  r=java.lang.Runtime.getRuntime;
-  % mem_avail   = r.freeMemory;
-  options.mpi = r.availableProcessors;
+if ~isfield(options,'mpi')
+  if usejava('jvm')
+    r=java.lang.Runtime.getRuntime;
+    % mem_avail   = r.freeMemory;
+    options.mpi = r.availableProcessors;
+  else try; options.mpi = feature('NumCores'); end; end
 end
 
 if isfield(options,'mpi') && ~isempty(options.mpi) && options.mpi > 1 && ~isempty(status.mpirun)
