@@ -103,11 +103,20 @@ else
   transpose_ab = 0;
 end
 
+% detect when objects are orthogonal
+sa = size(a); sb = size(b);
+if     numel(sa) > numel(sb), sb=sb(1:numel(sa));
+elseif numel(sb) > numel(sa), sa=sa(1:numel(sb));
+end
+index=find((sa == 1 & sb > 1) | (sb ==1 & sa > 1));
+orthogonal_ab = (numel(index) == numel(sa));  % all orthogonal
+
 % get Signal, Error and Monitor for 'a' and 'b'
-if isa(a, 'iData') & isa(b, 'iData') 
+if isa(a, 'iData') & isa(b, 'iData') & ~orthogonal_ab
   if strcmp(op, 'combine')
     [a,b] = union(a,b);     % perform combine on union
   else
+    % compute intersection when objects are not orthogonal
     [a,b] = intersect(a,b); % perform operation on intersection
   end
 end
@@ -317,6 +326,29 @@ if sum(m3(~isnan(m3))) ~= sum(y3(~isnan(y3)))
   c.Alias.Values{3} = m3;
 end
 clear m3 y3
+
+% fill missing axes when objects are orthogonal
+if isa(a, 'iData') && isa(b, 'iData') && orthogonal_ab 
+  index_b=1;
+  ax = getaxis(c);
+  for index=1:ndims(c)
+    if isempty(getaxis(c, num2str(index)))
+      x       = getaxis(b, index_b);           % axis value
+      [xd,xl] = getaxis(b, num2str(index_b));  % get the axis definition
+      % must make sure we do not overwrite an existing axis name
+      if any(strcmp(xd, ax)), xd = sprintf('Axis_%i', index); end
+      if any(strcmp(xd, ax)), xd = sprintf('axis_%i', index); end
+      if any(strcmp(xd, ax)), xd = sprintf('%s_%i', op, index); end
+      index_b = index_b+1;
+      if ~isempty(xd) && ischar(xd)
+        c=setalias(c, xd, x, xl);
+        c=setaxis(c, index, xd);
+      else
+        c=setaxis(c, index, x);
+      end
+    end
+  end
+end
 
 c.Command=cmd;
 c = iData_private_history(c, op, a,b);
