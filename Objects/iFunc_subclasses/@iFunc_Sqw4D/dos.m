@@ -4,13 +4,14 @@ function [DOS, DOS_partials] = dos(s, n)
 %  The routine can be used for 4D models.
 %    when used on 4D models S(HKL,w), the vDOS is computed.
 %
-%    DOS = sqw_phonon_dos(s)    returns the vibrational density of states (vDOS)
+%    DOS = dos(s)    returns the vibrational density of states (vDOS)
 %      the vDOS and the partials per mode are also stored in the UserData.
-%    DOS = sqw_phonon_dos(s, n) does the same with n-bins on the vDOS (n=100)
+%    DOS = dos(s, n) does the same with n-bins on the vDOS (n=100)
 %
 %    When the DOS has already been computed, it is used as is. To force a
 %    recomputation, specify a different number of bins 'n' or set:
 %      s.UserData.DOS=[];
+%    or use DOS = dos(s,'force')
 %
 %    To smooth the resulting distribution, use:
 %      sDOS = smooth(DOS); plot(sDOS);
