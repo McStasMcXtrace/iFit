@@ -88,6 +88,11 @@ function [DOS, DOS_partials, s] = sqw_phonon_dos_4D(s, n)
   %
   % Example: DOS=sqw_phonon_dos(sqw_cubic_monoatomic('defaults'))
   % (c) E.Farhi, ILL. License: EUPL.
+  
+  % NOTE: for partial DOS per atom 'i', see Reichardt Eq (2.9) p 4
+  %   see also: Schober JNR 2014 Eq (9.105)
+  %   g_i(hw) = sum_j |e_i,j|^2 delta(hw - hw_j(q))
+  % i.e. we weight the DOS with polarisation vector norms per atom
 
   DOS = []; f=[]; DOS_partials = [];
   
@@ -97,6 +102,9 @@ function [DOS, DOS_partials, s] = sqw_phonon_dos_4D(s, n)
   end
   
   if nargin < 2, n=[]; end
+  if strcmp(n, 'force')
+    s.UserData.DOS = [];
+  end
   
   % first get a quick estimate of the max frequency
   if  ~isfield(s.UserData,'DOS') || isempty(s.UserData.DOS) || (~isempty(n) && prod(size(s.UserData.DOS)) ~= n)
@@ -106,6 +114,12 @@ function [DOS, DOS_partials, s] = sqw_phonon_dos_4D(s, n)
     s.UserData.DOS     = [];  % make sure we re-evaluate again on a finer grid
     qh=linspace(-0.5,.5,50);qk=qh; ql=qh; w=linspace(0.01,maxFreq*1.2,51);
     f=iData(s,[],qh,qk,ql',w);
+    % force to evaluate on a finer grid
+    if ~isfield(s.UserData,'FREQ') || isempty(s.UserData.FREQ)
+      qk=linspace(0,0.5,30); qh=qk; ql=qk; 
+      w =linspace(0.01,maxFreq*1.2,11);
+      f =iData(s,[],qh,qk,ql',w);
+    end
   end
   
   if (~isfield(s.UserData,'DOS') || isempty(s.UserData.DOS)) ...
@@ -154,6 +168,9 @@ function [DOS, DOS_partials, s] = sqw_phonon_dos_4D(s, n)
   % get the DOS and other output
   if isfield(s.UserData,'DOS') && ~isempty(s.UserData.DOS)
     DOS = s.UserData.DOS;
+    if isfield(s.UserData,'properties')
+      DOS.UserData.properties = s.UserData.properties;
+    end
   end
   if isfield(s.UserData,'DOS_partials') && numel(s.UserData.DOS_partials) > 0
     DOS_partials = s.UserData.DOS_partials;
