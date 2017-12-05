@@ -82,13 +82,13 @@ function sigma=moments(data, M, T, classical)
   M1      = abs(trapz(abs(w).*data));    % = h2q2/2/M recoil when non-classical, 0 for classical symmetrized
   if ~classical && isempty(M)
     % try to extract a mass from the recoil
-    mn      = 1.675E-027;      % neutron mass [kg]
-    e       = 1.602E-019;      % [C]
-    HBAR    = 1.05457168e-34;  % Plank/2PI
-    kb      = 1.381E-023;      % Boltzmann [J/K]
-    q2toE   = HBAR*HBAR/2/mn/e*1000*1e20; % = 2.0723 = [Angs^-2] to [meV] 
+    mn      = 1.674927471E-027; % neutron mass [kg]
+    e       = 1.60217662E-019;  % [C]
+    HBAR    = 1.05457168e-34;   % Plank/2PI
+    kb      = 1.38064852E-023;  % Boltzmann [J/K]
+    q2toE   = HBAR*HBAR/2/mn/e*1000*1e20; % = 2.0721 = [Angs^-2] to [meV] 
     C       = e/1000/kb/T;
-    M=mean(q.*q*2.0723./M1);
+    M       = mean(q.*q*q2toE./M1);
     if M >= 1 && M < 2000
       disp([ mfilename ': INFO: The data set ' data.Tag ' ' data.Title ' from ' data.Source  ]);
       disp([ '    Recoil provides a mass M=' num2str(M) ' [g/mol]. Wq may be wrong.' ]);
