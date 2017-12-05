@@ -104,12 +104,26 @@ classdef iFunc_Sqw4D < iFunc
     
     function f = iData(self, varargin)
       % iFunc_Sqw4D: iData: evaluate a 4D Sqw into an iData object
-      f =iData(iFunc(self),varargin{:});
+      %
+      %   iData(self, p, qh, qk, ql, w)
+      
+      % check for QH QK QL W grid
+      if isempty(varargin),  varargin{end+1} = []; end
+      if numel(varargin) <2, varargin{end+1} = linspace(0,0.5,30); end
+      if numel(varargin) <3, varargin{end+1} = linspace(0,0.5,30); end
+      if numel(varargin) <4, varargin{end+1} = linspace(0,0.5,30)'; end
+      if numel(varargin) <5, varargin{end+1} = linspace(0.01,max(self)*1.2,11); end
+      s = iFunc(self);
+      f =iData(s,varargin{:});
       xlabel(f, 'QH [rlu]');
       ylabel(f, 'QK [rlu]');
       zlabel(f, 'QL [rlu]');
       clabel(f, 'Energy [meV]');
       title(f, self.Name);
+      self.UserData = s.UserData;
+      if ~isempty(inputname(1))
+        assignin('caller',inputname(1),self); % update in original object
+      end
     end
     
     function [fig, s, k] = plot(self, varargin)
