@@ -125,7 +125,7 @@ end
 for f=findfield_out'        % get this NXdata members in the initial object
   % f{1} is Data...<NXdata>.<member in NXdata>
   val = get(in, f{1});
-  if strncmp(fliplr(f{1}), fliplr('.PARAMETERS'), length('.PARAMETERS')) && ischar(val)
+  if strncmp(lower(fliplr(f{1})), lower(fliplr('.PARAMETERS')), length('.PARAMETERS')) && ischar(val)
     % this is a PARAMETERS from LAMP
     val = str2struct(val(:)');
   end

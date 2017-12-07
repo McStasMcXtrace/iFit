@@ -39,7 +39,7 @@ cellstring = {};
 for index=1:numel(string)
   this = string{index};
   if isempty(this), continue; end
-  split = textscan(this,'%s','Delimiter',sprintf('\n\r\f;'));
+  split = textscan(this(:)','%s','Delimiter',sprintf('\n\r\f;'));
   for j=1:numel(split)
     this_split=split{j};
     cellstring = { cellstring{:} this_split{:} };
