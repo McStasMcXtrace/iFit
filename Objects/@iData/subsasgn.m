@@ -82,6 +82,9 @@ else
     for i=1:(length(S)-1)
       b = subsref(b, S(i));       % navigate to the pre-last level -> b, e.g. not an iData
     end
+    if isobject(val) % first create the field to avoid calling subsasgn with the child object
+      b = subsasgn(b, S(end), []);
+    end
     b = subsasgn(b, S(end), val); % assigment for last level
     b = subsasgn(a, S(1:(end-1)), b);
     return
