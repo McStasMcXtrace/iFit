@@ -127,7 +127,7 @@ for f=findfield_out'        % get this NXdata members in the initial object
   val = get(in, f{1});
   if strncmp(fliplr(f{1}), fliplr('.PARAMETERS'), length('.PARAMETERS')) && ischar(val)
     % this is a PARAMETERS from LAMP
-    val = str2struct(val);
+    val = str2struct(val(:)');
   end
   nxdata = set(nxdata, f{1}, val);  % make sure we resolve links
   clear val;
