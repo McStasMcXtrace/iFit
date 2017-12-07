@@ -28,7 +28,7 @@ if ischar(string) && exist(string, 'file')
   string=fileread(string);
   string(find(string=='$' | string=='#')) = '';
 end
-if ~ischar(string) && ~iscell(string), return; end
+if ~ischar(string) && ~iscell(string), s=string; return; end
 
 % transform the string into a cellstr
 string = cellstr(string);
