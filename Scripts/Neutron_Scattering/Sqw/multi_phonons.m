@@ -12,6 +12,8 @@ function [Sqw, Iqt, Wq, Tall] = multi_phonons(gw, q, T, sigma, m, n)
 %
 % This implementation is in principle exact for an isotropic monoatomic material,
 % e.g. a liquid or powder.
+% This methodology is equivalent to the LEAPR module of NJOY ("phonon expansion")
+% to compute S(alpha,beta) from a vibrational density of states.
 %
 % conventions:
 % w = Ei-Ef = energy lost by the neutron
