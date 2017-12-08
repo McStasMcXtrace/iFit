@@ -39,6 +39,13 @@ if isempty(fields) % default: search all parameters and assemble them
   return
 end
 
+% make sure we have a 'parameters' field
+if isempty(findfield(s,'parameters','first'))
+  return
+elseif ~isfield(s, 'parameters')
+  s=setalias(s, 'parameters', get(s, findfield(s,'parameters','first cache')));
+end
+
 if ischar(fields) && strcmpi(fields, 'sqw')
   % a list of parameter names, followed by comments
   % aliases can be specified when a parameter is given as a cellstr, with 
@@ -76,7 +83,7 @@ if ischar(fields) && strcmpi(fields, 'sqw')
      {'IncidentWavevector [Angs-1] neutron incident wavevector' 'ki' 'Ki'} ...
      {'FinalWavevector [Angs-1] neutron final wavevector' 'kf' 'Kf'} ...
      {'Distance [m] Sample-Detector distance' 'distance' } ...
-     {'ChannelWidth [time unit] ToF Channel Width' } ...
+     {'ChannelWidth [time unit] ToF Channel Width' 'Channel_Width'} ...
      {'V_rho [Angs^-3] atom density' 'rho' } ...
     };
 elseif ischar(fields) && strcmpi(fields, 'sab')
@@ -141,9 +148,9 @@ end
 for index=1:length(fields)
   f = fields{index};
   if ischar(f), f= {f}; end
-  p_name = strtok(f{1});
+  p_name = strtok(f{1});          % the first name before the comment. We will assign it.
   for f_index=1:numel(f)
-    name   = strtok(f{f_index});
+    name   = strtok(f{f_index});  % the name of the field or alternatives
     if     isfield(s, name)   val0=get(s, name);
     elseif isfield(s, p_name) val0=get(s, p_name);
     elseif isfield(s, 'parameters') && isfield(get(s, 'parameters'), name)
@@ -155,6 +162,9 @@ for index=1:length(fields)
       links    = findfield(s,strtok(f{f_index}),'exact');
     else
       links    = findfield(s,strtok(f{f_index}),'exact cache');
+      if isempty(links) && numel(strtok(f{f_index})) > 3
+        links    = findfield(s,strtok(f{f_index}),'cache'); % search for incomplete names
+      end
     end
     if isfield(s.Data, name)
       links = [ 'Data.' name ];

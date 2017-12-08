@@ -6,12 +6,12 @@ function s = Sqw_phi2q(s)
   
   disp([ mfilename ': ' s.Tag ' ' s.Title ' Converting Axis 2 "' label(s, 2) '": angle [deg] to wavevector [Angs-1].' ]);
   Ei    = 81.805/lambda^2;
-  phi   = s{2}; % angle
-  hw    = s{1};
+  phi   = getaxis(s,2); % angle
+  hw    = getaxis(s,1);
   if isvector(hw) && isvector(phi)
     s = meshgrid(s);
-    phi   = s{2}; % angle
-    hw    = s{1};
+    phi   = getaxis(s,2); % angle
+    hw    = getaxis(s,1);
   end
   % we use: cos(phi) = (Ki.^2 + Kf.^2 - q.^2) ./ (2*Ki.*Kf);
   Ei = 81.805/lambda^2; Ki = 2*pi./lambda; 

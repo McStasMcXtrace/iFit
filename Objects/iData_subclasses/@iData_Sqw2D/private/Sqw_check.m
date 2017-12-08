@@ -48,6 +48,7 @@ function s = Sqw_check(s)
       if ischar(def), lab = [ def ' ' lab ]; end
       if isempty(lab), lab=lower(getaxis(s, num2str(index))); end
       lab = strread(lab, '%s'); % split string into cell
+      
       if strcmpm(lab, {'alpha','a'}) % strcmpm = multiple strcmpi is private below
         alpha_present=index;
       elseif strcmpm(lab, {'beta','b'})
@@ -56,39 +57,43 @@ function s = Sqw_check(s)
         q_present=index;
       elseif strcmpm(lab, {'energy','frequency','w','e','mev'})
         w_present=index;
-      elseif strcmpm(lab, {'time','sec','t','tof'})
+      elseif strcmpm(lab, {'time','sec','t','tof','channels','channel'})
         t_present=index;
-      elseif strcmpm(lab, {'angle','deg','theta','phi'})
+      elseif strcmpm(lab, {'angle','deg','theta','phi','2theta','2thetha'})
         a_present=index;
       end
     end
   end
-
-  % conversions
-  if alpha_present && beta_present && (~w_present || ~q_present)
-    s = Sab_Sqw(s); % convert from S(alpha,beta) to S(q,w)
-    return
-  end
   
   % search for Sqw parameters for further conversions
   if ~isfield(s, 'parameters')
-    s = Sqw_parameters(s);
+    [s, parameters] = Sqw_parameters(s);
+  end
+  % conversions
+  if alpha_present && beta_present && (~w_present || ~q_present)
+    disp([ mfilename ': S(alpha,beta) data set detected: converting to S(q,w)' ]);
+    s = Sab_Sqw(s); % convert from S(alpha,beta) to S(q,w)
+    return
   end
   if ~w_present && t_present
     % convert from S(xx,t) to S(xx,w): t2e requires L2=Distance
+    disp([ mfilename ': time/channel data set detected: converting axis "' label(s,t_present) '" to energy.' ]);
     s = Sqw_t2e(s);
-    s = Sqw_check(s);
-    return
+    if ~isempty(s), w_present = t_present; end
   end
   if ~q_present && a_present && w_present
     % convert from S(phi,w) to S(q,w)
+    disp([ mfilename ': S(phi,w) data set detected: converting angle axis "' label(s,a_present) '" to wavevector.' ]);
     s = Sqw_phi2q(s);
-    s = Sqw_check(s);
-    return
+    if ~isempty(s), q_present = a_present; end
   end
   if ~w_present || ~q_present
     disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ]);
     disp('    does not seem to be an isotropic S(|q|,w) 2D object. Ignoring.');
+    disp([ '    Energy    axis present:' num2str(w_present) ])
+    disp([ '    Time      axis present:' num2str(t_present) ])
+    disp([ '    Angle     axis present:' num2str(a_present) ])
+    disp([ '    Momentum  axis present:' num2str(q_present) ])
     s = [];
     return
   end
