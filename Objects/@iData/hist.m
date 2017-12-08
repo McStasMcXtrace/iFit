@@ -44,7 +44,13 @@ if numel(a) > 1
   return
 end
 
-if ~isvector(a), c=a; return; end
+if ~isvector(a)
+  % we create an event list, then re-sample it
+  a = event(a);  % make it an event dataset
+  % convert back to histogram
+  c = hist(a, varargin{:});
+  return
+end
 fillme = 0;
 
 % scan varargin and search for AccumData
@@ -105,7 +111,7 @@ varargin{use_accumdata} = ones(M,1);
 
 % normalise to the number of accumulated events per bin
 index = find(count);
-index0= find(~count);
+%index0= find(~count);
 
 % compute the Error and Monitor
 e = subsref(a,struct('type','.','subs','Error'));
@@ -126,11 +132,11 @@ else
 end
 
 % the monitor is multiplied by the nb of occurencies in the accumulated data
-count_m = count_m.*count;
+%count_m = count_m.*count;
 
-count_s(index0) = 0;
-count_e(index0) = 0;
-count_m(index0) = 0;
+%count_s(index0) = 0;
+%count_e(index0) = 0;
+%count_m(index0) = 0;
 
 % assemble final new object
 c = copyobj(a);
