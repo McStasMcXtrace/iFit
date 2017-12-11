@@ -102,16 +102,8 @@ end
 clear ax signal
 if isempty(use_axes), c=a; return; end
 
-% now call the magic function (private, below)
+% now call the magic function (private, below). The Signal is the mean value.
 [count_s edges] = histcn(axes, varargin{:});
-
-% count the accumulated events (so that we divide results by it to get mean value)
-varargin{use_accumdata} = ones(M,1);
-[count edges] = histcn(axes, varargin{:});
-
-% normalise to the number of accumulated events per bin
-index = find(count);
-%index0= find(~count);
 
 % compute the Error and Monitor
 e = subsref(a,struct('type','.','subs','Error'));
@@ -130,13 +122,6 @@ if  ~isempty(m) && not(all(m(:) == 0 | m(:) == 1)) && numel(m) == M
 else
   count_m = m;
 end
-
-% the monitor is multiplied by the nb of occurencies in the accumulated data
-%count_m = count_m.*count;
-
-%count_s(index0) = 0;
-%count_e(index0) = 0;
-%count_m(index0) = 0;
 
 % assemble final new object
 c = copyobj(a);

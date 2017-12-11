@@ -49,6 +49,7 @@ otherwise % nD, n>1
     return
   end
   if isvector(i_signal)  % long vector nD Data set
+  
     if length(i_axes) == 2
       if ~any(strcmp(method,{'linear','nearest','cubic','v4','natural'})), method='linear'; end
       f_signal = griddata(i_axes{[2 1]}, i_signal, f_axes{[2 1]}, method);
@@ -64,7 +65,9 @@ otherwise % nD, n>1
       f_signal = griddatan(cell2mat(i_axes), i_signal, cell2mat(f_axes), method);
       method = 'griddatan with vector signal';
     end
-  else
+    
+  else                   % normal grids/axes
+  
     % f_axes must be an ndgrid result, and monotonic
     if ~any(strcmp(method,{'linear','nearest','cubic','spline'})), method='linear'; end
     any_vector  = 0;
@@ -96,63 +99,109 @@ otherwise % nD, n>1
             end
         end
     end
-    % now we can call interpn, else default to griddata (very slow)
-    failed = false;
-    f_signal1 = []; 
-    try
-      f_signal1 = interpn(i_axes{:}, i_signal, f_axes{:}, method, NaN);
-      method    = 'interpn with signal';
-      f_signal  = f_signal1;
-    catch ME
-      failed = true;
-    end
-    % check if we have generated many NaN's
-    if ~failed && ~isempty(f_signal1) && length(i_axes) <= 3
-      nb_i_nans  = numel(find(isnan(i_signal(:))));
-      nb_f_nans1 = numel(find(isnan(f_signal1(:))));
-      if nb_f_nans1/numel(f_signal1) > 2*nb_i_nans/numel(i_signal) && nb_f_nans1/numel(f_signal1) > 1e-2
-        failed = true;  % twice as many NaN's as before. Try the other interpolant
+    
+    interpolants = {'iData_interp_interpn','iData_interp_griddata'};
+    f_signals ={};
+    f_methods ={};
+    f_nans    =[];
+    % input number of NaN's
+    nb_i_nans  = numel(find(isnan(i_signal(:))));
+    for index = 1:numel(interpolants)
+      try
+        [f_signal, f_method] = feval(interpolants{index}, i_axes, i_signal, f_axes, method);
+        if ~isempty(f_signal)
+          f_signals{end+1}  = f_signal;
+          f_methods{end+1}  = f_method;
+          f_nans(end+1)     = numel(find(isnan(f_signal(:))));
+          if f_nans(end) == 0, break; end % perfect method/no NaN's, we assume it is good
+        end
+      catch ME
+        % disp([ mfilename ': failed interpolation with ' interpolants{index} ]);
+        % disp(getReport(ME))
       end
     end
     
-    if failed
-      % griddata is much slower than interpn
-      if length(i_axes) == 2
-        if ~any(strcmp(method,{'linear','nearest','cubic','v4','natural'})), method='linear'; end
-        f_signal2 = griddata(i_axes{[2 1]}, i_signal, f_axes{[2 1]}, method);
-        method = 'griddata with signal';
-      elseif length(i_axes) == 3 && exist('griddata3')
-        if ~any(strcmp(method,{'linear','nearest'})), method='linear'; end
-        f_signal2 = griddata3(i_axes{[2 1]}, i_signal, f_axes{[2 1]}, method);
-        method = 'griddata3 with signal';
-      else
-        % try with griddatan, requires to assemble new X,Y and XI
-        if numel(i_signal) ~= length(i_signal)
-          if all(cellfun(@(c)numel(c)==length(c), i_axes))
-            [ i_axes{:} ] = ndgrid(i_axes{:});
-          end
-          if all(cellfun(@(c)numel(c)==length(c), f_axes))
-            [ f_axes{:} ] = ndgrid(f_axes{:});
-          end
-        end
-        % i_axes and f_axes must be columns, and cell2mat append them for
-        % griddatan
-        sz = size(f_axes{1});
-        for index=1:length(i_axes)
-          x = i_axes{index}; i_axes{index}=x(:); 
-          x = f_axes{index}; f_axes{index}=x(:); clear x;
-        end
-        f_signal2 = griddatan(cell2mat(i_axes), i_signal, cell2mat(f_axes), method);
-        f_signal2 = reshape(f_signal2, sz);
-      end
-      % get the interpolation which produces less NaN's
-      nb_f_nans2 = numel(find(isnan(f_signal2(:))));
-      if ~isempty(f_signal1) && ...
-        (isempty(f_signal2) || (nb_f_nans1/numel(f_signal1) < nb_f_nans2/numel(f_signal2)))
-        f_signal = f_signal1;
-      else
-        f_signal = f_signal2;
-      end
-    end
+    f_signal = []; method = []; f_nan = Inf;
+    % now we get the best method, which has fewer NaN's
+    [~,best] = min(f_nans);
+    f_signal = f_signals{best};
+    method   = f_methods{best};
+    f_nan    = f_nans(best);
   end
 end
+
+% ------------------------------------------------------------------------------
+
+function [f_signal, method] = iData_interp_interpn(i_axes, i_signal, f_axes, method)
+  % interpn is faster than griddatan, but requires that i_axes are monotonic
+  % as obtained from ndgrid.
+  switch length(i_axes)
+  case 1
+    f_signal  = interp1(i_axes{1}, i_signal, f_axes{1}, method, NaN);
+  case 2
+    f_signal  = interp2(i_axes{[2 1]}, i_signal, f_axes{[2 1]}, method, NaN);
+  case 3
+    f_signal  = interp3(i_axes{[2 1 3]}, i_signal, f_axes{[2 1 3]}, method, NaN);
+  otherwise
+    f_signal  = interpn(i_axes{:}, i_signal, f_axes{:}, method, NaN);
+  end
+  method    = [ method ' interpn' ];
+  
+function [f_signal, method] = iData_interp_griddata(i_axes, i_signal, f_axes, method)
+  % griddata is much slower than interpn. 
+  % Also, it uses triangulation, which creates fake area when using 
+  %   non-meshgrid concave initial data.
+  % In order to minimize this effet, we extend the initial data with zeros around
+  %
+  % NOTE: TriScatteredInterp provides the same results
+  
+  % pad with 0 around to avoid strange Tri interpolant in concave sets
+  [i_axes, i_signal] = iData_interp_safeboxes(i_axes, i_signal);
+  
+  if length(i_axes) == 2
+    if ~any(strcmp(method,{'linear','nearest','cubic','v4','natural'})), method='linear'; end
+    f_signal = griddata(i_axes{[2 1]}, i_signal, f_axes{[2 1]}, method);
+    method = [ method ' griddata'];
+  elseif length(i_axes) == 3 && exist('griddata3')
+    if ~any(strcmp(method,{'linear','nearest'})), method='linear'; end
+    f_signal = griddata3(i_axes{[2 1]}, i_signal, f_axes{[2 1]}, method);
+    method = [ method ' griddata3'];
+  else
+    % try with griddatan, requires to assemble new X,Y and XI
+    if numel(i_signal) ~= length(i_signal)
+      if all(cellfun(@(c)numel(c)==length(c), i_axes))
+        [ i_axes{:} ] = ndgrid(i_axes{:});
+      end
+      if all(cellfun(@(c)numel(c)==length(c), f_axes))
+        [ f_axes{:} ] = ndgrid(f_axes{:});
+      end
+    end
+
+    % i_axes and f_axes must be columns, and cell2mat append them for
+    % griddatan
+    sz = size(f_axes{1});
+    for index=1:length(i_axes)
+      x = i_axes{index}; i_axes{index}=x(:); 
+      x = f_axes{index}; f_axes{index}=x(:); clear x;
+    end
+    f_signal = griddatan(cell2mat(i_axes), i_signal, cell2mat(f_axes), method);
+    f_signal = reshape(f_signal, sz);
+    method = [ method ' griddatan'];
+  end
+  
+function [i_axes, i_signal] = iData_interp_safeboxes(i_axes, i_signal)
+  i_signal = iData_interp_safebox(i_signal);
+  for index=1:numel(i_axes)
+    i_axes{index} = iData_interp_safebox(i_axes{index});
+  end
+  
+function [x] = iData_interp_safebox(in)
+  % surrounds a matrix with a 0's
+  x = in;
+  s = num2cell(2+size(x));  % this adds 1 every where.
+  x(s{:}) = 0;          % fill with NaN's
+  if numel(x) == length(x)  % a vector
+    x = circshift(x, 1);
+  else
+    x = circshift(x, ones(1, ndims(x)));
+  end

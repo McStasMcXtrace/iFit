@@ -19,7 +19,9 @@ function b = interp(a, varargin)
 %     b=interp(s, ..., 'method') uses specified method for interpolation as one of
 %                    linear (default), spline, cubic, or nearest
 %     b=interp(s, ..., 'grid') uses meshgrid/ndgrid to determine new axes as arrays
-%   Extrapolated data is set to NaN for the Signal, Error and Monitor.
+%   Extrapolated data is set to NaN for the Signal, Error and Monitor. Also, in some
+%     cases, the triangulation interpolant creates fake 'flat' area, especially 
+%     when the axes area is concave. We then recommend you try the 'hist' method.
 %   For Event data sets, we recommend to use the 'hist' method which is much faster.
 %
 % input:  s: object or array (iData)
@@ -316,7 +318,7 @@ if ~has_changed,
 end
 
 % interpolation takes place here ------------------------------------------
-[f_signal, meth] = iData_interp(i_axes, i_signal, f_axes, method);
+
 
 if isnumeric(i_error) && length(i_error) > 1, 
      f_error = iData_interp(i_axes, i_error,  f_axes, method); 
@@ -325,7 +327,10 @@ clear i_error
 if isnumeric(i_monitor) && length(i_monitor) > 1, 
      f_monitor = iData_interp(i_axes, i_monitor,f_axes, method);
 else f_monitor = i_monitor; end
-clear i_monitor i_axes
+clear i_monitor
+
+[f_signal, meth] = iData_interp(i_axes, i_signal, f_axes, method);
+clear i_axes
 
 % get back to original Signal class
 if ~strcmp(i_class, 'double')
