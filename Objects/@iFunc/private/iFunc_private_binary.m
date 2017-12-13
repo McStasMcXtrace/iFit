@@ -171,7 +171,15 @@ if isFa && isFb
   c.UserData.(tmp_a)=a.UserData;
   c.UserData.(tmp_b)=b.UserData;
   
-  % set expressions to store, set and reset parameters/UserData
+  % handle cross/orthogonal axes operation -> extend dimension
+  if any(strcmp(op, {'mpower','mtimes','mrdivide'}))
+    c.Dimension=a.Dimension + b.Dimension;
+  else
+    c.Dimension=max(a.Dimension,b.Dimension);
+  end
+  
+  % set expressions to store, set and reset parameters/UserData/axes
+  ax = 'x,y,z,t,u,v,w,'; ax = ax(1:(c.Dimension*2-1));
   string.head = [ ...
     sprintf('%s_p          = p(%i:%i); %% store 1st object parameters\n', tmp_a, i1a, i2a), ...
     sprintf('%s_p          = p(%i:%i); %% store 2nd object parameters\n', tmp_b, i1b, i2b), ...
@@ -179,13 +187,16 @@ if isFa && isFb
     sprintf('%s_UserData   = this.UserData.%s; %% store 2nd object UserData\n', tmp_b, tmp_b), ...
     sprintf('p             = %s_p; %% get 1st object parameters\n', tmp_a), ...
     sprintf('this.UserData = %s_UserData; %% get 1st object UserData\n', tmp_a), ...
+    sprintf('%s_ax         = { %s }; %% store the initial axes\n', tmp_a, ax);
   ];
   
+  % switch between models: restore parameter values, UserData, axes
   string.core = [ ...
     sprintf('%s_p          = p; %% update 1st object parameters\n', tmp_a), ...
     sprintf('%s_UserData   = this.UserData; %% update 1st object UserData\n', tmp_a), ...
     sprintf('p             = %s_p; %% get 2nd object parameters\n', tmp_b), ...
     sprintf('this.UserData = %s_UserData; %% get 2nd object UserData\n', tmp_b), ...
+    sprintf('[%s]          = deal(%s_ax{:}); %% restore the initial axes\n', ax, tmp_a);
   ];
   
   string.tail = [ ...
@@ -209,13 +220,6 @@ if isFa && isFb
   t = iFunc;
   c.Tag  = t.Tag;
   c.Date = t.Date;
-
-  % handle cross/orthogonal axes operation -> extend dimension
-  if any(strcmp(op, {'mpower','mtimes','mrdivide'}))
-    c.Dimension=a.Dimension + b.Dimension;
-  else
-    c.Dimension=max(a.Dimension,b.Dimension);
-  end
   
   % append Constraint ==========================================================
   if     isempty(a.Constraint.eval), 

@@ -339,7 +339,8 @@ if ~isempty(signal_in_varargin) && length(varargin) >= signal_in_varargin
   varargin(signal_in_varargin) = []; % remove Signal from arguments for evaluation (used in Guess)
   signal_in_varargin = [];
 end
-% EVALUATION HERE **************************************************************
+% EVALUATION HERE
+% **************************************************************
 [signal,ax,p,model,duration] = iFunc_feval_expr(model, varargin{:});
 if duration>0, model.Duration = duration; end
 
@@ -415,15 +416,16 @@ try
 catch ME
   disp([ 'Error: Could not evaluate Expression in model ' this.Name ' ' this.Tag ]);
   disp(this)
-  t=this.Eval;
-  if numel(t) > 20
-    disp(t(1:10))
+  tmp=this.Eval;
+  if numel(tmp) > 20
+    disp(tmp(1:10))
     disp('...')
-    disp(t((end-5):end))
+    disp(tmp((end-5):end))
   else
-    disp(t)
+    disp(tmp)
   end
   disp(getReport(ME,'basic'))
+  clear tmp
   save iFunc_feval_error
   whos
   error([ 'iFunc:' mfilename ], [ 'Failed model evaluation. Saved state in ' fullfile(pwd,'iFunc_feval_error') ]);

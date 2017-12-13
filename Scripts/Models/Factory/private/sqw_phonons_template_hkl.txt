@@ -14,16 +14,18 @@ check_numel  = cellfun(@numel, ax);
 % check orientation (axis rank) for vectors. 0 for non vectors
 check_orient = zeros(1,4);
 index        = find(check_vector);
-check_orient(index) = cellfun(@(c)find(size(c)==numel(c)), ax(index));
+check_orient(index) = cellfun(@(c)find(size(c)==numel(c),1), ax(index));
 
 HKL = []; is_event = false; resize_me = [];
 if all(check_vector) && all(check_numel == check_numel(1)) && all(check_orient == check_orient(1))
   % event 4D: [ x y z t ]   as vectors, same length, same orientation
   is_event = true;
+  resize_me = size(x);
   
 elseif all(check_vector(1:4)) && all(check_numel(1:3) == check_numel(1)) && all(check_orient(1:3) == check_orient(1))
   % kpath 2D: [ x y z ]     as vectors, same length, same orientation, [ t ] vector, not same length or orientation
   % this is the SAME test as event 4D, but with xyz only
+  resize_me = [ numel(x) numel(t) ];
 
 elseif all(cellfun(@ndims, ax) == 4) && all(check_numel == check_numel(1)) % (X,Y,Z,T) are all 4D, same numel
   x=x(:,:,:,1); y=y(:,:,:,1); z=z(:,:,:,1); t=t(1,1,1,:);
@@ -32,6 +34,7 @@ elseif all(cellfun(@ndims, ax) == 4) && all(check_numel == check_numel(1)) % (X,
 elseif all(cellfun(@ndims, ax(1:3)) == 3)  && all(check_numel(1:3) == check_numel(1)) % (X,Y,Z) are all 3D
   % 3D HKL data sets plus energy axis. NOP.
   resize_me = size(x);
+
 else
   % map 4D:   any other choice
   % any(~check_vector) || any(check_numel ~= check_numel(1)) || any(check_orient ~= check_orient(1))
