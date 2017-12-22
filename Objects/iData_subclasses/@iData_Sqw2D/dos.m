@@ -17,12 +17,12 @@ function DOS = dos(s, method, n)
 %
 %  The method to use in the gDOS computation can be given as 2nd argument
 %       gDOS = dos(Sqw, 'Carpenter')
-%       gDOS = dos(Sqw, 'Bellisent')
+%       gDOS = dos(Sqw, 'Bellissent')
 %       gDOS = dos(Sqw, 'Bredov') better for coherent scatterers
 %
 % input:
 %   s: Sqw data set e.g. 2D data set with w as 1st axis (rows, meV), q as 2nd axis (Angs-1).
-%   method: 'Carpenter' (default),'Bellisent' or 'Bredov'
+%   method: 'Carpenter' (default),'Bellissent' or 'Bredov'
 %   n: number of low-angle values to integrate (integer). Default is 10 when omitted.
 %
 % output:
@@ -34,7 +34,7 @@ function DOS = dos(s, method, n)
 %    omega < 0, neutron gains energy, anti-Stokes
 %
 % references: Price J. et al, Non Cryst Sol 92 (1987) 153
-%         Bellisent-Funel et al, J. Mol. Struct. 250 (1991) 213
+%         Bellissent-Funel et al, J. Mol. Struct. 250 (1991) 213
 %         Carpenter and Pelizarri, Phys. Rev. B 12, 2391 (1975)
 %         Suck et al, Journal of Alloys and Compounds 342 (2002) 314
 %         Bredov et al., Sov. Phys. Solid State 9, 214 (1967)
@@ -66,8 +66,8 @@ function DOS = dos(s, method, n)
   if isfield(s,'classical') || ~isempty(findfield(s, 'classical'))
     if s.classical == 1
       disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' seems to be classical.' ])
-      disp('  The gDOS computation may be wrong. Now using method=''Bellisent'', or apply Bosify first.');
-      method = 'Bellisent';
+      disp('  The gDOS computation may be wrong. Now using method=''Bellissent'', or apply Bosify first.');
+      method = 'Bellissent';
     end
   end
   
@@ -77,10 +77,10 @@ function DOS = dos(s, method, n)
   w= s{1};
   
   T = Sqw_getT(s);
-  if isempty(T) && isempty(strfind(method, 'Bellisent'))
+  if isempty(T) && isempty(strfind(method, 'Bellissent'))
     disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source  ])
-    disp(['    has no Temperature defined. Using method=''Bellisent''' ])
-    method = 'Bellisent';
+    disp(['    has no Temperature defined. Using method=''Bellissent''' ])
+    method = 'Bellissent';
   end
   
   switch lower(method)
@@ -88,9 +88,9 @@ function DOS = dos(s, method, n)
     g = sqw_phonon_dos_Carpenter(s, T);  % requires Temperature 
   case 'bredov'
     g = sqw_phonon_dos_Bredov(s, T);     % requires Temperature (call Carpenter)
-  otherwise % 'bellisent'
-    method = 'Bellisent';
-    g = sqw_phonon_dos_Bellisent(s);
+  otherwise % 'bellissent'
+    method = 'Bellissent';
+    g = sqw_phonon_dos_Bellissent(s);
   end
 
   if ischar(xl), setaxis(g,2, xl); end
@@ -148,12 +148,12 @@ function g = sqw_phonon_dos_Carpenter(s, T)
   g       = abs(hw./(n+1)).*s./q.^2;
   g.Error = s.Error./s.Signal.*g.Signal;
   
-function g = sqw_phonon_dos_Bellisent(s)
-% See e.g.: Bellisent-Funel et al, J. Mol. Struct. 250 (1991) 213
+function g = sqw_phonon_dos_Bellissent(s)
+% See e.g.: Bellissent-Funel et al, J. Mol. Struct. 250 (1991) 213
 %
 % uses Carpenter with approx: exp(2W)=1 and 1/(n(w)+1) ~ hw
 %
-% g(q,w) ~ hw.^2./q.^2 S(q,w)                      [Bellisent]
+% g(q,w) ~ hw.^2./q.^2 S(q,w)                      [Bellissent]
   hw = s{1}; 
   q  = s{2};
   
