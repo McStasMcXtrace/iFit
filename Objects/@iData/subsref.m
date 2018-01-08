@@ -90,9 +90,14 @@ for i = 1:length(S)     % can handle multiple index levels
         setalias(b,'Signal', 'ModelValue');
         return
       elseif any(cellfun('isempty',s.subs)), b=iData; return;        % b([])
+      elseif length(s.subs) == 1 && all(size(s.subs{1}) == size(b))  % b(logical mask)
+        select = double(s.subs{1});
+        select(select ~= 0) = 1;
+        select(select == 0) = nan;
+        b = b.*select; return;
       elseif ~isa(b, 'iData') b=subsref(b, s); return;
       end
-      if length(s.subs) == 1 && all(s.subs{:} == 1), continue; end  % b(1)
+      if length(s.subs) == 1 && isscalar(s.subs{1}) && all(s.subs{:} == 1), continue; end  % b(1)
       
       iData_private_warning('enter',mfilename);
       
