@@ -29,6 +29,8 @@ if isempty(fig) || ~ishandle(fig)
     setappdata(fig, 'CurrentDataSetIndex',[]);
     setappdata(fig, 'CurrentDataSetHandle',[]);
     
+    set(fig,'Pointer','watch');
+    
     % Display welcome dialog during menu build
     h = mifit_Help_About(fig);
     mifit_disp([ version(iData) sprintf(' Visit <http://ifit.mccode.org>') ]);
@@ -146,5 +148,7 @@ if isempty(fig) || ~ishandle(fig)
 
     % close welcome image
     delete(h);
+    
+    set(fig,'Pointer','arrow');
 
 end

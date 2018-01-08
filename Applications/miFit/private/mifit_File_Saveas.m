@@ -15,7 +15,7 @@ function mifit_File_Saveas(varargin)
     file = varargin{1};
   else
     filterspec = { '*.mat','MAT-files (*.mat)'};
-    [filename, pathname] = uiputfile(filterspec, 'Save All miFit Data sets and Models as', [ mfilename '.mat' ]);
+    [filename, pathname] = uiputfile(filterspec, 'Save All miFit Data sets and Models as', [ 'mifit.mat' ]);
     if isequal(filename,0) || isequal(pathname,0)
       return
     end
