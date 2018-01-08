@@ -29,6 +29,8 @@
               Models</a></li>
           <li><a href="#mozTocId805610">from copy/paste</a></li>
           <li><a href="#mozTocId565408">from drag-and-drop</a></li>
+          <li><a href="#mozTocId821000">from the TextEdit (File:Evaluate
+              code/script menu item)</a></li>
           <li><a href="#mozTocId997017">creating a new Data set</a></li>
           <li><a href="#mozTocId638950">creating new Models</a></li>
         </ol>
@@ -37,6 +39,8 @@
         <ol>
           <li><a href="#mozTocId207324"> Plotting data</a></li>
           <li><a href="#mozTocId97236"> Sorting and searching data</a></li>
+          <li><a href="#mozTocId567444">Selecting/deselecting regions of
+              interest (ROI)</a></li>
           <li><a href="#mozTocId467624"> Mathematical operators on Data
               sets</a></li>
         </ol>
@@ -76,6 +80,7 @@
     <hr size="2" width="100%"><br>
     This is the <i>miFit</i> help, a simple graphical user interface to
     iFit. To access the main iFit help pages, <a href="index.html">click
+
       here</a>.<br>
     <br>
     <h3 align="center"><a class="mozTocH3" name="mozTocId772540"></a>Starting</h3>
@@ -132,6 +137,7 @@
     </ul>
     <h4><a class="mozTocH4" name="mozTocId647875"></a>from files</h4>
     <p>The legacy way to import data files into miFit is to select the <i>Open
+
 
 
 
@@ -214,6 +220,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
                     TOF</a>)<br>
                 </small></li>
               <small> </small>
@@ -222,6 +229,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
               <li><small>Xray/neutron diffraction<span
                     class="Apple-converted-space">&nbsp;</span><a
                     href="http://www.esrf.fr/computing/Forum/imgCIF/cbf_definition.html">Crystallographic
+
 
 
 
@@ -244,7 +252,9 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
                     3D volume</a><span class="Apple-converted-space">&nbsp;</span>Analyze
+
 
 
 
@@ -341,6 +351,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
                   (*.stl)</small></li>
               <small> </small>
               <li><small><a
@@ -355,6 +366,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
               <small> </small>
               <li><small><a href="http://www.marresearch.com/">MAR</a><span
                     class="Apple-converted-space">&nbsp;</span>MarResearch
+
 
 
 
@@ -384,6 +396,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
                   Scientific WinView CCD / PI Acton Camera file (*.spe)</small></li>
               <small> </small>
               <li><small><a
@@ -398,6 +411,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
                     class="Apple-converted-space">&nbsp;</span><a
                     href="http://shelx.uni-ac.gwdg.de/SHELX/">INS/RES/SHX</a><span
                     class="Apple-converted-space">&nbsp;</span>Crystallography
+
 
 
 
@@ -463,7 +477,9 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
 
 
 
+
                     Design</a><span class="Apple-converted-space">&nbsp;</span>VMS
+
 
 
 
@@ -495,6 +511,7 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
 
 
 
+
                     Nuclear Data File</a><span
                     class="Apple-converted-space">&nbsp;</span>(*.endf,*.tsl)</small></li>
               <small> </small>
@@ -503,6 +520,9 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
                     class="Apple-converted-space">&nbsp;</span>files
                   (*.ace) [requires<span class="Apple-converted-space">&nbsp;</span><a
                     href="http://pyne.io/">PyNE</a>]</small></li>
+              <li><small>Numpy <a
+                    href="https://docs.scipy.org/doc/numpy/neps/npy-format.html">NPY</a>
+                  binary array (*.npy)</small></li>
             </ul>
           </td>
         </tr>
@@ -536,7 +556,7 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
     <pre style="color: rgb(0, 0, 0); font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; margin-left: 40px;"><meta http-equiv="content-type" content="text/html; charset=windows-1252"></pre><h4><a class="mozTocH4" name="mozTocId487410"></a>from the Matlab/iFit prompt: Data sets<br></h4><p>It is possible to work from the Matlab/iFit prompt, and send any numerical array, as well as <a href="iData.html">iData</a> (data sets) and iFunc (models) objects. This is done with the <font color="#3366ff">mifit(data)</font> command. Any syntax from the <a href="Load.html">Load</a> page can be used, where '<i>mifit</i>' stand in place of '<i>iData</i>'.&nbsp;</p><p>To import a file, send it path: <i>mifit(filename)</i><br></p><ul><li><pre><font color="#3366ff">mifit</font>(<font color="#cc33cc">'path_to_file'</font>)&nbsp;</pre></li><li><pre><font color="#3366ff">mifit</font>(<font color="#cc33cc">'http://path_to_distant_file'</font>)</pre></li></ul><div align="right"><i>Remember to properly set the proxy settings in the Preferences in case you are behind one. </i><br></div><p>To import a numerical array:<i> mifit(array)</i><br></p><ul><li><a href="images/iFit_standalone.png"><img alt="iFit standalone
             window (no Matlab license required)" title="iFit standalone
             window (no Matlab license required)" src="images/iFit_standalone.png" style="border: 0px solid;
-            border: 0px solid; width: 300px; height: 198px;" align="right"></a><code>a=<font color="#3366ff">rand</font>(10);</code><code><br></code><code><font color="#3366ff">mifit</font>(a);</code></li></ul><p>or <i>mifit(x,y,z, ... signal)</i><br></p><ul><li><code>x = 0:.1:8*pi; y = sin(x);</code><code><br></code><code><font color="#3366ff">mifit</font></code><code>(x,y);</code><br></li></ul><p>or</p><ul><li><code>a=[ &nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0</code><code><br></code><code>&nbsp;&nbsp;&nbsp; 0.1000&nbsp;&nbsp;&nbsp; 0.0998</code><code><br></code><code>&nbsp;&nbsp;&nbsp; 0.2000&nbsp;&nbsp;&nbsp; 0.1987</code><code><br></code><code>&nbsp;&nbsp;&nbsp; 0.3000&nbsp;&nbsp;&nbsp; 0.2955</code><code><br></code><code>&nbsp;&nbsp;&nbsp; 0.4000&nbsp;&nbsp;&nbsp; 0.3894</code><code><br></code><code>&nbsp;&nbsp;&nbsp; 0.5000&nbsp;&nbsp;&nbsp; 0.4794</code><code><br></code><code>&nbsp;&nbsp;&nbsp; 0.6000&nbsp;&nbsp;&nbsp; 0.5646</code><code><br></code><code>&nbsp;&nbsp;&nbsp; 0.7000&nbsp;&nbsp;&nbsp; 0.6442</code><code><br></code><code>&nbsp;&nbsp;&nbsp; 0.8000&nbsp;&nbsp;&nbsp; 0.7174</code><code><br></code><code>&nbsp;&nbsp;&nbsp; 0.9000&nbsp;&nbsp;&nbsp; 0.7833</code><code><br></code><code>&nbsp;&nbsp;&nbsp; 1.0000&nbsp;&nbsp;&nbsp; 0.8415</code><code><br></code><code>&nbsp;&nbsp;&nbsp; 1.1000&nbsp;&nbsp;&nbsp; 0.8912</code><code><br></code><code>&nbsp;&nbsp;&nbsp; 1.2000&nbsp;&nbsp;&nbsp; 0.9320 ];<br></code><code><font color="#3366ff">mifit</font></code><code>(a);</code><br></li></ul><p>To import an iData object (data set. Refer to the <a href="Load.html">Load</a> page): <i>mifit(iData)</i><br></p><ul><li><code>a = iData(peaks);</code></li><li><code>a.Title = <font color="#cc33cc">'Peak function'</font>; <font color="#3366ff">label</font>(a,1,<font color="#cc33cc">'my X axis'</font>); <font color="#3366ff">label</font>(a,2,<font color="#cc33cc">'my Y axis'</font>);</code></li><li><code><font color="#3366ff">mifit</font>(a);</code></li></ul><h4><a class="mozTocH4" name="mozTocId315062"></a>from the Matlab/iFit prompt: Models</h4><p>To import a Model (<a href="iFunc.html">iFunc</a> object): <i>mifit(iFunc)</i><br></p><ul><li><code>f=gauss+lorz; f.Background_2=0; <font color="#3366ff">fix</font>(f,<font color="#cc33cc">'Background_2'</font>);</code></li><li><code><font color="#3366ff">mifit</font>(f);</code></li></ul>The new model is added to the <i>1D</i> Models menu, as a <b><font color="#3366ff">blue</font></b> entry, which is used to label 'user' models. Such models are <b><i>'static'</i></b> in the sense that once in the Models menu, only the model parameters can be changed. These models are assigned a unique iD in the form <i>iFxxxx</i>.<br><br>It is also possible to add Models as expressions, which are then evaluated to create a model. Such models, shown in <b><font color="#33cc00">green</font></b> in the Models menu, are <i><b>'dynamic'</b></i> in the sense that they are used to effectively create <i>other</i> static models. Such model creators do not have a unique model iD. For instance, the '<i>sqw_phonons</i>' model is dynamic. When called, it requires to enter parameters to initiate the model creation, such as the DFT code to use, the k-mesh, ... Then, a <i>static</i> model is created, but the parameters used initially (DFT, k-mesh, ...) can not be changed further. However, the model parameters (intensity, ...) can be changed, e.g. during fit processes.<br><br>To import a Model expression as a dynamic model (creator), use:<br><ul><li><code><font color="#3366ff">mifit</font>(<font color="#cc33cc">'Models_Add_Entry'</font>,<font color="#cc33cc">'gauss+lorz'</font>);</code></li></ul><h4><a class="mozTocH4" name="mozTocId805610"></a>from copy/paste</h4><p>It is possible to use the Copy/Paste mechanism to import data sets. If the copied element is a file, it will be imported the same way as with the Open item above when selecting the <i>Paste</i> item in the <i>Edit</i> menu. You can also click on the grey window background or the 'Data Sets' label above the list, and press <i>Ctrl-V</i> (command-V on MacOSX)<br></p><p>You can also copy whole data blocks (e.g. numerical values/array from a text editor or a spreadsheet), and paste them into miFit.<br></p><p>The copy/paste also works with path name (as strings) including distant files (URL with http, https, ftp). Remember to properly set the proxy settings in the Preferences in case you are behind one.</p><h4><a class="mozTocH4" name="mozTocId565408"></a>from drag-and-drop</h4><p>A very convenient way to import data is to drag a data file, and drop it into the miFit window. A new data sets object is then read, and added to the list. This works with multiple file selections, as well as file path given as strings, including HTTP, HTTPS and FTP links. Remember to properly set the proxy settings in the Preferences in case you are behind one.<br></p><h4><a class="mozTocH4" name="mozTocId997017"></a>creating a new Data set</h4><p>You may create a new data set using a spreadsheet by selecting the <i>New</i> item in the <i>File</i> menu, or the white page icon in the toolbar. Type in your data (Copy/Paste works). The data set will be imported into miFit when you close the window.<br></p><h4><a class="mozTocH4" name="mozTocId638950"></a>creating new Models</h4><p>The way to define new Models into miFit is <i>via</i> the Matlab/iFit prompt (see <a href="#mozTocId315062">above</a>), or by importing a data file containing a model (iFunc) definition.<br></p><h3 align="center"><a class="mozTocH3" name="mozTocId82620"></a>Working with Data sets</h3><p>You should first import or create Data Sets (see <a href="#mozTocId638950">above</a>), which populate the <i>miFit</i> list. Each entry is an <a href="iData.html">iData</a> object.<br></p><p>Most actions require to select one or more Data Sets from the list. You can use the mouse click, with the <i>Ctrl</i> key for adding one-by-one, or the <i>Shit</i> key to add in a range. The <i>Select All</i> item in the <i>Edit</i> menu allows to select all, or none (when they are all selected). To deselect a single item, use mouse <i>Ctrl-click</i> on it. You can use <i>Ctrl-A</i> to select all.<br></p><p>Subsequent Data Sets states are saved into a History, which allow to Undo last operations (data states, model selections, etc...). You may as well save any time the miFit state from the <i>Save as</i> item in the <i>File</i> menu.<br></p><p>The miFit interface provides, in its <i>miFit:File/Evaluate code</i> menu item, access to the <b>TextEdit</b> application, which allows to write scripts and commands, and execute them (<i>TextEdit:File/Evaluate</i>).
+            border: 0px solid; width: 300px; height: 198px;" align="right"></a><code>a=<font color="#3366ff">rand</font>(10);</code><code><br></code><code><font color="#3366ff">mifit</font>(a);</code></li></ul><p>or <i>mifit(x,y,z, ... signal)</i><br></p><ul><li><code>x = 0:.1:8*pi; y = sin(x);</code><code><br></code><code><font color="#3366ff">mifit</font></code><code>(x,y);</code><br></li></ul><p>or</p><ul><li><code>a=[ &nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0</code><code><br></code><code>&nbsp;&nbsp;&nbsp; 0.1000&nbsp;&nbsp;&nbsp; 0.0998</code><code><br></code><code>&nbsp;&nbsp;&nbsp; 0.2000&nbsp;&nbsp;&nbsp; 0.1987</code><code><br></code><code>&nbsp;&nbsp;&nbsp; 0.3000&nbsp;&nbsp;&nbsp; 0.2955</code><code><br></code><code>&nbsp;&nbsp;&nbsp; 0.4000&nbsp;&nbsp;&nbsp; 0.3894</code><code><br></code><code>&nbsp;&nbsp;&nbsp; 0.5000&nbsp;&nbsp;&nbsp; 0.4794</code><code><br></code><code>&nbsp;&nbsp;&nbsp; 0.6000&nbsp;&nbsp;&nbsp; 0.5646</code><code><br></code><code>&nbsp;&nbsp;&nbsp; 0.7000&nbsp;&nbsp;&nbsp; 0.6442</code><code><br></code><code>&nbsp;&nbsp;&nbsp; 0.8000&nbsp;&nbsp;&nbsp; 0.7174</code><code><br></code><code>&nbsp;&nbsp;&nbsp; 0.9000&nbsp;&nbsp;&nbsp; 0.7833</code><code><br></code><code>&nbsp;&nbsp;&nbsp; 1.0000&nbsp;&nbsp;&nbsp; 0.8415</code><code><br></code><code>&nbsp;&nbsp;&nbsp; 1.1000&nbsp;&nbsp;&nbsp; 0.8912</code><code><br></code><code>&nbsp;&nbsp;&nbsp; 1.2000&nbsp;&nbsp;&nbsp; 0.9320 ];<br></code><code><font color="#3366ff">mifit</font></code><code>(a);</code><br></li></ul><p>To import an iData object (data set. Refer to the <a href="Load.html">Load</a> page): <i>mifit(iData)</i><br></p><ul><li><code>a = iData(peaks);</code></li><li><code>a.Title = <font color="#cc33cc">'Peak function'</font>; <font color="#3366ff">label</font>(a,1,<font color="#cc33cc">'my X axis'</font>); <font color="#3366ff">label</font>(a,2,<font color="#cc33cc">'my Y axis'</font>);</code></li><li><code><font color="#3366ff">mifit</font>(a);</code></li></ul><h4><a class="mozTocH4" name="mozTocId315062"></a>from the Matlab/iFit prompt: Models</h4><p>To import a Model (<a href="iFunc.html">iFunc</a> object): <i>mifit(iFunc)</i><br></p><ul><li><code>f=gauss+lorz; f.Background_2=0; <font color="#3366ff">fix</font>(f,<font color="#cc33cc">'Background_2'</font>);</code></li><li><code><font color="#3366ff">mifit</font>(f);</code></li></ul>The new model is added to the <i>1D</i> Models menu, as a <b><font color="#3366ff">blue</font></b> entry, which is used to label 'user' models. Such models are <b><i>'static'</i></b> in the sense that once in the Models menu, only the model parameters can be changed. These models are assigned a unique iD in the form <i>iFxxxx</i>.<br><br>It is also possible to add Models as expressions, which are then evaluated to create a model. Such models, shown in <b><font color="#33cc00">green</font></b> in the Models menu, are <i><b>'dynamic'</b></i> in the sense that they are used to effectively create <i>other</i> static models. Such model creators do not have a unique model iD. For instance, the '<i>sqw_phonons</i>' model is dynamic. When called, it requires to enter parameters to initiate the model creation, such as the DFT code to use, the k-mesh, ... Then, a <i>static</i> model is created, but the parameters used initially (DFT, k-mesh, ...) can not be changed further. However, the model parameters (intensity, ...) can be changed, e.g. during fit processes.<br><br>To import a Model expression as a dynamic model (creator), use:<br><ul><li><code><font color="#3366ff">mifit</font>(<font color="#cc33cc">'Models_Add_Entry'</font>,<font color="#cc33cc">'gauss+lorz'</font>);</code></li></ul><h4><a class="mozTocH4" name="mozTocId805610"></a>from copy/paste</h4><p>It is possible to use the Copy/Paste mechanism to import data sets. If the copied element is a file, it will be imported the same way as with the Open item above when selecting the <i>Paste</i> item in the <i>Edit</i> menu. You can also click on the grey window background or the 'Data Sets' label above the list, and press <i>Ctrl-V</i> (command-V on MacOSX)<br></p><p>You can also copy whole data blocks (e.g. numerical values/array from a text editor or a spreadsheet), and paste them into miFit.<br></p><p>The copy/paste also works with path name (as strings) including distant files (URL with http, https, ftp). Remember to properly set the proxy settings in the Preferences in case you are behind one.</p><h4><a class="mozTocH4" name="mozTocId565408"></a>from drag-and-drop</h4><p>A very convenient way to import data is to drag a data file, and drop it into the miFit window. A new data sets object is then read, and added to the list. This works with multiple file selections, as well as file path given as strings, including HTTP, HTTPS and FTP links. Remember to properly set the proxy settings in the Preferences in case you are behind one.<br></p><h4><a class="mozTocH4" name="mozTocId821000"></a>from the TextEdit (File:Evaluate code/script menu item)<br></h4><p><img alt="TextEdit" title="TextEdit" src="images/iFit_TextEdit.png" height="190" width="250" align="right">The miFit <i>File</i> menu has an <i>Evaluate code/script</i> menu item. Your can enter any Matlab command there, and evaluate a selection, or all ('<font color="#009900">Play</font>' button or the <i>TextEdit:File:Evaluate selection</i> item) . To send some data directly to miFit, use e.g.:<br></p><ul><li><font color="#3366ff">mifit</font>( blah )</li></ul><p>just as you would do from the prompt. <br></p><h4><a class="mozTocH4" name="mozTocId997017"></a>creating a new Data set</h4><p>You may create a new data set using a spreadsheet by selecting the <i>New</i> item in the <i>File</i> menu, or the white page icon in the toolbar. Type in your data (Copy/Paste works). The data set will be imported into miFit when you close the window.<br></p><h4><a class="mozTocH4" name="mozTocId638950"></a>creating new Models</h4><p>The way to define new Models into miFit is <i>via</i> the Matlab/iFit prompt (see <a href="#mozTocId315062">above</a>), or by importing a data file containing a model (iFunc) definition.<br></p><h3 align="center"><a class="mozTocH3" name="mozTocId82620"></a>Working with Data sets</h3><p>You should first import or create Data Sets (see <a href="#mozTocId638950">above</a>), which populate the <i>miFit</i> list. Each entry is an <a href="iData.html">iData</a> object.<br></p><p>Most actions require to select one or more Data Sets from the list. You can use the mouse click, with the <i>Ctrl</i> key for adding one-by-one, or the <i>Shit</i> key to add in a range. The <i>Select All</i> item in the <i>Edit</i> menu allows to select all, or none (when they are all selected). To deselect a single item, use mouse <i>Ctrl-click</i> on it. You can use <i>Ctrl-A</i> to select all.<br></p><p>Subsequent Data Sets states are saved into a History, which allow to Undo last operations (data states, model selections, etc...). You may as well save any time the miFit state from the <i>Save as</i> item in the <i>File</i> menu.<br></p><p>The miFit interface provides, in its <i>miFit:File:Evaluate code/script</i> menu item, access to the <b>TextEdit</b> application, which allows to write scripts and commands, and execute them (<i>TextEdit:File:Evaluate</i>).
 This is highly recommended when using the <a href="iFit.html">standalone iFit</a> executable, as you can keep track of all your commands as a 
 script, with highlight syntaxing, and it is <i>not</i> sensitive to the 
 localised character crash  [<a href="http://www.mathworks.com/support/bugreports/624817">bug 624817</a>]. 
@@ -544,7 +564,10 @@ localised character crash  [<a href="http://www.mathworks.com/support/bugreports
     Plotting data</h4>
     <img alt="miFit_Data_Plot" title="miFit_Data_Plot" src="images/miFit_Data_Plot.png" height="269" width="300" align="right">You can plot Data Sets by selecting one or more, and then click on the <i>Plot</i> icon in the toolbar, or the <i>Plot</i> item in the <i>Data</i> menu. To plot a single Data Set, double-click it in the Data Set list. Data Sets with assigned Models (see <a href="#mozTocId892073">below</a>) will also show the model evaluation.<br><br>You can of course export the plot windows from their <i>File:Save as</i> menu item, and print them subsequently.<br><br>To print a data set, we recommend to use the <i>printer</i> icon in the tool bar, or the <i>File:Print</i> menu item on a selection of Data Sets. A web page will be generated, displayed, and can be printed subsequently.<br><h4><a class="mozTocH3" name="mozTocId97236"></a>
     Sorting and searching data</h4>
-    Once you have imported or created many Data Sets, it is desirable to be able to sort them, or to find some that match given criteria.<br><br>The <i>Sort List</i> item in the <i>Data</i> menu allows to sort the Data Sets according to a given criteria, such as the integrated value, the Date, the title, its unique iD, its size (number of elements). <br><br>The <i>Search</i> item in the <i>Data</i> menu allows to enter a token/word to be searched in the data sets. Those matching the token will then be selected. You can then use the above <i>Sort List</i> item to move these at the top or bottom of the Data Set list.<br><h4><a class="mozTocH3" name="mozTocId467624"></a>
+    Once you have imported or created many Data Sets, it is desirable to be able to sort them, or to find some that match given criteria.<br><br>The <i>Sort List</i> item in the <i>Data</i> menu allows to sort the Data Sets according to a given criteria, such as the integrated value, the Date, the title, its unique iD, its size (number of elements). <br><br>The <i>Search</i> item in the <i>Data</i> menu allows to enter a token/word to be searched in the data sets. Those matching the token will then be selected. You can then use the above <i>Sort List</i> item to move these at the top or bottom of the Data Set list.<br><h4><a class="mozTocH4" name="mozTocId567444"></a>Selecting/deselecting regions of interest (ROI)<br></h4><div align="center"><a href="images/iData_plot_imroi.png"><img src="images/iData_plot_imroi.png" title="iData_plot_imroi" alt="iData_plot_imroi" border="0" height="180" width="200"></a><a href="images/iData_plot_imroi_extracted.png"><img src="images/iData_plot_imroi_extracted.png" title="iData_plot_imroi_extracted" alt="iData_plot_imroi_extracted" border="0" height="180" width="200"></a><br>
+      The <b>imroi</b> selection tool allows to select polygonal
+      regions of interest (ROI, left). <br>
+      Once extracted, the new data set can be plotted (right).<br></div><br>It is usual to have to select a region in data sets before e.g. fitting them, or alternatively, deselect some other parts ('odd' points). To do so, select the data sets to handle in the Data Sets list, then use the <i>Data:Select Region of Interest (ROI)</i> menu item. Then, simply click on the plot to define the polygonal region corresponding to the area you wish to keep in the data.<br><br>The corresponding mask (which has 1 where data is selected, and 0 elsewhere) will be added as a data set, which you may use further to multiply with some other data set. In addition, the same mask will be applied to all selected data sets (if more than one).<br><br>If you rather need to remove (deselect) some areas from your data set, use the <i>Data:Deselect Region of Interest (ROI)</i> menu item.<br><br>More help about this tool, and for instance to ability to define distinct areas in the same data set, or rotate the plot during selection, is available in the <a href="Plot.html#mozTocId313946">Plot</a> page.<br><br>The selection functionality is also available from the <i>Data:Transform:Unary</i> operators menu item.<br><h4><a class="mozTocH3" name="mozTocId467624"></a>
     Mathematical operators on Data sets</h4><p>It is possible to apply simple mathematical operators onto one or more Data Sets. <br></p><ul>
       <li><i>Unary:</i> these operators take single data sets, and return the same number of data sets after the transformation, which are appended to the Data Sets list. You can find  typically: log, abs, trigonometric, opposite (uminus), ...<br></li>
       <li><i>Binary:</i> these operators take operators two-by-two and return a single data set, which is appended to the Data Sets list. You can find  typically:merge/combine, plus, minus, times, divide, comparisons, interpolation, FFT convolution, ...<br></li>
