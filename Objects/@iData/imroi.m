@@ -22,6 +22,7 @@ function [b, mask, f] = imroi(a, options)
 %   This stores the current polygon definition, and switch to the rotate mode.
 %   Once the view is properly oriented, disable the Rotate tool (click again on 
 %   the rotate icon) to enter a new polygon definition.
+%   You may alternatively use the up/down/left/right arrows to rotate the view.
 %
 % Once all ROI's are defined, press the middle mouse button or the Return key to
 %   end the ROI selection and compute the intersection with the data set.
@@ -30,6 +31,7 @@ function [b, mask, f] = imroi(a, options)
 %
 % [b, mask] = imroi(a)
 %  Same as above, but returns the mask data set, which contains 0 and 1.
+%  and we have b=a(mask);
 %
 % [b, mask, f] = imroi(a)
 %  Same as above, but returns the selection figure handle.
@@ -38,14 +40,15 @@ function [b, mask, f] = imroi(a, options)
 %  The options are used to customize the plot rendering, see iData/plot.
 %
 % Interaction:
-%     mouse left-click           add a point/line
-%     right-click or BACKSPACE   removes last point
-%     DEL or "c"                 removes all points
-%     return or "q" or middle-click: terminate input and compute intersections
-%     a                          start a new separate polygon (add)
-%     r                          change orientation (2D/3D). Disable rotation to continue ROI.
+%     mouse left-click or SPACE  add a point/line
+%     right-click or BACKSPACE   remove last point
+%     DEL or "C"                 remove all points
+%     return or "Q" or middle-click: terminate input and compute intersections
+%     A                          start a new separate polygon (add)
+%     R                          change orientation (2D/3D). Disable rotation to continue ROI.
 %     ESC                        abort
-%     h                          display a help dialogue
+%     H                          display a help dialogue
+%     left/right/up/down arrows  rotate the view
 %
 % Example:
 %  a = iData(peaks); b=imroi(a);
@@ -65,8 +68,10 @@ function [b, mask, f] = imroi(a, options)
     warning([ mfilename ': can only be used with a single data set. Using first.' ])
     a = a(1);
   end
+  b = []; mask = []; f=[];
   
   if nargin < 2, options = []; end
+  if isempty(a), return; end
   
   % first we plot the object
   f = figure;
@@ -74,7 +79,6 @@ function [b, mask, f] = imroi(a, options)
   
   % we make sure the object is a meshgrid
   a = meshgrid(a);
-  b = []; mask = [];
   
   % extract the axes and signal
   ax_signal = {};
@@ -107,9 +111,12 @@ function [b, mask, f] = imroi(a, options)
     s_b = s_a*0;
     s_b(select) = 1;
     mask = setalias(mask, 'Signal', s_b, [  'imroi(' sl ') mask' ]);
+    mask.Title = [  'imroi(' sl ') mask' ];
   end
     
 end % imroi
+
+% ------------------------------------------------------------------------------
 
 function [select, xselect, yselect, zselect, cselect, h] = imroi1(h, xdata, ydata, zdata, cdata)
 % imroi: define a region of interest on an axis
@@ -317,7 +324,7 @@ function s = selectpoints_ginput()
       % toggle rotate tool
       s.event = 'rotate';
       return
-    case 'a'
+    case {'a','n','p'}
       % go to a next polygon
       s.event = 'next';
       return
@@ -325,14 +332,35 @@ function s = selectpoints_ginput()
       helpdlg({[ mfilename ': Add vertices (points) on the axis to', ...
       'define a Region Of Interest area' ], ...
       ' ', ...
-      '  mouse left-click           add a point/line', ...
-      '  right-click or BACKSPACE   removes last point', ...
-      '  DEL or "c"                 removes all points (clear)', ...
-      '  return or "q" or middle-click: terminate input (quit)', ...
-      '  a                          define a new separate polygon (add)', ...
-      '  r                          change orientation (2D/3D). Disable rotation to continue ROI.', ...
-      '  ESC                        abort'
+      '  mouse left-click or SPACE  add a point/line', ...
+      '  right-click or BACKSPACE   remove last point', ...
+      '  DEL or "C"                 remove all points (clear)', ...
+      '  return or "Q" or middle-click: terminate input (quit)', ...
+      '  A                          define a new separate polygon (add)', ...
+      '  R                          change orientation (2D/3D). Disable rotation to continue ROI.', ...
+      '  ESC                        abort', ...
+      '  left/right/up/down arrows  rotate the view' ...
       }, [ mfilename ': Define ROI' ]);
+      continue
+    case 28 % left arrow
+      [az,el] = view;
+      az = az+5;
+      view(az, el);
+      continue
+    case 29 % right arrow
+      [az,el] = view;
+      az = az-5;
+      view(az, el);
+      continue
+    case 30 % up arrow
+      [az,el] = view;
+      el = el+5;
+      view(az, el);
+      continue
+    case 31 % down arrow
+      [az,el] = view;
+      el = el-5;
+      view(az, el);
       continue
     end
 
