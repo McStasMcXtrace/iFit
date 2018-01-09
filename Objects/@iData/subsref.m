@@ -89,7 +89,7 @@ for i = 1:length(S)     % can handle multiple index levels
         setalias(b,'Error', 0);
         setalias(b,'Signal', 'ModelValue');
         return
-      elseif any(cellfun('isempty',s.subs)), b=iData; return;        % b([])
+      elseif (iscell(s.subs) && any(cellfun('isempty',s.subs))) || isempty(s.subs), b=iData; return;        % b([])
       elseif length(s.subs) == 1 && all(size(s.subs{1}) == size(b))  % b(logical mask)
         select = double(s.subs{1});
         select(select ~= 0) = 1;

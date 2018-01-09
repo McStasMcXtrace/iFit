@@ -10,6 +10,7 @@ function c = iData_private_binary(a, b, op, varargin)
 %   an iData array, which should then have the same dimension as the other 
 %     iData argument, in which case operator applies on pairs of both arguments.
 %     operator(a(index), b(index))
+%   an iFunc object (2nd arg), which is then evaluated on the iData axes for operator
 %
 % operator may be: 'plus','minus','combine'
 %                  'times','rdivide', 'ldivide','mtimes','mrdivide','mldivide', 'conv', 'xcorr'
@@ -71,10 +72,15 @@ if ischar(b) && (exist(b, 'file') || any(strncmp(b, {'file:/','http:/','ftp://',
   b = iData(b); % import file    
 end
 
+% when given an iFunc, we evaluate it on the iData axes
 if isa(a,'iFunc')
-  a = subsref(b, struct('type','()','subs', a) );
+  s.type = '()';
+  s.subs = { a };
+  a = subsref(b, s);
 elseif isa(b, 'iFunc')
-  b = subsref(a, struct('type','()','subs', b) );
+  s.type = '()';
+  s.subs = { b };
+  b = subsref(a, s);
 end
 
 if (isempty(a) || isempty(b))

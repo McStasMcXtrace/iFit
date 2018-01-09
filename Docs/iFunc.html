@@ -459,7 +459,7 @@
     <pre style="margin-left: 40px;">&gt;&gt; a = <span style="color: rgb(51, 102, 255);">convn</span>(lorz, 3)		<span style="font-style: italic;">% convolution of a Lorentzian with a Gaussian of width 3<br></span>&gt;&gt; a = <span style="color: rgb(51, 102, 255);">convn</span>(lorz, gauss)	<span style="font-style: italic;">% a Voigt function...<br></span>&gt;&gt; a = <span style="color: rgb(51, 102, 255);">convn</span>(lorz, <span style="color: rgb(204, 51, 204);">'double(b)'</span>)<span style="font-style: italic;">; </span>a.Constraint = <span style="color: rgb(204, 51, 204);">'global b'</span>;	% convolute with a global variable 'b'<br></pre>
     Methods generally mimic the Matlab default ones in functionality,
     and are also similar to those of the <a href="iData.html">iData</a>
-    objects (see the <a href="Methods.html">Methods</a> page).<br>
+    objects (see the <a href="Methods.html">Methods</a> page).<br><br>It is possible to apply binary operators on mixed type arguments (e.g. a Data set and a Model), in which case the result depends on the arguments, as detailed in the '<a href="iData.html#mozTocId57469">binary operators with mixed arguments</a>' help.<br>
     <br>
     <h3 align="center"><a class="mozTocH3" name="mozTocId604963"></a>Optimising
 

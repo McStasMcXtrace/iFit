@@ -9,6 +9,7 @@ function c = iFunc_private_binary(a, b, op, varargin)
 %   an iFunc array, which should then have the same dimension as the other 
 %     iFunc argument, in which case operator applies on pairs of both arguments.
 %     operator(a(index), b(index))
+%   an iData object (2nd arg), which is inserted into the evaluation code (stored in UserData and evaluated on current axes)
 %
 % operator may be: 'plus','minus','times','rdivide','conv', 'xcorr', 'power'
 %                  'mtimes','mrdivide','mpower' -> perform orthogonal axes dimensionality extension
@@ -18,6 +19,7 @@ function c = iFunc_private_binary(a, b, op, varargin)
 % iFunc <op> scalar
 % iFunc <op> string -> directly catenate with the Expression
 % iFunc <op> global variable (caller/base)
+% iFunc <op> iData  -> interpolate iData on iFunc current axes at evaluation
 
 % handle iFunc array input
 if isa(a,'iFunc') && numel(a) > 1
@@ -368,7 +370,7 @@ elseif isFb && ischar(a)  % syntax: 'string'+iFunc
     c.Expression{end+1} = sprintf('\nsignal=%s(%s,signal%s);', op, a, v);
   end
   c.Name       = sprintf('%s(%s,%s)', op, a(1:min(10,length(a))), c.Name);
-elseif isFa && isnumeric(b) % syntax: iFunc+array
+elseif isFa && ~isa(b, 'iData') && isnumeric(b) % syntax: iFunc+array
   c.Expression = cellstr(c.Expression);
   % special case for mpower iFunc^n -> dimension extension
   if strcmp(op, 'mpower') && b == floor(b) && b>1
@@ -381,12 +383,37 @@ elseif isFa && isnumeric(b) % syntax: iFunc+array
     if length(b) > 13, b=[ b(1:10) '...' ]; end
   end
   c.Name       = sprintf('%s(%s,%g)', op, c.Name, b);
-elseif isFb && isnumeric(a) % syntax: array+iFunc
+elseif isFb && ~isa(a, 'iData') && isnumeric(a) % syntax: array+iFunc
   c.Expression = cellstr(c.Expression);
   a = mat2str(double(a));
   c.Expression{end+1} = sprintf('\nsignal=%s(%s,signal%s);', op, a, v);
   if length(a) > 13, a=[ a(1:10) '...' ]; end
   c.Name       = sprintf('%s(%s,%g)', op, c.Name, a);
+elseif isFa && isa(b, 'iData')  % syntax: iFunc+iData
+  % we store the iData object, and must interpolate on axes at eval
+  c.Expression = cellstr(c.Expression);
+  if isempty(c.UserData) || isstruct(c.UserData)
+    ud.User = c.UserData;
+  end
+  ud.([ 'iData_' b.Tag ]) = b;
+  c.UserData = ud;
+  ax = 'x,y,z,t,u,v,w,'; ax = ax(1:(a.Dimension*2-1));
+  c.Expression{end+1} = ...
+    sprintf('\nsignal=%s(signal,double(interp(this.UserData.iData_%s, %s))%s);', ...
+    op, b.Tag, ax, v);
+    
+elseif isFb && isa(a, 'iData')  % syntax: iData+iFunc
+  % we store the iData object, and must interpolate on axes at eval
+  c.Expression = cellstr(c.Expression);
+  if isempty(c.UserData) || isstruct(c.UserData)
+    ud.User = c.UserData;
+  end
+  ud.([ 'iData_' a.Tag ]) = a;
+  c.UserData = ud;
+  ax = 'x,y,z,t,u,v,w,'; ax = ax(1:(b.Dimension*2-1));
+  c.Expression{end+1} = ...
+    sprintf('\nsignal=%s(double(interp(this.UserData.iData_%s, %s)),signal%s);', ...
+    op, a.Tag, ax, v);
 else
   error(['iFunc:' mfilename ], [mfilename ': can not apply operator ' op ' between class ' class(a) ' and class ' ...
       class(b) '.' ]);
