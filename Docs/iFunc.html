@@ -34,28 +34,34 @@
     <div style="text-align: center;">Commands we use in this page: <span
         style="font-style: italic;">iFunc, save(iFunc, filename), fits<br>
       </span><span style="font-style: italic;"><b>See also</b>: <a
-          href="Load.html">Load (import) data sets </a></span><span
-        style="font-style: italic;"><span style="font-style: italic;"><a
+          href="iData.html">iData</a>, <a href="Load.html">Load
+          (import) data sets, </a></span><span style="font-style:
+        italic;"><span style="font-style: italic;"><a
             href="Loaders.html">Low level Loaders</a>,</span> <a
           href="Save.html">Save (export) data sets</a> </span><br>
     </div>
     <br>
     The <span style="font-style: italic;">iFunc</span> class is a
-    structure which holds a multi-parameter model,to be used for e.g.
-    plot or fit onto a data set. Models can be assembled using standard
-    Matlab operators. There exist a set of pre-defined <a
+    structure which holds a <b>multi-parameter model</b>, to be used
+    for e.g. plot or fit onto a data set. Models can be assembled using
+    standard Matlab operators. There exist a set of pre-defined <a
       href="Models.html">Models</a>, which you can assemble to define
     more complex ones. You can also <a href="Fit.html">Fit</a> an iFunc
     model onto an <a href="iData.html">iData</a> object (containing
-    e.g. some experimental data). The iFunc Models also exist in a set
-    of specialized flavours (sub-classes) which inherit full <i>iFunc</i>
-    capabilities, and add a few more specialized functionalities:<br>
+    e.g. some experimental data). <br>
+    <br>
+    The iFunc Models also exist in a set of specialized flavours
+    (sub-classes) which inherit full <i>iFunc</i> capabilities, and add
+    a few more specialized functionalities:<br>
     <ul>
-      <li><a href="McStas.html">iFunc_McCode</a>: an instrument
-        simulation model using e.g. <a href="McStas.html">McStas</a>.</li>
-      <li><a href="iFunc_Sqw4D.html">iFunc_Sqw4D</a>: a 4D Model holding
-        an S(<b>q</b>,w) from e.g. <a href="Models_Phonons.html">phonons</a>,
-        <a href="Models.html#mozTocId908192">spinwaves</a>, etc.</li>
+      <li><a href="McStas.html">iFunc_McCode</a>: an neutron/X-ray
+        ray-tracing Monte-Carlo instrument simulation model using e.g. <a
+          href="http://www.mcstas.org">McStas</a>.</li>
+      <li><a href="iFunc_Sqw4D.html">iFunc_Sqw4D</a>: a Model holding a
+        <a href="https://en.wikipedia.org/wiki/Dynamic_structure_factor">dynamic
+          structure factor</a> 4D <i>S(</i><i><b>q</b></i><i>,w)</i>
+        from e.g. <a href="Models_Phonons.html">phonons</a>, <a
+          href="Models.html#mozTocId908192">spinwaves</a>, etc.</li>
     </ul>
     <br>
     <h3 style="text-align: center;"><a class="mozTocH3"

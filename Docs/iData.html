@@ -8,8 +8,8 @@
   <body>
     <h1 style="text-align: center;">iFit: iData object description</h1>
     <ul id="mozToc">
-      <!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6--> <a
-        href="#mozTocId466436">Introduction to the iData objects</a>
+      <!--mozToc h3 1 h4 2 h5 3 h6 4-->
+      <li><a href="#mozTocId466436">Introduction to the iData objects</a></li>
       <li><a href="#mozTocId443357">Inquiring the iData object (get,
           disp, display)</a></li>
       <li><a href="#mozTocId964118">Modifying the iData object (set) </a></li>
@@ -19,13 +19,20 @@
           <li><a href="#mozTocId653680">defining a new field as a value</a></li>
           <li><a href="#mozTocId85628">getting the value of a new field</a></li>
           <li><a href="#mozTocId124075">defining a new field as a link
-              (reference)</a></li>
+              (reference)</a>
+            <ul>
+              <li><a href="#mozTocId692085">Links to other links</a></li>
+              <li><a href="#mozTocId869083">Links as more general
+                  expressions</a></li>
+              <li><a href="#mozTocId794385">Links to external resources</a></li>
+            </ul>
+          </li>
           <li><a href="#mozTocId718185">getting the definition of a new
               field (reference)</a></li>
           <li><a href="#mozTocId826628">assigning the value of a linked
               field</a></li>
           <li><a href="#mozTocId600912">getting the value of a linked
-              field using get</a></li>
+              field</a></li>
           <li><a href="#mozTocId8406">removing a field from the object</a></li>
           <li><a href="#mozTocId483786">A warning is in place here</a></li>
         </ul>
@@ -33,10 +40,10 @@
       <li><a href="#mozTocId134021">Definition of the Signal, Error bar
           and Monitor</a>
         <ul>
-          <li><a href="#mozTocId157576">Types of Signals that can be
-              handled</a></li>
+          <li><a href="#mozTocId157576">Dimensionality and Types of
+              Signals that can be handled</a></li>
           <li><a href="#mozTocId696835">Error bars definition</a></li>
-          <li><a href="#mozTocId243435">Monitor definition</a></li>
+          <li><a href="#mozTocId243435">Monitor definition </a></li>
         </ul>
       </li>
       <li><a href="#mozTocId765887">Definition of Axes </a>
@@ -46,43 +53,65 @@
         </ul>
       </li>
       <li><a href="#mozTocId993635">Handling iData object arrays</a></li>
+      <li><a href="#mozTocId410494">Handling event lists</a></li>
       <li><a href="#mozTocId393725">Going further - some other useful
-          methods</a></li>
-      <br>
-      <hr style="width: 100%; height: 2px;">
-      <div style="text-align: center;">Commands we use in this page: <span
-          style="font-style: italic;">iData, get, set, setalias,
-          getalias, setaxis, getaxis, labels</span>, <a
-          href="Methods.html">methods</a> </div>
-      <br>
-      The <span style="font-style: italic;">iData</span> class is a
-      structure which holds some imported data (numerical blocks), as
-      well as additional metadata and axes definitions, <span
-        style="font-style: italic;">Signal, Error bars, Monitors</span>,
-      and user defined fields (aliases). The instantiated objects, which
-      are used as normal Matlab variables, often contain 1D, 2D, 3D, nD
-      histograms or nD event lists. You will learn below how to
-      customize these objects (set, get, setalias, getalias, setaxis,
-      getaxis, indexing).<br>
-      <br>
-      A large number of <a href="Methods.html">methods</a> can be used
-      with iData, including data <a href="Load.html">import, </a><a
-        href="Plot.html">plotting, </a><a href="Save.html">saving, </a><a
-        href="Fit.html">fitting</a> and <a href="Math.html">mathematical</a>
-      operators.<br>
-      <br>
-      For impatient readers, we advise you to refer to the <a
-        href="Load.html#mozTocId889584">quick Setting Signal and Axes</a>
-      documentation in the <a href="Load.html">Load</a> page, in order
-      to customize the object. For the others, just go on reading how
-      objects are built, and how to handle them.<br>
-      <h3 style="text-align: center;"><a class="mozTocH3"
-          name="mozTocId466436"></a>Introduction to the iData objects</h3>
-      An iData object is obtained for instance by transforming a file
-      name into an iData object <span style="font-style: italic;
-        font-weight: bold;">a</span> with<br>
-      <div style="margin-left: 40px;">
-        <pre>&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">[</span><span style="color: rgb(204, 51, 204);"> ifitpath '</span><span style="color: rgb(204, 51, 204);">Data/ILL_IN6.dat'</span>])	<span style="font-style: italic;">% imports a file into an object</span><br>a =  iData object:<br><br>    [Tag]     [Dimension]                           [Title] [Last command]          [Label]<br> tp460929      [257  512] 'File ILL_IN6.dat ILL Data (n...' tp460929=load(iData,...  <br></pre>
+          methods </a></li>
+    </ul>
+    <br>
+    <hr size="2" width="100%">
+    <div align="center">Commands we use in this page: <span
+        style="font-style: italic;">iData, get, set, setalias, getalias,
+        setaxis, getaxis, labels</span>, <a href="Methods.html">methods</a><br>
+      See also: <a href="iFunc.html">iFunc</a>, <a href="Fit.html">Fit</a>,
+      <a href="Math.html">Math</a>, <a href="Plot.html">Plot</a>, <a
+        href="Load.html">Load</a>, <a href="Save.html">Save</a> <br>
+    </div>
+    &nbsp;<br>
+    The <span style="font-style: italic;">iData</span> class is a
+    structure which holds some <b>multidimensional data set</b>
+    (numerical blocks), as well as additional metadata and axes
+    definitions, <span style="font-style: italic;">Signal, Error bars,
+      Monitors</span>, and user defined fields (aliases). The
+    instantiated objects, which are used as normal Matlab variables,
+    often contain 1D, 2D, 3D, nD histograms or nD event lists. You will
+    learn below how to customize these objects (set, get, setalias,
+    getalias, setaxis, getaxis, indexing, ...).<br>
+    <br>
+    A large number of <a href="Methods.html">methods</a> can be used
+    with iData, including data <a href="Load.html">import, </a><a
+      href="Plot.html">plotting, </a><a href="Save.html">saving, </a><a
+      href="Fit.html">fitting</a> and <a href="Math.html">mathematical</a>
+    operators.<br>
+    <br>
+    For impatient readers, we advise you to refer to the <a
+      href="Load.html#mozTocId889584">quick Setting Signal and Axes</a>
+    documentation in the <a href="Load.html">Load</a> page, in order to
+    customize the object. For the others, just go on reading how objects
+    are built, and how to handle them.<br>
+    <br>
+    The iData data sets also exist in a set of specialized flavours
+    (sub-classes) which inherit full <i>iData</i> capabilities, and add
+    a few more specialized functionalities:<br>
+    <ul>
+      <li><a href="iData_Sqw2D.html">iData_Sqw2D</a>: a data set holding
+        a liquid/powder/amorphous <a
+          href="https://en.wikipedia.org/wiki/Dynamic_structure_factor">dynamic
+          structure factor</a> 2D <i>S(q,w)</i> data set.</li>
+      <li><a href="iData_Sab.html">iData_Sab</a>: a
+        data set holding a liquid/powder/amorphous <a
+          href="https://en.wikipedia.org/wiki/Dynamic_structure_factor">dynamic
+          structure factor</a> 2D <i>S(alpha,beta)</i> data set, used
+        e.g. in nuclear data bases (ENDF, JEFF, ...).<br>
+      </li>
+    </ul>
+    <br>
+    <h3 style="text-align: center;"><a class="mozTocH3"
+        name="mozTocId466436"></a>Introduction to the iData objects</h3>
+    An iData object is obtained for instance by transforming a file name
+    into an iData object <span style="font-style: italic; font-weight:
+      bold;">a</span> with<br>
+    <div style="margin-left: 40px;">
+      <pre>&gt;&gt; a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">[</span><span style="color: rgb(204, 51, 204);"> ifitpath '</span><span style="color: rgb(204, 51, 204);">Data/ILL_IN6.dat'</span>])	<span style="font-style: italic;">% imports a file into an object</span><br>a =  iData object:<br><br>    [Tag]     [Dimension]                           [Title] [Last command]          [Label]<br> tp460929      [257  512] 'File ILL_IN6.dat ILL Data (n...' tp460929=load(iData,...  <br></pre>
       </div>
       which results in an <span style="font-style: italic;">iData</span>
       object. An other way to create such an object is to import
@@ -354,7 +383,7 @@ to
       character strings.<br>
       As explained below, it is possible to define links to othet links,
       or external files.<br>
-      <h5>Links to other links</h5>
+      <h5><a class="mozTocH5" name="mozTocId692085"></a>Links to other links</h5>
       More complex links may be defined to other parts of the object or
       to an other <span style="font-style: italic;">Alias</span>,<br>
       <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">setalias</span>(a,<span style="color: rgb(204, 51, 204);">'NewField'</span>,<span style="color: rgb(204, 51, 204);">'Data.ZEROS'</span>)		<span style="font-style: italic;">% a link to the whole ZEROS subfield structure</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">setalias</span>(a,<span style="color: rgb(204, 51, 204);">'NewField'</span>,<span style="color: rgb(204, 51, 204);">'Data.ZEROS.A1'</span>)	<span style="font-style: italic;">% a link to the A1 value in the ZEROS subfield</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">setalias</span>(a,<span style="color: rgb(204, 51, 204);">'AnotherNewField'</span>, <span style="color: rgb(204, 51, 204);">'NewField'</span>);	<span style="font-style: italic;">% creates a link to a link to a Data part (follow me !)</span><br>&gt;&gt; a.AnotherNewField<br>ans =<br><br> -115.7500<br></pre>
@@ -367,7 +396,7 @@ to
       This brings the ability to enrich the Data area of the object with
       new content, and then define an Alias which links to it:<br>
       <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(0, 0, 0);">a.Data.NewContent1 = <span style="color: rgb(51, 102, 255);">rand</span>(10);	<span style="font-style: italic;">		% add </span></span><span style="color: rgb(0, 0, 0);"><span style="font-style: italic;">a new array in the Data</span><br></span><span style="color: rgb(0, 0, 0);">&gt;&gt; a.Data.NewContent2 = <span style="color: rgb(51, 102, 255);">struct</span>(<span style="color: rgb(204, 51, 204);">'a'</span>,1,<span style="color: rgb(204, 51, 204);">'b'</span>, <span style="color: rgb(51, 102, 255);">rand</span>(10));	</span><span style="color: rgb(0, 0, 0);"><span style="font-style: italic;">% add a </span></span><span style="color: rgb(0, 0, 0);"><span style="font-style: italic;">new structure in the Data<br></span></span><span style="color: rgb(0, 0, 0);">&gt;&gt; </span><span style="color: rgb(51, 102, 255);">setalias</span>(a,<span style="color: rgb(204, 51, 204);">'HowAreYouToday'</span>, <span style="color: rgb(204, 51, 204);">'Data.NewContent2'</span>);<br></pre>
-      <h5>Links as more general expressions</h5>
+      <h5><a class="mozTocH5" name="mozTocId869083"></a>Links as more general expressions</h5>
       Advanced <span style="font-style: italic;">Alias</span>
       definition may be set by means of the<span style="font-style:
         italic; font-weight: bold;"> 'this' </span>self-referring
@@ -385,7 +414,7 @@ to
 
 
       </span>so that their value follow the target one.<br>
-      <h5>Links to external resources</h5>
+      <h5><a class="mozTocH5" name="mozTocId794385"></a>Links to external resources</h5>
       In the case the link begins with <span style="color: rgb(204, 51,
         204);">file://</span>, <span style="color: rgb(204, 51, 204);">ftp://</span>,
       <span style="color: rgb(204, 51, 204);">http://</span>, or <span style="color: rgb(204, 51, 204);">https://</span> the external
@@ -668,7 +697,7 @@ represents
       can not be deleted. <br>
       <br>
       The raw Signal and Error are obtained with: <br>
-    </ul>
+    
     <pre style="margin-left: 40px;">&gt;&gt; a=<span style="color: rgb(51, 102, 255);">load</span>(iData, <span style="color: rgb(204, 51, 204);">[ ifitpath </span><span style="color: rgb(204, 51, 204);">'Data/sv1850.scn'</span>])<br>&gt;&gt; a.Signal<br>&gt;&gt; a.Error<br></pre>
     <ul id="mozToc">
       The normalised Signal and Error (i.e. divided by Monitor) are
@@ -782,7 +811,7 @@ represents
       To create an iData vector, just use the bracket [ ... ] symbol<br>
       <pre style="margin-left: 40px;">&gt;&gt; b = [ a 2*a ];<br></pre>
     </ul>
-    <h3 align="center">Handling event lists</h3>
+    <h3 align="center"><a class="mozTocH3" name="mozTocId410494"></a>Handling event lists</h3>
     <blockquote>
       <p>Some data sets contain lists of 'events', that is a set of
         coordinates for a set of signal values. These events are then
@@ -810,7 +839,7 @@ represents
         neighboring values. More information available in the <a href="Math.html#mozTocId621133">Math</a> page.<br>
       </p>
     </blockquote>
-    <h3> </h3>
+    
     <ul id="mozToc">
       <h3 style="text-align: center;"><a class="mozTocH3" name="mozTocId393725"></a>Going further - some other useful
         methods<br>
@@ -893,7 +922,7 @@ Farhi
             &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL,
             Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px
             solid ; width: 53px; height: 50px;" align="right"></a> </div>
-    </ul>
   
 
-</body></html>
+
+</ul></body></html>

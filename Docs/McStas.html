@@ -40,14 +40,15 @@
     </ol>
     <hr style="width: 100%; height: 2px;">
     <div style="text-align: left;">
-      <div style="text-align: center;">Commands we use in this page: <span
-          style="font-style: italic;">mcstas</span> (mcxtrace)<br>
+      <div style="text-align: center;">Commands we use in this page: <b>mccode</b><br>
       </div>
       <br>
-      In this document, we demonstrate how <a href="index.html">iFit</a>/<a
-        href="Optimizers.html">Optimizers</a> and <a href="iData.html">iData</a>
-      can all be used transparently to simulate and optimize <a
-        href="http://www.mcstas.org">McStas</a> instrument models.<br>
+      In this document, we demonstrate how <a href="iFunc.html">iFunc</a>,
+      <a href="index.html">iFit</a>/<a href="Optimizers.html">Optimizers</a>
+      and <a href="iData.html">iData</a> objects can all be used
+      transparently to simulate and optimize <a
+        href="http://www.mcstas.org">McStas</a>/McXtrace neutron and
+      X-ray ray-tracing Monte-Carlo instrument models.<br>
       <br>
       To import a McStas simulation results, just use <br>
       <pre style="margin-left: 40px;">&gt;&gt; results = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">'single_detector_file'</span>)<br>&gt;&gt; results = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">'directory'</span>)                 <span style="font-style: italic;">% import everything in the directory, including sim files (files may imported more than once)</span><br>&gt;&gt; results = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">'scan_directory/mcstas.<span style="font-weight: bold;">dat</span>'</span>) <span style="font-style: italic;">% for scans</span><br>&gt;&gt; results = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">'scan_directory/mcstas.<span style="font-weight: bold;">sim</span>'</span>) <span style="font-style: italic;">% for all files from the directory, uniquely</span>.<br></pre>
@@ -65,26 +66,25 @@
           You may still used it, and get help for it with: '<i>&gt;&gt;
             help mcstas</i>'.</font><br>
       </p>
-      <p>The syntax for building a McCode (McStas or McXtrace)
+      <p>The syntax for building a McCode (<a href="http://www.mcstas.org">McStas</a> for neutrons or <a href="http://mcxtrace.org/">McXtrace</a> for X-rays)
         instrument model is:<br>
       </p>
       <pre style="margin-left: 40px;">&gt;&gt; model = <span style="color: rgb(51, 102, 255);">mccode</span>(<span style="color: rgb(204, 51, 204);">'instrument'</span>);	<i>% uses the given instrument file (*.instr)</i><br>&gt;&gt; model = <span style="color: rgb(51, 102, 255);">mccode</span>(<span style="color: rgb(204, 51, 204);">'gui'</span>);		<i>% lists all available instruments to select one</i><br>&gt;&gt; model = <span style="color: rgb(51, 102, 255);">mccode</span>(<span style="color: rgb(204, 51, 204);">''</span>);			<i>% pop-up a file selector to select an *.instr file</i><br>&gt;&gt; model = <span style="color: rgb(51, 102, 255);">mccode</span>(<span style="color: rgb(204, 51, 204);">'defaults'</span>);		<i>% uses the templateDIFF instrument as example <br></i></pre>
       which compile the instrument, and create an <a href="iFunc.html">iFunc</a>
       model (in fact an <b><i>iFunc_McCode</i></b> flavour). <br>
       When the instrument is not found in the current directory, it is
-      searched in the McStas library (may be specified with the MCSTAS
+      searched in the McStas/McXtrace library (may be specified with the MCSTAS
       and MCXTRACE environment variables), and eventually copied
       locally, which triggers its compilation.<br>
       <br>
       In addition, it is possible to select an instrument from the
-      McStas installation with:<br>
-      <br>
+      McStas/McXtrace installation with:<br><pre style="margin-left: 40px;">model = <span style="color: rgb(51, 102, 255);">mccode</span>(<span style="color: rgb(204, 51, 204);">'gui'</span>)</pre>
       You may even assemble these models as iFunc arrays to iteratively
       perform series of simulations, or use arithmetic operations to
       combine models (see the <a href="iFunc.html#mozTocId443357">iFunc</a>
       documentation).<br><br>The resulting 'model' object can be forced into an <b>iFunc_McCode</b> one (in case its flavour was lost) with:<br><ul><li>model = <font color="#3366ff">iFunc_McCode</font>(model)</li></ul>
       
-      This type of sub-class (derived from <a href="iFunc.html">iFunc</a>), provides all <a href="iFunc.html">iFunc</a> methods, but also specific methods adapted to McCode simulations:<br><ul><li><font color="#3366ff">plot</font>(model)</li></ul><blockquote><blockquote>plot the model geometry in 3D.<br></blockquote></blockquote><ul><li><font color="#3366ff">feval</font>(model)</li></ul><blockquote><blockquote>evaluate the model using its current parameter values and settings. The returned data is array for the selected or last Monitor value. Other monitors are available as iData objects in <i>model.UserData.monitors</i><br></blockquote></blockquote><ul><li><font color="#3366ff">edit</font>(model)</li></ul><blockquote><blockquote>edit the instrument source code. Do not forget to save the file before closing the editor. If changes are done, the object is updated, and the instrument is re-compiled.<br></blockquote></blockquote><ul><li><font color="#3366ff">dialog</font>(model)</li></ul><blockquote><blockquote>displays a table where you can change the parameter/configuration values. Instrument parameters (scalars) can be given as a single scalar, or a vector (for scans). The calculation starts when you close the table. To <i><b>Cancel</b></i> the computation, select the contextual menu (right mouse button) CANCEL item, or press <i>Ctrl-C</i> at the prompt. The resulting monitors are displayed when the simulation end.<br></blockquote></blockquote>It is also possible to finely tune the instrument configuration
+      This type of sub-class (derived from <a href="iFunc.html">iFunc</a>), provides all <a href="iFunc.html">iFunc</a> methods, but also specific methods adapted to McCode simulations:<br><ul><li><font color="#3366ff">plot</font>(model)</li></ul><blockquote><blockquote>plot the model geometry in 3D.<br></blockquote></blockquote><ul><li><font color="#3366ff">feval</font>(model)</li></ul><blockquote><blockquote>evaluate the model using its current parameter values and settings. The returned data is an array for the selected or last Monitor value. Other monitors are available as iData objects in <i>model.UserData.monitors</i><br></blockquote></blockquote><ul><li><font color="#3366ff">edit</font>(model)</li></ul><blockquote><blockquote>edit the instrument source code. Do not forget to save the file before closing the editor. If changes are done, the object is updated, and the instrument is re-compiled.<br></blockquote></blockquote><ul><li><font color="#3366ff">dialog</font>(model)</li></ul><blockquote><blockquote>displays a table where you can change the parameter/configuration values. Instrument parameters (scalars) can be given as a single scalar, or a vector (for scans). The calculation starts when you close the table. To <i><b>Cancel</b></i> the computation, select the contextual menu (right mouse button) CANCEL item, or press <i>Ctrl-C</i> at the prompt. The resulting monitors are displayed when the simulation end.<br></blockquote></blockquote><ul><li><font color="#3366ff">publish</font>(model)</li></ul><blockquote><blockquote>create a full readable report as an HTML web page, including the instrument model view, results, and code.<br></blockquote></blockquote><br><br>It is also possible to finely tune the instrument configuration
       using standard McStas/McXtrace options with the syntax:<br>
       <blockquote>
         <pre>&gt;&gt;  <span style="color: rgb(51, 102, 255);">mccode</span>(<span style="color: rgb(204, 51, 204);">'instrument'</span>, options)</pre>
@@ -250,8 +250,8 @@
         </li>
       </ul>
       <h4><a class="mozTocH4" name="mozTocId619025"></a><i><b>Requirements</b></i></h4>
-      As iFit contains powerful import routines, that support McStas
-      data files, it is straight forward to launch a McStas instrument
+      As iFit contains powerful import routines, that support McStas/McXtrace
+      data files, it is straight forward to launch a McStas/McXtrace instrument
       simulation from Matlab and get back the simulation results. To do
       so, you will obviously need to have <span style="font-style:
         italic;">iFit</span> installed (refer to the <a href="Install.html">Install</a> page), as well as <span style="font-style: italic;">McStas</span> (refer to the <a href="http://www.mcstas.org">McStas web site</a>) or <a href="http://mcxtrace.org/">McXtrace</a>. When used with the
@@ -267,7 +267,7 @@
       optionally axes:<br>
       <pre style="margin-left: 40px;">&gt;&gt; results = <font color="#3366ff">feval</font>(model);			<i>% return the monitor, using current/default parameters</i><br>&gt;&gt; results = <font color="#3366ff">feval</font>(model, parameters);		<i>% return the monitor as an array using guessed axes</i><br>&gt;&gt; results = <font color="#3366ff">feval</font>(model, parameters, x,y,...);	<i>% return the monitor as an array</i><i>, using specified axes</i><br>&gt;&gt; results = <font color="#3366ff">feval</font>(model, parameters, nan);	<i>% return the raw monitor as an array</i><br></pre>
       but it may be more convenient to manipulate the model value as
-      iData objects:<br>
+      <a href="iData.html">iData</a> objects:<br>
       <pre style="margin-left: 40px;">&gt;&gt; result = <font color="#3366ff">iData</font>(model, parameters);		<i>% return monitor interpolated onto guessed axes<br></i>&gt;&gt; result = <font color="#3366ff">iData</font>(model, parameters, nan);	<i>% return raw monitor as an iData object</i><br>&gt;&gt; result = <font color="#3366ff">iData</font>(model, parameters, x,y,...);	<i>% return monitor interpolated onto axes x,y,...</i><br>&gt;&gt; <font color="#3366ff">plot</font>(result);<br>&gt;&gt; <font color="#3366ff">plot</font>(model.UserData.monitors)</pre>
       where <span style="font-style: italic;">parameters</span> is a
       structure, or string, or vector that holds parameter names and
@@ -364,7 +364,7 @@
         input parameters, you can access the model.UserData area:<br>
         <pre>&gt;&gt; model.UserData<br><br>ans = <br><br>        instrument_source: [1x7011 char]<br>    instrument_executable: [1299344x1 double]<br>           instrument_exe: 'templateDIFF.out'<br>          instrument_info: [1x960 char]<br>                  options: [1x1 struct]<br>               Parameters: [1x1 struct]<br>      Parameters_Constant: [1x1 struct]<br>                 monitors: [5x1 iData]<br></pre>
         and especially the instrument_info and instrument_source, which
-        you can edit with e.g:<br>
+        you can view with e.g:<br>
         <ul>
           <li><font color="#3366ff">disp</font>(model.UserData.instrument_info)</li>
         </ul>
@@ -453,7 +453,7 @@ of
           [ scan <font color="#3366ff">iData</font>(model, [], nan) ];
           <font color="#3366ff">end</font></li>
         <li><font color="#3366ff">subplot<font color="#000000">(scan)</font></font></li></ul><h4><a name="mozTocId329402" class="mozTocH4"></a>Running series
-        of simulations (single step and scans): graphical user interface<br></h4><font color="#3366ff"><font color="#000000">A user interface can be used to enter most McStas configuration and instrument parameters. To display it, use:<br></font></font><ul><li><font color="#3366ff"><font color="#000000"><font color="#3366ff">dialog</font>(model)</font></font></li></ul><font color="#3366ff"><font color="#000000">which shows a table where instrument parameters can be specified as scalars (e.g. <i><b>1</b></i>), vectors (e.g. <i>[1 2 3]</i> or <i>0:0.5:5</i> or <i>linspace(0,5,10)</i> ) or strings (<i>'Al.laz'</i> for the additional non variable parameters such as file names, etc).<br></font></font><ul>
+        of simulations (single step and scans): graphical user interface<br></h4><font color="#3366ff"><font color="#000000">A user interface can be used to enter most McStas/McXtrace configuration and instrument parameters. To display it, use:<br></font></font><ul><li><font color="#3366ff"><font color="#000000"><font color="#3366ff">dialog</font>(model)</font></font></li></ul><font color="#3366ff"><font color="#000000">which shows a table where instrument parameters can be specified as scalars (e.g. <i><b>1</b></i>), vectors (e.g. <i>[1 2 3]</i> or <i>0:0.5:5</i> or <i>linspace(0,5,10)</i> ) or strings (<i>'Al.laz'</i> for the additional non variable parameters such as file names, etc).<br></font></font><ul>
       </ul>
       <h3><a class="mozTocH3" name="mozTocId690143"></a>Optimizing
         instrument parameters<br>
@@ -537,15 +537,15 @@ of
     specified optimiser.<br>
     <br>
     It is <font color="#ff0000"><b>highly recommended</b></font> to
-    request the opimisation using the raw monitors. As indicated above,
+    request the optimisation using the raw monitors. As indicated above,
     the axes are specified as additional arguments after the options:<br>
     <pre style="margin-left: 40px;">&gt;&gt; best_parameters = <span style="color: rgb(51, 102, 255);">fmax</span>(model, parameters, options, x, y, ...);</pre>
     and in particular you should probably use:<br>
-    <pre style="margin-left: 40px;">&gt;&gt; best_parameters = <span style="color: rgb(51, 102, 255);">fmax</span>(model, parameters, options, nan);	<i>% use raw monitors</i></pre>
+    <pre style="margin-left: 40px;">&gt;&gt; best_parameters = <span style="color: rgb(51, 102, 255);">fmax</span>(model, parameters, options, <b>nan</b>);	<i>% use raw monitors</i></pre>
     The optimization returns the best parameter guess, as well as the
     monitor value for this solution.<br>
     <br>
-    In the following example, a McStas model is assembled, specifying
+    In the following example, a McStas/McXtrace model is assembled, specifying
     which monitor to use as model value. Then all parameters are fixed
     except RV and L2 which are bound (see section below). Last, the
     optimizer is explicitly indicated (else an automatic guess is made)
@@ -553,7 +553,7 @@ of
     addition, similarly with other iFit <a href="Optimizers.html">optimization
       methods</a>, the optimizer final status and optional returned
     information can be obtained with e.g.&nbsp;
-    <pre style="margin-left: 40px;">&gt;&gt; model = <span style="color: rgb(51, 102, 255);">mccode</span>(<span style="color: rgb(204, 51, 204);">'templateDIFF'</span>,<font color="#cc33cc">'monitor=*Theta*'</font>);	% monitor contains 'Theta'<br>&gt;&gt; <font color="#3366ff">fix</font>(model, <font color="#cc33cc">'all'</font>); 				% fix all but RV L2<br>&gt;&gt; model.RV=<font color="#cc33cc">'free'</font>; model.RV=[0.5 0.8 1.5];	% set RV bounds and value in a single assignment<br>&gt;&gt; model.L2=<font color="#cc33cc">'free'</font>; model.L2=[1 3 4];<br>&gt;&gt; [parameters, fval, <span style="color: rgb(255, 0, 0);">status, output</span>]=<span style="color: rgb(51, 102, 255);">fmax</span>(model<span style="color: rgb(204, 51, 204);"></span>,<span style="color: rgb(51, 102, 255);">[], </span><span style="color: rgb(204, 51, 204);">'optimizer=fminimfil; OutputFcn=fminplot'</span>, nan);</pre>
+    <pre style="margin-left: 40px;">&gt;&gt; model = <span style="color: rgb(51, 102, 255);">mccode</span>(<span style="color: rgb(204, 51, 204);">'templateDIFF'</span>,<font color="#cc33cc">'monitor=*Theta*'</font>);	% monitor contains 'Theta'<br>&gt;&gt; <font color="#3366ff">fix</font>(model, <font color="#cc33cc">'all'</font>); 				% fix all but RV L2<br>&gt;&gt; model.RV=<font color="#cc33cc">'free'</font>; model.RV=[0.5 0.8 1.5];	% set RV bounds and value in a single assignment<br>&gt;&gt; model.L2=<font color="#cc33cc">'free'</font>; model.L2=[1 3 4];<br>&gt;&gt; [parameters, fval, <span style="color: rgb(255, 0, 0);">status, output</span>]=<span style="color: rgb(51, 102, 255);">fmax</span>(model<span style="color: rgb(204, 51, 204);"></span>,<span style="color: rgb(51, 102, 255);">[], </span><span style="color: rgb(204, 51, 204);">'optimizer=fminimfil; OutputFcn=fminplot'</span>, <b>nan</b>);</pre>
     where <span style="font-style: italic;">output</span> stores most
     of the optimization process data, including uncertainty on the best
     parameter values, <span style="font-style: italic;">output.parsHistoryUncertainty
@@ -612,7 +612,7 @@ of
 
 
 
-    <a href="http://www.mcstas.org">McStas</a> uses a Monte-Carlo
+    <a href="http://www.mcstas.org">McStas</a>/McXtrace use a Monte-Carlo
     technique (which means 'random'), the criteria is a noisy function.
     The stop conditions must then usually be quite relaxed for the
     optimization to end, or the number of <span style="font-style:
