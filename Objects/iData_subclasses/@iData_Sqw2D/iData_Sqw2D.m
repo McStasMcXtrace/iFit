@@ -15,7 +15,7 @@ classdef iData_Sqw2D < iData
   % d = dos(s)
   %   Compute the generalized vibrational density of states (gDOS).
   % t = thermochemistry(s)
-  %   Compute and display thermochemistry quantities.
+  %   Compute and display thermochemistry quantities from the gDOS.
   % m = moments(s)
   %   Compute the S(q,w) moments/sum rules (harmonic frequencies).
   % sym = symmetrize(s)
@@ -78,11 +78,9 @@ classdef iData_Sqw2D < iData
 
     % structure_factor (sq)
     
-    % symmetrize (+/-)
     % dynamic_range
     % scattering_cross_section
     
-    % dos (gDOS)
     % thermochemistry
     
     % sound_velocity ?

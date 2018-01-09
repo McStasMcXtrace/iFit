@@ -1,31 +1,29 @@
 function [t, fig]=thermochemistry(s, T, options)
-% iFunc_Sqw4D/thermochemistry: compute thermodynamic quantities for 4D S(q,w) models.
+% iData_Sqw2D/thermochemistry: compute thermodynamic quantities for 2D S(q,w) data sets.
 %
-% compute thermodynamics quantities for a 4D S(q,w) Model.
-% When missing, the phonon (vibrational) density of states (vDOS) is estimated 
-% from e.g. the evaluation of the 4D sqw phonons object.
+% compute thermodynamics quantities.
+% When missing, the generalised density of states (gDOS) is estimated 
+% from the 2D sqw object.
 %
-% The input 4D model should be e.g. a 4D phonon one, with axes qh,qk,ql,energy
-% in [rlu^3,meV]. The evaluation of the model should provide the density of states
-% in model.UserData.DOS as an iData object.
+% The input 2D data set should be e.g. a 2D S(q,w), with axes |q|,energy
+% in [Angs-1,meV]. 
 %
 % the function returns an array of iData objects:
 %   DOS                                 [modes/energy unit/unit cell]
-%   DOS_partials                    DOS partials (one per mode)
 %   entropy                           S [eV/K/cell]
 %   internal_energy                   U [eV/cell]
 %   helmholtz_energy                  F [eV/cell]
 %   heat_capacity at constant volume Cv [eV/K/cell]
 %
 % input:
-%   s: a 4D sqw phonons model [K,H,L,Energy] (iFunc)
+%   s: a 2D sqw data set [|Q|,Energy] (iData_Sqw2D)
 %   T: temperature range. When not given, T=1:500 [K]
 %   options: can be 'plot' to display the results.
 %         The 'newplot' option does the same but opens a new figure instead of
 %         re-using an existing one.
 %
 % output:
-%   t: structure with [DOS, DOS_partials, S U F Cv ]
+%   t: structure with [DOS, S U F Cv ]
 %   fig: figure handle
 %
 % Reference: https://wiki.fysik.dtu.dk/ase/ase/thermochemistry/thermochemistry.html#background
@@ -38,8 +36,8 @@ if nargin < 2, T=[]; end
 if nargin < 3, options=[]; end
 
 % must be 2D or 4D iFunc/iData.
-if ~isa(s,'iFunc') || ndims(s) ~= 4
-  disp([ mfilename ': Invalid model dimension. Should be iFunc/iData 2D or 4D. It is currently ' class(s) ' ' num2str(ndims(s)) 'D' ]);
+if ~isa(s,'iData') || ndims(s) ~= 2
+  disp([ mfilename ': Invalid model dimension. Should be iData 2D . It is currently ' class(s) ' ' num2str(ndims(s)) 'D' ]);
   return
 end
 
@@ -47,7 +45,7 @@ if isempty(T)
   T = 1:500;  % default
 end
 
-[DOS,DOS_partials] = dos(s);
+DOS = dos(s);
 omega_e = DOS{1};
 dos_e   = DOS{0};
 
@@ -111,7 +109,6 @@ end
 % return all
 t.README = [ mfilename ' ' s.Name ];
 t.DOS             =DOS;
-t.DOS_partials    =DOS_partials;
 t.Temperature     =T;
 t.maxFreq         =s.UserData.maxFreq;
 t.entropy         =s.UserData.entropy;            % S
@@ -129,18 +126,7 @@ if nargout == 0 || ~isempty(strfind(options, 'plot'))
       DOS{1} = DOS{1}; % change energy unit
       xlabel(DOS,[ 'Energy [meV]' ]);
       % plot any partials first
-      if isfield(s.UserData,'DOS_partials') && numel(s.UserData.DOS_partials) > 0
-        d=s.UserData.DOS_partials;
-        for index=1:numel(d)
-          this_pDOS=d(index);
-          this_pDOS{1} = this_pDOS{1};
-          d(index) = this_pDOS;
-        end
-        h=plot(d);
-        if iscell(h), h=cell2mat(h); end
-        set(h,'LineStyle','--');
-        hold on
-      end
+      
       % plot total DOS and rotate
       h=plot(DOS); set(h,'LineWidth',2);
     end
