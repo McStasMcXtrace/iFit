@@ -7,8 +7,8 @@ classdef iData_Sqw2D < iData
   %
   % Useful methods for this iData flavour:
   %
-  % methods(iFunc_Sqw4D)
-  %   all iFunc methods can be used.
+  % methods(iData_Sqw2D)
+  %   all iData methods can be used.
   % iData_Sqw2D(s)
   %   convert input [e.g. a 2D iData object] into an iData_Sqw2D to give access to
   %   the methods below.
@@ -28,8 +28,7 @@ classdef iData_Sqw2D < iData
   %   Search for physical quantities in S(q,w) data set.
   %
   % input:
-  %   can be an iFunc or struct or any set of parameters to generate a Sqw4D object.
-  %   when not given an iFunc, the parameters to sqw_phonons are expected.
+  %   can be an iData or filename to generate a 2D Sqw object.
   %
   % output: an iData_Sqw2D object
   %
@@ -77,11 +76,9 @@ classdef iData_Sqw2D < iData
     end
 
     % structure_factor (sq)
-    
     % dynamic_range
     % scattering_cross_section
-    
-    % thermochemistry
+    % Sqw2Sab -> iData_Sab
     
     % sound_velocity ?
     % MSD ?
@@ -108,10 +105,15 @@ classdef iData_Sqw2D < iData
     
     function f = saveas(self, varargin)
       % iData_Sqw2D: saveas: save S(q,w) into a file.
+      %
+      % syntax: saveas(sqw2D, filename, format)
+      %
+      %   with format as mcstas, sqw, spe, inx or any other iData supported format.
+      %
       % all iData.saveas formats are available, and in addition:
       %
       %   McStas (for Isotropic_Sqw component)
-      %   INX (MuPhoCor)
+      %   INX (INX/MuPhoCor)
       %   SPE (MSlice)
       %
       if numel(varargin) >= 2

@@ -1,5 +1,5 @@
 function [Sqw, Iqt, Wq, Tall] = multi_phonons(gw, q, T, sigma, m, n)
-% muphocor: compute the multi-phonon contributions in S(q,w) from an initial density of states
+% multi_phonons: compute the multi-phonon contributions in S(q,w) from an initial density of states in the incoherent gaussian approximation
 %
 % [Sqw, Wq, Tall] = multi_phonons(gw, q, T, sigma, m, n)
 %
