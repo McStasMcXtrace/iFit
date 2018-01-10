@@ -39,6 +39,13 @@ if isempty(fields) % default: search all parameters and assemble them
   return
 end
 
+if numel(s) > 1
+  for index=1:numel(s)
+    [s(index),parameters,fields] = Sqw_parameters(s(index), fields);
+  end
+  return
+end
+
 % make sure we have a 'parameters' field
 if isempty(findfield(s,'parameters','first'))
   return

@@ -11,14 +11,14 @@ function [DOS, DOS_partials] = dos(s, n)
 %    When the DOS has already been computed, it is used as is. To force a
 %    recomputation, specify a different number of bins 'n' or set:
 %      s.UserData.DOS=[];
-%    or use DOS = dos(s,'force')
+%    or use DOS = dos(s,'force') or dos(s, 0)
 %
 %    To smooth the resulting distribution, use:
 %      sDOS = smooth(DOS); plot(sDOS);
 %
 % input:
 %   s: S(q,w) 4D model (iFunc_Sqw4D)
-%   n: number of energy values (integer). Optional. Default is to nmodes*10
+%   n: number of energy values (integer). Optional. Default is nmodes*10
 %
 % output:
 %   DOS:   DOS(w)   (1D iData versus energy)
@@ -75,6 +75,9 @@ function [DOS, DOS_partials] = dos(s, n)
     set(fig, 'NextPlot','new');
   end
   
+  DOS           = iData_vDOS(DOS);
+  DOS_partials  = iData_vDOS(DOS_partials);
+  
 % ------------------------------------------------------------------------------
 
 function [DOS, DOS_partials, s] = sqw_phonon_dos_4D(s, n)
@@ -103,7 +106,7 @@ function [DOS, DOS_partials, s] = sqw_phonon_dos_4D(s, n)
   end
   
   if nargin < 2, n=[]; end
-  if strcmp(n, 'force')
+  if strcmp(n, 'force') || (isscalar(n) && n == 0)
     s.UserData.DOS = [];
   end
   
@@ -126,21 +129,26 @@ function [DOS, DOS_partials, s] = sqw_phonon_dos_4D(s, n)
   if (~isfield(s.UserData,'DOS') || isempty(s.UserData.DOS)) ...
     && isfield(s.UserData,'FREQ') && ~isempty(s.UserData.FREQ)
     nmodes = size(s.UserData.FREQ,2);
-    if isempty(n)
+    if isempty(n) || n == 0
       n = max(nmodes*10, 100);
     end
-    index= find(imag(s.UserData.FREQ) == 0);
-    dos_e = s.UserData.FREQ(index);
-    omega_e = linspace(min(dos_e(:)),max(dos_e(:))*1.2, n);
-    [dos_e,omega_e]=hist(dos_e,omega_e);
-    dos_factor = size(s.UserData.FREQ,2) / trapz(omega_e(:), dos_e(:));
-    dos_e = dos_e * dos_factor ; % 3n modes per unit cell
-    DOS=iData(omega_e,dos_e);
-    DOS.Title = [ 'Total DOS ' s.Name ];
-    DOS.Label = '';
+    
+    % compute the DOS histogram
+    index           = find(imag(s.UserData.FREQ) == 0);
+    dos_e           = s.UserData.FREQ(index);
+    omega_e         = linspace(min(dos_e(:)),max(dos_e(:))*1.2, n);
+    [dos_e,omega_e] = hist(dos_e,omega_e);
+    dos_factor      = size(s.UserData.FREQ,2) / trapz(omega_e(:), dos_e(:));
+    dos_e           = dos_e * dos_factor ; % 3n modes per unit cell
+    
+    % create the object
+    DOS                   = iData(omega_e,dos_e);
+    DOS.Title             = [ 'Total DOS ' s.Name ];
+    DOS.Label             = '';
+    DOS.Error             = 0;
     xlabel(DOS,'Energy [meV]'); 
     ylabel(DOS,[ 'Total DOS/unit cell ' strtok(s.Name) ]);
-    DOS.Error=0; s.UserData.DOS=DOS;
+    s.UserData.DOS=iData_vDOS(DOS);
     % partial phonon DOS (per mode) when possible
     pDOS = [];
     for mode=1:nmodes
@@ -148,15 +156,16 @@ function [DOS, DOS_partials, s] = sqw_phonon_dos_4D(s, n)
       index = find(imag(f1) == 0);
       dos_e = hist(f1(index),omega_e, n);
       dos_e = dos_e * dos_factor ; % normalize to the total DOS
-      DOS=iData(omega_e,dos_e);
+      
+      DOS       = iData(omega_e,dos_e);
       DOS.Title = [ 'Mode [' num2str(mode) '] DOS ' s.Name ]; 
       DOS.Label = '';
+      DOS.Error = 0;
       xlabel(DOS,'Energy [meV]'); 
       ylabel(DOS,[ 'Partial DOS[' num2str(mode) ']/unit cell ' strtok(s.Name) ]);
-      DOS.Error = 0;
-      pDOS = [ pDOS DOS ];
+      pDOS      = [ pDOS DOS ];
     end
-    s.UserData.DOS_partials=pDOS;
+    s.UserData.DOS_partials=iData_vDOS(pDOS);
     clear f1 index dos_e omega_e dos_factor DOS pDOS
   elseif ~isfield(s.UserData,'FREQ') || isempty(s.UserData.FREQ)
     error([ mfilename ': Can not compute the density of states as the bare frequencies are not available (UserData.FREQ)' ]);
@@ -168,12 +177,17 @@ function [DOS, DOS_partials, s] = sqw_phonon_dos_4D(s, n)
 
   % get the DOS and other output
   if isfield(s.UserData,'DOS') && ~isempty(s.UserData.DOS)
+    % make it an iData vDOS flavour to access e.g. thermochemistry
     DOS = s.UserData.DOS;
     if isfield(s.UserData,'properties')
       DOS.UserData.properties = s.UserData.properties;
     end
+    if isfield(s.UserData,'maxFreq')
+      DOS.UserData.maxFreq = s.UserData.maxFreq;
+      DOS = setalias(DOS, 'maxFreq', s.UserData.maxFreq, 'Maximum phonon frequency');
+    end
   end
   if isfield(s.UserData,'DOS_partials') && numel(s.UserData.DOS_partials) > 0
-    DOS_partials = s.UserData.DOS_partials;
+    DOS_partials = iData_vDOS(s.UserData.DOS_partials);
   end
    
