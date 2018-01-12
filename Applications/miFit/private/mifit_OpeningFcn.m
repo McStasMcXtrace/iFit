@@ -147,7 +147,9 @@ if isempty(fig) || ~ishandle(fig)
     % set(fig,'windowbuttondownfcn','disp(''down in:''); get(0,''pointerwindow'')')
 
     % close welcome image
-    delete(h);
+    if ishandle(h)
+      delete(h);
+    end
     
     set(fig,'Pointer','arrow');
 

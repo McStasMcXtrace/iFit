@@ -114,10 +114,14 @@ otherwise % nD, n>1
           f_methods{end+1}  = f_method;
           f_nans(end+1)     = numel(find(isnan(f_signal(:))));
           if f_nans(end) == 0, break; end % perfect method/no NaN's, we assume it is good
+          % less than twice as many NaN's as original data set, or 1%: this is acceptable
+          if f_nans(end)/numel(f_signal) < 2*nb_i_nans/numel(i_signal) || f_nans(end)/numel(f_signal) < 1e-2
+            break
+          end
         end
       catch ME
-        % disp([ mfilename ': failed interpolation with ' interpolants{index} ]);
-        % disp(getReport(ME))
+        disp([ mfilename ': WARNING: failed interpolation with ' interpolants{index} '. Going on.' ]);
+        disp(getReport(ME))
       end
     end
     

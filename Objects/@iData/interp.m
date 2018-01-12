@@ -385,7 +385,7 @@ for index=1:length(f_axes)
 end
 b.Command=cmd; 
 % final check
-b = iData(b);
+b = iData_check(b);
 
 if isscalar(b), b=double(b); end
 

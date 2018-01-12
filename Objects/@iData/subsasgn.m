@@ -180,7 +180,7 @@ else
       b.Command=cmd;
       b = iData_private_history(b, toadd);
       % final check
-      b = iData(b);
+      b = iData_check(b);
     elseif length(s.subs) == 1 && length(s.subs{:}) == 1 && s.subs{:} == 1
     % SYNTAX: object(1) = iData: just assign objects on common axis frame
       [b,val]=union(b,val); % extrapolated values from 'val' are set to zero by interp
