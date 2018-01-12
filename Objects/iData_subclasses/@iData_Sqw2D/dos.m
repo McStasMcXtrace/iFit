@@ -39,7 +39,7 @@ function DOS = dos(s, method, n)
 %         Suck et al, Journal of Alloys and Compounds 342 (2002) 314
 %         Bredov et al., Sov. Phys. Solid State 9, 214 (1967)
 %
-% Example: Sqw=iData_Sqw2D('SQW_coh_lGe.nc'); g = dos(bosify(symmetrize(Sqw))); plot(g);
+% Example: Sqw=iData_Sqw2D('SQW_coh_lGe.nc'); g = dos(Bosify(symmetrize(Sqw))); plot(g);
 % (c) E.Farhi, ILL. License: EUPL.
 
   DOS=[];  
@@ -60,11 +60,10 @@ function DOS = dos(s, method, n)
   if isempty(method), method = 'Carpenter'; end
   if isempty(n) || n <= 0, n=10; end
   if isempty(s), return; end
-  s = iData(s);
 
   % test if classical
   if isfield(s,'classical') || ~isempty(findfield(s, 'classical'))
-    if s.classical == 1
+    if get(s,'classical') == 1
       disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' seems to be classical.' ])
       disp('  The gDOS computation may be wrong. Now using method=''Bellissent'', or apply Bosify first.');
       method = 'Bellissent';
@@ -74,7 +73,7 @@ function DOS = dos(s, method, n)
   % compute g(q,w) aka P(alpha,beta) -------------------------------------------
   yl=getaxis(s, '1');
   xl=getaxis(s, '2');
-  w= s{1};
+  w= getaxis(s,1);
   
   T = Sqw_getT(s);
   if isempty(T) && isempty(strfind(method, 'Bellissent'))
@@ -100,9 +99,11 @@ function DOS = dos(s, method, n)
   if isempty(g.Label), g.Label='gDOS'; end
   
   % this is the weighting for valid data
-  g(~isfinite(g)) = 0;
+  S.type='()';
+  S.subs={ ~isfinite(g) };
+  g = subsasgn(g, S, 0);
   % normalise to 1. No need for the mass, temperature and other constant factors
-  sum_g = g{0};
+  sum_g = getaxis(g,0);
   g = g./sum(sum_g(:)); 
   
   % determine the low-momentum limit -------------------------------------------
@@ -128,6 +129,13 @@ function DOS = dos(s, method, n)
   xlabel(DOS, 'Energy');
   DOS       = iData_vDOS(DOS);
   
+  if nargout == 0 && ~isempty(DOS)
+    fig=figure; 
+    % plot total DOS
+    h=plot(DOS); set(h,'LineWidth',2);
+    set(fig, 'NextPlot','new');
+  end
+  
 
 % ------------------------------------------------------------------------------
 function g = sqw_phonon_dos_Carpenter(s, T)
@@ -141,8 +149,8 @@ function g = sqw_phonon_dos_Carpenter(s, T)
 %   exp(2*W) ~ exp(-0.003*q.^2) ~ 0.9-1 in q=0:5 Angs-1. Assumed to be 1.
 %   n(hw) = 1./(exp(w/kT)-1))
 
-  hw= s{1}; 
-  q = s{2};
+  hw= getaxis(s,1); 
+  q = getaxis(s,2); 
   beta    = -11.605*hw/T;
   n = 1./(exp(beta) - 1);
   n(~isfinite(n)) = 0;
@@ -156,8 +164,8 @@ function g = sqw_phonon_dos_Bellissent(s)
 % uses Carpenter with approx: exp(2W)=1 and 1/(n(w)+1) ~ hw
 %
 % g(q,w) ~ hw.^2./q.^2 S(q,w)                      [Bellissent]
-  hw = s{1}; 
-  q  = s{2};
+  hw= getaxis(s,1); 
+  q = getaxis(s,2); 
   
   g = s.*hw.^2./q.^2;
 
@@ -169,13 +177,13 @@ function g = sqw_phonon_dos_Bredov(s, T)
 %        * \int_{theta_min -> theta_max} exp(2*W) kf/ki S(q,w) sin(theta) dtheta
 
   g = sqw_phonon_dos_Carpenter(s,T);
-  q = s{2};
+  q = getaxis(s,2); 
   % for each energy, we get the min and max which can be measured
   % requires to know the incident energy.
   q4= zeros(size(s{1}));
   for index=1:size(s, 1)
     sw = s(index,:); % slab for a given energy. length is 'q'
-    sw = sw{0};
+    sw = getaxis(sw,0);
     valid = find(sw(isfinite(sw) & sw > 0));
     if isvector(q)
       qw = q;

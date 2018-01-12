@@ -18,8 +18,7 @@ function s = Sqw_check(s)
 % (c) E.Farhi, ILL. License: EUPL.
 
   if nargin == 0, return; end
-  
-  if ~isa(s, 'iData'), s=iData(s); end
+  if ~isa(s, 'iData'), s = iData(s); end
   
   % handle array of objects
   if numel(s) > 1
@@ -40,7 +39,7 @@ function s = Sqw_check(s)
   a_present=0;
   t_present=0;
   alpha_present=0;
-  beta_present=0;
+  beta_present =0;
   if isa(s, 'iData') && ndims(s) == 2
     for index=1:2
       lab = lower(label(s,index));
@@ -104,16 +103,18 @@ function s = Sqw_check(s)
   end
   
   % this is the weighting for valid data
-  s(~isfinite(s)) = 0;
+  S.type='()';
+  S.subs={ ~isfinite(s) };
+  s = subsasgn(s, S, 0);
   
   % check 'classical' and 'symmetric'
   if isfield(s,'classical') 
-    classical0 = s.classical;
+    classical0 = get(s,'classical');
   else
     classical0 = [];
   end
   
-  w  = s{1};
+  w  = getaxis(s,1);
   % checks that we have 0<w<Ei for Stokes, and w<0 can be lower (anti-Stokes)
   if any(w(:) < 0) && any(w(:) > 0)
     % for experimental data we should get w1=max(w) < Ei and w2 can be as low as
@@ -131,7 +132,7 @@ function s = Sqw_check(s)
   end
 
   % can we guess if this is classical data ? get temperature ?
-  w = s{1};
+  w = getaxis(s,1);
 
   if any(w(:) < 0) && any(w(:) > 0)
     % restrict the energy axis to the common +/- range
@@ -143,7 +144,7 @@ function s = Sqw_check(s)
       s_res = s;
     end
     % get axes
-    w = s_res{1};
+    w = getaxis(s_res,1);
     
     % we compare the s(q,w) and s(q,-w)
     s_opp = setaxis(s_res, 1, -w);
@@ -154,7 +155,7 @@ function s = Sqw_check(s)
     % the ratio should be S(q,w)/S(q,-w) = exp(hw/kT)
     % so log(S(q,w)) - log(S(q,-w)) = hw/kT
     log_s_ratio = log(s_res) - log(s_opp);
-    w = log_s_ratio{1};
+    w = getaxis(log_s_ratio,1);
     clear s_res s_opp
     
     % mean_log_ratio = mean(log_s_ratio,0);
@@ -164,7 +165,7 @@ function s = Sqw_check(s)
     % log_s_ratio should be a constant if S(q,w) contains Bose
     % then kT = w./log_s_ratio
     T         = w./log_s_ratio*11.6045; % 1 meV = 11.6045 K
-    T         = T{0};
+    T         = getaxis(T,0);
     if any(isfinite(T)) && (all(T(~isnan(T))>0.1) || all(T(~isnan(T))<0.1))
       T         = mean(real(T(~isnan(T))));
     else T=NaN;

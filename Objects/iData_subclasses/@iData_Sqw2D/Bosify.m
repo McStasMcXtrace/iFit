@@ -77,7 +77,7 @@ function s = Bosify(s0, T, type)
   end
   
   if isempty(s0), return; end
-  s = copyobj(iData(s0)); % back to iData
+  s = copyobj(s0); % back to iData
   if strfind(lower(type),'debosify')
        do_bosify=0;
        type = strtrim(strrep(lower(type), 'debosify','')); % remove debosify occurence
@@ -102,10 +102,10 @@ function s = Bosify(s0, T, type)
   if isfield(s,'classical') || ~isempty(findfield(s, 'classical'))
     % Bosify   must be applied on classical
     % deBosify must be applied on quantum
-    if (s.classical == 0 && do_bosify)
+    if (get(s,'classical') == 0 && do_bosify)
       disp([ mfilename ': WARNING: Not "classical/symmetric": The data set ' s.Tag ' ' s.Title ' from ' s.Source ' does not seem to be classical (classical=0).' ]);
       disp([ mfilename ':   It may ALREADY contain the Bose factor in which case the detailed balance will be wrong.' ]);
-    elseif (s.classical == 1 && ~do_bosify)
+    elseif (get(s,'classical') == 1 && ~do_bosify)
       disp([ 'de' mfilename ': WARNING: Not "quantum": The data set ' s.Tag ' ' s.Title ' from ' s.Source ' seems to be classical/symmetric (classical=1).' ]);
       disp([ 'de' mfilename ':   The Bose factor may NOT NEED to be removed in which case the detailed balance will be wrong.' ]);
     end
@@ -123,7 +123,7 @@ function s = Bosify(s0, T, type)
   
   T2E       = (1/11.6045);           % Kelvin to meV = 1000*K_B/e
   kT        = T*T2E;
-  hw_kT     = s{1}./kT;               % hbar omega / kT
+  hw_kT     = getaxis(s,1)./kT;               % hbar omega / kT
   
   % apply sqrt(Bose) factor to get experimental-like
   % semi-classical corrections, aka quantum correction factor
@@ -143,7 +143,7 @@ function s = Bosify(s0, T, type)
   else
     error([ mfilename 'Unknown semi-classical correction ' type ]);
   end
-  Q(find(s{1}==0)) = 1;
+  Q(find(hw_kT==0)) = 1;
   if ~do_bosify, Q = 1./Q; end
   s         = s .* Q;  % apply detailed balance with the selected correction
   

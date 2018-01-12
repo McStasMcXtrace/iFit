@@ -40,7 +40,6 @@ function sigma=moments(data, M, T, classical)
   if nargin < 4, classical = []; end
   
   if isempty(data), sigma=[]; return; end
-  data = iData(data);
   
   % guess when omitted arguments
   if isempty(classical) && (isfield(data,'classical') || ~isempty(findfield(data, 'classical')))
@@ -73,7 +72,9 @@ function sigma=moments(data, M, T, classical)
   
   % clean low level data
   i=find(log(data) < -15);
-  data(i) = 0;
+  S.type='()';
+  S.subs={ i };
+  data = subsasgn(data, S, 0);
   
   sq      = abs(trapz(data)); % S(q) from the data itself
   M0      = sq;
@@ -110,8 +111,9 @@ function sigma=moments(data, M, T, classical)
   if ~isempty(M) && isnumeric(M)
     wq      = 2*q.*sqrt(kT./M0/M);  % Lovesey p180 eq. 5.38 = w0
     wq.Label='w_q=q \surd kB T/m S(q) mean energy transfer';
+    title(wq, wq.Label );
   else
-    wq = iData;
+    wq = iData_Sqw2D;
   end
   
   if classical
@@ -124,20 +126,26 @@ function sigma=moments(data, M, T, classical)
     wl      = sqrt(M3./M1); 
   end
   
-  sq.Label='S(q) structure factor';
-  M1.Label='recoil E_r=h^2q^2/2M <wS> 1st moment';
-  wc.Label='w_c collective/isothermal dispersion';  
-  wl.Label='w_l harmonic/longitudinal excitation';
-  M2.Label='<w2S> 2nd moment';
-  M3.Label='<w3S> 3rd moment';
-  M4.Label='<w4S> 4th moment';
+  sq.Label='S(q) structure factor';                 ylabel(sq, sq.Label );
+  M1.Label='recoil E_r=h^2q^2/2M <wS> 1st moment';  ylabel(M1, M1.Label );
+  wc.Label='w_c collective/isothermal dispersion';  ylabel(wc, wc.Label );
+  wl.Label='w_l harmonic/longitudinal excitation';  ylabel(wl, wl.Label );
+  M2.Label='<w2S> 2nd moment';                      ylabel(M2, M2.Label );
+  M3.Label='<w3S> 3rd moment';                      ylabel(M3, M3.Label );
+  M4.Label='<w4S> 4th moment';                      ylabel(M4, M4.Label );
+
+  sigma =iData([ sq M1 wc wl wq M2 M3 M4 ]);
   
-  sigma =[ sq M1 wc wl wq M2 M3 M4 ];
+  if nargout == 0
+    fig=figure; 
+    subplot(sigma);
+    set(fig, 'NextPlot','new');
+  end
 
   return
   
   
-  % now fit gaussians for each q value...
+  % now fit gaussians for each q value... inactive code
   for index=1:length(q)
     this  = data(index,:);
     w.dwG(index) = std(this);

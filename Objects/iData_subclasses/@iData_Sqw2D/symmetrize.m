@@ -40,11 +40,10 @@ function s=Sqw_symmetrize(s)
   end
 
   if isempty(s), return; end
-  s = iData(s);
 
   % test if classical
   if isfield(s,'classical') || ~isempty(findfield(s, 'classical'))
-    if s.classical == 0
+    if get(s,'classical') == 0
       disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' does NOT seem to be classical.']);
       disp([ mfilename ':   It may already contain the Bose factor in which case the symmetrisation will be wrong.' ]);
     end
@@ -53,13 +52,13 @@ function s=Sqw_symmetrize(s)
   end
 
   % test if the data set has single energy side: much faster to symmetrise
-  w = s{1}; % should be a row vector
+  w = getaxis(s,1); % should be a row vector
   w0= w;
   if isvector(w) && (all(w(:) >= 0) || all(w(:) <= 0))
     signal = get(s, 'Signal');
     signal=[ signal ; signal ];
     [w,index]=unique([ w ; -w ]);
-    s{1}=w;
+    s = setaxis(s,1,w);
     s = set(s, 'Signal', signal(index,:));
     clear signal
     
@@ -88,8 +87,8 @@ function s=Sqw_symmetrize(s)
   end
   
   
-
+  s     = setalias(s,'classical', 1);
   % final object (and merge common area)
   
-  s     = iData_Sqw2D(s);
+  % s     = iData_Sqw2D(s);
   

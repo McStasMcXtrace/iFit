@@ -44,6 +44,7 @@ classdef iData_Sqw2D < iData
       %
       % input:
       %   must be a 2D iData object holding a S(q,w), S(phi,t), S(alpha,beta) or S(phi,w)
+      %   or file name.
       %
       % Example: s=iData_Sqw2D('SQW_coh_lGe.nc');
       obj = obj@iData;
@@ -52,7 +53,7 @@ classdef iData_Sqw2D < iData
       if ~nargin, return; end  % empty object
       
       % convert/test
-      if ~isa(s, mfilename), m = Sqw_check(s); else m=s; end
+      if ~isa(s, 'iData'), m = Sqw_check(s); else m=s; end
       if ~isa(m, 'iData') || isempty(m) || ndims(m) ~= 2
         error([ mfilename ': the given input ' class(s) ' does not seem to be convertible to iData_Sqw2D.' ])
       end
@@ -74,6 +75,23 @@ classdef iData_Sqw2D < iData
       % This search is also done when creating iData_Sqw2D objects.
       [s,parameters,fields] = Sqw_parameters(s);
     end
+    
+    function f = iData(self)
+      % iData_Sqw2D: iData: convert a iData_Sqw2D back to iData
+      f = [];
+      for index=1:numel(self)
+        this = self(index);
+        f1 = iData;
+        this = struct(this);
+        w = warning('query','iData:subsasgn');
+        warning('off','iData:subsasgn');
+        for p = fieldnames(this)'
+          f1.(p{1}) = this.(p{1}); % generates a warning when setting Alias
+        end
+        warning(w);
+        f = [ f f1 ];
+      end
+    end
 
     % structure_factor (sq)
     % dynamic_range
@@ -85,18 +103,6 @@ classdef iData_Sqw2D < iData
     % diffusion constant ?
     % compressibility ?
     % g(r) pdf
-    
-    function f = iData(self)
-      % iData_Sqw2D: iData: convert a single iData_Sqw2D back to iData
-      f = iData;
-      self = struct(self);
-      w = warning('query','iData:subsasgn');
-      warning('off','iData:subsasgn');
-      for p = fieldnames(self)'
-        f.(p{1}) = self.(p{1}); % generates a warning when setting Alias
-      end
-      warning(w);
-    end
     
     function spe = q2phi(self)
       % iData_Sqw2D: q2phi: convert a S(q,w) into a S(phi,w) iData
