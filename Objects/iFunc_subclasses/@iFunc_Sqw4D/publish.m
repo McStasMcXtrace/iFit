@@ -420,6 +420,7 @@ function self = publish_eval_3D(self, fid, options)
   % modify aspect ratio to fit in a cube for X3D/XHTML
   saveas(Sqw4D_0KLE, fullfile(options.target, 'img', 'Sqw4D_0KLE.xhtml'), 'xhtml','axes auto');
   saveas(Sqw4D_0KLE, fullfile(options.target, 'img', 'Sqw4D_0KLE.x3d'), 'x3d','axes auto');
+  saveas(Sqw4D_0KLE, fullfile(options.target, 'img', 'Sqw4D_0KLE.avi'), 'avi','axes auto');
   
   publish(self, '', 'table', 'Sqw4D_0KLE');
   

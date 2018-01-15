@@ -179,10 +179,11 @@ function filename = iData_private_saveas_html(a, filename, format)
       'MRC Electron density map, to be visualized with <a href="http://www.pymol.org/">PyMol</a>, <a href="http://www.ks.uiuc.edu/Research/vmd/">VMD</a>, <a href="http://www.cgl.ucsf.edu/chimera/">Chimera</a>, <a href="http://www.yasara.org/">Yasara</a>, <a href="http://mem.ibs.fr/VEDA/">VEDA</a>.' ];
   end
   if ~flag_data && any(ndims(a) == [2 3])
-    export = [ export 'xhtml' 'x3d' ];
+    export = [ export 'xhtml' 'x3d' 'avi' ];
     export_label = [ export_label ...
       'Extensible Web page with embeded viewer (X3DOM), to be viewed with Chrome/Firefox.', ...
-      'X3D Geometry Scene for <a href="http://castle-engine.sourceforge.net/view3dscene.php">view3dscene</a>, <a href="http://www.instantreality.org/">InstantPlayer</a>, <a href="http://freewrl.sourceforge.net/">FreeWRL</a>' ];
+      'X3D Geometry Scene for <a href="http://castle-engine.sourceforge.net/view3dscene.php">view3dscene</a>, <a href="http://www.instantreality.org/">InstantPlayer</a>, <a href="http://freewrl.sourceforge.net/">FreeWRL</a>'. ...
+      '<a href="https://en.wikipedia.org/wiki/Audio_Video_Interleave">AVI</a> movie file, to be viewed with e.g. <a href="https://en.wikipedia.org/wiki/VLC_media_player">VLC</a>, <a href="http://www.mplayerhq.hu">MPlayer</a>' ];
   end
   if ndims(a) == 2
     export = [ export 'fits' ];
