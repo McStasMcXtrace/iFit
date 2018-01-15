@@ -1,7 +1,7 @@
-function [Sqw, Iqt, Wq, Tall] = multi_phonons(gw, q, T, sigma, m, n)
-% multi_phonons: compute the multi-phonon contributions in S(q,w) from an initial density of states in the incoherent gaussian approximation
+function [Sqw, Iqt, Wq, Tall] = multi_phonons_incoherent(gw, q, T, sigma, m, n)
+% multi_phonons_incoherent: compute the multi-phonon contributions in S(q,w) from an initial density of states in the incoherent gaussian approximation
 %
-% [Sqw, Wq, Tall] = multi_phonons(gw, q, T, sigma, m, n)
+% [Sqw, Wq, Tall] = multi_phonons_incoherent(gw, q, T, sigma, m, n)
 %
 % The partial differential scattering cross section (measured intensity) is:
 %
@@ -23,7 +23,7 @@ function [Sqw, Iqt, Wq, Tall] = multi_phonons(gw, q, T, sigma, m, n)
 % Example:
 %   s   = sqw_phonons('POSCAR_Al', 'emt');
 %   gw  = dos(s);
-%   Sqw = multi_phonons(gw, [], 300);
+%   Sqw = multi_phonons_incoherent(gw, [], 300);
 %   subplot(Sqw);
 %
 % input:

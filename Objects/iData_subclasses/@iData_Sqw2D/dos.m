@@ -1,4 +1,4 @@
-function DOS = dos(s, method, n)
+function [DOS, fig] = dos(s, method, n)
 % iData_Sqw2D: dos: compute the generalised density of states (gDOS)
 %
 %  The routine can be used for 2D data sets.
@@ -42,7 +42,7 @@ function DOS = dos(s, method, n)
 % Example: Sqw=iData_Sqw2D('SQW_coh_lGe.nc'); g = dos(Bosify(symmetrize(Sqw))); plot(g);
 % (c) E.Farhi, ILL. License: EUPL.
 
-  DOS=[];  
+  DOS=[]; fig = [];
   if nargin < 2, method = []; end
   if nargin < 3, n=[]; end
   
@@ -63,7 +63,7 @@ function DOS = dos(s, method, n)
 
   % test if classical
   if isfield(s,'classical') || ~isempty(findfield(s, 'classical'))
-    if get(s,'classical') == 1
+    if get(s,'classical')
       disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' seems to be classical.' ])
       disp('  The gDOS computation may be wrong. Now using method=''Bellissent'', or apply Bosify first.');
       method = 'Bellissent';

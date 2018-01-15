@@ -14,6 +14,7 @@ classdef iData_vDOS < iData
   % iData_vDOS(g)
   %   convert input [e.g. a 2D or 4D Sqw, or a 1D vDOS] into an iData_vDOS to give access to
   %   the methods below.
+  %
   % d = dos(g)
   %   Compute/get the vibrational density of states (vDOS).
   %
@@ -103,6 +104,24 @@ classdef iData_vDOS < iData
       % This search is also done when creating iData_vDOS objects.
       [s,parameters,fields] = Sqw_parameters(s);
     end
+    
+    function f = iData(self)
+      % iData_vDOS: iData: convert a iData_vDOS back to iData
+      f = [];
+      for index=1:numel(self)
+        this = self(index);
+        f1   = iData;
+        this = struct(this);
+        w = warning('query','iData:subsasgn');
+        warning('off','iData:subsasgn');
+        for p = fieldnames(this)'
+          f1.(p{1}) = this.(p{1}); % generates a warning when setting Alias
+        end
+        warning(w);
+        f = [ f f1 ];
+      end
+    end
+    
   end
   
 end

@@ -2,6 +2,13 @@ classdef iData_Sqw2D < iData
   % iData_Sqw2D: create a 2D S(q,w) data set (iData flavour)
   %
   % The iData_Sqw2D class is a 2D data set holding a S(q,w) dynamic structure factor.
+  %   The first  axis (rows)    is the Momentum transfer [Angs-1] (wavevector). 
+  %   The second axis (columns) is the Energy   transfer [meV].
+  %
+  % conventions:
+  % w = omega = Ei-Ef = energy lost by the neutron [meV]
+  %    omega > 0, neutron looses energy, can not be higher than Ei (Stokes)
+  %    omega < 0, neutron gains energy, anti-Stokes
   %
   % Example: s=iData_Sqw2D('SQW_coh_lGe.nc')
   %
@@ -12,23 +19,42 @@ classdef iData_Sqw2D < iData
   % iData_Sqw2D(s)
   %   convert input [e.g. a 2D iData object] into an iData_Sqw2D to give access to
   %   the methods below.
-  % d = dos(s)
+  %
+  % d   = dos(s)
   %   Compute the generalized vibrational density of states (gDOS).
-  % t = thermochemistry(s)
+  %
+  % t   = thermochemistry(s)
   %   Compute and display thermochemistry quantities from the gDOS.
-  % m = moments(s)
+  %
+  % m   = moments(s)
   %   Compute the S(q,w) moments/sum rules (harmonic frequencies).
+  %
   % sym = symmetrize(s)
   %   Extend the S(|q|,w) in both energy sides.
-  % sb = Bosify(s)
+  %
+  % sb  = Bosify(s)
   %   Apply the 'Bose' factor (detailed balance) to a classical data set.
-  % s  = deBosify(sb)
+  %
+  % s   = deBosify(sb)
   %   Remove Bose factor (detailed balance) from an 'experimental/quantum' data set.
-  % p = parseparams(s)
+  %
+  % p   = parseparams(s)
   %   Search for physical quantities in S(q,w) data set.
   %
+  % sab = Sab(s)
+  %   Convert to an S(alpha,beta) suitable for nuclear data bases (ENDF, etc).
+  %
+  % xs  = scattering_cross_section(s)
+  %   Compute the total integrated scattering cross section
+  %
+  % dr  = dynamic_range(s, Ei, angles)
+  %   Compute the dynamic range restricted to given incident energy and detector angles
+  %
+  % sq  = structure_factor(s)
+  %   Compute the structure factor S(q)
+  %
   % input:
-  %   can be an iData or filename to generate a 2D Sqw object.
+  %   can be a 2D iData or filename to generate a 2D Sqw object.
   %
   % output: an iData_Sqw2D object
   %
@@ -53,6 +79,7 @@ classdef iData_Sqw2D < iData
       if ~nargin, return; end  % empty object
       
       % convert/test
+      if isa(s, 'iData_Sab') s = Sqw(s); end
       if ~isa(s, 'iData'), m = Sqw_check(s); else m=s; end
       if ~isa(m, 'iData') || isempty(m) || ndims(m) ~= 2
         error([ mfilename ': the given input ' class(s) ' does not seem to be convertible to iData_Sqw2D.' ])
@@ -81,7 +108,7 @@ classdef iData_Sqw2D < iData
       f = [];
       for index=1:numel(self)
         this = self(index);
-        f1 = iData;
+        f1   = iData;
         this = struct(this);
         w = warning('query','iData:subsasgn');
         warning('off','iData:subsasgn');
@@ -92,11 +119,6 @@ classdef iData_Sqw2D < iData
         f = [ f f1 ];
       end
     end
-
-    % structure_factor (sq)
-    % dynamic_range
-    % scattering_cross_section
-    % Sqw2Sab -> iData_Sab
     
     % sound_velocity ?
     % MSD ?

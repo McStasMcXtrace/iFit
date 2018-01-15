@@ -71,7 +71,7 @@ function s = Sqw_check(s)
   % conversions
   if alpha_present && beta_present && (~w_present || ~q_present)
     disp([ mfilename ': S(alpha,beta) data set detected: converting to S(q,w)' ]);
-    s = Sab_Sqw(s); % convert from S(alpha,beta) to S(q,w)
+    s = Sqw(iData_Sab(s)); % convert from S(alpha,beta) to S(q,w)
     return
   end
   if ~w_present && t_present
@@ -112,6 +112,12 @@ function s = Sqw_check(s)
     classical0 = get(s,'classical');
   else
     classical0 = [];
+  end
+  
+  % handle ENDF keywords
+  if isfield(s,'LASYM')
+    s.classical = ~s.LASYM;
+    classical0  = s.classical;
   end
   
   w  = getaxis(s,1);

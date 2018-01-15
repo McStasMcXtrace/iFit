@@ -1,5 +1,5 @@
 function s = structure_factor(s)
-% Sqw_Sq: compute the structure factor
+% structure_factor: compute the structure factor
 %  The structure factor is the integral of the dynamic structure factor along
 %  the energy axis. It is representative of the material structure.
 %  Its Fourier transform is the pair distribution function g(r).

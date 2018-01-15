@@ -1,5 +1,5 @@
 function sigma=moments(data, M, T, classical)
-% moments=moments(sqw, M, T, classical): compute Sqw moments/sum rules (harmonic frequencies)
+% iData_Sqw2D: moments=moments(sqw, M, T, classical): compute Sqw moments/sum rules (harmonic frequencies)
 %
 %   Compute the structure factor (moment 0), recoil energy (moment 1) and the
 %     collective, harmonic and mean energy transfer dispersions.
