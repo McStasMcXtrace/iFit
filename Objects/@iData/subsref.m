@@ -249,7 +249,8 @@ for i = 1:length(S)     % can handle multiple index levels
       end
     elseif numel(b) == 1 && isstruct(b.Alias) && numel(b.Alias) == 1 && iscell(b.Alias.Names) && any(strcmpi(fieldname, b.Alias.Names))
       b = iData_getAliasValue(b,fieldname);
-    elseif any(strcmp(fieldname,method)) % b.method = ismethod(b, fieldname)
+    elseif isempty(superclasses(b)) && any(strcmp(fieldname,method)) ... % b.method = ismethod(b, fieldname)
+       || ~isempty(superclasses(b)) && any(strcmp(fieldname,methods(b)))
       if i == length(S)
         if nargout(fieldname) ==0
           feval(fieldname, b);
