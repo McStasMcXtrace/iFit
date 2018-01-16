@@ -1,7 +1,7 @@
 function [Sqw, Iqt, Wq, Tall] = multi_phonons_incoherent(gw, q, T, sigma, m, n)
 % multi_phonons_incoherent: compute the multi-phonon contributions in S(q,w) from an initial density of states in the incoherent gaussian approximation
 %
-% [Sqw, Wq, Tall] = multi_phonons_incoherent(gw, q, T, sigma, m, n)
+% [Sqw, Iqt, Wq, Tp] = multi_phonons_incoherent(gw, q, T, sigma, m, n)
 %
 % The partial differential scattering cross section (measured intensity) is:
 %
@@ -35,7 +35,7 @@ function [Sqw, Iqt, Wq, Tall] = multi_phonons_incoherent(gw, q, T, sigma, m, n)
 %   n:  number of iterations in the series expansion, e.g. 5
 %
 % output:
-%   Sqw:  neutron weighted S(q,w) terms, to be summed [iData array]
+%   Sqw:  neutron weighted S(q,w) terms, to be summed [iData_Sqw2D array]
 %   Iqt:  I(q,t) terms, to be summed [iData array]
 %   Wq:   half Debye-Waller factor. The DW function is exp(-2*Wq)  [iData vs q]
 %   Tp:   p-phonon terms [iData array]
@@ -56,22 +56,22 @@ function [Sqw, Iqt, Wq, Tall] = multi_phonons_incoherent(gw, q, T, sigma, m, n)
   % search in the vDOS data set in case missing properties are stored there
   % q, T, mass, sigma
   if isempty(q)
-    hw = max(abs(gw{1}));
+    hw = max(abs(getaxis(gw,1)));
     q  = linspace(0, sqrt(hw), 100);
   end
   if isempty(T) || T<=0
     T = Sqw_getProp(gw);
   end
   if isempty(m) || m<=0
-    m = Sqw_getProp(gw, {'Masses','Molar_mass','Mass'});
+    m = Sqw_getProp(gw, {'Masses','Molar_mass','Mass','Weight'});
   end
   if isempty(sigma) || all(sigma<=0)
     sigma = Sqw_getProp(gw, {'sigma_coh','sigma_inc','sigma'});
   end
   % fail when missing information
-  if isempty(m)     error([ mfilename ': Unspecified molar mass.' ]); end
-  if isempty(T)     error([ mfilename ': Unspecified temperature.' ]); end
-  if isempty(sigma) error([ mfilename ': Unspecified scattering cross section.' ]); end
+  if isempty(m)     error([ mfilename ': Unspecified molar mass (m). Use multi_phonons_incoherent(g, q, T, sigma, m)' ]); end
+  if isempty(T)     error([ mfilename ': Unspecified temperature (T). Use multi_phonons_incoherent(gw, q, T).' ]); end
+  if isempty(sigma) error([ mfilename ': Unspecified scattering cross section (sigma). Use multi_phonons_incoherent(gw, q, T, sigma).' ]); end
   if isempty(n), n=5; end
   
   % conversion factors
@@ -87,9 +87,9 @@ function [Sqw, Iqt, Wq, Tall] = multi_phonons_incoherent(gw, q, T, sigma, m, n)
   titl  = gw.Title;
   gw1   = xlim(gw, [0 inf]);
   gw1   = gw1/trapz(gw1);               % normalize to 1  on [0:inf]
-  gw2   = gw1; gw2{1} = -gw2{1};
+  gw2   = gw1; setaxis(gw2,1, -getaxis(gw2,1));
   gw    = cat(1, gw1, gw2);
-  hw    = gw{1};                        % energy axis in [meV]
+  hw    = getaxis(gw,1);                % energy axis in [meV]
   
   % we search the smallest non zero energy value and create a 'delta' function
   [dw, index] =  min(abs(hw(:)));
@@ -126,12 +126,13 @@ function [Sqw, Iqt, Wq, Tall] = multi_phonons_incoherent(gw, q, T, sigma, m, n)
   Sqw      = (sigma/4/pi)*exp(-2*Wq').*delta';   % eq (10.64) elast.
   Sqw      = Sqw';
   setalias(Sqw, 'Temperature', T, 'Temperature [K]');
-  setalias(Sqw, 'Masses',      m, 'Molar masses [g/mol]');
+  setalias(Sqw, 'Weight',      m, 'Molar masses [g/mol]');
   setalias(Sqw, 'Sigma',   sigma, 'Neutron scattering cross section [barns]');
   Sqw.Title= [ 'Elastic scattering function S(q,w) [p=0] from ' titl ];
   title(Sqw, [ 'S(q,w) [p=0] from ' titl ]);
   Sqw.Label= [ 'S(q,w) [p=0]' ];
   xlabel(Sqw, 'q wavevector [Angs-1]'); ylabel(Sqw, 'hw energy [meV]');
+  Sqw      = iData_Sqw2D(Sqw);
   
   % determine the I(q,t) p=0 term in [q,w] space -------------------------------
   % from T1 we can compute f(t) as the inverse FFT
@@ -142,16 +143,16 @@ function [Sqw, Iqt, Wq, Tall] = multi_phonons_incoherent(gw, q, T, sigma, m, n)
     ft     = real(fft(T1copy));
     xlabel(ft, 'time [s]');
     % rescale f(t) so that it matches f(0)
-    fts    = ft{0};
+    fts    = getaxis(ft,0);
     ft     = ft/fts(1)*f0;
     % then can compute I(q,t) from Eq (10.63)
     one    = ones(size(ft')); 
-    one    = iData(ft{1}, one);             % make it an iData for easier handling
+    one    = iData(getaxis(ft,1), one);             % make it an iData for easier handling
     xlabel(one, 'time [s]');
     Iqt    = sigma/4/pi*exp(-2*Wq').*one;
     Iqt    = Iqt';
     setalias(Iqt, 'Temperature', T, 'Temperature [K]');
-    setalias(Iqt, 'Masses',      m, 'Molar masses [g/mol]');
+    setalias(Iqt, 'Weight',      m, 'Molar masses [g/mol]');
     setalias(Iqt, 'Sigma',   sigma, 'Neutron scattering cross section [barns]');
     Iqt.Title= [ 'Intermediate scattering function I(q,t) [p=0] from ' titl ];
     title(Iqt, [ 'I(q,t) [p=0] from ' titl ]);
@@ -195,12 +196,13 @@ function [Sqw, Iqt, Wq, Tall] = multi_phonons_incoherent(gw, q, T, sigma, m, n)
     dSqw    = dSqw_c.*(dSqw_q'.*dSqw_w'); % Eq (10.79) p331 ; [q]*[w]
     dSqw    = dSqw';
     setalias(dSqw, 'Temperature', T, 'Temperature [K]');
-    setalias(dSqw, 'Masses',      m, 'Molar masses [g/mol]');
+    setalias(dSqw, 'Weight',      m, 'Molar masses [g/mol]');
     setalias(dSqw, 'Sigma',   sigma, 'Neutron scattering cross section [barns]');
     dSqw.Title= [ 'Scattering function S(q,w) [p=' num2str(p) ']' ];
     title(dSqw, [ 'S(q,w) [p=' num2str(p) '] from ' titl ]);
     dSqw.Label= [ 'S(q,w) [p=' num2str(p) ']' ];
     xlabel(dSqw, 'q wavevector [Angs-1]'); ylabel(dSqw, 'hw energy [meV]');
+    dSqw    = iData_Sqw2D(dSqw);
     Sqw     = [ Sqw dSqw ];
   end
   
@@ -214,7 +216,7 @@ function [Sqw, Iqt, Wq, Tall] = multi_phonons_incoherent(gw, q, T, sigma, m, n)
       dIqt_c  = sigma/4/pi/fact;                  % scaling with constant
       dIqt    = dIqt_c.*(dIqt_q'.*dIqt_t');
       setalias(dIqt, 'Temperature', T, 'Temperature [K]');
-      setalias(dIqt, 'Masses',      m, 'Molar masses [g/mol]');
+      setalias(dIqt, 'Weight',      m, 'Molar masses [g/mol]');
       setalias(dIqt, 'Sigma',   sigma, 'Neutron scattering cross section [barns]');
       dIqt = dIqt';
       dIqt.Title= [ 'Intermediate scattering function I(q,t) [p=' num2str(p) ']' ];

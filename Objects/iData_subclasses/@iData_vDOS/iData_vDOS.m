@@ -122,6 +122,12 @@ classdef iData_vDOS < iData
       end
     end
     
+    function inc = incoherent(g, varargin)
+      % iData_vDOS: incoherent: incoherent neutron scattering law estimate in the incoherent gaussian approximation
+      inc = multi_phonons_incoherent(g, varargin{:});
+      if numel(inc) > 2, inc = inc(1:2); end
+      inc = plus(inc);
+    end
   end
   
 end
