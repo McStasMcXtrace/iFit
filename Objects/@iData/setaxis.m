@@ -75,12 +75,12 @@ if nargin == 1
 end
 
 % check input arguments
-if strcmp(rank, 'Signal'), rank=0; end
+if isnumeric(alias),       value = alias; alias = ''; end
+if strcmp(rank, 'Signal'), rank  = 0;     alias = 'Signal'; end
 if isempty(rank) && isempty(alias), return; end
 if ~isnumeric(rank), 
   iData_private_error(mfilename,[ 'the axis rank should be numeric and not ' class(rank) '.' ]);
 end
-if isnumeric(alias), value = alias; alias = ''; end
 
 if ischar(rank)
   rank = str2double(rank);
@@ -159,7 +159,7 @@ if isempty(find(strcmpi(alias, this.Alias.Names)))
     iData_private_warning(mfilename,[ 'the Alias ' alias ' used to define axis rank ' ...
       num2str(rank) ' does not exist in object ' inputname(1) ' ' this.Tag ' "' this.Title '".' ]);
     return;
-  else
+  elseif ~isempty(this.Title)
     iData_private_warning(mfilename,[ 'the Alias ' alias ' used to define axis rank ' ...
       num2str(rank) ' does not exist in object ' inputname(1) ' ' this.Tag ' "' this.Title '".\n\tDefining it.' ]);
   end
