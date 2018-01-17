@@ -79,9 +79,8 @@ function sqw = Sqw(s, M, T)
   end
   
   % we must have s.classical = 1
-  if get(s,'classical') == 0
-    fprintf(1, '%s: %s: Converting to classical/symmetric for T=%g [K] (deBosify)\n', mfilename, s.Title, T);
-    s = deBosify(s, T); % make it classical/symmetric
+  if (isfield(s,'classical') || ~isempty(findfield(s, 'classical'))) && get(s,'classical') == 0
+    fprintf(1, '%s: %s: Data set is quantum/experimental. Use deBosify to obtain the classical/symmetric one.\n', mfilename, s.Title);
   end
 
   % some constants 
@@ -117,10 +116,14 @@ function sqw = Sqw(s, M, T)
 
   % create new data set, and display it
   sqw=iData(q,E,Z);  % Z(alpha,beta)
-  sqw.Title = [ 'Sqw(' s.Title ')' ];
+  sqw.Title = s.Title;
   setalias(sqw,'Temperature', T, '[K] Temperature');
   setalias(sqw,'weight',      M, '[g/mol] Material molar weight');
-  setalias(sqw,'classical',   1, '[0=from measurement, with Bose factor included, 1=from MD, symmetric]');
+  if ~isfield(s,'classical')
+    setalias(sqw,'classical',   1, '[0=from measurement, with Bose factor included, 1=from MD, symmetric]');
+  else
+    setalias(sqw,'classical',  get(s,'classical'), '[0=from measurement, with Bose factor included, 1=from MD, symmetric]');
+  end
   sqw.Label='Sqw';
   title(sqw, 'S(q,w)');
   ylabel(sqw,'wavevector [Angs-1]');
@@ -128,4 +131,10 @@ function sqw = Sqw(s, M, T)
   sqw = transpose(sqw);
   % transfer available information compatible with ENDF
   sqw = iData_Sqw2D(sqw);
+  
+  if nargout == 0
+    fig=figure; 
+    h  =plot(sqw); 
+    set(fig, 'NextPlot','new');
+  end
 
