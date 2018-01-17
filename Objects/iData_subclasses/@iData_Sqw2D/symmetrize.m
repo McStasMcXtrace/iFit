@@ -12,17 +12,18 @@ function s=Sqw_symmetrize(s)
 %    deBosify(s, T)
 %
 % The positive energy values in the S(q,w) map correspond to Stokes processes, 
-% i.e. material gains energy, and neutrons loose energy when scattered.
+% i.e. material gains energy, and neutrons loose energy when down-scattered.
 %
 % input:
 %   s:  Sqw data set (classical, often labelled as S*)
 %        2D data set with w as 1st axis (rows, meV), q as 2nd axis (Angs-1).
 % output:
-%   s:  S(|q|,w) symmetrised in energy
+%   s:  S(|q|,w) symmetrised in energy, classical.
 %
 % Example: Sqw=iData_Sqw2D('SQW_coh_lGe.nc'); symmetrize(s);
 %
-% See also: Bosify, deBosify, Sqw_dynamic_range, Sqw_scatt_xs
+% See also: iData_Sqw2D/Bosify, iData_Sqw2D/deBosify, 
+%           iData_Sqw2D/dynamic_range, iData_Sqw2D/scattering_cross_section
 % (c) E.Farhi, ILL. License: EUPL.
 
   if nargin == 0, return; end
@@ -55,11 +56,11 @@ function s=Sqw_symmetrize(s)
   w = getaxis(s,1); % should be a row vector
   w0= w;
   if isvector(w) && (all(w(:) >= 0) || all(w(:) <= 0))
-    signal = get(s, 'Signal');
-    signal=[ signal ; signal ];
-    [w,index]=unique([ w ; -w ]);
-    s = setaxis(s,1,w);
-    s = set(s, 'Signal', signal(index,:));
+    signal    = get(s, 'Signal');
+    signal    = [ signal ; signal ];
+    [w,index] = unique([ w ; -w ]);
+    s = setaxis(s, 1, w);
+    s = setaxis(s, 'Signal', signal(index,:));
     clear signal
     
     if ~isempty(getalias(s,'Error')) && ~strcmp(getalias(s,'Error'),'sqrt(this.Signal)')
@@ -67,7 +68,7 @@ function s=Sqw_symmetrize(s)
        if all(err(:) > 0 )
          err=[ err ; err ];
          [w,index]=unique([ w0 ; -w0 ]);
-         s = set(s, 'Error', err(index,:));
+         s = setalias(s, 'Error', err(index,:));
        end
     end
     clear err
@@ -77,13 +78,13 @@ function s=Sqw_symmetrize(s)
       if all(m(:) > 0 )
         m=[ m ; m ];
         [w,index]=unique([ w0 ; -w0 ]);
-        s = set(s, 'Monitor', m(index,:));
+        s = setalias(s, 'Monitor', m(index,:));
       end
     end
     clear m
   else
     % create a new object with an opposite energy axis
-    s     = combine(s, setaxis(s, 1, -s{1}));
+    s     = combine(s, setaxis(s, 1, -getaxis(s,1)));
   end
   
   

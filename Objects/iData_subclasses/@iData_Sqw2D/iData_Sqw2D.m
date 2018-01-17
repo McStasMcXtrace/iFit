@@ -53,6 +53,9 @@ classdef iData_Sqw2D < iData
   % sq  = structure_factor(s)
   %   Compute the structure factor S(q)
   %
+  % inc = incoherent(s, q, T, sigma, m, n)
+  %   Compute an estimate of the incoherent neutron scattering law in the incoherent gaussian approximation
+  %
   % input:
   %   can be a 2D iData or filename to generate a 2D Sqw object.
   %
@@ -101,6 +104,9 @@ classdef iData_Sqw2D < iData
       % iData_Sqw2D: parseparams: search for physical quantities in object.
       % This search is also done when creating iData_Sqw2D objects.
       [s,parameters,fields] = Sqw_parameters(s);
+      if nargout == 0 & length(inputname(1))
+        assignin('caller',inputname(1),s);
+      end
     end
     
     function f = iData(self)
@@ -125,6 +131,35 @@ classdef iData_Sqw2D < iData
     % diffusion constant ?
     % compressibility ?
     % g(r) pdf
+    
+    function [inc, multi] = incoherent(s, varargin)
+      % iData_Sqw2D: incoherent: incoherent neutron scattering law estimate in the incoherent gaussian approximation
+      inc = multi_phonons_incoherent(dos(s), varargin{:});
+      if numel(inc) > 2, inc = inc(1:2); end
+      multi = plus(inc(2:end));
+      inc   = plus(inc);
+      if nargout == 0
+        fig=figure; 
+        h  =subplot([inc multi]); 
+        set(fig, 'NextPlot','new');
+      end
+    end
+    
+    function [G,multi] = multi_phonons(s, varargin)
+      % iData_Sqw2D: multi_phonons: compute the integrated multi-phonon intensity from an initial density of states
+      %
+      % output:
+      %   G:      total gDOS [p=1...]
+      %   multi:  multi-phonon gDOS contribution [p=2...]
+      G     = multi_phonons_dos(dos(s), varargin{:});
+      multi = plus(G(2:end));
+      G     = plus(G);
+      if nargout == 0
+        fig=figure; 
+        h  =plot([ G multi ]); 
+        set(fig, 'NextPlot','new');
+      end
+    end
     
     function spe = q2phi(self)
       % iData_Sqw2D: q2phi: convert a S(q,w) into a S(phi,w) iData

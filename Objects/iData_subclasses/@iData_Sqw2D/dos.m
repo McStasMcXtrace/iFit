@@ -22,7 +22,7 @@ function [DOS, fig] = dos(s, method, n)
 %
 % input:
 %   s: Sqw data set e.g. 2D data set with w as 1st axis (rows, meV), q as 2nd axis (Angs-1).
-%   method: 'Carpenter' (default),'Bellissent' or 'Bredov'
+%   method: 'Carpenter','Bellissent' (default) or 'Bredov'
 %   n: number of low-angle values to integrate (integer). Default is 10 when omitted.
 %
 % output:
@@ -38,6 +38,7 @@ function [DOS, fig] = dos(s, method, n)
 %         Carpenter and Pelizarri, Phys. Rev. B 12, 2391 (1975)
 %         Suck et al, Journal of Alloys and Compounds 342 (2002) 314
 %         Bredov et al., Sov. Phys. Solid State 9, 214 (1967)
+%         V.S. Oskotskii, Sov. Phys. Solid State 9 (1967), 420.
 %
 % Example: Sqw=iData_Sqw2D('SQW_coh_lGe.nc'); g = dos(Bosify(symmetrize(Sqw))); plot(g);
 % (c) E.Farhi, ILL. License: EUPL.
@@ -134,6 +135,12 @@ function [DOS, fig] = dos(s, method, n)
     % plot total DOS
     h=plot(DOS); set(h,'LineWidth',2);
     set(fig, 'NextPlot','new');
+  end
+  
+  setalias(s, 'gDOS', DOS, DOS.Title);
+  
+  if nargout == 0 & length(inputname(1))
+    assignin('caller',inputname(1),s);
   end
   
 

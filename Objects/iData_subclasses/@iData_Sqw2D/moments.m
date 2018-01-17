@@ -45,8 +45,8 @@ function sigma=moments(data, M, T, classical)
   if isempty(classical) && (isfield(data,'classical') || ~isempty(findfield(data, 'classical')))
     classical = get(data,'classical');
   end
-  if isempty(M) && isfield(data, 'weight')
-    M       = get(data,'weight');               % mass
+  if isempty(M) || M<=0
+    m = Sqw_getT(data, {'Masses','Molar_mass','Mass','Weight'});
   end
   if isempty(T)
     T = Sqw_getT(data);
@@ -138,7 +138,7 @@ function sigma=moments(data, M, T, classical)
   
   if nargout == 0
     fig=figure; 
-    subplot(sigma);
+    subplot(sigma(1:6));
     set(fig, 'NextPlot','new');
   end
 

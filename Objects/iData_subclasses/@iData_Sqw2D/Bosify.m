@@ -52,7 +52,8 @@ function s = Bosify(s0, T, type)
 %
 % Example: s=iData_Sqw2D('SQW_coh_lGe.nc'); sb=Bosify(s, 300);
 %
-% See also: deBosify, symmetrize, Sqw_dynamic_range, Sqw_scatt_xs
+% See also: iData_Sqw2D/deBosify, iData_Sqw2D/symmetrize, 
+%           iData_Sqw2D/dynamic_range, iData_Sqw2D/scattering_cross_section
 % (c) E.Farhi, ILL. License: EUPL.
 
 % classical   T     getT    can convert
@@ -77,7 +78,7 @@ function s = Bosify(s0, T, type)
   end
   
   if isempty(s0), return; end
-  s = copyobj(s0); % back to iData
+  s = copyobj(s0);
   if strfind(lower(type),'debosify')
        do_bosify=0;
        type = strtrim(strrep(lower(type), 'debosify','')); % remove debosify occurence
@@ -99,13 +100,13 @@ function s = Bosify(s0, T, type)
   end
 
   % test if classical/quantum and bosify/debosify agree
-  if isfield(s,'classical') || ~isempty(findfield(s, 'classical'))
+  if isfield(s0,'classical') || ~isempty(findfield(s0, 'classical'))
     % Bosify   must be applied on classical
     % deBosify must be applied on quantum
-    if (get(s,'classical') == 0 && do_bosify)
+    if (get(s0,'classical') == 0 && do_bosify)
       disp([ mfilename ': WARNING: Not "classical/symmetric": The data set ' s.Tag ' ' s.Title ' from ' s.Source ' does not seem to be classical (classical=0).' ]);
       disp([ mfilename ':   It may ALREADY contain the Bose factor in which case the detailed balance will be wrong.' ]);
-    elseif (get(s,'classical') == 1 && ~do_bosify)
+    elseif (get(s0,'classical') == 1 && ~do_bosify)
       disp([ 'de' mfilename ': WARNING: Not "quantum": The data set ' s.Tag ' ' s.Title ' from ' s.Source ' seems to be classical/symmetric (classical=1).' ]);
       disp([ 'de' mfilename ':   The Bose factor may NOT NEED to be removed in which case the detailed balance will be wrong.' ]);
     end

@@ -10,7 +10,7 @@ function [Gw, Tsym] = multi_phonons_dos(gw, Ki, T, sigma, m, phi, n)
 %
 % This implementation is in principle exact for an isotropic monoatomic material,
 % e.g. a liquid or powder.
-% This methodology is a complete rewrite of the multi_phonons_dos code.
+% This methodology is a complete rewrite of the MUPHOCOR code.
 %
 % input:
 %   gw:   the vibrational density of states per [meV] [iData]
@@ -22,7 +22,7 @@ function [Gw, Tsym] = multi_phonons_dos(gw, Ki, T, sigma, m, phi, n)
 %   n:    number of iterations in the series expansion, e.g. 5
 %
 % output:
-%   Gw:   neutron weighted gDOS terms, to be summed [iData array]
+%   Gw:   neutron weighted gDOS terms, to be summed [iData_vDOS array]
 %   Wq:   half Debye-Waller factor. The DW function is exp(-2*Wq)  [iData vs q]
 %   Tp:   p-phonon terms [iData array]
 %
@@ -31,7 +31,7 @@ function [Gw, Tsym] = multi_phonons_dos(gw, Ki, T, sigma, m, phi, n)
 %     DOI 10.3233/JNR-140016 (see esp. pages 328-331)
 %   V.S. Oskotskii, Sov. Phys. Solid State 9 (1967), 420.
 %   A. Sjolander, Arkiv for Fysik 14 (1958), 315.
-%   W. Reichardt, multi_phonons_dos Karlsruhe Report 13.03.01p06L (1984)
+%   W. Reichardt, MUPHOCOR Karlsruhe Report 13.03.01p06L (1984)
 
   % check input parameters
   if nargin < 2, Ki   =[]; end
@@ -171,7 +171,14 @@ function [Gw, Tsym] = multi_phonons_dos(gw, Ki, T, sigma, m, phi, n)
     dGw.Title= [ 'gDOS [p=' num2str(p) ']' ];
     title(dGw, [ 'gDOS [p=' num2str(p) '] from ' titl ]);
     dGw.Label= [ 'gDOS [p=' num2str(p) ']' ];
+    dGw  = iData_vDOS(dGw);
     Gw   = [ Gw dGw ];
+  end
+  
+  if nargout == 0 && ~isempty(Gw)
+    fig=figure; 
+    h=subplot([ plus(Gw) plus(Gw(2:end)) ]); 
+    set(fig, 'NextPlot','new');
   end
 
 % ------------------------------------------------------------------------------
@@ -184,7 +191,7 @@ function ip = Ip(y, n)
   %   y: value where to evaluate the function
   %   p: order to evaluate (recursively)
   
-  % WARNING: there is an error in Schober Eq (10.83) and Reichard multi_phonons_dos p3
+  % WARNING: there is an error in Schober Eq (10.83) and Reichard MUPHOCOR p3
   % Obviously, the proposed In formulae are all negative, but should be always 
   %   positive.
   % The recursion formula is wrong. The second term is +p*I[p-1]

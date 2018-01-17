@@ -30,16 +30,9 @@ function [t, fig]=thermochemistry(s, T, options)
 %            D.A. McQuarrie. Statistical Mechanics. University Science Books, 2000.
 
 t=[]; fig=[];
-% test the input object
-if nargin == 0, return; end
+
 if nargin < 2, T=[]; end
 if nargin < 3, options=[]; end
-
-% must be 2D or 4D iFunc/iData.
-if ~isa(s,'iData') || ndims(s) ~= 2
-  disp([ mfilename ': Invalid model dimension. Should be iData 2D . It is currently ' class(s) ' ' num2str(ndims(s)) 'D' ]);
-  return
-end
 
 if isempty(T)
   T = 1:500;  % default

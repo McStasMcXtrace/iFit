@@ -47,10 +47,8 @@ if numel(s) > 1
 end
 
 % make sure we have a 'parameters' field
-if isempty(findfield(s,'parameters','first'))
-  return
-elseif ~isfield(s, 'parameters')
-  s=setalias(s, 'parameters', get(s, findfield(s,'parameters','first cache')));
+if isfield(s, 'parameters')
+  parameters = get(s, 'parameters');
 end
 
 if ischar(fields) && strcmpi(fields, 'sqw')
@@ -160,9 +158,9 @@ for index=1:length(fields)
     name   = strtok(f{f_index});  % the name of the field or alternatives
     if     isfield(s, name)   val0=get(s, name);
     elseif isfield(s, p_name) val0=get(s, p_name);
-    elseif isfield(s, 'parameters') && isfield(get(s, 'parameters'), name)
+    elseif isfield(parameters, name)
       val0 = get(s, [ 'parameters.' name ]);
-    elseif isfield(s, 'parameters') && isfield(get(s, 'parameters'), p_name)
+    elseif isfield(parameters, p_name)
       val0 = get(s, [ 'parameters.' p_name ]);  
     else val0=[]; end
     if index==1 && f_index==1
@@ -175,7 +173,7 @@ for index=1:length(fields)
     end
     if isfield(s.Data, name)
       links = [ 'Data.' name ];
-    elseif isfield(get(s, 'parameters'), name)
+    elseif isfield(parameters, name)
       links = ['parameters.' name ];
     end
     if ~iscell(links), links = { links }; end
@@ -195,8 +193,8 @@ for index=1:length(fields)
         end
       end
       % make sure it makes sense to update the link. must not link to itself.
-      if ~isempty(link) && ~isempty(val) && ~strcmp(p_name, link)
-        if numel(val) < 100
+      if ~isempty(link) && ~isempty(val)
+        if numel(val) < 100 || strcmp(p_name, link)
           parameters.(p_name) = val;   % update/store the value
         else 
           parameters.(p_name) = link;  % update/store the link/alias
@@ -207,7 +205,6 @@ for index=1:length(fields)
   end
   fields{index} = f{1}; % store the parameter name, plus optional label
 end
-
 
 for index=1:numel(fields)
   [name, comment] = strtok(fields{index});

@@ -122,11 +122,34 @@ classdef iData_vDOS < iData
       end
     end
     
-    function inc = incoherent(g, varargin)
+    function [inc, multi] = incoherent(g, varargin)
       % iData_vDOS: incoherent: incoherent neutron scattering law estimate in the incoherent gaussian approximation
       inc = multi_phonons_incoherent(g, varargin{:});
       if numel(inc) > 2, inc = inc(1:2); end
-      inc = plus(inc);
+      multi = plus(inc(2:end));
+      inc   = plus(inc);
+      if nargout == 0
+        fig=figure; 
+        h  =subplot([ inc multi ]); 
+        set(fig, 'NextPlot','new');
+      end
+    end
+    
+    function [G,multi] = multi_phonons(g, varargin)
+      % iData_vDOS: multi_phonons: compute the integrated multi-phonon intensity from an initial density of states
+      %
+      % output:
+      %   G:      total gDOS [p=1...]
+      %   multi:  multi-phonon gDOS contribution [p=2...]
+      G     = multi_phonons_dos(gw, varargin{:});
+      multi = plus(G(2:end));
+      G     = plus(G);
+      
+      if nargout == 0
+        fig=figure; 
+        h  =plot([ G multi ]); 
+        set(fig, 'NextPlot','new');
+      end
     end
   end
   

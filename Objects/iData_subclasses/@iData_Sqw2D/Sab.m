@@ -69,8 +69,8 @@ function sab = Sab(s, M, T)
   % test if classical
   if isfield(s,'classical') || ~isempty(findfield(s, 'classical'))
     if get(s,'classical') == 0
-      fprintf(1, '%s: %s: Converting to classical/symmetric for T=%g [K] (deBosify)\n', mfilename, s.Title, T);
-      s = deBosify(s, T); % make it classical/symmetric
+      fprintf(1, '%s: WARNING: %s: Data set is experimental/quantum (contains Bose factor/detailed balance).\n    You may use deBosify(s) to obtain the classical/symmetric representation\n', mfilename, s.Title);
+      % s = deBosify(s, T); % make it classical/symmetric
     end
   end
   
@@ -115,14 +115,17 @@ function sab = Sab(s, M, T)
 
   % create new data set, and display it
   sab=iData(alpha,beta,Z);  % Z(alpha,beta)
-  sab.Title = [ 'Sab(' s.Title ')' ];
+  sab.Title = s.Title;
   setalias(sab,'Temperature',T, '[K] Temperature');
   setalias(sab,'weight',     M, '[g/mol] Material molar weight');
-  setalias(sab,'classical',  1, '[0=from measurement, with Bose factor included, 1=from MD, symmetric]');
-  
+  if ~isfield(s,'classical')
+    setalias(sab,'classical',  1, '[0=from measurement, with Bose factor included, 1=from MD, symmetric]');
+  else
+    setalias(sab,'classical',  get(s,'classical'), '[0=from measurement, with Bose factor included, 1=from MD, symmetric]');
+  end
   
   sab.Label='Sab';
-  title(sab, 'S(\alpha,\beta)');
+  title(sab, 'S(alpha,beta)');
   ylabel(sab,'alpha [h2q2/2MkT]');
   xlabel(sab,'beta [-hw/kT]');
   sab = transpose(sab);

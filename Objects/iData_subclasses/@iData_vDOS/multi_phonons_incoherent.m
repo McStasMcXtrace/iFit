@@ -226,6 +226,12 @@ function [Sqw, Iqt, Wq, Tall] = multi_phonons_incoherent(gw, q, T, sigma, m, n)
       Iqt = [ Iqt dIqt ];
     end
   end
+  
+  if nargout == 0 && ~isempty(Sqw)
+    fig=figure; 
+    h  =plot(plus(Sqw)); 
+    set(fig, 'NextPlot','new');
+  end
 
 % ------------------------------------------------------------------------------
 function  T = Sqw_getProp(s, prop)
