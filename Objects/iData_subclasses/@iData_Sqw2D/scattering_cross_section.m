@@ -1,5 +1,5 @@
 function sigma = scattering_cross_section(s, Ei, M)
-% scattering_cross_section(s,Ei): compute the total neutron scattering cross section for
+% iData_Sqw2D: scattering_cross_section: compute the total neutron scattering cross section for
 %   incoming neutron energy. The S(|q|,w) should be the non-classical
 %   dynamic structure factor. 
 %
@@ -10,8 +10,6 @@ function sigma = scattering_cross_section(s, Ei, M)
 %   Data sets from analytical models and molecular dynamics simulations must 
 %   be symmetrised in energy, and the detailed balance must be applied to 
 %   take into account the material temperature on the inelastic part.
-%
-%   The input S(q,w) is a dynamic structure factor aka scattering function.
 %
 %   The incident neutron energy is given in [meV], and may be computed:
 %     Ei = 2.0721*Ki^2 = 81.8042/lambda^2 with Ki in [Angs-1] and lambda in [Angs]
@@ -50,7 +48,11 @@ function sigma = scattering_cross_section(s, Ei, M)
 %     s = Bosify(s, T);
 %
 % The positive energy values in the S(q,w) map correspond to Stokes processes, 
-% i.e. material gains energy, and neutrons loose energy when scattered.
+% i.e. material gains energy, and neutrons loose energy when down-scattered.
+%
+% syntax:
+%   sigma = scattering_cross_section(s, Ei)
+%   sigma = scattering_cross_section(s, Ei, M)
 %
 % input:
 %   s: Sqw data set (non classical, with T Bose factor e.g from experiment)
@@ -63,7 +65,8 @@ function sigma = scattering_cross_section(s, Ei, M)
 %   sigma: cross section per scattering unit (scalar or iData)
 %          to be multiplied afterwards by the bound cross section [barn]
 %
-% Example: sigma = scattering_cross_section(iData_Sqw2D('SQW_coh_lGe.nc'), 14.6)
+% Example: s=iData_Sqw2D('SQW_coh_lGe.nc'); 
+%          sigma = scattering_cross_section(Bosify(symmetrize(s),1235), 14.6);
 %
 % See also: iData_Sqw2D/Bosify, iData_Sqw2D/deBosify, iData_Sqw2D/symmetrize, iData_Sqw2D/dynamic_range
 % (c) E.Farhi, ILL. License: EUPL.
@@ -98,8 +101,8 @@ function sigma = scattering_cross_section(s, Ei, M)
   if isempty(Sqw_getT(s))
     disp([ mfilename ': WARNING: Temperature undefined: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' does not seem to have a Temperature defined. You may apply s=Bosify(s, temperature) before.' ]);
   end
-  if isempty(M) && isfield(s, 'weight')
-    M       = get(s,'weight');               % mass
+  if isempty(M) || M<=0
+    M = Sqw_getT(s, {'Masses','Molar_mass','Mass','Weight'});
   end
   
   w = getaxis(s,1);

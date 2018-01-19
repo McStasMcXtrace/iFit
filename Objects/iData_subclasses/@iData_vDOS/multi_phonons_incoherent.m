@@ -1,14 +1,5 @@
 function [Sqw, Iqt, Wq, Tall] = multi_phonons_incoherent(gw, q, T, sigma, m, n)
-% multi_phonons_incoherent: compute the multi-phonon contributions in S(q,w) from an initial density of states in the incoherent gaussian approximation
-%
-% [Sqw, Iqt, Wq, Tp] = multi_phonons_incoherent(gw, q, T, sigma, m, n)
-%
-% The partial differential scattering cross section (measured intensity) is:
-%
-%   (d^2 sigma/dOMEGA dE) = kf/ki S(q,w) 
-%
-% i.e. the returned S(q,w) is summed with the bound neutron cross section and
-% averaged over mode polarisations (e.g. for an isotropic powder).
+% iData_vDOS: multi_phonons_incoherent: compute the multi-phonon contributions in S(q,w) from an initial density of states in the incoherent gaussian approximation
 %
 % This implementation is in principle exact for an isotropic monoatomic material,
 % e.g. a liquid or powder.
@@ -20,11 +11,15 @@ function [Sqw, Iqt, Wq, Tall] = multi_phonons_incoherent(gw, q, T, sigma, m, n)
 %    w > 0, neutron looses energy, can not be higher than Ei (Stokes)
 %    w < 0, neutron gains energy, anti-Stokes
 %
-% Example:
-%   s   = sqw_phonons('POSCAR_Al', 'emt');
-%   gw  = dos(s);
-%   Sqw = multi_phonons_incoherent(gw, [], 300);
-%   subplot(Sqw);
+% Reference:
+%   H. Schober, Journal of Neutron Research 17 (2014) 109–357
+%     DOI 10.3233/JNR-140016 (see esp. pages 328-331)
+%   V.S. Oskotskii, Sov. Phys. Solid State 9 (1967), 420.
+%   A. Sjolander, Arkiv for Fysik 14 (1958), 315.
+%
+% syntax:
+%   [Sqw, Iqt, Wq, Tall] = multi_phonons_incoherent(gw)
+%   [Sqw, Iqt, Wq, Tall] = multi_phonons_incoherent(gw, q, T, sigma, m, n)
 %
 % input:
 %   gw: the vibrational density of states per [meV] [iData]
@@ -40,11 +35,15 @@ function [Sqw, Iqt, Wq, Tall] = multi_phonons_incoherent(gw, q, T, sigma, m, n)
 %   Wq:   half Debye-Waller factor. The DW function is exp(-2*Wq)  [iData vs q]
 %   Tp:   p-phonon terms [iData array]
 %
-% Reference:
-%   H. Schober, Journal of Neutron Research 17 (2014) 109–357
-%     DOI 10.3233/JNR-140016 (see esp. pages 328-331)
-%   V.S. Oskotskii, Sov. Phys. Solid State 9 (1967), 420.
-%   A. Sjolander, Arkiv for Fysik 14 (1958), 315.
+% Example:
+%   s   = sqw_phonons('POSCAR_Al', 'emt');
+%   gw  = dos(s);
+%   Sqw = multi_phonons_incoherent(gw, [], 300);
+%   subplot(Sqw);
+%
+% See also: iData_Sqw2D/multi_phonons_dos
+% (c) E.Farhi, ILL. License: EUPL.
+
 
   % check input parameters
   if nargin < 2, q    =[]; end
@@ -60,18 +59,18 @@ function [Sqw, Iqt, Wq, Tall] = multi_phonons_incoherent(gw, q, T, sigma, m, n)
     q  = linspace(0, sqrt(hw), 100);
   end
   if isempty(T) || T<=0
-    T = Sqw_getProp(gw);
+    T = Sqw_getT(gw);
   end
   if isempty(m) || m<=0
-    m = Sqw_getProp(gw, {'Masses','Molar_mass','Mass','Weight'});
+    m = Sqw_getT(gw, {'Masses','Molar_mass','Mass','Weight'});
   end
   if isempty(sigma) || all(sigma<=0)
-    sigma = Sqw_getProp(gw, {'sigma_coh','sigma_inc','sigma'});
+    sigma = Sqw_getT(gw, {'sigma_coh','sigma_inc','sigma'});
   end
   % fail when missing information
   if isempty(m)     error([ mfilename ': Unspecified molar mass (m). Use multi_phonons_incoherent(g, q, T, sigma, m)' ]); end
   if isempty(T)     error([ mfilename ': Unspecified temperature (T). Use multi_phonons_incoherent(gw, q, T).' ]); end
-  if isempty(sigma) error([ mfilename ': Unspecified scattering cross section (sigma). Use multi_phonons_incoherent(gw, q, T, sigma).' ]); end
+  if isempty(sigma) disp([ mfilename ': WARNING: Unspecified scattering cross section (sigma). Using sigma=1 barn. Scale result accordingly.' ]); sigma = 1; end
   if isempty(n), n=5; end
   
   % conversion factors
@@ -227,58 +226,14 @@ function [Sqw, Iqt, Wq, Tall] = multi_phonons_incoherent(gw, q, T, sigma, m, n)
     end
   end
   
-  if nargout == 0 && ~isempty(Sqw)
+  if nargout == 0
     fig=figure; 
-    h  =plot(plus(Sqw)); 
+    G1 =plus(Sqw); title(G1, ['Sinc [single+multi] from ' title(gw) ]); G1.Label=title(G1); G1.Title=title(G1);
+    h  =plot(log10(G1)); 
     set(fig, 'NextPlot','new');
   end
 
-% ------------------------------------------------------------------------------
-function  T = Sqw_getProp(s, prop)
-% Sqw_getProp: search for a property value in a data set
-%
-% input:
-%   s: any iData object, including S(q,w) and DOS ones.
-  
-  T = [];
-  if nargin < 2,    prop = []; end
-  if isempty(prop), prop={'Temperature','T'}; end
-  if ~iscellstr(prop), prop = { prop }; end
-  
-  % handle arrays
-  if numel(s) > 1
-    for index=1:numel(s)
-      t = Sqw_getT(s(index), prop);
-      if isempty(t), t=nan; end
-      T = [ T t ];
-    end
-    return
-  end
-  
-  for field=prop
-    if isfield(s,field{1}), T=get(s,field{1}); end
-    
-    if isempty(T) || all(T(:)<0) || ~isnumeric(T) || ~isvector(T)
-      f = findfield(s,field{1},'exact numeric');
-      if ~isempty(f), T = get(s,f{1}); end
-    end
 
-    if isempty(T) || all(T(:)<0) || ~isnumeric(T) || ~isvector(T)
-      f = findfield(s,field{1},'numeric cache');
-      for index=1:numel(f)
-        try
-          T = get(s,f{1});
-          if ~isempty(T) && isnumeric(T) && isvector(T) && all(T(:)>0), break; end
-        end
-      end
-    end
-
-    if ~isempty(T) && isnumeric(T) && isvector(T) && all(T(:)>0), break; end
-  end
-  
-  if isvector(T), T = mean(T(:)); else T=[]; end
-  
- 
   
 % ------------------------------------------------------------------------------
   

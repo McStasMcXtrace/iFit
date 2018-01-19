@@ -5,22 +5,26 @@ function [t, fig]=thermochemistry(s, T, options)
 %
 % The input 1D data set should be e.g. a vDOS, with axis energy in [meV]. 
 %
-% the function returns an array of iData objects:
+% The function returns an array of iData objects:
 %   entropy                           S [eV/K/cell]
 %   internal_energy                   U [eV/cell]
 %   helmholtz_energy                  F [eV/cell]
 %   heat_capacity at constant volume Cv [eV/K/cell]
 %
+% syntax:
+%   t = thermochemistry(g)
+%   t = thermochemistry(g, Tmin:Tmax)
+%
 % input:
-%   s: a 1D vDOS data set [Energy] (iData_vDOS)
+%   g: a 1D vDOS data set [Energy] (iData_vDOS)
 %   T: temperature range. When not given, T=1:500 [K]
 %   options: can be 'plot' to display the results.
 %         The 'newplot' option does the same but opens a new figure instead of
 %         re-using an existing one.
 %
 % output:
-%   t: structure with [S U F Cv ]
-%   fig: figure handle
+%   t:    structure with [S U F Cv ]
+%   fig:  figure handle
 %
 % Reference: https://wiki.fysik.dtu.dk/ase/ase/thermochemistry/thermochemistry.html#background
 %            D.A. McQuarrie. Statistical Mechanics. University Science Books, 2000.

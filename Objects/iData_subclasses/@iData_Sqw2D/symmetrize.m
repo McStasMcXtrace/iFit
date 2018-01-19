@@ -4,8 +4,6 @@ function s=Sqw_symmetrize(s)
 %  is thus symmetric in energy:
 %     S(q,w) = S(q,-w)
 %
-%  The S(q,w) is a dynamic structure factor aka scattering function.
-%
 %  The incoming data set should NOT contain the Bose factor, that is it
 %    should be 'classical'.
 %  To obtain a 'classical' S(q,w) from an experiment, use first:
@@ -13,6 +11,9 @@ function s=Sqw_symmetrize(s)
 %
 % The positive energy values in the S(q,w) map correspond to Stokes processes, 
 % i.e. material gains energy, and neutrons loose energy when down-scattered.
+%
+% syntax:
+%   s_sym = symmetrize(s)
 %
 % input:
 %   s:  Sqw data set (classical, often labelled as S*)
@@ -58,7 +59,7 @@ function s=Sqw_symmetrize(s)
   if isvector(w) && (all(w(:) >= 0) || all(w(:) <= 0))
     signal    = get(s, 'Signal');
     signal    = [ signal ; signal ];
-    [w,index] = unique([ w ; -w ]);
+    [w,index] = unique([ w0 ; -w0 ]);
     s = setaxis(s, 1, w);
     s = setaxis(s, 'Signal', signal(index,:));
     clear signal
@@ -67,7 +68,6 @@ function s=Sqw_symmetrize(s)
        err = get(s, 'Error');
        if all(err(:) > 0 )
          err=[ err ; err ];
-         [w,index]=unique([ w0 ; -w0 ]);
          s = setalias(s, 'Error', err(index,:));
        end
     end
@@ -77,7 +77,6 @@ function s=Sqw_symmetrize(s)
       m = get(s, 'Monitor');
       if all(m(:) > 0 )
         m=[ m ; m ];
-        [w,index]=unique([ w0 ; -w0 ]);
         s = setalias(s, 'Monitor', m(index,:));
       end
     end

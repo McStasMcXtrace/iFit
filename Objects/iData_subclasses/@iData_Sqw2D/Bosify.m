@@ -1,32 +1,19 @@
 function s = Bosify(s0, T, type)
-% Bosify: apply the 'Bose' factor (detailed balance) to a classical data set.
-%
-% iData_Sqw2D: bosify: apply the Bose factor, which adds a temperature effect.
+% iData_Sqw2D: Bosify: apply the 'Bose' factor (detailed balance) to a classical data set.
 %   The initial data set should obey S*=S(q,w) = S(q,-w), i.e. be 'classical'.
-%   The S(q,w) is a dynamic structure factor aka scattering function.
-%
-% sb=Bosify(s, T, type) 
-%
-% input:
-%   s: Sqw data set (classical, symmetric in energy, no T Bose factor)
-%        e.g. 2D data set with w as 1st axis (rows, meV), q as 2nd axis (Angs-1).
-%   T: when given, Temperature to use for Bose. When not given, the Temperature
-%      is searched in the object. The temperature is in [K]. 1 meV=11.605 K.
-%   type: 'Schofield' or 'harmonic' or 'standard' (default)
-%
-% output:
-%   sb: quantum Sqw data set (non classical, iData_Sqw2D).
+%   The resulting data set is 'quantum/experimental' and satisfies the detailed
+%   balance. It contains the temperature effect (population).
 %
 % conventions:
 % omega = Ei-Ef = energy lost by the neutron, given in [meV]
 %    omega > 0, neutron looses energy, can not be higher than Ei (Stokes)
 %    omega < 0, neutron gains energy, anti-Stokes
-% Egelstaff, Eq (9.25) p189,  where Q(w) is defined below:
+%
 %    S(q,-w) = exp(-hw/kT) S(q,w)
 %    S(q,w)  = exp( hw/kT) S(q,-w)
-%    S(q,w)  = Q(w) S*(q,w) with S*=classical limit
+%    S(q,w)  = Q(w) S*(q,w) with S*=classical limit and Q(w) defined below.
 % for omega > 0, S(q,w) > S(q,-w)
-%               
+%         
 % The semi-classical correction, Q, aka 'quantum' correction factor, 
 % can be selected from the optional   'type' argument:
 %    Q = exp(hw_kT/2)                 'Schofield' or 'Boltzmann'
@@ -50,7 +37,20 @@ function s = Bosify(s0, T, type)
 %    Monographs on Atomic, Molecular, and Chemical Physics, Vol. 2,
 %    Cambridge Univ. Press: London (1993).
 %
-% Example: s=iData_Sqw2D('SQW_coh_lGe.nc'); sb=Bosify(s, 300);
+% syntax:
+%   sqw_T = Bosify(sqw)
+%
+% input:
+%   sqw:  Sqw data set (classical, symmetric in energy, no T Bose factor)
+%           e.g. 2D data set with w as 1st axis (rows, meV), q as 2nd axis (Angs-1).
+%   T:    when given, Temperature to use for Bose. When not given, the Temperature
+%           is searched in the object. The temperature is in [K]. 1 meV=11.605 K.
+%   type: 'Schofield' or 'harmonic' or 'standard' (default)
+%
+% output:
+%   sqw_T: quantum Sqw data set (non classical, iData_Sqw2D).
+%
+% Example: s=iData_Sqw2D('SQW_coh_lGe.nc'); sb=Bosify(symmetrize(s), 1235);
 %
 % See also: iData_Sqw2D/deBosify, iData_Sqw2D/symmetrize, 
 %           iData_Sqw2D/dynamic_range, iData_Sqw2D/scattering_cross_section

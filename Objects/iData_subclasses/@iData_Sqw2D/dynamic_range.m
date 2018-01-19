@@ -1,10 +1,8 @@
 function [s, sphi] = dynamic_range(s, Ei, angles)
-% [sqw_Ei,sphiw]=dynamic_range(s,Ei): crop the S(|q|,w) to the available dynamic range
+% iData_Sqw2D: dynamic_range: crop the S(|q|,w) to the available dynamic range
 %   for given incident neutron energy.
 %
-%  The S(q,w) is a dynamic structure factor aka scattering function.
-%
-% The dynamic range is defined from the momwntum and energy conservation laws:
+% The dynamic range is defined from the momentum and energy conservation laws:
 %  Ef         = Ei - w                                is positive
 %  cos(theta) = (Ki.^2 + Kf.^2 - q.^2) ./ (2*Ki.*Kf)  is within [-1:1]
 %
@@ -23,17 +21,23 @@ function [s, sphi] = dynamic_range(s, Ei, angles)
 % The syntax:
 %   [sqw_Ei, sphiw] = dynamic_range(s,...)
 % also returns the S(phi,w) data set, which shows the detected signal vs scattering 
-% angle and energy transfer.
+% angle and energy transfer. This is the double differential cross section 
+% as a function of the scattering angle.
+%
+% syntax:
+%   sqw_Ei        =dynamic_range(s, Ei)
+%   [sqw_Ei,sphiw]=dynamic_range(s, Ei)
+%   [sqw_Ei,sphiw]=dynamic_range(s, Ei, [min_angle max_angle])
 %
 % input:
-%   s:  Sqw data set, e.g. 2D data set with w as 1st axis (rows, meV), q as 2nd axis (Angs-1).
-%   Ei: incoming neutron energy [meV]
-%   angles: detection range in [deg] as a vector. Min and Max values are used.
+%   s:      Sqw data set, e.g. 2D data set with w as 1st axis (rows, meV), q as 2nd axis (Angs-1).
+%   Ei:     incoming neutron energy [meV]
+%   angles: scattering detection range in [deg] as a vector. Min and Max values are used.
 % output:
-%   sqw:   S(q,w)   cropped to dynamic range for incident energy Ei.
-%   sphiw: S(phi,w) angular dynamic structure factor for incident energy Ei.
+%   sqw_Ei: S(q,w)   cropped to dynamic range for incident energy Ei.
+%   sphiw:  S(phi,w) angular dynamic structure factor for incident energy Ei.
 %
-% Example: dynamic_range(iData_Sqw2D('SQW_coh_lGe.nc'), 14.8, [-20 135])
+% Example: s=iData_Sqw2D('SQW_coh_lGe.nc'); dynamic_range(symmetrize(s), 14.8, [-20 135])
 %
 % See also: iData_Sqw2D/Bosify, iData_Sqw2D/deBosify, iData_Sqw2D/symmetrize, iData_Sqw2D/scattering_cross_section
 % (c) E.Farhi, ILL. License: EUPL.
@@ -72,20 +76,28 @@ function [s, sphi] = dynamic_range(s, Ei, angles)
   V2K  = 1.58825361e-3;     % Convert v[m/s] to k[1/AA]
   K2V  = 1/V2K;
   VS2E = 5.22703725e-6;     % Convert (v[m/s])**2 to E[meV]
-
+  
+  % search in the data set in case missing properties are stored there
   % compute Ki with given arguments
   if ~isempty(Ei)
     Ki = SE2V*V2K*sqrt(Ei);
   else
-    % get dynamic limits from the given S(q,w)
-    q = getaxis(s,2);
-    Ki = max(q(:))/2;
-    Ei = max(abs(w(:)));
-    if SE2V*V2K*sqrt(Ei) < Ki % check which of q,w limits the range
-      Ki = SE2V*V2K*sqrt(Ei);
+    Ki = Sqw_getT(s, {'wavevector','momentum','IncidentWavevector','Ki'});
+    if isempty(Ki) || Ki==0
+      lambda = Sqw_getT(s, {'wavelength','lambda'});
+      if ~isempty(lambda) && lambda>0
+        Ki = 2*pi/lambda;
+      else
+        Ei = Sqw_getT(s, {'IncidentEnergy','Ei'});
+        if isempty(Ei) || Ei<=0
+          w  = getaxis(s, 1);
+          Ei = max(abs(w(:)));
+          disp([ mfilename ': using Ei=' num2str(Ei) ' [meV] incident neutron energy.' ]);
+        end
+        Ki = SE2V*V2K*sqrt(Ei);
+      end
     end
   end
-  
 
   % get the S(q,w) on a meshgrid (and possibly rebin/interpolate)
   s = meshgrid(s);
@@ -125,6 +137,7 @@ function [s, sphi] = dynamic_range(s, Ei, angles)
     index= find(abs(costheta) > 1 | Ef <= 0);
   else
     if isscalar(angles), angles = [ angles-1 angles+1 ]; end
+    if min(angles) < 0 && max(angles) > 0, angles = [ 0 max(abs(angles)) ]; end
     cost = cosd(angles);
     index= find(costheta < min(cost(:)) | costheta > max(cost(:)) | Ef <= 0);
   end
@@ -139,6 +152,8 @@ function [s, sphi] = dynamic_range(s, Ei, angles)
   end
   
   s.DisplayName = strtrim([ s.DisplayName tt ]);
+  title(s, [ title(s) tt ]);
+  s.Label       = strtrim([ s.Label tt ]);
   s = setalias(s, 'IncidentEnergy', Ei, 'Incident Energy [meV]');
   if ~isempty(angles)
     s = setalias(s, 'DetectionAngles', angles, 'Detection Angles [deg]');
@@ -146,12 +161,9 @@ function [s, sphi] = dynamic_range(s, Ei, angles)
   % compute the angles from 'q' values, and create an Angle alias
   if nargout > 1
     angles = real(acos(costheta))*180/pi; % this is e.g. a 2D array
-    sphi = setalias(s, 'Angle', angles, 'Radial Angle [deg]');
+    sphi = setalias(iData(s), 'Angle', angles, 'Radial Scattering Angle [deg]');
     sphi = setaxis(sphi, 2, 'Angle');
   end
-  
-  s = title(s, strtrim([ s.Title tt ]));
-  s.Label = strtrim(tt);
   
   if nargout == 0
     fig=figure; 

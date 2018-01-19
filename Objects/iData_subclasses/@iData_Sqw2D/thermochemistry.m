@@ -1,7 +1,7 @@
 function [t, fig]=thermochemistry(s, T, options)
 % iData_Sqw2D/thermochemistry: compute thermodynamic quantities for 2D S(q,w) data sets.
 %
-% compute thermodynamics quantities.
+% Compute thermodynamics quantities.
 % When missing, the generalised density of states (gDOS) is estimated 
 % from the 2D sqw object.
 %
@@ -15,6 +15,13 @@ function [t, fig]=thermochemistry(s, T, options)
 %   helmholtz_energy                  F [eV/cell]
 %   heat_capacity at constant volume Cv [eV/K/cell]
 %
+% Reference: https://wiki.fysik.dtu.dk/ase/ase/thermochemistry/thermochemistry.html#background
+%            D.A. McQuarrie. Statistical Mechanics. University Science Books, 2000.
+%
+% syntax:
+%   t = thermochemistry(s)
+%   t = thermochemistry(s, Tmin:Tmax)
+%
 % input:
 %   s: a 2D sqw data set [|Q|,Energy] (iData_Sqw2D)
 %   T: temperature range. When not given, T=1:500 [K]
@@ -23,11 +30,10 @@ function [t, fig]=thermochemistry(s, T, options)
 %         re-using an existing one.
 %
 % output:
-%   t: structure with [DOS, S U F Cv ]
+%   t:   iData array with [DOS S U F Cv ]
 %   fig: figure handle
 %
-% Reference: https://wiki.fysik.dtu.dk/ase/ase/thermochemistry/thermochemistry.html#background
-%            D.A. McQuarrie. Statistical Mechanics. University Science Books, 2000.
+% See also: iData_Sqw2D/dos, iData_vDOS
 
 t=[]; fig=[];
 

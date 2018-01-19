@@ -26,7 +26,7 @@ function sab = Sab(s, M, T)
 %             R. E. MacFarlane, LA-12639-MS (ENDF-356), 1994.
 %
 % Example: sqw = iData_Sqw2D('SQW_coh_lGe.nc');
-%          sab = Sab(sqw,72.6,300);
+%          sab = Sab(sqw,72.6,1235);
 %          plot(log(sab)
 %
 % (c) E.Farhi, ILL. License: EUPL.
@@ -46,11 +46,8 @@ function sab = Sab(s, M, T)
 
   if isempty(s), return; end
   
-  if isempty(M) && isfield(s, 'weight')
-    M       = get(s,'weight');              % mass
-  end
-  if isempty(M) && isfield(s, 'mass')
-    M       = get(s,'mass');                % mass
+  if isempty(M) || M<=0
+    M = Sqw_getT(s, {'Masses','Molar_mass','Mass','Weight'});
   end
   if isempty(T)
     T = Sqw_getT(s);
@@ -90,7 +87,7 @@ function sab = Sab(s, M, T)
   e       = 1.602E-019;      % [C]
   HBAR    = 1.05457168e-34;  % Plank/2PI
 
-  fprintf(1, '%s: %s: q=[%g:%g] w=[%g:%g]\n', mfilename, s.Title, min(q(:)), max(q(:)), min(E(:)), max(E(:)));
+  % fprintf(1, '%s: %s: q=[%g:%g] w=[%g:%g]\n', mfilename, s.Title, min(q(:)), max(q(:)), min(E(:)), max(E(:)));
   
   % constant 
   q2toE   = HBAR*HBAR/2/mn/e*1000*1e20; % = 2.072 = [Angs^-2] to [meV] 
@@ -129,6 +126,17 @@ function sab = Sab(s, M, T)
   ylabel(sab,'alpha [h2q2/2MkT]');
   xlabel(sab,'beta [-hw/kT]');
   sab = transpose(sab);
+  
+  % copy initial aliases and UserData
+  sab.UserData = s.UserData;
+  f = getalias(s);
+  for index=1:numel(getalias(s))
+    if ~isfield(sab, f{index})
+      [link, lab] = getalias(s, f{index});
+      sab = setalias(sab, f{index}, link, lab);
+    end
+  end
+  
   % transfer available information compatible with ENDF MF7 MT4
   sab = iData_Sab(sab);
 

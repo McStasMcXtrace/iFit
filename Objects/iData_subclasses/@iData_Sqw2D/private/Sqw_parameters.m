@@ -159,9 +159,9 @@ for index=1:length(fields)
     if     isfield(s, name)   val0=get(s, name);
     elseif isfield(s, p_name) val0=get(s, p_name);
     elseif isfield(parameters, name)
-      val0 = get(s, [ 'parameters.' name ]);
+      val0 = parameters.(name);
     elseif isfield(parameters, p_name)
-      val0 = get(s, [ 'parameters.' p_name ]);  
+      val0 = parameters.(p_name);  
     else val0=[]; end
     if index==1 && f_index==1
       links    = findfield(s,strtok(f{f_index}),'exact');

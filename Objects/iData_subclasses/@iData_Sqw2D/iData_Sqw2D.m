@@ -1,9 +1,16 @@
 classdef iData_Sqw2D < iData
   % iData_Sqw2D: create a 2D S(q,w) data set (iData flavour)
   %
-  % The iData_Sqw2D class is a 2D data set holding a S(q,w) dynamic structure factor.
+  % The iData_Sqw2D class is a 2D data set holding a S(q,w) dynamic structure factor
+  %   aka scattering function/law.
   %   The first  axis (rows)    is the Momentum transfer [Angs-1] (wavevector). 
   %   The second axis (columns) is the Energy   transfer [meV].
+  %
+  % This quantity usually derives from the double differential neutron cross section
+  %
+  %    d2 sigma 
+  %   ---------   = N sigma /4pi kf/ki S(q,w)
+  %   dOMEGA dEf
   %
   % conventions:
   % w = omega = Ei-Ef = energy lost by the neutron [meV]
@@ -53,15 +60,19 @@ classdef iData_Sqw2D < iData
   % sq  = structure_factor(s)
   %   Compute the structure factor S(q)
   %
-  % inc = incoherent(s, q, T, sigma, m, n)
+  % [inc, multi] = incoherent(s, q, T, sigma, m, n)
   %   Compute an estimate of the incoherent neutron scattering law in the incoherent gaussian approximation
+  %
+  % [gDOS,M]     = multi_phonons(ss)
+  %   Compute the integrated multi-phonon DOS terms from an initial density of states
   %
   % input:
   %   can be a 2D iData or filename to generate a 2D Sqw object.
   %
   % output: an iData_Sqw2D object
   %
-  % See also: iData
+  % See also: iData, iData_Sab, iData_vDOS
+  % (c) E.Farhi, ILL. License: EUPL.
 
   properties
   end
@@ -134,13 +145,13 @@ classdef iData_Sqw2D < iData
     
     function [inc, multi] = incoherent(s, varargin)
       % iData_Sqw2D: incoherent: incoherent neutron scattering law estimate in the incoherent gaussian approximation
-      inc = multi_phonons_incoherent(dos(s), varargin{:});
-      if numel(inc) > 2, inc = inc(1:2); end
-      multi = plus(inc(2:end));
-      inc   = plus(inc);
+      g   = dos(s);
+      inc = multi_phonons_incoherent(g, varargin{:});
+      multi = plus(inc(3:end));
+      inc   = plus(inc(1:2));
       if nargout == 0
         fig=figure; 
-        h  =subplot([inc multi]); 
+        h  =subplot(log10([inc multi]),'view2'); 
         set(fig, 'NextPlot','new');
       end
     end

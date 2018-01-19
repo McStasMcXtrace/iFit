@@ -1,7 +1,5 @@
 function [Gw, Tsym] = multi_phonons_dos(gw, Ki, T, sigma, m, phi, n)
-% multi_phonons_dos: compute the integrated multi-phonon intensity from an initial density of states
-%
-% Gw = multi_phonons_dos(gw, Ki, T, sigma, m, n)
+% iData_vDOS: multi_phonons_dos: compute the integrated multi-phonon DOS from an initial density of states
 %
 % The 'generalized' neutron weighted density of states (gDOS) is computed from an 
 % initial vibrational density of states (vDOS).
@@ -11,6 +9,16 @@ function [Gw, Tsym] = multi_phonons_dos(gw, Ki, T, sigma, m, phi, n)
 % This implementation is in principle exact for an isotropic monoatomic material,
 % e.g. a liquid or powder.
 % This methodology is a complete rewrite of the MUPHOCOR code.
+%
+% Reference:
+%   H. Schober, Journal of Neutron Research 17 (2014) 109–357
+%     DOI 10.3233/JNR-140016 (see esp. pages 328-331)
+%   V.S. Oskotskii, Sov. Phys. Solid State 9 (1967), 420.
+%   A. Sjolander, Arkiv for Fysik 14 (1958), 315.
+%   W. Reichardt, MUPHOCOR Karlsruhe Report 13.03.01p06L (1984)
+%
+% syntax:
+%   Gw = multi_phonons_dos(gw, Ki, T, sigma, m, n)
 %
 % input:
 %   gw:   the vibrational density of states per [meV] [iData]
@@ -26,12 +34,10 @@ function [Gw, Tsym] = multi_phonons_dos(gw, Ki, T, sigma, m, phi, n)
 %   Wq:   half Debye-Waller factor. The DW function is exp(-2*Wq)  [iData vs q]
 %   Tp:   p-phonon terms [iData array]
 %
-% Reference:
-%   H. Schober, Journal of Neutron Research 17 (2014) 109–357
-%     DOI 10.3233/JNR-140016 (see esp. pages 328-331)
-%   V.S. Oskotskii, Sov. Phys. Solid State 9 (1967), 420.
-%   A. Sjolander, Arkiv for Fysik 14 (1958), 315.
-%   W. Reichardt, MUPHOCOR Karlsruhe Report 13.03.01p06L (1984)
+% Example: s=sqw_cubic_monoatomic; multi_phonons_dos(dos(s))
+%
+% See also: iData_Sqw2D/dos, iData_vDOS/multi_phonons_incoherent
+% (c) E.Farhi, ILL. License: EUPL.
 
   % check input parameters
   if nargin < 2, Ki   =[]; end
@@ -50,13 +56,13 @@ function [Gw, Tsym] = multi_phonons_dos(gw, Ki, T, sigma, m, phi, n)
   % search in the vDOS data set in case missing properties are stored there
   % Ki, T, mass, sigma
   if isempty(Ki)
-    Ki = Sqw_getProp(gw, {'wavevector','momentum','IncidentWavevector','Ki'});
-    if isempty(Ki) || Ki==0
-      lambda = Sqw_getProp(gw, {'wavelength','lambda'});
+    Ki = Sqw_getT(gw, {'wavevector','momentum','IncidentWavevector','Ki'});
+    if isempty(Ki) || Ki<=0
+      lambda = Sqw_getT(gw, {'wavelength','lambda'});
       if ~isempty(lambda) && lambda>0
         Ki = 2*pi/lambda;
       else
-        Ei = Sqw_getProp(gw, {'IncidentEnergy','Ei'});
+        Ei = Sqw_getT(gw, {'IncidentEnergy','Ei'});
         if isempty(Ei) || Ei<=0
           w  = getaxis(gw, 1);
           Ei = max(abs(w(:)));
@@ -67,13 +73,16 @@ function [Gw, Tsym] = multi_phonons_dos(gw, Ki, T, sigma, m, phi, n)
     end
   end
   if isempty(T) || T<=0
-    T = Sqw_getProp(gw);
+    T = Sqw_getT(gw);
   end
   if isempty(m) || m<=0
-    m = Sqw_getProp(gw, {'Masses','Molar_mass','Mass','Weight'});
+    m = Sqw_getT(gw, {'Masses','Molar_mass','Mass','Weight'});
   end
   if isempty(sigma) || all(sigma<=0)
-    sigma = Sqw_getProp(gw, {'sigma_coh','sigma_inc','sigma'});
+    sigma = Sqw_getT(gw, {'sigma_coh','sigma_inc','sigma'});
+  end
+  if isempty(phi)
+    phi = Sqw_getT(gw, {'DetectionAngles','Angle'});
   end
   if isempty(phi)
     phi = [ 10 120 ];
@@ -82,7 +91,7 @@ function [Gw, Tsym] = multi_phonons_dos(gw, Ki, T, sigma, m, phi, n)
   % fail when missing information
   if isempty(m)     error([ mfilename ': Unspecified molar mass (m). Use multi_phonons_dos(g, Ki, T, sigma, m)' ]); end
   if isempty(T)     error([ mfilename ': Unspecified temperature (T). Use multi_phonons_dos(g, Ki, T)' ]); end
-  if isempty(sigma) error([ mfilename ': Unspecified scattering cross section (sigma). Use multi_phonons_dos(g, Ki, T, sigma)' ]); end
+  if isempty(sigma) disp([ mfilename ': WARNING: Unspecified scattering cross section (sigma). Using sigma=1 barn. Scale result accordingly.' ]); sigma = 1; end
   if isempty(n),    n=5; end
   
   % conversion factors
@@ -175,9 +184,11 @@ function [Gw, Tsym] = multi_phonons_dos(gw, Ki, T, sigma, m, phi, n)
     Gw   = [ Gw dGw ];
   end
   
-  if nargout == 0 && ~isempty(Gw)
+  if nargout == 0
     fig=figure; 
-    h=subplot([ plus(Gw) plus(Gw(2:end)) ]); 
+    G1 = plus(Gw);        title(G1, 'gDOS [single+multi]'); G1.Label=title(G1); G1.Title=title(G1);
+    G2 = plus(Gw(2:end)); title(G2, 'gDOS [multi]');        G2.Label=title(G2); G2.Title=title(G2);
+    h=subplot([ G1 G2 ]); 
     set(fig, 'NextPlot','new');
   end
 
@@ -234,51 +245,6 @@ function q = Q(Ki, hw, phi)
   q(Ef<=0) = 0;
   q  = q(:); % as a column with numel(hw)
 
-% ------------------------------------------------------------------------------
-function  T = Sqw_getProp(s, prop)
-% Sqw_getProp: search for a property value in a data set
-%
-% input:
-%   s: any iData object, including S(q,w) and DOS ones.
-  
-  T = [];
-  if nargin < 2,    prop = []; end
-  if isempty(prop), prop={'Temperature','T'}; end
-  if ~iscellstr(prop), prop = { prop }; end
-  
-  % handle arrays
-  if numel(s) > 1
-    for index=1:numel(s)
-      t = Sqw_getT(s(index), prop);
-      if isempty(t), t=nan; end
-      T = [ T t ];
-    end
-    return
-  end
-  
-  for field=prop
-    if isfield(s,field{1}), T=get(s,field{1}); end
-    
-    if isempty(T) || all(T(:)<0) || ~isnumeric(T) || ~isvector(T)
-      f = findfield(s,field{1},'exact numeric');
-      if ~isempty(f), T = get(s,f{1}); end
-    end
-
-    if isempty(T) || all(T(:)<0) || ~isnumeric(T) || ~isvector(T)
-      f = findfield(s,field{1},'numeric cache');
-      for index=1:numel(f)
-        try
-          T = get(s,f{1});
-          if ~isempty(T) && isnumeric(T) && isvector(T) && all(T(:)>0), break; end
-        end
-      end
-    end
-
-    if ~isempty(T) && isnumeric(T) && isvector(T) && all(T(:)>0), break; end
-  end
-  
-  if isvector(T), T = mean(T(:)); else T=[]; end
-  
  
   
 % ------------------------------------------------------------------------------

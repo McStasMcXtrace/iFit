@@ -27,7 +27,7 @@ function sqw = Sqw(s, M, T)
 %             R. E. MacFarlane, LA-12639-MS (ENDF-356), 1994.
 %
 % Example: sab = iData_Sab('SQW_coh_lGe.nc');
-%          sqw = Sqw(sab,72.6,300);
+%          sqw = Sqw(sab,72.6,1235);
 %          sab2= Sab(sqw);
 %          subplot(log([Sqw Sab Sqw2))
 %
@@ -48,11 +48,8 @@ function sqw = Sqw(s, M, T)
 
   if isempty(s), return; end
   
-  if isempty(M) && isfield(s, 'weight')
-    M       = get(s,'weight');              % mass
-  end
-  if isempty(M) && isfield(s, 'mass')
-    M       = get(s,'mass');                % mass
+  if isempty(M) || M<=0
+    M = Sqw_getT(s, {'Masses','Molar_mass','Mass','Weight'});
   end
   if isempty(T)
     T = Sqw_getT(s);
@@ -103,7 +100,7 @@ function sqw = Sqw(s, M, T)
   q = sqrt(alpha/(C*q2toE));
   E = -beta/C;
   
-  fprintf(1, '%s: %s: q=[%g:%g] w=[%g:%g]\n', mfilename, s.Title, min(q(:)), max(q(:)), min(E(:)), max(E(:)));
+  % fprintf(1, '%s: %s: q=[%g:%g] w=[%g:%g]\n', mfilename, s.Title, min(q(:)), max(q(:)), min(E(:)), max(E(:)));
   
   for i=1:size(Z,1)   % E
     % Jacobian for S(q,w) -> S(a,b) is J=(dq.dw)/(dalpha.dbeta) = 1/(2*q*C^2*q2toE)
@@ -129,6 +126,16 @@ function sqw = Sqw(s, M, T)
   ylabel(sqw,'wavevector [Angs-1]');
   xlabel(sqw,'energy [meV]');
   sqw = transpose(sqw);
+  
+  % copy initial aliases and UserData
+  sqw.UserData = s.UserData;
+  f = getalias(s);
+  for index=1:numel(getalias(s))
+    if ~isfield(sqw, f{index})
+      [link, lab] = getalias(s, f{index});
+      sqw = setalias(sqw, f{index}, link, lab);
+    end
+  end
   % transfer available information compatible with ENDF
   sqw = iData_Sqw2D(sqw);
   

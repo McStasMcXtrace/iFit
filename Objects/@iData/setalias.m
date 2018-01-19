@@ -99,7 +99,9 @@ names = cellstr(names);
 if  ischar(links), links = cellstr(links); end
 if ~iscell(links), links = { links }; end
 
-labels= cellstr(labels);
+if ~isempty(labels)
+  labels= cellstr(labels);
+end
 
 if numel(this)
   to_keep = [ this.Alias.Names(1:3) this.Alias.Values(1:3) this.Alias.Axis ];

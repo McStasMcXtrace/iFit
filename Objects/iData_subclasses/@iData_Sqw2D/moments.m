@@ -14,24 +14,28 @@ function sigma=moments(data, M, T, classical)
 %   M3   = <w3S(q,w)>                                                 [moment 3]
 %   M4   = <w4S(q,w)>                                                 [moment 4]
 %
-% input:
-%   data: Sqw data set e.g. 2D data set with w as 1st axis (rows, meV), q as 2nd axis (Angs-1).
-%   M: molar weight of the material atom/molecule in [g/mol].
-%     when omitted or empty, it is searched 'weight' or 'mass' is the object.
-%   T: when given, Temperature to use. When not given or empty, the Temperature
-%      is searched in the object. The temperature is in [K]. 1 meV=11.605 K.
-%   classical: 0 for non symmetric S(q,w) [with Bose, from exp.], 1 for symmetric (from MD)
-%     when omitted or empty, this is guessed from the data set when possible
-%
-% output:
-%   moments=[ sq M1 wc wl wq M2 M3 M4 ] as an iData array
-%
 % Reference: 
 %   Helmut Schober, Journal of Neutron Research 17 (2014) pp. 109
 %   Lovesey, Theory of Neutron Scattering from Condensed Matter, Vol 1, p180 eq. 5.38 (w0)
 %   J-P.Hansen and I.R.McDonald, Theory of simple liquids Academic Press New York 2006.
 %
-% Example: m = moments(iData_Sqw2D('SQW_coh_lGe.nc'))); subplot(m);
+% syntax:
+%   m = moments(sqw)
+%   m = moments(sqw, M, T, classical)
+%
+% input:
+%   sqw:  Sqw data set e.g. 2D data set with w as 1st axis (rows, meV), q as 2nd axis (Angs-1).
+%   M:    molar weight of the material atom/molecule in [g/mol].
+%           when omitted or empty, it is searched 'weight' or 'mass' is the object.
+%   T:    when given, Temperature to use. When not given or empty, the Temperature
+%           is searched in the object. The temperature is in [K]. 1 meV=11.605 K.
+%   classical: 0 for non symmetric S(q,w) [with Bose, from exp.], 1 for symmetric (from MD)
+%         when omitted or empty, this is guessed from the data set when possible
+%
+% output:
+%   moments=[ sq M1 wc wl wq M2 M3 M4 ] as an iData array
+%
+% Example: m = moments(iData_Sqw2D('SQW_coh_lGe.nc'), 72.6,1235); subplot(m);
 % (c) E.Farhi, ILL. License: EUPL.
 
   sigma = [];
@@ -46,7 +50,7 @@ function sigma=moments(data, M, T, classical)
     classical = get(data,'classical');
   end
   if isempty(M) || M<=0
-    m = Sqw_getT(data, {'Masses','Molar_mass','Mass','Weight'});
+    M = Sqw_getT(data, {'Masses','Molar_mass','Mass','Weight'});
   end
   if isempty(T)
     T = Sqw_getT(data);
