@@ -1,4 +1,4 @@
-function [DOS, fig] = dos(s, method, n)
+function [DOS, g, fig] = dos(s, method, n)
 % iData_Sqw2D: dos: compute the generalised density of states (gDOS)
 %
 %  The gDOS is an approximation of the vibrational spectra (DOS).
@@ -11,13 +11,19 @@ function [DOS, fig] = dos(s, method, n)
 %  and:
 %       gDOS(w)   = lim(q->0) [ gDOS(q,w) ]
 %
+%       gDOS(q,w) = w*S(q,w)/Q^2/(1+n(w))            Bredov/Oskotskii
+%       gDOS(w)   = trapz(g, 2)
+%
+%  The Bredov/Oskotskii methodology provides the best gDOS estimate, using the
+%  whole data set.
+%
 %  The applicability to a coherent dynamic structure factor S(q,w) should be
 %  taken with great care, as this formalism then does not fully hold.
 %
 %  The method to use in the gDOS computation can be given as 2nd argument
+%       gDOS = dos(Sqw, 'Bredov')         more accurate as it uses 100% of data
 %       gDOS = dos(Sqw, 'Carpenter')      Temperature must be a property
 %       gDOS = dos(Sqw, 'Bellissent')     simple yet efficient
-%       gDOS = dos(Sqw, 'Bredov')         better for coherent S(q,w)
 %
 %  The gDOS is stored in the 'gDOS' property, and is retrieved without recomputation
 %  when available. To force a recomputation of the gDOS, use:
@@ -37,7 +43,7 @@ function [DOS, fig] = dos(s, method, n)
 %
 % input:
 %   s:      Sqw data set e.g. 2D data set with w as 1st axis (rows, meV), q as 2nd axis (Angs-1).
-%   method: 'Carpenter','Bellissent' (default) or 'Bredov'
+%   method: 'Carpenter','Bellissent' or 'Bredov' (default)
 %   n:      number of low-angle values to integrate (integer). Default is 10 when omitted.
 %           when 0 or 'force', the gDOS is re-computed.
 %
@@ -66,7 +72,7 @@ function [DOS, fig] = dos(s, method, n)
   end
 
   if strcmp(method, 'force'), method = []; n=0; end
-  if isempty(method), method = 'Bellissent'; end
+  if isempty(method), method = 'Bredov'; end
   if ~isempty(n) && (strcmp(n, 'force') || (isnumeric(n) && n <= 0))
     s = rmalias(s, 'gDOS');
     n = [];
@@ -104,6 +110,7 @@ function [DOS, fig] = dos(s, method, n)
       g = sqw_phonon_dos_Carpenter(s, T);  % requires Temperature 
     case 'bredov'
       g = sqw_phonon_dos_Bredov(s, T);     % requires Temperature (call Carpenter)
+      n = inf;                             % we use all the data.
     otherwise % 'bellissent'
       method = 'Bellissent';
       g = sqw_phonon_dos_Bellissent(s);
@@ -126,7 +133,7 @@ function [DOS, fig] = dos(s, method, n)
     % determine the low-momentum limit -------------------------------------------
     s0  = subsref(g,struct('type','.','subs','Signal'));
     DOS = zeros(size(s0,1),1);  % column of g(w) DOS for q->0
-    nc  = min(n,size(s0,2)); % get the first n=10 values for each energy transfer
+    nc  = min(n,size(s0,2));    % get the first n=10 values for each energy transfer
     for i=1:size(s0,1)
       nz = find(s0(i,:) > 0, nc, 'first');
       if ~isempty(nz)
@@ -153,6 +160,11 @@ function [DOS, fig] = dos(s, method, n)
         [link, lab] = getalias(s, f{index});
         DOS = setalias(DOS, f{index}, link, lab);
       end
+    end
+    
+    if numel(getaxis(DOS,1)) ~= prod(size(DOS))
+      w = unique(getaxis(s, 1));
+      DOS = setaxis(DOS, 1, w);
     end
     
     DOS       = iData_vDOS(DOS);

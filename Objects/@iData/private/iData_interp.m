@@ -121,7 +121,6 @@ otherwise % nD, n>1
         end
       catch ME
         disp([ mfilename ': WARNING: failed interpolation with ' interpolants{index} '. Going on.' ]);
-        disp(getReport(ME))
       end
     end
     

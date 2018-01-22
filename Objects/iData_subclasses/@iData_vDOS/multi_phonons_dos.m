@@ -89,8 +89,8 @@ function [Gw, Tsym] = multi_phonons_dos(gw, Ki, T, sigma, m, phi, n)
     disp([ mfilename ': using detector angular range phi=' mat2str(phi) ' [deg] incident neutron wavelength.' ]);
   end
   % fail when missing information
-  if isempty(m)     error([ mfilename ': Unspecified molar mass (m). Use multi_phonons_dos(g, Ki, T, sigma, m)' ]); end
-  if isempty(T)     error([ mfilename ': Unspecified temperature (T). Use multi_phonons_dos(g, Ki, T)' ]); end
+  if isempty(m) || m<=0    error([ mfilename ': Unspecified molar mass (m). Use multi_phonons_dos(g, Ki, T, sigma, m)' ]); end
+  if isempty(T) || T<=0    error([ mfilename ': Unspecified temperature (T). Use multi_phonons_dos(g, Ki, T)' ]); end
   if isempty(sigma) disp([ mfilename ': WARNING: Unspecified scattering cross section (sigma). Using sigma=1 barn. Scale result accordingly.' ]); sigma = 1; end
   if isempty(n),    n=5; end
   

@@ -174,18 +174,33 @@ classdef iData_Sab < iData
     
     function DOS = dos(self, varargin)
       % iData_Sab: dos(sab): compute the generalised density of states (gDOS)
-      %   The gDOS is an approximation of the vibrational spectra (DOS).
-      %  The incoherent approximation states that the gDOS from an incoherent S(q,w) is 
-      %  roughly equal to that obtained from a coherent S(q,w).
+      %  The gDOS is an approximation of the vibrational spectra (DOS).
+      %  This routine should better be applied on an incoherent dynamic S(a,b) data set.
+      %  The incoherent approximation states that the gDOS from an incoherent S(a,b) is 
+      %  roughly equal to that obtained from a coherent S(a,b).
       %
       %       gDOS(q,w) = S(q,w) w^2/q^2                   Bellissent
-      %       gDOS(q,w) = S(q,w) w^2/q^2 [1 - exp(-hw/kT)] Carpenter/Price
-      %   and:
+      %       gDOS(q,w) = S(q,w) w  /q^2/[1 + n(hw)]       Carpenter/Price
+      %  and:
       %       gDOS(w)   = lim(q->0) [ gDOS(q,w) ]
       %
-      %   The gDOS is stored in the 'gDOS' property, and is retrieved without recomputation
-      %   when available. To force a recomputation of the gDOS, use:
-      %       dos(Sqw, 'method', 0) or dos(Sqw, 'method', 'force')
+      %       gDOS(q,w) = w*S(q,w)/(1+n(w))/(Q^4max-Q^4min) Bredov/Oskotskii
+      %       gDOS(w)   = trapz(g, 2)
+      %
+      %  The Bredov/Oskotskii methodology provides the best gDOS estimate, using the
+      %  whole data set.
+      %
+      %  The applicability to a coherent dynamic structure factor S(q,w) should be
+      %  taken with great care, as this formalism then does not fully hold.
+      %
+      %  The method to use in the gDOS computation can be given as 2nd argument
+      %       gDOS = dos(Sqw, 'Bredov')         more accurate as it uses 100% of data
+      %       gDOS = dos(Sqw, 'Carpenter')      Temperature must be a property
+      %       gDOS = dos(Sqw, 'Bellissent')     simple yet efficient
+      %
+      %  The gDOS is stored in the 'gDOS' property, and is retrieved without recomputation
+      %  when available. To force a recomputation of the gDOS, use:
+      %       dos(Sab, 'method', 0) or dos(Sab, 'method', 'force')
       %
       %   When no output is used, a plot is shown.
       %
@@ -201,7 +216,7 @@ classdef iData_Sab < iData
       %   g = dos(sab, method, n)
       %
       % input:  sab:    S(alpha,beta) [iData_Sab]
-      %         method: 'Carpenter','Bellissent' (default) or 'Bredov'
+      %         method: 'Carpenter','Bellissent' or 'Bredov' (default)
       %         n:      number of low-angle values to integrate (integer). Default is 10.
       %                 can also be 0 or 'force' to re-compute the gDOS.
       % output: g:      gDOS [iData_vDOS]

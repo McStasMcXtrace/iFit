@@ -68,8 +68,8 @@ function [Sqw, Iqt, Wq, Tall] = multi_phonons_incoherent(gw, q, T, sigma, m, n)
     sigma = Sqw_getT(gw, {'sigma_coh','sigma_inc','sigma'});
   end
   % fail when missing information
-  if isempty(m)     error([ mfilename ': Unspecified molar mass (m). Use multi_phonons_incoherent(g, q, T, sigma, m)' ]); end
-  if isempty(T)     error([ mfilename ': Unspecified temperature (T). Use multi_phonons_incoherent(gw, q, T).' ]); end
+  if isempty(m) || m<=0     error([ mfilename ': Unspecified molar mass (m). Use multi_phonons_incoherent(g, q, T, sigma, m)' ]); end
+  if isempty(T) || T<=0    error([ mfilename ': Unspecified temperature (T). Use multi_phonons_incoherent(gw, q, T).' ]); end
   if isempty(sigma) disp([ mfilename ': WARNING: Unspecified scattering cross section (sigma). Using sigma=1 barn. Scale result accordingly.' ]); sigma = 1; end
   if isempty(n), n=5; end
   
@@ -103,6 +103,9 @@ function [Sqw, Iqt, Wq, Tall] = multi_phonons_incoherent(gw, q, T, sigma, m, n)
   nw = 1./(exp(hw./kT) -1);             % Bose population factor
   % compute the T1 term
   T1 = gw./hw.*(nw+1);                  % Eq. (10.68) p 329
+  S.type='()';
+  S.subs={ ~isfinite(T1) };
+  T1 = subsasgn(T1, S, 0);
   f0 = trapz(T1);
   disp([ mfilename ': 1/f(0)=' num2str(1/f0) ' [meV]' ]);
 
@@ -130,7 +133,7 @@ function [Sqw, Iqt, Wq, Tall] = multi_phonons_incoherent(gw, q, T, sigma, m, n)
   Sqw.Title= [ 'Elastic scattering function S(q,w) [p=0] from ' titl ];
   title(Sqw, [ 'S(q,w) [p=0] from ' titl ]);
   Sqw.Label= [ 'S(q,w) [p=0]' ];
-  xlabel(Sqw, 'q wavevector [Angs-1]'); ylabel(Sqw, 'hw energy [meV]');
+  xlabel(Sqw, 'wavevector [Angs-1]'); ylabel(Sqw, 'energy [meV]');
   Sqw      = iData_Sqw2D(Sqw);
   
   % determine the I(q,t) p=0 term in [q,w] space -------------------------------

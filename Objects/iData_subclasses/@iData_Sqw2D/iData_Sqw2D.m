@@ -94,7 +94,7 @@ classdef iData_Sqw2D < iData
       
       % convert/test
       if isa(s, 'iData_Sab') s = Sqw(s); end
-      if ~isa(s, 'iData'), m = Sqw_check(s); else m=s; end
+      m = Sqw_check(s); 
       if ~isa(m, 'iData') || isempty(m) || ndims(m) ~= 2
         error([ mfilename ': the given input ' class(s) ' does not seem to be convertible to iData_Sqw2D.' ])
       end
@@ -175,6 +175,11 @@ classdef iData_Sqw2D < iData
     function spe = q2phi(self)
       % iData_Sqw2D: q2phi: convert a S(q,w) into a S(phi,w) iData
       spe = Sqw_q2phi(self);
+      if nargout == 0
+        fig=figure; 
+        h  =plot(log10(s)); 
+        set(fig, 'NextPlot','new');
+      end
     end
     
     function f = saveas(self, varargin)
