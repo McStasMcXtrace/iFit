@@ -10,28 +10,6 @@ else
 end
 clear filename;
 
-% must check if the input object should be split into temperatures
-% the split of temperatures is done in openendf 
-%  function t0=read_endf_mf7_array(t)
-%  t0 = [];
-%  disp(sprintf('%s: MF=%3i   MT=%i TSL T=%s', mfilename, t.MF, t.MT, mat2str(t.T)));
-%  for index=1:numel(t.T)
-%    t1     = t;
-%    t1.T   = t.T(index);
-%    t1.Title = [ t1.ZSYNAM ' T=' num2str(t1.T) ' [K] ' t1.description];
-%    if t1.MT == 2 % Incoherent/Coherent Elastic Scattering
-%      t1.NP  = t.NP(index);
-%      t1.S   = t.S(index,:);
-%      t1.INT = t.INT(index);
-%      t1.Label = [ t1.ZSYNAM ' T=' num2str(t1.T) ' [K] TSL elastic' ];
-%    elseif t1.MT == 4 % Incoherent Inelastic Scattering
-%      t1.Sab = t.Sab(:,:,index);
-%      t1.Teff     = t.Teff(index,:);
-%      t1.Label = [ t1.ZSYNAM ' T=' num2str(t1.T) ' [K] TSL inelastic' ];
-%    end
-%    t0 = [ t0 t1 ];
-%  end
-
 if numel(out) > 1
   % handle input iData arrays
   for index=1:numel(out)
@@ -45,12 +23,29 @@ elseif ~isempty(out) && isfield(out.Data,'MF') && isfield(out.Data,'MT')
   % set generic aliases
   setalias(out, 'MT',    'Data.MT',    'ENDF Section');
   setalias(out, 'MF',    'Data.MF',    'ENDF File');
-  setalias(out, 'MAT',   'Data.MAT',   'ENDF Material number');
-  setalias(out, 'Material','Data.ZSYNAM','ENDF Material description (ZSYNAM)');
-  setalias(out, 'EDATE', 'Data.EDATE', 'ENDF Evaluation Date (EDATE)');
-  setalias(out, 'charge','Data.ZA',    'ENDF material charge Z (ZA)');
-  setalias(out, 'mass',  'Data.AWR',   'ENDF material mass A [g/mol] (AWR)');
-  setalias(out, 'DescriptiveData', 'Data.DescriptiveData', 'ENDF DescriptiveData (MF1/MT451)');
+  if ~isfield(out, 'MAT') && ~isempty(findfield(out, 'MAT','first case'))
+    setalias(out, 'MAT',      findfield(out, 'MAT','first case'),   'ENDF Material number');
+  end
+  if ~isfield(out, 'ZSYMAM') && ~isempty(findfield(out, 'ZSYMAM','first case'))
+    setalias(out, 'Material', findfield(out, 'ZSYMAM','first case'),'ENDF Material description (ZSYMAM)');
+  end
+  if ~isfield(out, 'EDATE') && ~isempty(findfield(out, 'EDATE','first case'))
+    setalias(out, 'EDATE',    findfield(out, 'EDATE','first case'), 'ENDF Evaluation Date (EDATE)');
+  end
+  if ~isfield(out, 'ZA') && ~isempty(findfield(out, 'ZA','first case'))
+    setalias(out, 'charge',   findfield(out, 'ZA','first case'),    'ENDF material charge Z (ZA)');
+  end
+  if ~isfield(out, 'AWR') && ~isempty(findfield(out, 'AWR','first case'))
+    setalias(out, 'mass',  findfield(out, 'AWR','first case'),   'ENDF material mass A [g/mol] (AWR)');
+  end
+  if ~isfield(out, 'DescriptiveData') && ~isempty(findfield(out, 'DescriptiveData','first case'))
+    setalias(out, 'DescriptiveData', findfield(out, 'DescriptiveData','first case'), 'ENDF DescriptiveData (MF1/MT451)');
+  end
+  if isfield(out, 'info')
+    setalias(out, 'DescriptiveData', findfield(out, 'info','first case'), 'ENDF DescriptiveData (MF1/MT451)');
+  elseif ~isfield(out, 'description') && ~isempty(findfield(out, 'description','first case'))
+    setalias(out, 'DescriptiveData', findfield(out, 'description','first case'), 'ENDF DescriptiveData (MF1/MT451)');
+  end
   MT=out.Data.MT; MF=out.Data.MF;
   % assign axes: alpha, beta, Sab for MF7 MT4
   if MF == 1 && MT == 451
@@ -87,7 +82,27 @@ elseif ~isempty(out) && isfield(out.Data,'MF') && isfield(out.Data,'MT')
       setaxis( out, 1, 'beta');
     end
   end
-end
+  % must check if the input object should be split into temperatures
+  if size(out, 3) > 1
+    out = read_endf_mf7_array(out);
+  end
+elseif ~isempty(out) && isfield(out.Data, 'info')
+  % we search for other structure members in Data and split the object into different sections
+  out_array = [];
+  f = fieldnames(out.Data);
+  for index=1:numel(f)
+    if strcmp(f{index}, 'info') continue; end
+    section = out.Data.(f{index});
+    info    = out.Data.info;
+    out0 = copyobj(out); % out0.Data = []; 
+    out0.Data = section;
+    setalias(out0, 'info', info, 'ENDF General information (MF1)');
+    out0 = feval(mfilename, out0);
+    out_array = [ out_array out0 ];
+  end
+  out = out_array;
+  
+end % if not empty
 
 if ~nargout
   figure; subplot(log10(out));
@@ -97,3 +112,28 @@ if ~nargout
     ans = out
   end
 end
+
+% ------------------------------------------------------------------------------
+function t0=read_endf_mf7_array(t)
+  % read_endf_mf7_array: split an array of ENDF entries vs Temperature
+  t0 = [];
+  disp(sprintf('%s: MF=%3i   MT=%i TSL T=%s', mfilename, t.MF, t.MT, mat2str(t.T)));
+  for index=1:numel(t.T)
+    t1     = t;
+    t1.T   = t.T(index);
+    t1.Title = [ t1.ZSYMAM ' T=' num2str(t1.T) ' [K] ' t1.description];
+    if t1.MT == 2 % Incoherent/Coherent Elastic Scattering
+      t1.NP  = t.NP(index);
+      t1.S   = t.S(index,:);
+      t1.INT = t.INT(index);
+      t1.Label = [ t1.ZSYMAM ' T=' num2str(t1.T) ' [K] TSL elastic' ];
+      setaxis(t1, 3, t1.T);
+    elseif t1.MT == 4 % Incoherent Inelastic Scattering
+      t1.Sab = t.Sab(:,:,index);
+      t1.Teff     = t.Teff(index,:);
+      t1.Label = [ t1.ZSYMAM ' T=' num2str(t1.T) ' [K] TSL inelastic' ];
+      setaxis(t1, 3, t1.T);
+    end
+    t1 = iData(t1); % check axis and possibly transpose
+    t0 = [ t0 t1 ];
+  end

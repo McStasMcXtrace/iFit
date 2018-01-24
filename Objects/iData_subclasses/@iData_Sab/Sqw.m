@@ -56,7 +56,7 @@ function sqw = Sqw(s, M, T)
   end
   
   % check input parameters
-  if isempty(M)
+  if isempty(M) || M<=0
     disp([ mfilename ': ERROR: Mass undefined: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' does not provide information about the material molar weight. Use Sqw(Sab, M).' ]);
     return
   end
@@ -112,7 +112,13 @@ function sqw = Sqw(s, M, T)
   Z     = Z*(2*C*C*q2toE);
 
   % create new data set, and display it
-  sqw=iData(q,E,Z);  % Z(alpha,beta)
+  sqw=iData_Sqw2D;
+  setalias(sqw, 'q', alpha, 'wavevector [Angs-1]');
+  setalias(sqw, 'w',  beta,  'energy [meV]');
+  setalias(sqw, 'Sqw',   Z,     'S(q,w)');  % Z(q,w)
+  setaxis(sqw, 0, 'Sqw');
+  setaxis(sqw, 2, 'q');
+  setaxis(sqw, 1, 'w');
   sqw.Title = s.Title;
   setalias(sqw,'Temperature', T, '[K] Temperature');
   setalias(sqw,'weight',      M, '[g/mol] Material molar weight');
@@ -122,9 +128,6 @@ function sqw = Sqw(s, M, T)
     setalias(sqw,'classical',  get(s,'classical'), '[0=from measurement, with Bose factor included, 1=from MD, symmetric]');
   end
   sqw.Label='Sqw';
-  title(sqw, 'S(q,w)');
-  ylabel(sqw,'wavevector [Angs-1]');
-  xlabel(sqw,'energy [meV]');
   sqw = transpose(sqw);
   
   % copy initial aliases and UserData
@@ -137,7 +140,7 @@ function sqw = Sqw(s, M, T)
     end
   end
   % transfer available information compatible with ENDF
-  sqw = iData_Sqw2D(sqw);
+  % sqw = iData_Sqw2D(sqw);
   
   if nargout == 0
     fig=figure; 

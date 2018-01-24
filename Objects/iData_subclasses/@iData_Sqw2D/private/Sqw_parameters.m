@@ -28,7 +28,7 @@ if isempty(fields) % default: search all parameters and assemble them
     [pnames,index] = unique(f);
     pairs = [fieldnames(parameters1), struct2cell(parameters1); ...
              fieldnames(parameters2), struct2cell(parameters2)].';
-    parameters = struct(pairs{:,index});
+    parameters = cell2struct(pairs(2,index), pairs(1,index), 2);
     fields = [ fields1 fields2 ];
     fields = fields(index);
     setalias(s, 'parameters', parameters(1));

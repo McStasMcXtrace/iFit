@@ -1,5 +1,5 @@
-function [Sqw, Iqt, Wq, Tall] = multi_phonons_incoherent(gw, q, T, sigma, m, n)
-% iData_vDOS: multi_phonons_incoherent: compute the multi-phonon contributions in S(q,w) from an initial density of states in the incoherent gaussian approximation
+function [Sqw, Iqt, Wq, Tall] = incoherent(gw, q, T, sigma, m, n)
+% iData_vDOS: incoherent: compute the multi-phonon contributions in S(q,w) from an initial density of states in the incoherent gaussian approximation
 %
 % This implementation is in principle exact for an isotropic monoatomic material,
 % e.g. a liquid or powder.
@@ -18,8 +18,8 @@ function [Sqw, Iqt, Wq, Tall] = multi_phonons_incoherent(gw, q, T, sigma, m, n)
 %   A. Sjolander, Arkiv for Fysik 14 (1958), 315.
 %
 % syntax:
-%   [Sqw, Iqt, Wq, Tall] = multi_phonons_incoherent(gw)
-%   [Sqw, Iqt, Wq, Tall] = multi_phonons_incoherent(gw, q, T, sigma, m, n)
+%   [Sqw, Iqt, Wq, Tall] = incoherent(gw)
+%   [Sqw, Iqt, Wq, Tall] = incoherent(gw, q, T, sigma, m, n)
 %
 % input:
 %   gw: the vibrational density of states per [meV] [iData]
@@ -38,7 +38,7 @@ function [Sqw, Iqt, Wq, Tall] = multi_phonons_incoherent(gw, q, T, sigma, m, n)
 % Example:
 %   s   = sqw_phonons('POSCAR_Al', 'emt');
 %   gw  = dos(s);
-%   Sqw = multi_phonons_incoherent(gw, [], 300);
+%   Sqw = incoherent(gw, [], 300);
 %   subplot(Sqw);
 %
 % See also: iData_Sqw2D/multi_phonons_dos
@@ -68,8 +68,8 @@ function [Sqw, Iqt, Wq, Tall] = multi_phonons_incoherent(gw, q, T, sigma, m, n)
     sigma = Sqw_getT(gw, {'sigma_coh','sigma_inc','sigma'});
   end
   % fail when missing information
-  if isempty(m) || m<=0     error([ mfilename ': Unspecified molar mass (m). Use multi_phonons_incoherent(g, q, T, sigma, m)' ]); end
-  if isempty(T) || T<=0    error([ mfilename ': Unspecified temperature (T). Use multi_phonons_incoherent(gw, q, T).' ]); end
+  if isempty(m) || m<=0     error([ mfilename ': Unspecified molar mass (m). Use incoherent(g, q, T, sigma, m)' ]); end
+  if isempty(T) || T<=0    error([ mfilename ': Unspecified temperature (T). Use incoherent(gw, q, T).' ]); end
   if isempty(sigma) disp([ mfilename ': WARNING: Unspecified scattering cross section (sigma). Using sigma=1 barn. Scale result accordingly.' ]); sigma = 1; end
   if isempty(n), n=5; end
   

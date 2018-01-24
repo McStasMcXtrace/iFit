@@ -54,7 +54,7 @@ function sab = Sab(s, M, T)
   end
   
   % check input parameters
-  if isempty(M)
+  if isempty(M) || M<=0
     error([ mfilename ': ERROR: Mass undefined: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' does not provide information about the material molar weight. Use Sab(Sqw, M).' ]);
     return
   end
@@ -109,9 +109,15 @@ function sab = Sab(s, M, T)
   alpha = q.*q*C*q2toE;
   beta  = -E *C;
   Z     = Z/(2*C*C*q2toE);
-
+  
   % create new data set, and display it
-  sab=iData(alpha,beta,Z);  % Z(alpha,beta)
+  sab=iData_Sab;
+  setalias(sab, 'alpha', alpha, 'alpha [h2q2/2MkT]');
+  setalias(sab, 'beta',  beta,  'beta [-hw/kT]');
+  setalias(sab, 'Sab',   Z,     'S(alpha,beta)');  % Z(alpha,beta)
+  setaxis(sab, 0, 'Sab');
+  setaxis(sab, 2, 'alpha');
+  setaxis(sab, 1, 'beta');
   sab.Title = s.Title;
   setalias(sab,'Temperature',T, '[K] Temperature');
   setalias(sab,'weight',     M, '[g/mol] Material molar weight');
@@ -122,9 +128,6 @@ function sab = Sab(s, M, T)
   end
   
   sab.Label='Sab';
-  title(sab, 'S(alpha,beta)');
-  ylabel(sab,'alpha [h2q2/2MkT]');
-  xlabel(sab,'beta [-hw/kT]');
   sab = transpose(sab);
   
   % copy initial aliases and UserData
@@ -138,5 +141,5 @@ function sab = Sab(s, M, T)
   end
   
   % transfer available information compatible with ENDF MF7 MT4
-  sab = iData_Sab(sab);
+  % sab = iData_Sab(sab);
 

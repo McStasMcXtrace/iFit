@@ -1,5 +1,5 @@
-function [Gw, Tsym] = multi_phonons_dos(gw, Ki, T, sigma, m, phi, n)
-% iData_vDOS: multi_phonons_dos: compute the integrated multi-phonon DOS from an initial density of states
+function [Gw, Tsym] = multi_phonons(gw, Ki, T, sigma, m, phi, n)
+% iData_vDOS: multi_phonons: compute the integrated multi-phonon DOS from an initial density of states
 %
 % The 'generalized' neutron weighted density of states (gDOS) is computed from an 
 % initial vibrational density of states (vDOS).
@@ -18,7 +18,7 @@ function [Gw, Tsym] = multi_phonons_dos(gw, Ki, T, sigma, m, phi, n)
 %   W. Reichardt, MUPHOCOR Karlsruhe Report 13.03.01p06L (1984)
 %
 % syntax:
-%   Gw = multi_phonons_dos(gw, Ki, T, sigma, m, n)
+%   Gw = multi_phonons(gw, Ki, T, sigma, m, n)
 %
 % input:
 %   gw:   the vibrational density of states per [meV] [iData]
@@ -34,7 +34,7 @@ function [Gw, Tsym] = multi_phonons_dos(gw, Ki, T, sigma, m, phi, n)
 %   Wq:   half Debye-Waller factor. The DW function is exp(-2*Wq)  [iData vs q]
 %   Tp:   p-phonon terms [iData array]
 %
-% Example: s=sqw_cubic_monoatomic; multi_phonons_dos(dos(s))
+% Example: s=sqw_cubic_monoatomic; multi_phonons(dos(s))
 %
 % See also: iData_Sqw2D/dos, iData_vDOS/multi_phonons_incoherent
 % (c) E.Farhi, ILL. License: EUPL.
@@ -89,8 +89,8 @@ function [Gw, Tsym] = multi_phonons_dos(gw, Ki, T, sigma, m, phi, n)
     disp([ mfilename ': using detector angular range phi=' mat2str(phi) ' [deg] incident neutron wavelength.' ]);
   end
   % fail when missing information
-  if isempty(m) || m<=0    error([ mfilename ': Unspecified molar mass (m). Use multi_phonons_dos(g, Ki, T, sigma, m)' ]); end
-  if isempty(T) || T<=0    error([ mfilename ': Unspecified temperature (T). Use multi_phonons_dos(g, Ki, T)' ]); end
+  if isempty(m) || m<=0    error([ mfilename ': Unspecified molar mass (m). Use multi_phonons(g, Ki, T, sigma, m)' ]); end
+  if isempty(T) || T<=0    error([ mfilename ': Unspecified temperature (T). Use multi_phonons(g, Ki, T)' ]); end
   if isempty(sigma) disp([ mfilename ': WARNING: Unspecified scattering cross section (sigma). Using sigma=1 barn. Scale result accordingly.' ]); sigma = 1; end
   if isempty(n),    n=5; end
   

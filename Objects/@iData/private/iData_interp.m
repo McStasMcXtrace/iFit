@@ -120,7 +120,7 @@ otherwise % nD, n>1
           end
         end
       catch ME
-        disp([ mfilename ': WARNING: failed interpolation with ' interpolants{index} '. Going on.' ]);
+        % warning([ mfilename ': WARNING: failed interpolation with ' interpolants{index} '. Going on.' ]);
       end
     end
     

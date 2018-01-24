@@ -93,20 +93,17 @@ classdef iData_Sqw2D < iData
       if ~nargin, return; end  % empty object
       
       % convert/test
-      if isa(s, 'iData_Sab') s = Sqw(s); end
-      m = Sqw_check(s); 
-      if ~isa(m, 'iData') || isempty(m) || ndims(m) ~= 2
-        error([ mfilename ': the given input ' class(s) ' does not seem to be convertible to iData_Sqw2D.' ])
+      if     isa(s, mfilename)   m = s;
+      elseif isa(s, 'iData_Sab') m = Sqw(s);
+      else
+        m = Sqw_check(s, 'qw'); 
+        if ~isa(m, 'iData') || any(isempty(m)) || any(ndims(m) ~= 2)
+          error([ mfilename ': the given input ' class(s) ' does not seem to be convertible to iData_Sqw2D.' ])
+        end
       end
       
-      % transfer properties
-      % this is a safe way to instantiate a subclass
-      warning off MATLAB:structOnObject
-      m = struct(m);
-      for p = fieldnames(m)'
-        obj.(p{1}) = m.(p{1});
-      end
-      obj.class = mfilename;
+      % copy all properties
+      obj = copy_prop(obj, m);
  
     end % iData_Sqw2D constructor
     

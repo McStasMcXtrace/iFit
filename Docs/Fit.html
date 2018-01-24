@@ -71,14 +71,16 @@
 
 
 
+
         Model)</span> is minimal }<br>
       <div style="text-align: left;"><br>
         where <span style="font-style: italic;">distance</span> is the
-        criteria for the fit, which measures how far the model is from
+        criteriion for the fit, which measures how far the model is from
         the data. There is a number of possible distance definitions,
         detailed <a href="#mozTocId778987">below</a>. You can refer to
         the <a
           href="http://en.wikipedia.org/wiki/Mathematical_optimization">mathematical
+
 
 
 
@@ -109,16 +111,12 @@
     parameters are also returned as a structure. Unspecified parameters
     are automatically guessed.<br>
     <pre style="margin-left: 40px;">&gt;&gt; p=<span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(51, 102, 255);">gauss</span>, <font color="#cc33cc">'Amplitude=0.5; Centre=1'</font>);<br>&gt;&gt; p=<span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(51, 102, 255);">gauss</span>, <font color="#3366ff">struct</font>(<font color="#cc33cc">'Amplitude'</font>,0.5,<font color="#cc33cc">'Centre'</font>,1));<br></pre>
-    The two first arguments to fits are the data object (<a
-      href="iData.html">iData</a> class) and the model object (<a
-      href="iFunc.html">iFunc</a> class).<br>
+    The two first arguments to fits are the data object (<a href="iData.html">iData</a> class) and the model object (<a href="iFunc.html">iFunc</a> class).<br>
     The result of the <span style="font-style: italic;">fits</span>
     method is the model parameter set that matches best the data. The
     number of fit parameters is not limited.<br>
     <br>
-    A number of model functions is available from the <a
-      href="Models.html">Models</a> sub-library. The<a
-      href="Models.html"> <span style="font-weight: bold;">list of all
+    A number of model functions is available from the <a href="Models.html">Models</a> sub-library. The<a href="Models.html"> <span style="font-weight: bold;">list of all
         available fit functions</span></a> can be obtained from the
     command:<a href="Models.html"><img title="iFit: default functions
         (in Models)" src="images/iFit_Models.png" alt="iFit: default
@@ -126,8 +124,7 @@
         solid; width: 200px; height: 112px;" align="right"></a>
     <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">fits</span>(iData); <span style="font-style: italic;">			% or fits(iFunc)</span></pre>
     Refer to the section <a href="#mozTocId855522">below</a> in order
-    to learn how to define new fit models with the <a
-      href="Models.html#mozTocId210092"><span style="font-weight: bold;
+    to learn how to define new fit models with the <a href="Models.html#mozTocId210092"><span style="font-weight: bold;
         font-style: italic;">ifitmakefunc</span></a> tool, or directly
     with the <a href="iFunc.html">iFunc</a> class. This latter supports
     many operators which allow to build complex models from simpler
@@ -149,16 +146,12 @@
     which will transparently create the model function, and then use it
     for the fit.<br>
     <br>
-    <a href="images/iData_fits_gauss.png"><img alt="fits(iData)"
-        title="fits(iData)" src="images/iData_fits_gauss.png"
-        style="border: 0px solid ; width: 200px; height: 177px;"
-        align="right"></a>In order to estimate the values of the model
+    <a href="images/iData_fits_gauss.png"><img alt="fits(iData)" title="fits(iData)" src="images/iData_fits_gauss.png" style="border: 0px solid ; width: 200px; height: 177px;" align="right"></a>In order to estimate the values of the model
     for the fit parameters onto the iData object data set axes, use the
     model as argument to the object:
     <pre style="margin-left: 40px;">&gt;&gt; b= <span style="color: rgb(51, 102, 255);"></span>a(<span style="color: rgb(204, 51, 204);">gauss</span>, p) <span style="font-style: italic;">% evaluate the 'gauss' model</span> onto the 'a' axes, with parameters 'p'<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>([ a b ])  % <span style="font-style: italic;">with parameters 'p', and plot both data and fit</span></pre>
     In this case, the evaluated model is an iData object, which contains
-    <span style="font-style: italic;">Parameter</span> and <span
-      style="font-style: italic;">Model</span> aliases that hold the
+    <span style="font-style: italic;">Parameter</span> and <span style="font-style: italic;">Model</span> aliases that hold the
     model parameters and description. <br>
     <br>
     The <span style="font-style: italic;">fits</span> function work
@@ -186,7 +179,7 @@
     additional arguments<br>
     <div style="text-align: center;">
       <div style="text-align: left; margin-left: 40px;">
-        <pre>&gt;&gt; [parameters,criteria,message,<span style="color: rgb(255, 0, 0);">output</span>]= <span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(204, 51, 204);">model, </span>initial_parameters,...)</pre>
+        <pre>&gt;&gt; [parameters,criterion,message,<span style="color: rgb(255, 0, 0);">output</span>]= <span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(204, 51, 204);">model, </span>initial_parameters,...)</pre>
       </div>
     </div>
     The input arguments allow to specify:<br>
@@ -197,22 +190,19 @@
             51, 204);">model</span>: </span>the name of the function or
         a function handle</li>
       <li><span style="font-style: italic;">initial_parameters: </span>a
-        set of starting parameters for the model. Using an <span
-          style="font-weight: bold;">empty</span> set will trigger an <span
-          style="font-weight: bold;">automatic estimate (guess)</span>
+        set of starting parameters for the model. Using an <span style="font-weight: bold;">empty</span> set will trigger an <span style="font-weight: bold;">automatic estimate (guess)</span>
         of the starting model parameters.<br>
       </li>
     </ol>
-    The returned arguments are similar to those returned by the Matlab <span
-      style="font-style: italic;">fminsearch</span> non-linear
+    The returned arguments are similar to those returned by the Matlab <span style="font-style: italic;">fminsearch</span> non-linear
     optimizer:<br>
     <ol>
       <li><span style="font-style: italic;">parameters: </span>is the
         best fit parameter set for the model obtained during the
         optimization<br>
       </li>
-      <li><span style="font-style: italic;">criteria: </span>is the
-        criteria value (<span style="font-style: italic;">least square</span>
+      <li><span style="font-style: italic;">criterion: </span>is the
+        criterion value (<span style="font-style: italic;">least square</span>
         &#967; by default - see <a href="#mozTocId778987">below</a> on how
         to change this setting)</li>
       <li><span style="font-style: italic;">message: </span>is the
@@ -222,8 +212,7 @@
             0, 0);">output</span>: </span>is a structure that holds all
         the information gathered during the fit procedure</li>
     </ol>
-    The most interesting output argument result is the 4th one <span
-      style="color: rgb(255, 0, 0); font-style: italic;">output</span>,
+    The most interesting output argument result is the 4th one <span style="color: rgb(255, 0, 0); font-style: italic;">output</span>,
     which provides significantly more information such as:<br>
     <ul>
       <li><span style="font-style: italic;">output.parsBest: </span>best
@@ -236,11 +225,9 @@ fit
 
         parameter set for the model</li>
       <li><span style="font-style: italic;">output.criteriaBest</span>:
-        best criteria value for the model</li>
-      <li><span style="font-style: italic;">output.</span><span
-          style="font-style: italic;">modelValue: </span>Last model
-        evaluation (iData), that is <span style="font-style: italic;"><span
-            style="color: rgb(51, 102, 255);"></span>a(model,
+        best criterion value for the model</li>
+      <li><span style="font-style: italic;">output.</span><span style="font-style: italic;">modelValue: </span>Last model
+        evaluation (iData), that is <span style="font-style: italic;"><span style="color: rgb(51, 102, 255);"></span>a(model,
           parameters)<br>
         </span></li>
       <li><span style="font-style: italic;">output.algorithm: </span>Algorithm/solver
@@ -261,17 +248,13 @@ which
 
         details the final state of the optimizer (char)<br>
       </li>
-      <li><span style="font-style: italic;">output.</span><span
-          style="font-style: italic;">funcCount: </span>Number of
+      <li><span style="font-style: italic;">output.</span><span style="font-style: italic;">funcCount: </span>Number of
         function evaluations performed during the fit (double)</li>
-      <li><span style="font-style: italic;">output.</span><span
-          style="font-style: italic;">iterations: </span>Number of
+      <li><span style="font-style: italic;">output.</span><span style="font-style: italic;">iterations: </span>Number of
         iterations performed during the fit (double)</li>
-      <li><span style="font-style: italic;">output.</span><span
-          style="font-style: italic;">parsHistory: </span>Parameter set
+      <li><span style="font-style: italic;">output.</span><span style="font-style: italic;">parsHistory: </span>Parameter set
         history during optimization (double array)</li>
-      <li><span style="font-style: italic;">output.</span><span
-          style="font-style: italic;">criteriaHistory: </span>Criteria
+      <li><span style="font-style: italic;">output.</span><span style="font-style: italic;">criteriaHistory: </span>Criteria
         history during optimization (double vector/array)</li>
       <li><span style="font-style: italic;">output.parsHistoryUncertainty:
 
@@ -321,31 +304,28 @@ information
         parameter names from the model<br>
       </li>
     </ul>
-    Last, the starting parameter 'guess' can also be specified as a <span
-      style="font-weight: bold;">structure</span> which fields contain
+    Last, the starting parameter 'guess' can also be specified as a <span style="font-weight: bold;">structure</span> which fields contain
     numbers, or as a <span style="font-weight: bold;">string</span>
     with members separated with the ';' character, such as in the
     following example:<br>
     <pre style="margin-left: 40px;">&gt;&gt; p.Amplitude=0.5; p.Center=1; p.HalfWidth=0.0035; p.Background=1e-4; 		<span style="font-style: italic;">% optimize named parameters </span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">fits</span>(a,<span style="color: rgb(204, 51, 204);"> gauss, </span>p)								<span style="font-style: italic;">% The result is also returned as a structure.</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">fits</span>(a,<span style="color: rgb(204, 51, 204);">'gauss','Amplitude=0.5; Center=1; HalfWidth=0.0035; Background=1e-4'</span>)	<span style="font-style: italic;">% create the structure above and fit...<br></span></pre>
     All model named parameters must be specified.<br>
     <pre style="margin-left: 40px;"><span style="font-style: italic;"></span><span style="font-style: italic;"></span></pre>
-    <h3 style="text-align: center;"><a class="mozTocH3"
-        name="mozTocId410769"></a>Specifying/configuring the
+    <h3 style="text-align: center;"><a class="mozTocH3" name="mozTocId410769"></a>Specifying/configuring the
       optimization method</h3>
     The iData <span style="font-weight: bold; font-style: italic;">fits</span>
     method is a wrapper to any of the <a href="Optimizers.html">Optimizers</a>
-    optimizers, with a specified fit criteria. Each optimizer can be
+    optimizers, with a specified fit criterion. Each optimizer can be
     customized (<span style="font-style: italic;">e.g.</span> the
     maximum number of iterations, stop/convergence conditions, ...) with
     an <span style="font-style: italic;">options</span> structure.<br>
-    <pre style="margin-left: 40px;">&gt;&gt; <span style="font-style: italic;"></span>[parameters,criteria,message,output]= <span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(204, 51, 204);">model, </span>initial_parameters, <span style="color: rgb(255, 0, 0);">options</span>)</pre>
+    <pre style="margin-left: 40px;">&gt;&gt; <span style="font-style: italic;"></span>[parameters,criterion,message,output]= <span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(204, 51, 204);">model, </span>initial_parameters, <span style="color: rgb(255, 0, 0);">options</span>)</pre>
     <h4><a class="mozTocH4" name="mozTocId842297"></a>Choosing an
       optimization method</h4>
     The <a href="Optimizers.html">Optimizers</a> sub-library provides
     21 different optimization techniques. No doubt that choosing one at
     first sight is difficult. We provide below a set of preferred
-    optimizers, based on a careful comparison explained in the <a
-      href="Optimizers.html">Optimizers</a> documentation.<br>
+    optimizers, based on a careful comparison explained in the <a href="Optimizers.html">Optimizers</a> documentation.<br>
     <br>
     The process of choosing a sensible optimizer can be automated by
     using the <span style="font-weight: bold; font-style: italic;">fmin</span>
@@ -356,14 +336,12 @@ information
     <pre style="margin-left: 40px;">&gt;&gt; fits(a, <span style="color: rgb(204, 51, 204);">model, </span>initial_parameters, '<span style="color: rgb(204, 51, 204);">fmin'</span>)</pre>
     When more than one optimizer is suitable, a random choice is
     performed, with a weighting by the success ratio and the number of
-    function calls (optimization speed). Successive calls to <span
-      style="font-style: italic; font-weight: bold;">fmin</span> with
+    function calls (optimization speed). Successive calls to <span style="font-style: italic; font-weight: bold;">fmin</span> with
     the same problem to solve may result in different optimizers and
     solutions.<br>
     <span style="font-style: italic; font-weight: bold;"><br>
     </span>
-    <table style="text-align: left; width: 100%;" border="1"
-      cellpadding="2" cellspacing="2">
+    <table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
       <tbody>
         <tr>
           <td style="vertical-align: top; font-weight: bold; font-style:
@@ -388,8 +366,7 @@ information
             84.1</td>
         </tr>
         <tr>
-          <td style="vertical-align: top; color: rgb(0, 0, 0);"><span
-              style="font-style: italic; font-weight: bold;">fminimfil</span></td>
+          <td style="vertical-align: top; color: rgb(0, 0, 0);"><span style="font-style: italic; font-weight: bold;">fminimfil</span></td>
           <td style="vertical-align: top;">Unconstrained Implicit
             filtering<br>
           </td>
@@ -398,26 +375,22 @@ information
           </td>
         </tr>
         <tr>
-          <td style="vertical-align: top; color: rgb(0, 0, 0);"><span
-              style="font-style: italic;">fminralg</span></td>
-          <td style="vertical-align: top;">Shor R-algorithm <span
-              style="font-style: italic; font-weight: bold;">(avoid when
+          <td style="vertical-align: top; color: rgb(0, 0, 0);"><span style="font-style: italic;">fminralg</span></td>
+          <td style="vertical-align: top;">Shor R-algorithm <span style="font-style: italic; font-weight: bold;">(avoid when
               noisy)</span></td>
           <td style="vertical-align: top; color: rgb(0, 0, 0);">88.9 /
             16.2<br>
           </td>
         </tr>
         <tr>
-          <td style="vertical-align: top; color: rgb(0, 0, 0);"><span
-              style="font-style: italic; font-weight: bold;">fminhooke</span></td>
+          <td style="vertical-align: top; color: rgb(0, 0, 0);"><span style="font-style: italic; font-weight: bold;">fminhooke</span></td>
           <td style="vertical-align: top;">Hooke-Jeeves direct search</td>
           <td style="vertical-align: top; color: rgb(0, 0, 0);">97.1/
             56.3<br>
           </td>
         </tr>
         <tr>
-          <td style="vertical-align: top; color: rgb(0, 0, 0);"><span
-              style="font-weight: bold; font-style: italic;">fmincmaes</span></td>
+          <td style="vertical-align: top; color: rgb(0, 0, 0);"><span style="font-weight: bold; font-style: italic;">fmincmaes</span></td>
           <td style="vertical-align: top;">Evolution Strategy with
             Covariance Matrix Adaptation</td>
           <td style="vertical-align: top; color: rgb(0, 0, 0);">88.9 /
@@ -473,17 +446,12 @@ information
         1: A selection among the most efficient and fast optimization
         methods</span><span style="font-style: italic; font-weight:
         bold;"></span><span style="font-style: italic;">. The two
-        success ratio are given for </span>continuous<span
-        style="font-style: italic;"> and </span>noisy<span
-        style="font-style: italic;"> functions resp.</span><br>
+        success ratio are given for </span>continuous<span style="font-style: italic;"> and </span>noisy<span style="font-style: italic;"> functions resp.</span><br>
       <span style="font-style: italic; font-weight: bold;"></span></div>
     <span style="font-weight: bold;"></span><span style="font-style:
       italic;"> </span><br>
-    The choice of the optimizer is done through a 4th input<span
-      style="font-style: italic;"></span> argument <span
-      style="font-style: italic;"><span style="color: rgb(255, 0, 0);">options</span>
-    </span>to <span style="font-style: italic;">fits </span>(see <a
-      href="#mozTocId422448">below</a>).<br>
+    The choice of the optimizer is done through a 4th input<span style="font-style: italic;"></span> argument <span style="font-style: italic;"><span style="color: rgb(255, 0, 0);">options</span>
+    </span>to <span style="font-style: italic;">fits </span>(see <a href="#mozTocId422448">below</a>).<br>
     <br>
     The <span style="font-weight: bold;">list of all available
       optimizer methods</span> can be obtained from the command:<br>
@@ -493,20 +461,16 @@ information
     </h4>
     In order to use these optimizers, one just has to specify their
     names as a <span style="font-style: italic;">fits</span> input
-    argument, e.g. <span style="font-style: italic;"><span
-        style="color: rgb(255, 0, 0);">options</span>=<span
-        style="color: rgb(204, 51, 204);">'fminimfil'</span></span> :
-    <pre style="margin-left: 40px;">&gt;&gt; <span style="font-style: italic;"></span>[parameters,criteria,message,output]= <span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(204, 51, 204);">model, </span>initial_parameters, <span style="color: rgb(204, 51, 204);">'fminimfil'</span>)<br></pre>
+    argument, e.g. <span style="font-style: italic;"><span style="color: rgb(255, 0, 0);">options</span>=<span style="color: rgb(204, 51, 204);">'fminimfil'</span></span> :
+    <pre style="margin-left: 40px;">&gt;&gt; <span style="font-style: italic;"></span>[parameters,criterion,message,output]= <span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(204, 51, 204);">model, </span>initial_parameters, <span style="color: rgb(204, 51, 204);">'fminimfil'</span>)<br></pre>
     will select the <span style="font-style: italic;">Unconstrained
-      Implicit filtering coupled with BFGS</span> <span
-      style="font-weight: bold; font-style: italic;">fminimfil</span>
+      Implicit filtering coupled with BFGS</span> <span style="font-weight: bold; font-style: italic;">fminimfil</span>
     optimizer to perform the fit. The default optimizer configuration
     will be used, as obtained from the <span style="font-style:
       italic;">optimset</span> function, or from the method itself with
     <span style="color: rgb(204, 51, 204);">'defaults'</span> as
     parameter. This latter call (<span style="font-style: italic;">i.e.</span>
-    not with <span style="font-style: italic;">optimset</span>)<span
-      style="font-style: italic;"> </span>provides more information:<br>
+    not with <span style="font-style: italic;">optimset</span>)<span style="font-style: italic;"> </span>provides more information:<br>
     <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(255, 0, 0);">options</span>=<span style="color: rgb(51, 102, 255);"></span><span style="color: rgb(51, 102, 255);"></span><span style="color: rgb(51, 102, 255);">fminimfil</span>(<span style="color: rgb(204, 51, 204);">'defaults'</span>)	<span style="font-style: italic;">% get the default optimizer configuration parameters</span><br></pre>
     Th<span style="font-style: italic;">e optimizer configuration</span>
     is a structure which members enable to tune the behavior of the
@@ -528,27 +492,20 @@ of
 
 
 
-        display [ off | iter | notify | final ]. Default is <span
-          style="color: rgb(204, 51, 204);">'off'</span></li>
-      <li><span style="font-style: italic;">options.</span><span
-          style="font-style: italic;">MaxFunEvals: </span>Maximum
+        display [ off | iter | notify | final ]. Default is <span style="color: rgb(204, 51, 204);">'off'</span></li>
+      <li><span style="font-style: italic;">options.</span><span style="font-style: italic;">MaxFunEvals: </span>Maximum
         number of function evaluations allowed</li>
-      <li><span style="font-style: italic;">options.</span><span
-          style="font-style: italic;">MaxIter: </span>Maximum number of
+      <li><span style="font-style: italic;">options.</span><span style="font-style: italic;">MaxIter: </span>Maximum number of
         iterations allowed</li>
-      <li><span style="font-style: italic;">options.</span><span
-          style="font-style: italic;">TolFun: </span>Termination
+      <li><span style="font-style: italic;">options.</span><span style="font-style: italic;">TolFun: </span>Termination
         tolerance on the function value (absolute value or change). Can
         be specified in <span style="color: rgb(204, 51, 204);">'%x'</span>
         for a relative value.<br>
       </li>
-      <li><span style="font-style: italic;">options.</span><span
-          style="font-style: italic;">TolX: </span>Termination
-        tolerance on parameter change. Can be specified in <span
-          style="color: rgb(204, 51, 204);">'%x'</span> for a relative
+      <li><span style="font-style: italic;">options.</span><span style="font-style: italic;">TolX: </span>Termination
+        tolerance on parameter change. Can be specified in <span style="color: rgb(204, 51, 204);">'%x'</span> for a relative
         value. </li>
-      <li><span style="font-style: italic;">options.</span><span
-          style="font-style: italic;">OutputFcn: </span>Name of an
+      <li><span style="font-style: italic;">options.</span><span style="font-style: italic;">OutputFcn: </span>Name of an
         output function (see <a href="#mozTocId684694">below</a>). You
         may use<span style="color: rgb(204, 51, 204);"> 'fminplot', </span>which
 
@@ -557,26 +514,22 @@ of
 
 
 
-        is provided in <a href="Optimizers.html"><span
-            style="font-style: italic;">Optimizers</span></a>. This
+        is provided in <a href="Optimizers.html"><span style="font-style: italic;">Optimizers</span></a>. This
         function should have the syntax <span style="font-style:
           italic;">fminplot(pars, optimValues, state).</span></li>
       <li><i>options.PlotFcns</i>: same as <i>OutputFcn,</i> but can be
         a set of function in a cell array.</li>
-      <li><span style="font-style: italic;">options.</span><span
-          style="font-style: italic;">FunValCheck: </span>Check for
+      <li><span style="font-style: italic;">options.</span><span style="font-style: italic;">FunValCheck: </span>Check for
         invalid function/model values, such as NaN or complex and abort.<br>
       </li>
-      <li><span style="font-style: italic;">options.</span><span
-          style="font-style: italic;">algorithm: </span>is a
+      <li><span style="font-style: italic;">options.</span><span style="font-style: italic;">algorithm: </span>is a
         description of the optimization method (solver)<br>
       </li>
-      <li><span style="font-style: italic;">options.</span><span
-          style="font-style: italic;">optimizer: </span>is the name of
+      <li><span style="font-style: italic;">options.</span><span style="font-style: italic;">optimizer: </span>is the name of
         the optimization function (solver)<br>
       </li>
       <li><span style="font-style: italic;">options.criteria</span>: the
-        criteria to use with syntax <span style="font-style: italic;">criteria(Signal,
+        criterion to use with syntax <span style="font-style: italic;">criterion(Signal,
 Error,
 
 
@@ -584,8 +537,7 @@ Error,
 
 
 
-          Model)</span>. The default is least-square error (see <a
-          href="#mozTocId778987">below</a>).</li>
+          Model)</span>. The default is least-square error (see <a href="#mozTocId778987">below</a>).</li>
       <li><span style="font-style: italic;">options.Diagnostics</span>:
         when set to <span style="color: rgb(204, 51, 204);">'on'</span>
         or 1, returns the correlation coefficient and Hessian matrix</li>
@@ -614,20 +566,14 @@ Error,
       performance of the optimization method and the fit process</h4>
     In order to follow the optimization process, you may define a call
     to a user function at each optimization iteration. A default
-    plotting facility has been implemented as the <span
-      style="font-style: italic; font-weight: bold;">fminplot</span>
+    plotting facility has been implemented as the <span style="font-style: italic; font-weight: bold;">fminplot</span>
     function:<br>
     <pre style="margin-left: 40px;">&gt;&gt; a=<span style="color: rgb(51, 102, 255);">load</span>(iData, <span style="color: rgb(204, 51, 204);">[ ifitpath 'Data/sv1850.scn' ]</span>)<br>&gt;&gt; options=<span style="color: rgb(51, 102, 255);"></span><span style="color: rgb(51, 102, 255);">fminimfil</span>(<span style="color: rgb(204, 51, 204);">'defaults'</span>)<br>&gt;&gt; options.<span style="color: rgb(255, 0, 0);">OutputFcn</span>=<span style="color: rgb(204, 51, 204);">'fminplot'</span>;<br>&gt;&gt; p=<span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(204, 51, 204);">gauss</span>, [], <span style="color: rgb(204, 51, 204);"></span>options<span style="color: rgb(51, 102, 255);"></span>)<br>p =<br><br>    0.6263    1.0008   -0.0037    0.0002<br>&gt;&gt; b = a(<span style="color: rgb(204, 51, 204);">gauss</span>, p)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">figure; plot</span>([ a b ])<br></pre>
-    <div style="text-align: center;"><a
-        href="images/Optimizers_fminplot.png"><img alt="fits with
+    <div style="text-align: center;"><a href="images/Optimizers_fminplot.png"><img alt="fits with
           options.OutputFcn=fminplot" title="fits with
-          options.OutputFcn=fminplot"
-          src="images/Optimizers_fminplot.png" style="border: 0px solid
-          ; width: 300px; height: 285px;"></a> <span
-        style="text-decoration: underline;"><a
-          href="images/iData_fits_gauss.png"><img alt="iData fits(gauss)
-            with plot" title="iData fits(gauss) with plot"
-            src="images/iData_fits_gauss.png" style="border: 0px solid ;
+          options.OutputFcn=fminplot" src="images/Optimizers_fminplot.png" style="border: 0px solid
+          ; width: 300px; height: 285px;"></a> <span style="text-decoration: underline;"><a href="images/iData_fits_gauss.png"><img alt="iData fits(gauss)
+            with plot" title="iData fits(gauss) with plot" src="images/iData_fits_gauss.png" style="border: 0px solid ;
             width: 330px; height: 292px;"></a></span><br>
       <span style="font-style: italic; font-weight: bold;">Left: </span>The
 
@@ -642,7 +588,7 @@ the
 right,
 showing
 the
-criteria
+criterion
 evolution
 with
 the
@@ -659,29 +605,27 @@ to
 
       the 3 first fit parameters. The <span style="color: rgb(255, 0,
         0);">red</span> dot indicates the current/final parameter set
-      and criteria. <span style="font-style: italic; font-weight:
+      and criterion. <span style="font-style: italic; font-weight:
         bold;">Right: </span>The final fit result on the left.<br>
       <div style="text-align: left;"><br>
         Also, as explained <a href="#mozTocId888705">above</a>, it is
         possible to obtain, on optimization completion, the whole
         criteria, and parameter set history, as a function of
         iterations/criteria evaluations.<br>
-        <pre style="margin-left: 40px;"><span style="font-style: italic;"></span>&gt;&gt; [p,criteria,message,output]= <span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(204, 51, 204);">gauss</span>, [], <span style="color: rgb(204, 51, 204);"></span>options<span style="color: rgb(51, 102, 255);"></span>)<br>&gt;&gt; output.parsHistory<br>&gt;&gt; output.criteriaHistory<br></pre>
+        <pre style="margin-left: 40px;"><span style="font-style: italic;"></span>&gt;&gt; [p,criterion,message,output]= <span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(204, 51, 204);">gauss</span>, [], <span style="color: rgb(204, 51, 204);"></span>options<span style="color: rgb(51, 102, 255);"></span>)<br>&gt;&gt; output.parsHistory<br>&gt;&gt; output.criteriaHistory<br></pre>
         The monitoring window above can be re-displayed with:<br>
         <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">fminplot</span>(output);</pre>
       </div>
     </div>
-    <h3 style="text-align: center;"><a class="mozTocH3"
-        name="mozTocId919221"></a>Model parameter constraints</h3>
+    <h3 style="text-align: center;"><a class="mozTocH3" name="mozTocId919221"></a>Model parameter constraints</h3>
     In many cases, the model parameters are to be constrained. Some
     optimization specialists call these <span style="font-style:
       italic;">restraints, </span>that is parameter values constraints.
     This includes some fixed values, or bounds within which parameters
     should be restricted. This is given to the <span style="font-style:
-      italic;">fits</span> method by mean of a 5th input argument <span
-      style="color: rgb(255, 0, 0); font-style: italic;">constraints</span>
+      italic;">fits</span> method by mean of a 5th input argument <span style="color: rgb(255, 0, 0); font-style: italic;">constraints</span>
     :<br>
-    <pre style="margin-left: 40px;">&gt;&gt; <span style="font-style: italic;"></span>[parameters,criteria,message,output]= <span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(204, 51, 204);">model, </span>initial_parameters, options, <span style="color: rgb(204, 51, 204);"><span style="color: rgb(255, 0, 0);">constraints</span></span><span style="color: rgb(0, 0, 0);">)<br></span><span style="color: rgb(0, 0, 0);"></span><br></pre>
+    <pre style="margin-left: 40px;">&gt;&gt; <span style="font-style: italic;"></span>[parameters,criterion,message,output]= <span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(204, 51, 204);">model, </span>initial_parameters, options, <span style="color: rgb(204, 51, 204);"><span style="color: rgb(255, 0, 0);">constraints</span></span><span style="color: rgb(0, 0, 0);">)<br></span><span style="color: rgb(0, 0, 0);"></span><br></pre>
     In short, the constraints is a structure with the following members,
     which should all have the same length as the model parameter vector:<br>
     <ul>
@@ -705,17 +649,14 @@ maximum
 
 
 
-        change between iterations for each parameter.<span
-          style="font-style: italic;"> +Inf</span> is supported.</li>
+        change between iterations for each parameter.<span style="font-style: italic;"> +Inf</span> is supported.</li>
       <li><i>constraints.eval: </i>any other expression to evaluate,
         returning a modified parameter vector 'p'</li>
     </ul>
     All these constraints may be used simultaneously.<br>
     <br>
     The <span style="font-style: italic;">constraints</span> input
-    argument can also be entered as a character string, like the input <span
-      style="font-style: italic;">parameters</span> and <span
-      style="font-style: italic;">options</span> :<br>
+    argument can also be entered as a character string, like the input <span style="font-style: italic;">parameters</span> and <span style="font-style: italic;">options</span> :<br>
     <blockquote> constraints=<span style="color: rgb(204, 51, 204);">'min=[0
 
 
@@ -726,8 +667,7 @@ maximum
     </blockquote>
     As constraints apply on the iFunc model, it is possible to
     manipulate all constraints using the object syntax and methods, as
-    explained <a href="#mozTocId359603">below</a><a
-      href="iFunc.html#mozTocId579374"></a>.<br>
+    explained <a href="#mozTocId359603">below</a><a href="iFunc.html#mozTocId579374"></a>.<br>
     <pre style="margin-left: 40px;"><span style="color: rgb(0, 0, 0);"></span></pre>
     <pre style="margin-left: 40px;"><span style="color: rgb(0, 0, 0);"></span><span style="color: rgb(0, 0, 0);"></span></pre>
     <h4><a class="mozTocH4" name="mozTocId267246"></a>Fixed parameters</h4>
@@ -736,8 +676,7 @@ maximum
     as a vector with <b>0 for free</b> parameters, and <b>1 for fixed</b>
     parameters, e.g. :<br>
     <pre style="margin-left: 40px;">&gt;&gt; a=<span style="color: rgb(51, 102, 255);">load</span>(iData, <span style="color: rgb(204, 51, 204);">[ ifitpath 'Data/sv1850.scn' ]</span>)<br>&gt;&gt; p=<span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(204, 51, 204);">gauss</span>, [], <span style="color: rgb(204, 51, 204);">'fminimfil'</span>, [ <span style="color: rgb(255, 0, 0);">1</span> 0 0 0 ])<br>** Minimization performed on parameters:<br>    'Amplitude'    'Centre'    'HalfWidth'    'Background'<br><br>    <span style="color: rgb(255, 0, 0);">0.5936</span>    0.9998    0.0018    0.0050<br><br>p =<br><br>    <span style="color: rgb(255, 0, 0);">0.5936</span>    1.0008   -0.0037    0.0002<br><br></pre>
-    will fix the first model parameter, which is here the <span
-      style="color: rgb(255, 0, 0);">Amplitude</span>. This parameter
+    will fix the first model parameter, which is here the <span style="color: rgb(255, 0, 0);">Amplitude</span>. This parameter
     name can be checked by simply entering the name of the model, which
     returns some information structure :<br>
     <pre style="margin-left: 40px;">&gt;&gt; disp(gauss)<br>ans = iFunc 1D model:<br>         Expression: @(p,x)p(1)*exp(-0.5*((x-p(2))/p(3)).^2)+p(4)<br>        Description: Single 1D Gaussian model<br>                Tag: 'iF420775'<br>               Date: '17-Jul-2012 15:50:11'<br>               Name: 'Gaussian (1D) [gauss]'<br>         Parameters: {'Amplitude'  'Centre'  'HalfWidth'  'Background'}<br>              Guess: [function_handle]<br>          Dimension: 1<br>    ParameterValues: []<br>           UserData: ''<br><br>Parameters:<br>  p(  1)=           Amplitude<br>  p(  2)=              Centre<br>  p(  3)=           HalfWidth<br>  p(  4)=          Background<br></pre>
@@ -745,8 +684,7 @@ maximum
     structure with a <span style="font-style: italic;">fixed</span>
     member :<br>
     <pre style="margin-left: 40px;">&gt;&gt; constraints.fixed = [ <span style="color: rgb(255, 0, 0);">1</span> 0 0 0 ];<br>&gt;&gt; p=<span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(204, 51, 204);">gauss</span>, [], <span style="color: rgb(204, 51, 204);">'fminimfil'</span>, constraints);<br></pre>
-    The <span style="font-style: italic;">constraints</span>.<span
-      style="font-style: italic;">fixed</span> vector should have the
+    The <span style="font-style: italic;">constraints</span>.<span style="font-style: italic;">fixed</span> vector should have the
     same length as the model parameter vector.<br>
     <br>
     Once the iFunc model object has been instantiated, it is possible to
@@ -757,18 +695,14 @@ maximum
       within limits</h4>
     If one needs to restrict the exploration range of parameters, it is
     possible to define the lower and upper bounds of the model
-    parameters. This can be done by setting the 5th <span
-      style="font-style: italic;">fits</span> argument to the lower
+    parameters. This can be done by setting the 5th <span style="font-style: italic;">fits</span> argument to the lower
     bounds<span style="font-style: italic;"> lb</span>, and the 6th to
     the upper <span style="font-style: italic;">ub</span>, e.g. :<br>
     <pre style="margin-left: 40px;">&gt;&gt; a=<span style="color: rgb(51, 102, 255);">load</span>(iData, <span style="color: rgb(204, 51, 204);">[ ifitpath 'Data/sv1850.scn' ]</span>)<br>&gt;&gt; p=<span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(204, 51, 204);">'gauss'</span>, [], <span style="color: rgb(204, 51, 204);">'fminimfil'</span>, <span style="color: rgb(255, 0, 0);">[ 0.5 0.8 0 0 ], [ 1 1.2 1 1 ]</span>)<br>						lb		ub<br></pre>
     A similar behavior is obtained by setting constraints as a structure
-    with members <span style="font-style: italic;">min</span> and <span
-      style="font-style: italic;">max</span> :<br>
+    with members <span style="font-style: italic;">min</span> and <span style="font-style: italic;">max</span> :<br>
     <pre style="margin-left: 40px;">&gt;&gt; constraints.min = <span style="color: rgb(255, 0, 0);">[ 0.5 0.8 0 0 ]</span>;<br>&gt;&gt; constraints.max = <span style="color: rgb(255, 0, 0);">[ 1 1.2 1 1 ]</span>;<br>&gt;&gt; p=<span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(204, 51, 204);">'gauss'</span>, [], <span style="color: rgb(204, 51, 204);">'fminimfil'</span>, constraints);</pre>
-    The <span style="font-style: italic;">constraints</span> <span
-      style="font-style: italic;">min</span> and <span
-      style="font-style: italic;">max</span> vectors should have the
+    The <span style="font-style: italic;">constraints</span> <span style="font-style: italic;">min</span> and <span style="font-style: italic;">max</span> vectors should have the
     same length as the model parameter vector.<br>
     <br>
     Once the iFunc model object has been instantiated, it is possible to
@@ -819,14 +753,11 @@ maximum
       </li>
       <li>or a function handle of 'p', returning modified 'p' values.</li>
     </ul>
-    <p>For instance one could use <span style="font-style: italic;">constraints.eval=<span
-          style="color: rgb(204, 51, 204);">'p(3)=p(1);'</span>.</span></p>
+    <p>For instance one could use <span style="font-style: italic;">constraints.eval=<span style="color: rgb(204, 51, 204);">'p(3)=p(1);'</span>.</span></p>
     <br>
     All these constraints may be used simultaneously. <br>
     The <span style="font-style: italic;">constraints</span> input
-    argument can also be entered as a character string, like the input <span
-      style="font-style: italic;">parameters</span> and <span
-      style="font-style: italic;">options</span> :<br>
+    argument can also be entered as a character string, like the input <span style="font-style: italic;">parameters</span> and <span style="font-style: italic;">options</span> :<br>
     <br>
     <div style="margin-left: 40px;">constraints=<span style="color:
         rgb(204, 51, 204);">'min=[0 0 0 0]; max=[1 10 3 0.1];
@@ -864,8 +795,7 @@ ans =			<font color="#ff0000">&lt;-- and we add it the the result as specified i
     the model parameters with:<br>
     <pre style="margin-left: 40px;">&gt;&gt; model.parameter=<span style="color: rgb(204, 51, 204);">'fix'</span>     <span style="font-style: italic;">% to lock its value during a fit process</span><br>&gt;&gt; model.parameter='<span style="color: rgb(204, 51, 204);">clear'</span>   <span style="font-style: italic;">% or <font color="#cc33cc">'free'</font> to unlock value during a fit process</span>
 &gt;&gt; model.parameter=[min max] <span style="font-style: italic;">% to bound value</span><br>&gt;&gt; model.parameter=[nan nan] <span style="font-style: italic;">% to remove bound constraint</span><br>&gt;&gt; model.parameter=<span style="color: rgb(204, 51, 204);">''</span>        <span style="font-style: italic;">% to remove all constraints on 'parameter'</span><br>&gt;&gt; model.parameter=<span style="color: rgb(204, 51, 204);">'expression'</span>        <span style="font-style: italic;">% to set the parameter from an expression</span><br>&gt;&gt; model.Constraint=<span style="color: rgb(204, 51, 204);">''</span>       <span style="font-style: italic;">% to remove all constraints</span><br>&gt;&gt; model.Constraint = 0;     <span style="font-style: italic;">% to unlock/free all Parameters during a fit process<br></span>&gt;&gt; model.Constraint = 1;     <span style="font-style: italic;">% to lock/fix all Parameters during a fit process</span><br></pre>
-    Any parameter name surrounded by double quotes, e.g. <span
-      style="font-style: italic;">"Amplitude"</span>, is replaced by the
+    Any parameter name surrounded by double quotes, e.g. <span style="font-style: italic;">"Amplitude"</span>, is replaced by the
     corresponding <span style="font-style: italic;">p(n)</span> value
     in an expression used for setting a parameter value
     (cross-constraints). For instance<br>
@@ -881,8 +811,7 @@ ans =			<font color="#ff0000">&lt;-- and we add it the the result as specified i
       munlock </span>and <span style="font-weight: bold;">xlim</span>
     methods:<br>
     <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">mlock</span>(f, {<span style="color: rgb(204, 51, 204);">'Amplitude','Background'</span>})	<span style="font-style: italic;">% fix these 2 parameters</span>, same as setting parameters to 'fix' <br>&gt;&gt; <span style="color: rgb(51, 102, 255);">munlock</span>(f, <span style="color: rgb(204, 51, 204);">'Background'</span>)		<span style="font-style: italic;">% unlock that parameter</span>, same as f.Background='clear'<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">xlim</span>(f, <span style="color: rgb(204, 51, 204);">   'Background'</span>, [0 1e-3])	<span style="font-style: italic;">% force parameter within range</span>, same as f.Background=[min max]<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">xlim</span>(f,  <span style="color: rgb(204, 51, 204);">  'Background'</span>, [])		<span style="font-style: italic;">% remove limits constraint</span><br></pre>
-    Last, you can fix/clear/bound parameters based on a <a
-      href="http://en.wikipedia.org/wiki/Regular_expression">regular
+    Last, you can fix/clear/bound parameters based on a <a href="http://en.wikipedia.org/wiki/Regular_expression">regular
       expression</a> search such as:<br>
     <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">mlock</span>(f, <span style="color: rgb(51, 102, 255);">regexp</span>(f.Parameters, <span style="color: rgb(204, 51, 204);">'Amplitude|Background'</span>})</pre>
     where we have used the '|' OR operator.<br>
@@ -890,8 +819,7 @@ ans =			<font color="#ff0000">&lt;-- and we add it the the result as specified i
     To list parameters which are fixed, free and bounded, use:<br>
     <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">mlock</span>(f)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">munlock</span>(f)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">xlim</span>(f)</pre>
     which return the number of parameters in each category.
-    <h3 style="text-align: center;"><a class="mozTocH3"
-        name="mozTocId179895"></a>Estimating the model parameter
+    <h3 style="text-align: center;"><a class="mozTocH3" name="mozTocId179895"></a>Estimating the model parameter
       uncertainties and the fit quality<br>
     </h3>
     Some theoretical notes&nbsp; about the goodness of fit are indicated
@@ -899,12 +827,11 @@ ans =			<font color="#ff0000">&lt;-- and we add it the the result as specified i
     <br>
     <br>
     To get the fit statistics, you need to use the syntax:<br>
-    <pre style="margin-left: 40px;">&gt;&gt; <span style="font-style: italic;"></span>[parameters,criteria,message,<i><b>output</b></i>]= <span style="color: rgb(51, 102, 255);">fits</span>(data, <span style="color: rgb(204, 51, 204);">model,<font color="#000000"> ...)</font></span></pre>
+    <pre style="margin-left: 40px;">&gt;&gt; <span style="font-style: italic;"></span>[parameters,criterion,message,<i><b>output</b></i>]= <span style="color: rgb(51, 102, 255);">fits</span>(data, <span style="color: rgb(204, 51, 204);">model,<font color="#000000"> ...)</font></span></pre>
     i.e. retrieve <i>all </i><i>output</i> arguments. Then the <i>'output'</i>
     4-th returned argument holds lots of information.<br>
     <br>
-    The uncertainty on the fit parameters can be obtained from<span
-      style="font-style: italic;">:<br>
+    The uncertainty on the fit parameters can be obtained from<span style="font-style: italic;">:<br>
     </span>
     <ul>
       <li><span style="font-style: italic;">output.parsHistoryUncertainty</span>
@@ -915,18 +842,12 @@ ans =			<font color="#ff0000">&lt;-- and we add it the the result as specified i
     Additionally, the <span style="font-style: italic;">output.parsHessianCorrelation</span>
     indicates the cross-correlations between parameters (off-diagonal
     values larger that 0.7 indicate cross-correlated parameters). <br>
-    The Hessian statistics are explicitly computed when <span
-      style="font-style: italic;">options.Diagnostics</span>=<span
-      style="color: rgb(204, 51, 204);">'on'</span>, or when the time
+    The Hessian statistics are explicitly computed when <span style="font-style: italic;">options.Diagnostics</span>=<span style="color: rgb(204, 51, 204);">'on'</span>, or when the time
     required for computation does not exceed about a minute.<br>
-    The parameter uncertainties are displayed when <span
-      style="font-style: italic;">options.Display</span> is set to <span
-      style="color: rgb(204, 51, 204);">'final'</span> or<span
-      style="color: rgb(204, 51, 204);"> 'iter'</span>.<br>
+    The parameter uncertainties are displayed when <span style="font-style: italic;">options.Display</span> is set to <span style="color: rgb(204, 51, 204);">'final'</span> or<span style="color: rgb(204, 51, 204);"> 'iter'</span>.<br>
     The Hessian method is very sensitive to noise in the objective
     function. All these Hessian final computations (which may take time)
-    can be skipped when using <span style="font-style: italic;">options.Diagnostics</span>=<span
-      style="color: rgb(204, 51, 204);">'off'</span>.<br>
+    can be skipped when using <span style="font-style: italic;">options.Diagnostics</span>=<span style="color: rgb(204, 51, 204);">'off'</span>.<br>
     <br>
     We also explain in the <a href="Optimizers.html#mozTocId228403">Optimizers
 
@@ -940,23 +861,18 @@ ans =			<font color="#ff0000">&lt;-- and we add it the the result as specified i
       italic;">output.corrcoef </span>returned value which goes from 0
     (very bad fit) to 1 (perfect fit). A value higher than 0.95 is
     usually very good.
-    <h3 style="text-align: center;"><a class="mozTocH3"
-        name="mozTocId855522"></a>Building model functions</h3>
-    <a href="images/ifitmakefunc.png"><img title="ifitmakefunc"
-        src="images/ifitmakefunc.png" alt="ifitmakefunc" style="border:
+    <h3 style="text-align: center;"><a class="mozTocH3" name="mozTocId855522"></a>Building model functions</h3>
+    <a href="images/ifitmakefunc.png"><img title="ifitmakefunc" src="images/ifitmakefunc.png" alt="ifitmakefunc" style="border:
         0px solid ; width: 150px; height: 137px;" align="right"></a>The
     <span style="font-weight: bold; font-style: italic;">ifitmakefunc</span>
     tool has been designed to automatically create model functions from
     either a single expression, or a more detailed description. Refer to
     the <a href="Models.html#mozTocId210092">Models/Model Builder</a>.<br>
     <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(255, 0, 0);">h</span>=<span style="color: rgb(51, 102, 255);">ifitmakefunc;                              <span style="color: rgb(0, 0, 0);"><span style="font-style: italic;">% pops-up a dialog to define the new fit function/model</span><br></span></span>&gt;&gt; <span style="color: rgb(255, 0, 0);">h</span>=<span style="color: rgb(51, 102, 255);">iFunc<span style="color: rgb(0, 0, 0);">(<span style="color: rgb(204, 51, 204);">'p(1)*exp( (x-p(2))/p(3) )'</span>);	<span style="font-style: italic;">% directly create an iFunc model</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(255, 0, 0);">h</span>)<br></span></span></pre>
-    The resulting model has the ability to identify itself (<span
-      style="color: rgb(204, 51, 204);">'identify'</span>, provide
-    detailed information), compute automatic starting parameters (<span
-      style="color: rgb(204, 51, 204);">'guess'</span>), display itself
+    The resulting model has the ability to identify itself (<span style="color: rgb(204, 51, 204);">'identify'</span>, provide
+    detailed information), compute automatic starting parameters (<span style="color: rgb(204, 51, 204);">'guess'</span>), display itself
     (<span style="color: rgb(204, 51, 204);">'plot'</span>), and
-    evaluate its value of course. It can be directly used with <span
-      style="font-weight: bold;">fits, </span>either with their name,
+    evaluate its value of course. It can be directly used with <span style="font-weight: bold;">fits, </span>either with their name,
     or their function handle. <br>
     <br>
     It is even possible to directly call the fitting method and create
@@ -966,10 +882,8 @@ ans =			<font color="#ff0000">&lt;-- and we add it the the result as specified i
     To assemble existing functions into new ones, you may use e.g. :<br>
     <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(255, 0, 0);">h</span>=gauss+lorz; h.Constraint = <span style="color: rgb(204, 51, 204);">'p(8)=0;'</span>;<br></pre>
     which creates a new function which is the sum of a Gaussian and a
-    Lorentzian. The second redundant Lorentzian Background <span
-      style="font-style: italic;">p(8)</span> parameter is forced to 0
-    so that it does not correlate with the Gaussian Background <span
-      style="font-style: italic;">p(4)</span>. Other function
+    Lorentzian. The second redundant Lorentzian Background <span style="font-style: italic;">p(8)</span> parameter is forced to 0
+    so that it does not correlate with the Gaussian Background <span style="font-style: italic;">p(4)</span>. Other function
     information/parameter names (here not specified) are
     guessed/defaulted.<br>
     <br>
@@ -982,32 +896,29 @@ ans =			<font color="#ff0000">&lt;-- and we add it the the result as specified i
     <pre style="margin-left: 40px;">&gt;&gt; p=<span style="color: rgb(51, 102, 255);">fits</span>(a, <span style="color: rgb(51, 102, 255);">model</span>, [ 0.5 1 0.01 0 ],'','',<span style="color: rgb(255, 0, 0);">additional_arguments</span>);</pre>
     assumes the model function has syntax<br>
     <pre style="margin-left: 40px;"><span style="color: rgb(51, 102, 255);">model</span>(p, axes from object, <span style="color: rgb(255, 0, 0);">additional_arguments</span>)</pre>
-    <h3 style="text-align: center;"><a class="mozTocH3"
-        name="mozTocId778987"></a>Specifying the optimization criteria</h3>
-    The default optimization criteria is the '<a
-      href="http://en.wikipedia.org/wiki/Least_squares">least square
+    <h3 style="text-align: center;"><a class="mozTocH3" name="mozTocId778987"></a>Specifying the optimization criteria</h3>
+    The default optimization criterion is the '<a href="http://en.wikipedia.org/wiki/Least_squares">least square
       error</a>':<br>
     <br>
     <div style="text-align: center;">&#967;<sup>2</sup> = &#8721; (Signal-Model)<sup>2</sup>.<br>
       <br>
     </div>
-    When the Monitor is defined (see <a
-      href="iData.html#mozTocId243435">iData</a> definition), the Signal
+    When the Monitor is defined (see <a href="iData.html#mozTocId243435">iData</a> definition), the Signal
     is normalized, so that<br>
     <br>
     <div style="text-align: center;">&#967;<sup>2</sup> = &#8721;
       (Signal/Monitor-Model)<sup>2</sup>.<br>
       <br>
     </div>
-    When the Error on the Signal is available, the weighted criteria
+    When the Error on the Signal is available, the weighted criterion
     reads<br>
     <br>
     <div style="text-align: center;">&#967;<sup>2</sup> = &#8721;
       [(Signal/Monitor-Model)/Error]<sup>2</sup>.<br>
     </div>
     <br>
-    The options.criteria can be defined as the name of a criteria
-    function with syntax <span style="font-style: italic;">criteria(Signal,
+    The options.criteria can be defined as the name of a criterion
+    function with syntax <span style="font-style: italic;">criterion(Signal,
 
 
 
@@ -1015,16 +926,15 @@ ans =			<font color="#ff0000">&lt;-- and we add it the the result as specified i
 
 
       Error, Model)</span> where all arguments should have the same
-    dimension, and the default criteria is:<br>
+    dimension, and the default criterion is:<br>
     <br>
     <div style="text-align: center;"><span style="font-style: italic;
         font-weight: bold;">options.criteria</span> =<span style="color:
-        rgb(204, 51, 204);"> 'least_square'</span>; <span
-        style="font-style: italic;">% criteria definition</span><br>
+        rgb(204, 51, 204);"> 'least_square'</span>; <span style="font-style: italic;">% criterion definition</span><br>
       <div style="text-align: left;"><br>
         The Signal will be normalized to the Monitor prior to calling
         the criteria. The Error is used as weight.<br>
-        The criteria is then normalized to the number of degrees of
+        The criterion is then normalized to the number of degrees of
         freedom by dividing it by<br>
         <br>
         <div style="text-align: center;">&#967;<sup>2</sup> &#8592; &#967;<sup>2</sup>
@@ -1041,12 +951,11 @@ ans =			<font color="#ff0000">&lt;-- and we add it the the result as specified i
         <br>
         The following pre-defined functions can be used as criteria:<br>
         <br>
-        <table style="text-align: left; width: 100%;" border="1"
-          cellpadding="2" cellspacing="2">
+        <table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
           <tbody>
             <tr>
               <td style="vertical-align: top; font-weight: bold;
-                font-style: italic;">criteria<br>
+                font-style: italic;">criterion<br>
                 (Signal,Error,Model)</td>
               <td style="vertical-align: top; font-weight: bold;
                 font-style: italic;">Expression<br>
@@ -1058,69 +967,57 @@ ans =			<font color="#ff0000">&lt;-- and we add it the the result as specified i
             <tr>
               <td style="vertical-align: top;">least_square<br>
               </td>
-              <td style="vertical-align: top; text-align: right;"
-                align="right">(|Signal-Model|/Error)<sup>2</sup><br>
+              <td style="vertical-align: top; text-align: right;" align="right">(|Signal-Model|/Error)<sup>2</sup><br>
               </td>
-              <td style="vertical-align: top;">non-robust. <a
-                  href="http://en.wikipedia.org/wiki/Least_squares">Ref</a>.<br>
+              <td style="vertical-align: top;">non-robust. <a href="http://en.wikipedia.org/wiki/Least_squares">Ref</a>.<br>
               </td>
             </tr>
             <tr>
               <td style="vertical-align: top;">least_absolute<br>
               </td>
-              <td style="vertical-align: top; text-align: right;"
-                align="right">|Signal-Model|/Error<br>
+              <td style="vertical-align: top; text-align: right;" align="right">|Signal-Model|/Error<br>
               </td>
-              <td style="vertical-align: top;">robust. <a
-                  href="http://en.wikipedia.org/wiki/Least_absolute_deviation">Ref</a>.<br>
+              <td style="vertical-align: top;">robust. <a href="http://en.wikipedia.org/wiki/Least_absolute_deviation">Ref</a>.<br>
               </td>
             </tr>
             <tr>
               <td style="vertical-align: top;">least_median<br>
               </td>
-              <td style="vertical-align: top; text-align: right;"
-                align="right">median(|Signal-Model|/Error)<br>
+              <td style="vertical-align: top; text-align: right;" align="right">median(|Signal-Model|/Error)<br>
               </td>
-              <td style="vertical-align: top;">robust, scalar. <a
-                  href="http://en.wikipedia.org/wiki/Median_absolute_deviation">Ref</a>.<br>
+              <td style="vertical-align: top;">robust, scalar. <a href="http://en.wikipedia.org/wiki/Median_absolute_deviation">Ref</a>.<br>
               </td>
             </tr>
             <tr>
               <td valign="top">least_mean<br>
               </td>
-              <td valign="top" align="right">mean(|Signal-Model|/Error)</td>
-              <td valign="top"><a
-                  href="https://en.wikipedia.org/wiki/Mean_absolute_difference">Ref</a>.<br>
+              <td align="right" valign="top">mean(|Signal-Model|/Error)</td>
+              <td valign="top"><a href="https://en.wikipedia.org/wiki/Mean_absolute_difference">Ref</a>.<br>
               </td>
             </tr>
             <tr>
               <td style="vertical-align: top;">least_max<br>
               </td>
-              <td style="vertical-align: top; text-align: right;"
-                align="right">max(|Signal-Model|/Error)<br>
+              <td style="vertical-align: top; text-align: right;" align="right">max(|Signal-Model|/Error)<br>
               </td>
-              <td style="vertical-align: top;">non-robust, scalar. <a
-                  href="http://en.wikipedia.org/wiki/Absolute_deviation">Ref</a>.
+              <td style="vertical-align: top;">non-robust, scalar. <a href="http://en.wikipedia.org/wiki/Absolute_deviation">Ref</a>.
                 <br>
               </td>
             </tr>
             <tr>
               <td valign="top">least_rfactor<br>
               </td>
-              <td valign="top" align="right">(|Signal-Model|/Error)<sup>2</sup>/(Signal/Error)<sup>2</sup>
+              <td align="right" valign="top">(|Signal-Model|/Error)<sup>2</sup>/(Signal/Error)<sup>2</sup>
               </td>
-              <td valign="top">non-robust. <a
-                  href="http://en.wikipedia.org/wiki/R-factor_%28crystallography%29">Ref</a>.<br>
+              <td valign="top">non-robust. <a href="http://en.wikipedia.org/wiki/R-factor_%28crystallography%29">Ref</a>.<br>
               </td>
             </tr>
             <tr>
               <td style="vertical-align: top;">max_likelihood<br>
               </td>
-              <td style="vertical-align: top; text-align: right;"
-                align="right">(|Signal-Model|/&#963;)<sup>2</sup> + 1/2
+              <td style="vertical-align: top; text-align: right;" align="right">(|Signal-Model|/&#963;)<sup>2</sup> + 1/2
                 log(2&#960;&#963;)</td>
-              <td style="vertical-align: top;"><a
-                  href="http://en.wikipedia.org/wiki/Maximum_likelihood">Ref</a>.
+              <td style="vertical-align: top;"><a href="http://en.wikipedia.org/wiki/Maximum_likelihood">Ref</a>.
                 Minimize <span style="font-style: italic;">-log(L)</span>.
                 <br>
                 The &#963; 'error' is refined during the fit. </td>
@@ -1128,10 +1025,9 @@ ans =			<font color="#ff0000">&lt;-- and we add it the the result as specified i
             <tr>
               <td valign="top">max_corrcoef<br>
               </td>
-              <td valign="top" align="right">1-corrcoef(Signal, Model)<br>
+              <td align="right" valign="top">1-corrcoef(Signal, Model)<br>
               </td>
-              <td valign="top"><a
-href="http://en.wikipedia.org/wiki/Pearson_product-moment_correlation_coefficient">Ref</a>.<br>
+              <td valign="top"><a href="http://en.wikipedia.org/wiki/Pearson_product-moment_correlation_coefficient">Ref</a>.<br>
               </td>
             </tr>
           </tbody>
@@ -1144,14 +1040,11 @@ href="http://en.wikipedia.org/wiki/Pearson_product-moment_correlation_coefficien
         <ul>
           <li>redefine the data set <span style="font-style: italic;">Error</span>,
             which is used as weighting factor in the evaluation of the
-            criteria. The <span style="font-style: italic;">sqrt(Signal)</span>
+            criterion. The <span style="font-style: italic;">sqrt(Signal)</span>
             (default) may not be suited. Try setting a.Error=1 ;</li>
-          <li>change the criteria definition (see <a
-              href="#mozTocId778987">above</a>). The<span
-              style="font-style: italic;"> <span style="font-weight:
+          <li>change the criterion definition (see <a href="#mozTocId778987">above</a>). The<span style="font-style: italic;"> <span style="font-weight:
                 bold;">least square</span></span> (default) may not be
-            suited to the Signal ; you may try the <span
-              style="font-weight: bold; font-style: italic;">Maximum
+            suited to the Signal ; you may try the <span style="font-weight: bold; font-style: italic;">Maximum
               likelihood</span>.<br>
           </li>
           <li>try with a specific <a href="Optimizers.html">optimizer</a>.
@@ -1188,5 +1081,6 @@ Farhi
           &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL,
           Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid
           ; width: 53px; height: 50px;" align="right"></a> </div>
-  </body>
-</html>
+  
+
+</body></html>

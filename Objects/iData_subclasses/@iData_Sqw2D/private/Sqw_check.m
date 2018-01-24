@@ -1,4 +1,4 @@
-function s = Sqw_check(s)
+function s = Sqw_check(s, mode)
 % Sqw_check: check if a 2D iData is a S(q,w).
 %
 % This routine can also convert automatically an input 
@@ -13,18 +13,21 @@ function s = Sqw_check(s)
 % input:
 %   s: Sqw data set
 %        e.g. 2D data set with w as 1st axis (rows), q as 2nd axis.
+%   mode: requested type of data. default is 'qw', but can also be 'ab' for S(alpha,beta)
 %
 % Example: sqw=Sqw_check('SQW_coh_lGe.nc');
 % (c) E.Farhi, ILL. License: EUPL.
 
   if nargin == 0, return; end
   if ~isa(s, 'iData'), s = iData(s); end
+  if nargin < 2, model = []; end
+  if isempty(mode), mode='qw'; end
   
   % handle array of objects
   if numel(s) > 1
     sqw = [];
     for index=1:numel(s)
-      sqw = [ sqw feval(mfilename, s(index)) ];
+      sqw = [ sqw feval(mfilename, s(index), mode) ];
     end
     s(index)=iData; % free memory
     s = sqw;
@@ -68,11 +71,15 @@ function s = Sqw_check(s)
   if ~isfield(s, 'parameters')
     [s, parameters] = Sqw_parameters(s);
   end
-  % conversions
+  % conversions: S(a,b) -> S(q,w) when expecting 'qw'
   if alpha_present && beta_present && (~w_present || ~q_present)
-    disp([ mfilename ': S(alpha,beta) data set detected: converting to S(q,w)' ]);
-    s = Sqw(iData_Sab(s)); % convert from S(alpha,beta) to S(q,w)
-    return
+    if strcmp(mode, 'qw')
+      disp([ mfilename ': S(alpha,beta) data set detected: converting to S(q,w)' ]);
+      if ~isa(s, 'iData_Sab'), s = iData_Sab(s); end
+      s = Sqw(s); % convert from S(alpha,beta) to S(q,w)
+      q_present = alpha_present;
+      w_present = beta_present
+    end
   end
   if ~w_present && t_present
     % convert from S(xx,t) to S(xx,w): t2e requires L2=Distance
@@ -86,19 +93,22 @@ function s = Sqw_check(s)
     s = Sqw_phi2q(s);
     if ~isempty(s), q_present = a_present; end
   end
-  if ~w_present || ~q_present
+  if (strcmp(mode, 'qw') && (~w_present || ~q_present)) ...
+  || (strcmp(mode, 'ab') && (~alpha_present || ~beta_present))
     disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ]);
     disp('    does not seem to be an isotropic S(|q|,w) 2D object. Ignoring.');
     disp([ '    Energy    axis present:' num2str(w_present) ])
     disp([ '    Time      axis present:' num2str(t_present) ])
     disp([ '    Angle     axis present:' num2str(a_present) ])
     disp([ '    Momentum  axis present:' num2str(q_present) ])
+    disp([ '    Alpha     axis present:' num2str(alpha_present) ])
+    disp([ '    Beta      axis present:' num2str(beta_present) ])
     s = [];
     return
   end
 
   % check if we need to transpose the S(q,w)
-  if w_present==2 && q_present==1
+  if (w_present==2 && q_present==1) || (beta_present==2 && alpha_present==1)
     s = transpose(s);
   end
   
@@ -122,7 +132,7 @@ function s = Sqw_check(s)
   
   w  = getaxis(s,1);
   % checks that we have 0<w<Ei for Stokes, and w<0 can be lower (anti-Stokes)
-  if any(w(:) < 0) && any(w(:) > 0)
+  if any(w(:) < 0) && any(w(:) > 0) && strcmp(mode, 'qw')
     % for experimental data we should get w1=max(w) < Ei and w2 can be as low as
     % measured (neutron gains energy from sample).
     
@@ -140,7 +150,7 @@ function s = Sqw_check(s)
   % can we guess if this is classical data ? get temperature ?
   w = getaxis(s,1);
 
-  if any(w(:) < 0) && any(w(:) > 0)
+  if any(w(:) < 0) && any(w(:) > 0)  && strcmp(mode, 'qw')
     % restrict the energy axis to the common +/- range
     w1 = max(w(:)); w2 = max(-w(:)); w_max = min([w1 w2]);
 
