@@ -13,7 +13,7 @@ function y=dirac(varargin)
 %         x: axis (double)
 %         y: when values are given and p='guess', a guess of the parameters is performed (double)
 % output: y: model value
-% ex:     y=dirac([1 0 1 1], -10:10); or plot(dirac)
+% ex:     y=dirac([1 0], -10:10); or plot(dirac)
 %
 % Version: $Date$
 % See also iData, iFunc/fits, iFunc/plot
