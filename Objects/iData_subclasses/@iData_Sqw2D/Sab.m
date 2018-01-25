@@ -111,7 +111,8 @@ function sab = Sab(s, M, T)
   Z     = Z/(2*C*C*q2toE);
   
   % create new data set, and display it
-  sab=iData_Sab;
+  sab = iData_Sab;
+  sab = copy_prop(sab, sqw);
   setalias(sab, 'alpha', alpha, 'alpha [h2q2/2MkT]');
   setalias(sab, 'beta',  beta,  'beta [-hw/kT]');
   setalias(sab, 'Sab',   Z,     'S(alpha,beta)');  % Z(alpha,beta)
@@ -129,16 +130,6 @@ function sab = Sab(s, M, T)
   
   sab.Label='Sab';
   sab = transpose(sab);
-  
-  % copy initial aliases and UserData
-  sab.UserData = s.UserData;
-  f = getalias(s);
-  for index=1:numel(getalias(s))
-    if ~isfield(sab, f{index})
-      [link, lab] = getalias(s, f{index});
-      sab = setalias(sab, f{index}, link, lab);
-    end
-  end
   
   % transfer available information compatible with ENDF MF7 MT4
   % sab = iData_Sab(sab);

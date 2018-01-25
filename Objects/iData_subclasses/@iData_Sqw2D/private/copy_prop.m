@@ -1,5 +1,5 @@
 function obj = copy_prop(obj0, m)
-  % copy the properties from 'in' in the instantiated object obj0 (single)
+  % copy the properties from 'm' in the instantiated object obj0 (single)
   % handle arrays by copying the obj0
   obj = [];
   for index=1:numel(m)
