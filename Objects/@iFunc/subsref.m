@@ -82,6 +82,8 @@ for i = 1:length(S)     % can handle multiple index levels
         c = builtin('feval',fieldname, b, S(i+1).subs{:}); i=i+1;
       end
       if isa(c, 'iFunc'), b = c; end
+    elseif ~isempty(superclasses([ 'iFunc' fieldname ]))
+      b = feval([ 'iFunc' fieldname ], b);  % convert to iFunc_<flavour>
     else
       if isa(b, 'iFunc')
         error([ mfilename ': can not get iFunc object Property ''' fieldname ''' in iFunc model ' b.Tag '.' ]);

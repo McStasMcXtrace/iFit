@@ -249,8 +249,8 @@ for i = 1:length(S)     % can handle multiple index levels
       end
     elseif numel(b) == 1 && isstruct(b.Alias) && numel(b.Alias) == 1 && iscell(b.Alias.Names) && any(strcmpi(fieldname, b.Alias.Names))
       b = iData_getAliasValue(b,fieldname);
-    elseif isempty(superclasses(b)) && any(strcmp(fieldname,method)) ... % b.method = ismethod(b, fieldname)
-       || ~isempty(superclasses(b)) && any(strcmp(fieldname,methods(b)))
+    elseif (isempty(superclasses(b)) && any(strcmp(fieldname,method))) ... % b.method = ismethod(b, fieldname)
+       || (~isempty(superclasses(b)) && ismethod(b, fieldname))
       if i == length(S)
         if nargout(fieldname) ==0
           feval(fieldname, b);
@@ -264,7 +264,7 @@ for i = 1:length(S)     % can handle multiple index levels
       if isa(c, 'iData'), b = c; end
       if i == length(S), return; end
     elseif ~isempty(superclasses([ 'iData_' fieldname ]))
-      b = feval([ 'iData_' fieldname ], b);
+      b = feval([ 'iData_' fieldname ], b); % convert to iData_<flavour>
     else
       % check if the fieldname belongs directly to b.Data
       strtk = find(fieldname == '.', 1); strtk = fieldname(1:(strtk-1));
