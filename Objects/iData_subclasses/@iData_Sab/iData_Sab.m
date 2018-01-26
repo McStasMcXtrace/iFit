@@ -107,11 +107,10 @@ classdef iData_Sab < iData
       if ~nargin, return; end  % empty object
       
       % convert/test
-      if  isa(s, mfilename)   m = s;      end
-      if  isa(s, 'iData_Sqw') m = Sab(s, varargin{:}); end
-      if ~isa(s, mfilename)
+      if     isa(s, mfilename)   m = s; 
+      elseif isa(s, 'iData_Sqw') m = Sqw2Sab(s, varargin{:});
+      else
         m = Sqw_check(s, 'ab'); 
-        m = Sab(m, varargin{:});
         if ~isa(m, 'iData') || any(isempty(m)) || any(ndims(m) ~= 2)
           error([ mfilename ': the given input ' class(s) ' does not seem to be convertible to iData_Sab.' ])
         end
@@ -140,6 +139,43 @@ classdef iData_Sab < iData
       if nargout == 0 && length(inputname(1))
         assignin('caller',inputname(1),s);
       end
+    end
+    
+    function s = Sqw(self)
+      % sqw = Sqw(Sab, M, T)
+      %  iData_Sab: Sqw: convert a 2D S(alpha,beta) into an S(q,w).
+      %
+      %  The S(alpha,beta) is a representation of the dynamic structure factor 
+      %  using unitless momentum and energy variables defined as:
+      %     alpha= h2q2/2MkT  = (Ei+Ef-2*mu*sqrt(Ei*Ef))/AkT
+      %     beta = -hw/kT     = (Ef-Ei)/kT
+      %     A    = M/m
+      %     mu   = cos(theta) = (Ki.^2 + Kf.^2 - q.^2) ./ (2*Ki.*Kf)
+      %  
+      % input:
+      %   s:  S(alpha,beta) data set e.g. 2D data set with beta as 1st axis (rows), alpha as 2nd axis (columns).
+      %   M:  molar weight of the atom/molecule in [g/mol].
+      %     when omitted or empty, it is searched as 'weight' or 'mass' is the object.
+      %   T: when given, Temperature to use. When not given or empty, the Temperature
+      %      is searched in the object. The temperature is in [K]. 1 meV=11.605 K.
+      % output:
+      %   sqw: S(q,w) 2D data set (iData_Sqw2D)
+      %
+      % conventions:
+      % w = omega = Ei-Ef = energy lost by the neutron [meV]
+      %    omega > 0, neutron looses energy, can not be higher than Ei (Stokes)
+      %    omega < 0, neutron gains energy, anti-Stokes
+      %
+      % references: M. Mattes and J. Keinert, IAEA INDC(NDS)-0470, 2005.
+      %             R. E. MacFarlane, LA-12639-MS (ENDF-356), 1994.
+      %
+      % Example: sab = iData_Sab('SQW_coh_lGe.nc');
+      %          sqw = Sqw(sab,72.6,1235);
+      %          sab2= Sab(sqw);
+      %          subplot(log([Sqw Sab Sqw2))
+      %
+      % (c) E.Farhi, ILL. License: EUPL.
+      s = Sab2Sqw(self);  % private
     end
     
     function f = iData(self)

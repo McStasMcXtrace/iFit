@@ -1,4 +1,4 @@
-function sqw = Sqw(s, M, T)
+function sqw = Sab2Sqw(s, M, T)
 % sqw = Sqw(Sab, M, T)
 %  iData_Sab: Sqw: convert a 2D S(alpha,beta) into an S(q,w).
 %
@@ -113,8 +113,8 @@ function sqw = Sqw(s, M, T)
 
   % create new data set, and display it
   sqw=iData_Sqw2D;
-  setalias(sqw, 'q', alpha, 'wavevector [Angs-1]');
-  setalias(sqw, 'w',  beta,  'energy [meV]');
+  setalias(sqw, 'q', q, 'wavevector [Angs-1]');
+  setalias(sqw, 'w', E, 'energy [meV]');
   setalias(sqw, 'Sqw',   Z,     'S(q,w)');  % Z(q,w)
   setaxis(sqw, 0, 'Sqw');
   setaxis(sqw, 2, 'q');

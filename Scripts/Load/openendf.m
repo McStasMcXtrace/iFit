@@ -23,19 +23,19 @@ elseif ~isempty(out) && isfield(out.Data,'MF') && isfield(out.Data,'MT')
   % set generic aliases
   setalias(out, 'MT',    'Data.MT',    'ENDF Section');
   setalias(out, 'MF',    'Data.MF',    'ENDF File');
-  if ~isfield(out, 'MAT') && ~isempty(findfield(out, 'MAT','first case'))
+  if ~isfield(out, 'MAT') && ~isempty(findfield(out, 'MAT','first case exact'))
     setalias(out, 'MAT',      findfield(out, 'MAT','first case'),   'ENDF Material number');
   end
-  if ~isfield(out, 'ZSYMAM') && ~isempty(findfield(out, 'ZSYMAM','first'))
+  if ~isfield(out, 'ZSYMAM') && ~isempty(findfield(out, 'ZSYMAM','first case exact'))
     setalias(out, 'Material', findfield(out, 'ZSYMAM','first'),'ENDF Material description (ZSYMAM)');
   end
-  if ~isfield(out, 'EDATE') && ~isempty(findfield(out, 'EDATE','first'))
+  if ~isfield(out, 'EDATE') && ~isempty(findfield(out, 'EDATE','first exact'))
     setalias(out, 'EDATE',    findfield(out, 'EDATE','first'), 'ENDF Evaluation Date (EDATE)');
   end
-  if ~isfield(out, 'ZA') && ~isempty(findfield(out, 'ZA','first case'))
+  if ~isfield(out, 'ZA') && ~isempty(findfield(out, 'ZA','first case exact'))
     setalias(out, 'charge',   findfield(out, 'ZA','first case'),    'ENDF material charge Z (ZA)');
   end
-  if ~isfield(out, 'AWR') && ~isempty(findfield(out, 'AWR','first'))
+  if ~isfield(out, 'AWR') && ~isempty(findfield(out, 'AWR','first case exact'))
     setalias(out, 'mass',  findfield(out, 'AWR','first case'),   'ENDF material mass A [g/mol] (AWR)');
   end
   if ~isfield(out, 'DescriptiveData') && ~isempty(findfield(out, 'DescriptiveData','first case'))
@@ -46,6 +46,15 @@ elseif ~isempty(out) && isfield(out.Data,'MF') && isfield(out.Data,'MT')
   elseif ~isfield(out, 'description') && ~isempty(findfield(out, 'description','first case'))
     setalias(out, 'DescriptiveData', findfield(out, 'description','first case'), 'ENDF DescriptiveData (MF1/MT451)');
   end
+  % search for aliases that we need
+  tokens={'S','E','T','W','SB','Sab','alpha','beta','NP','INT','MT','MF'};
+  for index=1:numel(tokens)
+    tok = tokens{index};
+    if ~isfield(out, tok) && ~isempty(findfield(out, tok,'first case exact'))
+      setalias(out, tok, findfield(out, tok,'first case exact'));
+    end
+  end
+  
   MT=out.Data.MT; MF=out.Data.MF;
   % assign axes: alpha, beta, Sab for MF7 MT4
   if MF == 1 && MT == 451
@@ -129,7 +138,7 @@ function t0=read_endf_mf7_array(t)
   t0 = [];
   disp(sprintf('%s: MF=%3i   MT=%i TSL T=%s', mfilename, t.MF, t.MT, mat2str(t.T)));
   for index=1:numel(t.T)
-    t1     = t;
+    t1     = copyobj(t);
     t1.T   = t.T(index);
     if isfield(t1, 'ZSYMAM')
       t1.Title = [ t1.Title ' ' t1.ZSYMAM ];
@@ -147,7 +156,12 @@ function t0=read_endf_mf7_array(t)
       t1.Label = [ t1.Label ' TSL elastic' ];
       setaxis(t1, 3, t1.T);
     elseif t1.MT == 4 % Incoherent Inelastic Scattering
-      t1.Sab = t.Sab(:,:,index);
+      if isfield(t1, 'Sab')
+        t1.Sab = t.Sab(:,:,index);
+      elseif isfield(t1, 'scattering_law')
+        t1.Sab = t.scattering_law(:,:,index);
+      end
+      
       if isstruct(t.Teff) && isfield(t.Teff, 'y');
         t1.Teff     = t.Teff.y(index);
       else

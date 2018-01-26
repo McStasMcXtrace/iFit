@@ -1,4 +1,4 @@
-function sab = Sab(s, M, T)
+function sab = Sqw2Sab(s, M, T)
 %  iData_Sqw2D: Sab: convert a 2D S(q,w) into an S(alpha,beta). 
 %
 %  The S(alpha,beta) is a representation of the dynamic structure factor 
@@ -112,7 +112,7 @@ function sab = Sab(s, M, T)
   
   % create new data set, and display it
   sab = iData_Sab;
-  sab = copy_prop(sab, sqw);
+  sab = copy_prop(sab, s);
   setalias(sab, 'alpha', alpha, 'alpha [h2q2/2MkT]');
   setalias(sab, 'beta',  beta,  'beta [-hw/kT]');
   setalias(sab, 'Sab',   Z,     'S(alpha,beta)');  % Z(alpha,beta)

@@ -50,7 +50,6 @@ function s = Sqw_check(s, mode)
       if ischar(def), lab = [ def ' ' lab ]; end
       if isempty(lab), lab=lower(getaxis(s, num2str(index))); end
       lab = strread(lab, '%s'); % split string into cell
-      
       if strcmpm(lab, {'alpha','a'}) % strcmpm = multiple strcmpi is private below
         alpha_present=index;
       elseif strcmpm(lab, {'beta','b'})
@@ -72,13 +71,21 @@ function s = Sqw_check(s, mode)
     [s, parameters] = Sqw_parameters(s);
   end
   % conversions: S(a,b) -> S(q,w) when expecting 'qw'
-  if alpha_present && beta_present && (~w_present || ~q_present)
+  if alpha_present && beta_present && ~w_present && ~q_present
     if strcmp(mode, 'qw')
       disp([ mfilename ': S(alpha,beta) data set detected: converting to S(q,w)' ]);
-      if ~isa(s, 'iData_Sab'), s = iData_Sab(s); end
-      s = Sqw(s); % convert from S(alpha,beta) to S(q,w)
-      q_present = alpha_present;
-      w_present = beta_present
+      s = Sab2Sqw(s); % convert from S(alpha,beta) to S(q,w)
+      s = feval(mfilename, s, mode);
+      return
+    end
+  end
+  % conversions: S(q,w) -> S(a,b) when expecting 'ab'
+  if ~alpha_present && ~beta_present && w_present && q_present
+    if strcmp(mode, 'ab')
+      disp([ mfilename ': S(q,w) data set detected: converting to S(alpha,beta)' ]);
+      s = Sqw2Sab(s); % convert from S(alpha,beta) to S(q,w)
+      s = feval(mfilename, s, mode);
+      return
     end
   end
   if ~w_present && t_present
@@ -96,7 +103,7 @@ function s = Sqw_check(s, mode)
   if (strcmp(mode, 'qw') && (~w_present || ~q_present)) ...
   || (strcmp(mode, 'ab') && (~alpha_present || ~beta_present))
     disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ]);
-    disp('    does not seem to be an isotropic S(|q|,w) 2D object. Ignoring.');
+    disp('    does not seem to be an isotropic neutron scattering law 2D object. Ignoring.');
     disp([ '    Energy    axis present:' num2str(w_present) ])
     disp([ '    Time      axis present:' num2str(t_present) ])
     disp([ '    Angle     axis present:' num2str(a_present) ])
@@ -126,8 +133,8 @@ function s = Sqw_check(s, mode)
   
   % handle ENDF keywords
   if isfield(s,'LASYM')
-    s.classical = ~s.LASYM;
-    classical0  = s.classical;
+    setalias(s,'classical', ~get(s,'LASYM'));
+    classical0  = get(s,'classical');
   end
   
   w  = getaxis(s,1);

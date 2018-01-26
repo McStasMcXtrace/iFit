@@ -94,9 +94,9 @@ classdef iData_Sqw2D < iData
       
       % convert/test
       if     isa(s, mfilename)   m = s;
-      elseif isa(s, 'iData_Sab') m = Sqw(s);
+      elseif isa(s, 'iData_Sab') m = Sab2Sqw(s);
       else
-        m = Sqw_check(s, 'qw'); 
+        m = Sqw_check(s, 'qw'); % check and possibly convert to Sqw
         if ~isa(m, 'iData') || any(isempty(m)) || any(ndims(m) ~= 2)
           error([ mfilename ': the given input ' class(s) ' does not seem to be convertible to iData_Sqw2D.' ])
         end
@@ -177,6 +177,41 @@ classdef iData_Sqw2D < iData
         h  =plot(log10(s)); 
         set(fig, 'NextPlot','new');
       end
+    end
+    
+    function s = Sab(self)
+      %  iData_Sqw2D: Sab: convert a 2D S(q,w) into an S(alpha,beta). 
+      %
+      %  The S(alpha,beta) is a representation of the dynamic structure factor 
+      %  using unitless momentum and energy variables defined as:
+      %     alpha= h2q2/2MkT  = (Ei+Ef-2*mu*sqrt(Ei*Ef))/AkT
+      %     beta = -hw/kT     = (Ef-Ei)/kT
+      %     A    = M/m
+      %     mu   = cos(theta) = (Ki.^2 + Kf.^2 - q.^2) ./ (2*Ki.*Kf)
+      %  
+      % input:
+      %   s:  S(q,w) data set e.g. 2D data set with q [Angs-1] as 1st axis (rows), energy [meV] as 2nd axis.
+      %   M:  molar weight of the atom/molecule in [g/mol].
+      %     when omitted or empty, it is searched as 'weight' or 'mass' in the object.
+      %   T: when given, Temperature to use. When not given or empty, the Temperature
+      %      is searched in the object. The temperature is in [K]. 1 meV=11.605 K.
+      % output:
+      %   sab: S(alpha,beta) 2D data set, classical (iData_Sab)
+      %
+      % conventions:
+      % w = omega = Ei-Ef = energy lost by the neutron [meV]
+      %    omega > 0, neutron looses energy, can not be higher than Ei (Stokes)
+      %    omega < 0, neutron gains energy, anti-Stokes
+      %
+      % references: M. Mattes and J. Keinert, IAEA INDC(NDS)-0470, 2005.
+      %             R. E. MacFarlane, LA-12639-MS (ENDF-356), 1994.
+      %
+      % Example: sqw = iData_Sqw2D('SQW_coh_lGe.nc');
+      %          sab = Sab(sqw,72.6,1235);
+      %          plot(log(sab)
+      %
+      % (c) E.Farhi, ILL. License: EUPL.
+      s = Sqw2Sab(self);  % private
     end
     
     function f = saveas(self, varargin)
