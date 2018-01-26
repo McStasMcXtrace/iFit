@@ -213,7 +213,13 @@ for index=1:numel(fields)
     % get and store the value of the parameter
     if ~isempty(link) && ~isempty(val) && ~strcmp(name, link)  % must not link to itself
       s=setalias(s, name, link, strtrim(comment));
-      parameters.(name) = get(s, link); % the value
+      try
+        parameters.(name) = get(s, link); % the value
+      catch
+        if isfield(s, 'name')
+          parameters.(name) = get(s, name); % the value
+        end
+      end
     end
   end
 end

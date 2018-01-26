@@ -263,6 +263,8 @@ for i = 1:length(S)     % can handle multiple index levels
       end
       if isa(c, 'iData'), b = c; end
       if i == length(S), return; end
+    elseif ~isempty(superclasses([ 'iData_' fieldname ]))
+      b = feval([ 'iData_' fieldname ], b);
     else
       % check if the fieldname belongs directly to b.Data
       strtk = find(fieldname == '.', 1); strtk = fieldname(1:(strtk-1));
