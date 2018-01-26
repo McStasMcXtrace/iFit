@@ -100,12 +100,15 @@ elseif ~isempty(out) && isfield(out.Data, 'info')
     elseif strcmp(f{index},'thermal_inelastic')
       section.MF = 7; section.MT = 4;
     end
-    info    = out.Data.info;
-    out0 = copyobj(out); % out0.Data = []; 
+    info      = out.Data.info;
+    out0      = copyobj(out); % out0.Data = []; 
     out0.Data = section;
     setalias(out0, 'info', info, 'ENDF General information (MF1)');
-    out0 = feval(mfilename, out0);
-    out_array = [ out_array out0 ];
+    out0      = feval(mfilename, out0);
+    if numel(out0) > 1 || (~isempty(out0) && ~strcmp(getalias(out0,'Signal'), get(out0,'Signal')))
+      out_array = [ out_array out0 ];
+    end
+    
   end
   out = out_array;
   
@@ -129,20 +132,28 @@ function t0=read_endf_mf7_array(t)
     t1     = t;
     t1.T   = t.T(index);
     if isfield(t1, 'ZSYMAM')
-      t1.Title = [ t1.ZSYMAM ' T=' num2str(t1.T) ' [K] ' t1.description];
-    else
-      t1.Title = [ ' T=' num2str(t1.T) ' [K] ' t1.description];
+      t1.Title = [ t1.Title ' ' t1.ZSYMAM ];
     end
+    t1.Title = [ t1.Title ' T=' num2str(t1.T) ' [K]' ];
+    if isfield(t1, 'description')
+      t1.Title = [ t1.Title ' ' t1.description ];
+    end
+    if isfield(t1, 'ZSYMAM') t1.Label = t1.ZSYMAM; end
+    t1.Label = [ t1.Label ' T=' num2str(t1.T) ' [K]' ];
     if t1.MT == 2 % Incoherent/Coherent Elastic Scattering
       t1.NP  = t.NP(index);
       t1.S   = t.S(index,:);
       t1.INT = t.INT(index);
-      t1.Label = [ t1.ZSYMAM ' T=' num2str(t1.T) ' [K] TSL elastic' ];
+      t1.Label = [ t1.Label ' TSL elastic' ];
       setaxis(t1, 3, t1.T);
     elseif t1.MT == 4 % Incoherent Inelastic Scattering
       t1.Sab = t.Sab(:,:,index);
-      t1.Teff     = t.Teff(index,:);
-      t1.Label = [ t1.ZSYMAM ' T=' num2str(t1.T) ' [K] TSL inelastic' ];
+      if isstruct(t.Teff) && isfield(t.Teff, 'y');
+        t1.Teff     = t.Teff.y(index);
+      else
+        t1.Teff     = t.Teff(index);
+      end
+      t1.Label = [ t1.Label ' TSL inelastic' ];
       setaxis(t1, 3, t1.T);
     end
     t1 = iData(t1); % check axis and possibly transpose
