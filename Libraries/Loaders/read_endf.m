@@ -747,7 +747,10 @@ function endf = read_endf_pyne(filename)
       this = [];
     end
     if isstruct(this) && isempty(fieldnames(this)), this = []; end
-    if ~isempty(this), endf.(dict{index}) = this; end
+    if ~isempty(this), 
+      this = read_endf_pyne2endf(this);
+      endf.(dict{index}) = this; 
+    end
   end
   endf.filename = filename;
   endf.pyne_script   = char(s);
@@ -755,3 +758,75 @@ function endf = read_endf_pyne(filename)
   % delete temporary files created
   delete([ tmp '*' ]);
   
+  % compatibility
+  
+  
+function endf = read_endf_pyne2endf(endf)
+  % make a PyNE ENDF compatible with legacy nomenclature
+  
+  pyne_endf_tokens = { ...
+   'description       COMMENT',...
+   'reference         REF',...
+   'format            NFOR',...
+   'date_distribution DDATE',...
+   'date_release      RDATE',...
+   'author            AUTH',...
+   'derived           LDRV',...
+   'sublibrary        NSUB',...
+   'library           NLIB',...
+   'energy_max        EMAX',...
+   'date              EDATE',...
+   'modification      NMOD',...
+   'laboratory        ALAB',...
+   'identifier        HSUB',...
+   'date_entry        ENDATE',...
+   'teff              Teff',...
+   'temperature       T',...
+   'scattering_law    Sab',...
+   'ln_S_             LLN',...
+   'beta              beta', ...
+   'alpha             alpha', ...
+   'num_non_principal NS' ...
+   };
+   for index=1:numel(pyne_endf_tokens)
+     line = pyne_endf_tokens{index};
+     [pyne_tok, endf_tok] = strtok(line);
+     endf_tok=strtrim(endf_tok);
+     if isfield(endf, pyne_tok) && ~isfield(endf, endf_tok)
+       endf.(endf_tok)= endf.(pyne_tok);
+     end
+   end
+   
+   % special tokens that require more logic
+   pyne_tok     = 'type'; 
+   endf_tok     = 'LTHR';
+   if isfield(endf, pyne_tok);
+     pyne_tok_ref = endf.(pyne_tok);
+     if strcmp(pyne_tok_ref,'coherent')
+       endf.(endf_tok)=1;
+     elseif strcmp(pyne_tok_ref,'incoherent')
+       endf.(endf_tok)=2;
+     end
+   end
+   
+   pyne_tok     = 'temperature_used'; 
+   endf_tok     = 'LAT';
+   if isfield(endf, pyne_tok);
+     pyne_tok_ref = endf.(pyne_tok);
+     if strcmp(pyne_tok_ref,'0.0253 eV')
+       endf.(endf_tok)= 1;
+     else
+       endf.(endf_tok)= 0;
+     end
+   end
+   
+   pyne_tok     = 'symmetric'; 
+   endf_tok     = 'LASYM';
+   if isfield(endf, pyne_tok)
+     pyne_tok_ref   = endf.(pyne_tok);
+     endf.(endf_tok)= ~pyne_tok_ref;
+   end
+   
+
+  
+ 

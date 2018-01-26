@@ -769,10 +769,10 @@ function data = iLoad_loader_check(file, data, loader)
       data.User    = [ 'User running on ' computer ' from ' pwd ];
     end
   end
-  
   if ~isfield(data, 'Label'), data.Label = ''; end
-  if isfield(loader, 'name') data.Format = loader.name; 
-  else data.Format=[ char(loader.method) ' import' ]; end
+  if     isfield(loader,'name')   data.Format = loader.name; 
+  elseif isfield(loader,'method') data.Format=[ char(loader.method) ' import' ]; 
+  elseif ischar(loader)           data.Format=[ char(loader) ' import' ]; end
   data.Loader = loader;
   
 end % Load_loader_check

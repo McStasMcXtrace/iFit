@@ -26,16 +26,16 @@ elseif ~isempty(out) && isfield(out.Data,'MF') && isfield(out.Data,'MT')
   if ~isfield(out, 'MAT') && ~isempty(findfield(out, 'MAT','first case'))
     setalias(out, 'MAT',      findfield(out, 'MAT','first case'),   'ENDF Material number');
   end
-  if ~isfield(out, 'ZSYMAM') && ~isempty(findfield(out, 'ZSYMAM','first case'))
-    setalias(out, 'Material', findfield(out, 'ZSYMAM','first case'),'ENDF Material description (ZSYMAM)');
+  if ~isfield(out, 'ZSYMAM') && ~isempty(findfield(out, 'ZSYMAM','first'))
+    setalias(out, 'Material', findfield(out, 'ZSYMAM','first'),'ENDF Material description (ZSYMAM)');
   end
-  if ~isfield(out, 'EDATE') && ~isempty(findfield(out, 'EDATE','first case'))
-    setalias(out, 'EDATE',    findfield(out, 'EDATE','first case'), 'ENDF Evaluation Date (EDATE)');
+  if ~isfield(out, 'EDATE') && ~isempty(findfield(out, 'EDATE','first'))
+    setalias(out, 'EDATE',    findfield(out, 'EDATE','first'), 'ENDF Evaluation Date (EDATE)');
   end
   if ~isfield(out, 'ZA') && ~isempty(findfield(out, 'ZA','first case'))
     setalias(out, 'charge',   findfield(out, 'ZA','first case'),    'ENDF material charge Z (ZA)');
   end
-  if ~isfield(out, 'AWR') && ~isempty(findfield(out, 'AWR','first case'))
+  if ~isfield(out, 'AWR') && ~isempty(findfield(out, 'AWR','first'))
     setalias(out, 'mass',  findfield(out, 'AWR','first case'),   'ENDF material mass A [g/mol] (AWR)');
   end
   if ~isfield(out, 'DescriptiveData') && ~isempty(findfield(out, 'DescriptiveData','first case'))
@@ -93,6 +93,13 @@ elseif ~isempty(out) && isfield(out.Data, 'info')
   for index=1:numel(f)
     if strcmp(f{index}, 'info') continue; end
     section = out.Data.(f{index});
+    if ~isstruct(section), continue; end
+    % we detect some sections to keep
+    if strcmp(f{index}, 'thermal_elastic')
+      section.MF = 7; section.MT = 2;
+    elseif strcmp(f{index},'thermal_inelastic')
+      section.MF = 7; section.MT = 4;
+    end
     info    = out.Data.info;
     out0 = copyobj(out); % out0.Data = []; 
     out0.Data = section;
@@ -121,7 +128,11 @@ function t0=read_endf_mf7_array(t)
   for index=1:numel(t.T)
     t1     = t;
     t1.T   = t.T(index);
-    t1.Title = [ t1.ZSYMAM ' T=' num2str(t1.T) ' [K] ' t1.description];
+    if isfield(t1, 'ZSYMAM')
+      t1.Title = [ t1.ZSYMAM ' T=' num2str(t1.T) ' [K] ' t1.description];
+    else
+      t1.Title = [ ' T=' num2str(t1.T) ' [K] ' t1.description];
+    end
     if t1.MT == 2 % Incoherent/Coherent Elastic Scattering
       t1.NP  = t.NP(index);
       t1.S   = t.S(index,:);
