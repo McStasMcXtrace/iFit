@@ -1,0 +1,8 @@
+#!/bin/sh
+#
+# Put this script in e.g. /usr/local/bin for access to the 'ifit' command in normal macOS shells
+#
+/Applications/iFit.app/Contents/Resources/standalone/ifit $*
+
+# Add a reset after ifit termination to recover shell properties
+reset
