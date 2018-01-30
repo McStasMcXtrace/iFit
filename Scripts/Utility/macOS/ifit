@@ -6,3 +6,8 @@
 
 # Add a reset after ifit termination to recover shell properties
 reset
+
+# Echo information that ifit exited
+echo -----------------------------------
+echo Your ifit shell session has exited!
+echo -----------------------------------
