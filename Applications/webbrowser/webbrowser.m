@@ -124,11 +124,11 @@ function ret=webbrowser(url, method)
     elseif isunix, precmd = 'LD_LIBRARY_PATH= ; '; 
     else precmd=''; end
     if ispc
-      ret=system([ precmd 'start ' url ]);
+      ret=system([ precmd 'start "' url '"']);
     elseif ismac
-      ret=system([ precmd 'open ' url ]);
+      ret=system([ precmd 'open "' url '"']);
     else
-      [ret, message]=system([ precmd 'xdg-open ' url ]);
+      [ret, message]=system([ precmd 'xdg-open "' url '"']);
     end
   end
 
