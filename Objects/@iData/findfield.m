@@ -172,7 +172,7 @@ if ~isempty(field)
   end
   if ~isempty(index) && iscell(index), index = find(cellfun('isempty', index) == 0); end
   if isempty(index)
-    match=[]; types=[]; dims=[];
+    match={}; types={}; dims=[];
   else
     match = match(index);
     types = types(index);
@@ -199,7 +199,7 @@ end
 % private function iData_getfields, returns field, class, numel 
 function [f, t, n] = iData_getfields(structure, parent)
 
-f=[]; t=[]; n=[];
+f={}; t={}; n=[];
 if ~isstruct(structure), return; end
 
 if numel(structure) > 1

@@ -266,7 +266,7 @@ function [data, format] = iLoad(filename, loader, varargin)
         return
       else
         f = findfield(data, filesub(2:end)); % calls private function
-        if all(cellfun(@isempty, f)), f=[]; end
+        if iscell(f) && all(cellfun(@isempty, f)), f=[]; end
         if ~isempty(f)
           this_data = {}; this_format = {};
           % 'data' will be a cell array of structure based on the initial one

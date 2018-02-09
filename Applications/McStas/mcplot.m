@@ -47,7 +47,7 @@ function a=mcplot(varargin)
   h = subplot(a, 'view2 tight');
   % we identify if this is a scan. Then we add a context menu item to plot 
   % separately each detector
-  if all(~cellfun(@isempty, findfield(a, 'xvars'))) && numel(a) == numel(h)
+  if (isempty(findfield(a, 'xvars')) || all(~cellfun(@isempty, findfield(a, 'xvars')))) && numel(a) == numel(h)
     for index=1:numel(a)
       uicm = get(h(index), 'UIContextMenu');
       if numel(a) == 1, this = a; else this = a(index); end
