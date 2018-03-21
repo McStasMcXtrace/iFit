@@ -1,9 +1,11 @@
-function a = xlim(a, lims)
+function a = xlim(a, lims, exclude)
 % b = xlim(s,[ xmin xmax ]) : Reduce iData X axis limits
 %
 %   @iData/xlim function to reduce the X axis (rank 2, columns) limits
 %     xlim(s) returns the current X axis limits. For 1D objects, the axis
 %     rank 1 limits are returned. Undefined axis returns [NaN NaN] as limits.
+%
+%   xlim(s, [min max], 'exclude') removes the specified range instead of keeping it.
 %
 % input:  s: object or array (iData)
 %         limits: new axis limits (vector)
@@ -14,11 +16,12 @@ function a = xlim(a, lims)
 % See also iData, iData/plot, iData/xlabel
 
 % handle input iData arrays
-if nargin == 1, lims = ''; end
+if nargin < 2, lims = ''; end
+if nargin < 3, exclude = ''; end
 if numel(a) > 1
   s = [];
   for index=1:numel(a)
-    s = [ s ; feval(mfilename, a(index), lims) ];
+    s = [ s ; feval(mfilename, a(index), lims, exclude) ];
   end
   if ~isempty(lims)
     a = reshape(s, size(a));
@@ -42,7 +45,11 @@ if isempty(lims)
   return
 end
 
-index=find(lims(1) < axisvalues & axisvalues < lims(2));
+if ~isempty(exclude)
+  index=find(lims(1) > axisvalues | axisvalues > lims(2));
+else
+  index=find(lims(1) < axisvalues & axisvalues < lims(2));
+end
 s.type='()';
 if ndims(a) > 1
   s.subs={ ':', index };
