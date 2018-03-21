@@ -140,15 +140,58 @@ classdef iData_Sqw2D < iData
     % compressibility ?
     % g(r) pdf
     
-    function [inc, multi] = incoherent(s, varargin)
+    function [inc, single, multi] = incoherent(s, varargin)
       % iData_Sqw2D: incoherent: incoherent neutron scattering law estimate in the incoherent gaussian approximation
+      %
+      % This implementation is in principle exact for an isotropic monoatomic material,
+      % e.g. a liquid or powder.
+      % This methodology is equivalent to the LEAPR module of NJOY ("phonon expansion")
+      % to compute S(alpha,beta) from a vibrational density of states.
+      % Arguments not given are searched in the data set.
+      %
+      % conventions:
+      % w = Ei-Ef = energy lost by the neutron
+      %    w > 0, neutron looses energy, can not be higher than Ei (Stokes)
+      %    w < 0, neutron gains energy, anti-Stokes
+      %
+      % Reference:
+      %   H. Schober, Journal of Neutron Research 17 (2014) 109–357
+      %     DOI 10.3233/JNR-140016 (see esp. pages 328-331)
+      %   V.S. Oskotskii, Sov. Phys. Solid State 9 (1967), 420.
+      %   A. Sjolander, Arkiv for Fysik 14 (1958), 315.
+      %
+      % syntax:
+      %   [inc, single, multi] = incoherent(sqw)
+      %   [inc, single, multi] = incoherent(sqw, q, T, sigma, m, n)
+      %
+      % input:
+      %   sqw:the scattering law S(q,w) [iData_Sqw2D]
+      %   q:  the momentum axis [Angs-1, vector]
+      %   T:  temperature [K]
+      %   sigma: neutron cross section [barns]
+      %   m:  mass [g/mol]
+      %   n:  number of iterations in the series expansion, e.g. 5
+      %
+      % output:
+      %   inc:    total S(q,w), single+multi-phonons [iData_Sqw2D]
+      %   single: so-called single-phonon incoherent S(q,w) [iData_Sqw2D]
+      %   multi:  so-called multi-phonon incoherent S(q,w)  [iData_Sqw2D]
+      %
+      % Example:
+      %   s   = iData_Sqw2D('SQW_coh_lGe.nc');
+      %   inc = incoherent(s);
+      %   subplot(inc);
+      %
+      % See also: iData_Sqw2D/multi_phonons_dos
+      % (c) E.Farhi, ILL. License: EUPL.
       g   = dos(s);
-      inc = multi_phonons_incoherent(g, varargin{:});
-      multi = plus(inc(3:end));
-      inc   = plus(inc(1:2));
+      inc = incoherent(g, varargin{:});
+      multi = plus(inc(3:end)); % multi-phonon
+      single= plus(inc(1:2));   % elastic+1-phonon
+      inc   = plus(inc);        % total
       if nargout == 0
         fig=figure; 
-        h  =subplot(log10([inc multi]),'view2'); 
+        h  =subplot(log10([inc single multi]),'view2'); 
         set(fig, 'NextPlot','new');
       end
     end
