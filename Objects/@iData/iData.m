@@ -158,10 +158,10 @@ methods
     % iData('filename', ...)
       if (startsWith(varargin{1},'http','IgnoreCase',true))
         if ~usejava('jvm')
-            % Fall back to using curl
+            % Fall back to using wget
             tmpfile = tempname;
-            display(['curl ' varargin{1} ' > ' tmpfile])
-            unix(['curl ' varargin{1} ' > ' tmpfile])
+            display(['wget ' varargin{1} ' -O ' tmpfile])
+            unix(['wget ' varargin{1} ' -O ' tmpfile])
             varargin{1} = tmpfile;
         end
       end
