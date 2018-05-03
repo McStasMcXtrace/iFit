@@ -126,6 +126,7 @@ if all(dim > 0)
       % make the integration
       if ~isscalar(s)
         % check dimension of axis x
+        if numel(x) == prod(size(x)), x=x(:); end
         if numel(x) ~= size(s, 1), x=x(:,1); end
         if numel(e) > 1, e = feval(op, x, e, 1); end % trapz(x,e2/m2,1)
         if numel(m) > 1, m = feval(op, 1:length(x), m, 1); end % sum(m)

@@ -158,7 +158,9 @@ function s=load_check_struct(data, loaders, filename)
   else                        s.Date   = clock; end
   if isfield(data, 'Label'),  s.Label = data.Label; end
   if ~isfield(s, 'Format'),
-    s.Format  = loaders{1}.name; 
+    if iscell(loaders) s.Format  = loaders{1}.name; 
+    else               s.Format  = loaders.name; 
+    end
   end
 
 % ----------------------------------------------------------------------
