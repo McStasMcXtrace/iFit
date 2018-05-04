@@ -156,7 +156,7 @@ methods
       return
     elseif ischar(varargin{1}) % filename -> iData
     % iData('filename', ...)
-      if (startsWith(varargin{1},'http','IgnoreCase',true))
+      if (strncmp(varargin{1},'http',4))
         if ~usejava('jvm')
             % Fall back to using wget
             tmpfile = tempname;
