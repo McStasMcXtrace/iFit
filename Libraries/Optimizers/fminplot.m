@@ -188,33 +188,39 @@ function stop = fminplot(pars, optimValues, state)
   % handle second subplot: parameters. The last set is highlighted
   subplot(1,2,2); % this subplot shows some parameters
   hold off
-  switch length(pars)
-  case 1
-    g=plot(fvalHistory,    parsHistory,'bo', ...
-        fvalHistory(1),    parsHistory(1),'ro', ...
-        fvalHistory(best), parsHistory(best),'gv', ...
-        fvalHistory(end),  parsHistory(end),'rs');
-    xlabel('Criteria'); ylabel('Par1'); 
-  case 2
-    g=plot3(parsHistory(:,1), parsHistory(:,2), fvalHistory, 'bo', ...
-        parsHistory(1,1),    parsHistory(1,2), fvalHistory(1), 'ro', ...
-        parsHistory(best,1), parsHistory(best,2), fvalHistory(best), 'gv', ...
-        parsHistory(end,1),  parsHistory(end,2), fvalHistory(end), 'rs');
-    xlabel('Par1'); ylabel('Par2'); zlabel('Criteria');
-  otherwise
-    % find the 3 first parameters that vary
-    index = find(sum(abs(diff(parsHistory,1)),1));
-    if length(index) > 3, index = index(1:3);
-    else
-      if ~any(index == 1), index = [ 1 index ]; end
-      if ~any(index == 2), index = [ index 2 ]; end
-      if ~any(index == 3), index = [ index 3 ]; end
+  if ~isempty(parsHistory)
+    switch length(pars)
+    case 1
+      g=plot(fvalHistory,    parsHistory,'bo', ...
+          fvalHistory(1),    parsHistory(1),'ro', ...
+          fvalHistory(best), parsHistory(best),'gv', ...
+          fvalHistory(end),  parsHistory(end),'rs');
+      xlabel('Criteria'); ylabel('Par1'); 
+    case 2
+      g=plot3(parsHistory(:,1), parsHistory(:,2), fvalHistory, 'bo', ...
+          parsHistory(1,1),    parsHistory(1,2), fvalHistory(1), 'ro', ...
+          parsHistory(best,1), parsHistory(best,2), fvalHistory(best), 'gv', ...
+          parsHistory(end,1),  parsHistory(end,2), fvalHistory(end), 'rs');
+      xlabel('Par1'); ylabel('Par2'); zlabel('Criteria');
+    otherwise
+      % find the 3 first parameters that vary
+      index = find(sum(abs(diff(parsHistory,1)),1));
+      if length(index) > 3, index = index(1:3);
+      else
+        if ~any(index == 1), index = [ 1 index ]; end
+        if ~any(index == 2), index = [ index 2 ]; end
+        if ~any(index == 3), index = [ index 3 ]; end
+      end
+      whos
+      index
+      best
+      
+      g=plot3(parsHistory(:,index(1)), parsHistory(:,index(2)),   parsHistory(:,index(3)), 'bo', ...
+            parsHistory(1,index(1)),   parsHistory(1,index(2)),   parsHistory(1,index(3)), 'ro', ...
+            parsHistory(best,index(1)),parsHistory(best,index(2)),parsHistory(best,index(3)), 'gv', ...
+            parsHistory(end,index(1)), parsHistory(end,index(2)), parsHistory(end,index(3)), 'rs');
+      xlabel([ 'Par' sprintf('%i',index(1)) ]); ylabel([ 'Par' sprintf('%i',index(2)) ]); zlabel([ 'Par' sprintf('%i',index(3)) ]); 
     end
-    g=plot3(parsHistory(:,index(1)), parsHistory(:,index(2)),   parsHistory(:,index(3)), 'bo', ...
-          parsHistory(1,index(1)),   parsHistory(1,index(2)),   parsHistory(1,index(3)), 'ro', ...
-          parsHistory(best,index(1)),parsHistory(best,index(2)),parsHistory(best,index(3)), 'gv', ...
-          parsHistory(end,index(1)), parsHistory(end,index(2)), parsHistory(end,index(3)), 'rs');
-    xlabel([ 'Par' sprintf('%i',index(1)) ]); ylabel([ 'Par' sprintf('%i',index(2)) ]); zlabel([ 'Par' sprintf('%i',index(3)) ]); 
   end
   
   set(g(end),'MarkerFaceColor','r');
