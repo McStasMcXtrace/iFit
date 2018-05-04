@@ -156,18 +156,6 @@ methods
       return
     elseif ischar(varargin{1}) % filename -> iData
     % iData('filename', ...)
-      if (strncmp(varargin{1},'http',4))
-        if ~usejava('jvm')
-            % Fall back to using wget
-            tmpfile = tempname;
-            % Keep file extension, may be useful for iData load
-            [filepath,name,ext] = fileparts(varargin{1});
-            tmpfile = [tmpfile ext];
-            display(['wget ' varargin{1} ' -O ' tmpfile])
-            unix(['wget ' varargin{1} ' -O ' tmpfile])
-            varargin{1} = tmpfile;
-        end
-      end
       out = load(iData, varargin{:});        % load file(s) with additional arguments. Check included.
       if isempty(out), out = iData; end
       return
