@@ -96,7 +96,6 @@ function stop = fminplot(pars, optimValues, state)
       stop=true;  % figure is not valid: was closed
       return;
     end
-    
     % store data history as rows
     if isempty(fvalHistory) | optimValues.funcount < 1
       parsHistory = pars(:)'; 
@@ -211,10 +210,6 @@ function stop = fminplot(pars, optimValues, state)
         if ~any(index == 2), index = [ index 2 ]; end
         if ~any(index == 3), index = [ index 3 ]; end
       end
-      whos
-      index
-      best
-      
       g=plot3(parsHistory(:,index(1)), parsHistory(:,index(2)),   parsHistory(:,index(3)), 'bo', ...
             parsHistory(1,index(1)),   parsHistory(1,index(2)),   parsHistory(1,index(3)), 'ro', ...
             parsHistory(best,index(1)),parsHistory(best,index(2)),parsHistory(best,index(3)), 'gv', ...
