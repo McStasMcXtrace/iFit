@@ -95,7 +95,7 @@ function y = mccode(instr, options, parameters)
 % ------------------------------------------------------------------------------
 % To optimise instrument parameters, you should first fix the non-varying
 % parameters, and possibly bound the others. Then the optimiser is launched
-% with any 'fmax':
+% with e.g. 'fmax' or 'fmin':
 %   model = mccode('templateDIFF');  % maximize
 %   fix(model, 'all'); model.RV='free';
 %   model.RV=[0 1 2];        % bounds and starting value

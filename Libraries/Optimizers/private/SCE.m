@@ -222,7 +222,7 @@ for i = 2:OPTIONS.MaxIter,
             [SFTRY,SXTRY] = AMOTRY(FUN,SIMPLEX,-1,LB,UB,varargin{:});
             
             %% check the result
-            if SFTRY <= SIMPLEX_FITNESS(1),
+            if ~isempty(SIMPLEX_FITNESS) && SFTRY <= SIMPLEX_FITNESS(1),
                 %% gives a result better than the best point,so try an additional
                 %% extrapolation by a factor 2
                 [SFTRYEXP,SXTRYEXP] = AMOTRY(FUN,SIMPLEX,-2,LB,UB,varargin{:});
@@ -235,7 +235,7 @@ for i = 2:OPTIONS.MaxIter,
                     SIMPLEX_FITNESS(end) = SFTRY;
                     ALGOSTEP = 'reflection';
                 end
-            elseif SFTRY >= SIMPLEX_FITNESS(NDIM),
+            elseif numel(SIMPLEX_FITNESS) >= NDIM && SFTRY >= SIMPLEX_FITNESS(NDIM),
                 %% the reflected point is worse than the second-highest, so look
                 %% for an intermediate lower point, i.e., do a one-dimensional
                 %% contraction
