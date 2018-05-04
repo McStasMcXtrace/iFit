@@ -5,28 +5,32 @@ function [pars,fval,exitflag,output] = fmax(objective, pars, options,  varargin)
 % behaviour and number of free parameters. You can however force a specific 
 % optimizer by setting e.g. options.optimizer='fminpso'
 %
-% fmin(model)
-%   minimize the model, using current model or guessed parameters. Return best parameters
-% fmin(model, pars)
-%   minimize the model, starting with given parameters and return best parameter set 
-%   when pars is given as [], current/guessed parameters are used
-% fmin(model, pars, 'optimizer')
-%   minimize the model, as above, using given optimizer with its default configuration
-%   for instance: fmin(model, [], 'fminpso')
-% fmin(model, pars, options)
-%   minimize the model, as above, using given optimizer configuration
-%   for instance: fmin(model, [], 'optimizer=fminpso; OutputFcn=iter; Display=iter')
+% WARNING: as the selected optimizer may change from one call to an other, the
+% solution found may vary as well. To avoid that, rather use a specific optimizer.
+%
+% Syntax:
+%   fmax(model)
+%     maximise the model, using current model or guessed parameters. Return best parameters
+%   fmax(model, pars)
+%     maximise the model, starting with given parameters and return best parameter set 
+%     when pars is given as [], current/guessed parameters are used
+%   fmax(model, pars, 'optimizer')
+%     maximise the model, as above, using given optimizer with its default configuration
+%     for instance: fmax(model, [], 'fminpso')
+%   fmax(model, pars, options)
+%     maximise the model, as above, using given optimizer configuration
+%     for instance: fmax(model, [], 'optimizer=fminpso; OutputFcn=fminplot; Display=iter')
 %
 % WARNING: as the selected optimizer may change from one call to an other, the
 % solution found may vary as well. To avoid that, rather use a specific optimizer.
 %
 % Best optimizers are:
-%   fmaxpso:    Particle Swarm Optimization
-%   fmaxpowell: Powell with Coggins line search
-%   fmaxhooke:  Hooke-Jeeves direct search
-%   fmaxralg:   Shor R-algorithm
-%   fmaxsimpsa: Simplex/simulated annealing
-%   fmaximfil:  Unconstrained Implicit filtering
+%   fminpso:    Particle Swarm Optimization
+%   fminpowell: Powell with Coggins line search
+%   fminhooke:  Hooke-Jeeves direct search
+%   fminralg:   Shor R-algorithm
+%   fminsimpsa: Simplex/simulated annealing
+%   fminimfil:  Unconstrained Implicit filtering
 % Type <a href="matlab:doc(iData,'Optimizers')">doc(iData,'Optimizers')</a> to access the Optimizers Documentation.
 %
 % Calling:
@@ -41,11 +45,17 @@ function [pars,fval,exitflag,output] = fmax(objective, pars, options,  varargin)
 %
 % The options structure may contain the following members, in agreement with 'optimset':
 %    options.Display: Level of display [ off | iter | notify | final ]. Default is 'off'
-%    options.MaxFunEvals: Maximum number of function evaluations allowed, sometimes referred as the 'cost' or 'budget'.
+%    options.MaxFunEvals: Maximum number of function evaluations allowed, sometimes 
+%      referred as the 'cost' or 'budget'.
 %    options.MaxIter: Maximum number of iterations allowed
-%    options.TolFun: Termination tolerance on the function value (absolute value or change). Use 'x%' to specify a relative function change.
-%    options.TolX: Termination tolerance on parameter change. Use 'x%' to specify a relative parameter change.
-%    options.OutputFcn: Name of an output function. When set, it is called at each iteration step. You may use 'fmaxplot', which is provided in Optimizers. Refer to the Fit page for more information about fmaxplot. A simpler/faster alternative is the 'fmaxstop' option.
+%    options.TolFun: Termination tolerance on the function value (absolute value or change). 
+%      Use 'x%' to specify a relative function change.
+%    options.TolX: Termination tolerance on parameter change. 
+%      Use 'x%' to specify a relative parameter change.
+%    options.OutputFcn: Name of an output function. When set, it is called at each
+%      iteration step. You may use 'fminplot', which is provided in Optimizers. 
+%      Refer to the Fit page for more information about fminplot. A simpler/faster
+%      alternative is the 'fminstop' option.
 %    options.PlotFcns: same as OutputFcn, but can be a set of function in a cell array.
 %    options.FunValCheck: Check for invalid values, such as NaN or complex
 %    options.MinFunEvals: when set, waits for a given number of iterations before testing for convergence
@@ -80,7 +90,7 @@ function [pars,fval,exitflag,output] = fmax(objective, pars, options,  varargin)
 %  fmax(model)
 %
 % Version: $Date$
-% See also: fmaxsearch, optimset, iFunc/fmin
+% See also: fminsearch, optimset, iFunc/fmin
 % (c) E.Farhi, ILL. License: EUPL.
 
 % we maximize the iFunc: (p)feval(iFunc, p). Must guess some axes to use.
