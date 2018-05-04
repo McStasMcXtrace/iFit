@@ -9,7 +9,7 @@ function y = mccode(instr, options, parameters)
 % mccode(description)
 %       creates a model with specified McCode instrument 
 %       The instrument may be given as an '.instr' McCode description, or directly
-%       as an executable.
+%       as an executable. Distant URL (ftp, http, https) can also be used.
 % mccode('')
 %       requests a McCode file (*.instr,*.out) with a file selector.
 % mccode('gui')   and 'mccode'  alone.
@@ -499,6 +499,37 @@ function instr = mccode_search_instrument(instr, d)
 
   % get/search instrument
   % check if the instrument exists, else attempt to find it
+  
+  if strncmp(instr,'http://',7) || strncmp(instr,'https://',8) || strncmp(instr,'ftp://',6) 
+    tmpfile = tempname;
+    % Keep file extension, may be useful for iData load
+    [filepath,name,ext] = fileparts(instr);
+    tmpfile = [tmpfile ext];
+    use_wget = false;
+    if ~usejava('jvm')
+      use_wget = true;
+    else
+      % access the net. Proxy settings must be set (if any).
+      try
+        % write to temporary file
+        tmpfile = urlwrite(instr, tmpfile);
+      catch ME
+        use_wget = true;
+      end
+    end
+    if use_wget
+      % Fall back to using wget
+      cmd = ['wget ' instr ' -O ' tmpfile]; disp(cmd)
+      [status, result] = system(cmd);
+      if status
+        disp(result);
+        error([ mfilename ': Can not get URL ' instr ]);
+      end
+    end
+    instr = tmpfile;
+  end
+      
+      
   if ~isempty(instr)
     index = dir(instr);
   else return;
