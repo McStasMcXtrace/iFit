@@ -334,20 +334,32 @@ function [data, format] = iLoad(filename, loader, varargin)
     if strncmp(filename, 'http://', length('http://')) ...
      | strncmp(filename, 'https://',length('https://')) ...
      | strncmp(filename, 'ftp://',  length('ftp://'))
-      if (~usejava('mwt'))
-          fprintf(1, 'iLoad: Reading from a URL requires a Java Virtual Machine.\n\tSkipping...\n');
-          return
+      tmpfile = tempname;
+      % Keep file extension, may be useful for iData load
+      [filepath,name,ext] = fileparts(filename);
+      tmpfile = [tmpfile ext];
+      use_wget = false;
+      if ~usejava('jvm')
+        use_wget = true;
+      else
+        % access the net. Proxy settings must be set (if any).
+        try
+          % write to temporary file
+          tmpfile = urlwrite(filename, tmpfile);
+        catch ME
+          use_wget = true;
+        end
       end
-      % access the net. Proxy settings must be set (if any).
-      try
-        % write to temporary file
-        filename = urlwrite(filename, tempname);
-        url = true;
-      catch ME
-        fprintf(1, 'iLoad: Can''t read URL "%s".\n', filename);
-        disp(ME.mesage)
-        return
+      if use_wget
+        % Fall back to using wget
+        cmd = ['wget ' filename ' -O ' tmpfile]; disp(cmd)
+        [status, result] = system(cmd);
+        if status
+          disp(result);
+          error([ mfilename ': Can not get URL ' filename ]);
+        end
       end
+      filename = tmpfile;
     end
     
     % handle compressed files (local or distant)
