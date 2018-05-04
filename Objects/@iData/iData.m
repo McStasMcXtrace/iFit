@@ -156,6 +156,15 @@ methods
       return
     elseif ischar(varargin{1}) % filename -> iData
     % iData('filename', ...)
+      if (startsWith(varargin{1},'http','IgnoreCase',true))
+        if ~usejava('jvm')
+            % Fall back to using wget
+            tmpfile = tempname;
+            display(['wget ' varargin{1} ' -O ' tmpfile])
+            unix(['wget ' varargin{1} ' -O ' tmpfile])
+            varargin{1} = tmpfile;
+        end
+      end
       out = load(iData, varargin{:});        % load file(s) with additional arguments. Check included.
       if isempty(out), out = iData; end
       return
