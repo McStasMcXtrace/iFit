@@ -220,7 +220,6 @@ for i = 2:OPTIONS.MaxIter,
             %% first extrapolate by a factor -1 through the face of the simplex
             %% across from the high point,i.e.,reflect the simplex from the high point
             [SFTRY,SXTRY] = AMOTRY(FUN,SIMPLEX,-1,LB,UB,varargin{:});
-            
             %% check the result
             if ~isempty(SIMPLEX_FITNESS) && SFTRY <= SIMPLEX_FITNESS(1),
                 %% gives a result better than the best point,so try an additional
@@ -235,7 +234,7 @@ for i = 2:OPTIONS.MaxIter,
                     SIMPLEX_FITNESS(end) = SFTRY;
                     ALGOSTEP = 'reflection';
                 end
-            elseif numel(SIMPLEX_FITNESS) >= NDIM && SFTRY >= SIMPLEX_FITNESS(NDIM),
+            elseif numel(SIMPLEX_FITNESS) <= NDIM && NDIM <= numel(SIMPLEX_FITNESS) && SFTRY >= SIMPLEX_FITNESS(NDIM),
                 %% the reflected point is worse than the second-highest, so look
                 %% for an intermediate lower point, i.e., do a one-dimensional
                 %% contraction
