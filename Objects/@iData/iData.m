@@ -160,6 +160,9 @@ methods
         if ~usejava('jvm')
             % Fall back to using wget
             tmpfile = tempname;
+            % Keep file extension, may be useful for iData load
+            [filepath,name,ext] = fileparts(varargin{1});
+            tmpfile = [tmpfile ext];
             display(['wget ' varargin{1} ' -O ' tmpfile])
             unix(['wget ' varargin{1} ' -O ' tmpfile])
             varargin{1} = tmpfile;
