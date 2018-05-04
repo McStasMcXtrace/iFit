@@ -66,7 +66,11 @@ function [comps, fig, model]=plot(model, p, options)
   if isempty(monitors)
     monitors       = model.UserData.monitors;
   end
-  monitors_names = get(monitors,'Component');
+  try
+    monitors_names = get(monitors,'Component');
+  catch
+    monitors_names = [];
+  end
 
   % first extract the portion 'start':'end'
   disp([ mfilename ': rendering geometry...' ])
