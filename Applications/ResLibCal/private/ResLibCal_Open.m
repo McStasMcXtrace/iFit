@@ -24,7 +24,23 @@ function EXP = ResLibCal_Open(filename, EXP, silent)
     if isempty(filename) || all(filename == 0), return; end
     filename = fullfile(pathname, filename);
   end
-
+  if ischar(filename) && ~exist(filename,'file') % file given, but not found. Search in 'instruments' and add extension
+    p   = fileparts(which(mfilename));  % private
+    p   = fullfile(p, '..','instruments');
+    ext = { '', '.ini','.cfg','.par','.res' };
+    tryfiles = {};
+    for index=1:numel(ext)
+      tryfiles{end+1} = [ filename ext{index} ];
+      tryfiles{end+1} = fullfile(p, [ filename ext{index} ]);
+    end
+    for index = 1:numel(tryfiles)
+      if exist(tryfiles{index}, 'file')
+        filename = tryfiles{index};
+        disp([ datestr(now) ': found TAS configuration ' filename ]);
+        break;
+      end
+    end
+  end
   if ischar(filename) && exist(filename,'file') % a file exists: read it
     % handle case of ResCal5 .par .cfg file (numerical vector)
     try

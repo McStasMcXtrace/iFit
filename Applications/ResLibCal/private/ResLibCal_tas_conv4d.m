@@ -246,6 +246,11 @@ signal.Expression = { ...
   'if ~isempty(hkle) ResLibCal(''silent'',hkle{:}); end'};
   
 signal = iFunc(signal);
+if dispersion.Dimension == 2
+  signal = iFunc_Sqw2D(signal);
+else                % dim==4
+  signal = iFunc_Sqw4D(signal)
+end
 disp(signal.Name);
 
 % ==============================================================================
