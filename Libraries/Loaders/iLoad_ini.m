@@ -350,5 +350,21 @@ function config = iLoad_ini
 	  config.UseSystemDialogs = 'yes'; % no: use uigetfiles, else defaults to 'uigetfile'
 	  config.FileName         = [ mfilename ' (default configuration from ' which(mfilename) ')' ];
 
+    % add to imformat when extension is OK
+    add_all2imformat(config.loaders);
 	  
-    
+% ------------------------------------------------------------------------------
+function add_all2imformat(config)
+  
+  for index=1:numel(config)
+    this = config{index};
+    if isfield(this, 'name') && isfield(this, 'extension') ...
+      && isfield(this, 'method') && ~isfield(this, 'options')
+      try
+        add2imformat(this.name, this.extension, ...
+          @(f)not(isempty(feval(this.method, f))), ...
+          @(f)feval(this.method, f), ...
+          @(f)feval(this.method, f), '');
+      end
+    end
+  end
