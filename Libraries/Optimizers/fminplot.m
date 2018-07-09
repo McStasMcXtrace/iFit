@@ -1,13 +1,16 @@
 function stop = fminplot(pars, optimValues, state)
 % stop=fminplot(pars, optimValues, state) default plotting function showing the 
-% criteria evolution as well as main parameters and status.
+%   criteria evolution as well as main parameters and status.
 % A STOP button allows premature abortion of the optimization.
+% When used after the optimization, fminplot can plot the criteria convergence 
+%   and parameter distributions.
 % 
 % To use this optimization monitoring tool, use:
 %   options.OutputFcn='fminplot'
 % prior to the optimization/fit.
 %
-% To plot this monitoring window after the optimization/fit completion, use:
+% To plot the criteria convergence and parameter distributions after the 
+% optimization/fit completion, use:
 %   [pars,fval,exitflag,output]=fmin(@objective, [], 'OutputFcn=fminplot')
 %   fminplot(output);
 %
@@ -53,6 +56,7 @@ function stop = fminplot(pars, optimValues, state)
   old_gcf = get(0, 'CurrentFigure');
   
   if isstruct(pars)  % we feed fminplot with an 'output' structure =============
+    output=pars;
     parsHistory = pars.parsHistory;
     fvalHistory = pars.criteriaHistory;
     optimValues.funcount = pars.funcCount;
@@ -67,6 +71,8 @@ function stop = fminplot(pars, optimValues, state)
     [dummy, best] = sort(fvalHistory); % sort in ascending order
     best= best(1);
     flag_input_is_struct = 1;
+    
+    fminplot_View_Parameters_Histograms(output);
     
   else              % normal execution during optimization =====================
     
@@ -234,3 +240,56 @@ function stop = fminplot(pars, optimValues, state)
 
 end
 
+function fminplot_View_Parameters_Histograms(o)
+  % display the Parameter distribution histograms
+  if isempty(o), return; end
+  if iscell(o), o=o{1}; end
+  titl = [ 'Parameter distributions: ' datestr(now) ' ' o.optimizer ];
+  if isfield(o, 'model') && isfield(o.model, 'Name')
+    titl = [ titl ' ' o.model.Name ];
+  end
+  figure('Name', titl);
+  M=numel(o.parsBest);
+  m=floor(sqrt(M)); n=ceil(M./m);
+  index      = find(o.criteriaHistory < min(o.criteriaHistory)*10); % select a portion close to the optimum
+  if numel(index)<20, index=1:numel(o.criteriaHistory); end
+  
+  % identify the parameters which are independent, from the Hessian Correlation matrix
+
+  if ~isfield(o,'parsHessianCorrelation') || isempty(o.parsHessianCorrelation)
+    corr = eye(M);
+  else
+    corr = o.parsHessianCorrelation;
+  end
+  parameters_independent = 1./sum(corr.^2);
+  corr = corr - eye(M);
+  
+  if ~isfield(o, 'parsNames')
+    o.parsNames = {};
+    for P=1:M
+      o.parsNames{end+1} = sprintf('[%i]', P);
+    end
+  end
+
+  % plot distributions
+  for P=1:M
+    subplot(m,n,P);
+    [N,X]=hist(o.parsHistory(index,P));
+    h=bar(X,N);
+    if parameters_independent(P) < 0.7, 
+      set(h, 'FaceColor','red');
+      [~,most_correlated] = max(abs(corr(:,P)));
+      if corr(most_correlated) < 0
+        most_correlated = sprintf('\nCorrelated to -%s', o.parsNames{most_correlated});
+      else
+        most_correlated = sprintf('\nCorrelated to %s', o.parsNames{most_correlated});
+      end
+    else
+      most_correlated = '';
+    end
+    title(sprintf('p(%i):%s = %g +/- %g%s', P, ...
+      o.parsNames{P}, o.parsBest(P), ...
+      o.parsHistoryUncertainty(P), most_correlated));
+    xlabel(o.parsNames{P});
+  end
+end

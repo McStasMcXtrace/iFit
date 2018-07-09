@@ -131,10 +131,14 @@ function [pars_out,criteria,message,output] = fits(model, a, pars, options, cons
 %           parsHistoryUncertainty: Uncertainty on the parameters obtained from 
 %                              the optimization trajectory (double)
 %
+% The 'output' 4th return argument can be sent to 'fminplot' to plot the 
+% criteria convergence and the parameter distributions (see example below).
+%
 % ex:     data=load(iData, [ ifitpath 'Data/sv1850.scn' ])
 %         p=fits(data);
 %         [p,c,m,o]=fits(gauss,data,[],'optimizer=fminpowell; OutputFcn=fminplot'); 
 %         figure; plot(a); hold on; plot(o.modelAxes, o.modelValue,'r');
+%         fminplot(o);
 %
 % Version: $Date$
 % See also fminsearch, optimset, optimget, iFunc, iData/fits, iData, ifitmakefunc
