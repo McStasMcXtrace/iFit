@@ -97,6 +97,11 @@ objective.Constraint=[];  % we have transfered the restraints.
 
 [pars,fval,exitflag,output] = fmin(fun, pars, options, constraints);
 
+% if we wish to have parameters usable as a structure
+output.parsBest_struct= cell2struct(...
+  num2cell(reshape(pars,1,numel(objective.ParameterValues))), ...
+  strtok(objective.Parameters),2);
+
 if ~isempty(inputname(1))
   objective.UserData.output = output;
   objective.ParameterValues = pars(:);
