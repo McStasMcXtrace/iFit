@@ -894,6 +894,13 @@ function config = iLoad_config_load
   
   loaders = config.loaders;
   
+  % we get the imformats extensions
+  imf = imformats;
+  imfext = {};
+  for index=1:numel(imf)
+    imfext = [ imfext imf(index).ext{:} ];
+  end
+  
   % ADD default loaders: method, ext, name, options
   % default importers, when no user specification is given. 
   % format = { method, extension, name, {options, patterns, postprocess} }
@@ -905,7 +912,7 @@ function config = iLoad_config_load
     { 'read_cdf', {'cdf'}, 'CDF (.cdf)','','',{'opencdf','load_nmoldyn'}}, ...
     { 'read_nc', {'nc','cdf'}, 'NetCDF (.nc)','','',{'opencdf','load_nmoldyn'}}, ...
     { 'xlsread', 'xls', 'Microsoft Excel (first spreadsheet, .xls)',''}, ...
-    { 'read_image',  {'bmp','jpg','jpeg','tiff','tif','png','ico','ppm','pgm','pbm','pnm'}, 'Image/Picture',''}, ...
+    { 'read_image',  imfext, 'Image/Picture',''}, ...
     { 'read_hdf5',{'hdf','hdf5','h5'}, 'HDF5','','','openhdf'}, ...
     { 'read_hdf5',{'nx','nxs','n5','nxspe'}, 'NeXus/HDF5','','','openhdf'}, ...
     { 'read_hdf4',{'hdf4','h4','hdf'},  'HDF4','','','openhdf'}, ...
@@ -970,6 +977,12 @@ function config = iLoad_config_load
     loaders{index} = loader;
   end
   config.loaders = loaders; % updated list of loaders
+  
+  % add to imformat when description,extension,method are OK
+  ret=add_all2imformat(config.loaders);
+  if ret>0
+    disp([ '% Updated image formats with ' num2str(ret) ' new extensions.' ]);
+  end
   
 end % iLoad_config_load
 
@@ -1244,4 +1257,22 @@ end
 index = reshape(index,size(c));
 cs = c(index);
 
-end
+end % sort_nat
+
+% ------------------------------------------------------------------------------
+function ret=add_all2imformat(config)
+  ret=0;
+  for index=1:numel(config)
+    this = config{index};
+    if isfield(this, 'name') && isfield(this, 'extension') ...
+      && isfield(this, 'method') && (~isfield(this, 'options') || isempty(this.options))
+      try
+        add2imformat(this.name, this.extension, ...
+          @(f)not(isempty(feval(this.method, f))), ...
+          @(f)feval(this.method, f), ...
+          @(f)feval(this.method, f), '');
+        ret=ret+1;
+      end
+    end
+  end
+end % add_all2imformat

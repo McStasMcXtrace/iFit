@@ -241,7 +241,7 @@ function config = iLoad_ini
 
     NPY.name            = 'Numpy NPY array';
     NPY.method          = 'read_npy';
-    NOY.extension       = 'npy';
+    NPY.extension       = 'npy';
     
     ESRF_edf.name       ='EDF ESRF Data Format';
     ESRF_edf.options    ='';
@@ -349,22 +349,4 @@ function config = iLoad_ini
 	       
 	  config.UseSystemDialogs = 'yes'; % no: use uigetfiles, else defaults to 'uigetfile'
 	  config.FileName         = [ mfilename ' (default configuration from ' which(mfilename) ')' ];
-
-    % add to imformat when extension is OK
-    add_all2imformat(config.loaders);
 	  
-% ------------------------------------------------------------------------------
-function add_all2imformat(config)
-  
-  for index=1:numel(config)
-    this = config{index};
-    if isfield(this, 'name') && isfield(this, 'extension') ...
-      && isfield(this, 'method') && ~isfield(this, 'options')
-      try
-        add2imformat(this.name, this.extension, ...
-          @(f)not(isempty(feval(this.method, f))), ...
-          @(f)feval(this.method, f), ...
-          @(f)feval(this.method, f), '');
-      end
-    end
-  end
