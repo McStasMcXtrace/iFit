@@ -5,6 +5,8 @@ classdef iFunc
 % structure, a function handle or an other object.
 %
 % The model can store the following information members:
+%   Dimension:        The model dimensionality. 0=scalar, 1,2,3,4... 
+%                       a negative dimension is used to indicate a variable dimensionality.
 %   Expression:       The expression for the function (string) or function handle
 %                       signal=Expression(p, x,y, ...)
 %                         The parameter names surrounded by "" are replaced
