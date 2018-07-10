@@ -577,13 +577,19 @@ function instr = mccode_search_instrument(instr, d)
   
 % ------------------------------------------------------------------------------
 % function to search for a file recursively
-function fileList = getAllFiles(dirName, File)
+function fileList = getAllFiles(dirName, File, recursive)
+
+  if nargin < 3, recursive = true; end
 
   % allow search in many directories
   if iscell(dirName)
     fileList = {};
     for d=1:length(dirName)
-      fileList1=getAllFiles(dirName{d}, File);
+      if strcmp(dirName{d}, '.')
+        fileList1=getAllFiles(dirName{d}, File, false); % not recursive for '.' as it may be long
+      else
+        fileList1=getAllFiles(dirName{d}, File);
+      end
       if ~isempty(fileList1)
         if ischar(fileList1)
           fileList{end+1} = fileList1;
@@ -594,7 +600,7 @@ function fileList = getAllFiles(dirName, File)
     end
     return
   end
-  
+
   dirData = dir(dirName);                 % Get the data for the current directory
   fileList= {};
   if ~isdir(dirName), dirName = fileparts(dirName); end
@@ -624,13 +630,16 @@ function fileList = getAllFiles(dirName, File)
     end
   end
   subDirs = {dirData(dirIndex).name};          % Get a list of the subdirectories
-  validIndex = ~ismember(subDirs,{'.','..'});  % Find index of subdirectories
-                                               %   that are not '.' or '..'
+  validIndex = ~ismember(subDirs,{'.','..'}) ...
+    & ~strncmp(subDirs, '.',1);                % Find index of subdirectories
+                                               %   that are not '.' or '..' or hidden
   
-  for iDir = find(validIndex)                  % Loop over valid subdirectories
-    nextDir = fullfile(dirName,subDirs{iDir}); % Get the subdirectory path
-    fileList = getAllFiles(nextDir, File);     % Recursively call getAllFiles
-    if ~isempty(fileList), return; end
+  if recursive
+    for iDir = find(validIndex)                  % Loop over valid subdirectories
+      nextDir = fullfile(dirName,subDirs{iDir}); % Get the subdirectory path
+      fileList = getAllFiles(nextDir, File);     % Recursively call getAllFiles
+      if ~isempty(fileList), return; end
+    end
   end
 
 % ------------------------------------------------------------------------------
