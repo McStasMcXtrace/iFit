@@ -322,6 +322,10 @@ function config = iLoad_ini
     thermo_ms.name      = 'Thermo Finnigan Mass Spectrometry/Chromatography';
     thermo_ms.method    = 'ImportThermo';
     thermo_ms.extension = 'raw';
+    
+    agilent_sdf.name    = 'HP/Agilent/Keysight Standard Data Format';
+    agilent_sdf.method  = 'read_sdf';
+    agilent_sdf.extension = { 'sdf', 'tim' };
 
 % data formats without extension
 
@@ -344,7 +348,7 @@ function config = iLoad_ini
       labview, qd_vms, endf, ace, yaml, json, ...
       NPY, ESRF_edf, ISIS_SQW, ILL_HBIN, Mar_CCD, Roper_SPE, Andor_SIF, ADSC_CCD, Matlab_FIG, ...
       Analyze, CBF, STL_binary, MRC, NifTI, Igor, lv_tdms, nmr_jeol, idl_sav, ...
-      agilent_ms, thermo_ms, ...
+      agilent_ms, thermo_ms, agilent_sdf, ...
       nmr_bruker, nmr_varian, ftir_bruker, llb_tas };
 	       
 	  config.UseSystemDialogs = 'yes'; % no: use uigetfiles, else defaults to 'uigetfile'

@@ -22,9 +22,8 @@ end
 
 if status
   ace = read_ace_pyne(filename);  % private function inline below
-  if ~isempty(ace), return; end
 else
-
+  ace = []; % failed
 end
 
 % ------------------------------------------------------------------------------
