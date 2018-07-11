@@ -195,10 +195,10 @@ classdef iFunc_McCode < iFunc
       end
     end % subplot
     
-    function [comps, fig, self]=trace(self, p, options)
+    function [comps, fig, self]=trace(self, varargin)
       % iFunc_McCode/plot: runs the model in --trace mode and capture the output
       % grab all MCDISPLAY lines, and render the TRACE information into a figure (3D geometry view).
-      [comps, fig, self]=plot(self, p, options);
+      [comps, fig, self]=plot(self, varargin{:});
     end
   end
   
