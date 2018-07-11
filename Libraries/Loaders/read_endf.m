@@ -748,17 +748,23 @@ function endf = read_endf_pyne(filename)
     end
     if isstruct(this) && isempty(fieldnames(this)), this = []; end
     if ~isempty(this), 
+      % compatibility
       this = read_endf_pyne2endf(this);
       endf.(dict{index}) = this; 
     end
   end
+  if   isfield(endf,'thermal_inelastic') && isfield(endf.thermal_inelastic, 'T') ...
+    && isfield(endf,'thermal_elastic') && ~isfield(endf.thermal_elastic, 'T')
+    endf.thermal_elastic.T = endf.thermal_inelastic.T;
+  end
+  
   endf.filename = filename;
   endf.pyne_script   = char(s);
   
   % delete temporary files created
   delete([ tmp '*' ]);
   
-  % compatibility
+  
   
   
 function endf = read_endf_pyne2endf(endf)

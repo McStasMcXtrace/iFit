@@ -72,7 +72,7 @@ elseif ~isempty(out) && isfield(out.Data,'MF') && isfield(out.Data,'MT')
         setalias(out,'Signal','Data.W','Debye-Waller integral divided by the atomic mass [eV-1] ) (W)');
         setalias(out,'Sigma', 'Data.SB','Characteristic bound cross section [barns] (SB)');
         setalias(out,'Temperature','Data.T', 'Temperature [K]');
-         setalias(out,'Scattering','incoherent elastic');
+        setalias(out,'Scattering','incoherent elastic');
         setaxis( out, 1, 'Temperature');
       end
     elseif MT == 4  % inelastic
@@ -92,7 +92,7 @@ elseif ~isempty(out) && isfield(out.Data,'MF') && isfield(out.Data,'MT')
     end
   end
   % must check if the input object should be split into temperatures
-  if size(out, 3) > 1
+  if size(out, 3) > 1 || (isfield(out, 'T') && numel(get(out,'T') > 1))
     out = read_endf_mf7_array(out);
   end
 elseif ~isempty(out) && isfield(out.Data, 'info')
@@ -135,7 +135,7 @@ end
 % ------------------------------------------------------------------------------
 function t0=read_endf_mf7_array(t)
   % read_endf_mf7_array: split an array of ENDF entries vs Temperature
-  t0 = [];
+  t0 = []; E = [];
   disp(sprintf('%s: MF=%3i   MT=%i TSL T=%s', mfilename, t.MF, t.MT, mat2str(t.T)));
   for index=1:numel(t.T)
     t1     = copyobj(t);
@@ -150,9 +150,25 @@ function t0=read_endf_mf7_array(t)
     if isfield(t1, 'ZSYMAM') t1.Label = t1.ZSYMAM; end
     t1.Label = [ t1.Label ' T=' num2str(t1.T) ' [K]' ];
     if t1.MT == 2 % Incoherent/Coherent Elastic Scattering
-      t1.NP  = t.NP(index);
-      t1.S   = t.S(index,:);
-      t1.INT = t.INT(index);
+      if isstruct(t.Data.S)
+        f = fieldnames(t.Data.S);
+        for index=1:numel(f)
+          tstr = [ 'T' num2str(floor(t1.T)) ];
+          if strncmp(f{index}, tstr, numel(tstr))
+            S = t.Data.S.(f{index});
+            if isstruct(S)
+              E = S.x;
+              S = S.y;
+            end
+            t1.Data.S = S;
+            if ~isempty(E), t1.Data.E = E; end
+          end
+        end
+      else
+        t1.NP  = t.NP(index);
+        t1.S   = t.S(index,:);
+        t1.INT = t.INT(index);
+      end
       t1.Label = [ t1.Label ' TSL elastic' ];
       setaxis(t1, 3, t1.T);
     elseif t1.MT == 4 % Incoherent Inelastic Scattering
