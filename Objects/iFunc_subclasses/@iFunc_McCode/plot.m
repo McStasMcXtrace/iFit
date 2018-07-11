@@ -18,7 +18,7 @@ function [comps, fig, model]=plot(model, p, options)
 %
 % input:
 %   model: instrument simulation as obtained with 'mccode' (iFunc)
-%          or path to an instrumnt definition to compile.
+%          or path to an instrument definition to compile.
 %   parameters: parameters to use, as a vector, cell, structure...
 %   options: rendering/export options. Can contain 
 %     'html','x3d','png','pdf','fig','tif','jpg','eps'
@@ -79,6 +79,7 @@ function [comps, fig, model]=plot(model, p, options)
   index_end   = strfind(output, 'MCDISPLAY: end');
   if numel(index_start) ~= 1 || numel(index_end) ~= 1
     disp([ mfilename ': The MCDISPLAY section is invalid (incomplete or multiple). Aborting.' ]);
+    comps=output; fig=[];
     return
   end
 

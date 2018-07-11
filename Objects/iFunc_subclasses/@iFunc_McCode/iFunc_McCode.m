@@ -13,6 +13,8 @@ classdef iFunc_McCode < iFunc
   % iFunc_McCode(a)
   %   convert a 4D model [a=iFunc class] into an iFunc_McCode to give access to
   %   the methods below.
+  % info(a)
+  %   print out some information about the instrument model, just as McCode --info would do.
   % plot(a)
   %   plot the instrument geometry
   % subplot(a)
@@ -95,6 +97,18 @@ classdef iFunc_McCode < iFunc
       f.class = 'iFunc';
     end
     
+    function model_info = info(self)
+      % iFunc_McCode: info: return/display model information just as --info
+      
+      if nargout
+        model_info = self.UserData.instrument_info;
+      else
+        model_info='';
+        disp(self.UserData.instrument_info);
+        disp(self);
+      end
+    end
+    
     % overloaded feval which prefers to use 'nan' when axes are undefined
     function [signal, self, ax, name] = feval(self, varargin)
       % iFunc_McCode: feval: Evaluate an McCode model value using given parameters and axes.
@@ -173,6 +187,7 @@ classdef iFunc_McCode < iFunc
     
     % overloaded subplot
     function h = subplot(self, varargin)
+      % iFunc_McCode: subplot: plot the instrument simulation results (monitors)
       if numel(self) == 1
         h = subplot(self.UserData.monitors, varargin{:});
       else
@@ -180,6 +195,11 @@ classdef iFunc_McCode < iFunc
       end
     end % subplot
     
+    function [comps, fig, self]=trace(self, p, options)
+      % iFunc_McCode/plot: runs the model in --trace mode and capture the output
+      % grab all MCDISPLAY lines, and render the TRACE information into a figure (3D geometry view).
+      [comps, fig, self]=plot(self, p, options);
+    end
   end
   
 end
