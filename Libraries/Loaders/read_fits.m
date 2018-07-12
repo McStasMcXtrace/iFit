@@ -10,5 +10,11 @@ try
 catch
   s=[]; return;
 end
-s.data = fitsread(filename);
+% we read all FITS 'extnames'
+s.data = [];
+for extname={'primary','table','bintable','image','unknown'}
+  try
+    s.data.(extname{1}) = fitsread(filename, extname{1});
+  end
+end
 
