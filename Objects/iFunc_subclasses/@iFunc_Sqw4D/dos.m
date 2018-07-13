@@ -1,8 +1,8 @@
 function [DOS, DOS_partials] = dos(s, n)
 % iFunc_Sqw4D: dos: compute the density of states (vDOS)
 %
-%  The routine can be used for 4D models.
-%    when used on 4D models S(HKL,w), the vDOS is computed.
+%  The routine can be used with 4D models to compute the vibrational density of 
+%   states (vDOS), aka phonon spectrum.
 %
 %    DOS = dos(s)    returns the vibrational density of states (vDOS)
 %      the vDOS and the partials per mode are also stored in the UserData.
@@ -138,7 +138,8 @@ function [DOS, DOS_partials, s] = sqw_phonon_dos_4D(s, n)
     dos_e           = s.UserData.FREQ(index);
     omega_e         = linspace(min(dos_e(:)),max(dos_e(:))*1.2, n);
     [dos_e,omega_e] = hist(dos_e,omega_e);
-    dos_factor      = size(s.UserData.FREQ,2) / trapz(omega_e(:), dos_e(:));
+    N3              = size(s.UserData.FREQ,2); % number of modes = 3N
+    dos_factor      = N3 / trapz(omega_e(:), dos_e(:));
     dos_e           = dos_e * dos_factor ; % 3n modes per unit cell
     
     % create the object
