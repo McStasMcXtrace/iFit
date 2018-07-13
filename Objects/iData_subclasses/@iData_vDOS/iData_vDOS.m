@@ -2,34 +2,43 @@ classdef iData_vDOS < iData
 
   % iData_vDOS: create a vibrational density of states data set (iData flavour)
   %
-  % The iData_vDOS class is a 1D data set holding a vibrational density of states
-  % often labelled as g(w)
+  % The iData_vDOS class is a 1D data set holding a density of states
+  %   often labelled as g(w). This usually can store a 'true' vibrational density 
+  %   of states (vDOS), or a generalised density of states (gDOS).
   %
   % Example: g=iData_vDOS('SQW_coh_lGe.nc')
   %
   % Useful methods for this iData flavour:
   %
-  % methods(iData_Sqw2D)
+  % methods(iData_vDOS)
   %   all iData methods can be used.
   % iData_vDOS(g)
   %   convert input [e.g. a 2D or 4D Sqw, or a 1D vDOS] into an iData_vDOS to give access to
   %   the methods below.
   %
   % d = dos(g)
-  %   Compute/get the vibrational density of states (vDOS).
+  %   Get the vibrational density of states (vDOS).
   %
   % t = thermochemistry(g)
   %   Compute and display thermochemistry quantities from the vDOS.
   %
-  % [Sqw,Iqt,DW] = multi_phonons_incoherent(g, q, T, sigma, m, n)
-  %   Compute the so-called multi-phonon dynamic structure factor expansion in 
-  %   the incoherent gaussian approximation. The neutron scattering incoherent 
-  %   gaussian dynamic structure factor is computed, as well as the corresponding
-  %   intermediate scattering function, and the Debye-Waller factor.
+  % [Sqw,Iqt,DW] = incoherent(g, q, T, sigma, m, n)
+  %   Compute the incoherent gaussian approximation scattering law S(q,w) from an initial 
+  %   density of states vDOS.
   %
-  % [Gw, Tsym] = multi_phonons_vDOS(g, Ki, T, sigma, m, phi, n)
-  %   Compute the so-called multi-phonon density of states expansion in the 
-  %   neutron scattering incoherent gaussian approximation.
+  % [Gw, Tsym] = multi_phonons(g, Ki, T, sigma, m, phi, n)
+  %   compute the integrated multi-phonon generalised density of states (gDOS) 
+  %   from an initial vibrational density of states (vDOS) in the neutron 
+  %   scattering incoherent gaussian approximation.
+  %   The generalised density of states (gDOS) is the sum of the terms in this expansion.
+  %
+  % gDOS = gdos(vDOS, Ki, T, sigma, m, phi, n)
+  %   compute the generalised density of states (gDOS) from a vibrational 
+  %   density of states (vDOS) in the neutron scattering incoherent gaussian approximation.
+  %
+  % vDOS = vdos(gDOS, Ki, T, sigma, m, phi, n)
+  %   compute the 'true' vibrational density of states from a gDOS estimate
+  %   in the neutron scattering incoherent gaussian approximation.
   %
   % input:
   %   can be an iData (1D vDOS, 2D Sqw, 4D Sqw) or filename to generate a 1D vDOS object.
@@ -92,10 +101,19 @@ classdef iData_vDOS < iData
  
     end % iData_vDOS constructor
     
-    function d = dos(s)
+    function d = dos(self)
     % iData_vDOS: dos: return the object. 
     %   For easier syntax and compatibility with other classes.
-      d = s;
+      d = self;
+    end
+    
+    function g = gdos(self, varargin)
+    % iData_vDOS: gdos: compute the generalised density of states from a vibrational density of states. Should be compared to experimental gDOS.
+      g   = multi_phonons(self, varargin{:});
+      % normalise the 1-phonon term to 1 and apply to others
+      nrm = trapz(g(1));
+      g   = g ./ nrm; % normalise to gDOS 1-phonon term
+      g   = sum(g); % effective gDOS == \int q S(q,w) dq
     end
     
     % parameters (search for parameters in iData)
@@ -122,22 +140,47 @@ classdef iData_vDOS < iData
       end
     end
     
-    function [G,multi] = multi_phonons(g, varargin)
-      % iData_vDOS: multi_phonons: compute the integrated multi-phonon intensity from an initial density of states
+    function v = vdos(self, varargin)
+      % iData_vDOS: vdos: compute the 'true' vibrational density of states from a gDOS estimate.
+      %
+      % input:
+      %   self:   a generalised density of states (gDOS), e.g. \int q S(q,w) dq
+      %   order:  restrict the multi-phonon expansion to given order
       %
       % output:
-      %   G:      total gDOS [p=1...]
-      %   multi:  multi-phonon gDOS contribution [p=2...]
-      G     = multi_phonons_dos(gw, varargin{:});
-      multi = plus(G(2:end));
-      G     = plus(G);
+      %   v:      vDOS
       
-      if nargout == 0
-        fig=figure; 
-        h  =plot([ G multi ]); 
-        set(fig, 'NextPlot','new');
+      % self is e.g. \int q S(q,w) dq = \int S(theta,w) sin(theta) d(theta)
+      
+      % we want that self == gdos(v) == sum(multi_phonons terms)
+      
+      % norm(gdos) > 1. norm(v) == 1
+      
+      self = self./trapz(self); % normalise initial gDOS to 1. In fact norm should be higher if contains multi-phonons
+      
+      v = self;         % we start by assuming the gDOS is not too far from the vdos
+      
+      flag = false;
+      
+      while ~flag
+        % compute the gDOS from the vDOS
+        g   = gdos(v, varargin{:});
+        nrm = trapz(g)  % total norm of the gDOS, including multi-phonons, nrm > 1
+        
+        % we compare the initial gDOS (self) to our current estimate (g)
+        % our initial gDOS has norm 1, we want it to have norm 'nrm' for comparison
+        ratio = self*nrm./g;
+        
+        % check if we have converged (correction is small) e.g. self == gdos(v)
+        flag = all(abs(ratio - 1) < .01); % changes smaller than 1 percent everywhere
+        
+        % correct our vDOS estimate. When ratio > 1, self is too large, and we should increase 'v'
+        v = v .* ratio;
       end
+      
     end
+    
+    
   end
   
 end

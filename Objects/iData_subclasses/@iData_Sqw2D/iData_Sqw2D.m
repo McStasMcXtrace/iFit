@@ -28,10 +28,10 @@ classdef iData_Sqw2D < iData
   %   the methods below.
   %
   % d   = dos(s)
-  %   Compute the generalized vibrational density of states (gDOS).
+  %   Compute the vibrational density of states.
   %
   % t   = thermochemistry(s)
-  %   Compute and display thermochemistry quantities from the gDOS.
+  %   Compute and display thermochemistry quantities from the density of states.
   %
   % m   = moments(s)
   %   Compute the S(q,w) moments/sum rules (harmonic frequencies).
@@ -194,15 +194,15 @@ classdef iData_Sqw2D < iData
         h  =subplot(log10([inc single multi]),'view2'); 
         set(fig, 'NextPlot','new');
       end
-    end
+    end % incoherent
     
     function [G,multi] = multi_phonons(s, varargin)
-      % iData_Sqw2D: multi_phonons: compute the integrated multi-phonon intensity from an initial density of states
+      % iData_Sqw2D: multi_phonons: compute the integrated multi-phonon intensity from a scattering law
       %
       % output:
-      %   G:      total gDOS [p=1...]
+      %   G:      total gDOS [p=1]
       %   multi:  multi-phonon gDOS contribution [p=2...]
-      G     = multi_phonons_dos(dos(s), varargin{:});
+      G     = multi_phonons(dos(s), varargin{:});
       multi = plus(G(2:end));
       G     = plus(G);
       if nargout == 0
@@ -210,6 +210,24 @@ classdef iData_Sqw2D < iData
         h  =plot([ G multi ]); 
         set(fig, 'NextPlot','new');
       end
+    end
+    
+    function g = gdos(self, varargin)
+      % iData_Sqw2D: gdos: compute the generalised density of states (gDOS) from a S(q,w)
+      %   See: iData_Sqw2D/dos
+      g = dos(self, varargin{:});
+    end
+    
+    function v = vdos(self, varargin)
+      % iData_Sqw2D: vdos: compute the 'true' vibrational density of states
+      %   by removing the multi-phonons from the initial estimate from the 
+      %   Bredov/Oskotskii formula.
+      
+      % we fisrt compute an initial estimate of the vDOS
+      g = dos(self);
+      v = vdos(g, varargin{:});  % then get the true vDOS using the iData_vDOS method.
+      
+      
     end
     
     function spe = q2phi(self)

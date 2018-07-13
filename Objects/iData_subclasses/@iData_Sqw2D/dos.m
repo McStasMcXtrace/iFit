@@ -1,32 +1,37 @@
 function [DOS, g, fig] = dos(s, method, n)
-% iData_Sqw2D: dos: compute the generalised density of states (gDOS)
+% iData_Sqw2D: dos: compute the generalised density of states (gDOS) from a S(q,w)
 %
-%  The gDOS is an approximation of the vibrational spectra (DOS).
-%  This routine should better be applied on an incoherent dynamic S(q,w) data set.
-%  The incoherent approximation states that the gDOS from an incoherent S(q,w) is 
-%  roughly equal to that obtained from a coherent S(q,w).
+%  The returned generalised density of states corresponds with the 1-phonon term in the
+%  the incoherent Gaussian approximation. This density of states is normalised to 1.
 %
 %       gDOS(q,w) = S(q,w) w^2/q^2                   Bellissent
 %       gDOS(q,w) = S(q,w) w  /q^2/[1 + n(hw)]       Carpenter/Price
 %  and:
 %       gDOS(w)   = lim(q->0) [ gDOS(q,w) ]
 %
-%       gDOS(q,w) = w*S(q,w)/Q^2/(1+n(w))            Bredov/Oskotskii
+%       gDOS(q,w) = w*q*S(q,w)/[Qmax^4 - Qmin^4]/(1+n(w)) Bredov/Oskotskii
 %       gDOS(w)   = trapz(g, 2)
 %
 %  The Bredov/Oskotskii methodology provides the best gDOS estimate, using the
 %  whole data set.
 %
-%  The applicability to a coherent dynamic structure factor S(q,w) should be
-%  taken with great care, as this formalism then does not fully hold.
+%  LIMITATIONS/WARNINGS:
+%  The incoherent approximation states that the gDOS from an incoherent S(q,w) is 
+%    roughly equal to that obtained from a coherent S(q,w). However, the 
+%    applicability to a coherent dynamic structure factor S(q,w) should be
+%    taken with great care, as this formalism then does not fully hold.
+%  This implementation is in principle exact for an isotropic monoatomic material,
+%    e.g. a liquid, powder, or cubic crystal. 
+%  This routine should better be applied on an incoherent dynamic S(q,w) data set.
 %
 %  The method to use in the gDOS computation can be given as 2nd argument
 %       gDOS = dos(Sqw, 'Bredov')         more accurate as it uses 100% of data
 %       gDOS = dos(Sqw, 'Carpenter')      Temperature must be a property
 %       gDOS = dos(Sqw, 'Bellissent')     simple yet efficient
 %
-%  The gDOS is stored in the 'gDOS' property, and is retrieved without recomputation
-%  when available. To force a recomputation of the gDOS, use:
+%  The gDOS is stored in the 'gDOS' property of the initial Sqw object, and is 
+%    retrieved without recomputation when available. 
+%  To force a recomputation of the gDOS, use:
 %       dos(Sqw, 'method', 0) or dos(Sqw, 'method', 'force')
 %
 % References: Price J. et al, Non Cryst Sol 92 (1987) 153
@@ -53,7 +58,7 @@ function [DOS, g, fig] = dos(s, method, n)
 % Example: Sqw=iData_Sqw2D('SQW_coh_lGe.nc'); g = dos(Bosify(symmetrize(Sqw))); plot(g);
 %
 % See also: iData_Sqw2D/multi_phonons, iData_Sqw2D/incoherent
-%           iData_vDOS/multi_phonons_dos, iData_vDOS/multi_phonons_incoherent
+%           iData_vDOS/multi_phonons, iData_vDOS/multi_phonons
 % (c) E.Farhi, ILL. License: EUPL.
 
   DOS=[]; fig = [];
@@ -88,8 +93,8 @@ function [DOS, g, fig] = dos(s, method, n)
     % test if classical
     if isfield(s,'classical') || ~isempty(findfield(s, 'classical'))
       if get(s,'classical')
-        disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' seems to be classical.' ])
-        disp('  The gDOS computation may be wrong.');
+        disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ])
+        disp('  seems to be classical. The DOS computation may be wrong.');
       end
     end
     
@@ -101,14 +106,14 @@ function [DOS, g, fig] = dos(s, method, n)
     T = Sqw_getT(s);
     if isempty(T) && isempty(strfind(method, 'Bellissent'))
       disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source  ])
-      disp(['    has no Temperature defined. Using method=''Bellissent''' ])
+      disp(['    has no Temperature defined. Using method=''Bellissent'' as it does not require it.' ])
       method = 'Bellissent';
     end
     
     switch lower(method)
     case {'carpenter','price'}          
       g = sqw_phonon_dos_Carpenter(s, T);  % requires Temperature 
-    case 'bredov'
+    case {'bredov','oskotskii'}
       g = sqw_phonon_dos_Bredov(s, T);     % requires Temperature (call Carpenter)
       n = inf;                             % we use all the data.
     otherwise % 'bellissent'
@@ -221,13 +226,22 @@ function g = sqw_phonon_dos_Bredov(s, T)
 % See e.g.: Suck et al, Journal of Alloys and Compounds 342 (2002) 314
 %           M. M. Bredov et al., Sov. Phys. Solid State 9, 214 (1967).
 %
-% g(w) = Ei w./(n(w)+1)/(q_max^4-q_min^4)
-%        * \int_{theta_min -> theta_max} exp(2*W) kf/ki S(q,w) sin(theta) dtheta
+% g(w) = Ei w./(n(w)+1)/(q_max^4-q_min^4) m/sigma exp(2*W) 
+%        * \int_{q_min -> q_max} q S(q,w) dq
 
-  g = sqw_phonon_dos_Carpenter(s,T);
+  % axes
+  hw= getaxis(s,1);
   q = getaxis(s,2); 
-  % for each energy, we get the min and max which can be measured
-  % requires to know the incident energy.
+  beta    = 11.605*hw/T;
+  n = 1./(exp(beta) - 1);
+  n(~isfinite(n)) = 0;
+  
+  % we compute the integral of qS(q,w)
+  g = q.*s;
+  g = trapz(g, 2);    % integral over q
+
+  % for each energy, we get the min and max which could be measured
+  % requires to know the incident energy, but as we normalise g to 1, this is not important
   q4= zeros(size(getaxis(s,1)));
   s = double(s);
   for index=1:size(s, 1)
@@ -240,10 +254,11 @@ function g = sqw_phonon_dos_Bredov(s, T)
     end
     q_min = min(qw(valid)); q_max = max(qw(valid));
     if isvector(q)
-      q4(index) = q_max^4 - q_min^4;
+      q4(index)   = q_max^4 - q_min^4;
     else
       q4(index,:) = q_max^4 - q_min^4;
     end
   end
-  g       = g.*q.^2./q4;
+  % here, g=qSq
+  g = hw./(n+1)./q4.*g;
   

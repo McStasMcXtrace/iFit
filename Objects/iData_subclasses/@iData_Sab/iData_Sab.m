@@ -207,7 +207,7 @@ classdef iData_Sab < iData
     end
     
     function DOS = dos(self, varargin)
-      % iData_Sab: dos(sab): compute the generalised density of states (gDOS)
+      % iData_Sab: dos(sab): compute the density of states (DOS)
       %  The gDOS is an approximation of the vibrational spectra (DOS).
       %  This routine should better be applied on an incoherent dynamic S(a,b) data set.
       %  The incoherent approximation states that the gDOS from an incoherent S(a,b) is 
