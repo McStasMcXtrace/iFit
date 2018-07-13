@@ -1,10 +1,30 @@
 function [Sqw, Iqt, Wq, Tall] = incoherent(gw, q, T, sigma, m, n)
-% iData_vDOS: incoherent: compute the multi-phonon contributions in S(q,w) from an initial density of states in the incoherent gaussian approximation
+% iData_vDOS: incoherent: compute the incoherent gaussian approximation scattering law S(q,w) from an initial density of states vDOS
+%
+% The input argument 'gw' should be a vibrational density of states (vDOS) as
+%   obtained from an experiment (e.g. Bedov/Oskotskii estimate), molecular 
+%   dynamics, or lattice dynamics. In the so-called incoherent approximation,
+%   the vDOS obtained from incoherent and coherent scattering laws are equal.
+%
+% The result is the dynamic structure factor (scattering law) for neutrons, in
+%   in the incoherent gaussian approximation. The corresponding intermediate 
+%   scattering function is also returned. The generalised density of states is
+%   defined as \int q.S(q,w) dq
+%
+% Missing arguments (or given as [] empty), are searched within the initial density 
+%   of states object.
 %
 % This implementation is in principle exact for an isotropic monoatomic material,
-% e.g. a liquid or powder.
+%   e.g. a liquid, powder, or cubic crystal. 
 % This methodology is equivalent to the LEAPR module of NJOY ("phonon expansion")
 % to compute S(alpha,beta) from a vibrational density of states.
+%
+% For a poly-atomic material with a set of non-equivalent atoms with relative 
+%   concentration Ci, mass Mi and bound scattering cross section sigma_i, 
+%   one should use:
+%
+%   sigma = sum_i Ci sigma_i                              weighted cross section
+%   m     = [sum_i Ci sigma_i]/[sum_i Ci sigma_i/Mi]      weighted mass
 %
 % conventions:
 % w = Ei-Ef = energy lost by the neutron
@@ -25,13 +45,13 @@ function [Sqw, Iqt, Wq, Tall] = incoherent(gw, q, T, sigma, m, n)
 %   gw: the vibrational density of states per [meV] [iData]
 %   q:  the momentum axis [Angs-1, vector]
 %   T:  temperature [K]
-%   sigma: neutron cross section [barns]
+%   sigma: bound neutron scattering cross section [barns]
 %   m:  mass [g/mol]
 %   n:  number of iterations in the series expansion, e.g. 5
 %
 % output:
-%   Sqw:  neutron weighted S(q,w) terms, to be summed [iData_Sqw2D array]
-%   Iqt:  I(q,t) terms, to be summed [iData array]
+%   Sqw:  neutron weighted S(q,w) incoherent terms, to be summed [iData_Sqw2D array]
+%   Iqt:  I(q,t) incoherent terms, to be summed [iData array]
 %   Wq:   half Debye-Waller factor. The DW function is exp(-2*Wq)  [iData vs q]
 %   Tp:   p-phonon terms [iData array]
 %
@@ -41,7 +61,7 @@ function [Sqw, Iqt, Wq, Tall] = incoherent(gw, q, T, sigma, m, n)
 %   Sqw = incoherent(gw, [], 300);
 %   subplot(Sqw);
 %
-% See also: iData_Sqw2D/multi_phonons_dos
+% See also: iData_Sqw2D/multi_phonons
 % (c) E.Farhi, ILL. License: EUPL.
 
 

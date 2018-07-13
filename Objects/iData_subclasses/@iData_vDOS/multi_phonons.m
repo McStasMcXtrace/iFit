@@ -1,14 +1,38 @@
 function [Gw, Tsym] = multi_phonons(gw, Ki, T, sigma, m, phi, n)
-% iData_vDOS: multi_phonons: compute the integrated multi-phonon DOS from an initial density of states
+% iData_vDOS: multi_phonons: compute the integrated multi-phonon generalised density of states (gDOS) from an initial vibrational density of states (vDOS)
 %
-% The 'generalized' neutron weighted density of states (gDOS) is computed from an 
-% initial vibrational density of states (vDOS).
-% Missing arguments (or given as [] empty), are searched in the initial density 
-% of states.
+% The input argument 'gw' should be a vibrational density of states (vDOS) as
+%   obtained from an experiment (e.g. Bedov/Oskotskii estimate), molecular 
+%   dynamics, or lattice dynamics. In the so-called incoherent approximation,
+%   the vDOS obtained from incoherent and coherent scattering laws are equal.
+%
+% The result is the 'neutron weighted' (generalised) density of states (gDOS),
+%   which should be compared with:
+%
+%   Gw -> \int q. I(q,w) dq ~ \int I(theta, w) sin(theta) d(theta)
+%
+%   where I(q,w) and I(theta,w) are the measured scattering intensity as a function 
+%   of the momentum q or scattering angle theta.
+%   In practice, the measured I(q,w) contains both the single phonon and multi-phonon
+%   terms (and potentially multiple scattering).
+%
+% The 1st element of the result 'Gw' is the generalised density of states, as computed
+%   in the Oskotskii formalism. The following terms are the multi-phonon contributions.
+%   The generalised density of states (gDOS) is the sum of the terms in this expansion.
+%
+% Missing arguments (or given as [] empty), are searched within the initial density 
+%   of states object.
 %
 % This implementation is in principle exact for an isotropic monoatomic material,
-% e.g. a liquid or powder.
-% This methodology is a complete rewrite of the MUPHOCOR code.
+%   e.g. a liquid, powder, or cubic crystal. This methodology is equivalent to 
+%   the MUPHOCOR code.
+%
+% For a poly-atomic material with a set of non-equivalent atoms with relative 
+%   concentration Ci, mass Mi and bound scattering cross section sigma_i, 
+%   one should use:
+%
+%   sigma = sum_i Ci sigma_i                              weighted cross section
+%   m     = [sum_i Ci sigma_i]/[sum_i Ci sigma_i/Mi]      weighted mass
 %
 % Reference:
 %   H. Schober, Journal of Neutron Research 17 (2014) 109–357
@@ -24,7 +48,7 @@ function [Gw, Tsym] = multi_phonons(gw, Ki, T, sigma, m, phi, n)
 %   gw:   the vibrational density of states per [meV] [iData]
 %   Ki:   incident wavevector [Angs-1]. Ki=2*pi/lambda=0.695*sqrt(Ei)
 %   T:    temperature [K]
-%   sigma: neutron cross section [barns]
+%   sigma: bound neutron scattering cross section [barns]
 %   m:    mass [g/mol]
 %   phi:  detector angles, min and max [deg]
 %   n:    number of iterations in the series expansion, e.g. 5
@@ -34,9 +58,11 @@ function [Gw, Tsym] = multi_phonons(gw, Ki, T, sigma, m, phi, n)
 %   Wq:   half Debye-Waller factor. The DW function is exp(-2*Wq)  [iData vs q]
 %   Tp:   p-phonon terms [iData array]
 %
-% Example: s=sqw_cubic_monoatomic; multi_phonons(dos(s))
+% Example: s=sqw_cubic_monoatomic; gw=dos(s); 
+%   mp=multi_phonons(gw); gdos=sum(mp); plot( [gw mp ]);
+% 
 %
-% See also: iData_Sqw2D/dos, iData_vDOS/multi_phonons_incoherent
+% See also: iData_Sqw2D/dos, iData_vDOS/incoherent
 % (c) E.Farhi, ILL. License: EUPL.
 
   % check input parameters
@@ -89,9 +115,18 @@ function [Gw, Tsym] = multi_phonons(gw, Ki, T, sigma, m, phi, n)
     disp([ mfilename ': using detector angular range phi=' mat2str(phi) ' [deg] incident neutron wavelength.' ]);
   end
   % fail when missing information
-  if isempty(m) || m<=0    error([ mfilename ': Unspecified molar mass (m). Use multi_phonons(g, Ki, T, sigma, m)' ]); end
-  if isempty(T) || T<=0    error([ mfilename ': Unspecified temperature (T). Use multi_phonons(g, Ki, T)' ]); end
-  if isempty(sigma) disp([ mfilename ': WARNING: Unspecified scattering cross section (sigma). Using sigma=1 barn. Scale result accordingly.' ]); sigma = 1; end
+  if isempty(m) || m<=0    
+    disp([ mfilename ': WARNING: Unspecified molar mass (m). Using m=12 [g/mol]' ]); 
+    m = 12;
+  end
+  if isempty(T) || T<=0    
+    disp([ mfilename ': WARNING: Unspecified temperature (T). Using T=10 [K]' ]); 
+    T = 10;
+  end
+  if isempty(sigma) 
+    disp([ mfilename ': WARNING: Unspecified scattering cross section (sigma). Using sigma=1 [barn]. Scale result accordingly.' ]); 
+    sigma = 1; 
+  end
   if isempty(n),    n=5; end
   
   % conversion factors
@@ -131,7 +166,7 @@ function [Gw, Tsym] = multi_phonons(gw, Ki, T, sigma, m, phi, n)
   W     = (q2toE/4/m*f0);               % W = <u2> in Angs^2. integrate 0:inf
   gamma = 2*W;
   disp([ mfilename ': Debye-Waller coefficient gamma      =' num2str(2*W) ...
-    ' [Angs^2]. Debye-Waller function is 2W(q)=gamma*q^2' ]);
+    ' [Angs^2]. Debye-Waller function is 2W(q)=gamma*q^2. Debye-Waller factor is exp(-gamma.q^2)' ]);
   
   % compute the T[p] terms iteratively -----------------------------------------
   Tall = T1;
@@ -177,6 +212,8 @@ function [Gw, Tsym] = multi_phonons(gw, Ki, T, sigma, m, phi, n)
     setalias(dGw, 'IncidentWavevector', Ki, 'neutron incident wavevector [Angs-1]');
     setalias(dGw, 'Wavelength', 2*pi/Ki, 'neutron incident wavelength [Angs]');
     setalias(dGw, 'DetectionAngles', phi, 'Detection Angles [deg]');
+    setalias(dGw, 'DebyeWallerCooeficient', gamma, ...
+      'Debye-Waller coefficient gamma [Angs^2]. Debye-Waller function is 2W(q)=gamma*q^2. Debye-Waller factor is exp(-gamma.q^2)');
     dGw.Title= [ 'gDOS [p=' num2str(p) ']' ];
     title(dGw, [ 'gDOS [p=' num2str(p) '] from ' titl ]);
     dGw.Label= [ 'gDOS [p=' num2str(p) ']' ];
