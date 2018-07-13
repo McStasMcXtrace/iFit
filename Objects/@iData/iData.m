@@ -48,25 +48,23 @@ classdef iData
 %   load_clean_metadata
 
 properties
-  % create a new iData object
-  Tag          = 0;           % unique ID
+  Tag          = 0;           % Unique ID
   Title        = '';          % Data title
-  Source       = pwd;         % origin of data (filename/path)
+  Source       = pwd;         % Origin of data (filename/path)
   Creator      = [];          % Creator (program) name
 
   
   User         = '';          % User ID
-  Date         = clock;
-  ModificationDate  = ''; % modification Date
+  Date         = clock;       % Creation Date
+  ModificationDate  = '';     % Modification Date
   Command      = '';          % Matlab commands/history of the object
-  UserData     = '';          % user data storage area
-  Label        = '';          % user label (color)
-  DisplayName  = '';          % user name for handling data set as a variable
+  UserData     = '';          % User data storage area
+  Label        = '';          % User label (color, tag, ...)
+  DisplayName  = '';          % User name for handling data set as a variable and legends
   
-  % hidden fields
   Data         = [];          % Data storage area
-  Alias        = {};
-  class = mfilename;
+  Alias        = {};          % Holds all defined aliases
+  class = mfilename;          % Class of the object, e.g iData or other derived class
   
 end % properties
   

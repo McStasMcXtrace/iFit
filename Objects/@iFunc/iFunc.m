@@ -114,30 +114,20 @@ classdef iFunc
 % (c) E.Farhi, ILL. License: EUPL.
 
 properties  % create the empty iFunc object structure
-  % create a new iFunc object
-  Tag         = 0;
-  Date        = clock;  % creation date
-  Name        = ''; % the function Name
-  Description = ''; % the Description
-  Parameters  = {}; % the function parameters, a cellstr or words or a single
-                      % string of words separated by spaces, or a structure with parameter values
-  Guess       = 'automatic'; % the default parameter set or expression or function handle
-                      % char or function_handle(x,y,..., signal, Parameters{})
-                      % or 'automatic'
-  Expression  = ''; % the expression to evaluate to get the function value
-                      % char or function_handle(p, x,y, ...)
-  Constraint  = ''; % code to evaluate before computing the Expression
-                      % can be: a function_handle
-                      %         a char/cellstr
-                      %         a vector (length p)
-                      %         a structure with fields: min, max, fixed
-  Dimension   = 0;  % function dimensionality (1,2,3,4...) 0=scalar=empty.
-                      % a negative dimension is used to indicate a variable dimensionality.
-  ParameterValues = [];
-  Eval        = ''; % code to evaluate for the model value
-  UserData    = '';
-  Duration    = 0;
-  class       = mfilename;
+  Tag         = 0;      % Unique ID
+  Date        = clock;  % Creation date
+  Name        = '';     % Model Name (short)
+  Description = '';     % Description (long)
+  Parameters  = {};     % Function parameters, a cellstr or words or a single string of words separated by spaces, or a structure with parameter values
+  Guess       = 'automatic'; % Default parameter set or expression or function handle, char or function_handle(x,y,..., signal, Parameters{}) or 'automatic'
+  Expression  = ''; % Expression to evaluate to get the function value, char or function_handle(p, x,y, ...)
+  Constraint  = ''; % Restraints/constraints to evaluate before computing the Expression, can be: a function_handle, a char/cellstr, a vector (length p), a structure with fields: min, max, fixed
+  Dimension   = 0;  % Model dimensionality (1,2,3,4...) 0=scalar=empty. a negative dimension is used to indicate a variable dimensionality.
+  ParameterValues = []; % Current parameter values
+  Eval        = ''; % Code to evaluate for the model value
+  UserData    = ''; % User data storage area
+  Duration    = 0;  % Time spent for the evaluation
+  class       = mfilename;  % Class of the object, e.g iFunc or other derived class
 end % properties  
 
 methods
