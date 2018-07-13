@@ -11,6 +11,7 @@ AL20_017.DAT: example data files from the D3 reflectometer at Chalk River CNBC N
 C004 and R014: LLB/TAS data files [LLB, binary]
 cyno_atlas.4dint.hdr and cyno_atlas.4dint.img: Tomographic monkey brain data - Volume dataset in Analyze format. Open the 'hdr' file. See ReadAnalyze  [binary]
 Diff_BananaTheta_1314088587.th and Diff_BananaPSD_1314088587.th_y: example McStas simulation result files, 1D and 2D [text, McStas]
+example.sdf: an HP/Agilent SDF file from e.g. an oscilloscope [binary, SDF]
 Example.spe: an ISIS SPE file from a TOF spectrometer (from the Mantid Project) [SPE]
 gluco_toluene.0001: an OPUS FTIR data file [Opus]
 Horace_sqw_1d.sqw: an Horace Sqw file [binary]
@@ -46,5 +47,6 @@ SQW_coh_lGe.nc: the coherent dynamic structure factor obtained from ab-initio mo
 sv1850.scn: some IN14 neutron triple-axis spectrometer at the ILL (UPt3, QH scan) [text]
 sv1884.scn: some IN14 neutron triple-axis spectrometer at the ILL (UPt3, sample rotation scan) [text]
 sv4700.scn: some IN12 neutron triple-axis spectrometer at the ILL (bcc 4He, Energy scan) [text]
+tsl_0012_para-d.endf: a para-D2 thermal scattering cross section ENDF [text, ENDF]
 YIG_4A_corr_vana_spectre.inx: an INX example file obtained from IN5 tof at the ILL [text, INX].
 
