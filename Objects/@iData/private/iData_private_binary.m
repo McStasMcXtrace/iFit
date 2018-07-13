@@ -356,6 +356,9 @@ if isa(a, 'iData') && isa(b, 'iData') && orthogonal_ab
   end
 end
 
+c = setaxis(c); % check axes
+
+
 c.Command=cmd;
 c = iData_private_history(c, op, a,b);
 

@@ -227,6 +227,34 @@ function this = iData_checkaxes(this)
     end
   end % for index
   
+  % check axes wrt Signal dimension
+for index=1:ndims(this)
+  x = getaxis(this, index);
+  % cases:
+  
+  %   matrix which dimension is not size(signal)
+  myisvector = @(c)length(c) == numel(c);
+  if     myisvector(x) && numel(x) ~= size(this, index)
+    % axis is vector which length is not size(index)
+    % search for the dimension index it matches in size(signal)
+    [~, order] = ismember(length(x), size(this));  % WARN: duplicate sizes give same index
+    % swap axes index and order
+    this.Alias.Axis([ index order ]) = this.Alias.Axis([ order index ]);
+  elseif numel(x) == prod(size(this)) && any(size(x) ~= size(this))
+    % axis is a matrix with proper number of elements, but wrong orientation
+    if ndims(this) <= 2
+      x = x';
+    else
+      % permute axes indices following that of the Signal
+      [~, order] = ismember(size(x), size(this));  % WARN: duplicate sizes give same index
+      try
+        x = permute(x, order);  % may fail when dimensions are not distinguishable
+      end
+    end
+    this = setaxis(this,index,x);
+  end
+end
+  
   % remove singleton axes and put them in end position
   ax = this.Alias.Axis;
   if ~isempty(axis_1D) && length(axis_1D) < length(ax) 
