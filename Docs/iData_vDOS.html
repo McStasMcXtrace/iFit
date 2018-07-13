@@ -1,0 +1,58 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>iFit: iData_vDOS</title>
+  </head>
+  <body>
+    iData_vDOS: create a vibrational density of states data set (iData
+    flavour)<br>
+    &nbsp;<br>
+    &nbsp; The iData_vDOS class is a 1D data set holding a vibrational
+    density of states<br>
+    &nbsp; often labelled as g(w)<br>
+    &nbsp;<br>
+    &nbsp; Example: g=iData_vDOS('SQW_coh_lGe.nc')<br>
+    &nbsp;<br>
+    &nbsp; Useful methods for this iData flavour:<br>
+    &nbsp;<br>
+    &nbsp; methods(iData_vDOS)<br>
+    &nbsp;&nbsp;&nbsp; all iData methods can be used.<br>
+    &nbsp; iData_vDOS(g)<br>
+    &nbsp;&nbsp;&nbsp; convert input [e.g. a 2D or 4D Sqw, or a 1D vDOS]
+    into an iData_vDOS to give access to<br>
+    &nbsp;&nbsp;&nbsp; the methods below.<br>
+    &nbsp;<br>
+    &nbsp; d = dos(g)<br>
+    &nbsp;&nbsp;&nbsp; Compute/get the vibrational density of states
+    (vDOS).<br>
+    &nbsp;<br>
+    &nbsp; t = thermochemistry(g)<br>
+    &nbsp;&nbsp;&nbsp; Compute and display thermochemistry quantities
+    from the vDOS.<br>
+    &nbsp;<br>
+    &nbsp; [Sqw,Iqt,DW] = incoherent(g, q, T, sigma, m, n)<br>
+    &nbsp;&nbsp;&nbsp; Compute the so-called multi-phonon dynamic
+    structure factor expansion in <br>
+    &nbsp;&nbsp;&nbsp; the incoherent gaussian approximation. The
+    neutron scattering incoherent <br>
+    &nbsp;&nbsp;&nbsp; gaussian dynamic structure factor is computed, as
+    well as the corresponding<br>
+    &nbsp;&nbsp;&nbsp; intermediate scattering function, and the
+    Debye-Waller factor.<br>
+    &nbsp;<br>
+    &nbsp; [Gw, Tsym] = multi_phonons(g, Ki, T, sigma, m, phi, n)<br>
+    &nbsp;&nbsp;&nbsp; Compute the so-called multi-phonon density of
+    states expansion in the neutron scattering incoherent gaussian
+    approximation. <br>
+    The generalised density of states is the sum of the terms in this
+    expansion.<br>
+    &nbsp;<br>
+    &nbsp; input:<br>
+    &nbsp;&nbsp;&nbsp; can be an iData (1D vDOS, 2D Sqw, 4D Sqw) or
+    filename to generate a 1D vDOS object.<br>
+    &nbsp;<br>
+    &nbsp; output: an iData_vDOS object
+  </body>
+</html>

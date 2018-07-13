@@ -1,0 +1,100 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>iFit: iData_Sqw2D</title>
+  </head>
+  <body>
+    iData_Sqw2D: create a 2D S(q,w) data set (iData flavour)<br>
+    &nbsp;<br>
+    &nbsp; The iData_Sqw2D class is a 2D data set holding a S(q,w)
+    dynamic structure factor<br>
+    &nbsp;&nbsp;&nbsp; aka scattering function/law.<br>
+    &nbsp;&nbsp;&nbsp; The first&nbsp; axis (rows)&nbsp;&nbsp;&nbsp; is
+    the Momentum transfer [Angs-1] (wavevector). <br>
+    &nbsp;&nbsp;&nbsp; The second axis (columns) is the
+    Energy&nbsp;&nbsp; transfer [meV].<br>
+    &nbsp;<br>
+    &nbsp; This quantity usually derives from the double differential
+    neutron cross section<br>
+    &nbsp;<br>
+    &nbsp;&nbsp;&nbsp;&nbsp; d2 sigma <br>
+    &nbsp;&nbsp;&nbsp; ---------&nbsp;&nbsp; = N sigma /4pi kf/ki S(q,w)<br>
+    &nbsp;&nbsp;&nbsp; dOMEGA dEf<br>
+    &nbsp;<br>
+    &nbsp; conventions:<br>
+    &nbsp; w = omega = Ei-Ef = energy lost by the neutron [meV]<br>
+    &nbsp;&nbsp;&nbsp;&nbsp; omega &gt; 0, neutron looses energy, can
+    not be higher than Ei (Stokes)<br>
+    &nbsp;&nbsp;&nbsp;&nbsp; omega &lt; 0, neutron gains energy,
+    anti-Stokes<br>
+    &nbsp;<br>
+    &nbsp; Example: s=iData_Sqw2D('SQW_coh_lGe.nc')<br>
+    &nbsp;<br>
+    &nbsp; Useful methods for this iData flavour:<br>
+    &nbsp;<br>
+    &nbsp; methods(iData_Sqw2D)<br>
+    &nbsp;&nbsp;&nbsp; all iData methods can be used.<br>
+    &nbsp; iData_Sqw2D(s)<br>
+    &nbsp;&nbsp;&nbsp; convert input [e.g. a 2D iData object] into an
+    iData_Sqw2D to give access to<br>
+    &nbsp;&nbsp;&nbsp; the methods below.<br>
+    &nbsp;<br>
+    &nbsp; d&nbsp;&nbsp; = dos(s)<br>
+    &nbsp;&nbsp;&nbsp; Compute the generalized vibrational density of
+    states (gDOS).<br>
+    &nbsp;<br>
+    &nbsp; t&nbsp;&nbsp; = thermochemistry(s)<br>
+    &nbsp;&nbsp;&nbsp; Compute and display thermochemistry quantities
+    from the gDOS.<br>
+    &nbsp;<br>
+    &nbsp; m&nbsp;&nbsp; = moments(s)<br>
+    &nbsp;&nbsp;&nbsp; Compute the S(q,w) moments/sum rules (harmonic
+    frequencies).<br>
+    &nbsp;<br>
+    &nbsp; sym = symmetrize(s)<br>
+    &nbsp;&nbsp;&nbsp; Extend the S(|q|,w) in both energy sides.<br>
+    &nbsp;<br>
+    &nbsp; sb&nbsp; = Bosify(s)<br>
+    &nbsp;&nbsp;&nbsp; Apply the 'Bose' factor (detailed balance) to a
+    classical data set.<br>
+    &nbsp;<br>
+    &nbsp; s&nbsp;&nbsp; = deBosify(sb)<br>
+    &nbsp;&nbsp;&nbsp; Remove Bose factor (detailed balance) from an
+    'experimental/quantum' data set.<br>
+    &nbsp;<br>
+    &nbsp; p&nbsp;&nbsp; = parseparams(s)<br>
+    &nbsp;&nbsp;&nbsp; Search for physical quantities in S(q,w) data
+    set.<br>
+    &nbsp;<br>
+    &nbsp; sab = Sab(s)<br>
+    &nbsp;&nbsp;&nbsp; Convert to an S(alpha,beta) suitable for nuclear
+    data bases (ENDF, etc).<br>
+    &nbsp;<br>
+    &nbsp; xs&nbsp; = scattering_cross_section(s)<br>
+    &nbsp;&nbsp;&nbsp; Compute the total integrated scattering cross
+    section<br>
+    &nbsp;<br>
+    &nbsp; dr&nbsp; = dynamic_range(s, Ei, angles)<br>
+    &nbsp;&nbsp;&nbsp; Compute the dynamic range restricted to given
+    incident energy and detector angles<br>
+    &nbsp;<br>
+    &nbsp; sq&nbsp; = structure_factor(s)<br>
+    &nbsp;&nbsp;&nbsp; Compute the structure factor S(q)<br>
+    &nbsp;<br>
+    &nbsp; [inc, multi] = incoherent(s, q, T, sigma, m, n)<br>
+    &nbsp;&nbsp;&nbsp; Compute an estimate of the incoherent neutron
+    scattering law in the incoherent gaussian approximation<br>
+    &nbsp;<br>
+    &nbsp; [gDOS,M]&nbsp;&nbsp;&nbsp;&nbsp; = multi_phonons(ss)<br>
+    &nbsp;&nbsp;&nbsp; Compute the integrated multi-phonon DOS terms
+    from an initial density of states<br>
+    &nbsp;<br>
+    &nbsp; input:<br>
+    &nbsp;&nbsp;&nbsp; can be a 2D iData or filename to generate a 2D
+    Sqw object.<br>
+    &nbsp;<br>
+    &nbsp; output: an iData_Sqw2D object
+  </body>
+</html>

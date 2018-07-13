@@ -1,0 +1,112 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+
+    <meta http-equiv="content-type" content="text/html; charset=windows-1252">
+  </head>
+  <body>
+    <br>
+    <br>
+    iData_Sab: create a 2D S(alpha,beta) data set (iData flavour)<br>
+    &nbsp;<br>
+    &nbsp; The iData_Sab class is a 2D data set holding a S(alpha,beta)
+    dynamic <br>
+    &nbsp;&nbsp;&nbsp; structure factor aka scattering function/law.<br>
+    &nbsp;&nbsp;&nbsp; The data set axes are beta as 1st axis (rows),
+    alpha as 2nd axis (Angs-1).<br>
+    &nbsp;<br>
+    &nbsp; The S(alpha,beta) is a representation of the dynamic
+    structure factor <br>
+    &nbsp; using unitless momentum and energy variables defined as:<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; alpha= h2q2/2MkT&nbsp; =
+    (Ei+Ef-2*mu*sqrt(Ei*Ef))/AkT<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; beta = -hw/kT&nbsp;&nbsp;&nbsp;&nbsp;
+    =
+    (Ef-Ei)/kT&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    energy gained by neutron<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; A&nbsp;&nbsp;&nbsp; = M/m<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; mu&nbsp;&nbsp; = cos(theta) = (Ki.^2
+    + Kf.^2 - q.^2) ./ (2*Ki.*Kf)<br>
+    &nbsp; This representation is common in nuclear data, neutron
+    sections (e.g. ENDF MF7).<br>
+    &nbsp;<br>
+    &nbsp; conventions:<br>
+    &nbsp; beta = (Ef-Ei)/kT = -hw/kT&nbsp; energy gained by the
+    neutron, unitless<br>
+    &nbsp;&nbsp;&nbsp;&nbsp; beta &lt; 0, neutron looses energy,
+    down-scattering (Stokes)<br>
+    &nbsp;&nbsp;&nbsp;&nbsp; beta &gt; 0, neutron gains energy,&nbsp;
+    up-scattering (anti-Stokes)<br>
+    &nbsp;<br>
+    &nbsp; Example: sab=iData_Sab('SQW_coh_lGe.nc', 72.6,1235)<br>
+    &nbsp;<br>
+    &nbsp; Useful methods for this iData flavour:<br>
+    &nbsp;<br>
+    &nbsp; methods(iData_Sab)<br>
+    &nbsp;&nbsp;&nbsp; all iData methods can be used.<br>
+    &nbsp; iData_Sab(sab)<br>
+    &nbsp;&nbsp;&nbsp; convert input [e.g. a 2D iData object] into an
+    iData_Sab to give access to<br>
+    &nbsp;&nbsp;&nbsp; the methods below.<br>
+    &nbsp;<br>
+    &nbsp; d&nbsp;&nbsp; = dos(sab)<br>
+    &nbsp;&nbsp;&nbsp; Compute the generalized vibrational density of
+    states (gDOS).<br>
+    &nbsp;<br>
+    &nbsp; t&nbsp;&nbsp; = thermochemistry(sab,T)<br>
+    &nbsp;&nbsp;&nbsp; Compute and display thermochemistry quantities
+    from the gDOS.<br>
+    &nbsp;<br>
+    &nbsp; m&nbsp;&nbsp; = moments(sab, M, T)<br>
+    &nbsp;&nbsp;&nbsp; Compute the S(alpha,beta) moments/sum rules
+    (harmonic frequencies).<br>
+    &nbsp;<br>
+    &nbsp; sym = symmetrize(sab)<br>
+    &nbsp;&nbsp;&nbsp; Extend the S(alpha,beta) in both 'beta' sides.
+    The resulting S(a,b) is classical/symmetric in energy.<br>
+    &nbsp;<br>
+    &nbsp; sb&nbsp; = Bosify(sab,T)<br>
+    &nbsp;&nbsp;&nbsp; Apply the 'Bose' factor (detailed balance) to a
+    classical data set.<br>
+    &nbsp;<br>
+    &nbsp; s&nbsp;&nbsp; = deBosify(sab,T)<br>
+    &nbsp;&nbsp;&nbsp; Remove Bose factor (detailed balance) from an
+    'experimental/quantum' data set.<br>
+    &nbsp;<br>
+    &nbsp; p&nbsp;&nbsp; = parseparams(sab)<br>
+    &nbsp;&nbsp;&nbsp; Search for physical quantities in S(alpha,beta)
+    data set.<br>
+    &nbsp;<br>
+    &nbsp; sqw = Sqw(sab)<br>
+    &nbsp;&nbsp;&nbsp; Convert an S(alpha,beta) to an S(q,w), which is
+    roughly independent of the temperature.<br>
+    &nbsp;<br>
+    &nbsp; xs&nbsp; = scattering_cross_section(sab, Ei)<br>
+    &nbsp;&nbsp;&nbsp; Compute the total integrated scattering cross
+    section<br>
+    &nbsp;<br>
+    &nbsp; dr&nbsp; = dynamic_range(sab, Ei, angles)<br>
+    &nbsp;&nbsp;&nbsp; Compute the dynamic range restricted to given
+    incident energy and detector angles<br>
+    &nbsp;<br>
+    &nbsp; sq&nbsp; = structure_factor(sab)<br>
+    &nbsp;&nbsp;&nbsp; Compute the structure factor S(q)<br>
+    &nbsp;<br>
+    &nbsp; [inc,multi] = incoherent(sab)<br>
+    &nbsp;&nbsp;&nbsp; Compute the incoherent neutron scattering law
+    estimate in the incoherent <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; gaussian approximation, using its
+    density of states.<br>
+    &nbsp;<br>
+    &nbsp; [gDOS,M]&nbsp;&nbsp;&nbsp; = multi_phonons(sab)<br>
+    &nbsp;&nbsp;&nbsp; Compute the integrated multi-phonon DOS terms
+    from an initial density of states<br>
+    &nbsp;<br>
+    &nbsp; input:<br>
+    &nbsp;&nbsp;&nbsp; can be an iData or filename to generate a 2D Sab
+    object.<br>
+    &nbsp;<br>
+    &nbsp; output: an iData_Sab object<br>
+    <br>
+  </body>
+</html>
