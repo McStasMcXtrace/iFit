@@ -978,12 +978,6 @@ function config = iLoad_config_load
   end
   config.loaders = loaders; % updated list of loaders
   
-  % add to imformat when description,extension,method are OK
-  ret=add_all2imformat(config.loaders);
-  if ret>0
-    disp([ '% Updated image formats with ' num2str(ret) ' new extensions.' ]);
-  end
-  
 end % iLoad_config_load
 
 % ------------------------------------------------------------------------------
@@ -1258,21 +1252,3 @@ index = reshape(index,size(c));
 cs = c(index);
 
 end % sort_nat
-
-% ------------------------------------------------------------------------------
-function ret=add_all2imformat(config)
-  ret=0;
-  for index=1:numel(config)
-    this = config{index};
-    if isfield(this, 'name') && isfield(this, 'extension') ...
-      && isfield(this, 'method') && (~isfield(this, 'options') || isempty(this.options))
-      try
-        add2imformat(this.name, this.extension, ...
-          @(f)not(isempty(feval(this.method, f))), ...
-          @(f)feval(this.method, f), ...
-          @(f)feval(this.method, f), '');
-        ret=ret+1;
-      end
-    end
-  end
-end % add_all2imformat
