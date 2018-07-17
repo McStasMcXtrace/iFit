@@ -52,6 +52,11 @@ otherwise % nD, n>1
   
     if length(i_axes) == 2
       if ~any(strcmp(method,{'linear','nearest','cubic','v4','natural'})), method='linear'; end
+      i_signal(~isfinite(i_signal)) = 0;
+      for index=1:length(i_axes)
+          x = i_axes{index}; x(~isfinite(x)) = 0; i_axes{index} = x;
+          x = f_axes{index}; x(~isfinite(x)) = 0; f_axes{index} = x;
+      end
       f_signal = griddata(i_axes{[2 1]}, i_signal, f_axes{[2 1]}, method);
       method = 'griddata with vector signal';
     else                       % method: linear or nearest
@@ -100,7 +105,8 @@ otherwise % nD, n>1
         end
     end
     
-    interpolants = {'iData_interp_interpn','iData_interp_griddata'};
+    interpolants = {'iData_interp_interpn','iData_interp_TriScatteredInterp', ...
+        'iData_interp_scatteredInterpolant','iData_interp_griddata'};
     f_signals ={};
     f_methods ={};
     f_nans    =[];
@@ -121,12 +127,19 @@ otherwise % nD, n>1
         end
       catch ME
         % warning([ mfilename ': WARNING: failed interpolation with ' interpolants{index} '. Going on.' ]);
+        % getReport(ME)
       end
     end
     
     f_signal = []; method = []; f_nan = Inf;
     % now we get the best method, which has fewer NaN's
     [~,best] = min(f_nans);
+    if isempty(best) || numel(f_signals) == 1
+        best = 1;
+    end
+    if isempty(f_signals)
+        error([ mfilename ': failed all interpolation methods.' ]);
+    end
     f_signal = f_signals{best};
     method   = f_methods{best};
     f_nan    = f_nans(best);
@@ -150,6 +163,56 @@ function [f_signal, method] = iData_interp_interpn(i_axes, i_signal, f_axes, met
   end
   method    = [ method ' interpn' ];
   
+function [f_signal, method] = iData_interp_TriScatteredInterp(i_axes, i_signal, f_axes, method)
+  % TriScatteredInterp is recommended in R2010a up to R2013a
+  if ~exist('TriScatteredInterp') || length(i_axes) > 3
+      error('TriScatteredInterp is not available');
+  end
+  
+  % make sure we do not have nan/inf, and use vectors
+  i_signal(~isfinite(i_signal)) = 0; i_signal=i_signal(:);
+  for index=1:length(i_axes)
+      x = i_axes{index}; x(~isfinite(x)) = 0; i_axes{index} = x(:);
+      x = f_axes{index}; x(~isfinite(x)) = 0; f_axes{index} = x(:);
+  end
+  
+  switch length(i_axes)
+  case 1
+    F = TriScatteredInterp(i_axes{1}, i_signal);
+    f_signal = F(f_axes{1});
+  case 2
+    F = TriScatteredInterp(i_axes{[2 1]}, i_signal);
+    f_signal = F(f_axes{[2 1]});
+  case 3
+    F = TriScatteredInterp(i_axes{[2 1 3]}, i_signal);
+    f_signal = F(f_axes{[2 1 3]});
+  end
+  method = 'TriScatteredInterp';
+  
+  
+function [f_signal, method] = iData_interp_scatteredInterpolant(i_axes, i_signal, f_axes, method)
+  % scatteredInterpolant is recommended above R2013a
+  if ~exist('scatteredInterpolant') || ~any(length(i_axes) == [2 3])
+      error('scatteredInterpolant is not available');
+  end
+  
+  % make sure we do not have nan/inf, and use vectors
+  i_signal(~isfinite(i_signal)) = 0; i_signal=i_signal(:);
+  for index=1:length(i_axes)
+      x = i_axes{index}; x(~isfinite(x)) = 0; i_axes{index} = x(:);
+      x = f_axes{index}; x(~isfinite(x)) = 0; f_axes{index} = x(:);
+  end
+  
+  switch length(i_axes)
+  case 2
+    F = scatteredInterpolant(i_axes{[2 1]}, i_signal);
+    f_signal = F(f_axes{[2 1]});
+  case 3
+    F = scatteredInterpolant(i_axes{[2 1 3]}, i_signal);
+    f_signal = F(f_axes{[2 1 3]});
+  end
+  method = 'scatteredInterpolant';
+
 function [f_signal, method] = iData_interp_griddata(i_axes, i_signal, f_axes, method)
   % griddata is much slower than interpn. 
   % Also, it uses triangulation, which creates fake area when using 
@@ -160,6 +223,13 @@ function [f_signal, method] = iData_interp_griddata(i_axes, i_signal, f_axes, me
   
   % pad with 0 around to avoid strange Tri interpolant in concave sets
   [i_axes, i_signal] = iData_interp_safeboxes(i_axes, i_signal);
+  
+  % make sure we do not have nan/inf
+  i_signal(~isfinite(i_signal)) = 0;
+  for index=1:length(i_axes)
+      x = i_axes{index}; x(~isfinite(x)) = 0; i_axes{index} = x;
+      x = f_axes{index}; x(~isfinite(x)) = 0; f_axes{index} = x;
+  end
   
   if length(i_axes) == 2
     if ~any(strcmp(method,{'linear','nearest','cubic','v4','natural'})), method='linear'; end
