@@ -28,6 +28,11 @@ classdef iData_Sqw2D < iData
   %   the methods below.
   % saw = q2phi(s, lambda)
   %   Compute S(phi,w) from S(q,w) for given wavelength [Angs]
+  % sqt = w2t(s, lambda)
+  %   Compute S(q,t) from S(q,w) for given wavelength [Angs]
+  % [spt,spc] = qw2phit(s, lambda)
+  %   Compute S(phi,t) from S(q,w) for given wavelength [Angs]. 
+  %   Also return the S(phi,channel) as 2nd arg.
   % sab = Sab(s, M, T)
   %   Compute S(alpha,beta) from S(q,w) for given mass and temperature
   %
@@ -244,9 +249,9 @@ classdef iData_Sqw2D < iData
       end
     end
     
-    function sxt = w2t(self)
+    function sxt = w2t(self, varargin)
       % iData_Sqw2D: w2t: convert a S(q,w) into a S(q,t) iData
-      sqt = Sqw_e2t(self);
+      sqt = Sqw_e2t(self, varargin{:});
       if nargout == 0
         fig=figure; 
         h  =plot(log10(sqt)); 
@@ -254,10 +259,11 @@ classdef iData_Sqw2D < iData
       end
     end
     
-    function spt = qw2phit(self, varargin)
+    function [spt, spc] = qw2phit(self, varargin)
       % iData_Sqw2D: qw2phit: convert a S(q,w) into a S(phi,t) iData
+      %   Also return the S(phi,channel) as 2nd arg.
       spe = Sqw_q2phi(self, varargin{:});
-      spt = Sqw_e2t(spe);
+      [spt, spc] = Sqw_e2t(spe, varargin{:});
       if nargout == 0
         fig=figure; 
         h  =plot(log10(spt)); 
