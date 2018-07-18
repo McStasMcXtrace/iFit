@@ -11,7 +11,12 @@ function s = read_image(filename)
 s=[];
 if nargin == 0, return; end
 
-s       = imfinfo(filename);
+try
+  s       = imfinfo(filename);
+catch
+  s = [];
+  return;
+end
 s.image = imread(filename);
 if exist('exifread') == 2
     try
