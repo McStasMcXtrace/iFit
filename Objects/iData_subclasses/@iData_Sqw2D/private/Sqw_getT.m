@@ -20,13 +20,16 @@ function  T = Sqw_getT(s, prop)
   end
   
   for field=prop
+    % does it already exist as a property ?
     if isfield(s,field{1}), T=get(s,field{1}); end
     
+    % search case sensitive, the first match only
     if isempty(T) || all(T(:)<0) || ~isnumeric(T) || ~isvector(T)
-      f = findfield(s,field{1},'exact numeric');
-      if ~isempty(f), T = get(s,f{1}); end
+      f = findfield(s,field{1},'exact numeric first');
+      if ~isempty(f), T = get(s,f); end
     end
-
+    
+    % not found ? search non case sensitive, all matches
     if isempty(T) || all(T(:)<0) || ~isnumeric(T) || ~isvector(T)
       f = findfield(s,field{1},'numeric cache');
       for index=1:numel(f)

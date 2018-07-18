@@ -14,30 +14,30 @@ function [s,lambda,distance,chwidth,energy,wavevector] = Sqw_search_lambda(s)
   if isfield(parameters, 'Wavelength'),         
     lambda     = parameters.Wavelength; 
   else
-    lambda     = getfieldvalue(s, {'wavelength' 'lambda'});
+    lambda     = Sqw_getT(s, {'wavelength' 'lambda'});
   end
   if isfield(parameters, 'IncidentEnergy'),     
     energy     = parameters.IncidentEnergy; 
   else
-    energy     = getfieldvalue(s, {'IncidentEnergy' 'fixed_energy' 'energy' 'ei'});
+    energy     = Sqw_getT(s, {'IncidentEnergy' 'fixed_energy' 'energy' 'ei'});
   end
   if isfield(parameters, 'IncidentWavevector'), 
     wavevector = parameters.IncidentWavevector; 
   else
-    wavevector = getfieldvalue(s, {'IncidentWavevector','wavevector' 'ki'});
+    wavevector = Sqw_getT(s, {'IncidentWavevector','wavevector' 'ki'});
   end
   if isfield(parameters,'Distance')
     distance = parameters.Distance;
   else
-    distance = getfieldvalue(s, {'Distance_Det_Sample','detector_distance', 'distance'});
+    distance = Sqw_getT(s, {'Distance_Det_Sample','detector_distance', 'distance'});
   end
   if isfield(parameters, 'ChannelWidth')
     chwidth = parameters.ChannelWidth;
   else
-    chwidth = getfieldvalue(s, {'Channel_width','ChannelWidth'});
+    chwidth = Sqw_getT(s, {'ChannelWidth', 'Channel_width','ChannelWidth'});
   end
   
-  % now we test if the retyrieved value are OK
+  % now we test if the retrieved value are OK
   if isempty(lambda)
     if     ~isempty(energy)
       if ischar(energy), energy = get(s, energy); end
@@ -58,45 +58,39 @@ function [s,lambda,distance,chwidth,energy,wavevector] = Sqw_search_lambda(s)
   else
     lambda = mean(lambda(:));
     disp([ mfilename ': ' s.Tag ' ' s.Title ' using <wavelength>               =' num2str(lambda) ' [Angs]']);
-    setalias(s, 'IncidentWavelength', energy, 'Incident neutron Wavelength [Angs-1]');
+    if ~isfield(s, 'IncidentWavelength')
+      setalias(s, 'IncidentWavelength', lambda, 'Incident neutron Wavelength [Angs-1]');
+    end
   end
   
   if ~isempty(lambda) && lambda > 0 && (isempty(energy) || ischar(energy))
     energy      = 81.805./lambda^2; 
-    setalias(s, 'IncidentEnergy', energy, 'Incident neutron Energy [meV]');
+    if ~isfield(s, 'IncidentEnergy')
+      setalias(s, 'IncidentEnergy', energy, 'Incident neutron Energy [meV]');
+    end
   end
   if ~isempty(lambda) && lambda > 0 && (isempty(wavevector)  || ischar(wavevector))
     wavevector  = 2*pi./lambda;
-    setalias(s, 'IncidentWavevector', energy, 'Incident neutron Wavevector [Angs-1]');
+    if ~isfield(s, 'IncidentWavevector')
+      setalias(s, 'IncidentWavevector', energy, 'Incident neutron Wavevector [Angs-1]');
+    end
   end
   
   % search for a sample-to-detector distance
   if ~isempty(distance)
     distance = mean(distance(:));
     disp([ mfilename ': ' s.Tag ' ' s.Title ' using <sample-detector distance> =' num2str(distance) ' [m]' ]);
-    setalias(s, 'Distance_Sample_Detector', distance);
+    if ~isfield(s, 'Distance')
+      setalias(s, 'Distance', distance, '[m] Sample-Detector distance'); 
+    end
   end
   
   % search for the Channel Width
   if ~isempty(chwidth)
     chwidth = mean(chwidth);
     disp([ mfilename ': ' s.Tag ' ' s.Title ' using <channel width>            =' num2str(chwidth) ' [time unit: s, ms or us]']);
-    setalias(s, 'Time_Channel_Width', chwidth);
-  end
-  
-  % ----------------------------------------------------------------------------
-  function v = getfieldvalue(s, fields)
-    v = [];
-    for f=fields(:)'
-      if isfield(s, f{1})
-        v = get(s, f{1}); return; 
-      end
-      link = findfield(s, f{1}, 'first exact');
-      if isempty(link) && numel(f{1}) > 3
-        link = findfield(s, f{1}, 'first');
-      end
-      if ~isempty(link)
-        v = get(s, link); return; 
-      end
+    if ~isfield(s, 'ChannelWidth')
+      setalias(s, 'ChannelWidth', chwidth, '[time unit] ToF Channel Width');
     end
-  
+  end
+ 
