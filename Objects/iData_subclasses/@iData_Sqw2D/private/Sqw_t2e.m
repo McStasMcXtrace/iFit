@@ -1,17 +1,48 @@
-function s=Sqw_t2e(s)
+function s=Sqw_t2e(s, t_present)
 % convert S(xx,t) to S(xx,w). From lamp t2e and in5_t2e. Requires wavelength and/or distance
 
   if isempty(s), return; end
   [s,lambda,distance,chwidth] = Sqw_search_lambda(s);
+  if nargin < 1, t_present=1; end
 
-  disp([ mfilename ': ' s.Tag ' ' s.Title ' Converting Axis 1 "' label(s,1) '": time [sec] to energy [meV].' ]);
-  t = getaxis(s, 1);
+  disp([ mfilename ': ' s.Tag ' ' s.Title ' Converting Axis ' num2str(t_present) ' "' ...
+    label(s,t_present) '": time [sec] to energy [meV].' ]);
+    
+  t = getaxis(s, t_present); % most probably channels
+  
+  % compute the elastic peak position (EPP) and centre the time axis
+  % in principle, the time structure is symmetric when integrated over wavevector
+  % but not from time.
+  EPP = Sqw_getT(s, {'ElasticPeakPosition' 'Elastic_peak_channel' 'Elastic_peak' 'Peak_channel' 'Elastic'});
+  if ~isempty(EPP)
+    t_elast0 = EPP;
+  else t_elast0=[]; end
+  
+  % compute the EPP
+  s_time = trapz(s, 2);       % compute time distribution, integrating angle
+  [~,s_time_max]            = max(s_time, [],t_present);
+  t_elast                    = t(s_time_max);  % EPP estimate from maximum
+  dt = (max(t) - min(t))/10;  % select 10% around the maximum
+
+  % get gaussian distribution around maximum
+  s_time = xlim(s_time, t_elast+[-dt dt]);
+  [s_time_std,s_time_centre]= std(s_time,t_present);
+  if abs(t_elast - s_time_centre) < s_time_std && abs(t_elast - s_time_centre) < 1e-3
+    t_elast = mean([t_elast s_time_centre]);  % improve accuray from gaussian std
+  end
+  if ~isempty(t_elast0) && t_elast0 && abs(t_elast0 - t_elast)/t_elast0 > 1e-2
+    disp([ mfilename ': WARNING: ' s.Tag ' ' s.Title ' Elastic peak position mismatch.' ])
+    disp([ '  the Elastic peak position from the file Parameters is ' num2str(t_elast0) ]);
+    disp([ '  the Elastic peak position computed                 is ' num2str(t_elast) ]);
+  else t_elast = mean([t_elast0 t_elast]);
+  end
   
   % check if the tof is given in channels
   if all(unique(diff(t(:))) == 1)
     % use ChannelWidth
     if ~isempty(chwidth) && chwidth
-      t = t.*chwidth;
+      t       = t.*chwidth;
+      t_elast = t_elast.*chwidth;
       disp([ mfilename ': the time axis is given in channels. Converting to time.' ]);
     else
       disp([ mfilename ': WARNING: ' s.Tag ' ' s.Title ' the time-of-flight Axis 1 is given in time channels.' ])
@@ -25,33 +56,23 @@ function s=Sqw_t2e(s)
     % NOP: time is already OK
   elseif all(abs(t < 100))
     % probably in milli-seconds
-    t = t/1000;
+    t       = t/1000;
+    t_elast = t_elast/1000;
     disp('    Assuming time is in [ms].');
   elseif all(abs(t < 100000))
     % probably in micro-seconds
-    t = t/1e6;
+    t       = t/1e6;
+    t_elast = t_elast/1e6;
     disp('    Assuming time is in [us].');
   else
     disp([ mfilename ': WARNING: ' s.Tag ' ' s.Title ' the time-of-flight Axis 1 seems odd.' ])
     disp('    Check that the time-of-flight is defined as the time from the sample to the detector, in [s].')
   end
   
-  % compute the elastic peak position (EPP) and centre the time axis
-  % in principle, the time structure is symmetric when integrated over wavevector
-  % but not from time.
-  setaxis(s, 1, t);           % update time in [s]
-  label(s, 1, 'time [s]');
-  s_time = trapz(s, 2);       % compute time distribution, integrating angle
-  [~,s_time_max]            = max(s_time, [],1);
-  t_elast                    = t(s_time_max);  % EPP estimate from maximum
-  dt = (max(t) - min(t))/10;  % select 10% around the maximum
-  
-  % get gaussian distribution around maximum
-  s_time = xlim(s_time, t_elast+[-dt dt]);
-  [s_time_std,s_time_centre]= std(s_time,1);
-  if abs(t_elast - s_time_centre) < s_time_std && abs(t_elast - s_time_centre) < 1e-3
-    t_elast = mean([t_elast s_time_centre]);  % improve accuray from gaussian std
-  end
+  % update time axis
+  setaxis(s, t_present, t);           % update time in [s]
+  label(s, t_present, 'time [s]');
+    
   
   % when angular axis, the estimate is wrong.
   % we should convert to [q,w], center energy range, and back to time.
@@ -97,5 +118,5 @@ function s=Sqw_t2e(s)
 
   dtdEkikf = dtdE.*kikf;
   s    = s.*dtdEkikf;
-  setaxis(s, 1, hw0);
-  label(s, 1, 'Energy transfer hw [meV]');
+  setaxis(s, t_present, hw0);
+  label(s, t_present, 'Energy transfer hw [meV]');
