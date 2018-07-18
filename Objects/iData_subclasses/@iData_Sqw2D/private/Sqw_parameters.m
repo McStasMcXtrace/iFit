@@ -74,8 +74,8 @@ if ischar(fields) && strcmpi(fields, 'sqw')
       'Material Material description' ...
       'Phase Material state' ...
       'Scattering process' ...
-     {'Wavelength [Angs] neutron wavelength' 'lambda' 'Lambda' }...
-      'Instrument neutron spectrometer used for measurement' ...
+     {'Wavelength [Angs] neutron wavelength' 'lambda' 'Lambda' } ...
+     {'Instrument neutron spectrometer used for measurement' 'SOURCE' } ...
       'Comment' ...
       'C_s [J/mol/K]   heat capacity' ...
       'Sigma [N/m] surface tension' ...
@@ -90,6 +90,7 @@ if ischar(fields) && strcmpi(fields, 'sqw')
      {'Distance [m] Sample-Detector distance' 'distance' } ...
      {'ChannelWidth [time unit] ToF Channel Width' 'Channel_Width'} ...
      {'V_rho [Angs^-3] atom density' 'rho' } ...
+     {'DetectionAngles [deg] Detection Angles'} ...
     };
 elseif ischar(fields) && strcmpi(fields, 'sab')
   % ENDF compatibility flags: MF1 MT451 and MF7 MT2/4
@@ -156,17 +157,23 @@ for index=1:length(fields)
   p_name = strtok(f{1});          % the first name before the comment. We will assign it.
   for f_index=1:numel(f)
     name   = strtok(f{f_index});  % the name of the field or alternatives
-    if     isfield(s, name)   val0=get(s, name);
-    elseif isfield(s, p_name) val0=get(s, p_name);
+    if     isfield(s, p_name) val0=get(s, p_name);
     elseif isfield(parameters, name)
       val0 = parameters.(name);
     elseif isfield(parameters, p_name)
       val0 = parameters.(p_name);  
+    elseif isfield(s, name)   val0=get(s, name);
     else val0=[]; end
     if index==1 && f_index==1
-      links    = findfield(s,strtok(f{f_index}),'exact');
+      links    = findfield(s,strtok(f{f_index}),'exact case');
+      if isempty(links)
+        links    = findfield(s,strtok(f{f_index}),'exact');
+      end
     else
-      links    = findfield(s,strtok(f{f_index}),'exact cache');
+      links    = findfield(s,strtok(f{f_index}),'exact cache case');
+      if isempty(links)
+        links    = findfield(s,strtok(f{f_index}),'exact cache');
+      end
       if isempty(links) && numel(strtok(f{f_index})) > 3
         links    = findfield(s,strtok(f{f_index}),'cache'); % search for incomplete names
       end

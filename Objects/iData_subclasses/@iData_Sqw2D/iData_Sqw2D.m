@@ -26,6 +26,10 @@ classdef iData_Sqw2D < iData
   % iData_Sqw2D(s)
   %   convert input [e.g. a 2D iData object] into an iData_Sqw2D to give access to
   %   the methods below.
+  % saw = q2phi(s, lambda)
+  %   Compute S(phi,w) from S(q,w) for given wavelength [Angs]
+  % sab = Sab(s, M, T)
+  %   Compute S(alpha,beta) from S(q,w) for given mass and temperature
   %
   % d   = dos(s)
   %   Compute the vibrational density of states.
@@ -230,17 +234,38 @@ classdef iData_Sqw2D < iData
       
     end
     
-    function spe = q2phi(self)
-      % iData_Sqw2D: q2phi: convert a S(q,w) into a S(phi,w) iData
-      spe = Sqw_q2phi(self);
+    function spe = q2phi(self, varargin)
+      % iData_Sqw2D: q2phi: convert a S(q,w) into a S(phi,w) iData (scattering angle)
+      spe = Sqw_q2phi(self, varargin{:});
       if nargout == 0
         fig=figure; 
-        h  =plot(log10(s)); 
+        h  =plot(log10(spe)); 
         set(fig, 'NextPlot','new');
       end
     end
     
-    function s = Sab(self)
+    function sxt = w2t(self)
+      % iData_Sqw2D: w2t: convert a S(q,w) into a S(q,t) iData
+      sqt = Sqw_e2t(self);
+      if nargout == 0
+        fig=figure; 
+        h  =plot(log10(sqt)); 
+        set(fig, 'NextPlot','new');
+      end
+    end
+    
+    function spt = qw2phit(self, varargin)
+      % iData_Sqw2D: qw2phit: convert a S(q,w) into a S(phi,t) iData
+      spe = Sqw_q2phi(self, varargin{:});
+      spt = Sqw_e2t(spe);
+      if nargout == 0
+        fig=figure; 
+        h  =plot(log10(spt)); 
+        set(fig, 'NextPlot','new');
+      end
+    end
+    
+    function s = Sab(self, varargin)
       %  iData_Sqw2D: Sab: convert a 2D S(q,w) into an S(alpha,beta). 
       %
       %  The S(alpha,beta) is a representation of the dynamic structure factor 
@@ -272,7 +297,7 @@ classdef iData_Sqw2D < iData
       %          plot(log(sab)
       %
       % (c) E.Farhi, ILL. License: EUPL.
-      s = Sqw2Sab(self);  % private
+      s = Sqw2Sab(self, varargin{:});  % private
     end
     
     function f = saveas(self, varargin)

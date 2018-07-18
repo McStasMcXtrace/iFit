@@ -91,13 +91,13 @@ function s = Sqw_check(s, mode)
   if ~w_present && t_present
     % convert from S(xx,t) to S(xx,w): t2e requires L2=Distance
     disp([ mfilename ': time/channel data set detected: converting axis "' label(s,t_present) '" to energy.' ]);
-    s = Sqw_t2e(s);
+    s = Sqw_t2e(s, t_present);
     if ~isempty(s), w_present = t_present; end
   end
   if ~q_present && a_present && w_present
-    % convert from S(phi,w) to S(q,w)
+    % convert from S(phi,w) to S(q,w). WARNING: phi = 2*theta is the angle at the detector.
     disp([ mfilename ': S(phi,w) data set detected: converting angle axis "' label(s,a_present) '" to wavevector.' ]);
-    s = Sqw_phi2q(s);
+    s = Sqw_phi2q(s, [], a_present, w_present);
     if ~isempty(s), q_present = a_present; end
   end
   if (strcmp(mode, 'qw') && (~w_present || ~q_present)) ...
