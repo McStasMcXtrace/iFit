@@ -14,7 +14,8 @@ function s = Sqw_q2phi(s, lambda)
     lambda = 2.36;
   end
   
-  disp([ mfilename ': ' s.Tag ' ' s.Title ' Converting Axis 2 "' label(s, 2) '": wavevector [Angs-1] to scattering angle [deg].' ]);
+  disp([ mfilename ': ' s.Tag ' ' s.Title ' Converting Axis 2 "' label(s, 2) ...
+    '": wavevector [Angs-1] to scattering angle [deg].' ]);
   Ei    = 81.805./lambda.^2;
   q     = s{2}; % wavevector
   hw    = s{1};

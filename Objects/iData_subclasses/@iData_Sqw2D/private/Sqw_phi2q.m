@@ -10,15 +10,12 @@ function s = Sqw_phi2q(s, lambda, a_present, w_present)
     [s,lambda] = Sqw_search_lambda(s);
   end
   
-  disp([ mfilename ': ' s.Tag ' ' s.Title ' Converting Axis ' num2str(a_present) ' "' label(s, a_present) '": angle [deg] to wavevector [Angs-1].' ]);
+  disp([ mfilename ': ' s.Tag ' ' s.Title ' Converting Axis ' num2str(a_present) ...
+    ' "' label(s, a_present) '": angle [deg] to wavevector [Angs-1].' ]);
   Ei    = 81.805/lambda^2;
   phi   = getaxis(s,  a_present); % angle (assumed to be scattering angle)
   hw    = getaxis(s,  w_present);
-  % check for phi range
-  if max(abs(phi)) > 90
-     % this is angle at the detector phi=2*theta
-     phi = phi/2;
-  end
+  
   if isvector(hw) && isvector(phi)
     s = meshgrid(s);
     phi   = getaxis(s,a_present); % angle
