@@ -26,11 +26,11 @@ classdef iData_Sqw2D < iData
   % iData_Sqw2D(s)
   %   convert input [e.g. a 2D iData object] into an iData_Sqw2D to give access to
   %   the methods below.
-  % saw = q2phi(s, lambda)
-  %   Compute S(phi,w) from S(q,w) for given wavelength [Angs]
-  % sqt = w2t(s, lambda)
+  % spw = qw2phiw(s, lambda)
+  %   Convert a S(q,w) into a S(phi,w) iData (scattering angle)
+  % sqt = qw2qt(s, lambda)
   %   Compute S(q,t) from S(q,w) for given wavelength [Angs]
-  % [spt,spc] = qw2phit(s, lambda)
+  % [spt,spc] = qw2phi(s, lambda)
   %   Compute S(phi,t) from S(q,w) for given wavelength [Angs]. 
   %   Also return the S(phi,channel) as 2nd arg.
   % sab = Sab(s, M, T)
@@ -239,18 +239,18 @@ classdef iData_Sqw2D < iData
       
     end
     
-    function spe = q2phi(self, varargin)
-      % iData_Sqw2D: q2phi: convert a S(q,w) into a S(phi,w) iData (scattering angle)
-      spe = Sqw_q2phi(self, varargin{:});
+    function spw = qw2phiw(self, varargin)
+      % iData_Sqw2D: qw2phiw: convert a S(q,w) into a S(phi,w) iData (scattering angle)
+      spw = Sqw_q2phi(self, varargin{:});
       if nargout == 0
         fig=figure; 
-        h  =plot(log10(spe)); 
+        h  =plot(log10(spw)); 
         set(fig, 'NextPlot','new');
       end
     end
     
-    function sxt = w2t(self, varargin)
-      % iData_Sqw2D: w2t: convert a S(q,w) into a S(q,t) iData
+    function sqt = qw2qt(self, varargin)
+      % iData_Sqw2D: qw2qt: convert a S(q,w) into a S(q,t) iData (time-of-flight from sample)
       sqt = Sqw_e2t(self, varargin{:});
       if nargout == 0
         fig=figure; 
@@ -259,11 +259,24 @@ classdef iData_Sqw2D < iData
       end
     end
     
-    function [spt, spc] = qw2phit(self, varargin)
-      % iData_Sqw2D: qw2phit: convert a S(q,w) into a S(phi,t) iData
-      %   Also return the S(phi,channel) as 2nd arg.
-      spe = Sqw_q2phi(self, varargin{:});
-      [spt, spc] = Sqw_e2t(spe, varargin{:});
+    function [spt, spc, spw] = qw2phi(self, varargin)
+      % iData_Sqw2D: qw2phi: convert a S(q,w) into S(phi,t) iData (scattering angle,ToF)
+      %   This method returns S(phi,t), S(phi,channels) and S(phi,w)
+      %
+      %   [spt, spc, spw] = qw2phi(sqw);
+      %   [spt, spc, spw] = qw2phi(sqw, lambda);
+      %
+      % input:
+      %   sqw:    S(q,w) as an iData_Sqw2D object
+      %   lambda: wavelength used for conversion [Angs]. When not given , it is
+      %           searched in the S(q,w) data set.
+      %
+      % output:
+      %   spt:    S(phi,t)        with phi=scattering angle [deg], t=time-of-flight from sample
+      %   spc:    S(phi,channel)  with the time-of-flight axis given in time channels
+      %   spw:    S(phi,w)        with phi=scattering angle [deg]
+      spw        = Sqw_q2phi(self, varargin{:});
+      [spt, spc] = Sqw_e2t(spw, varargin{:});
       if nargout == 0
         fig=figure; 
         h  =plot(log10(spt)); 

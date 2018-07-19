@@ -72,7 +72,7 @@ function [s,lambda,distance,chwidth,energy,wavevector] = Sqw_search_lambda(s)
   if ~isempty(lambda) && lambda > 0 && (isempty(wavevector)  || ischar(wavevector))
     wavevector  = 2*pi./lambda;
     if ~isfield(s, 'IncidentWavevector')
-      setalias(s, 'IncidentWavevector', energy, 'Incident neutron Wavevector [Angs-1]');
+      setalias(s, 'IncidentWavevector', wavevector, 'Incident neutron Wavevector [Angs-1]');
     end
   end
   

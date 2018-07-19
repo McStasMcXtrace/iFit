@@ -31,6 +31,7 @@ function s = Sqw_q2phi(s, lambda)
   cos_phi(Ef < 0 | abs(cos_phi) > 1) = nan;
   phi     = acosd(cos_phi); % in degrees
 
+  s = iData(s); % make it a true iData
   s = setalias(s, 'phi', phi, 'Scattering Angle [deg]');
   s = setaxis(s, 2, 'phi');
   

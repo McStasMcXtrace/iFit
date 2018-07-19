@@ -177,7 +177,10 @@ function s = Sqw_check(s, mode)
 
     % the ratio should be S(q,w)/S(q,-w) = exp(hw/kT)
     % so log(S(q,w)) - log(S(q,-w)) = hw/kT
+    wrn = warning;
+    warning off;
     log_s_ratio = log(s_res) - log(s_opp);
+    warning(wrn);
     w = getaxis(log_s_ratio,1);
     clear s_res s_opp
     

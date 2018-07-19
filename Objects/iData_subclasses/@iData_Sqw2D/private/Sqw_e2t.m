@@ -10,7 +10,7 @@ function [s, schan] =Sqw_e2t(s, lambda)
   else
     [s,~,distance,chwidth] = Sqw_search_lambda(s);
   end
-
+  schan = [];
   disp([ mfilename ': ' s.Tag ' ' s.Title ' Converting Axis 1 "' ...
     label(s,1) '": energy [meV] to time [sec].' ]);
  
@@ -43,8 +43,9 @@ function [s, schan] =Sqw_e2t(s, lambda)
   dtdEkikf= dtdE.*kikf;
   s       = s./dtdEkikf;
   
-  setaxis(s, 1, t);
-  label(s, 1, 'Time from sample [s]');
+  s = iData(s); % make it a true iData
+  setalias(s, 'time', t, 'Time from sample [s]');
+  setaxis(s, 1, 'time');
   
   % generate a S(phi, channel) data set
   if nargout > 1
@@ -54,7 +55,12 @@ function [s, schan] =Sqw_e2t(s, lambda)
     t = t / chwidth;
     % now we want EPP to be at t_sample_detector
     % t_elast = EPP*chwidth = t_sample_detector
-    EPP = t_sample_detector/chwidth;
+    EPP       = t_sample_detector/chwidth;
+    
+    % make sure time channels start at 1
+    deltaChan = min(t(:));
+    t         = t-deltaChan+1;
+    EPP       = EPP-deltaChan+1;
     
     schan = copyobj(s);
     setalias(schan, 'Channel', round(t), 'Time Channel [1]');

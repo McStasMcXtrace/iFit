@@ -21,8 +21,8 @@ function s=Sqw_t2e(s, t_present)
   % compute the EPP
   s_time = trapz(s, 2);       % compute time distribution, integrating angle
   [~,s_time_max]            = max(s_time, [],t_present);
-  t_elast                    = t(s_time_max);  % EPP estimate from maximum
-  dt = (max(t) - min(t))/10;  % select 10% around the maximum
+  t_elast                   = t(s_time_max);  % EPP estimate from maximum
+  dt = (max(t(:)) - min(t(:)))/10;  % select 10% around the maximum
 
   % get gaussian distribution around maximum
   s_time = xlim(s_time, t_elast+[-dt dt]);
@@ -30,15 +30,17 @@ function s=Sqw_t2e(s, t_present)
   if abs(t_elast - s_time_centre) < s_time_std && abs(t_elast - s_time_centre) < 1e-3
     t_elast = mean([t_elast s_time_centre]);  % improve accuray from gaussian std
   end
-  if ~isempty(t_elast0) && t_elast0 && abs(t_elast0 - t_elast)/t_elast0 > 1e-2
-    disp([ mfilename ': WARNING: ' s.Tag ' ' s.Title ' Elastic peak position mismatch.' ])
-    disp([ '  the Elastic peak position from the file Parameters is ' num2str(t_elast0) ]);
-    disp([ '  the Elastic peak position computed                 is ' num2str(t_elast) ]);
-  else t_elast = mean([t_elast0 t_elast]);
+  disp([ mfilename ': Computed Elastic peak position (EPP) ' num2str(t_elast) ]);
+  % check the EPP when stored/computed as channels
+  if ~isempty(t_elast0) && t_elast0 && t_elast0 > 1 && t_elast > 1 ...
+    if abs(t_elast0 - t_elast)/t_elast0 > 1e-2
+      disp([ mfilename ': WARNING: ' s.Tag ' ' s.Title ' Elastic peak position mismatch. Using computed value.' ])
+      disp([ '  The Elastic peak position from the file Parameters is ' num2str(t_elast0) ]);
+    else t_elast = mean([t_elast0 t_elast]); end
   end
   
   % check if the tof is given in channels
-  if all(unique(diff(t(:))) == 1)
+  if all(unique(diff(unique(t(:)))) == 1)
     % use ChannelWidth
     if ~isempty(chwidth) && chwidth
       t       = t.*chwidth;
@@ -118,5 +120,6 @@ function s=Sqw_t2e(s, t_present)
 
   dtdEkikf = dtdE.*kikf;
   s    = s.*dtdEkikf;
-  setaxis(s, t_present, hw0);
-  label(s, t_present, 'Energy transfer hw [meV]');
+  setalias(s, 'energy', hw0,  'Energy transfer hw [meV]');
+  setaxis(s, t_present, 'energy');
+

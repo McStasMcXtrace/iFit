@@ -26,7 +26,12 @@ function s = Sqw_phi2q(s, lambda, a_present, w_present)
   end
   % we use: cos(phi) = (Ki.^2 + Kf.^2 - q.^2) ./ (2*Ki.*Kf);
   Ei = 81.805/lambda^2; Ki = 2*pi./lambda; 
-  Ef = Ei - hw;         Kf = sqrt(Ef/2.0721);
+  Ef = Ei - hw;         
+  if numel(Ef) < numel(phi)
+    % Ef is a vector [Mx1], phi is a matrix [MxN]
+    Ef = repmat(Ef, 1, size(phi,2));
+  end
+  Kf = sqrt(Ef/2.0721);
   q  = sqrt(Ki.^2 + Kf.^2 - 2*cos(phi*pi/180).*Ki.*Kf);
 
   s = setalias(s, 'q', q, 'Wavevector [Angs-1]');
