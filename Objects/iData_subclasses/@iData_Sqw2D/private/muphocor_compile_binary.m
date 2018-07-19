@@ -13,7 +13,7 @@ function compiled = muphocor_compile_binary(compile)
   % try in order: global(system), local, local_arch
   for try_target={ ...
           [ 'muphocor' ext ], 'muphocor'
-          fullfile(this_path, [ 'muphocor' computer('arch') ext ]), ...
+          fullfile(this_path, [ 'muphocor_' computer('arch') ext ]), ...
           fullfile(this_path, [ 'muphocor' ext ]) }
       
     [status, result] = system([ precmd try_target{1} ]); % run from Matlab
@@ -26,7 +26,7 @@ function compiled = muphocor_compile_binary(compile)
   end
   
   % when we get there, compile muphocor_arch, not existing yet
-  target = fullfile(this_path, [ 'muphocor' computer('arch') ext ]);
+  target = fullfile(this_path, [ 'muphocor_' computer('arch') ext ]);
 
   % search for a FORTRAN compiler
   fc = '';
