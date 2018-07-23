@@ -50,6 +50,14 @@ end
 for index=1:length(varargin)
   property = varargin{index}; % get PropertyName
   if isempty(property), continue; end
+  if iscellstr(property)
+    b = {};
+    for p=property(:)'
+      b{end+1} = get(this, p{1});
+    end
+    varargout{1} = b;
+    return
+  end
   if ~ischar(property)
     error([ mfilename ': PropertyName should be char strings in object ' inputname(1) ' ' this.Tag ' "' this.Name '" and not ' class(property) ]);
   end

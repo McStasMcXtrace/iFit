@@ -1,5 +1,5 @@
 function [match, types, dims] = findfield(s, field, option)
-% [match, types, nelements]=findfield(iFunc, field, option) : look for iData fields
+% [match, types, nelements]=findfield(iFunc, field, option) : look for iFunc fields
 %
 %   @iFunc/findfield function to look for iFunc fields, type and number of elements
 %
