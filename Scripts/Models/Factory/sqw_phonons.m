@@ -596,7 +596,8 @@ end
 if ~isempty(fullfile(target, 'properties.mat'))
   properties = load(fullfile(target, 'properties.mat'));
   if isfield(properties, 'chemical_symbols')
-    properties.b_coh = sqw_phonons_b_coh(properties.chemical_symbols);
+    [properties.b_coh, properties.b_inc, properties.sigma_abs] = ...
+      sqw_phonons_b_coh(properties.chemical_symbols);
     save(fullfile(target, 'properties.mat'), '-v6', 'properties')
   end
   if isfield(properties, 'masses')
