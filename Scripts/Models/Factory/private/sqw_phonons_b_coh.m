@@ -5,7 +5,7 @@ b_coh = zeros(size(chemical_elements));
 b_inc = zeros(size(chemical_elements));
 
 % get all scattering lengths
-[elements,b_cohs,b_incs] = sqw_phonons_b_cohs;
+[elements,b_cohs,b_incs,sigma_abss] = sqw_phonons_b_cohs;
 
 % search for the elements from the formula
 for index=1:numel(chemical_elements)
