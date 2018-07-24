@@ -1,5 +1,21 @@
-function g = muphocor(s, lambda, T)
+function g = muphocor(s, lambda, T, mass, sigma_inc, conc)
   % run MUPHOCOR on the given S(q,w) data set, incident wavelength and Temperature
+  %
+  %   g = muphocor(s, lambda, T, mass, sigma_inc, conc)
+  %
+  % When not given, the physical parameters are searched in the object.
+  % The material physical properties include the masses, the incoherent 
+  %   scattering cross sections, and the concentrations which can be given as 
+  %   vectors per element/non equivalent atom in the material.
+  % The concentrations are the relative proportion of atoms in the material.
+  %
+  % input:
+  %   s:      iData_Sqw2D object S(q,w)
+  %   lambda: optional incident neutron wavelength [Angs]
+  %   T:      optional Temperature [K]
+  %   mass:   optional material mass [g/mol]
+  %   sigma_inc: optional incoherent scattering cross section [barns]
+  %   conc:   optional material concentration [1]
   
   % check if muphocor is compiled, else compile it
   persistent compiled
@@ -7,8 +23,11 @@ function g = muphocor(s, lambda, T)
   if isempty(compiled)
     compiled = muphocor_compile_binary; % check and possibly compile MUPHOCOR. Return path the EXE
   end
-  if nargin < 2, lambda=[]; end
-  if nargin < 3, T=[]; end
+  if nargin < 2, lambda   =[]; end
+  if nargin < 3, T        =[]; end
+  if nargin < 4, mass     =[]; end
+  if nargin < 5, sigma_inc=[]; end
+  if nargin < 6, conc     =[]; end
   
   if isempty(lambda)
     [s,lambda,distance,chwidth,~,wavevector] = Sqw_search_lambda(s);
@@ -26,6 +45,28 @@ function g = muphocor(s, lambda, T)
   if isempty(T)
     T = 293;
     disp([ mfilename ': WARNING: Using Temperature=' num2str(T) ' [K] for data set ' s.Tag ' ' s.Title ' from ' s.Source ]);
+  end
+  
+  % check for other required parameters: mass/weight, b_inc, concentration
+  if isempty(mass)
+    mass = Sqw_getT(s, {'weight'	'mass' 'AWR'});
+  end
+  if isempty(mass)
+    disp( [ mfilename ': Set object ' inputname(1) '.mass to the total molar weight, or a vector with molar weight per atom in the material.' ]);
+    error([ mfilename ': ERROR: Unspecified mass [g/mol] in data set ' s.Tag ' ' s.Title ' from ' s.Source ]);
+  end
+  if isempty(sigma_inc)
+    sigma_inc = Sqw_getT(s, {'sigma_inc'});
+  end
+  if isempty(sigma_inc)
+    disp( [ mfilename ': Set object ' inputname(1) '.sigma_inc to the total incoherent neutron scattering cross section, or a vector with sigma_inc per atom in the material.' ]);
+    error([ mfilename ': ERROR: Unspecified sigma_inc [barn] in data set ' s.Tag ' ' s.Title ' from ' s.Source ]);
+  end
+  if isempty(conc)
+    conc = Sqw_getT(s, {'concentration'});
+  end
+  if isempty(conc)
+    conc = ones(size(mass));
   end
   
   % data must be [\int sin(theta) S(theta,t) dtheta] that is start from time distribution
