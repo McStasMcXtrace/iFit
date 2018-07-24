@@ -34,7 +34,7 @@ function [s,lambda,distance,chwidth,energy,wavevector] = Sqw_search_lambda(s)
   if isfield(parameters, 'ChannelWidth')
     chwidth = parameters.ChannelWidth;
   else
-    chwidth = Sqw_getT(s, {'ChannelWidth', 'Channel_width','ChannelWidth'});
+    chwidth = Sqw_getT(s, {'ChannelWidth', 'Channel_width'});
   end
   
   % now we test if the retrieved value are OK

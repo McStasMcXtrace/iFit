@@ -92,6 +92,7 @@ if ischar(fields) && strcmpi(fields, 'sqw')
      {'V_rho [Angs^-3] atom density' 'rho' } ...
      {'DetectionAngles [deg] Detection Angles'} ...
      {'ElasticPeakPosition [chan] Channel for the elastic peak' 'Elastic_peak_channel' 'Elastic_peak' 'Peak_channel' 'Elastic'} ...
+     {'ChemicalFormula Material Chemical Formula' 'chemical_formula' 'formula' 'chemical' 'ZSYMAM'} ...
     };
 elseif ischar(fields) && strcmpi(fields, 'sab')
   % ENDF compatibility flags: MF1 MT451 and MF7 MT2/4
@@ -129,7 +130,7 @@ elseif ischar(fields) && strcmpi(fields, 'sab')
    {'LDRV ENDF derived evaluation id' 'derived' }...
     'NWD ENDF Number of records' ...
     'NXC ENDF Number of records in directory' ...
-    'ZSYMAM ENDF Character representation of the material' ...
+   {'ZSYMAM ENDF Character representation of the material' 'ChemicalFormula' 'chemical_formula' 'formula'} ...
    {'ALAB ENDF Laboratory' 'laboratory' } ...
    {'AUTH ENDF Author' 'author' } ...
    {'REF ENDF Primary reference' 'reference' } ...
@@ -231,6 +232,10 @@ for index=1:numel(fields)
     end
   end
 end
+
+% check for chemical formula
+[s, parameters] = Sqw_parameters_chemicalformula(s, parameters);
+
 % now transfer parameters into the object, as alias values
 s=setalias(s, 'parameters',       parameters, 'Material parameters');
 
@@ -238,3 +243,52 @@ if nargout == 0 & length(inputname(1))
   assignin('caller',inputname(1),s);
 end
 
+
+% ------------------------------------------------------------------------------
+function [s, parameters] = Sqw_parameters_chemicalformula(s, parameters)
+  % Sqw_parameters_chemicalformula: search for a chemical formula, and derive 
+  % missing mass, scattering cross sections
+  
+  if isfield(s, 'ChemicalFormula') && ischar(get(s,'ChemicalFormula'))
+    if ~isfield(parameters, 'ChemicalFormula')
+      parameters.ChemicalFormula = get(s,'ChemicalFormula');
+    end
+  end
+
+  if ~isfield(parameters, 'ChemicalFormula') || ~ischar(parameters.ChemicalFormula) 
+    at = 'A[cglmrstu]|B[aehikr]?|C[adeflmnorsu]?|D[bsy]|E[rsu]|F[elmr]?|G[ade]|H[efgos]?|I[nr]?|Kr?|L[airuv]|M[dgnot]|N[abdeiop]?|Os?|P[abdmortu]?|R[abefghnu]|S[bcegimnr]?|T[abcehilm]|U(u[opst])?|V|W|Xe|Yb?|Z[nr]';
+    qt ='\d*\.?\d*';
+    % regexp to match formula with only Atom symbols
+    % r='[A-Z][a-z]?\d*\.?\d*|(?<!\([^)]*)\(.*\)\d+\.?\d*(?![^(]*\))'      also works
+    % r='\(?([A-Z]{1}[a-z]?[^a-z])(\d*\.?\d*)([+-]?)(\d*\.?\d*)\)?(\d*)';  works nicely, but not atom specific
+    r= [ '\(?(' at ')([^a-z])(' qt ')([+-]?)(' qt ')\)?(\d*)' ];
+    form = regexp(findstr(s), r, 'match');
+    % get the longest formula
+    try
+      [~,index] = max(cellfun(@numel, form));
+      form = form{index};
+      parameters.ChemicalFormula = sprintf('%s', form{:});
+      
+    end
+  end
+  
+  if isfield(parameters, 'ChemicalFormula') && ...
+    ( ~isfield(s,'ChemicalFormula') || ~ischar(get(s, 'ChemicalFormula')) )
+    s = setalias(s, 'ChemicalFormula', parameters.ChemicalFormula, ...
+        'Material Chemical Formula');
+  end
+  
+  % determine mass, and neutron cross sections
+  % we parse the chemical formula and split it into tokens
+  if isfield(parameters, 'ChemicalFormula') && ischar(parameters.ChemicalFormula)
+    r = parse_formula(parameters.ChemicalFormula);
+    parameters.weight = molweight(fieldnames(r));
+    [b_coh, b_inc,sigma_abs,elements] = sqw_phonons_b_coh(fieldnames(r));
+    parameters.sigma_coh = 4*pi*b_coh;
+    parameters.sigma_inc = 4*pi*b_inc;
+    parameters.sigma_abs = sigma_abs;
+    parameters.b_coh = b_coh;
+    parameters.b_inc = b_inc;
+    parameters.atoms = fieldnames(r);
+    parameters.concentration = cell2mat(struct2cell(r));
+  end

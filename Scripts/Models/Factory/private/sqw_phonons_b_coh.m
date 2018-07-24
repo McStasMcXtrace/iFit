@@ -1,11 +1,25 @@
-function [b_coh, b_inc,sigma_abs] = sqw_phonons_b_coh(chemical_elements)
+function [b_coh, b_inc,sigma_abs,element] = sqw_phonons_b_coh(chemical_elements)
+  % sqw_phonons_b_coh: return cross sections per elements%
+  % input: cellstr or single char
+
+persistent elements b_cohs b_incs sigma_abss sigma_incs
 
 chemical_elements = cellstr(chemical_elements);
 b_coh = zeros(size(chemical_elements));
 b_inc = zeros(size(chemical_elements));
+element=cell(size(chemical_elements));
 
 % get all scattering lengths
-[elements,b_cohs,b_incs,sigma_abss] = sqw_phonons_b_cohs;
+if isempty(elements)
+  [elements, b_cohs, b_incs, sigma_abss, sigma_incs] = sqw_phonons_b_cohs;
+end
+if nargin == 0
+  b_coh = b_cohs;
+  b_inc = b_incs;
+  sigma_abs = sigma_abss;
+  element = elements;
+  return
+end
 
 % search for the elements from the formula
 for index=1:numel(chemical_elements)
@@ -13,13 +27,19 @@ for index=1:numel(chemical_elements)
   if numel(index_element) == 1
     b_coh(index) = b_cohs(index_element);
     b_inc(index) = b_incs(index_element);
+    if isnan(b_inc(index))
+      b_inc(index) = sqrt(sigma_incs(index_element)/4/pi);
+    end
     sigma_abs(index) = sigma_abss(index_element);
+    element{index} = elements{index_element};
   end
 end
 
 % ------------------------------------------------------------------------------
-function [elements,b_cohs,b_incs,sigma_abss] = sqw_phonons_b_cohs
+function [elements,b_cohs,b_incs,sigma_abss,sigma_incs] = sqw_phonons_b_cohs
 % neutron scattering length from https://www.ncnr.nist.gov/resources/n-lengths/list.html
+
+% there are 371 entries
 
 elements ='H 1H  2H  3H  He  3He  4He  Li  6Li  7Li  Be  B  10B  11B  C  12C  13C  N  14N  15N  O  16O  17O  18O  F  Ne  20Ne  21Ne  22Ne  Na  Mg  24Mg  25Mg  26Mg  Al  Si  28Si  29Si  30Si  P  S  32S  33S  34S  36S  Cl  35Cl  37Cl  Ar  36Ar  38Ar  40Ar  K  39K  40K  41K  Ca  40Ca  42Ca  43Ca  44Ca  46Ca  48Ca  Sc  Ti  46Ti  47Ti  48Ti  49Ti  50Ti  V  50V  51V  Cr  50Cr  52Cr  53Cr  54Cr  Mn  Fe  54Fe  56Fe  57Fe  58Fe  Co  Ni  58Ni  60Ni  61Ni  62Ni  64Ni  Cu  63Cu  65Cu  Zn  64Zn  66Zn  67Zn  68Zn  70Zn  Ga  69Ga  71Ga  Ge  70Ge  72Ge  73Ge  74Ge  76Ge  As  Se  74Se  76Se  77Se  78Se  80Se  82Se  Br  79Br  81Br  Kr  78Kr  80Kr  82Kr  83Kr  84Kr  86Kr  Rb  85Rb  87Rb  Sr  84Sr  86Sr  87Sr  88Sr  Y  Zr  90Zr  91Zr  92Zr  94Zr  96Zr  Nb  Mo  92Mo  94Mo  95Mo  96Mo  97Mo  98Mo  100Mo  Tc  Ru  96Ru  98Ru  99Ru  100Ru  101Ru  102Ru  104Ru  Rh  Pd  102Pd  104Pd  105Pd  106Pd  108Pd  110Pd  Ag  107Ag  109Ag  Cd  106Cd  108Cd  110Cd  111Cd  112Cd  113Cd  114Cd  116Cd  In  113In  115In  Sn  112Sn  114Sn  115Sn  116Sn  117Sn  118Sn  119Sn  120Sn  122Sn  124Sn  Sb  121Sb  123Sb  Te  120Te  122Te  123Te  124Te  125Te  126Te  128Te  130Te  I  Xe  124Xe  126Xe  128Xe  129Xe  130Xe  131Xe  132Xe  134Xe  136Xe  Cs  Ba  130Ba  132Ba  134Ba  135Ba  136Ba  137Ba  138Ba  La  138La  139La  Ce  136Ce  138Ce  140Ce  142Ce  Pr  Nd  142Nd  143Nd  144Nd  145Nd  146Nd  148Nd  150Nd  Pm  Sm  144Sm  147Sm  148Sm  149Sm  150Sm  152Sm  154Sm  Eu  151Eu  153Eu  Gd  152Gd  154Gd  155Gd  156Gd  157Gd  158Gd  160Gd  Tb  Dy  156Dy  158Dy  160Dy  161Dy  162Dy  163Dy  164Dy  Ho  Er  162Er  164Er  166Er  167Er  168Er  170Er  Tm  Yb  168Yb  170Yb  171Yb  172Yb  173Yb  174Yb  176Yb  Lu  175Lu  176Lu  Hf  174Hf  176Hf  177Hf  178Hf  179Hf  180Hf  Ta  180Ta  181Ta  W  180W  182W  183W  184W  186W  Re  185Re  187Re  Os  184Os  186Os  187Os  188Os  189Os  190Os  192Os  Ir  191Ir  193Ir  Pt  190Pt  192Pt  194Pt  195Pt  196Pt  198Pt  Au  Hg  196Hg  198Hg  199Hg  200Hg  201Hg  202Hg  204Hg  Tl  203Tl  205Tl  Pb  204Pb  206Pb  207Pb  208Pb  Bi  Po  At  Rn  Fr  Ra  Ac  Th  Pa  U  233U  234U  235U  238U  Np  Pu  238Pu  239Pu  240Pu  242Pu  Am  Cm  244Cm  246Cm  248Cm';
 elements = textscan(elements, '%s','Delimiter',' ');
@@ -32,3 +52,4 @@ b_incs = [ nan 25.274 4.04 -1.04 nan -2.5+2.568i	 0 nan -1.89+0.26i	 -2.49 0.12 
 
 sigma_abss = [ 	0.3326 0.3326 0.000519 0 0.00747 5333 0 70.5 940 0.0454 0.0076 767 3835 0.0055 0.0035 0.00353 0.00137 1.9 1.91 0.000024 0.00019 0.0001 0.236 0.00016 0.0096 0.039 0.036 0.67 0.046 0.53 0.063 0.05 0.19 0.0382 0.231 0.171 0.177 0.101 0.107 0.172 0.53 0.54 0.54 0.227 0.15 33.5 44.1 0.433 0.675 5.2 0.8 0.66 2.1 2.1 35 1.46 0.43 0.41 0.68 6.2 0.88 0.74 1.09 27.5 6.09 0.59 1.7 7.84 2.2 0.179 5.08 60 4.9 3.05 15.8 0.76 18.1 0.36 13.3 2.56 2.25 2.59 2.48 1.28 37.18 4.49 4.6 2.9 2.5 14.5 1.52 3.78 4.5 2.17 1.11 0.93 0.62 6.8 1.1 0.092 2.75 2.18 3.61 2.2 3 0.8 15.1 0.4 0.16 4.5 11.7 51.8 85 42 0.43 0.61 0.044 6.9 11 2.7 25 6.4 11.8 29 185 0.113 0.003 0.38 0.48 0.12 1.28 0.87 1.04 16 0.058 1.28 0.185 0.011 1.17 0.22 0.0499 0.0229 1.15 2.48 0.019 0.015 13.1 0.5 2.5 0.127 0.4 20 2.56 0.28 4 6.9 4.8 3.3 1.17 0.31 144.8 6.9 3.4 0.6 20 0.304 8.55 0.226 63.3 37.6 91.0 2520 1 1.1 11 24 2.2 20600. 0.34 0.075 193.8 12.0 202 0.626 1 0.114 30 0.14 2.3 0.22 2.2 0.14 0.18 0.133 4.91 5.75 3.8 4.7 2.3 3.4 418 6.8 1.55 1.04 0.215 0.29 6.15 23.9 165 3.5 4 21 13 85. 0.45 0.265 0.26 29.0 1.1 30 7 2.0 5.8 0.68 3.6 0.27 8.97 57 8.93 0.63 7.3 1.1 0.57 0.95 11.5 50.5 18.7 337 3.6 42 1.4 2.5 1.2 168.4 5922 0.7 57 2.4 42080 104 206 8.4 4530 9100 312 49700 735 85 61100 1.5 259000. 2.2 0.77 23.4 994 33 43 56 600 194 124 2840 64.7 159 19 13 19.6 659 2.74 5.8 100 34.8 2230 11.4 48.6 0.8 17.1 69.4 2.85 74 21 2065 104.1 561 23.5 373 84 41 13.04 20.6 563 20.5 18.3 30 20.7 10.1 1.7 37.9 89.7 112 76.4 16 3000 80 320 4.7 25 13.1 2 425 954 111 10.3 152 10.0 1.44 27.5 0.72 3.66 98.65 372.3 3080 2 2150 30 7.8 4.89 0.43 3.43 11.4 0.104 0.171 0.65 0.03 0.699 0.00048 0.0338 nan nan nan nan 12.8 nan 7.37 200.6 7.57 574.7 100.1 680.9 2.68 175.9 nan 558 1017.3 289.6 18.5 75.3 nan 16.2 1.36 3 ];
 
+sigma_incs = [ 	80.26 80.27 2.05 0.14 0 1.6 0 0.92 0.46 0.78 0.0018 1.7 3 0.21 0.001 0 0.034 0.5 0.5 0.00005 0.0008 0 0.004 0 0.0008 0.008 0 0.05 0 1.62 0.08 0 0.28 0 0.0082 0.004 0 0.001 0 0.005 0.007 0 0.3 0 0 5.3 4.7 0.001 0.225 0 0 0 0.27 0.25 0.5 0.3 0.05 0 0 0.5 0 0 0 4.5 2.87 0 1.5 0 3.3 0 5.08 0.5 5.07 1.83 0 0 5.93 0 0.4 0.4 0 0 0.3 0 4.8 5.2 0 0 1.9 0 0 0.55 0.006 0.4 0.077 0 0 0.28 0 0 0.16 0.091 0.084 0.18 0 0 1.5 0 0 0.06 0.32 0 0 0.05 0 0 0 0.1 0.15 0.05 0.01 0 0 0 0 0 0 0.5 0.5 0.5 0.06 0 0 0.5 0 0.15 0.02 0 0.15 0 0 0 0.0024 0.04 0 0 0.5 0 0.5 0 0 0.5 0.4 0 0 0 0 0 0 0 0.3 0.093 0 0 0.8 0 0 0 0.58 0.13 0.32 3.46 0 0 0 0.3 0 0.3 0 0 0.54 0.000037 0.55 0.022 0 0 0.3 0 0.3 0 0.3 0 0 0 0.007 0.0003 0.001 0.09 0 0 0.52 0 0.008 0 0 0 0.31 0 0 0 0 0 0 0 0 0 0 0.21 0.15 0 0 0 0.5 0 0.5 0 1.13 0.5 1.13 0.001 0 0 0 0 0.015 9.2 0 55 0 5 0 0 0 1.3 39 0 143 0 137 0 0 0 2.5 3.1 1.3 151 0 0 25 0 394 0 0 0.004 54.4 0 0 0 3 0 0.21 0 0.36 1.1 0 0 0 0.13 0 0 0.1 4 0 0 3.9 0 3.5 0 0 0.7 0.6 1.2 2.6 0 0 0.1 0 0.14 0 0.01 0.5 0.011 1.63 0 0 0.3 0 0 0.9 0.5 1 0.3 0 0 0.3 0 0.5 0 0 0 0 0 0.13 0 0 0 0.13 0 0 0.43 6.6 0 0 30 0 0 0 0 0.21 0.14 0.007 0.003 0 0 0.002 0 0.0084 0 0 0 0 0 0 0 0.1 0.005 0.1 0 0.2 0 0.5 0 0 0.2 0 0 0.3 0 0 0 0 ];
