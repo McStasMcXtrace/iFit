@@ -1,6 +1,10 @@
 function [b_coh, b_inc,sigma_abs,element] = sqw_phonons_b_coh(chemical_elements)
-  % sqw_phonons_b_coh: return cross sections per elements%
+  % sqw_phonons_b_coh: return cross sections per elements
   % input: cellstr or single char
+  % output:
+  %   b_coh, b_inc: scattering length [fm]
+  %   sigma_abs: absorption cross section [barn]
+  %   element: atom symbols
 
 persistent elements b_cohs b_incs sigma_abss sigma_incs
 
@@ -25,10 +29,12 @@ end
 for index=1:numel(chemical_elements)
   index_element = find(strcmpi(chemical_elements{index}, elements));
   if numel(index_element) == 1
+    % b     = sqrt(sigma*100/4/pi) [fm]
+    % sigma = 4*pi*b^2/100         [barn]
     b_coh(index) = b_cohs(index_element);
     b_inc(index) = b_incs(index_element);
     if isnan(b_inc(index))
-      b_inc(index) = sqrt(sigma_incs(index_element)/4/pi);
+      b_inc(index) = sqrt(sigma_incs(index_element)*100/4/pi);
     end
     sigma_abs(index) = sigma_abss(index_element);
     element{index} = elements{index_element};

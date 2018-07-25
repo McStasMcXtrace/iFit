@@ -93,6 +93,7 @@ if ischar(fields) && strcmpi(fields, 'sqw')
      {'DetectionAngles [deg] Detection Angles'} ...
      {'ElasticPeakPosition [chan] Channel for the elastic peak' 'Elastic_peak_channel' 'Elastic_peak' 'Peak_channel' 'Elastic'} ...
      {'ChemicalFormula Material Chemical Formula' 'chemical_formula' 'formula' 'chemical' 'ZSYMAM'} ...
+     {'Concentration Proportional concentration of atoms in material'} ...
     };
 elseif ischar(fields) && strcmpi(fields, 'sab')
   % ENDF compatibility flags: MF1 MT451 and MF7 MT2/4
@@ -202,7 +203,7 @@ for index=1:length(fields)
         end
       end
       % make sure it makes sense to update the link. must not link to itself.
-      if ~isempty(link) && ~isempty(val)
+      if ~isempty(link) && ~isempty(val) && ~isfield(parameters, p_name)
         if numel(val) < 100 || strcmp(p_name, link)
           parameters.(p_name) = val;   % update/store the value
         else 
@@ -215,13 +216,17 @@ for index=1:length(fields)
   fields{index} = f{1}; % store the parameter name, plus optional label
 end
 
+% check for chemical formula
+[s, parameters] = Sqw_parameters_chemicalformula(s, parameters);
+
+% update parameter values (replace links by values) and object aliases
 for index=1:numel(fields)
   [name, comment] = strtok(fields{index});
   if isfield(parameters, name)
     link = parameters.(name);  % link
     % get and store the value of the parameter
     if ~isempty(link) && ~isempty(val) && ~strcmp(name, link)  % must not link to itself
-      s=setalias(s, name, link, strtrim(comment));
+      s=setalias(s, name, [ 'parameters.' name ], strtrim(comment));  % link to parameters
       try
         parameters.(name) = get(s, link); % the value
       catch
@@ -232,9 +237,6 @@ for index=1:numel(fields)
     end
   end
 end
-
-% check for chemical formula
-[s, parameters] = Sqw_parameters_chemicalformula(s, parameters);
 
 % now transfer parameters into the object, as alias values
 s=setalias(s, 'parameters',       parameters, 'Material parameters');
@@ -249,10 +251,17 @@ function [s, parameters] = Sqw_parameters_chemicalformula(s, parameters)
   % Sqw_parameters_chemicalformula: search for a chemical formula, and derive 
   % missing mass, scattering cross sections
   
-  if isfield(s, 'ChemicalFormula') && ischar(get(s,'ChemicalFormula'))
-    if ~isfield(parameters, 'ChemicalFormula')
-      parameters.ChemicalFormula = get(s,'ChemicalFormula');
-    end
+  Z = {'H' 'He' 'Li' 'Be' 'B' 'C' 'N' 'O' 'F' 'Ne' 'Na' 'Mg' 'Al' 'Si' 'P' 'S' 'Cl' 'Ar' 'K' 'Ca' 'Sc' 'Ti' 'V' 'Cr' 'Mn' 'Fe' 'Co' 'Ni' 'Cu' 'Zn' 'Ga' 'Ge' 'As' 'Se' 'Br' 'Kr' 'Rb' 'Sr' 'Y' 'Zr' 'Nb' 'Mo' 'Tc' 'Ru' 'Rh' 'Pd' 'Ag' 'Cd' 'In' 'Sn' 'Sb' 'Te' 'I' 'Xe' 'Cs' 'Ba' 'La' 'Ce' 'Pr' 'Nd' 'Pm' 'Sm' 'Eu' 'Gd' 'Tb' 'Dy' 'Ho' 'Er' 'Tm' 'Yb' 'Lu' 'Hf' 'Ta' 'W' 'Re' 'Os' 'Ir' 'Pt' 'Au' 'Hg' 'Tl' 'Pb' 'Bi' 'Po' 'At' 'Rn' 'Fr' 'Ra' 'Ac' 'Th' 'Pa' 'U' 'Np' 'Pu' 'Am' 'Cm' 'Bk' 'Cf' 'Es' 'Fm' 'Md' 'No' 'Lr' 'Rf' 'Db' 'Sg' 'Bh' 'Hs' 'Mt' 'Ds' 'Rg' 'Cn' 'Nh' 'Fl' 'Mc' 'Lv' 'Ts' 'Og'};
+  
+  if isfield(s, 'ChemicalFormula') && ischar(get(s,'ChemicalFormula')) ...
+    && ~strcmp(getalias(s, 'ChemicalFormula'), 'parameters.ChemicalFormula')
+    parameters.ChemicalFormula = get(s,'ChemicalFormula');
+  end
+  
+  if (isfield(parameters, 'At_number') && isnumeric(parameters.At_number)) ...
+    && (~isfield(s, 'ChemicalFormula') || ~ischar(get(s,'ChemicalFormula'))) ...
+    && (~isfield(parameters, 'ChemicalFormula') || ~ischar(parameters.ChemicalFormula))
+    parameters.ChemicalFormula = sprintf('%s ', Z{parameters.At_number})
   end
 
   if ~isfield(parameters, 'ChemicalFormula') || ~ischar(parameters.ChemicalFormula) 
@@ -261,34 +270,46 @@ function [s, parameters] = Sqw_parameters_chemicalformula(s, parameters)
     % regexp to match formula with only Atom symbols
     % r='[A-Z][a-z]?\d*\.?\d*|(?<!\([^)]*)\(.*\)\d+\.?\d*(?![^(]*\))'      also works
     % r='\(?([A-Z]{1}[a-z]?[^a-z])(\d*\.?\d*)([+-]?)(\d*\.?\d*)\)?(\d*)';  works nicely, but not atom specific
-    r= [ '\(?(' at ')([^a-z])(' qt ')([+-]?)(' qt ')\)?(\d*)' ];
+    r= [ '\(?(' at ')([^a-z\._-])(' qt ')([+-]?)(' qt ')\)?(\d*)' ];
     form = regexp(findstr(s), r, 'match');
     % get the longest formula
     try
       [~,index] = max(cellfun(@numel, form));
       form = form{index};
       parameters.ChemicalFormula = sprintf('%s', form{:});
-      
+    end
+  end
+
+  % determine mass, and neutron cross sections
+  % we parse the chemical formula and split it into tokens
+  if isfield(parameters, 'ChemicalFormula') && ischar(parameters.ChemicalFormula)
+    try
+      r = parse_formula(parameters.ChemicalFormula);
+      parameters.weight = molweight(fieldnames(r));
+      [b_coh, b_inc,sigma_abs,elements] = sqw_phonons_b_coh(fieldnames(r));
+      % b     = sqrt(sigma*100/4/pi) [fm]
+      % sigma = 4*pi*b^2/100         [barn]
+      parameters.b_coh = b_coh;    % [fm]
+      parameters.b_inc = b_inc;    % [fm]
+      parameters.sigma_coh = 4*pi*b_coh.^2/100;
+      parameters.sigma_inc = 4*pi*b_inc.^2/100;
+      parameters.sigma_abs = sigma_abs;
+      parameters.atoms     = fieldnames(r);
+      parameters.Concentration = cell2mat(struct2cell(r));
+      parameters.At_number = zeros(size(parameters.atoms));
+      for index=1:numel(parameters.atoms)
+         z = find(strcmp(Z, parameters.atoms{index}),1);
+         if ~isempty(z)
+           parameters.At_number(index) = z;
+         end
+      end
+    catch ME
+      parameters = rmfield(parameters, 'ChemicalFormula');
     end
   end
   
   if isfield(parameters, 'ChemicalFormula') && ...
     ( ~isfield(s,'ChemicalFormula') || ~ischar(get(s, 'ChemicalFormula')) )
-    s = setalias(s, 'ChemicalFormula', parameters.ChemicalFormula, ...
+    s = setalias(s, 'ChemicalFormula', 'parameters.ChemicalFormula', ...
         'Material Chemical Formula');
-  end
-  
-  % determine mass, and neutron cross sections
-  % we parse the chemical formula and split it into tokens
-  if isfield(parameters, 'ChemicalFormula') && ischar(parameters.ChemicalFormula)
-    r = parse_formula(parameters.ChemicalFormula);
-    parameters.weight = molweight(fieldnames(r));
-    [b_coh, b_inc,sigma_abs,elements] = sqw_phonons_b_coh(fieldnames(r));
-    parameters.sigma_coh = 4*pi*b_coh;
-    parameters.sigma_inc = 4*pi*b_inc;
-    parameters.sigma_abs = sigma_abs;
-    parameters.b_coh = b_coh;
-    parameters.b_inc = b_inc;
-    parameters.atoms = fieldnames(r);
-    parameters.concentration = cell2mat(struct2cell(r));
   end

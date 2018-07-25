@@ -121,7 +121,7 @@ classdef iData_Sqw2D < iData
       % iData_Sqw2D: parseparams: search for physical quantities in object.
       % This search is also done when creating iData_Sqw2D objects.
       [s,parameters,fields] = Sqw_parameters(s);
-      if nargout == 0 & length(inputname(1))
+      if length(inputname(1))
         assignin('caller',inputname(1),s);
       end
     end
