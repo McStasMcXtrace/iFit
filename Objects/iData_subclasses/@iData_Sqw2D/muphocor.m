@@ -223,16 +223,24 @@ function g = muphocor(s, varargin)
   for f=fieldnames(p)'
     params.(f{1}) = p.(f{1});
   end
-  
-  disp([ mfilename ': Input parameters:' ])
-  params
 
   % run MUPHOCOR
-  [g, mess] = muphocor_run(compiled, params, double(St));
+  [g, params.output] = muphocor_run(compiled, params, double(St));
   
   % g is an array with columns:
   % [index] [hw] [ g(w) g_0(w) g_multi(w) ]
-  % hw = g(:,2); gw = g(:,3); g0w =  g(:,4); gmw =  g(:,5);
+  hw = g(:,2);
+  
+  gw = iData(hw, g(:,3)); 
+  title(gw,  [ 'Vibrational density of States ' title(s) ]); label(gw, 'vDOS');
+  g0w= iData(hw, g(:,4)); 
+  title(g0w, [ 'Neutron weighted generalised density of States ' title(s) ]); label(g0w, 'gDOS');
+  gmw= iData(hw, g(:,5)); 
+  title(gmw, [ 'multi-phonon density of States ' title(s) ]); label(gmw, 'gDOS multi-phonon');
+  
+  g = [ gw g0w gmw ];
+  setalias(g, 'parameters', get(s, 'parameters'));
+  setalias(g, 'muphocor',   params);
 
 end % muphocor
 
@@ -295,7 +303,6 @@ function [s, mess] = muphocor_run(compiled, params, St)
   cd(tmp);  % go in tmp dir
   try
     [status, mess] = system([ precmd cmd ]);
-    disp(mess)
   end
   
   % read results
@@ -303,9 +310,9 @@ function [s, mess] = muphocor_run(compiled, params, St)
   
   if exist(fullfile(tmp, 'GDOS_plot_f90.dat'), 'file')
     s = load(fullfile(tmp, 'GDOS_plot_f90.dat'));
-  else 
-    disp([ mfilename ': ERROR: Calculation failed. Check parameters and Log file.' ])
-    s = []; 
+  else
+    disp(mess);
+    error([ mfilename ': ERROR: Calculation failed. Check parameters and output above.' ])
   end
   
 end
