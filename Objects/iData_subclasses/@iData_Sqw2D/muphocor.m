@@ -14,6 +14,46 @@ function g = muphocor(s, varargin)
   %   'sigi',   [ 82.0168      4.2325 ]
   %   'conci',  [  2           1      ]
   %
+  %
+  % MUPHOCOR Parameters:
+  % --------------------
+  %
+  % Can be given as name/value pairs.
+  %  
+  %      E0:        INC. ENERGY(MEV)             
+  %      FP:        FLIGHTPATH(CM)
+  %      XNEL:      CHANNEL OF ELASTIC LINE    
+  %      CW:        CHANNEL WIDTH(MYS)
+  %      FIMI:      MIN.SCATT.ANGLE            
+  %      FIMA:      MAX.SCATT.ANGLE
+  %      UNT:       CONST.BACKGROUND            
+  %      ABK:       Absorption coefficient
+  %      AEMP:      Coeff. for calculating the detector efficiency bac=unt/(1.0-EXP(-aemp/SQRT(e0-hot(n))))
+  %      NSPEC:       NUMBER OF DIFFERENT ATOMIC SPECIES
+  %      HOX:       UPPER LIMIT OF DENSITY OF STATES
+  %      TEMPO:     TEMPERATURE IN KELVIN
+  %      DW:        MEAN DEBY WALLER COEFFICIENT
+  %      AMASI:     ATOMIC MASS (g/mol)
+  %      SIGI :     SIGMA (total scattering cross section, barns)
+  %      CONCI:     CONCENTRATION
+  %      ALFI:      SCATTERING POWER
+  %      NPHO:      NUMBER OF MULTI PHONON TERMS
+  %      ITM:       TOTAL NUMBER OF ITERATIONS
+  %      IVIT=0(1): ITERATION BY DIFFERENCE(QUOTIENT) METHOD
+  %      IDW=0:     DW COEFF. KEPT CONST.=INPUT VALUE,DW=1:DW COEFF.ITERATED
+  %      IEMP=1(0): CORRECTIONS FOR COUNTER EFFICIENCY WILL BE(NOT BE) DONE
+  %      IRES=1(0): DATA WILL BE(NOT BE) CORRECTED FOR SPECTR. RESOLUTION
+  %      IPR=1(0):  Convolutions integrals o the multiphonon term are printed
+  %      ILOSS=1:   Analysis OF the imcomplete energy loss spectrum will be done
+  %      NU:        First channel OF spektrum NO: Last channel OF spektrum
+  %      NUU:       First channel OF TOF distribution used FOR calculation
+  %      NOO:       Last channel  OF TOF distribution used FOR calculation
+  %      IGLU:      Number OF smoothing processes in CASE OF a time-dependant background
+  %      UNT:       CONSTANT BACKGROUND
+  %      FUN:       MULTIPLICATION FACTOR FOR TIME DEPENDENT BACKGROUND
+  %      Z00:       TIME OF FLIGHT DISTRIBUTION
+  %      UN0:       TIME DEPENDENT BACKGROUND (if fun = 1)
+  %
   % input:
   %   s:      iData_Sqw2D object S(q,w)
   %   lambda:  optional incident neutron wavelength [Angs]
@@ -21,6 +61,14 @@ function g = muphocor(s, varargin)
   %   amasi:   optional material mass [g/mol]
   %   sigi:    optional total scattering cross section [barns]
   %   conci:   optional material concentration [1]
+  %
+  % References:
+  %   H. Schober, Journal of Neutron Research 17 (2014) 109–357
+  %     DOI 10.3233/JNR-140016 (see esp. pages 328-331)
+  %   V.S. Oskotskii, Sov. Phys. Solid State 9 (1967), 420.
+  %   A. Sjolander, Arkiv for Fysik 14 (1958), 315.
+  %   W. Reichardt, MUPHOCOR Karlsruhe Report 13.03.01p06L (1984)
+  
   
   % check if muphocor is compiled, else compile it
   persistent compiled
@@ -41,7 +89,7 @@ function g = muphocor(s, varargin)
   
   % transfer name/value pairs
   for index=1:2:numel(prop)
-    p.(prop{index}) = prop{index+1};
+    p.(lower(prop{index})) = prop{index+1};
   end
   
   if isempty(p.lambda) && isfield(p, 'e0')
@@ -70,7 +118,7 @@ function g = muphocor(s, varargin)
   
   % check for other required parameters: mass/we0ght, b_inc, concentration
   if isempty(p.amasi)
-    p.amasi = Sqw_getT(s, {'weight'	'mass' 'AWR' 'amasi'}, 'raw');
+    p.amasi = sum(Sqw_getT(s, {'weight'	'mass' 'AWR' 'amasi'}, 'raw'));
   end
   if isempty(p.amasi)
     disp( [ mfilename ': Set object ' inputname(1) '.weight to the total molar weight' ])
@@ -79,7 +127,9 @@ function g = muphocor(s, varargin)
     error([ mfilename ': ERROR: Unspecified weight [g/mol] in data set ' s.Tag ' ' s.Title ' from ' s.Source ]);
   end
   if isempty(p.sigi)
-    p.sigi = Sqw_getT(s, {'sigma_inc','sigi'}, 'raw');
+    inc = Sqw_getT(s, {'sigma_inc'}, 'raw');
+    coh = Sqw_getT(s, {'sigma_coh', 'sigma', 'sigi'}, 'raw');
+    p.sigi = sum(inc)+sum(coh); % total scattering cross section
   end
   if isempty(p.sigi)
     disp( [ mfilename ': Set object ' inputname(1) '.sigma_inc to the total incoherent neutron scattering cross section' ])
@@ -174,21 +224,15 @@ function g = muphocor(s, varargin)
     params.(f{1}) = p.(f{1});
   end
   
-  disp([ mfilename ': Input parameters' ])
+  disp([ mfilename ': Input parameters:' ])
   params
-  % what is not set properly:
-  % check: amasi, sigi, conci, unt
-  % Material: Ba8Ge40.3Au5.2
-  % amasi: 135.6345
-  %  sigi: 0.2518
-  % conci: 17.8333
-  
 
   % run MUPHOCOR
-  g = muphocor_run(compiled, params, double(St));
+  [g, mess] = muphocor_run(compiled, params, double(St));
   
   % g is an array with columns:
   % [index] [hw] [ g(w) g_0(w) g_multi(w) ]
+  % hw = g(:,2); gw = g(:,3); g0w =  g(:,4); gmw =  g(:,5);
 
 end % muphocor
 

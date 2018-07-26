@@ -52,7 +52,7 @@ function  T = Sqw_getT(s, prop, raw)
     if ~isempty(T) && isnumeric(T) && isvector(T) && all(T(:)>0), break; end
   end
   
-  if raw
+  if ~raw
     if isvector(T), T = mean(T(:)); else T=[]; end % also for scalars
   end
   
