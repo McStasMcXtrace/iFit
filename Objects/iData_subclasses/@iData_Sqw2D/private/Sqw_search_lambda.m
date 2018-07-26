@@ -11,27 +11,27 @@ function [s,lambda,distance,chwidth,energy,wavevector] = Sqw_search_lambda(s)
   % get lambda, energy, wavevector and check for distance and channel width ----
   % first solution:  search in 'parameters'
   % second solution: findfield in the object
-  if isfield(parameters, 'Wavelength'),         
+  if isfield(parameters, 'Wavelength') && parameters.Wavelength   
     lambda     = parameters.Wavelength; 
   else
     lambda     = Sqw_getT(s, {'wavelength' 'lambda'});
   end
-  if isfield(parameters, 'IncidentEnergy'),     
+  if isfield(parameters, 'IncidentEnergy') && parameters.IncidentEnergy
     energy     = parameters.IncidentEnergy; 
   else
     energy     = Sqw_getT(s, {'IncidentEnergy' 'fixed_energy' 'energy' 'ei'});
   end
-  if isfield(parameters, 'IncidentWavevector'), 
+  if isfield(parameters, 'IncidentWavevector') && parameters.IncidentWavevector
     wavevector = parameters.IncidentWavevector; 
   else
     wavevector = Sqw_getT(s, {'IncidentWavevector','wavevector' 'ki'});
   end
-  if isfield(parameters,'Distance')
+  if isfield(parameters,'Distance') && parameters.Distance
     distance = parameters.Distance;
   else
     distance = Sqw_getT(s, {'Distance_Det_Sample','detector_distance', 'distance'});
   end
-  if isfield(parameters, 'ChannelWidth')
+  if isfield(parameters, 'ChannelWidth') && parameters.ChannelWidth
     chwidth = parameters.ChannelWidth;
   else
     chwidth = Sqw_getT(s, {'ChannelWidth', 'Channel_width'});

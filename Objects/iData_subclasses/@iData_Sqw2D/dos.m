@@ -114,7 +114,7 @@ function [DOS, g, fig] = dos(s, method, n)
     case {'carpenter','price'}          
       g = sqw_phonon_dos_Carpenter(s, T);  % requires Temperature 
     case {'bredov','oskotskii'}
-      g = sqw_phonon_dos_Bredov(s, T);     % requires Temperature (call Carpenter)
+      g = sqw_phonon_dos_Bredov(s, T);     % requires Temperature
       n = inf;                             % we use all the data.
     otherwise % 'bellissent'
       method = 'Bellissent';
@@ -138,18 +138,23 @@ function [DOS, g, fig] = dos(s, method, n)
     % determine the low-momentum limit -------------------------------------------
     s0  = subsref(g,struct('type','.','subs','Signal'));
     DOS = zeros(size(s0,1),1);  % column of g(w) DOS for q->0
-    nc  = min(n,size(s0,2));    % get the first n=10 values for each energy transfer
-    for i=1:size(s0,1)
-      nz = find(s0(i,:) > 0, nc, 'first');
-      if ~isempty(nz)
-        DOS(i) = sum(s0(i,nz));
+    
+    if ~isfinite(n) || n<=0
+      DOS = sum(s0,2);
+    else
+      nc  = min(n,size(s0,2));    % get the first n=10 values for each energy transfer
+      for i=1:size(s0,1)
+        nz = find(isfinite(s0(i,:)) & s0(i,:) > 0, nc, 'first');
+        if ~isempty(nz)
+          DOS(i) = sum(s0(i,nz));
+        end
       end
     end
     DOS=DOS./sum(DOS);
     if isvector(w)
       DOS=iData(w,DOS);
     else
-      DOS=iData(w(1,:),DOS);
+      DOS=iData(w(1,:),DOS);  %^ from meshgrid
     end
     set(DOS,'Error',0);
     DOS.Title = [ 'DOS(' s.Title ') ' method ];
@@ -229,20 +234,34 @@ function g = sqw_phonon_dos_Bredov(s, T)
 % g(w) = Ei w./(n(w)+1)/(q_max^4-q_min^4) m/sigma exp(2*W) 
 %        * \int_{q_min -> q_max} q S(q,w) dq
 
-  % axes
-  hw= getaxis(s,1);
-  q = getaxis(s,2); 
-  beta    = 11.605*hw/T;
-  n = 1./(exp(beta) - 1);
-  n(~isfinite(n)) = 0;
+  % get an estimate of corresponding incident energy
+  [Ki, Ei] = getKi(s);
+
+  % axes and Q4
+  hw = getaxis(s,1);
+  q  = getaxis(s,2); 
+
+  theta_max = 120;
+  theta_min = 13;
+  q4 =(2*Ei-hw-2*sqrt(Ei*abs(Ei-hw))*cos(theta_max*pi/180)).^2 ...
+    - (2*Ei-hw-2*sqrt(Ei*abs(Ei-hw))*cos(theta_min*pi/180)).^2;
+  q4 = q4/2.072/2.072;
   
   % we compute the integral of qS(q,w)
   g = q.*s;
   g = trapz(g, 2);    % integral over q
+  beta    = 11.605*hw/T;
+  n = 1./(exp(beta) - 1);
+  n(~isfinite(n)) = 0;
+  g = hw./(n+1)./q4.*g;
+  
+function q4 = getQ4(s, q, w)
+  % getQ4: compute Q4max - Q4min
 
   % for each energy, we get the min and max which could be measured
   % requires to know the incident energy, but as we normalise g to 1, this is not important
-  q4= zeros(size(getaxis(s,1)));
+  
+  q4= zeros(size(w));
   s = double(s);
   for index=1:size(s, 1)
     sw = s(index,:); % slab for a given energy. length is 'q'
@@ -253,12 +272,45 @@ function g = sqw_phonon_dos_Bredov(s, T)
       qw = q(index,:);
     end
     q_min = min(qw(valid)); q_max = max(qw(valid));
+    if isempty(q_max) || isempty(q_min)
+      q_max = nan; q_min = nan;
+    end
     if isvector(q)
       q4(index)   = q_max^4 - q_min^4;
     else
       q4(index,:) = q_max^4 - q_min^4;
     end
   end
-  % here, g=qSq
-  g = hw./(n+1)./q4.*g;
   
+function [Ki, Ei] = getKi(s, Ei)
+
+  % search in the data set in case missing properties are stored there
+  % compute Ki with given arguments
+  SE2V = 437.393377;        % Convert sqrt(E)[meV] to v[m/s]
+  V2K  = 1.58825361e-3;     % Convert v[m/s] to k[1/AA]
+  K2V  = 1/V2K;
+  VS2E = 5.22703725e-6;     % Convert (v[m/s])**2 to E[meV]
+  
+  if nargin < 2, Ei=[]; end
+  
+  if ~isempty(Ei)
+    Ki = SE2V*V2K*sqrt(Ei);
+  else
+    Ki = Sqw_getT(s, {'wavevector','momentum','IncidentWavevector','Ki'});
+    if isempty(Ki) || Ki==0
+      lambda = Sqw_getT(s, {'wavelength','lambda'});
+      if ~isempty(lambda) && lambda>0
+        Ki = 2*pi/lambda;
+      else
+        Ei = Sqw_getT(s, {'IncidentEnergy','Ei'});
+        if isempty(Ei) || Ei<=0
+          w  = getaxis(s, 1);
+          Ei = max(abs(w(:)));
+          disp([ mfilename ': using Ei=' num2str(Ei) ' [meV] incident neutron energy.' ]);
+        end
+        Ki = SE2V*V2K*sqrt(Ei);
+      end
+    end
+  end
+
+    

@@ -50,7 +50,7 @@ function compiled = muphocor_compile_binary(compile)
     mfilename);
   else
     try
-      FCFLAGS = [ '-g -fcheck=all -fbounds-check -C -c  -fdollar-ok -finit-local-zero ' ...
+      FCFLAGS = [ '-g -fcheck=all -fbounds-check -fdollar-ok -finit-local-zero ' ...
         '-static -std=legacy -fno-automatic -fdefault-real-8 -fno-align-commons -static-libgfortran' ];
       FCFLAGS = textscan(FCFLAGS, '%s', 'Delimiter',' ');
       FCFLAGS = FCFLAGS{1};

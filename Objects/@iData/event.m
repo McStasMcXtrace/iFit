@@ -27,7 +27,7 @@ function b = event(a, dim, signal, err, monitor)
 %
 % Version: $Date$
 % See also iData, iData/squeeze, iData/size, iData/permute, iData/resize, iData/meshgrid, iData/hist
-
+b = a;
 % first get dimensions from varargin
 if nargin < 2, dim=[]; end
 if nargin < 3, signal=[]; end

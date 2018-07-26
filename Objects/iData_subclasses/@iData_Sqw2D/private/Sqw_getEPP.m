@@ -1,7 +1,7 @@
 function t_elast = Sqw_getEPP(s, t_present)
 % Sqw_getEPP: compute the elastic peak position (EPP) and centre the time axis
   
-  if nargin < 1, t_present=1; end
+  if nargin < 2, t_present=1; end
   
   t = getaxis(s, t_present);
   
@@ -13,7 +13,11 @@ function t_elast = Sqw_getEPP(s, t_present)
   else t_elast0=[]; end
   
   % compute the EPP
-  s_time = trapz(s, 2);       % compute time distribution, integrating angle
+  if ndims(s) > 1
+    s_time = trapz(s, 2);       % compute time distribution, integrating angle
+  else
+    s_time = s;
+  end
   [~,s_time_max]            = max(s_time, [],t_present);
   t_elast                   = t(s_time_max);  % EPP estimate from maximum
   dt = (max(t(:)) - min(t(:)))/10;  % select 10% around the maximum

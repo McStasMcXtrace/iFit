@@ -29,11 +29,13 @@ function [s, schan] =Sqw_e2t(s, lambda)
   hw   = getaxis(s, 1);
   Ef   = Ei - hw;
   t_sample_detector = distance/Vi;      % this is the time for the elastic peak
+  t    = Ei./Ef;
+  t(t < 0) = nan;
+  t    = t_sample_detector.*sqrt(t); % from sample
   
-  t  = t_sample_detector./sqrt(Ef./Ei); % from sample
-  
-  if isempty(chwidth) 
-    chwidth = diff(unique(t(:)));
+  if isempty(chwidth)
+    t_valid = t(isfinite(t));
+    chwidth = diff(unique(t_valid(:)));
     chwidth = mean(chwidth);
     disp([ mfilename ': ' s.Tag ' ' s.Title ' Using ChannelWidth=' num2str(chwidth) ' [s]' ]);
   end    % first channel

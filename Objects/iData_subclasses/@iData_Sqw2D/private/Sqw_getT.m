@@ -1,8 +1,17 @@
-function  T = Sqw_getT(s, prop)
+function  T = Sqw_getT(s, prop, raw)
 % Sqw_getT: search for a property value in a data set
+%
+%   T = Sqw_getT(s, prop, raw)
 %
 % input:
 %   s: any iData object, including S(q,w) and DOS ones.
+%   prop: a list of equivalent properties (numeric) to search for.
+%   raw: optional, when specified, use raw output, else compute the mean value.
+%
+% output:
+%   T: the property value (mean value when 'raw' not specified)
+
+  if nargin < 3, raw = false; else raw = true; end
   
   T = [];
   if nargin < 2,    prop = []; end
@@ -43,6 +52,8 @@ function  T = Sqw_getT(s, prop)
     if ~isempty(T) && isnumeric(T) && isvector(T) && all(T(:)>0), break; end
   end
   
-  if isvector(T), T = mean(T(:)); else T=[]; end
+  if raw
+    if isvector(T), T = mean(T(:)); else T=[]; end % also for scalars
+  end
   
  
