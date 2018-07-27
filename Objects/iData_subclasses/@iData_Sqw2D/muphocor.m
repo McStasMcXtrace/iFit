@@ -118,7 +118,7 @@ function g = muphocor(s, varargin)
   
   % check for other required parameters: mass/we0ght, b_inc, concentration
   if isempty(p.amasi)
-    p.amasi = sum(Sqw_getT(s, {'weight'	'mass' 'AWR' 'amasi'}, 'raw'));
+    p.amasi = Sqw_getT(s, {'weight'	'mass' 'AWR' 'amasi'}, 'raw');
   end
   if isempty(p.amasi)
     disp( [ mfilename ': Set object ' inputname(1) '.weight to the total molar weight' ])
@@ -129,7 +129,7 @@ function g = muphocor(s, varargin)
   if isempty(p.sigi)
     inc = Sqw_getT(s, {'sigma_inc'}, 'raw');
     coh = Sqw_getT(s, {'sigma_coh', 'sigma', 'sigi'}, 'raw');
-    p.sigi = sum(inc)+sum(coh); % total scattering cross section
+    p.sigi = inc+coh; % total scattering cross section
   end
   if isempty(p.sigi)
     disp( [ mfilename ': Set object ' inputname(1) '.sigma_inc to the total incoherent neutron scattering cross section' ])
@@ -138,11 +138,22 @@ function g = muphocor(s, varargin)
     error([ mfilename ': ERROR: Unspecified sigma_inc [barn] in data set ' s.Tag ' ' s.Title ' from ' s.Source ]);
   end
   if isempty(p.conci)
-    p.conci = Sqw_getT(s, {'concentration'}, 'raw'); % TODO WARNING  does a MEAN VALUE -> WRONG !!!!
+    p.conci = Sqw_getT(s, {'concentration'}, 'raw');
   end
   if isempty(p.conci) || numel(p.conci) ~= numel(p.amasi)
     p.conci = ones(size(p.amasi));
   end
+  
+  % MUPHOCOR only works with 1 or 2 species (nspec), and then requires the partials.
+  % we use it here in integrated mode.
+  % Reichardt eq (2.13-2.15)
+  p.conci = p.conci/sum(p.conci);
+  p.sigi  = sum(p.conci .* p.sigi);
+  alpha   = p.conci .* p.sigi ./ p.amasi;
+  alpha   = alpha / sum(alpha);
+  p.amasi = sum(alpha .* p.amasi);
+  
+  
   
   % test if data set is only w > 0 or w < 0. Then print a warning and symmetrize, and Bosify
   w    = getaxis(s, 1);
@@ -156,6 +167,7 @@ function g = muphocor(s, varargin)
   
   % data must be [\int sin(theta) S(theta,t) dtheta] that is start from time distribution
   % but the computation in q is much faster as we enter a (q,w) data set.
+  % Schober Eq (9.294)
   SE2V = 437.393377;        % Convert sqrt(E)[meV] to v[m/s]
   V2K  = 1.58825361e-3;     % Convert v[m/s] to k[1/AA]
   K2V  = 1/V2K;
@@ -205,6 +217,7 @@ function g = muphocor(s, varargin)
     'no',     prod(size(St)), ...
     'noo',    prod(size(St)), ...
     'nu',     1, ...
+    'unt',    min(double(St)), ...
     'nuu',    1);
   
   clear q w
@@ -225,22 +238,39 @@ function g = muphocor(s, varargin)
   end
 
   % run MUPHOCOR
-  [g, params.output] = muphocor_run(compiled, params, double(St));
+  [g, params.output, params.input] = muphocor_run(compiled, params, double(St));
   
   % g is an array with columns:
   % [index] [hw] [ g(w) g_0(w) g_multi(w) ]
   hw = g(:,2);
   
   gw = iData(hw, g(:,3)); 
-  title(gw,  [ 'Vibrational density of States ' title(s) ]); label(gw, 'vDOS');
-  g0w= iData(hw, g(:,4)); 
-  title(g0w, [ 'Neutron weighted generalised density of States ' title(s) ]); label(g0w, 'gDOS');
-  gmw= iData(hw, g(:,5)); 
-  title(gmw, [ 'multi-phonon density of States ' title(s) ]); label(gmw, 'gDOS multi-phonon');
+  gw.Label ='gDOS';
+  gw.Title = [ gw.Label '(' title(s) ')' ];
+  title(gw, [ gw.Label ' g(w) [meV^{-1}]' ]); 
+  
+  g0w= iData(hw, g(:,4));
+  g0w.Label ='vDOS';
+  g0w.Title = [ g0w.Label '(' title(s) ')' ];
+  title(g0w, [ g0w.Label ' g(w) [meV^{-1}]' ]); 
+  
+  gmw= iData(hw, g(:,5));
+  gmw.Label ='gDOS multi-phonons';
+  gmw.Title = [ gmw.Label '(' title(s) ')' ];
+  title(gmw, [ gmw.Label ' g(w) [meV^{-1}]' ]); 
   
   g = [ gw g0w gmw ];
-  setalias(g, 'parameters', get(s, 'parameters'));
+  xlabel(g, 'Energy [meV]'); ylabel('g(w) [mev^{-1}]'); set(g, 'Error', 0);
+  set(g, 'UserData', s.UserData);
   setalias(g, 'muphocor',   params);
+  
+  f = getalias(s);
+  for index=1:numel(getalias(s))
+    if ~isfield(g, f{index})
+      [link, lab] = getalias(s, f{index});
+      g = setalias(g, f{index}, link, lab);
+    end
+  end
 
 end % muphocor
 
@@ -278,7 +308,7 @@ function muphocor_write_input(foutname, par, St)
   fclose(fid);
 end % muphocor_write_input
 
-function [s, mess] = muphocor_run(compiled, params, St)
+function [s, mess, in] = muphocor_run(compiled, params, St)
   % run MUPHOCOR for given parameters and channel spectrum [\int sin(theta) S(theta, channel) dtheta]
   
   % create a temporary directory to work in
@@ -288,6 +318,7 @@ function [s, mess] = muphocor_run(compiled, params, St)
   
   % write input muphocor file
   muphocor_write_input(fullfile(tmp, 'input.txt'), params, St);
+  in = fileread(fullfile(tmp, 'input.txt'));
   
   % run MUPHOCOR executable
   if ismac,      precmd = 'DYLD_LIBRARY_PATH= ; DISPLAY= ; ';
