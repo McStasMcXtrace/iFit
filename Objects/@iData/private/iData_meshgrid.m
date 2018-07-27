@@ -1,15 +1,17 @@
-function [out, changed] = iData_meshgrid(in, Signal, method)
+function [out, needinterp] = iData_meshgrid(in, Signal, method)
 % iData_meshgrid: checks/determine an axis system so that 
 % * it is regular
 % * it matches the Signal dimensions 
 %
-% arguments
-%   in:     is a cell array of axes
-%   Signal: array dimensions (as obtained from size), or array which dimensions 
-%             are used for checking axes.
-%   out: a cell array of axes which are regular
-%   changed: true when the Signal needs to be interpolated on new axes
-%   flag_linspace: array of axes that were set new vectors
+% input:
+%   in:         is a cell array of axes
+%   Signal:     array dimensions (as obtained from size), or array which dimensions 
+%                 are used for checking axes.
+%   method:     can be 'vector' to indicate we want vector axes
+%
+% output:
+%   out:        a cell array of axes which are regular
+%   needinterp: true when the Signal needs to be interpolated on new axes
 
 if nargin < 2, Signal=[]; end
 if nargin < 3, method=''; end
@@ -23,7 +25,7 @@ if isa(in, 'iData')
   in = out;
 end
 
-changed = 0;
+needinterp = 0;
 
 % if no Signal is defined, we will determine its size from the axes dimensions
 myisvector = @(c)length(c) == numel(c);
@@ -50,31 +52,32 @@ out = in;
 % test if all axes are same size, and multi-dimensional (i.e. allready ndgrid)
 for index=2:length(in)
   x = in{index};
-  if numel(size(x)) == numel(size(in{1})) && any(size(x) ~= size(in{1})),  changed=1; end
+  if numel(size(x)) == numel(size(in{1})) && any(size(x) ~= size(in{1})),  needinterp=1; end
   if ~isempty(strfind(method, 'vector')) && (numel(x) == prod(Signal) || numel(x) ~= Signal(index))
-    changed = 1;
+    needinterp = 1;
   end
 end 
-if changed == 0, return; end
+if needinterp == 0, return; end
 
-changed = 0;
+needinterp=0;
 for index=1:length(in)
   x = in{index}; 
 
   x=x(:); ux = unique(x);
   if length(ux) == Signal(index) 
+    if numel(x) ~= numel(ux), needinterp=1; end
     % we get a nice vector from the initial axis values
-    out{index} = ux; changed=1;
+    out{index} = ux; 
   else
     % we use a new regular vector
-    out{index} = linspace(min(x), max(x), Signal(index));
-    changed    = 1; % new axis requires interpolation
+    out{index} = linspace(min(x), max(x), Signal(index)); 
+    needinterp = 1; % new axis requires interpolation
   end
  
 end
 
 % make sure we have grid style axes
-if changed && isempty(strfind(method, 'vector'))
+if isempty(strfind(method, 'vector'))
   [out{:}] = ndgrid(out{:});
 end
 

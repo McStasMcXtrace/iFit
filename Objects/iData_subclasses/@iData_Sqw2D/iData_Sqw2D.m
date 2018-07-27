@@ -241,6 +241,9 @@ classdef iData_Sqw2D < iData
     
     function spw = qw2phiw(self, varargin)
       % iData_Sqw2D: qw2phiw: convert a S(q,w) into a S(phi,w) iData (scattering angle)
+      %
+      % spw = qw2phiw(self)
+      % spw = qw2phiw(self, lambda)
       spw = Sqw_q2phi(self, varargin{:});
       if nargout == 0
         fig=figure; 
@@ -251,6 +254,9 @@ classdef iData_Sqw2D < iData
     
     function sqt = qw2qt(self, varargin)
       % iData_Sqw2D: qw2qt: convert a S(q,w) into a S(q,t) iData (time-of-flight from sample)
+      %
+      % sqt = qw2qt(self)
+      % sqt = qw2qt(self, lambda)
       sqt = Sqw_e2t(self, varargin{:});
       if nargout == 0
         fig=figure; 

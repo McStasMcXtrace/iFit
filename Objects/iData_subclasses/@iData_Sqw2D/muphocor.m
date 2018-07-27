@@ -146,15 +146,12 @@ function g = muphocor(s, varargin)
   
   % MUPHOCOR only works with 1 or 2 species (nspec), and then requires the partials.
   % we use it here in integrated mode.
-  % Reichardt eq (2.13-2.15)
   p.conci = p.conci/sum(p.conci);
   p.sigi  = sum(p.conci .* p.sigi);
   alpha   = p.conci .* p.sigi ./ p.amasi;
   alpha   = alpha / sum(alpha);
-  p.amasi = sum(alpha .* p.amasi);
-  
-  
-  
+  p.amasi = sum(alpha .* p.amasi);  % Reichardt eq (2.13-2.15)
+
   % test if data set is only w > 0 or w < 0. Then print a warning and symmetrize, and Bosify
   w    = getaxis(s, 1);
   q    = getaxis(s, 2);
@@ -167,7 +164,6 @@ function g = muphocor(s, varargin)
   
   % data must be [\int sin(theta) S(theta,t) dtheta] that is start from time distribution
   % but the computation in q is much faster as we enter a (q,w) data set.
-  % Schober Eq (9.294)
   SE2V = 437.393377;        % Convert sqrt(E)[meV] to v[m/s]
   V2K  = 1.58825361e-3;     % Convert v[m/s] to k[1/AA]
   K2V  = 1/V2K;
@@ -179,16 +175,42 @@ function g = muphocor(s, varargin)
   Ef   = Ei - w;
   Vf   = sqrt(Ef/VS2E); Vf(Ef<=0) = nan;
   Kf   = Vf/K2V;
-  St   = qw2qt(s).*q./Kf;
+  St   = qw2qt(s, p.lambda);
+  set(St, 'Error',   0);
+  set(St, 'Monitor', 1); 
+  St   = St.*q./Kf;   % Schober Eq (9.294)
   
   clear Ef Vf Kf
-  St   = hist(St, size(St));  % the data set is well covered here and interpolation works well.
+  % resample histogram when axes are not vectors
+  hist_me = false;
+  for index=1:ndims(St)
+    x = getaxis(St, index);
+    if numel(x) ~= length(x), hist_me=true; break; end
+  end
+  if hist_me
+    St   = hist(St, size(St));  % the data set is well covered here and interpolation works well.
+  end
   St   = trapz(St, 2);
   
+  % Elastic peak position
+  EPP = Sqw_getT(s, {'ElasticPeakPosition' 'Elastic_peak_channel' 'Elastic_peak' 'Peak_channel' 'Elastic'});
+  if isempty(EPP)
+    St  = rmaxis(St, 1); % to channels
+    EPP = Sqw_getEPP(St);
+  end
+  
+  St = double(St);
+  
+  % reduce St to max 512 elements (limit in MUPHOCOR)
+  if numel(St) > 512
+    x  = 1:numel(St);
+    nx = linspace(1,numel(St),512);
+    EPP= EPP*512/numel(St);
+    St = interp1(x, St, nx);
+  end
+
   % we get the angle range
-  spw = qw2phiw(s);
-  phi = getaxis(spw, 2);
-  clear spw
+  phi = getaxis(qw2phiw(s, p.lambda), 2);
   
   % This is equivalent to: S(q,w) -> S(phi,channel)
   %   [~,spc] = qw2phi(s, p.lambda);           
@@ -198,7 +220,11 @@ function g = muphocor(s, varargin)
   % except for a normalisation factor
 
   disp([ mfilename ': Computing vDOS for ' s.Tag ' ' s.Title ' from ' s.Source ]);
-  disp([ '  Material     ' get(s, 'ChemicalFormula') ]);
+  if isfield(s, 'ChemicalFormula')
+    disp([ '  Material     ' get(s, 'ChemicalFormula') ]);
+  else
+    disp([ '  Material     ' char(s) ]);
+  end
   disp([ '  Temperature= ' num2str(p.temp0)  ' [K]' ])
   disp([ '  Wavelength = ' num2str(p.lambda)  ' [Angs] incident' ])
   disp([ '  Q          = [' num2str(min(q(:))) ' ' num2str(max(q(:))) '] [Angs-1]' ])
@@ -214,22 +240,16 @@ function g = muphocor(s, varargin)
     'fima',   max(phi(:)), ...
     'hox',    max(abs(w(:))), ...
     'nspec',  numel(p.sigi), ...
-    'no',     prod(size(St)), ...
-    'noo',    prod(size(St)), ...
+    'no',     numel(St), ...
+    'noo',    numel(St), ...
     'nu',     1, ...
-    'unt',    min(double(St)), ...
+    'unt',    min(St(:)), ...
     'nuu',    1);
   
   clear q w
-  % Elastic peak position
-  EPP = Sqw_getT(s, {'ElasticPeakPosition' 'Elastic_peak_channel' 'Elastic_peak' 'Peak_channel' 'Elastic'});
-  if isempty(EPP)
-    St  = rmaxis(St, 1); % to channels
-    St  = set(St, 'Error',0);
-    EPP = Sqw_getEPP(St);
-  end
+  
   params.xnel  = EPP;
-  params.lm    = min(prod(size(St)), 512);  % LM must be limited to 512 (LM2 and LM5 to 1024 in MUPHOCOR)
+  params.lm    = min(numel(St), 512);  % LM must be limited to 512 (LM2 and LM5 to 1024 in MUPHOCOR)
   params.title = char(s);
   
   % transfer any additional parameter from input arguments to MUPHOCOR
@@ -238,7 +258,7 @@ function g = muphocor(s, varargin)
   end
 
   % run MUPHOCOR
-  [g, params.output, params.input] = muphocor_run(compiled, params, double(St));
+  [g, params.output, params.input] = muphocor_run(compiled, params, St);
   
   % g is an array with columns:
   % [index] [hw] [ g(w) g_0(w) g_multi(w) ]
@@ -260,7 +280,7 @@ function g = muphocor(s, varargin)
   title(gmw, [ gmw.Label ' g(w) [meV^{-1}]' ]); 
   
   g = [ gw g0w gmw ];
-  xlabel(g, 'Energy [meV]'); ylabel('g(w) [mev^{-1}]'); set(g, 'Error', 0);
+  xlabel(g, 'Energy [meV]'); set(g, 'Error', 0, 'Monitor', 1);
   set(g, 'UserData', s.UserData);
   setalias(g, 'muphocor',   params);
   
