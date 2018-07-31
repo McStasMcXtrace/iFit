@@ -201,11 +201,13 @@ if isempty(get(gca,   'UIContextMenu'))
   if isfield(ud,'contextual_2d') && ud.contextual_2d==1
     uimenu(uicm, 'Label','Reset Flat/3D View', 'Callback', [ ...
       '[tmp_a,tmp_e]=view; if (tmp_a==0 & tmp_e==90) view(3); else view(2); end;' ...
-      'clear tmp_a tmp_e; lighting none;alpha(1);shading flat;rotate3d off;axis tight;' ]);
+      'clear tmp_a tmp_e; lighting none;alpha(1);shading flat;rotate3d off;axis tight;' ], ...
+      'Separator','on');
     uimenu(uicm, 'Label','Smooth View','Callback', 'shading interp;');
     uimenu(uicm, 'Label','Add Light','Callback', 'light;lighting phong;');
     uimenu(uicm, 'Label','Add Transparency','Callback', 'alphamap(''decrease''); for tmp_h=get(gca, ''children'')''; try; alpha(tmp_h,0.7*get(tmp_h, ''facealpha'')); end; end; clear tmp_h');
     uimenu(uicm, 'Label','Invert Transparency','Callback', 'tmp_a = alphamap; if tmp_a(1) > tmp_a(end), alphamap rampup; else alphamap rampdown; end; clear tmp_a');
+    uimenu(uicm, 'Label','Edit Colormap','Callback', 'colormapeditor;')
     uimenu(uicm, 'Label',[ 'Linear/Log signal ' strtok(title(a)) ],...
       'Callback', 'if strcmp(get(gca,''zscale''),''linear'')  set(gca,''zscale'',''log''); else set(gca,''zscale'',''linear''); end');
     uimenu(uicm, 'Label',[ 'Linear/Log X axis ' strtok(xlabel(a)) ], ...
@@ -214,7 +216,8 @@ if isempty(get(gca,   'UIContextMenu'))
       'Callback', 'if strcmp(get(gca,''yscale''),''linear'')  set(gca,''yscale'',''log''); else set(gca,''yscale'',''linear''); end');
     uimenu(uicm, 'Label','Toggle Perspective','Callback', 'if strcmp(get(gca,''Projection''),''orthographic'')  set(gca,''Projection'',''perspective''); else set(gca,''Projection'',''orthographic''); end');
   else
-    uimenu(uicm, 'Label','Reset View', 'Callback','view(2);lighting none;alpha(1);shading flat;axis tight;rotate3d off;');
+    uimenu(uicm, 'Label','Reset View', 'Callback','view(2);lighting none;alpha(1);shading flat;axis tight;rotate3d off;', ...
+      'Separator','on');
     uimenu(uicm, 'Label',[ 'Linear/Log signal ' strtok(title(a)) ],'Callback', 'if strcmp(get(gca,''yscale''),''linear'')  set(gca,''yscale'',''log''); else set(gca,''yscale'',''linear''); end');
     uimenu(uicm, 'Label',[ 'Linear/Log axis ' strtok(xlabel(a)) ],'Callback', 'if strcmp(get(gca,''xscale''),''linear'')  set(gca,''xscale'',''log''); else set(gca,''xscale'',''linear''); end');
   end
