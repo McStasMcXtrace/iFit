@@ -46,7 +46,9 @@ function [s, schan] =Sqw_e2t(s, lambda)
   s       = s./dtdEkikf;
   
   s = iData(s); % make it a true iData
-  setalias(s, 'time', t, 'Time from sample [s]');
+  setalias(s, 'time', t, 'Time of flight / sample [s]');
+  setalias(s, 'ElasticPeakPosition', t_sample_detector, '[s] Elastic peak position');
+  setalias(s, 'IncidentWavelength', lambda);
   setaxis(s, 1, 'time');
   
   % generate a S(phi, channel) data set
@@ -67,5 +69,6 @@ function [s, schan] =Sqw_e2t(s, lambda)
     schan = copyobj(s);
     setalias(schan, 'Channel', round(t), 'Time Channel [1]');
     setalias(schan, 'ElasticPeakPosition', EPP, '[chan] Channel for the elastic');
+    setalias(schan, 'IncidentWavelength', lambda);
     setaxis(schan, 1, 'Channel');
   end

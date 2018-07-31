@@ -29,9 +29,9 @@ classdef iData_Sqw2D < iData
   % spw = qw2phiw(s, lambda)
   %   Convert a S(q,w) into a S(phi,w) iData (scattering angle)
   % sqt = qw2qt(s, lambda)
-  %   Compute S(q,t) from S(q,w) for given wavelength [Angs]
+  %   Compute S(q,tof) from S(q,w) for given wavelength [Angs]
   % [spt,spc] = qw2phi(s, lambda)
-  %   Compute S(phi,t) from S(q,w) for given wavelength [Angs]. 
+  %   Compute S(phi,tof) from S(q,w) for given wavelength [Angs]. 
   %   Also return the S(phi,channel) as 2nd arg.
   % sab = Sab(s, M, T)
   %   Compute S(alpha,beta) from S(q,w) for given mass and temperature
@@ -232,7 +232,7 @@ classdef iData_Sqw2D < iData
       %   by removing the multi-phonons from the initial estimate from the 
       %   Bredov/Oskotskii formula.
       
-      % we fisrt compute an initial estimate of the vDOS
+      % we first compute an initial estimate of the vDOS
       g = dos(self);
       v = vdos(g, varargin{:});  % then get the true vDOS using the iData_vDOS method.
       
@@ -253,7 +253,7 @@ classdef iData_Sqw2D < iData
     end
     
     function sqt = qw2qt(self, varargin)
-      % iData_Sqw2D: qw2qt: convert a S(q,w) into a S(q,t) iData (time-of-flight from sample)
+      % iData_Sqw2D: qw2qt: convert a S(q,w) into a S(q,tof) iData (time-of-flight from sample)
       %
       % sqt = qw2qt(self)
       % sqt = qw2qt(self, lambda)
@@ -266,8 +266,8 @@ classdef iData_Sqw2D < iData
     end
     
     function [spt, spc, spw] = qw2phi(self, varargin)
-      % iData_Sqw2D: qw2phi: convert a S(q,w) into S(phi,t) iData (scattering angle,ToF)
-      %   This method returns S(phi,t), S(phi,channels) and S(phi,w)
+      % iData_Sqw2D: qw2phi: convert a S(q,w) into S(phi,tof) iData (scattering angle,ToF)
+      %   This method returns S(phi,tof), S(phi,tof channels) and S(phi,w)
       %
       %   [spt, spc, spw] = qw2phi(sqw);
       %   [spt, spc, spw] = qw2phi(sqw, lambda);
@@ -278,7 +278,7 @@ classdef iData_Sqw2D < iData
       %           searched in the S(q,w) data set.
       %
       % output:
-      %   spt:    S(phi,t)        with phi=scattering angle [deg], t=time-of-flight from sample
+      %   spt:    S(phi,tof)      with phi=scattering angle [deg], t=time-of-flight from sample
       %   spc:    S(phi,channel)  with the time-of-flight axis given in time channels
       %   spw:    S(phi,w)        with phi=scattering angle [deg]
       spw        = Sqw_q2phi(self, varargin{:});
@@ -292,6 +292,8 @@ classdef iData_Sqw2D < iData
     
     function s = Sab(self, varargin)
       %  iData_Sqw2D: Sab: convert a 2D S(q,w) into an S(alpha,beta). 
+      %
+      %  syntax: sab = Sab(sqw, M, T)
       %
       %  The S(alpha,beta) is a representation of the dynamic structure factor 
       %  using unitless momentum and energy variables defined as:

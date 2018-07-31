@@ -32,4 +32,5 @@ function s = Sqw_phi2q(s, lambda, a_present, w_present)
   q  = sqrt(Ki.^2 + Kf.^2 - 2*cos(phi*pi/180).*Ki.*Kf);
 
   s = setalias(s, 'q', q, 'Wavevector [Angs-1]');
+  s = setalias(s, 'IncidentWavelength', lambda);
   s = setaxis(s, a_present, 'q');

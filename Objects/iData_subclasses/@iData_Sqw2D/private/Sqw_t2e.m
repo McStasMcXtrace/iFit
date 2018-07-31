@@ -3,7 +3,7 @@ function s=Sqw_t2e(s, t_present)
 
   if isempty(s), return; end
   [s,lambda,distance,chwidth] = Sqw_search_lambda(s);
-  if nargin < 1, t_present=1; end
+  if nargin < 2, t_present=1; end
 
   disp([ mfilename ': ' s.Tag ' ' s.Title ' Converting Axis ' num2str(t_present) ...
     ' "' label(s,t_present) '": time [sec] to energy [meV].' ]);
@@ -94,5 +94,6 @@ function s=Sqw_t2e(s, t_present)
   dtdEkikf = dtdE.*kikf;
   s    = s.*dtdEkikf;
   setalias(s, 'energy', hw0,  'Energy transfer hw [meV]');
+  s = setalias(s, 'IncidentWavelength', lambda);
   setaxis(s, t_present, 'energy');
 

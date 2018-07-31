@@ -34,6 +34,7 @@ function s = Sqw_q2phi(s, lambda)
 
   s = iData(s); % make it a true iData
   s = setalias(s, 'phi', phi, 'Scattering Angle [deg]');
+  s = setalias(s, 'IncidentWavelength', lambda);
   s = setaxis(s, 2, 'phi');
   
   
