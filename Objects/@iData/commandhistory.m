@@ -1,4 +1,4 @@
-function [s,fig] = commandhistory(a, fig)
+function [s,fig] = commandhistory(a, fig, varargin)
 % commandhistory(s) : show the command history of iData object
 %
 %   @iData/commandhistory shows the list of commands that have been used to
@@ -15,9 +15,9 @@ function [s,fig] = commandhistory(a, fig)
 % See also iData, iData/disp, iData/display
 
 % syntax for CloseRequest callback from the listdlg
-if nargin == 2 && ischar(fig)
+if nargin >= 2 && ischar(fig)
   % add a command to the history
-  a = iData_private_history(a, fig);
+  a = iData_private_history(a, fig, varargin{:});
   s = a;
   if ~isempty(inputname(1))
     assignin('caller',inputname(1),a); % update in original object
