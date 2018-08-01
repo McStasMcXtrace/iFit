@@ -9,7 +9,7 @@ function [Sqw, Iqt, Wq, Tall] = incoherent(gw, q, T, sigma, m, n)
 % The result is the dynamic structure factor (scattering law) for neutrons, in
 %   in the incoherent gaussian approximation. The corresponding intermediate 
 %   scattering function is also returned. The generalised density of states is
-%   defined as \int q.S(q,w) dq
+%   defined from \int q.S(q,w) /Ki/Kf dq
 %
 % Missing arguments (or given as [] empty), are searched within the initial density 
 %   of states object.

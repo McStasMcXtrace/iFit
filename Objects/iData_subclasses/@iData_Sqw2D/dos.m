@@ -1,6 +1,8 @@
 function [DOS, g, fig] = dos(s, method, n)
 % iData_Sqw2D: dos: compute the generalised density of states (gDOS) from a S(q,w)
 %
+% compute: iData_Sqw2D -> generalised Density of States gDOS [p=1]
+%
 %  The returned generalised density of states corresponds with the 1-phonon term in the
 %  the incoherent Gaussian approximation. This density of states is normalised to 1.
 %
@@ -179,6 +181,9 @@ function [DOS, g, fig] = dos(s, method, n)
     
     DOS       = iData_vDOS(DOS);
   end
+  
+  label(DOS, 0, [  'gDOS [p=1]' '(' label(s, 0) ')' ]);
+  DOS = commandhistory(DOS,    'dos', s, method, n);
   
   if nargout == 0 && ~isempty(DOS)
     fig=figure; 

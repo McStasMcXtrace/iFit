@@ -1,6 +1,7 @@
-function s=Sqw_t2e(s, t_present)
+function sxw=Sqw_t2e(s, t_present)
 % convert S(xx,t) to S(xx,w). From lamp t2e and in5_t2e. Requires wavelength and/or distance
 
+  sxw = [];
   if isempty(s), return; end
   [s,lambda,distance,chwidth] = Sqw_search_lambda(s);
   if nargin < 2, t_present=1; end
@@ -85,15 +86,18 @@ function s=Sqw_t2e(s, t_present)
   t                 = t -t_elast +t_sample_detector;  % shift time axis to EPP=sample-detector time
   
   Ef = Ei.*(t_sample_detector./t).^2;
-  dtdE    = t./(2.*Ef)*1e6;   % to be consistent with vnorm abs. calc.
-  kikf    = sqrt(Ei./Ef);     % all times above calculated in sec.
+  dtdE    = t./(2.*Ef)*1e6;   % to be consistent with vnorm abs. calc. all times above calculated in sec.
+  % kikf    = sqrt(Ei./Ef);   % The Kf/Ki correction is applied in Sqw2ddcs method
   hw = Ei - Ef;
   % Average energy scale:
   hw0 = mean(hw,2);
 
-  dtdEkikf = dtdE.*kikf;
-  s    = s.*dtdEkikf;
-  setalias(s, 'energy', hw0,  'Energy transfer hw [meV]');
-  s = setalias(s, 'IncidentWavelength', lambda);
-  setaxis(s, t_present, 'energy');
+  sxw    = copyobj(s).*dtdE;
+  setalias(sxw, 'energy', hw0,  'Energy transfer hw [meV]');
+  sxw = setalias(sxw, 'IncidentWavelength', lambda);
+  setaxis(sxw, t_present, 'energy');
+  
+  sxw = commandhistory(sxw, 't2e', s, t_present);
+  sxw.Label = 'S(x, w)';
+  label(sxw, 0, [  't2e' '(' label(s, 0) ')' ]);
 

@@ -128,8 +128,10 @@ function sab = Sqw2Sab(s, M, T)
     setalias(sab,'classical',  get(s,'classical'), '[0=from measurement, with Bose factor included, 1=from MD, symmetric]');
   end
   
-  sab.Label='Sab';
   sab = transpose(sab);
+  sab.Label='S(alpha,beta)';
+  sab = commandhistory(sab, 'Sab', s, M, T);
+  label(sab, 0, [  'Sab' '(' label(s, 0) ')' ]);
   
   % transfer available information compatible with ENDF MF7 MT4
   % sab = iData_Sab(sab);

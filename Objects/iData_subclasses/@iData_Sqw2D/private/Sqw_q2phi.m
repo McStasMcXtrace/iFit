@@ -1,6 +1,7 @@
-function s = Sqw_q2phi(s, lambda)
+function spw = Sqw_q2phi(s, lambda)
 % convert S(q,w) to S(phi,w). Requires wavelength
 
+  spw = [];
   if isempty(s), return; end
   if nargin < 2, lambda=[]; end
   
@@ -32,9 +33,13 @@ function s = Sqw_q2phi(s, lambda)
   cos_phi(Ef < 0 | abs(cos_phi) > 1) = nan;
   phi     = acosd(cos_phi); % in degrees
 
-  s = iData(s); % make it a true iData
-  s = setalias(s, 'phi', phi, 'Scattering Angle [deg]');
-  s = setalias(s, 'IncidentWavelength', lambda);
-  s = setaxis(s, 2, 'phi');
+  spw = iData(copyobj(s)); % make it a true iData
+  spw = setalias(spw, 'phi', phi, 'Scattering Angle [deg]');
+  spw = setalias(spw, 'IncidentWavelength', lambda);
+  spw = setaxis(spw, 2, 'phi');
+  
+  spw = commandhistory(spw, 'qw2phiw', s, varargin{:});
+  spw.Label = 'S(phi, w)';
+  label(spw, 0, [  'qw2phiw [q2phi]' '(' label(s, 0) ')' ]);
   
   

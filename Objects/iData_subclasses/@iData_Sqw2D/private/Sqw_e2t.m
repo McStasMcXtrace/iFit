@@ -1,8 +1,9 @@
-function [s, schan] =Sqw_e2t(s, lambda)
+function [sxt, schan] =Sqw_e2t(s, lambda)
 % convert S(xx,w) to S(xx,t). Requires wavelength, chwidth, distance
 %
 % also returns the S(phi,channel)
 
+  sxt = []; schan = []; 
   if isempty(s), return; end
   if nargin < 2, lambda = []; end
   if isempty(lambda)
@@ -10,7 +11,7 @@ function [s, schan] =Sqw_e2t(s, lambda)
   else
     [s,~,distance,chwidth] = Sqw_search_lambda(s);
   end
-  schan = [];
+
   disp([ mfilename ': ' s.Tag ' ' s.Title ' Converting Axis 1 "' ...
     label(s,1) '": energy [meV] to time [sec].' ]);
  
@@ -40,16 +41,19 @@ function [s, schan] =Sqw_e2t(s, lambda)
     disp([ mfilename ': ' s.Tag ' ' s.Title ' Using ChannelWidth=' num2str(chwidth) ' [s]' ]);
   end    % first channel
   
-  dtdE    = t./(2.*Ef)*1e6;   % to be consistent with vnorm abs. calc.
-  kikf    = sqrt(Ei./Ef);     % all times above calculated in sec.
-  dtdEkikf= dtdE.*kikf;
-  s       = s./dtdEkikf;
+  dtdE    = t./(2.*Ef)*1e6;   % to be consistent with vnorm abs. calc. all times above calculated in sec.
+  % kikf    = sqrt(Ei./Ef);   % The Kf/Ki correction is applied in Sqw2ddcs method
+  sxt       = copyobj(s)./dtdE;
   
-  s = iData(s); % make it a true iData
-  setalias(s, 'time', t, 'Time of flight / sample [s]');
-  setalias(s, 'ElasticPeakPosition', t_sample_detector, '[s] Elastic peak position');
-  setalias(s, 'IncidentWavelength', lambda);
-  setaxis(s, 1, 'time');
+  sxt = iData(sxt); % make it a true iData
+  setalias(sxt, 'time', t, 'Time of flight / sample [s]');
+  setalias(sxt, 'ElasticPeakPosition', t_sample_detector, '[s] Elastic peak position');
+  setalias(sxt, 'IncidentWavelength', lambda);
+  setaxis(sxt, 1, 'time');
+  
+  sxt = commandhistory(sxt, 'e2t', s, lambda);
+  sxt.Label = 'S(x, tof)';
+  label(sxt, 0, [  'e2t' '(' label(s, 0) ')' ]);
   
   % generate a S(phi, channel) data set
   if nargout > 1
@@ -66,9 +70,11 @@ function [s, schan] =Sqw_e2t(s, lambda)
     t         = t-deltaChan+1;
     EPP       = EPP-deltaChan+1;
     
-    schan = copyobj(s);
+    schan = copyobj(sxt);
     setalias(schan, 'Channel', round(t), 'Time Channel [1]');
     setalias(schan, 'ElasticPeakPosition', EPP, '[chan] Channel for the elastic');
     setalias(schan, 'IncidentWavelength', lambda);
     setaxis(schan, 1, 'Channel');
+    sxt.Label = 'S(x, tof_chan)';
+    label(sxt, 0, [  'e2t[channel]' '(' label(s, 0) ')' ]);
   end

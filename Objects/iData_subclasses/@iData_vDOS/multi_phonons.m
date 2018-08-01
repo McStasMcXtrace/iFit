@@ -9,7 +9,7 @@ function [Gw, Tsym] = multi_phonons(gw, Ki, T, sigma, m, phi, n)
 % The result is the 'neutron weighted' (generalised) density of states (gDOS),
 %   which should be compared with:
 %
-%   Gw -> \int q. I(q,w) dq ~ \int I(theta, w) sin(theta) d(theta)
+%   Gw -> \int q. I(q,w) /Ki/Kf dq ~ \int I(theta, w) sin(theta) d(theta)
 %
 %   where I(q,w) and I(theta,w) are the measured scattering intensity as a function 
 %   of the momentum q or scattering angle theta.
