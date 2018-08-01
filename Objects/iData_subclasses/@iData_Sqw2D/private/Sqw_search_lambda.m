@@ -14,7 +14,7 @@ function [s,lambda,distance,chwidth,energy,wavevector] = Sqw_search_lambda(s)
   if isfield(parameters, 'Wavelength') && parameters.Wavelength   
     lambda     = parameters.Wavelength; 
   else
-    lambda     = Sqw_getT(s, {'wavelength' 'lambda'});
+    lambda     = Sqw_getT(s, {'IncidentWavelength', 'wavelength' 'lambda'});
   end
   if isfield(parameters, 'IncidentEnergy') && parameters.IncidentEnergy
     energy     = parameters.IncidentEnergy; 

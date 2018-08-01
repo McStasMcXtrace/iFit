@@ -91,6 +91,8 @@ classdef iData_Sqw2D < iData
     function obj = iData_Sqw2D(s)
       % iData_Sqw2D: create the iData_Sqw2D subclass
       %
+      %   convert: anything -> iData_Sqw2D
+      %
       % input:
       %   must be a 2D iData object holding a S(q,w), S(phi,t), S(alpha,beta) or S(phi,w)
       %   or file name.
@@ -113,6 +115,8 @@ classdef iData_Sqw2D < iData
       
       % copy all properties
       obj = copy_prop(obj, m);
+      obj = commandhistory(obj, mfilename, s);
+      label(obj, 0, [  mfilename '(' label(obj, 0) ')' ]);
  
     end % iData_Sqw2D constructor
     
@@ -120,6 +124,8 @@ classdef iData_Sqw2D < iData
     function parameters = parseparams(s)
       % iData_Sqw2D: parseparams: search for physical quantities in object.
       % This search is also done when creating iData_Sqw2D objects.
+      %
+      %   iData_Sqw2D -> physical parameters
       [s,parameters,fields] = Sqw_parameters(s);
       if length(inputname(1))
         assignin('caller',inputname(1),s);
@@ -128,17 +134,13 @@ classdef iData_Sqw2D < iData
     
     function f = iData(self)
       % iData_Sqw2D: iData: convert a iData_Sqw2D back to iData
+      %
+      % convert: iData_Sqw2D -> iData
       f = [];
       for index=1:numel(self)
-        this = self(index);
-        f1   = iData;
-        this = struct(this);
-        w = warning('query','iData:subsasgn');
-        warning('off','iData:subsasgn');
-        for p = fieldnames(this)'
-          f1.(p{1}) = this.(p{1}); % generates a warning when setting Alias
-        end
-        warning(w);
+        f1   = copy_prop(iData, self(index));
+        f1   = commandhistory(f1, 'iData', self);
+        label(f1, 0, [  'iData' '(' label(self, 0) ')' ]);
         f = [ f f1 ];
       end
     end
@@ -151,6 +153,8 @@ classdef iData_Sqw2D < iData
     
     function [inc, single, multi] = incoherent(s, varargin)
       % iData_Sqw2D: incoherent: incoherent neutron scattering law estimate in the incoherent gaussian approximation
+      %
+      % compute: iData_Sqw2D -> generalised Density of States -> Incoherent approximation
       %
       % This implementation is in principle exact for an isotropic monoatomic material,
       % e.g. a liquid or powder.
@@ -198,6 +202,13 @@ classdef iData_Sqw2D < iData
       multi = plus(inc(3:end)); % multi-phonon
       single= plus(inc(1:2));   % elastic+1-phonon
       inc   = plus(inc);        % total
+      % update Command
+      inc   = commandhistory(inc,    'incoherent', s, varargin{:});
+      multi = commandhistory(multi,  'incoherent', s, varargin{:});
+      single= commandhistory(single, 'incoherent', s, varargin{:});
+      label(inc,    0, [  'incoherent' '(' label(s, 0) ')' ]);
+      label(multi,  0, [  'multi-phonons' '(' label(s, 0) ')' ]);
+      label(single, 0, [  'single-phonon' '(' label(s, 0) ')' ]);
       if nargout == 0
         fig=figure; 
         h  =subplot(log10([inc single multi]),'view2'); 
@@ -205,15 +216,23 @@ classdef iData_Sqw2D < iData
       end
     end % incoherent
     
-    function [G,multi] = multi_phonons(s, varargin)
+    function [G,multi,g] = multi_phonons(s, varargin)
       % iData_Sqw2D: multi_phonons: compute the integrated multi-phonon intensity from a scattering law
       %
+      % compute: iData_Sqw2D -> generalised Density of States -> multi-phonons DOS
+      %
       % output:
-      %   G:      total gDOS [p=1]
+      %   G:      total gDOS [sum p=1..Inf]
       %   multi:  multi-phonon gDOS contribution [p=2...]
-      G     = multi_phonons(dos(s), varargin{:});
+      %   g:      gDOS [p=1]
+      g     = dos(s);
+      G     = multi_phonons(g, varargin{:});
       multi = plus(G(2:end));
       G     = plus(G);
+      G     = commandhistory(G,    'multi_phonons', s, varargin{:});
+      multi = commandhistory(multi,'multi_phonons', s, varargin{:});
+      label(G,     0, [  'total gDOS' '(' label(s, 0) ')' ]);
+      label(multi, 0, [  'multi_phonons gDOS' '(' label(s, 0) ')' ]);
       if nargout == 0
         fig=figure; 
         h  =plot([ G multi ]); 
@@ -223,7 +242,10 @@ classdef iData_Sqw2D < iData
     
     function g = gdos(self, varargin)
       % iData_Sqw2D: gdos: compute the generalised density of states (gDOS) from a S(q,w)
-      %   See: iData_Sqw2D/dos
+      %
+      % compute: iData_Sqw2D -> generalised Density of States
+      %
+      % See: iData_Sqw2D/dos
       g = dos(self, varargin{:});
     end
     
@@ -231,20 +253,26 @@ classdef iData_Sqw2D < iData
       % iData_Sqw2D: vdos: compute the 'true' vibrational density of states
       %   by removing the multi-phonons from the initial estimate from the 
       %   Bredov/Oskotskii formula.
+      %
+      % compute: iData_Sqw2D -> generalised Density of States -> vibrational DOS
       
       % we first compute an initial estimate of the vDOS
       g = dos(self);
       v = vdos(g, varargin{:});  % then get the true vDOS using the iData_vDOS method.
-      
-      
     end
     
     function spw = qw2phiw(self, varargin)
       % iData_Sqw2D: qw2phiw: convert a S(q,w) into a S(phi,w) iData (scattering angle)
       %
+      % convert: iData_Sqw2D S(q,w) -> S(phi,w)
+      %
       % spw = qw2phiw(self)
       % spw = qw2phiw(self, lambda)
+      
       spw = Sqw_q2phi(self, varargin{:});
+      spw = commandhistory(spw, 'qw2phiw', self, varargin{:});
+      spw.Label = 'S(phi, w)';
+      label(spw, 0, [  'qw2phiw' '(' label(self, 0) ')' ]);
       if nargout == 0
         fig=figure; 
         h  =plot(log10(spw)); 
@@ -255,9 +283,14 @@ classdef iData_Sqw2D < iData
     function sqt = qw2qt(self, varargin)
       % iData_Sqw2D: qw2qt: convert a S(q,w) into a S(q,tof) iData (time-of-flight from sample)
       %
+      % convert: iData_Sqw2D S(q,w) -> S(q,tof)
+      %
       % sqt = qw2qt(self)
       % sqt = qw2qt(self, lambda)
       sqt = Sqw_e2t(self, varargin{:});
+      sqt = commandhistory(sqt, 'qw2qt', self, varargin{:});
+      sqt.Label = 'S(q, tof)';
+      label(sqt, 0, [  'qw2qt [e2t]' '(' label(self, 0) ')' ]);
       if nargout == 0
         fig=figure; 
         h  =plot(log10(sqt)); 
@@ -268,6 +301,8 @@ classdef iData_Sqw2D < iData
     function [spt, spc, spw] = qw2phi(self, varargin)
       % iData_Sqw2D: qw2phi: convert a S(q,w) into S(phi,tof) iData (scattering angle,ToF)
       %   This method returns S(phi,tof), S(phi,tof channels) and S(phi,w)
+      %
+      % convert: iData_Sqw2D S(q,w) -> [S(phi,tof) S(phi,tof channels) S(phi,w)]
       %
       %   [spt, spc, spw] = qw2phi(sqw);
       %   [spt, spc, spw] = qw2phi(sqw, lambda);
@@ -290,8 +325,97 @@ classdef iData_Sqw2D < iData
       end
     end
     
+    function ddcs = Sqw2ddcs(s, lambda, inverse)
+      % iData_Sqw2D: Sqw2ddcs: convert a S(q,w) into a double differential cross-section (q,w)
+      %   i.e. multiply by Kf/Ki
+      %
+      % convert: iData_Sqw2D S(q,w) -> d2(sigma)/dOmega/dE = N.sigma Kf/Ki S(q,w)
+      %
+      %   s = Sqw2ddcs(s, lambda)
+      %
+      % input:
+      %   s:      S(q,w) as an iData_Sqw2D object
+      %   lambda: wavelength used for conversion [Angs]. When not given , it is
+      %           searched in the S(q,w) data set.
+      %
+      % output:
+      %   s:      double differential cross-section [Kf/Ki S(q,w)]
+      
+      ddcs = [];
+      if isempty(s), return; end
+      if nargin < 2, lambda = []; end
+      if nargin < 3, inverse = false; else inverse = true; end
+      if isempty(lambda)
+        [s,lambda,distance,chwidth] = Sqw_search_lambda(s);
+      else
+        [s,~,distance,chwidth] = Sqw_search_lambda(s);
+      end
+      if isempty(lambda)
+        lambda   = 2.36;
+        disp([ mfilename ': ' s.Tag ' ' s.Title ' using <wavelength>               =' num2str(lambda) ' [Angs]']);
+      end
+
+      SE2V = 437.393377;        % Convert sqrt(E)[meV] to v[m/s]
+      V2K  = 1.58825361e-3;     % Convert v[m/s] to k[1/AA]
+      K2V  = 1/V2K;
+      VS2E = 5.22703725e-6;     % Convert (v[m/s])**2 to E[meV]
+      
+      Ki   = 2*pi/lambda;
+      Vi   = K2V*Ki;
+      Ei   = VS2E*Vi.^2;
+      % compute final energy
+      hw   = getaxis(s, 1);
+      Ef   = Ei - hw;
+      kikf = sqrt(Ei./Ef);
+      if inverse
+        kikf = 1./kikf; % DDCS -> Sqw
+      end
+      ddcs = copyobj(s) .* kikf;
+      setalias(ddcs, 'IncidentWavelength', lambda);
+      if inverse
+        ddcs = commandhistory(ddcs, 'ddcs2Sqw', s, lambda, inverse);
+        ddcs.Label = 'S(q, w)';
+        label(ddcs, 0, [  'ddcs2Sqw' '(' label(s, 0) ')' ]);
+      else
+        ddcs = commandhistory(ddcs, 'Sqw2ddcs', s, lambda, inverse);
+        ddcs.Label = 'DDCS(q, w)';
+        label(ddcs, 0, [  'DDCS' '(' label(s, 0) ')' ]);
+      end
+    
+    end % Sqw2ddcs
+    
+    function self = ddcs2Sqw(ddcs, varargin)
+      % iData_Sqw2D: ddcs2Sqw: convert a double differential cross-section (q,w) into a S(q,w)
+      %   i.e. divide by Kf/Ki
+      %
+      % convert: iData_Sqw2D d2(sigma)/dOmega/dE -> S(q,w)
+      %
+      %   s = ddcs2Sqw(s, lambda)
+      %
+      % input:
+      %   s:      double differential cross-section [Kf/Ki S(q,w)]
+      %   lambda: wavelength used for conversion [Angs]. When not given , it is
+      %           searched in the S(q,w) data set.
+      %
+      % output:
+      %   s:      S(q,w) as an iData_Sqw2D object
+      %
+      %   s = ddcs2Sqw(s, lambda)
+      %
+      %   d2(sigma)/dOmega/dE = N.sigma Kf/Ki S(q,w)
+      
+      if nargin > 1
+        self = Sqw2ddcs(ddcs, varargin{:}, 'inverse');
+      else
+        self = Sqw2ddcs(ddcs, [], 'inverse');
+      end
+    
+    end % qw2ddcs
+    
     function s = Sab(self, varargin)
       %  iData_Sqw2D: Sab: convert a 2D S(q,w) into an S(alpha,beta). 
+      %
+      % convert: iData_Sqw2D S(q,w) -> S(alpha,beta)
       %
       %  syntax: sab = Sab(sqw, M, T)
       %
@@ -329,6 +453,8 @@ classdef iData_Sqw2D < iData
     
     function f = saveas(self, varargin)
       % iData_Sqw2D: saveas: save S(q,w) into a file.
+      %
+      % convert: iData_Sqw2D S(q,w) -> file
       %
       % syntax: saveas(sqw2D, filename, format)
       %
