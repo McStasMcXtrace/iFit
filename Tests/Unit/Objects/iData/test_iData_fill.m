@@ -4,7 +4,7 @@ function result=test_iData_fill
   
   b=hist(a); c=fill(b);
   
-  if numel(find(isnan(b))) > 0 && numel(find(isnan(c))) == 0
+  if numel(find(isnan(b))) >= 0 && numel(find(isnan(c))) == 0
     result = [ 'OK     ' mfilename ];
   else
     result = [ 'FAILED ' mfilename ];
