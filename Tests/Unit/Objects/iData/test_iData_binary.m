@@ -3,6 +3,8 @@ function result = test_iData_binary
   op = {'combine','conv','convn','eq','ge','gt','le','lt','minus', ...
   'mrdivide','ne','plus','power','rdivide','times','xcorr'};
   
+  % not tested: mpower mtimes
+  
   a = iData([ ifitpath 'Data/ILL_IN6.dat' ]);    a.Monitor=1;
   b = iData([ ifitpath 'Data/ILL_IN6_2.dat' ]);  b.Monitor=2;
   da=get(a,'Signal'); db=get(b,'Signal');

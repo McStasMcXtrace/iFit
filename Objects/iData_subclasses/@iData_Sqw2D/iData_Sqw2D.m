@@ -26,6 +26,10 @@ classdef iData_Sqw2D < iData
   % iData_Sqw2D(s)
   %   convert input [e.g. a 2D iData object] into an iData_Sqw2D to give access to
   %   the methods below.
+  % Sqw = ddcs2Sqw(s)
+  %   convert a double differential neutron scattering cross section to a S(q,w) [Kf/Ki]
+  % ddcs = Sqw2ddcs(s)
+  %   convert a S(q,w) to a double differential neutron scattering cross section [Kf/Ki]
   % spw = qw2phiw(s, lambda)
   %   Convert a S(q,w) into a S(phi,w) iData (scattering angle)
   % sqt = qw2qt(s, lambda)
@@ -139,8 +143,8 @@ classdef iData_Sqw2D < iData
       f = [];
       for index=1:numel(self)
         f1   = copy_prop(iData, self(index));
-        f1   = commandhistory(f1, 'iData', self);
-        label(f1, 0, [  'iData' '(' label(self, 0) ')' ]);
+        f1   = commandhistory(f1, 'iData', self(index));
+        label(f1, 0, [  'iData' '(' label(self(index), 0) ')' ]);
         f = [ f f1 ];
       end
     end
@@ -370,8 +374,21 @@ classdef iData_Sqw2D < iData
       if inverse
         kikf = 1./kikf; % DDCS -> Sqw
       end
+      
+      if ~inverse
+        % check if initial data set is classical: apply Bose factor
+        if (isfield(s,'classical') || ~isempty(findfield(s, 'classical')))
+          classical = get(s,'classical');
+        else classical = false;
+        end
+        if ~isempty(classical) && classical
+          s = Bosify(s);
+        end
+      end
+      
       ddcs = copyobj(s) .* kikf;
       setalias(ddcs, 'IncidentWavelength', lambda);
+      
       if inverse
         ddcs = commandhistory(ddcs, 'ddcs2Sqw', s, lambda, inverse);
         ddcs.Label = 'S(q, w)';
