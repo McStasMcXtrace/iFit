@@ -24,7 +24,7 @@ if isempty(pid), return; end
 if isnumeric(pid) && numel(pid) > 1
   for index=1:numel(pid)
     [this_PID, this_command] = get_command(pid(index));
-    if ~isempty(this_PID), PID(end+1) = this_PID; end
+    if ~isempty(this_PID), PID = [ PID this_PID ]; end
     if ~isempty(this_command), command{end+1} = sprintf('%s', this_command{:}); end
   end
   return
@@ -59,7 +59,8 @@ elseif ~ischar(pid)
   whos pid
   error([ mfilename ': PID specification should be a number or string' ]);
 end
-index = find(~cellfun(@isempty, strfind(tasks, pid)));
+m = regexp(tasks, ['\<' pid '\>' ],'match');
+index = find(~cellfun(@isempty, m));
 if isempty(index), command = {}; return; end
 tasks = tasks(index);
 

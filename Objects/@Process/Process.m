@@ -9,7 +9,7 @@ classdef Process < timer
     %
     % You can as well monitor an existing external process by connecting to its PID (number)
     % 
-    %   pid = process(1234);
+    %   pid = Process(1234);
     %   pid = connect(Process, 1234);
     %
     % or by connecting to a running named process:
@@ -345,31 +345,37 @@ classdef Process < timer
       obj.jobject.UserData=ud;
     end
     
-    function obj = connect(obj0, pid)
-      obj = Process;  % always use a new object for the connection
+    function obj1 = connect(obj0, pid)
+      obj1 = [];  % always use a new object for the connection
       if isnumeric(pid) || ischar(pid)
-        [PID, command] = get_command(pid);
+        [PID, command] = get_command(pid);  % can be a vector
+        
+        if isempty(PID)
+          error([ datestr(now) ':  Process PID ' num2str(pid) ' does not exist.' ])
+        end
 
-        if ~isempty(PID) || ~isempty(command)
+        for index=1:numel(PID)
+          obj = Process;  % create a new process object;
           UserData = getUserData(obj);
           % we have found a corresponding process. Connect to it.
-          if isempty(PID)
-            UserData.process = pid;  % initial request (num or char)
-          else 
-            UserData.process = PID;   % PID (list of ID's)
+          UserData.process = PID(index);   % PID (list of ID's)
+          if iscellstr(command) && numel(command) >= index
+            UserData.command       = command{index};
+          else
+            UserData.command       = pid;     % the initial request
           end
-          UserData.command       = pid;     % the initial request
           UserData.creationDate  = now;
-          UserData.PID           = PID;
+          UserData.PID           = PID(index);
           if UserData.Monitor
-            disp([ datestr(now) ': Process ' num2str(pid) ' is connected ' mat2str(PID) ])
+            disp([ datestr(now) ': Process ' num2str(pid) ' is connected to ' mat2str(PID(index)) ])
           end
           set(obj, 'Name', num2str(pid));
           setUserData(obj, UserData);
           start(obj);
-        else
-          error([ datestr(now) ':  Process PID ' num2str(pid) ' does not exist.' ])
+          
+          obj1 = [ obj1 obj ];
         end
+          
       end
     end % connect
     
