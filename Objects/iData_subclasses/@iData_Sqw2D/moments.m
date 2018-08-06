@@ -57,13 +57,6 @@ function sigma=moments(data, M, T, classical)
   end
   
   % check input parameters
-  if isempty(classical)
-    disp([ mfilename ': ERROR: The data set ' data.Tag ' ' data.Title ' from ' data.Source ])
-    disp('   does not provide information about classical/quantum data set.');
-    disp('   Use moments(data, M, T, classical=0 or 1)');
-    return
-  end
-  
   if isempty(T) || T<=0
     disp([ mfilename ': ERROR: Temperature undefined: The data set ' data.Tag ' ' data.Title ' from ' data.Source ]);
     disp('    does not have any temperature defined. Use moments(data, M, T, classical).' );
@@ -84,7 +77,21 @@ function sigma=moments(data, M, T, classical)
   M0      = sq;
   % w2R = 2 kT M1
   % w2R 1/2/kT = wS = M1 and w0^2 = 1/S(q) w2R = 1/S(q) 2 kT M1 = q2 kT/M/M0
-  M1      = abs(trapz(abs(w).*data));    % = h2q2/2/M recoil when non-classical, 0 for classical symmetrized
+  M1      = trapz(w.*data);    % = h2q2/2/M recoil when non-classical, 0 for classical symmetrized
+  
+  % check if symmetric
+  if isempty(classical) && numel(find(M1 < 1e-6)) == numel(M1)
+    classical = 1;
+  end
+  
+  if isempty(classical)
+    disp([ mfilename ': ERROR: The data set ' data.Tag ' ' data.Title ' from ' data.Source ])
+    disp('   does not provide information about classical/quantum data set.');
+    disp('   Use moments(data, M, T, classical=0 or 1)');
+    return
+  end
+  
+  
   if ~classical && isempty(M)
     % try to extract a mass from the recoil
     mn      = 1.674927471E-027; % neutron mass [kg]
@@ -107,7 +114,7 @@ function sigma=moments(data, M, T, classical)
     disp('    Ignoring: The Wq frequency will be empty.');
   end
   M2      = abs(trapz(w.^2.*data)); % M2 cl = wc^2
-  M3      = abs(trapz(abs(w).^3.*data));
+  M3      =     trapz(w.^3.*data);
   M4      = abs(trapz(w.^4.*data));
   
   % half width from normalized 2nd frequency moment J-P.Hansen and I.R.McDonald 
@@ -124,11 +131,16 @@ function sigma=moments(data, M, T, classical)
     % all odd moments are 0, even are to be multiplied by 2 when using S(q,w>0)
     % M2 = q.^2.*kT/M
     wc      = sqrt(M2./M0); % sqrt(<w2S>/s(q)) == q sqrt(kT/M/s(q)) collective/isothermal
-    wl      = M3./M2; % maxima wL(q) of the longitudinal current correlation function ~ wl
+    m3      = abs(trapz(abs(w).^3.*data));
+    wl      = m3./M2; % maxima wL(q) of the longitudinal current correlation function ~ wl
   else
     wc      = sqrt(2*kT.*M1./M0); 
     wl      = sqrt(M3./M1); 
   end
+  
+  % a very crude estimate of S(q) may be obtained from (phenomenological):
+  %   M2./wl.^2./q
+  % and normalize it.
   
   sq.Label='S(q) structure factor';                 ylabel(sq, sq.Label );
   M1.Label='recoil E_r=h^2q^2/2M <wS> 1st moment';  ylabel(M1, M1.Label );
