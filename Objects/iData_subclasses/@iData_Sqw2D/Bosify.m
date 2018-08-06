@@ -90,7 +90,7 @@ function s = Bosify(s0, T, type)
     if (isempty(T0) || T0 == 0)
       T0 = 293;
     end
-    disp([ mfilename ': WARNING: Using Temperature=' num2str(T0) ' [K] for data set ' s.Tag ' ' s.Title ' from ' s.Source ]);
+    disp([ mfilename ': INFO: Using Temperature=' num2str(T0) ' [K] for data set ' s.Tag ' ' s.Title ' from ' s.Source ]);
     T=T0;
   else T0=T; end  
   
