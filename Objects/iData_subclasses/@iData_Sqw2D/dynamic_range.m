@@ -21,8 +21,7 @@ function [s, sphi] = dynamic_range(s, Ei, angles)
 % The syntax:
 %   [sqw_Ei, sphiw] = dynamic_range(s,...)
 % also returns the S(phi,w) data set, which shows the detected signal vs scattering 
-% angle and energy transfer. This is the double differential cross section 
-% as a function of the scattering angle.
+% angle and energy transfer.
 %
 % syntax:
 %   sqw_Ei        =dynamic_range(s, Ei)
@@ -37,7 +36,7 @@ function [s, sphi] = dynamic_range(s, Ei, angles)
 %   sqw_Ei: S(q,w)   cropped to dynamic range for incident energy Ei.
 %   sphiw:  S(phi,w) angular dynamic structure factor for incident energy Ei.
 %
-% Example: s=iData_Sqw2D('SQW_coh_lGe.nc'); dynamic_range(symmetrize(s), 14.8, [-20 135])
+% Example: s=iData_Sqw2D('SQW_coh_lGe.nc'); dynamic_range(s, 14.8, [-20 135])
 %
 % See also: iData_Sqw2D/Bosify, iData_Sqw2D/deBosify, iData_Sqw2D/symmetrize, iData_Sqw2D/scattering_cross_section
 % (c) E.Farhi, ILL. License: EUPL.
@@ -65,9 +64,12 @@ function [s, sphi] = dynamic_range(s, Ei, angles)
   % check if the energy range is limited
   w = getaxis(s,1);
   if all(w(:) >= 0) || all(w(:) <= 0)
+    
     disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ])
     disp([ '    seems to have its energy range w=[' num2str([ min(w(:)) max(w(:)) ]) '] defined only on one side.' ])
-    disp('    Perhaps you should apply symmetrize and Bosify first ?');
+    disp('    Applying symmetrize first.');
+    s = symmetrize(s);
+    w = getaxis(s,1);
   end
   
   % compute Ei, Ef, Ki, Kf
