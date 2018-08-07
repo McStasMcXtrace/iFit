@@ -94,7 +94,24 @@ function sigma = scattering_cross_section(s, Ei, M)
   s = meshgrid(s);
   s = Sqw_check(s);
   if isempty(s), return; end
-  if isfield(s, 'classical') && get(s,'classical') == 1
+  
+  if isfield(s,'classical') || ~isempty(findfield(s, 'classical'))
+    classical = get(s,'classical');
+  else
+    classical = [];
+  end
+  if isempty(classical)
+    % compute the 1st moment, should be 0 for classical (Recoil)
+    w       = getaxis(s,1);
+    M1      = trapz(w.*s);    % = h2q2/2/M recoil when non-classical, 0 for classical symmetrized
+  
+    % check if symmetric
+    if isempty(classical) && abs(mean(M1)) < 1e-6
+      classical = 1;
+    end
+  end
+  
+  if classical == 1
     disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' seems to be "classical". You should apply s=Bosify(s, temperature) before.' ]);
   end
   
@@ -108,7 +125,7 @@ function sigma = scattering_cross_section(s, Ei, M)
   w = getaxis(s,1);
   
   if min(w(:)) * max(w(:)) >= 0
-    disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' seems to only be defined on w<0 or w>0. You should apply  and then s=Bosify(symmetrize(s), temperature) before.' ]);
+    disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' seems to only be defined on w<0 or w>0. You should apply s=Bosify(symmetrize(s), temperature) before.' ]);
   end
 
   % do the total XS computation there...

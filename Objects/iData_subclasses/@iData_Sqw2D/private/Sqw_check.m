@@ -20,7 +20,7 @@ function s = Sqw_check(s, mode)
 
   if nargin == 0, return; end
   if ~isa(s, 'iData'), s = iData(s); end
-  if nargin < 2, model = []; end
+  if nargin < 2, mode = []; end
   if isempty(mode), mode='qw'; end
   
   % handle array of objects

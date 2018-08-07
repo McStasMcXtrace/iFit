@@ -35,7 +35,7 @@ function sigma=moments(data, M, T, classical)
 % output:
 %   moments=[ sq M1 wc wl wq M2 M3 M4 ] as an iData array
 %
-% Example: m = moments(iData_Sqw2D('SQW_coh_lGe.nc'), 72.6,1235); subplot(m);
+% Example: m = moments(iData_Sqw2D('SQW_coh_lGe.nc'), 72.6, 1235); subplot(m);
 % (c) E.Farhi, ILL. License: EUPL.
 
   sigma = [];
@@ -80,7 +80,7 @@ function sigma=moments(data, M, T, classical)
   M1      = trapz(w.*data);    % = h2q2/2/M recoil when non-classical, 0 for classical symmetrized
   
   % check if symmetric
-  if isempty(classical) && numel(find(M1 < 1e-6)) == numel(M1)
+  if isempty(classical) && abs(mean(M1)) < 1e-6
     classical = 1;
   end
   
@@ -89,8 +89,8 @@ function sigma=moments(data, M, T, classical)
     disp('   does not provide information about classical/quantum data set.');
     disp('   Use moments(data, M, T, classical=0 or 1)');
     return
+  else classical=classical(1);
   end
-  
   
   if ~classical && isempty(M)
     % try to extract a mass from the recoil
