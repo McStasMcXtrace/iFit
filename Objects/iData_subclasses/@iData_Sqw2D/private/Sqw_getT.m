@@ -112,8 +112,11 @@ function T = Sqw_getT_Bose(s)
     % then kT = w./log_s_ratio
     T         = w./log_s_ratio*11.6045; % 1 meV = 11.6045 K
     T         = getaxis(T,0);
-    if any(isfinite(T)) && (all(T(~isnan(T))>0.1) || all(T(~isnan(T))<0.1))
-      T         = mean(real(T(~isnan(T))));
-    end 
+    T         = T(isfinite(T));
+    index = find(T ~= 0);
+    if ~isempty(index)
+      T = T(index);
+    end
+    T         = mean(real(T));
   end
  
