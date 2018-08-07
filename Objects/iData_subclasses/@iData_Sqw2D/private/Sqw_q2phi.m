@@ -38,7 +38,7 @@ function spw = Sqw_q2phi(s, lambda)
   spw = setalias(spw, 'IncidentWavelength', lambda);
   spw = setaxis(spw, 2, 'phi');
   
-  spw = commandhistory(spw, 'qw2phiw', s, varargin{:});
+  spw = commandhistory(spw, 'qw2phiw', s, lambda);
   spw.Label = 'S(phi, w)';
   label(spw, 0, [  'qw2phiw [q2phi]' '(' label(s, 0) ')' ]);
   

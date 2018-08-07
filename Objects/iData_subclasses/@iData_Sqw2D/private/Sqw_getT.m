@@ -117,6 +117,6 @@ function T = Sqw_getT_Bose(s)
     if ~isempty(index)
       T = T(index);
     end
-    T         = mean(real(T));
+    T         = mean(abs(real(T)));
   end
  

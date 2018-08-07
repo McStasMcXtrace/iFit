@@ -240,7 +240,7 @@ function g = sqw_phonon_dos_Bredov(s, T)
 %        * \int_{q_min -> q_max} q S(q,w) dq
 
   % get an estimate of corresponding incident energy
-  [Ki, Ei] = getKi(s);
+  [s,lambda,distance,chwidth,Ei,Ki] = Sqw_search_lambda(s)
 
   % axes and Q4
   hw = getaxis(s,1);
@@ -287,35 +287,112 @@ function q4 = getQ4(s, q, w)
     end
   end
   
-function [Ki, Ei] = getKi(s, Ei)
-
-  % search in the data set in case missing properties are stored there
-  % compute Ki with given arguments
+function St = sinDDCSphi(s, lambda)
+  % sinDDCSphi: compute the time distribution of the sin theta weighted scattering cross section
+  %
+  %  The sin(theta) weighted double differential cross section is the input to
+  %  e.g. MUPHOCOR and Oskotskii formalism.
+  %
+  %  The calculation is:
+  %    \int sin(theta) DDCS(theta, tof) d(theta)
+  %  = \int          q DDCS(q,tof)      dq
+  %
+  % input:
+  %   s: DDCS (q,w) i.e. measurement (including symmetrize, Bosify)
+  %   lambda: wavelength(or 2.36 as default) [Angs]
+  %
+  % output:
+  %   St: \int sin(theta) DDCS(theta,tof) d(theta)
+  %
+  % Example:
+  %   s =iData_Sqw2D('D2O_liq_290_coh.sqw.zip'); s=Sqw2ddcs(Bosify(symmetrize(s)));
+  %   st=sinDDCSphi(s);
+  
+  if nargin < 2, lambda=2.36; end
+  
+  % data must be [\int sin(theta) S(theta,t) dtheta] that is start from time distribution
+  % but the computation in q is much faster as we enter a (q,w) data set.
+  
+  w    = getaxis(s, 1);
+  q    = getaxis(s, 2);
+  
   SE2V = 437.393377;        % Convert sqrt(E)[meV] to v[m/s]
   V2K  = 1.58825361e-3;     % Convert v[m/s] to k[1/AA]
   K2V  = 1/V2K;
   VS2E = 5.22703725e-6;     % Convert (v[m/s])**2 to E[meV]
+  Ki   = 2*pi/lambda;
+  Vi   = K2V*Ki;
+  Ei   = VS2E*Vi.^2;
   
-  if nargin < 2, Ei=[]; end
+  Ef   = Ei - w;
+  Vf   = sqrt(Ef/VS2E); Vf(Ef<=0) = nan;
+  Kf   = Vf/K2V;
+  St   = qw2qt(s, lambda);
+  set(St, 'Error',   0);
+  set(St, 'Monitor', 1); 
+  St   = St.*q./Kf;   % Schober Eq (9.294)
   
-  if ~isempty(Ei)
-    Ki = SE2V*V2K*sqrt(Ei);
-  else
-    Ki = Sqw_getT(s, {'wavevector','momentum','IncidentWavevector','Ki'});
-    if isempty(Ki) || Ki==0
-      lambda = Sqw_getT(s, {'wavelength','lambda'});
-      if ~isempty(lambda) && lambda>0
-        Ki = 2*pi/lambda;
-      else
-        Ei = Sqw_getT(s, {'IncidentEnergy','Ei'});
-        if isempty(Ei) || Ei<=0
-          w  = getaxis(s, 1);
-          Ei = max(abs(w(:)));
-          disp([ mfilename ': using Ei=' num2str(Ei) ' [meV] incident neutron energy.' ]);
-        end
-        Ki = SE2V*V2K*sqrt(Ei);
-      end
-    end
+  clear Ef Vf Kf
+  % re-sample histogram when axes are not vectors
+  hist_me = false;
+  for index=1:ndims(St)
+    x = getaxis(St, index);
+    if numel(x) ~= length(x), hist_me=true; break; end
   end
-
+  if hist_me
+    St   = hist(St, size(St));  % the data set is well covered here and interpolation works well.
+  end
+  St   = trapz(St, 2); % \int dq
     
+function spw = qDDCSKf(s, lambda)
+  % sinDDCSphi: compute the energy distribution of the sin theta weighted scattering cross section
+  %
+  %  The sin(theta) weighted double differential cross section is the input to
+  %  e.g. MUPHOCOR and Oskotskii formalism.
+  %
+  %  The calculation is:
+  %    \int sin(theta) DDCS(theta, w) d(theta)
+  %  = \int          q DDCS(q,w)      dq
+  %
+  % input:
+  %   s: DDCS (q,w) i.e. measurement (including symmetrize, Bosify and Kf/Ki factor)
+  %   lambda: wavelength(or 2.36 as default) [Angs]
+  %
+  % output:
+  %   Spw: \int sin(theta) DDCS(theta,w) d(w)
+  
+  if nargin < 2, lambda=2.36; end
+  
+  % data must be [\int sin(theta) S(theta,t) dtheta] that is start from time distribution
+  % but the computation in q is much faster as we enter a (q,w) data set.
+  
+  w    = getaxis(s, 1);
+  q    = getaxis(s, 2);
+  
+  SE2V = 437.393377;        % Convert sqrt(E)[meV] to v[m/s]
+  V2K  = 1.58825361e-3;     % Convert v[m/s] to k[1/AA]
+  K2V  = 1/V2K;
+  VS2E = 5.22703725e-6;     % Convert (v[m/s])**2 to E[meV]
+  Ki   = 2*pi/lambda;
+  Vi   = K2V*Ki;
+  Ei   = VS2E*Vi.^2;
+  
+  Ef   = Ei - w;
+  Vf   = sqrt(Ef/VS2E); Vf(Ef<=0) = nan;
+  Kf   = Vf/K2V;
+  spw  = copyobj(s);
+  set(spw, 'Error',   0);
+  set(spw, 'Monitor', 1); 
+  spw  = spw.*q./Kf;   % Schober Eq (9.294)
+  
+  clear Ef Vf Kf
+  % re-sample histogram when axes are not vectors
+  hist_me = false;
+  for index=1:ndims(spw)
+    x = getaxis(spw, index);
+    if numel(x) ~= length(x), hist_me=true; break; end
+  end
+  if hist_me
+    spw   = hist(spw, size(spw));  % the data set is well covered here and interpolation works well.
+  end
+  spw   = trapz(spw, 2); % \int dq
