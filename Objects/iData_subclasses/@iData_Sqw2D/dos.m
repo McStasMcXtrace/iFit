@@ -237,14 +237,78 @@ function g = sqw_phonon_dos_Bredov(s, T)
 %           M. M. Bredov et al., Sov. Phys. Solid State 9, 214 (1967).
 %
 % g(w) = Ei w./(n(w)+1)/(q_max^4-q_min^4) m/sigma exp(2*W) 
-%        * \int_{q_min -> q_max} q S(q,w) dq
+%        * \int_{q_min -> q_max} q / kf DDCS dq
+%
+%      = w./(n(w)+1)/(q_max^4-q_min^4) m/sigma exp(2*W) * \int_{q_min -> q_max} q S(q,w) dq
+
+% Schober (9.299) p 315
+%   \int sin(theta) DDCS d(theta) = sigma ki^2/m exp(-2W(q)) (q^4max-q^4min) g(w) (n+1)/w
+%   \int q/ki/kf    DDCS dq
+% and (usual Squires exp)
+%   DDCS(q,w) = d2sigma/dOmega/dEf = kf/ki sigma S(q,w)
+
+%   \int q/ki/kf kf/ki sigma S(q,w) dq = sigma ki^2/m exp(-2W(q)) (q^4max-q^4min) g(w) (n+1)/w
+%   \int q/ki^2 S(q,w) dq = ki^2/m exp(-2W(q)) (q^4max-q^4min) g(w) (n+1)/w
+% with fixed Ki:
+%   \int q S(q,w) dq = [ exp(-2W(q))/m (q^4max-q^4min)  (n+1)/w ] g(w)
+%
+% g(w) = \int q S(q,w) dq / [ exp(-2W(q))/m (q^4max-q^4min)  (n+1)/w ]
+%      = [\int q S(q,w) dq] exp(2W(q)) m / (q^4max-q^4min) * w/(1+n)
+%      ~ [\int q S(q,w) dq] exp(2W(q)) m w^2/(q^4max-q^4min)
+
+% w/(1+n) ~ w2 to avoid divergence
+
+  % get an estimate of corresponding incident energy
+  [s,lambda,distance,chwidth,Ei,Ki] = Sqw_search_lambda(s);
+  
+  % restrict s to a dynamic range (so that q4 corresponds with a simulated experiment)
+  s = dynamic_range(s, Ei);
+  
+  qSq = s.*q;
+  
+  % re-sample histogram when axes are not vectors
+  hist_me = false;
+  for index=1:ndims(qSq)
+    x = getaxis(qSq, index);
+    if numel(x) ~= length(x), hist_me=true; break; end
+  end
+  if hist_me
+    qSq   = hist(qSq, size(qSq));  % the data set is well covered here and interpolation works well.
+  end
+  
+  % axes
+  w = getaxis(qSq,1);
+  q = getaxis(qSq,2);
+  
+  % compute delta(Q4)
+  q4 = zeros(size(w));
+  sd = double(s);
+  for index=1:size(s, 1)
+    sw = sd(index,:); % slab for a given energy. length is 'q'
+    valid = find(sw(isfinite(sw) & sw > 0));
+    if isvector(q)
+      qw = q;
+    else
+      qw = q(index,:);
+    end
+    q_min = min(qw(valid)); q_max = max(qw(valid));
+    if isempty(q_max) || isempty(q_min)
+      q_max = nan; q_min = nan;
+    end
+    if isvector(q)
+      q4(index)   = q_max^4 - q_min^4;
+    else
+      q4(index,:) = q_max^4 - q_min^4;
+    end
+  end
+  
+  % g(w)
+  g = qSq.*(w.^2./q4);
 
   % get an estimate of corresponding incident energy
   [s,lambda,distance,chwidth,Ei,Ki] = Sqw_search_lambda(s)
 
-  % axes and Q4
-  hw = getaxis(s,1);
-  q  = getaxis(s,2); 
+   
 
   theta_max = 120;
   theta_min = 13;
