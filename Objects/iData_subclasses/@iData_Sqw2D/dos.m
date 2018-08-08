@@ -252,7 +252,7 @@ function g = sqw_phonon_dos_Bredov(s, T)
 % with fixed Ki:
 %   \int q S(q,w) dq = [ exp(-2W(q))/m (q^4max-q^4min)  (n+1)/w ] g(w)
 %
-% g(w) = \int q S(q,w) dq / [ exp(-2W(q))/m (q^4max-q^4min)  (n+1)/w ]
+% g(w) =  \int q S(q,w) dq / [ exp(-2W(q))/m (q^4max-q^4min)  (n+1)/w ]
 %      = [\int q S(q,w) dq] exp(2W(q)) m / (q^4max-q^4min) * w/(1+n)
 %      ~ [\int q S(q,w) dq] exp(2W(q)) m w^2/(q^4max-q^4min)
 
@@ -264,28 +264,29 @@ function g = sqw_phonon_dos_Bredov(s, T)
   % restrict s to a dynamic range (so that q4 corresponds with a simulated experiment)
   s = dynamic_range(s, Ei);
   
-  qSq = s.*q;
-  
   % re-sample histogram when axes are not vectors
   hist_me = false;
-  for index=1:ndims(qSq)
-    x = getaxis(qSq, index);
+  for index=1:ndims(s)
+    x = getaxis(s, index);
     if numel(x) ~= length(x), hist_me=true; break; end
   end
   if hist_me
-    qSq   = hist(qSq, size(qSq));  % the data set is well covered here and interpolation works well.
+    s   = hist(s, size(s));  % the data set is well covered here and interpolation works well.
   end
   
   % axes
-  w = getaxis(qSq,1);
-  q = getaxis(qSq,2);
+  w = getaxis(s,1);
+  q = getaxis(s,2);
+
+  qSq = s.*q;
   
-  % compute delta(Q4)
+  % compute delta(Q)
   q4 = zeros(size(w));
   sd = double(s);
+  qmax = []; qmin = [];
   for index=1:size(s, 1)
     sw = sd(index,:); % slab for a given energy. length is 'q'
-    valid = find(sw(isfinite(sw) & sw > 0));
+    valid = find(isfinite(sw) & sw > 0);
     if isvector(q)
       qw = q;
     else
@@ -293,36 +294,19 @@ function g = sqw_phonon_dos_Bredov(s, T)
     end
     q_min = min(qw(valid)); q_max = max(qw(valid));
     if isempty(q_max) || isempty(q_min)
-      q_max = nan; q_min = nan;
+      q_max = inf; q_min = 0;
     end
-    if isvector(q)
-      q4(index)   = q_max^4 - q_min^4;
-    else
-      q4(index,:) = q_max^4 - q_min^4;
-    end
+    qmax(end+1) = q_max;
+    qmin(end+1) = q_min;
   end
-  
-  % g(w)
-  g = qSq.*(w.^2./q4);
+  qmax = qmax(:); qmin = qmin(:);
+  index = find(abs(qmax - qmin) < .1);
+  qmax(index) = qmin(index) + 0.1;
 
-  % get an estimate of corresponding incident energy
-  [s,lambda,distance,chwidth,Ei,Ki] = Sqw_search_lambda(s)
-
-   
-
-  theta_max = 120;
-  theta_min = 13;
-  q4 =(2*Ei-hw-2*sqrt(Ei*abs(Ei-hw))*cos(theta_max*pi/180)).^2 ...
-    - (2*Ei-hw-2*sqrt(Ei*abs(Ei-hw))*cos(theta_min*pi/180)).^2;
-  q4 = q4/2.072/2.072;
-  
-  % we compute the integral of qS(q,w)
-  g = q.*s;
-  g = trapz(g, 2);    % integral over q
-  beta    = 11.605*hw/T;
+  beta    = -11.605*w/T;
   n = 1./(exp(beta) - 1);
   n(~isfinite(n)) = 0;
-  g = hw./(n+1)./q4.*g;
+  g = trapz(q.*s,2).*abs(w./(n+1)./(qmax.^4 - qmin.^4));
   
 function q4 = getQ4(s, q, w)
   % getQ4: compute Q4max - Q4min
