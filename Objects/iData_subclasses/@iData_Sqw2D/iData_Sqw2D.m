@@ -381,7 +381,7 @@ classdef iData_Sqw2D < iData
           classical = get(s,'classical');
         else classical = false;
         end
-        if ~isempty(classical) && classical
+        if ~isempty(classical) && classical(1)
           s = Bosify(s);
         end
       end

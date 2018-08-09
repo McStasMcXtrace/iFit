@@ -111,7 +111,7 @@ function sigma = scattering_cross_section(s, Ei, M)
     end
   end
   
-  if classical == 1
+  if classical(1) == 1
     disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' seems to be "classical". You should apply s=Bosify(s, temperature) before.' ]);
   end
   

@@ -65,10 +65,11 @@ function sab = Sqw2Sab(s, M, T)
   
   % test if classical
   if isfield(s,'classical') || ~isempty(findfield(s, 'classical'))
-    if get(s,'classical') == 0
-      fprintf(1, '%s: WARNING: %s: Data set is experimental/quantum (contains Bose factor/detailed balance).\n    You may use deBosify(s) to obtain the classical/symmetric representation\n', mfilename, s.Title);
-      % s = deBosify(s, T); % make it classical/symmetric
-    end
+    classical = get(s0,'classical');
+  else classical = []; end
+  if ~isempty(classical) && classical(1) == 0
+    fprintf(1, '%s: WARNING: %s: Data set is experimental/quantum (contains Bose factor/detailed balance).\n    You may use deBosify(s) to obtain the classical/symmetric representation\n', mfilename, s.Title);
+    % s = deBosify(s, T); % make it classical/symmetric
   end
   
   E = getaxis(s,1); 
@@ -122,10 +123,10 @@ function sab = Sqw2Sab(s, M, T)
   sab.Title = s.Title;
   setalias(sab,'Temperature',T, '[K] Temperature');
   setalias(sab,'weight',     M, '[g/mol] Material molar weight');
-  if ~isfield(s,'classical')
+  if ~isfield(s,'classical')  || (~isempty(classical) && classical(1) == 1)
     setalias(sab,'classical',  1, '[0=from measurement, with Bose factor included, 1=from MD, symmetric]');
   else
-    setalias(sab,'classical',  get(s,'classical'), '[0=from measurement, with Bose factor included, 1=from MD, symmetric]');
+    setalias(sab,'classical',  classical(1), '[0=from measurement, with Bose factor included, 1=from MD, symmetric]');
   end
   
   sab = transpose(sab);

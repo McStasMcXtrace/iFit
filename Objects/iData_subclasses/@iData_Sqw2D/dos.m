@@ -94,9 +94,9 @@ function [DOS, g, fig] = dos(s, method, n)
     % do the computation
     % test if classical
     if isfield(s,'classical') || ~isempty(findfield(s, 'classical'))
-      if get(s,'classical')
-        disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ])
-        disp('  seems to be classical. The DOS computation may be wrong.');
+      classical = get(s,'classical');
+      if classical(1) && strcmp(lower(method), 'carpenter')
+        method = 'Bellissent';  % do not use Bose/temp on classical
       end
     end
     
@@ -106,7 +106,7 @@ function [DOS, g, fig] = dos(s, method, n)
     w= getaxis(s,1);
     
     T = Sqw_getT(s);
-    if isempty(T) && isempty(strfind(method, 'Bellissent'))
+    if isempty(T) && isempty(strfind(method, 'Bellissent')) && isempty(strfind(method, 'Bredov'))
       disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source  ])
       disp(['    has no Temperature defined. Using method=''Bellissent'' as it does not require it.' ])
       method = 'Bellissent';
@@ -116,7 +116,7 @@ function [DOS, g, fig] = dos(s, method, n)
     case {'carpenter','price'}          
       g = sqw_phonon_dos_Carpenter(s, T);  % requires Temperature 
     case {'bredov','oskotskii'}
-      g = sqw_phonon_dos_Bredov(s, T);     % requires Temperature
+      [g,w] = sqw_phonon_dos_Bredov(s, T);     % requires Temperature
       n = inf;                             % we use all the data.
     otherwise % 'bellissent'
       method = 'Bellissent';
@@ -141,7 +141,7 @@ function [DOS, g, fig] = dos(s, method, n)
     s0  = subsref(g,struct('type','.','subs','Signal'));
     DOS = zeros(size(s0,1),1);  % column of g(w) DOS for q->0
     
-    if ~isfinite(n) || n<=0
+    if ~isfinite(n) || n<=0       % Bredov case
       DOS = sum(s0,2);
     else
       nc  = min(n,size(s0,2));    % get the first n=10 values for each energy transfer
@@ -152,11 +152,11 @@ function [DOS, g, fig] = dos(s, method, n)
         end
       end
     end
-    DOS=DOS./sum(DOS);
+    DOS=DOS./sum(DOS);        % normalise to 1
     if isvector(w)
       DOS=iData(w,DOS);
     else
-      DOS=iData(w(1,:),DOS);  %^ from meshgrid
+      DOS=iData(w(1,:),DOS);  % from meshgrid
     end
     set(DOS,'Error',0);
     DOS.Title = [ 'DOS(' s.Title ') ' method ];
@@ -220,6 +220,7 @@ function g = sqw_phonon_dos_Carpenter(s, T)
   g       = abs(hw./(n+1)).*s./q.^2;
   set(g,'Error', get(s,'Error')./get(s,'Signal').*get(g,'Signal'));
   
+% ------------------------------------------------------------------------------
 function g = sqw_phonon_dos_Bellissent(s)
 % See e.g.: Bellissent-Funel et al, J. Mol. Struct. 250 (1991) 213
 %
@@ -232,7 +233,8 @@ function g = sqw_phonon_dos_Bellissent(s)
   g = s.*hw.^2./q.^2;
   set(g,'Error', get(s,'Error')./get(s,'Signal').*get(g,'Signal'));
 
-function g = sqw_phonon_dos_Bredov(s, T)
+% ------------------------------------------------------------------------------
+function [g, w] = sqw_phonon_dos_Bredov(s, T)
 % See e.g.: Suck et al, Journal of Alloys and Compounds 342 (2002) 314
 %           M. M. Bredov et al., Sov. Phys. Solid State 9, 214 (1967).
 %
@@ -241,16 +243,16 @@ function g = sqw_phonon_dos_Bredov(s, T)
 %
 %      = w./(n(w)+1)/(q_max^4-q_min^4) m/sigma exp(2*W) * \int_{q_min -> q_max} q S(q,w) dq
 
-% Schober (9.299) p 315
+% Schober (9.299) p 315. See also (10.96)
 %   \int sin(theta) DDCS d(theta) = sigma ki^2/m exp(-2W(q)) (q^4max-q^4min) g(w) (n+1)/w
 %   \int q/ki/kf    DDCS dq
 % and (usual Squires exp)
 %   DDCS(q,w) = d2sigma/dOmega/dEf = kf/ki sigma S(q,w)
 
 %   \int q/ki/kf kf/ki sigma S(q,w) dq = sigma ki^2/m exp(-2W(q)) (q^4max-q^4min) g(w) (n+1)/w
-%   \int q/ki^2 S(q,w) dq = ki^2/m exp(-2W(q)) (q^4max-q^4min) g(w) (n+1)/w
+%   \int q/ki^2 S(q,w) dq              =       ki^2/m exp(-2W(q)) (q^4max-q^4min) g(w) (n+1)/w
 % with fixed Ki:
-%   \int q S(q,w) dq = [ exp(-2W(q))/m (q^4max-q^4min)  (n+1)/w ] g(w)
+%   \int q S(q,w) dq                   = [ exp(-2W(q))/m (q^4max-q^4min)  (n+1)/w ] g(w)
 %
 % g(w) =  \int q S(q,w) dq / [ exp(-2W(q))/m (q^4max-q^4min)  (n+1)/w ]
 %      = [\int q S(q,w) dq] exp(2W(q)) m / (q^4max-q^4min) * w/(1+n)
@@ -258,10 +260,15 @@ function g = sqw_phonon_dos_Bredov(s, T)
 
 % w/(1+n) ~ w2 to avoid divergence
 
+  if isfield(s,'classical') || ~isempty(findfield(s, 'classical'))
+    classical = get(s,'classical');
+  else classical = [];
+  end
+
   % get an estimate of corresponding incident energy
   [s,lambda,distance,chwidth,Ei,Ki] = Sqw_search_lambda(s);
   
-  % restrict s to a dynamic range (so that q4 corresponds with a simulated experiment)
+  % restrict s to a dynamic range (so that q4 corresponds with a 'simulated' experiment)
   s = dynamic_range(s, Ei);
   
   % re-sample histogram when axes are not vectors
@@ -277,8 +284,9 @@ function g = sqw_phonon_dos_Bredov(s, T)
   % axes
   w = getaxis(s,1);
   q = getaxis(s,2);
-
-  qSq = s.*q;
+  
+  qSq = q.*s;
+  
   
   % compute delta(Q)
   q4 = zeros(size(w));
@@ -303,144 +311,16 @@ function g = sqw_phonon_dos_Bredov(s, T)
   index = find(abs(qmax - qmin) < .1);
   qmax(index) = qmin(index) + 0.1;
 
-  beta    = -11.605*w/T;
-  n = 1./(exp(beta) - 1);
-  n(~isfinite(n)) = 0;
-  g = trapz(q.*s,2).*abs(w./(n+1)./(qmax.^4 - qmin.^4));
-  
-function q4 = getQ4(s, q, w)
-  % getQ4: compute Q4max - Q4min
+  % compute the dos
+  g = [];
+  if ~isempty(classical) && classical(1) % do not use Temperature
+    % g(w) = [\int q S(q,w) dq] exp(2W(q)) m / (q^4max-q^4min) * w.^2
+    g = trapz(qSq,2).*abs(w.^2./(qmax.^4 - qmin.^4));
+  else    % use Bose/Temperature (in quantum case)
+    beta    = 11.605*w/T;
+    n = 1./(exp(beta) - 1);
+    n(~isfinite(n)) = 0;
+    % g(w) = [\int q S(q,w) dq] exp(2W(q)) m / (q^4max-q^4min) * w/(1+n)
+    g = trapz(qSq,2).*abs(w./(n+1)./(qmax.^4 - qmin.^4));
+  end
 
-  % for each energy, we get the min and max which could be measured
-  % requires to know the incident energy, but as we normalise g to 1, this is not important
-  
-  q4= zeros(size(w));
-  s = double(s);
-  for index=1:size(s, 1)
-    sw = s(index,:); % slab for a given energy. length is 'q'
-    valid = find(sw(isfinite(sw) & sw > 0));
-    if isvector(q)
-      qw = q;
-    else
-      qw = q(index,:);
-    end
-    q_min = min(qw(valid)); q_max = max(qw(valid));
-    if isempty(q_max) || isempty(q_min)
-      q_max = nan; q_min = nan;
-    end
-    if isvector(q)
-      q4(index)   = q_max^4 - q_min^4;
-    else
-      q4(index,:) = q_max^4 - q_min^4;
-    end
-  end
-  
-function St = sinDDCSphi(s, lambda)
-  % sinDDCSphi: compute the time distribution of the sin theta weighted scattering cross section
-  %
-  %  The sin(theta) weighted double differential cross section is the input to
-  %  e.g. MUPHOCOR and Oskotskii formalism.
-  %
-  %  The calculation is:
-  %    \int sin(theta) DDCS(theta, tof) d(theta)
-  %  = \int          q DDCS(q,tof)      dq
-  %
-  % input:
-  %   s: DDCS (q,w) i.e. measurement (including symmetrize, Bosify)
-  %   lambda: wavelength(or 2.36 as default) [Angs]
-  %
-  % output:
-  %   St: \int sin(theta) DDCS(theta,tof) d(theta)
-  %
-  % Example:
-  %   s =iData_Sqw2D('D2O_liq_290_coh.sqw.zip'); s=Sqw2ddcs(Bosify(symmetrize(s)));
-  %   st=sinDDCSphi(s);
-  
-  if nargin < 2, lambda=2.36; end
-  
-  % data must be [\int sin(theta) S(theta,t) dtheta] that is start from time distribution
-  % but the computation in q is much faster as we enter a (q,w) data set.
-  
-  w    = getaxis(s, 1);
-  q    = getaxis(s, 2);
-  
-  SE2V = 437.393377;        % Convert sqrt(E)[meV] to v[m/s]
-  V2K  = 1.58825361e-3;     % Convert v[m/s] to k[1/AA]
-  K2V  = 1/V2K;
-  VS2E = 5.22703725e-6;     % Convert (v[m/s])**2 to E[meV]
-  Ki   = 2*pi/lambda;
-  Vi   = K2V*Ki;
-  Ei   = VS2E*Vi.^2;
-  
-  Ef   = Ei - w;
-  Vf   = sqrt(Ef/VS2E); Vf(Ef<=0) = nan;
-  Kf   = Vf/K2V;
-  St   = qw2qt(s, lambda);
-  set(St, 'Error',   0);
-  set(St, 'Monitor', 1); 
-  St   = St.*q./Kf;   % Schober Eq (9.294)
-  
-  clear Ef Vf Kf
-  % re-sample histogram when axes are not vectors
-  hist_me = false;
-  for index=1:ndims(St)
-    x = getaxis(St, index);
-    if numel(x) ~= length(x), hist_me=true; break; end
-  end
-  if hist_me
-    St   = hist(St, size(St));  % the data set is well covered here and interpolation works well.
-  end
-  St   = trapz(St, 2); % \int dq
-    
-function spw = qDDCSKf(s, lambda)
-  % sinDDCSphi: compute the energy distribution of the sin theta weighted scattering cross section
-  %
-  %  The sin(theta) weighted double differential cross section is the input to
-  %  e.g. MUPHOCOR and Oskotskii formalism.
-  %
-  %  The calculation is:
-  %    \int sin(theta) DDCS(theta, w) d(theta)
-  %  = \int          q DDCS(q,w)      dq
-  %
-  % input:
-  %   s: DDCS (q,w) i.e. measurement (including symmetrize, Bosify and Kf/Ki factor)
-  %   lambda: wavelength(or 2.36 as default) [Angs]
-  %
-  % output:
-  %   Spw: \int sin(theta) DDCS(theta,w) d(w)
-  
-  if nargin < 2, lambda=2.36; end
-  
-  % data must be [\int sin(theta) S(theta,t) dtheta] that is start from time distribution
-  % but the computation in q is much faster as we enter a (q,w) data set.
-  
-  w    = getaxis(s, 1);
-  q    = getaxis(s, 2);
-  
-  SE2V = 437.393377;        % Convert sqrt(E)[meV] to v[m/s]
-  V2K  = 1.58825361e-3;     % Convert v[m/s] to k[1/AA]
-  K2V  = 1/V2K;
-  VS2E = 5.22703725e-6;     % Convert (v[m/s])**2 to E[meV]
-  Ki   = 2*pi/lambda;
-  Vi   = K2V*Ki;
-  Ei   = VS2E*Vi.^2;
-  
-  Ef   = Ei - w;
-  Vf   = sqrt(Ef/VS2E); Vf(Ef<=0) = nan;
-  Kf   = Vf/K2V;
-  spw  = copyobj(s);
-  set(spw, 'Error',   0);
-  set(spw, 'Monitor', 1); 
-  spw  = spw.*q./Kf;   % Schober Eq (9.294)
-  
-  clear Ef Vf Kf
-  % re-sample histogram when axes are not vectors
-  hist_me = false;
-  for index=1:ndims(spw)
-    x = getaxis(spw, index);
-    if numel(x) ~= length(x), hist_me=true; break; end
-  end
-  if hist_me
-    spw   = hist(spw, size(spw));  % the data set is well covered here and interpolation works well.
-  end
-  spw   = trapz(spw, 2); % \int dq

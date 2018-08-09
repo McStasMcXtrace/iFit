@@ -45,7 +45,8 @@ function s=Sqw_symmetrize(s)
 
   % test if classical
   if isfield(s,'classical') || ~isempty(findfield(s, 'classical'))
-    if get(s,'classical') == 0
+    classical = get(s,'classical');
+    if ~isempty(classical) && classical(1) == 0
       disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' does NOT seem to be classical.']);
       disp([ mfilename ':   It may already contain the Bose factor in which case the symmetrisation will be wrong.' ]);
     end

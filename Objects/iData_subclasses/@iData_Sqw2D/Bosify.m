@@ -103,10 +103,11 @@ function s = Bosify(s0, T, type)
   if isfield(s0,'classical') || ~isempty(findfield(s0, 'classical'))
     % Bosify   must be applied on classical
     % deBosify must be applied on quantum
-    if (get(s0,'classical') == 0 && do_bosify)
+    classical = get(s0,'classical');
+    if (~isempty(classical) && classical(1) == 0 && do_bosify)
       disp([ mfilename ': WARNING: Not "classical/symmetric": The data set ' s.Tag ' ' s.Title ' from ' s.Source ' does not seem to be classical (classical=0).' ]);
       disp([ mfilename ':   It may ALREADY contain the Bose factor in which case the detailed balance will be wrong.' ]);
-    elseif (get(s0,'classical') == 1 && ~do_bosify)
+    elseif (~isempty(classical) && classical(1) == 1 && ~do_bosify)
       disp([ 'de' mfilename ': WARNING: Not "quantum": The data set ' s.Tag ' ' s.Title ' from ' s.Source ' seems to be classical/symmetric (classical=1).' ]);
       disp([ 'de' mfilename ':   The Bose factor may NOT NEED to be removed in which case the detailed balance will be wrong.' ]);
     end
@@ -136,7 +137,7 @@ function s = Bosify(s0, T, type)
     % J. S. Bader and B. J. Berne. J. Chem. Phys., 100, 8359 (1994).
     % T. D. Hone and G. A. Voth. J. Chem. Phys., 121, 6412 (2004).
     Q  = hw_kT./(1-exp(-hw_kT));  % w*(1+n(w))
-  elseif strcmpi(type, 'Standard') || strcmpi(type, 'Frommhold')
+  elseif strcmpi(type, 'Standard') || strcmpi(type, 'Frommhold') || strcmpi(type, 'default')
     % L. Frommhold. Collision-induced absorption in gases, 1 st ed., Cambridge
     %   Monographs on Atomic, Molecular, and Chemical Physics, Vol. 2,
     %   Cambridge Univ. Press: London (1993).

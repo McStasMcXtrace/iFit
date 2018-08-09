@@ -136,6 +136,7 @@ function s = Sqw_check(s, mode)
     setalias(s,'classical', ~get(s,'LASYM'));
     classical0  = get(s,'classical');
   end
+  if numel(classical0) > 1, classical0=classical0(1); end
   
   w  = getaxis(s,1);
   % checks that we have 0<w<Ei for Stokes, and w<0 can be lower (anti-Stokes)
@@ -204,6 +205,11 @@ function s = Sqw_check(s, mode)
     end
     
   end % energy axis has +/- 
+  
+  if isfield(s,'classical') 
+    classical = get(s,'classical');
+    if numel(classical) > 1, s = setalias(s, 'classical', classical(1)); end
+  end
 
 % ------------------------------------------------------------------------------
 function flag=strcmpm(str, words)
