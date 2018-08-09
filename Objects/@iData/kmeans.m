@@ -3,23 +3,38 @@ function [s,c] = kmeans(a, k, method)
 %
 %   @iData/kmeans function to partition the object X into k classes.
 %
-%   b = kmeans(a,k) partitions the points in the iData object X into k clusters.
+%   b = kmeans(X,k) partitions the Signal in the iData object X into k clusters.
 %     The resulting object Signal contains numbers from 1 to 'k' which are indices
 %     of segments/partitions.
 %     When no cluster can be found, the result is empty.
-%   b = kmeans(a) assumes k=2 partitions
-%   [b,c] = kmeans(a,k) also returns the centroid of the clusters/partitions/segments.
+%   b = kmeans(X)   assumes k=2 partitions
+%
+%   [b,c] = kmeans(X,k) also returns the centroid of the clusters/partitions/segments.
+%
+%   b = kmeans(X, k, 'otsu')
+%     uses the Otsu method, for 2D data sets
+%   b = kmeans(X, k, 'kmeans++')
+%     uses the K-means++ method, for 2D data sets
 %
 % input:  X: object or array (iData)
 %         k: number of partitions wanted (integer, default is 2)
 %         method: '' for default, 'otsu' for Otsu method (only for 2D images).
 % output: b: object or array with partition indices (iData)
 %         c: centroid locations of clusters
-% ex:     b=kmeans(a);
+% ex:     a=iData(peaks); b=kmeans(a);
 %
-% See: http://en.wikipedia.org/wiki/K-means_clustering
+% See: https://en.wikipedia.org/wiki/K-means_clustering
+% See: https://en.wikipedia.org/wiki/K-means%2B%2B
 % See: https://en.wikipedia.org/wiki/Otsu%27s_method
-% Reference: Otsu N., A threshold selection method from gray-level histogram, IEEE Trans. Syst. Man Cybern. 9:62-66;1979
+%
+% References:
+%   Otsu N., A threshold selection method from gray-level histogram, IEEE Trans. Syst. Man Cybern. 9:62-66;1979
+%   [1] J. B. MacQueen, "Some Methods for Classification and Analysis of 
+%       MultiVariate Observations", in Proc. of the fifth Berkeley
+%       Symposium on Mathematical Statistics and Probability, L. M. L. Cam
+%       and J. Neyman, eds., vol. 1, UC Press, 1967, pp. 281-297.
+%   [2] D. Arthur and S. Vassilvitskii, "k-means++: The Advantages of
+%       Careful Seeding", Technical Report 2006-13, Stanford InfoLab, 2006.
 %
 % Version: $Date$
 % See also iData, iData/uminus, iData/abs, iData/real, iData/imag, iData/uplus
@@ -56,6 +71,9 @@ end
 
 if strcmpi(method,'otsu') && ndims(X) == 2
   X = otsu(X,k);      % see inline private below
+elseif strcmpi(method, 'kmeans++')
+  X = kmeanspp(S(:)',k);
+  X = reshape(X, size(S));
 else
   X = FastCMeans(X, k);
 end
@@ -68,13 +86,13 @@ if ndims(X) == 3
   end
 end
 
-if all(X == 0)  % no cluster found
+if isempty(X) || all(X == 0)  % no cluster found
   return
 end
 
 % create the final object
 s=copyobj(a); 
-s=iData_private_history(s, mfilename, a, k);
+s=iData_private_history(s, mfilename, a, k, method);
 
 s=set(s, 'Signal', X, 'Error', 0);
 s=label(s, 0, 'Clusters/partitions');
@@ -93,6 +111,51 @@ end
 
 end % function
 
+% ------------------------------------------------------------------------------
+
+function [L,C] = kmeanspp(X,k)
+%KMEANS Cluster multivariate data using the k-means++ algorithm.
+%   [L,C] = kmeans(X,k) produces a 1-by-size(X,2) vector L with one class
+%   label per column in X and a size(X,1)-by-k matrix C containing the
+%   centers corresponding to each class.
+
+%   Version: 2013-02-08
+%   Authors: Laurent Sorber (Laurent.Sorber@cs.kuleuven.be)
+%
+%   References:
+%   [1] J. B. MacQueen, "Some Methods for Classification and Analysis of 
+%       MultiVariate Observations", in Proc. of the fifth Berkeley
+%       Symposium on Mathematical Statistics and Probability, L. M. L. Cam
+%       and J. Neyman, eds., vol. 1, UC Press, 1967, pp. 281-297.
+%   [2] D. Arthur and S. Vassilvitskii, "k-means++: The Advantages of
+%       Careful Seeding", Technical Report 2006-13, Stanford InfoLab, 2006.
+
+L = [];
+L1 = 0;
+
+while length(unique(L)) ~= k
+    
+    % The k-means++ initialization.
+    C = X(:,1+round(rand*(size(X,2)-1)));
+    L = ones(1,size(X,2));
+    for i = 2:k
+        D = X-C(:,L);
+        D = cumsum(sqrt(dot(D,D,1)));
+        if D(end) == 0, C(:,i:k) = X(:,ones(1,k-i+1)); return; end
+        C(:,i) = X(:,find(rand < D/D(end),1));
+        [~,L] = max(bsxfun(@minus,2*real(C'*X),dot(C,C,1).'));
+    end
+    
+    % The k-means algorithm.
+    while any(L ~= L1)
+        L1 = L;
+        for i = 1:k, l = L==i; C(:,i) = sum(X(:,l),2)/sum(l); end
+        [~,L] = max(bsxfun(@minus,2*real(C'*X),dot(C,C,1).'),[],1);
+    end
+    
+end
+end % kmeans function
+ 
 % ------------------------------------------------------------------------------
 
 function [IDX,sep] = otsu(I,n)
