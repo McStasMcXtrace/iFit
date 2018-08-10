@@ -309,7 +309,7 @@ function [s, parameters] = Sqw_parameters_chemicalformula(s, parameters)
          end
       end
     catch ME
-      disp([ mfilename ': invalid ChemicalFormula "' parameters.ChemicalFormula '" removed.' ]);
+      % disp([ mfilename ': invalid ChemicalFormula "' parameters.ChemicalFormula '" removed.' ]);
       parameters = rmfield(parameters, 'ChemicalFormula');
     end
   end
