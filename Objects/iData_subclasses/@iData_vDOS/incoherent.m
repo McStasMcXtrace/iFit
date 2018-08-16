@@ -1,4 +1,4 @@
-function [Sqw, Iqt, Wq, Tall] = incoherent(gw, q, T, sigma, m, n)
+function [Sqw, Iqt, Wq, Tall] = incoherent(gw, varargin)
 % iData_vDOS: incoherent: compute the incoherent gaussian approximation scattering law S(q,w) from an initial density of states vDOS
 %
 % The input argument 'gw' should be a vibrational density of states (vDOS) as
@@ -8,16 +8,16 @@ function [Sqw, Iqt, Wq, Tall] = incoherent(gw, q, T, sigma, m, n)
 %
 % The result is the dynamic structure factor (scattering law) for neutrons, in
 %   in the incoherent gaussian approximation. The corresponding intermediate 
-%   scattering function is also returned. The generalised density of states is
-%   defined from \int q.S(q,w) /Ki/Kf dq
+%   scattering function is also returned.
 %
 % Missing arguments (or given as [] empty), are searched within the initial density 
-%   of states object.
+%   of states object. Input arguments can be given in order, or with name-value 
+%   pairs, or as a structure with named fields.
 %
 % This implementation is in principle exact for an isotropic monoatomic material,
 %   e.g. a liquid, powder, or cubic crystal. 
 % This methodology is equivalent to the LEAPR module of NJOY ("phonon expansion")
-% to compute S(alpha,beta) from a vibrational density of states.
+%   to compute S(alpha,beta) from a vibrational density of states.
 %
 % For a poly-atomic material with a set of non-equivalent atoms with relative 
 %   concentration Ci, mass Mi and bound scattering cross section sigma_i, 
@@ -33,13 +33,14 @@ function [Sqw, Iqt, Wq, Tall] = incoherent(gw, q, T, sigma, m, n)
 %
 % Reference:
 %   H. Schober, Journal of Neutron Research 17 (2014) 109–357
-%     DOI 10.3233/JNR-140016 (see esp. pages 328-331)
+%     DOI 10.3233/JNR-140016 (see espars. pages 328-331)
 %   V.S. Oskotskii, Sov. Phys. Solid State 9 (1967), 420.
 %   A. Sjolander, Arkiv for Fysik 14 (1958), 315.
 %
 % syntax:
 %   [Sqw, Iqt, Wq, Tall] = incoherent(gw)
 %   [Sqw, Iqt, Wq, Tall] = incoherent(gw, q, T, sigma, m, n)
+%   [Sqw, Iqt, Wq, Tall] = incoherent(gw, 'q', q, 'T', T, 'sigma', sigma, 'm', m, 'n', n)
 %
 % input:
 %   gw: the vibrational density of states per [meV] [iData]
@@ -65,33 +66,31 @@ function [Sqw, Iqt, Wq, Tall] = incoherent(gw, q, T, sigma, m, n)
 % (c) E.Farhi, ILL. License: EUPL.
 
 
-  % check input parameters
-  if nargin < 2, q    =[]; end
-  if nargin < 3, T    =[]; end
-  if nargin < 4, sigma=[]; end
-  if nargin < 5, m    =[]; end
-  if nargin < 6, n    =[]; end
+  pars = varargin2struct({'q' 'T' 'sigma' 'm' 'n' 'DW'}, varargin, true);
+  
+  if isfield(pars, 'gamma') pars.dw = pars.gamma; end
+  if isfield(pars, 'u2')    pars.dw = pars.u2; end
   
   % search in the vDOS data set in case missing properties are stored there
   % q, T, mass, sigma
-  if isempty(q)
+  if isempty(pars.q)
     hw = max(abs(getaxis(gw,1)));
-    q  = linspace(0, sqrt(hw), 100);
+    pars.q  = linspace(0, sqrt(hw), 100);
   end
-  if isempty(T) || T<=0
-    T = Sqw_getT(gw);
+  if isempty(pars.t) || pars.t<=0
+    pars.t = Sqw_getT(gw);
   end
-  if isempty(m) || m<=0
-    m = Sqw_getT(gw, {'Masses','Molar_mass','Mass','Weight'});
+  if isempty(pars.m) || pars.m<=0
+    pars.m = Sqw_getT(gw, {'Masses','Molar_mass','Mass','Weight'});
   end
-  if isempty(sigma) || all(sigma<=0)
-    sigma = Sqw_getT(gw, {'sigma_coh','sigma_inc','sigma'});
+  if isempty(pars.sigma) || all(pars.sigma<=0)
+    pars.sigma = Sqw_getT(gw, {'sigma_coh','sigma_inc','sigma'});
   end
   % fail when missing information
-  if isempty(m) || m<=0     error([ mfilename ': Unspecified molar mass (m). Use incoherent(g, q, T, sigma, m)' ]); end
-  if isempty(T) || T<=0    error([ mfilename ': Unspecified temperature (T). Use incoherent(gw, q, T).' ]); end
-  if isempty(sigma) disp([ mfilename ': WARNING: Unspecified scattering cross section (sigma). Using sigma=1 barn. Scale result accordingly.' ]); sigma = 1; end
-  if isempty(n), n=5; end
+  if isempty(pars.m) || pars.m<=0     error([ mfilename ': Unspecified molar mass (m). Use incoherent(g, q, T, sigma, m)' ]); end
+  if isempty(pars.t) || pars.t<=0    error([ mfilename ': Unspecified temperature (T). Use incoherent(gw, q, T).' ]); end
+  if isempty(pars.sigma) disp([ mfilename ': WARNING: Unspecified scattering cross section (sigma). Using sigma=1 barn. Scale result accordingly.' ]); pars.sigma = 1; end
+  if isempty(pars.n), pars.n=5; end
   
   % conversion factors
   mn      = 1.674927471E-027; % neutron mass [kg]
@@ -116,10 +115,10 @@ function [Sqw, Iqt, Wq, Tall] = incoherent(gw, q, T, sigma, m, n)
   delta = iData(hw, delta);             % make it an iData for easier handling
 
   % compute the Debye-Waller function W(q) = <u2>/2. Schober p 328 -------------
-  kT = T/meVtoK;                        % T [K] -> [meV] = 11.6045
+  kT = pars.t/meVtoK;                        % T [K] -> [meV] = 11.6045
   
   % f(0) is an inverse energy. integrate -inf:inf
-  % f(0)=\int(dw g(w)/w [n(w)+1]) Eq (10.58)
+  % f(0)=\int(dw g(w)/w [pars.n(w)+1]) Eq (10.58)
   nw = 1./(exp(hw./kT) -1);             % Bose population factor
   % compute the T1 term
   T1 = gw./hw.*(nw+1);                  % Eq. (10.68) p 329
@@ -127,29 +126,36 @@ function [Sqw, Iqt, Wq, Tall] = incoherent(gw, q, T, sigma, m, n)
   S.subs={ ~isfinite(T1) };
   T1 = subsasgn(T1, S, 0);
   f0 = trapz(T1);
+  if ~isempty(pars.dw) && pars.dw > 0
+    % we use a specified DW 'gamma' value
+    T1 = T1/f0;
+    f0 = pars.dw/(q2toE/4/pars.m)/2;  % new DW factor sets f0=trapz(T1)
+    T1 = T1*f0;
+  end
   disp([ mfilename ': 1/f(0)=' num2str(1/f0) ' [meV]' ]);
 
   % Debye-Waller coefficient, aka gamma=2W/q^2
-  W  = (q2toE/4/m*f0);                  % W = <u2> in Angs^2. integrate 0:inf
-  Wq = W.*(q.^2);                       % Eq (10.61), here W(q), not 2W(q). Unit-less
+  W  = (q2toE/4/pars.m*f0);                  % W = <u2> in Angs^2. integrate 0:inf
+  Wq = W.*(pars.q.^2);                       % Eq (10.61), here W(q), not 2W(q). Unit-less
   gamma = 2*W;
-  disp([ mfilename ': Debye-Waller coefficient gamma      =' num2str(2*W) ...
+  disp([ mfilename ': Debye-Waller coefficient gamma=<u^2>=' num2str(2*W) ...
     ' [Angs^2]. Debye-Waller function is 2W(q)=gamma*q^2' ]);
+  % gamma=0.00677 Angs^2 for Vanadium (Skold PRA 1972)
   disp([ mfilename ': Debye-Waller factor      exp(-2W(q))=[max mean min]=' ...
     mat2str([max(exp(-2*Wq)) mean(exp(-2*Wq)) min(exp(-2*Wq))],2) ...
-    ' on q=[0:' num2str(max(q)) '] [Angs-1]' ]);
+    ' on q=[0:' num2str(max(pars.q)) '] [Angs-1]' ]);
   
-  Wq = iData(q, Wq);                    % make it an iData for easier handling
+  Wq = iData(pars.q, Wq);                    % make it an iData for easier handling
   
   % W(q) =<(Q.u)^2> is unit less. <u2>=0.25 in deuterium
   % exp(-2W) is the Debye-Waller factor, unit-less
 
   % determine the S(q,w) p=0 term in [q,w] space -------------------------------
-  Sqw      = (sigma/4/pi)*exp(-2*Wq').*delta';   % eq (10.64) elast.
+  Sqw      = (pars.sigma/4/pi)*exp(-2*Wq').*delta';   % eq (10.64) elast.
   Sqw      = Sqw';
-  setalias(Sqw, 'Temperature', T, 'Temperature [K]');
-  setalias(Sqw, 'Weight',      m, 'Molar masses [g/mol]');
-  setalias(Sqw, 'Sigma',   sigma, 'Neutron scattering cross section [barns]');
+  setalias(Sqw, 'Temperature', pars.t, 'Temperature [K]');
+  setalias(Sqw, 'Weight',      pars.m, 'Molar masses [g/mol]');
+  setalias(Sqw, 'Sigma',   pars.sigma, 'Neutron scattering cross section [barns]');
   Sqw.Title= [ 'Elastic scattering function S(q,w) [p=0] from ' titl ];
   title(Sqw, [ 'S(q,w) [p=0] from ' titl ]);
   Sqw.Label= [ 'S(q,w) [p=0]' ];
@@ -171,27 +177,27 @@ function [Sqw, Iqt, Wq, Tall] = incoherent(gw, q, T, sigma, m, n)
     one    = ones(size(ft')); 
     one    = iData(getaxis(ft,1), one);             % make it an iData for easier handling
     xlabel(one, 'time [s]');
-    Iqt    = sigma/4/pi*exp(-2*Wq').*one;
+    Iqt    = pars.sigma/4/pi*exp(-2*Wq').*one;
     Iqt    = Iqt';
-    setalias(Iqt, 'Temperature', T, 'Temperature [K]');
-    setalias(Iqt, 'Weight',      m, 'Molar masses [g/mol]');
-    setalias(Iqt, 'Sigma',   sigma, 'Neutron scattering cross section [barns]');
+    setalias(Iqt, 'Temperature', pars.t, 'Temperature [K]');
+    setalias(Iqt, 'Weight',      pars.m, 'Molar masses [g/mol]');
+    setalias(Iqt, 'Sigma',   pars.sigma, 'Neutron scattering cross section [barns]');
     Iqt.Title= [ 'Intermediate scattering function I(q,t) [p=0] from ' titl ];
     title(Iqt, [ 'I(q,t) [p=0] from ' titl ]);
     Iqt.Label= [ 'I(q,t) [p=0]' ];
     xlabel(Iqt, 'q wavevector [Angs-1]'); ylabel(Iqt, 'time [s]');
   end
   
-  % compute the T[p] terms iteratively -----------------------------------------
+  % compute the pars.t[p] terms iteratively -----------------------------------------
   Tall = T1;
   
   % stop when requesting only the one-phonon term
-  if isempty(n) || n < 2, return; end
+  if isempty(pars.n) || pars.n < 2, return; end
   
   % evaluate iteratively the higher order terms
   Tpm1 = T1;
-  fp   = f0.^(1:n);
-  for p=2:n
+  fp   = f0.^(1:pars.n);
+  for p=2:pars.n
     % compute the T[p] = conv(T[1], T[p-1])
     Tp   = conv(T1, Tpm1);
     % make sure trapz(Tp) = f0^p Eq (10.77)
@@ -202,7 +208,7 @@ function [Sqw, Iqt, Wq, Tall] = incoherent(gw, q, T, sigma, m, n)
   
   % compute the S(q,w) expansion [Sjolander] -----------------------------------
   fact  = 1;
-  for p=1:n
+  for p=1:pars.n
     fact = fact*p;  % p!
     if numel(Tall) == 1, Tp = Tall; else Tp = Tall(p); end
     
@@ -210,16 +216,16 @@ function [Sqw, Iqt, Wq, Tall] = incoherent(gw, q, T, sigma, m, n)
     Tp      = Tp/fp(p);                 % fp(p) = trapz(Tp) = f0^p Eq (10.78)
     dSqw_q  = exp(-2*Wq).*(2*Wq).^p;    % q-dependence
     dSqw_w  = Tp/trapz(Tp);             % w-dependence Ttilde(p)
-    dSqw_c  = sigma/4/pi/fact;          % scaling with constant
+    dSqw_c  = pars.sigma/4/pi/fact;          % scaling with constant
     
     % sigma/4/pi*exp(-2*Wq).*(2*Wq).^p / fact * Ttilde_p
     % the (q,w) terms are multiplied orthogonally with iData objects to create a 2D
     
     dSqw    = dSqw_c.*(dSqw_q'.*dSqw_w'); % Eq (10.79) p331 ; [q]*[w]
     dSqw    = dSqw';
-    setalias(dSqw, 'Temperature', T, 'Temperature [K]');
-    setalias(dSqw, 'Weight',      m, 'Molar masses [g/mol]');
-    setalias(dSqw, 'Sigma',   sigma, 'Neutron scattering cross section [barns]');
+    setalias(dSqw, 'Temperature', pars.t, 'Temperature [K]');
+    setalias(dSqw, 'Weight',      pars.m, 'Molar masses [g/mol]');
+    setalias(dSqw, 'Sigma',   pars.sigma, 'Neutron scattering cross section [barns]');
     dSqw.Title= [ 'Scattering function S(q,w) [p=' num2str(p) ']' ];
     title(dSqw, [ 'S(q,w) [p=' num2str(p) '] from ' titl ]);
     dSqw.Label= [ 'S(q,w) [p=' num2str(p) ']' ];
@@ -231,15 +237,15 @@ function [Sqw, Iqt, Wq, Tall] = incoherent(gw, q, T, sigma, m, n)
   % compute the I(q,t) expansion [Sjolander] -----------------------------------
   if nargout > 1
     fact= 1;
-    for p=1:n
+    for p=1:pars.n
       fact    = fact*p;  % p!
-      dIqt_q  = exp(-2*Wq).*(q2toE/2/m.*q.^2).^p; % q-dependence
+      dIqt_q  = exp(-2*Wq).*(q2toE/2/pars.m.*pars.q.^2).^p; % q-dependence
       dIqt_t  = ft.^p;                            % time dependence
-      dIqt_c  = sigma/4/pi/fact;                  % scaling with constant
+      dIqt_c  = pars.sigma/4/pi/fact;                  % scaling with constant
       dIqt    = dIqt_c.*(dIqt_q'.*dIqt_t');
-      setalias(dIqt, 'Temperature', T, 'Temperature [K]');
-      setalias(dIqt, 'Weight',      m, 'Molar masses [g/mol]');
-      setalias(dIqt, 'Sigma',   sigma, 'Neutron scattering cross section [barns]');
+      setalias(dIqt, 'Temperature', pars.t, 'Temperature [K]');
+      setalias(dIqt, 'Weight',      pars.m, 'Molar masses [g/mol]');
+      setalias(dIqt, 'Sigma',   pars.sigma, 'Neutron scattering cross section [barns]');
       dIqt = dIqt';
       dIqt.Title= [ 'Intermediate scattering function I(q,t) [p=' num2str(p) ']' ];
       title(dIqt, [ 'I(q,t) [p=' num2str(p) '] from ' titl ]);
@@ -255,8 +261,6 @@ function [Sqw, Iqt, Wq, Tall] = incoherent(gw, q, T, sigma, m, n)
     h  =plot(log10(G1)); 
     set(fig, 'NextPlot','new');
   end
-
-
   
 % ------------------------------------------------------------------------------
   

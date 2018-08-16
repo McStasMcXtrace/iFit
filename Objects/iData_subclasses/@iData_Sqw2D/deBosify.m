@@ -1,4 +1,4 @@
-function s = deBosify(s, T, type)
+function s = deBosify(s, varargin)
 % iData_Sqw2D: deBosify: remove Bose factor (detailed balance) from an 'experimental/quantum' data set.
 %   The initial data set should be 'quantum/experimental' and satisfy the detailed balance.
 %   The resulting data set obeys S*=S(q,w) = S(q,-w), i.e. is 'classical'.
@@ -56,11 +56,11 @@ function s = deBosify(s, T, type)
 %           iData_Sqw2D/dynamic_range, iData_Sqw2D/scattering_cross_section
 % (c) E.Farhi, ILL. License: EUPL.
   
-  if nargin < 2, T = []; end
-  if nargin < 3, type=''; end
-  if isempty(type), type='standard'; end
+  p = varargin2struct({'T' 'type'}, varargin, true);
+  if isempty(p.type), p.type='standard'; end
+  p.type = [ p.type ' debosify' ];
   
-  s = Bosify(s, T, [ type ' debosify' ]);
+  s = Bosify(s, p);
   
 
   

@@ -1,4 +1,4 @@
-function [g, fig] = dos(s, method, n)
+function [g, fig] = dos(s, varargin)
 % iData_Sqw2D: dos: compute the generalised density of states (gDOS) from a S(q,w)
 %
 % compute: iData_Sqw2D -> generalised Density of States gDOS [p=1]
@@ -36,23 +36,28 @@ function [g, fig] = dos(s, method, n)
 %  To force a recomputation of the gDOS, use:
 %       dos(Sqw, 'method', 0) or dos(Sqw, 'method', 'force')
 %
+%  Input arguments can be given in order, or with name-value pairs, or as a 
+%    structure with named fields.
+%
 % References: Price J. et al, Non Cryst Sol 92 (1987) 153
 %         Bellissent-Funel et al, J. Mol. Struct. 250 (1991) 213
 %         Carpenter and Pelizarri, Phys. Rev. B 12, 2391 (1975)
 %         Suck et al, Journal of Alloys and Compounds 342 (2002) 314
 %         Bredov et al., Sov. Phys. Solid State 9, 214 (1967)
 %         V.S. Oskotskii, Sov. Phys. Solid State 9 (1967), 420.
-%         H. Schober, Journal of Neutron Research 17 (2014) 109–357. (esp. p307)
+%         H. Schober, Journal of Neutron Research 17 (2014) 109–357. (esp. p307-315)
 %
 % syntax:
 %   g = dos(s)
 %   g = dos(s, method, n)
+%   g = dos(s, 'method', method, 'n', n, 'T', T)
 %
 % input:
 %   s:      Sqw data set e.g. 2D data set with w as 1st axis (rows, meV), q as 2nd axis (Angs-1).
 %   method: 'Carpenter','Bellissent' or 'Bredov' (default)
 %   n:      number of low-angle values to integrate (integer). Default is 10 when omitted.
 %           when 0 or 'force', the gDOS is re-computed. Only for Carpenter/Bellissent.
+%   T:      temperature to use for computation (leave undefined for automatic).
 %
 % output:
 %   g:      gDOS(w)   (1D iData versus energy)
@@ -64,13 +69,12 @@ function [g, fig] = dos(s, method, n)
 % (c) E.Farhi, ILL. License: EUPL.
 
   g=[]; fig = [];
-  if nargin < 2, method = []; end
-  if nargin < 3, n=[]; end
+  p = varargin2struct({'method' 'n' 't'}, varargin, true);
   
   % handle array of objects
   if numel(s) > 1
     for index=1:numel(s)
-      g = [ g feval(mfilename, s(index), method, n) ];
+      g = [ g feval(mfilename, s(index), p.method, n) ];
     end
     if ~isempty(inputname(1))
       assignin('caller',inputname(1),s);
@@ -80,8 +84,8 @@ function [g, fig] = dos(s, method, n)
 
   % check for method arguments
   if isempty(s), return; end
-  if strcmp(method, 'force'), method = []; n=0; end
-  if isempty(method),         method = 'Bredov'; end
+  if strcmp(p.method, 'force'), p.method = []; n=0; end
+  if isempty(p.method),         p.method = 'Bredov'; end
   if ~isempty(n) && (strcmp(n, 'force') || (isnumeric(n) && n <= 0))
     s = rmalias(s, 'gDOS');
     n = [];
@@ -93,18 +97,20 @@ function [g, fig] = dos(s, method, n)
   else
     % do the computation
     
-    T = Sqw_getT(s);
-    if isempty(T) && ~isempty(strfind(method, 'Carpenter')) 
+    if isempty(p.t)
+      p.t = Sqw_getT(s);
+    end
+    if isempty(p.t) && ~isempty(strfind(p.method, 'Carpenter')) 
       disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source  ])
       disp(['    has no Temperature defined. Will assume 1/[1+n(w)] ~ w.' ])
     end
     
-    switch lower(method)
+    switch lower(p.method)
     case {'bredov','oskotskii','default'}
-      [g,w] = sqw_phonon_dos_Bredov(s, T); 
+      [g,w] = sqw_phonon_dos_Bredov(s, p.t); 
     otherwise % {'carpenter','price','bellissent'}
       if isempty(n), n=max(10, size(s, 2)/10); end
-      [g, method] = sqw_phonon_dos_Carpenter(s, T, n); % also incl. Bellissent
+      [g, p.method] = sqw_phonon_dos_Carpenter(s, p.t, n); % also incl. Bellissent
     end
 
     % check if DOS is on both energy axes. If so, symmetrize.
@@ -129,11 +135,12 @@ function [g, fig] = dos(s, method, n)
     g     = g/sum(g);
     
     % set Title, etc
-    g.Title = [ 'DOS(' s.Title ') ' method ];
-    g.Label = [ 'gDOS ' method ];
-    title( g,[ 'gDOS [p=1](' s.Title ') ' method ]);
+    g.Title = [ 'DOS(' s.Title ') ' p.method ];
+    g.Label = [ 'gDOS ' p.method ];
+    title( g,[ 'gDOS [p=1](' s.Title ') ' p.method ]);
     xlabel(g,  ylabel(s));  % energy axis
-    g = commandhistory(g,    'dos', s, method, n);
+    g = commandhistory(g,    'dos', s, p.method, n);
+    setalias(g, 'DOS_method', p.method, 'Method used for DOS estimate');
     setalias(s, 'gDOS', g, g.Title);
     
     if length(inputname(1))
@@ -171,12 +178,12 @@ function [g, method] = sqw_phonon_dos_Carpenter(s, T, nc)
   q = getaxis(s,2); 
   
   % compute g(q,w) aka P(alpha,beta) 
-  if (~isempty(classical) && classical(1)) || isempty(T) % do not use Temperature
+  if (~isempty(classical) && classical(1)) || isempty(T) || T==0 % do not use Temperature
     % Bellissent
     % uses Carpenter with approx: exp(2W)=1 and 1/(n(w)+1) ~ hw
     method = 'Bellissent';
     
-    g = s.*hw.^2./q.^2;
+    g = s.*hw.^2./(q.^2);
   else
     % Carpenter/Price
     method = 'Carpenter';
@@ -184,7 +191,7 @@ function [g, method] = sqw_phonon_dos_Carpenter(s, T, nc)
     beta    = 11.605*hw/T;
     n = 1./(exp(beta) - 1);
     n(~isfinite(n)) = 0;
-    g       = abs(hw./(n+1)).*s./q.^2;
+    g       = abs(hw./(n+1)).*s./(q.^2);
   end
 
   % determine the low-momentum limit -------------------------------------------
@@ -238,6 +245,7 @@ function [g, w] = sqw_phonon_dos_Bredov(s, T)
 
   % get an estimate of corresponding incident energy
   [s,lambda,distance,chwidth,Ei,Ki] = Sqw_search_lambda(s);
+  parameters = get(s, 'parameters');
   
   % restrict s to a dynamic range (so that q4 corresponds with a 'simulated' experiment)
   s = dynamic_range(s, Ei);
@@ -285,7 +293,7 @@ function [g, w] = sqw_phonon_dos_Bredov(s, T)
 
   % compute the dos
   g = [];
-  if (~isempty(classical) && classical(1)) || isempty(T) % do not use Temperature
+  if (~isempty(classical) && classical(1)) || isempty(T) || T==0 % do not use Temperature
     % g(w) = [\int q S(q,w) dq] exp(2W(q)) m / (q^4max-q^4min) * w.^2
     g = trapz(qSq,2).*abs(w.^2./(qmax.^4 - qmin.^4));
   else    % use Bose/Temperature (in quantum case)
@@ -295,4 +303,7 @@ function [g, w] = sqw_phonon_dos_Bredov(s, T)
     % g(w) = [\int q S(q,w) dq] exp(2W(q)) m / (q^4max-q^4min) * w/(1+n)
     g = trapz(qSq,2).*abs(w./(n+1)./(qmax.^4 - qmin.^4));
   end
+  
+  % set back aliases
+  setalias(g, 'parameters', parameters, 'Material parameters'); 
 

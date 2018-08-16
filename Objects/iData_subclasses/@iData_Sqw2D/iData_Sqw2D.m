@@ -3,8 +3,8 @@ classdef iData_Sqw2D < iData
   %
   % The iData_Sqw2D class is a 2D data set holding a S(q,w) dynamic structure factor
   %   aka scattering function/law.
-  %   The first  axis (rows)    is the Momentum transfer [Angs-1] (wavevector). 
-  %   The second axis (columns) is the Energy   transfer [meV].
+  %   The first  axis (rows)    is the Energy   transfer [meV].
+  %   The second axis (columns) is the Momentum transfer [Angs-1] (wavevector). 
   %
   % This quantity usually derives from the double differential neutron cross section
   %
@@ -74,10 +74,16 @@ classdef iData_Sqw2D < iData
   %   Compute the structure factor S(q)
   %
   % [inc, multi] = incoherent(s, q, T, sigma, m, n)
-  %   Compute an estimate of the incoherent neutron scattering law in the incoherent gaussian approximation
+  %   Compute an estimate of the incoherent neutron scattering law in the gaussian approximation (Sjolander)
+  %
+  % [coh] = coherent(inc, sq)
+  %   Compute an estimate of the coherent S(q,w) from an incoherent S(q,w) and a structure factor (Skold)
   %
   % [gDOS,M]     = multi_phonons(ss)
-  %   Compute the integrated multi-phonon DOS terms from an initial density of states
+  %   Compute the integrated multi-phonon DOS terms from an initial density of states (Sjolander)
+  %
+  % saveas(s, filename, 'McStas'|'Sqw'|'inx'|'spe')
+  %   Save the S(q,w) as a McStas Sqw, INX or ISIS SPE file format
   %
   % input:
   %   can be a 2D iData or filename to generate a 2D Sqw object.
@@ -219,6 +225,71 @@ classdef iData_Sqw2D < iData
         set(fig, 'NextPlot','new');
       end
     end % incoherent
+    
+    function [coh] = coherent(self, sq)
+      % iData_Sqw2D: coherent: compute the coherent scattering cross section from the incoherent and structure factor, in the Skold approximation
+      %
+      % coh = coherent(inc, sq)
+      %
+      % input:
+      %   inc: incoherent S(q,w) [iData_Sqw2D]
+      %   sq:  S(q)              [double or iData]
+      %        can also be a single interatomic distance d-spacing
+      % output:
+      %   coh: coherent estimate [iData_Sqw2D]
+      
+      if nargin < 2, sq = []; end
+      
+      % make sure we use a regular grid
+      inc = meshgrid(self,'vector');
+      q   = getaxis(inc, 2);
+      
+      if isempty(sq)
+        sq = [ 3 .2]; % will use Percus-Yevick
+      end
+      if prod(size(sq)) <= 2
+        % assume sq is a mean interatomic distance -> Percus-Yevick model
+        if isscalar(sq), p = [ double(sq) .2 ];
+        else p =double(sq); end
+        sq = sf_hard_spheres(p);
+      end
+      if isa(sq, 'iFunc')
+        sq = feval(sq, q);
+      end
+      if isa(sq, 'iData') && ndims==1
+        sq = interp(sq, q); % make sure we use same q values in S(q,w) and S(q)
+      end
+      
+      sq = double(sq); sq = sq(:);
+      
+      % K. Skold, Phys. Rev. Lett. 19, 1023 (1967).
+      % Scoh(q,w) = Sinc(q/sqrt(S(q)), w) S(q)
+      
+      % index method: we directly use index values to avoid interpolations
+      % index of new Skold q value in initial Sinc data set
+      
+      % number of q values in initial and final data sets
+      nq = size(self, 2); 
+      index_q_skold = round( (1:nq)./ sqrt(sq') );
+      index_q_skold(index_q_skold < 1)  = 1;
+      index_q_skold(index_q_skold > nq) = nq;
+      
+      coh = copyobj(inc);
+      signal_inc = getaxis(inc, 0);
+      signal_coh = signal_inc(:,index_q_skold);  % Sinc(q/sqrt(sq),w)
+      coh = setaxis(coh, 0, signal_coh);
+      
+      % interpolation method: compute the new Sinc with modified q axis
+      % qinc = getaxis(inc, 2)./sqrt(sq);
+      % sinc = interp(s, qinc, w).*sq;
+      % interpolate on the initial grid
+      % coh  = interp(coh, q,w);
+      
+      % get the coherent estimate
+      coh  = sinc.*sq;
+      
+      
+    end % coherent
     
     function [G,multi,g] = multi_phonons(s, varargin)
       % iData_Sqw2D: multi_phonons: compute the integrated multi-phonon intensity from a scattering law

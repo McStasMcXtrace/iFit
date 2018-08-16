@@ -77,21 +77,12 @@ function g = muphocor(s, varargin)
     compiled = muphocor_compile_binary; % check and possibly compile MUPHOCOR. Return path the EXE
   end
   
-  p = []; % store parameters for iData_Sqw2D => MUPHOCOR
+  % store parameters for iData_Sqw2D => MUPHOCOR. Lower case parameters from varargin
+  p = varargin2struct({'lambda' 'temp0' 'amasi' 'sigi' 'conci'}, varargin, true);
   
-  [reg, prop] = parseparams(varargin);
-  % transfer 'regular' parameters
-  if numel(reg) < 1, p.lambda   =[]; else p.lambda=reg(1); end
-  if numel(reg) < 2, p.temp0    =[]; else p.temp0 =reg(2); end
-  if numel(reg) < 3, p.amasi    =[]; else p.amasi =reg(3); end
-  if numel(reg) < 4, p.sigi     =[]; else p.sigi  =reg(4); end
-  if numel(reg) < 5, p.conci    =[]; else p.conci =reg(5); end
-  
-  % transfer name/value pairs
-  for index=1:2:numel(prop)
-    p.(lower(prop{index})) = prop{index+1};
+  if isempty(p.temp0) && isfield(p, 't')
+    p.temp0 = p.t;  % alias for temperature
   end
-  
   if isempty(p.lambda) && isfield(p, 'e0')
     p.lambda = sqrt(81.805./p.e0);
   end

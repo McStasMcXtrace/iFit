@@ -62,6 +62,8 @@ function compiled = muphocor_compile_binary(compile)
       [status, result] = system([ precmd cmd ]);
       if status == 0
         compiled = target;
+      else
+        disp(result);
       end
     end
   end

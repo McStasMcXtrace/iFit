@@ -1,4 +1,4 @@
-function s = Bosify(s0, T, type)
+function s = Bosify(s0, varargin)
 % iData_Sqw2D: Bosify: apply the 'Bose' factor (detailed balance) to a classical data set.
 %   The initial data set should obey S*=S(q,w) = S(q,-w), i.e. be 'classical'.
 %   The resulting data set is 'quantum/experimental' and satisfies the detailed
@@ -39,6 +39,8 @@ function s = Bosify(s0, T, type)
 %
 % syntax:
 %   sqw_T = Bosify(sqw)
+%   sqw_T = Bosify(sqw, T, type)
+%   sqw_T = Bosify(sqw, 'T', T, 'type', type)
 %
 % input:
 %   sqw:  Sqw data set (classical, symmetric in energy, no T Bose factor)
@@ -63,39 +65,40 @@ function s = Bosify(s0, T, type)
 % no(quantum) []    any     must use T=-getT to remove
 % no(quantum) T     any     must use -abs(T) to remove
 % no(quantum) T>0           NO
-
-  if nargin < 2, T = []; end
-  if nargin < 3, type=''; end
-  if isempty(type), type='standard'; end
+  
+  
+  p = varargin2struct({'T' 'type'}, varargin, true);
+  if isempty(p.type), p.type='standard'; end
+  
   s=[];
   
   % handle array of objects
   if numel(s0) > 1
     for index=1:numel(s)
-      s = [ s feval(mfilename, s0(index), T, type) ];
+      s = [ s feval(mfilename, s0(index), p.t, p.type) ];
     end
     return
   end
   
   if isempty(s0), return; end
   s = copyobj(s0);
-  if strfind(lower(type),'debosify')
+  if strfind(lower(p.type),'debosify')
        do_bosify=0;
-       type = strtrim(strrep(lower(type), 'debosify','')); % remove debosify occurence
+       p.type = strtrim(strrep(lower(p.type), 'debosify','')); % remove debosify occurence
   else do_bosify=1; end
 
   % define the fallback Temperature to use
-  if isempty(T) || T == 0
+  if isempty(p.t) || p.t == 0
     T0 = Sqw_getT(s); 
     if (isempty(T0) || T0 == 0)
       T0 = 293;
     end
     disp([ mfilename ': INFO: Using Temperature=' num2str(T0) ' [K] for data set ' s.Tag ' ' s.Title ' from ' s.Source ]);
-    T=T0;
-  else T0=T; end  
+    p.t=T0;
+  else T0=p.t; end  
   
-  % when not given use the T from the data set.
-  if isempty(T) || T == 0
+  % when not given use the p.t from the data set.
+  if isempty(p.t) || p.t == 0
     error([ mfilename ': ERROR: Undefined Temperature in data set ' s.Tag ' ' s.Title ' from ' s.Source ]);
   end
 
@@ -114,49 +117,49 @@ function s = Bosify(s0, T, type)
   end
   
   % handle different temperatures
-  if numel(T) > 1
+  if numel(p.t) > 1
     sqw = [];
-    for index=1:numel(T)
-      sqw = [ sqw feval(mfilename, s, T(index), type, 'checked') ];
+    for index=1:numel(p.t)
+      sqw = [ sqw feval(mfilename, s, p.t(index), p.type, 'checked') ];
     end
     s = sqw;
     return
   end
   
   T2E       = (1/11.6045);           % Kelvin to meV = 1000*K_B/e
-  kT        = T*T2E;
+  kT        = p.t*T2E;
   hw_kT     = getaxis(s,1)./kT;               % hbar omega / kT
   
   % apply sqrt(Bose) factor to get experimental-like
   % semi-classical corrections, aka quantum correction factor
   
-  if strcmpi(type, 'Schofield') || strcmpi(type, 'exp') || strcmpi(type, 'Boltzmann') 
+  if strcmpi(p.type, 'Schofield') || strcmpi(p.type, 'exp') || strcmpi(p.type, 'Boltzmann') 
     % P. Schofield. Phys. Rev. Lett., 4, 239 (1960).
     Q  = exp(hw_kT/2);          
-  elseif strcmpi(type, 'Harmonic') || strcmpi(type, 'Bader')
+  elseif strcmpi(p.type, 'Harmonic') || strcmpi(p.type, 'Bader')
     % J. S. Bader and B. J. Berne. J. Chem. Phys., 100, 8359 (1994).
-    % T. D. Hone and G. A. Voth. J. Chem. Phys., 121, 6412 (2004).
+    % p.t. D. Hone and G. A. Voth. J. Chem. Phys., 121, 6412 (2004).
     Q  = hw_kT./(1-exp(-hw_kT));  % w*(1+n(w))
-  elseif strcmpi(type, 'Standard') || strcmpi(type, 'Frommhold') || strcmpi(type, 'default')
+  elseif strcmpi(p.type, 'Standard') || strcmpi(p.type, 'Frommhold') || strcmpi(p.type, 'default')
     % L. Frommhold. Collision-induced absorption in gases, 1 st ed., Cambridge
     %   Monographs on Atomic, Molecular, and Chemical Physics, Vol. 2,
     %   Cambridge Univ. Press: London (1993).
     Q = 2./(1+exp(-hw_kT));
   else
-    error([ mfilename 'Unknown semi-classical correction ' type ]);
+    error([ mfilename ': Unknown semi-classical correction ' p.type ]);
   end
   Q(find(hw_kT==0)) = 1;
   if ~do_bosify, Q = 1./Q; end
   s         = s .* Q;  % apply detailed balance with the selected correction
   
-  setalias(s, 'Temperature', abs(T));
-  setalias(s, 'QuantumCorrection',type,[ 'Quantum correction applied in ' mfilename ]);
+  setalias(s, 'Temperature', abs(p.t));
+  setalias(s, 'QuantumCorrection',p.type,[ 'Quantum correction applied in ' mfilename ]);
   if do_bosify % Bosify
     setalias(s, 'classical', 0, 'This is a experimental/quantum S(q,w) with Bose factor');
-    s = commandhistory(s, sprintf('Bosify(%s,%g,''%s'')', s0.Tag,T,type));
+    s = commandhistory(s, sprintf('Bosify(%s,%g,''%s'')', s0.Tag,p.t,p.type));
   elseif ~do_bosify % deBosify
     setalias(s, 'classical', 1, 'This is a classical/symmetric S(q,w) without Bose factor');
-    s = commandhistory(s, sprintf('deBosify(%s,%g,''%s'')', s0.Tag, T,type));
+    s = commandhistory(s, sprintf('deBosify(%s,%g,''%s'')', s0.Tag, p.t,p.type));
   end
   
   s = iData_Sqw2D(s); % final Sqw2D object
