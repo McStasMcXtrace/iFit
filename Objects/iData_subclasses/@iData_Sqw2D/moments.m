@@ -1,8 +1,13 @@
-function sigma=moments(data, M, T, classical)
+function sigma=moments(data, varargin)
 % iData_Sqw2D: moments=moments(sqw, M, T, classical): compute Sqw moments/sum rules (harmonic frequencies)
 %
-%   Compute the structure factor (moment 0), recoil energy (moment 1) and the
-%     collective, harmonic and mean energy transfer dispersions.
+%   m = moments(sqw, M, T, classical)
+%
+%  Compute the structure factor (moment 0), recoil energy (moment 1) and the
+%    collective, harmonic and mean energy transfer dispersions.
+%
+%  Input arguments can be given in order, or with name-value pairs, or as a 
+%    structure with named fields.
 %
 % The result is given as an iData array with data sets:
 %   S(q) = \int S(q,w) dw = <S(q,w)>                 structure factor [moment 0]
@@ -22,6 +27,7 @@ function sigma=moments(data, M, T, classical)
 % syntax:
 %   m = moments(sqw)
 %   m = moments(sqw, M, T, classical)
+%   m = moments(sqw, 'M', M, 'T', T, 'classical', classical)
 %
 % input:
 %   sqw:  Sqw data set e.g. 2D data set with w as 1st axis (rows, meV), q as 2nd axis (Angs-1).
@@ -39,31 +45,28 @@ function sigma=moments(data, M, T, classical)
 % (c) E.Farhi, ILL. License: EUPL.
 
   sigma = [];
-  if nargin < 2, M = []; end
-  if nargin < 3, T = []; end
-  if nargin < 4, classical = []; end
-  
-  if isempty(data), sigma=[]; return; end
+  if isempty(data), return; end
+  p = varargin2struct({'M' 'T' 'classical'}, varargin, true);
   
   % guess when omitted arguments
-  if isempty(classical) && (isfield(data,'classical') || ~isempty(findfield(data, 'classical')))
-    classical = get(data,'classical');
+  if isempty(p.classical) && (isfield(data,'classical') || ~isempty(findfield(data, 'classical')))
+    p.classical = get(data,'classical');
   end
-  if isempty(M) || M<=0
-    M = Sqw_getT(data, {'Masses','Molar_mass','Mass','Weight'});
+  if isempty(p.m) || p.m<=0
+    p.m = Sqw_getT(data, {'Masses','Molar_mass','Mass','Weight'});
   end
-  if isempty(T)
-    T = Sqw_getT(data);
+  if isempty(p.t)
+    p.t = Sqw_getT(data);
   end
   
   % check input parameters
-  if isempty(T) || T<=0
+  if isempty(p.t) || p.t<=0
     disp([ mfilename ': ERROR: Temperature undefined: The data set ' data.Tag ' ' data.Title ' from ' data.Source ]);
     disp('    does not have any temperature defined. Use moments(data, M, T, classical).' );
     return
   end
   
-  kT      = T/11.604;   % kbT in meV;
+  kT      = p.t/11.604;   % kbT in meV;
   q       = getaxis(data,2);
   w       = getaxis(data,1);
   
@@ -76,39 +79,39 @@ function sigma=moments(data, M, T, classical)
   sq      = abs(trapz(data)); % S(q) from the data itself
   M0      = sq;
   % w2R = 2 kT M1
-  % w2R 1/2/kT = wS = M1 and w0^2 = 1/S(q) w2R = 1/S(q) 2 kT M1 = q2 kT/M/M0
-  M1      = trapz(w.*data);    % = h2q2/2/M recoil when non-classical, 0 for classical symmetrized
+  % w2R 1/2/kT = wS = M1 and w0^2 = 1/S(q) w2R = 1/S(q) 2 kT M1 = q2 kT/p.m/M0
+  M1      = trapz(w.*data);    % = h2q2/2/p.m recoil when non-classical, 0 for classical symmetrized
   
   % check if symmetric
-  if isempty(classical) && abs(mean(M1)) < 1e-6
-    classical = 1;
+  if isempty(p.classical) && abs(mean(M1)) < 1e-6
+    p.classical = 1;
   end
   
-  if isempty(classical)
+  if isempty(p.classical)
     disp([ mfilename ': ERROR: The data set ' data.Tag ' ' data.Title ' from ' data.Source ])
     disp('   does not provide information about classical/quantum data set.');
     disp('   Use moments(data, M, T, classical=0 or 1)');
     return
-  else classical=classical(1);
+  else p.classical=p.classical(1);
   end
   
-  if ~classical && isempty(M)
+  if ~p.classical && isempty(p.m)
     % try to extract a mass from the recoil
     mn      = 1.674927471E-027; % neutron mass [kg]
     e       = 1.60217662E-019;  % [C]
     HBAR    = 1.05457168e-34;   % Plank/2PI
     kb      = 1.38064852E-023;  % Boltzmann [J/K]
     q2toE   = HBAR*HBAR/2/mn/e*1000*1e20; % = 2.0721 = [Angs^-2] to [meV] 
-    C       = e/1000/kb/T;
-    M       = mean(q.*q*q2toE./M1);
-    if M >= 1 && M < 2000
+    C       = e/1000/kb/p.t;
+    p.m       = mean(q.*q*q2toE./M1);
+    if p.m >= 1 && p.m < 2000
       disp([ mfilename ': INFO: The data set ' data.Tag ' ' data.Title ' from ' data.Source  ]);
-      disp([ '    Recoil provides a mass M=' num2str(M) ' [g/mol]. Wq may be wrong.' ]);
+      disp([ '    Recoil provides a mass M=' num2str(p.m) ' [g/mol]. Wq may be wrong.' ]);
     else
-      M = [];
+      p.m = [];
     end
   end
-  if isempty(M)
+  if isempty(p.m)
     disp([ mfilename ': WARNING: Mass undefined: The data set ' data.Tag ' ' data.Title ' from ' data.Source ]);
     disp('    does not provide information about the material molar weight. Use Sqw_moments(data, M).')
     disp('    Ignoring: The Wq frequency will be empty.');
@@ -119,15 +122,15 @@ function sigma=moments(data, M, T, classical)
   
   % half width from normalized 2nd frequency moment J-P.Hansen and I.R.McDonald 
   % Theory of simple liquids Academic Press New York 2006.
-  if ~isempty(M) && isnumeric(M)
-    wq      = 2*q.*sqrt(kT./M0/M);  % Lovesey p180 eq. 5.38 = w0
-    wq.Label='w_q=q \surd kB T/m S(q) mean energy transfer';
+  if ~isempty(p.m) && isnumeric(p.m)
+    wq      = 2*q.*sqrt(kT./M0/p.m);  % Lovesey p180 eq. 5.38 = w0
+    wq.Label='w_q=q \surd kB T/M S(q) mean energy transfer';
     title(wq, wq.Label );
   else
     wq = iData_Sqw2D;
   end
   
-  if classical
+  if p.classical
     % all odd moments are 0, even are to be multiplied by 2 when using S(q,w>0)
     % M2 = q.^2.*kT/M
     wc      = sqrt(M2./M0); % sqrt(<w2S>/s(q)) == q sqrt(kT/M/s(q)) collective/isothermal

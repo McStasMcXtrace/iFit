@@ -1,4 +1,4 @@
-function s=Sqw_symmetrize(s)
+function s=symmetrize(s)
 % iData_Sqw2D: symmetrize(s): extend the S(|q|,w) in both energy sides
 %  The resulting S(q,w) is the combination of S(q,w) and S(q,-w), which
 %  is thus symmetric in energy:

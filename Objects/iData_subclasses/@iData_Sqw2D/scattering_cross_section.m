@@ -1,7 +1,9 @@
-function sigma = scattering_cross_section(s, Ei, M)
+function sigma = scattering_cross_section(s, varargin)
 % iData_Sqw2D: scattering_cross_section: compute the total neutron scattering cross section for
 %   incoming neutron energy. The S(|q|,w) should be the non-classical
 %   dynamic structure factor. 
+%
+%   sigma = scattering_cross_section(s, Ei, M)
 %
 %   Such data sets are obtained from e.g. xray and neutron scattering 
 %   experiments on isotropic density materials (liquids, powders, amorphous
@@ -24,11 +26,12 @@ function sigma = scattering_cross_section(s, Ei, M)
 %
 %   When the weight M of the scattering unit is given, it is used to multiply the
 %    cross section by the estimated Debye-Waller-like factor so that it equals
-%    A/(A+1)]^2 at Ei=1eV to gradually go from the bound (thermal) to the free 
+%    [A/(A+1)]^2 at Ei=1eV to gradually go from the bound (thermal) to the free 
 %    cross section at 1 eV. The threshold of 1eV is used by e.g. OpenMC.
 %     W  = 2e-3*(log(M)-log(M+1));
 %     DW = exp(W*Ei) = exp(2e-3*(log(M)-log(M+1))*Ei)
 %   Above the epithermal energy threshold, the DW factor is kept fixed. 
+%
 %   For a poly-atomic scatterer, the effective mass is computed by weighting
 %   with the bound cross sections for elements A, e.g.
 %     r = sqrt(sum((A/(A+1))^2 * sigma_bound(A)) / sum(sigma_bound(A)));
@@ -53,6 +56,8 @@ function sigma = scattering_cross_section(s, Ei, M)
 % syntax:
 %   sigma = scattering_cross_section(s, Ei)
 %   sigma = scattering_cross_section(s, Ei, M)
+%   sigma = scattering_cross_section(s, 'Ei',Ei, 'M',M)
+%   sigma = scattering_cross_section(s, 'lambda', lambda)
 %
 % input:
 %   s: Sqw data set (non classical, with T Bose factor e.g from experiment)
@@ -61,6 +66,7 @@ function sigma = scattering_cross_section(s, Ei, M)
 %   M: molar weight of the atom/molecule in [g/mol].
 %     when given empty, it is searched 'weight' or 'mass' is the object.
 %     Default is set to 0, i.e. the Debye-Waller factor is not taken into account.
+%   'lambda','Ki': additional named arguments
 % output:
 %   sigma: cross section per scattering unit (scalar or iData)
 %          to be multiplied afterwards by the bound cross section [barn]
@@ -72,19 +78,25 @@ function sigma = scattering_cross_section(s, Ei, M)
 % (c) E.Farhi, ILL. License: EUPL.
   
   sigma = [];
-  if nargin == 0, return; end
+  if isempty(s), return; end
 
   % first look at the given arguments
-  if nargin < 2,  Ei = []; end
-  if nargin < 3,  M  = []; end
-  if isempty(Ei), Ei = 14.6; end
+  p = varargin2struct({'Ei' 'M' 'lambda' 'Ki'}, varargin, true);
 
-  sigma = [];
+  if isempty(p.ei) && isfield(p, 'lambda') && ~isempty(p.lambda) && p.lambda > 0
+    p.ei = 81.8042./p.lambda.^2;
+  end
+  if isempty(p.ei) && isfield(p, 'ki') && ~isempty(p.ki) && p.ki > 0
+    p.ei = 2.0721.*p.ki.^2;
+  end
+  
+  if isempty(p.ei), p.ei = 14.6; end
+
 
   % handle array of objects
   if numel(s) > 1
     for index=1:numel(s)
-      sigma = [ sigma feval(mfilename, s(index), Ei, M) ];
+      sigma = [ sigma feval(mfilename, s(index), p) ];
       s(index) = iData_Sqw2D; % free memory
     end
     return
@@ -112,38 +124,44 @@ function sigma = scattering_cross_section(s, Ei, M)
   end
   
   if classical(1) == 1
-    disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' seems to be "classical". You should apply s=Bosify(s, temperature) before.' ]);
+    disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ])
+    disp([ '    seems to be "classical". You should apply s=Bosify(s, temperature) before.' ]);
   end
   
   if isempty(Sqw_getT(s))
-    disp([ mfilename ': WARNING: Temperature undefined: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' does not seem to have a Temperature defined. You may apply s=Bosify(s, temperature) before.' ]);
+    disp([ mfilename ': WARNING: Temperature undefined: The data set ' s.Tag ' ' s.Title ' from ' s.Source ])
+    disp([ '    does not seem to have a Temperature defined. You may apply s=Bosify(s, temperature) before.' ]);
   end
-  if isempty(M) || M<=0
-    M = Sqw_getT(s, {'Masses','Molar_mass','Mass','Weight'});
+  if isempty(p.m) || p.m<=0
+    p.m = Sqw_getT(s, {'Masses','Molar_mass','Mass','Weight'});
   end
   
   w = getaxis(s,1);
   
   if min(w(:)) * max(w(:)) >= 0
-    disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' seems to only be defined on w<0 or w>0. You should apply s=Bosify(symmetrize(s), temperature) before.' ]);
+    disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ])
+    disp([ '    seems to have its energy range w=[' num2str([ min(w(:)) max(w(:)) ]) '] defined only on one side.' ])
+    disp('    Applying symmetrize first.');
+    s = symmetrize(s);
+    w = getaxis(s,1);
   end
 
   % do the total XS computation there...
-  if numel(Ei) > 1
+  if numel(p.ei) > 1
     sigma = [];
-    if numel(Ei) == 2, Ei=logspace(log10(Ei(1)),log10(Ei(2)),20); end
+    if numel(p.ei) == 2, p.ei=logspace(log10(p.ei(1)),log10(p.ei(2)),20); end
     % loop for each incoming neutron energy
-    for ie=1:numel(Ei)
-      sigma = [ sigma Sqw_scatt_xs_single(s, Ei(ie), M) ];
+    for ie=1:numel(p.ei)
+      sigma = [ sigma Sqw_scatt_xs_single(s, p.ei(ie), p.m) ];
     end
-    sigma = iData(Ei, sigma);
+    sigma = iData(p.ei, sigma);
     signa.Title = [ 'XS(' s.Title ')' ];
     title(sigma, 'XS [/barn/scatterer]');
     label(sigma, 'Signal', [ 'Total XS(' s.Title ')' ]);
     sigma.Label='XS';
     return
   else
-    sigma = Sqw_scatt_xs_single(s, Ei, M);
+    sigma = Sqw_scatt_xs_single(s, p.ei, p.m);
   end
   
 % ----------------------------------------------------------------------------

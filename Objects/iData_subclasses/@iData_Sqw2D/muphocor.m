@@ -14,6 +14,9 @@ function g = muphocor(s, varargin)
   %   'sigi',   [ 82.0168      4.2325 ]
   %   'conci',  [  2           1      ]
   %
+  %  Input arguments can be given in order, or with name-value pairs, or as a 
+  %    structure with named fields.
+  %
   %
   % MUPHOCOR Parameters:
   % --------------------

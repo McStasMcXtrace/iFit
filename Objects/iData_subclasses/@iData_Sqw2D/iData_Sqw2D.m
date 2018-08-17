@@ -164,13 +164,25 @@ classdef iData_Sqw2D < iData
     function [inc, single, multi] = incoherent(s, varargin)
       % iData_Sqw2D: incoherent: incoherent neutron scattering law estimate in the incoherent gaussian approximation
       %
-      % compute: iData_Sqw2D -> generalised Density of States -> Incoherent approximation
+      %   [inc, single, multiple] = incoherent(s, q, T, sigma, m, n, DW)
+      %
+      % compute: iData_Sqw2D -> generalised Density of States -> Incoherent approximation S(q,w)
+      %
+      % The result is the dynamic structure factor (scattering law) for neutrons, in
+      %   the incoherent gaussian approximation. If you wish to obtain the intermediate
+      %   scattering function I(q,t), use [inc, Iqt] = incoherent(dos(s), ...)
       %
       % This implementation is in principle exact for an isotropic monoatomic material,
-      % e.g. a liquid or powder.
+      %   e.g. a liquid or powder.
       % This methodology is equivalent to the LEAPR module of NJOY ("phonon expansion")
-      % to compute S(alpha,beta) from a vibrational density of states.
-      % Arguments not given are searched in the data set.
+      %   to compute S(alpha,beta) from a vibrational density of states.
+      %
+      % For a poly-atomic material with a set of non-equivalent atoms with relative 
+      %   concentration Ci, mass Mi and bound scattering cross section sigma_i, 
+      %   one should use:
+      %
+      %   sigma = sum_i Ci sigma_i                              weighted cross section
+      %   m     = [sum_i Ci sigma_i]/[sum_i Ci sigma_i/Mi]      weighted mass
       %
       % conventions:
       % w = Ei-Ef = energy lost by the neutron
@@ -185,15 +197,23 @@ classdef iData_Sqw2D < iData
       %
       % syntax:
       %   [inc, single, multi] = incoherent(sqw)
-      %   [inc, single, multi] = incoherent(sqw, q, T, sigma, m, n)
+      %   [inc, single, multi] = incoherent(sqw, q, T, sigma, m, n, DW)
+      %   [inc, single, multi] = incoherent(sqw, 'q', q, 'T', T, 'sigma', sigma, 'm', m, 'n', n, 'DW', dw)
+      %
+      % Missing arguments (or given as [] empty), are searched within the initial 
+      %   data set. Input arguments can be given in order, or with name-value 
+      %   pairs, or as a structure with named fields.
       %
       % input:
       %   sqw:the scattering law S(q,w) [iData_Sqw2D]
       %   q:  the momentum axis [Angs-1, vector]
       %   T:  temperature [K]
-      %   sigma: neutron cross section [barns]
-      %   m:  mass [g/mol]
+      %   sigma: bound neutron scattering cross section [barns]
+      %   m:  mass of the scattering unit [g/mol]
       %   n:  number of iterations in the series expansion, e.g. 5
+      %   DW: Debye-Waller coefficient gamma=<u^2> [Angs^2] e.g. 0.005
+      %       The Debye-Waller function is      2W(q)=gamma*q^2
+      %       The Debye-Waller factor   is exp(-2W(q))
       %
       % output:
       %   inc:    total S(q,w), single+multi-phonons [iData_Sqw2D]
@@ -201,13 +221,12 @@ classdef iData_Sqw2D < iData
       %   multi:  so-called multi-phonon incoherent S(q,w)  [iData_Sqw2D]
       %
       % Example:
-      %   s   = iData_Sqw2D('SQW_coh_lGe.nc');
-      %   inc = incoherent(s);
-      %   subplot(inc);
+      %   s   = iData_Sqw2D('D2O_liq_290_coh.sqw.zip');
+      %   inc = incoherent(s); plot(log10(inc));
       %
       % See also: iData_Sqw2D/multi_phonons_dos
       % (c) E.Farhi, ILL. License: EUPL.
-      g   = dos(s);
+      g   = dos(s, varargin{:});
       inc = incoherent(g, varargin{:});
       multi = plus(inc(3:end)); % multi-phonon
       single= plus(inc(1:2));   % elastic+1-phonon

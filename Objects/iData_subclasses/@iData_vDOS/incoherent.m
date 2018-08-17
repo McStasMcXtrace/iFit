@@ -1,18 +1,18 @@
 function [Sqw, Iqt, Wq, Tall] = incoherent(gw, varargin)
 % iData_vDOS: incoherent: compute the incoherent gaussian approximation scattering law S(q,w) from an initial density of states vDOS
 %
+%   [Sqw, Iqt, Wq, Tall] = incoherent(gw, q, T, sigma, m, n, DW)
+%
+% compute: Density of States -> Incoherent approximation S(q,w)
+%
 % The input argument 'gw' should be a vibrational density of states (vDOS) as
 %   obtained from an experiment (e.g. Bedov/Oskotskii estimate), molecular 
 %   dynamics, or lattice dynamics. In the so-called incoherent approximation,
 %   the vDOS obtained from incoherent and coherent scattering laws are equal.
 %
 % The result is the dynamic structure factor (scattering law) for neutrons, in
-%   in the incoherent gaussian approximation. The corresponding intermediate 
+%   the incoherent gaussian approximation. The corresponding intermediate 
 %   scattering function is also returned.
-%
-% Missing arguments (or given as [] empty), are searched within the initial density 
-%   of states object. Input arguments can be given in order, or with name-value 
-%   pairs, or as a structure with named fields.
 %
 % This implementation is in principle exact for an isotropic monoatomic material,
 %   e.g. a liquid, powder, or cubic crystal. 
@@ -39,16 +39,23 @@ function [Sqw, Iqt, Wq, Tall] = incoherent(gw, varargin)
 %
 % syntax:
 %   [Sqw, Iqt, Wq, Tall] = incoherent(gw)
-%   [Sqw, Iqt, Wq, Tall] = incoherent(gw, q, T, sigma, m, n)
-%   [Sqw, Iqt, Wq, Tall] = incoherent(gw, 'q', q, 'T', T, 'sigma', sigma, 'm', m, 'n', n)
+%   [Sqw, Iqt, Wq, Tall] = incoherent(gw, q, T, sigma, m, n, DW)
+%   [Sqw, Iqt, Wq, Tall] = incoherent(gw, 'q', q, 'T', T, 'sigma', sigma, 'm', m, 'n', n, 'DW', dw)
+%
+% Missing arguments (or given as [] empty), are searched within the initial density 
+%   of states object. Input arguments can be given in order, or with name-value 
+%   pairs, or as a structure with named fields.
 %
 % input:
 %   gw: the vibrational density of states per [meV] [iData]
 %   q:  the momentum axis [Angs-1, vector]
 %   T:  temperature [K]
 %   sigma: bound neutron scattering cross section [barns]
-%   m:  mass [g/mol]
+%   m:  mass of the scattering unit [g/mol]
 %   n:  number of iterations in the series expansion, e.g. 5
+%   DW: Debye-Waller coefficient gamma=<u^2> [Angs^2] e.g. 0.005
+%       The Debye-Waller function is      2W(q)=gamma*q^2
+%       The Debye-Waller factor   is exp(-2W(q))
 %
 % output:
 %   Sqw:  neutron weighted S(q,w) incoherent terms, to be summed [iData_Sqw2D array]
@@ -65,11 +72,12 @@ function [Sqw, Iqt, Wq, Tall] = incoherent(gw, varargin)
 % See also: iData_Sqw2D/multi_phonons
 % (c) E.Farhi, ILL. License: EUPL.
 
-
+  Sqw=[]; Iqt=[]; Wq=[]; Tall=[];
+  if isempty(gw), return; end
   pars = varargin2struct({'q' 'T' 'sigma' 'm' 'n' 'DW'}, varargin, true);
   
-  if isfield(pars, 'gamma') pars.dw = pars.gamma; end
-  if isfield(pars, 'u2')    pars.dw = pars.u2; end
+  if isfield(pars, 'gamma') && ~isempty(pars.gamma), pars.dw = pars.gamma; end
+  if isfield(pars, 'u2')    && ~isempty(pars.u2),    pars.dw = pars.u2; end
   
   % search in the vDOS data set in case missing properties are stored there
   % q, T, mass, sigma

@@ -63,7 +63,7 @@ function pars_struct = varargin2struct(pars_names, varargin, flag_lower)
       end
     end
   end
-  
+
   % transfer name/value pairs
   for index=1:2:numel(prop)
     if flag_lower
@@ -72,3 +72,4 @@ function pars_struct = varargin2struct(pars_names, varargin, flag_lower)
       pars_struct.(prop{index}) = prop{index+1};
     end
   end
+

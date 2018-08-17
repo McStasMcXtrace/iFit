@@ -34,6 +34,7 @@ function [s, sphi] = dynamic_range(s, varargin)
 %   [sqw_Ei,sphiw]=dynamic_range(s, Ei)
 %   [sqw_Ei,sphiw]=dynamic_range(s, Ei, [min_angle max_angle])
 %   [sqw_Ei,sphiw]=dynamic_range(s, 'Ei', Ei, 'angles', [min_angle max_angle])
+%   [sqw_Ei,sphiw]=dynamic_range(s, 'lambda', lambda)
 %
 % input:
 %   s:      Sqw data set, e.g. 2D data set with w as 1st axis (rows, meV), q as 2nd axis (Angs-1).
@@ -52,17 +53,19 @@ function [s, sphi] = dynamic_range(s, varargin)
   % first look at the given arguments
   p = varargin2struct({'Ei' 'angles' 'lambda' 'Ki'}, varargin, true);
 
-  sqw = [];
+  sqw = []; sphi=[];
 
   % handle array of objects
   if numel(s) > 1
     for index=1:numel(s)
-      sqw = [ sqw feval(mfilename, s(index), varargin{:}) ];
+      sqw = [ sqw feval(mfilename, s(index), p) ];
       s(index)=iData_Sqw2D; % clear memory
     end
     s = sqw;
     return
   end
+  
+  if isempty(s), return; end
   
   % check if the energy range is limited
   w = getaxis(s,1);
@@ -82,10 +85,10 @@ function [s, sphi] = dynamic_range(s, varargin)
   K2V  = 1/V2K;
   VS2E = 5.22703725e-6;     % Convert (v[m/s])**2 to E[meV]
 
-  if isempty(p.ei) && isfield(p, 'lambda') && p.lambda > 0
+  if isempty(p.ei) && isfield(p, 'lambda') && ~isempty(p.lambda) && p.lambda > 0
     p.ei = (2*pi/V2K/SE2V)^2/p.lambda^2;
   end
-  if isempty(p.ei) && isfield(p, 'ki') && p.ki > 0
+  if isempty(p.ei) && isfield(p, 'ki') && ~isempty(p.ki) && p.ki > 0
     p.ei = (p.ki/(SE2V*V2K))^2;
   end
   

@@ -1,5 +1,7 @@
-function [g, fig] = dos(s, varargin)
+function [g, fig] = dos(s, method, varargin)
 % iData_Sqw2D: dos: compute the generalised density of states (gDOS) from a S(q,w)
+%
+%   g = dos(s, method, n, T, DW)
 %
 % compute: iData_Sqw2D -> generalised Density of States gDOS [p=1]
 %
@@ -11,11 +13,11 @@ function [g, fig] = dos(s, varargin)
 %  and:
 %       gDOS(w)   = lim(q->0) [ gDOS(q,w) ]
 %
-%       gDOS(q,w) = w*q*S(q,w)/[Qmax^4 - Qmin^4]/(1+n(w)) Bredov/Oskotskii
+%       gDOS(q,w) = w*q*S(q,w)*exp(2W(q))/[Qmax^4 - Qmin^4]/(1+n(w)) Bredov/Oskotskii
 %       gDOS(w)   = trapz(g, 2)
 %
 %  The Bredov/Oskotskii methodology provides the best gDOS estimate, using the
-%  whole data set.
+%    whole data set.
 %
 %  LIMITATIONS/WARNINGS:
 %  The incoherent approximation states that the gDOS from an incoherent S(q,w) is 
@@ -49,32 +51,48 @@ function [g, fig] = dos(s, varargin)
 %
 % syntax:
 %   g = dos(s)
-%   g = dos(s, method, n)
-%   g = dos(s, 'method', method, 'n', n, 'T', T)
+%   g = dos(s, method, n, T, DW)
+%   g = dos(s, 'method', method, 'n', n, 'T', T, 'DW', dw)
 %
 % input:
 %   s:      Sqw data set e.g. 2D data set with w as 1st axis (rows, meV), q as 2nd axis (Angs-1).
 %   method: 'Carpenter','Bellissent' or 'Bredov' (default)
 %   n:      number of low-angle values to integrate (integer). Default is 10 when omitted.
 %           when 0 or 'force', the gDOS is re-computed. Only for Carpenter/Bellissent.
-%   T:      temperature to use for computation (leave undefined for automatic).
+%   T:      optional temperature to use for computation (leave undefined for automatic).
+%   DW:     optional Debye-Waller coefficient gamma=<u^2> [Angs^2] e.g. 0.005
+%           The Debye-Waller function is      2W(q)=gamma*q^2
+%           The Debye-Waller factor   is exp(-2W(q))
 %
 % output:
 %   g:      gDOS(w)   (1D iData versus energy)
 %
-% Example: Sqw=iData_Sqw2D('SQW_coh_lGe.nc'); g = dos(Bosify(symmetrize(Sqw))); plot(g);
+% Example: Sqw=iData_Sqw2D('D2O_liq_290_coh.sqw.zip'); g = dos(Bosify(symmetrize(Sqw))); plot(g);
 %
 % See also: iData_Sqw2D/multi_phonons, iData_Sqw2D/incoherent
 %           iData_vDOS/multi_phonons, iData_vDOS/multi_phonons
 % (c) E.Farhi, ILL. License: EUPL.
 
   g=[]; fig = [];
-  p = varargin2struct({'method' 'n' 't'}, varargin, true);
+  if isempty(s), return; end
   
+  if nargin < 2, method = '';
+  elseif ~any(strcmpi(method, {'force','bredov','oskotskii','default','carpenter','bellissent'})) && ~isempty(method)
+    varargin = { method varargin{:} };
+    method = '';
+  end
+  if isempty(method), method = 'default'; end
+  
+  p = varargin2struct({'n' 't' 'DW' 'gamma' 'u2'}, varargin, true);
+  if ~isfield(p,'method') p.method = method; end
+  
+  if isfield(p, 'gamma') && ~isempty(p.gamma), p.dw = p.gamma; end
+  if isfield(p, 'u2')    && ~isempty(p.u2),    p.dw = p.u2; end
+
   % handle array of objects
   if numel(s) > 1
     for index=1:numel(s)
-      g = [ g feval(mfilename, s(index), p.method, n) ];
+      g = [ g feval(mfilename, s(index), p) ];
     end
     if ~isempty(inputname(1))
       assignin('caller',inputname(1),s);
@@ -84,11 +102,11 @@ function [g, fig] = dos(s, varargin)
 
   % check for method arguments
   if isempty(s), return; end
-  if strcmp(p.method, 'force'), p.method = []; n=0; end
-  if isempty(p.method),         p.method = 'Bredov'; end
-  if ~isempty(n) && (strcmp(n, 'force') || (isnumeric(n) && n <= 0))
+  if strcmp(p.method, 'force'), p.method = []; p.n=0; end
+  if isempty(p.method),         p.method = 'default'; end
+  if ~isempty(p.n) && (strcmp(p.n, 'force') || (isnumeric(p.n) && p.n <= 0))
     s = rmalias(s, 'gDOS');
-    n = [];
+    p.n = [];
   end
   
   if isfield(s, 'gDOS') && nargin == 1
@@ -102,15 +120,16 @@ function [g, fig] = dos(s, varargin)
     end
     if isempty(p.t) && ~isempty(strfind(p.method, 'Carpenter')) 
       disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source  ])
-      disp(['    has no Temperature defined. Will assume 1/[1+n(w)] ~ w.' ])
+      disp(['    has no Temperature defined. Will assume 1/[1+p.n(w)] ~ w.' ])
     end
     
     switch lower(p.method)
     case {'bredov','oskotskii','default'}
-      [g,w] = sqw_phonon_dos_Bredov(s, p.t); 
+      [g,w] = sqw_phonon_dos_Bredov(s, p.t, p.dw); 
+      method = 'Bredov';
     otherwise % {'carpenter','price','bellissent'}
-      if isempty(n), n=max(10, size(s, 2)/10); end
-      [g, p.method] = sqw_phonon_dos_Carpenter(s, p.t, n); % also incl. Bellissent
+      if isempty(p.n), p.n=max(10, size(s, 2)/10); end
+      [g, p.method] = sqw_phonon_dos_Carpenter(s, p.t, p.n, p.dw); % also incl. Bellissent
     end
 
     % check if DOS is on both energy axes. If so, symmetrize.
@@ -139,7 +158,7 @@ function [g, fig] = dos(s, varargin)
     g.Label = [ 'gDOS ' p.method ];
     title( g,[ 'gDOS [p=1](' s.Title ') ' p.method ]);
     xlabel(g,  ylabel(s));  % energy axis
-    g = commandhistory(g,    'dos', s, p.method, n);
+    g = commandhistory(g,    'dos', s, p.method, p.n);
     setalias(g, 'DOS_method', p.method, 'Method used for DOS estimate');
     setalias(s, 'gDOS', g, g.Title);
     
@@ -156,7 +175,7 @@ function [g, fig] = dos(s, varargin)
   end
 
 % ------------------------------------------------------------------------------
-function [g, method] = sqw_phonon_dos_Carpenter(s, T, nc)
+function [g, method] = sqw_phonon_dos_Carpenter(s, T, nc, DW)
 % See e.g.: Boatner et al, PRB 56 (1997) 11584
 %           Price J. et al, Non Cryst Sol 92 (1987) 153
 %           J. M. Carpenter and C. A. Pelizarri, Phys. Rev. B 12, 2391 (1975)
@@ -175,12 +194,16 @@ function [g, method] = sqw_phonon_dos_Carpenter(s, T, nc)
   end
   
   hw= getaxis(s,1); 
-  q = getaxis(s,2); 
+  q = getaxis(s,2);
+  if ~isempty(DW)
+    DW= exp(2*DW*q.^2);
+  else DW = 1;
+  end
   
   % compute g(q,w) aka P(alpha,beta) 
   if (~isempty(classical) && classical(1)) || isempty(T) || T==0 % do not use Temperature
     % Bellissent
-    % uses Carpenter with approx: exp(2W)=1 and 1/(n(w)+1) ~ hw
+    % uses Carpenter with approx: exp(2W)=1 and 1/(p.n(w)+1) ~ hw
     method = 'Bellissent';
     
     g = s.*hw.^2./(q.^2);
@@ -193,12 +216,13 @@ function [g, method] = sqw_phonon_dos_Carpenter(s, T, nc)
     n(~isfinite(n)) = 0;
     g       = abs(hw./(n+1)).*s./(q.^2);
   end
+  g = g.*DW;
 
   % determine the low-momentum limit -------------------------------------------
   s0  = subsref(g,struct('type','.','subs','Signal'));
   DOS = zeros(size(s0,1),1);  % column of g(w) DOS for q->0
   
-  nc  = ceil(min(nc,size(s0,2)));    % get the first n values for each energy transfer
+  nc  = ceil(min(nc,size(s0,2)));    % get the first nc values for each energy transfer
   for i=1:size(s0,1)
     nz = find(isfinite(s0(i,:)) & s0(i,:) > 0, nc, 'first');
     if ~isempty(nz)
@@ -212,7 +236,7 @@ function [g, method] = sqw_phonon_dos_Carpenter(s, T, nc)
   setaxis(g, 1, unique(hw));
 
 % ------------------------------------------------------------------------------
-function [g, w] = sqw_phonon_dos_Bredov(s, T)
+function [g, w] = sqw_phonon_dos_Bredov(s, T, DW)
 % See e.g.: Suck et al, Journal of Alloys and Compounds 342 (2002) 314
 %           M. M. Bredov et al., Sov. Phys. Solid State 9, 214 (1967).
 %
@@ -230,7 +254,7 @@ function [g, w] = sqw_phonon_dos_Bredov(s, T)
 %   \int q/ki/kf kf/ki sigma S(q,w) dq = sigma ki^2/m exp(-2W(q)) (q^4max-q^4min) g(w) (n+1)/w
 %   \int q/ki^2 S(q,w) dq              =       ki^2/m exp(-2W(q)) (q^4max-q^4min) g(w) (n+1)/w
 % with fixed Ki:
-%   \int q S(q,w) dq                   = [ exp(-2W(q))/m (q^4max-q^4min)  (n+1)/w ] g(w)
+%   \int q S(q,w) dq                   = [ exp(-2W(q))/m (q^4max-q^4min)  (p.n+1)/w ] g(w)
 %
 % g(w) =  \int q S(q,w) dq / [ exp(-2W(q))/m (q^4max-q^4min)  (n+1)/w ]
 %      = [\int q S(q,w) dq] exp(2W(q)) m / (q^4max-q^4min) * w/(1+n)
@@ -264,8 +288,13 @@ function [g, w] = sqw_phonon_dos_Bredov(s, T)
   % axes
   w = getaxis(s,1);
   q = getaxis(s,2);
+
+  if ~isempty(DW)
+    DW= exp(2*DW*q.^2);
+  else DW = 1;
+  end
   
-  qSq = q.*s;
+  qSq = s.*q.*DW;
   
   
   % compute delta(Q)
@@ -298,10 +327,10 @@ function [g, w] = sqw_phonon_dos_Bredov(s, T)
     g = trapz(qSq,2).*abs(w.^2./(qmax.^4 - qmin.^4));
   else    % use Bose/Temperature (in quantum case)
     beta    = 11.605*w/T;
-    n = 1./(exp(beta) - 1);
-    n(~isfinite(n)) = 0;
+    p.n = 1./(exp(beta) - 1);
+    p.n(~isfinite(p.n)) = 0;
     % g(w) = [\int q S(q,w) dq] exp(2W(q)) m / (q^4max-q^4min) * w/(1+n)
-    g = trapz(qSq,2).*abs(w./(n+1)./(qmax.^4 - qmin.^4));
+    g = trapz(qSq,2).*abs(w./(p.n+1)./(qmax.^4 - qmin.^4));
   end
   
   % set back aliases
