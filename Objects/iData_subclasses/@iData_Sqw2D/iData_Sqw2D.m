@@ -250,6 +250,8 @@ classdef iData_Sqw2D < iData
       %
       % coh = coherent(inc, sq)
       %
+      % compute: iData_Sqw2D incoherent S(q,w)-> coherent S(q,w)
+      %
       % input:
       %   inc: incoherent S(q,w) [iData_Sqw2D]
       %   sq:  S(q)              [double or iData]
@@ -275,7 +277,7 @@ classdef iData_Sqw2D < iData
       if isa(sq, 'iFunc')
         sq = feval(sq, q);
       end
-      if isa(sq, 'iData') && ndims==1
+      if isa(sq, 'iData') && ndims(sq)==1
         sq = interp(sq, q); % make sure we use same q values in S(q,w) and S(q)
       end
       
@@ -292,11 +294,13 @@ classdef iData_Sqw2D < iData
       index_q_skold = round( (1:nq)./ sqrt(sq') );
       index_q_skold(index_q_skold < 1)  = 1;
       index_q_skold(index_q_skold > nq) = nq;
+      index_q_skold(~isfinite(index_q_skold)) = [];
       
       coh = copyobj(inc);
       signal_inc = getaxis(inc, 0);
-      signal_coh = signal_inc(:,index_q_skold);  % Sinc(q/sqrt(sq),w)
-      coh = setaxis(coh, 0, signal_coh);
+      signal_coh = 0*signal_inc;
+      signal_coh(:,1:numel(index_q_skold)) = signal_inc(:,index_q_skold);  % Sinc(q/sqrt(sq),w)
+      coh = set(coh, 'Signal', signal_coh);
       
       % interpolation method: compute the new Sinc with modified q axis
       % qinc = getaxis(inc, 2)./sqrt(sq);
@@ -305,9 +309,8 @@ classdef iData_Sqw2D < iData
       % coh  = interp(coh, q,w);
       
       % get the coherent estimate
-      coh  = sinc.*sq;
-      
-      
+      coh  = coh.*sq';
+
     end % coherent
     
     function [G,multi,g] = multi_phonons(s, varargin)
