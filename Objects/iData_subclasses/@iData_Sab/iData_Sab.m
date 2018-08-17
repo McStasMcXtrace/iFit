@@ -139,7 +139,7 @@ classdef iData_Sab < iData
       if nargout == 0 && length(inputname(1))
         assignin('caller',inputname(1),s);
       end
-    end
+    end % parseparams
     
     function s = Sqw(self)
       % sqw = Sqw(Sab, M, T)
@@ -176,7 +176,7 @@ classdef iData_Sab < iData
       %
       % (c) E.Farhi, ILL. License: EUPL.
       s = Sab2Sqw(self);  % private
-    end
+    end % Sqw
     
     function f = iData(self)
       % iData_Sab: iData(sab): convert a iData_Sab back to iData
@@ -204,7 +204,7 @@ classdef iData_Sab < iData
         warning(w);
         f = [ f f1 ];
       end
-    end
+    end % iData
     
     function DOS = dos(self, varargin)
       % iData_Sab: dos(sab): compute the density of states (DOS)
@@ -270,7 +270,7 @@ classdef iData_Sab < iData
         h=plot(DOS); set(h,'LineWidth',2);
         set(fig, 'NextPlot','new');
       end
-    end
+    end % dos
     
     function t = thermochemistry(s, T, options)
       % iData_Sab: thermochemistry(sab, T): compute thermodynamic quantities for 2D S(alpha,beta) data sets.
@@ -307,7 +307,7 @@ classdef iData_Sab < iData
       end
       s = iData_Sqw2D(s);
       t = thermochemistry(s, T, options);
-    end
+    end % thermochemistry
     
     function sigma = moments(data, varargin)
       % iData_Sab: moments(sab, M, T, classical): compute Sqw moments/sum rules (harmonic frequencies)
@@ -350,7 +350,7 @@ classdef iData_Sab < iData
       if nargout == 0
         fig=figure; h  =plot(sigma(1:6),'legend'); set(fig, 'NextPlot','new');
       end
-    end
+    end % moments
     
     function s = symmetrize(s0)
       % iData_Sab: symmetrize(s): extend the S(alpha,beta) in both beta/energy sides
@@ -388,7 +388,7 @@ classdef iData_Sab < iData
       if nargout == 0
         fig=figure; h  =plot(log10(s)); set(fig, 'NextPlot','new');
       end
-    end
+    end % symmetrize
     
     function s = Bosify(s0, varargin)
       % iData_Sab: Bosify(s, T): apply the 'Bose' factor (detailed balance) to a classical data set.
@@ -450,7 +450,7 @@ classdef iData_Sab < iData
       if nargout == 0
         fig=figure; h  =plot(log10(s)); set(fig, 'NextPlot','new');
       end
-    end
+    end % Bosify
     
     function s = deBosify(s0, varargin)
       % iData_Sab: deBosify(s, T): remove the 'Bose' factor (detailed balance) from an experimental/ quantum data set.
@@ -513,7 +513,7 @@ classdef iData_Sab < iData
       if nargout == 0
         fig=figure; h  =plot(log10(s)); set(fig, 'NextPlot','new');
       end
-    end
+    end % deBosify
     
     function [s, sphiw] = dynamic_range(s, varargin)
       % iData_Sab: dynamic_range: crop the S(alpha,beta) to the available dynamic range
@@ -563,7 +563,7 @@ classdef iData_Sab < iData
       if nargout == 0
         fig=figure; h  =subplot(log10([ s sphiw ]), 'view2 tight'); set(fig, 'NextPlot','new');
       end
-    end
+    end % dynamic_range
     
     function sigma = scattering_cross_section(s, varargin)
       % iData_Sab: scattering_cross_section: compute the total neutron scattering cross section for
@@ -639,7 +639,7 @@ classdef iData_Sab < iData
       if nargout == 0
         fig=figure; h  =plot(sigma); set(fig, 'NextPlot','new');
       end
-    end
+    end % scattering_cross_section
     
     function sq = structure_factor(s)
       % iData_Sab: structure_factor: compute the structure factor
@@ -666,7 +666,7 @@ classdef iData_Sab < iData
       if nargout == 0
         fig=figure; h  =plot(sq); set(fig, 'NextPlot','new');
       end
-    end
+    end % structure_factor
     
     function [inc, multi] = incoherent(s, varargin)
       % iData_Sab: multi_phonons_incoherent: compute the multi-phonon contributions in S(q,w) from an initial density of states in the incoherent gaussian approximation
@@ -710,7 +710,7 @@ classdef iData_Sab < iData
         h  =subplot(log10([inc multi]), 'view2'); 
         set(fig, 'NextPlot','new');
       end
-    end
+    end % incoherent
     
     function [G1, G2] = multi_phonons(s, varargin)
       % iData_Sqw2D: multi_phonons: compute the integrated multi-phonon DOS from an initial density of states
@@ -761,7 +761,7 @@ classdef iData_Sab < iData
         h  =plot([ G1 G2 ]); 
         set(fig, 'NextPlot','new');
       end
-    end
+    end % multi_phonons
     
   end % methods
   

@@ -105,7 +105,7 @@ classdef iData_vDOS < iData
     % iData_vDOS: dos: return the object. 
     %   For easier syntax and compatibility with other classes.
       d = self;
-    end
+    end % dos
     
     function g = gdos(self, varargin)
     % iData_vDOS: gdos: compute the generalised density of states from a vibrational density of states. Should be compared to experimental gDOS.
@@ -113,15 +113,15 @@ classdef iData_vDOS < iData
       % normalise the 1-phonon term to 1 and apply to others
       nrm = trapz(g(1));
       g   = g ./ nrm; % normalise to gDOS 1-phonon term
-      g   = sum(g); % effective gDOS == \int q S(q,w) dq
-    end
+      g   = plus(g); % effective gDOS == \int q S(q,w) dq
+    end % gdos
     
     % parameters (search for parameters in iData)
     function parameters = parseparams(s)
       % iData_vDOS: parseparams: search for physical quantities in object.
       % This search is also done when creating iData_vDOS objects.
       [s,parameters,fields] = Sqw_parameters(s);
-    end
+    end % parseparams
     
     function f = iData(self)
       % iData_vDOS: iData: convert a iData_vDOS back to iData
@@ -138,10 +138,11 @@ classdef iData_vDOS < iData
         warning(w);
         f = [ f f1 ];
       end
-    end
+    end % iData
     
     function v = vdos(self, varargin)
       % iData_vDOS: vdos: compute the 'true' vibrational density of states from a gDOS estimate.
+      %   TODO: Not finished yet, not tested.
       %
       % Example:
       %   gdos = dos(
@@ -181,9 +182,9 @@ classdef iData_vDOS < iData
         v = v .* ratio;
       end
       
-    end
+    end % vdos
     
     
-  end
+  end % methods
   
-end
+end % class

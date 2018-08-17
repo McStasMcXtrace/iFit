@@ -40,7 +40,7 @@ function [s, sphi] = dynamic_range(s, varargin)
 %   s:      Sqw data set, e.g. 2D data set with w as 1st axis (rows, meV), q as 2nd axis (Angs-1).
 %   Ei:     incoming neutron energy [meV]
 %   angles: scattering detection range in [deg] as a vector. Min and Max values are used.
-%   'lambda','Ki': additional named arguments
+%   'lambda','Ki': additional named arguments to specify the incident energy
 % output:
 %   sqw_Ei: S(q,w)   cropped to dynamic range for incident energy Ei.
 %   sphiw:  S(phi,w) angular dynamic structure factor for incident energy Ei.

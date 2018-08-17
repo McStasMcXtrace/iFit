@@ -66,7 +66,7 @@ function sigma = scattering_cross_section(s, varargin)
 %   M: molar weight of the atom/molecule in [g/mol].
 %     when given empty, it is searched 'weight' or 'mass' is the object.
 %     Default is set to 0, i.e. the Debye-Waller factor is not taken into account.
-%   'lambda','Ki': additional named arguments
+%   'lambda','Ki': additional named arguments to specify the incident energy
 % output:
 %   sigma: cross section per scattering unit (scalar or iData)
 %          to be multiplied afterwards by the bound cross section [barn]

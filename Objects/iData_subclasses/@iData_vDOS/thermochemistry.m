@@ -2,6 +2,7 @@ function [t, fig]=thermochemistry(s, T, options)
 % iData_vDOS/thermochemistry: compute thermodynamic quantities for 1D vDOS data sets.
 %
 % compute thermodynamics quantities from the vibrational density of states.
+%   vDOS -> S, U, F, Cv
 %
 % The input 1D data set should be e.g. a vDOS, with axis energy in [meV]. 
 %

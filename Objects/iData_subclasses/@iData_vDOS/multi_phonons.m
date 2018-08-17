@@ -1,10 +1,16 @@
-function [Gw, Tsym] = multi_phonons(gw, Ki, T, sigma, m, phi, n)
+function [Gw, Tsym] = multi_phonons(gw, varargin)
 % iData_vDOS: multi_phonons: compute the integrated multi-phonon generalised density of states (gDOS) from an initial vibrational density of states (vDOS)
+%
+%   Gw = multi_phonons(gw, Ki, T, sigma, m, n)
+%
+% compute: Density of States -> multi-phonon gDOS terms
 %
 % The input argument 'gw' should be a vibrational density of states (vDOS) as
 %   obtained from an experiment (e.g. Bedov/Oskotskii estimate), molecular 
 %   dynamics, or lattice dynamics. In the so-called incoherent approximation,
 %   the vDOS obtained from incoherent and coherent scattering laws are equal.
+% This method is equivalent to the 'incoherent' one, but provides the
+%   density-of-states gDOS instead of a scattering law Sinc(q,w).
 %
 % The result is the 'neutron weighted' (generalised) density of states (gDOS),
 %   which should be compared with:
@@ -20,12 +26,9 @@ function [Gw, Tsym] = multi_phonons(gw, Ki, T, sigma, m, phi, n)
 %   in the Oskotskii formalism. The following terms are the multi-phonon contributions.
 %   The generalised density of states (gDOS) is the sum of the terms in this expansion.
 %
-% Missing arguments (or given as [] empty), are searched within the initial density 
-%   of states object.
-%
 % This implementation is in principle exact for an isotropic monoatomic material,
 %   e.g. a liquid, powder, or cubic crystal. This methodology is equivalent to 
-%   the MUPHOCOR code.
+%   an iteration of the MUPHOCOR code.
 %
 % For a poly-atomic material with a set of non-equivalent atoms with relative 
 %   concentration Ci, mass Mi and bound scattering cross section sigma_i, 
@@ -43,6 +46,12 @@ function [Gw, Tsym] = multi_phonons(gw, Ki, T, sigma, m, phi, n)
 %
 % syntax:
 %   Gw = multi_phonons(gw, Ki, T, sigma, m, n)
+%   Gw = multi_phonons(gw, 'Ki',Ki, 'T',T, 'sigma',sigma, 'm',m, 'n',n)
+%   Gw = multi_phonons(gw, 'lambda', lambda)
+%
+% Missing arguments (or given as [] empty), are searched within the initial density 
+%   of states object. Input arguments can be given in order, or with name-value 
+%   pairs, or as a structure with named fields.
 %
 % input:
 %   gw:   the vibrational density of states per [meV] [iData]
@@ -52,26 +61,30 @@ function [Gw, Tsym] = multi_phonons(gw, Ki, T, sigma, m, phi, n)
 %   m:    mass [g/mol]
 %   phi:  detector angles, min and max [deg]
 %   n:    number of iterations in the series expansion, e.g. 5
+%   DW: Debye-Waller coefficient gamma=<u^2> [Angs^2] e.g. 0.005
+%       The Debye-Waller function is      2W(q)=gamma*q^2
+%       The Debye-Waller factor   is exp(-2W(q))
+%   'lambda','Ei': additional named arguments to specify the incident energy
 %
 % output:
 %   Gw:   neutron weighted gDOS terms, to be summed [iData_vDOS array]
-%   Wq:   half Debye-Waller factor. The DW function is exp(-2*Wq)  [iData vs q]
 %   Tp:   p-phonon terms [iData array]
 %
 % Example: s=sqw_cubic_monoatomic; gw=dos(s); 
-%   mp=multi_phonons(gw); gdos=sum(mp); plot( [gw mp ]);
+%   mp=multi_phonons(gw); gdos=plus(mp); plot( [gw mp ]);
 % 
 %
 % See also: iData_Sqw2D/dos, iData_vDOS/incoherent
 % (c) E.Farhi, ILL. License: EUPL.
 
+  Gw = []; Tsym=[];
+  if isempty(gw), return; end
+  
   % check input parameters
-  if nargin < 2, Ki   =[]; end
-  if nargin < 3, T    =[]; end
-  if nargin < 4, sigma=[]; end
-  if nargin < 5, m    =[]; end
-  if nargin < 6, phi  =[]; end
-  if nargin < 7, n    =[]; end
+  pars = varargin2struct({'Ki' 'T' 'sigma' 'm' 'phi' 'n' 'DW' 'lambda' 'Ei'}, varargin, true);
+  
+  if isfield(pars, 'gamma') && ~isempty(pars.gamma), pars.dw = pars.gamma; end
+  if isfield(pars, 'u2')    && ~isempty(pars.u2),    pars.dw = pars.u2; end
   
   % constants
   SE2V = 437.393377;        % Convert sqrt(E)[meV] to v[m/s]
@@ -81,53 +94,56 @@ function [Gw, Tsym] = multi_phonons(gw, Ki, T, sigma, m, phi, n)
   
   % search in the vDOS data set in case missing properties are stored there
   % Ki, T, mass, sigma
-  if isempty(Ki)
-    Ki = Sqw_getT(gw, {'wavevector','momentum','IncidentWavevector','Ki'});
-    if isempty(Ki) || Ki<=0
-      lambda = Sqw_getT(gw, {'wavelength','lambda'});
-      if ~isempty(lambda) && lambda>0
-        Ki = 2*pi/lambda;
-      else
-        Ei = Sqw_getT(gw, {'IncidentEnergy','Ei'});
-        if isempty(Ei) || Ei<=0
-          w  = getaxis(gw, 1);
-          Ei = max(abs(w(:)));
-          disp([ mfilename ': using Ei=' num2str(Ei) ' [meV] incident neutron energy.' ]);
-        end
-        Ki = SE2V*V2K*sqrt(Ei);
-      end
-    end
+  if isempty(pars.ki)
+    pars.ki = Sqw_getT(gw, {'wavevector','momentum','IncidentWavevector','Ki'});
   end
-  if isempty(T) || T<=0
-    T = Sqw_getT(gw);
+  if isempty(pars.lambda)
+    pars.lambda = Sqw_getT(gw, {'wavelength','lambda'});
   end
-  if isempty(m) || m<=0
-    m = Sqw_getT(gw, {'Masses','Molar_mass','Mass','Weight'});
+  if isempty(pars.ei)
+    pars.ei = Sqw_getT(gw, {'IncidentEnergy','Ei'});
   end
-  if isempty(sigma) || all(sigma<=0)
-    sigma = Sqw_getT(gw, {'sigma_coh','sigma_inc','sigma'});
+  
+  if isempty(pars.ki) && isfield(pars, 'lambda') && ~isempty(pars.lambda) && pars.lambda > 0
+    pars.ki=2*pi/pars.lambda;
   end
-  if isempty(phi)
-    phi = Sqw_getT(gw, {'DetectionAngles','Angle'});
+  if isempty(pars.ki) && isfield(pars, 'ei') && ~isempty(pars.ei) && pars.ei > 0
+    pars.ki=0.695*sqrt(pars.ei);
   end
-  if isempty(phi)
-    phi = [ 10 120 ];
-    disp([ mfilename ': using detector angular range phi=' mat2str(phi) ' [deg] incident neutron wavelength.' ]);
+  if isempty(pars.ki)
+    pars.ki = 2.662;
+  end
+  
+  if isempty(pars.t) || pars.t<=0
+    pars.t = Sqw_getT(gw);
+  end
+  if isempty(pars.m) || pars.m<=0
+    pars.m = Sqw_getT(gw, {'Masses','Molar_mass','Mass','Weight'});
+  end
+  if isempty(pars.sigma) || all(pars.sigma<=0)
+    pars.sigma = Sqw_getT(gw, {'sigma_coh','sigma_inc','sigma'});
+  end
+  if isempty(pars.phi)
+    pars.phi = Sqw_getT(gw, {'DetectionAngles','Angle'});
+  end
+  if isempty(pars.phi)
+    pars.phi = [ 10 120 ];
+    disp([ mfilename ': using detector angular range phi=' mat2str(pars.phi) ' [deg] incident neutron wavelength.' ]);
   end
   % fail when missing information
-  if isempty(m) || m<=0    
+  if isempty(pars.m) || pars.m<=0    
     disp([ mfilename ': WARNING: Unspecified molar mass (m). Using m=12 [g/mol]' ]); 
-    m = 12;
+    pars.m = 12;
   end
-  if isempty(T) || T<=0    
+  if isempty(pars.t) || pars.t<=0    
     disp([ mfilename ': WARNING: Unspecified temperature (T). Using T=10 [K]' ]); 
-    T = 10;
+    pars.t = 10;
   end
-  if isempty(sigma) 
+  if isempty(pars.sigma) 
     disp([ mfilename ': WARNING: Unspecified scattering cross section (sigma). Using sigma=1 [barn]. Scale result accordingly.' ]); 
-    sigma = 1; 
+    pars.sigma = 1; 
   end
-  if isempty(n),    n=5; end
+  if isempty(pars.n),    pars.n=5; end
   
   % conversion factors
   mn      = 1.674927471E-027; % neutron mass [kg]
@@ -152,7 +168,7 @@ function [Gw, Tsym] = multi_phonons(gw, Ki, T, sigma, m, phi, n)
   delta = iData(hw, delta);             % make it an iData for easier handling
 
   % compute the Debye-Waller function W(q) = <u2>/2. Schober p 328 -------------
-  kT = T/meVtoK;                        % T [K] -> [meV] = 11.6045
+  kT = pars.t/meVtoK;                        % T [K] -> [meV] = 11.6045
   
   % f(0) is an inverse energy. integrate -inf:inf
   % f(0)=\int(dw g(w)/w [n(w)+1]) Eq (10.58)
@@ -160,12 +176,18 @@ function [Gw, Tsym] = multi_phonons(gw, Ki, T, sigma, m, phi, n)
   % compute the T1 term
   T1 = gw./hw.*(nw+1);                  % Eq. (10.68) p 329
   f0 = trapz(T1);
+  if ~isempty(pars.dw) && pars.dw > 0
+    % we use a specified DW 'gamma' value
+    T1 = T1/f0;
+    f0 = pars.dw/(q2toE/4/pars.m)/2;  % new DW factor sets f0=trapz(T1)
+    T1 = T1*f0;
+  end
   disp([ mfilename ': 1/f(0)=' num2str(1/f0) ' [meV]' ]);
 
   % Debye-Waller coefficient, aka gamma=2W/q^2 ; h/2m = q2toE/2/m
-  W     = (q2toE/4/m*f0);               % W = <u2> in Angs^2. integrate 0:inf
+  W     = (q2toE/4/pars.m*f0);               % W = <u2> in Angs^2. integrate 0:inf
   gamma = 2*W;
-  disp([ mfilename ': Debye-Waller coefficient gamma      =' num2str(2*W) ...
+  disp([ mfilename ': Debye-Waller coefficient gamma=<u^2>=' num2str(2*W) ...
     ' [Angs^2]. Debye-Waller function is 2W(q)=gamma*q^2. Debye-Waller factor is exp(-gamma.q^2)' ]);
   
   % compute the T[p] terms iteratively -----------------------------------------
@@ -173,8 +195,8 @@ function [Gw, Tsym] = multi_phonons(gw, Ki, T, sigma, m, phi, n)
   
   % evaluate iteratively the higher order terms
   Tpm1 = T1;
-  fp   = f0.^(1:n);
-  for p=2:n
+  fp   = f0.^(1:pars.n);
+  for p=2:pars.n
     % compute the T[p] = conv(T[1], T[p-1])
     Tp   = conv(T1, Tpm1);
     % make sure trapz(Tp) = f0^p Eq (10.77)
@@ -185,8 +207,8 @@ function [Gw, Tsym] = multi_phonons(gw, Ki, T, sigma, m, phi, n)
   
   % compute the symmetrized multi-phonon Tp terms ------------------------------
   Tsym = [];
-  for p=1:n
-    if n==1, Tp = Tall; else Tp = Tall(p); end
+  for p=1:pars.n
+    if pars.n==1, Tp = Tall; else Tp = Tall(p); end
     Tpsym = exp(-hw./2/kT).*Tp;
     Tsym = [ Tsym Tpsym ];
   end
@@ -194,26 +216,26 @@ function [Gw, Tsym] = multi_phonons(gw, Ki, T, sigma, m, phi, n)
   % compute the integrated intensity -------------------------------------------
   Gw = [];
   % compute the dynamic range
-  Qm   = [ Q(Ki, hw, min(phi)) Q(Ki, hw, max(phi)) ]; % size=[ numel(hw) 2 ]
+  Qm   = [ Q(pars.ki, hw, min(pars.phi)) Q(pars.ki, hw, max(pars.phi)) ]; % size=[ numel(hw) 2 ]
   Qmax = max(Qm,[], 2);                               % size=[ numel(hw) 1 ]
   Qmin = min(Qm,[], 2);
   
   fact = 1;
   % compute the gDOS terms Eq (10.93)
-  for p=1:n
-    if n==1, Tpsym = Tsym; else Tpsym = Tsym(p); end
+  for p=1:pars.n
+    if pars.n==1, Tpsym = Tsym; else Tpsym = Tsym(p); end
     fact = fact*p;  % !p
-    dGw  = ((max(abs(phi))-min(abs(phi)))*sigma/8/pi/Ki.^2).*exp(hw./2/kT) ...
-        .*(1/m)^p/gamma^(p+1) ...
+    dGw  = ((max(abs(pars.phi))-min(abs(pars.phi)))*pars.sigma/8/pi/pars.ki.^2).*exp(hw./2/kT) ...
+        .*(1/pars.m)^p/gamma^(p+1) ...
         .*(Ip(gamma*Qmax,p) - Ip(gamma*Qmin,p)).*Tpsym/fact;
-    setalias(dGw, 'Temperature', T, 'Temperature [K]');
-    setalias(dGw, 'Weight',      m, 'Molar masses [g/mol]');
-    setalias(dGw, 'Sigma',   sigma, 'Neutron scattering cross section [barns]');
-    setalias(dGw, 'IncidentWavevector', Ki, 'neutron incident wavevector [Angs-1]');
-    setalias(dGw, 'Wavelength', 2*pi/Ki, 'neutron incident wavelength [Angs]');
-    setalias(dGw, 'DetectionAngles', phi, 'Detection Angles [deg]');
-    setalias(dGw, 'DebyeWallerCooeficient', gamma, ...
-      'Debye-Waller coefficient gamma [Angs^2]. Debye-Waller function is 2W(q)=gamma*q^2. Debye-Waller factor is exp(-gamma.q^2)');
+    setalias(dGw, 'Temperature', pars.t, 'Temperature [K]');
+    setalias(dGw, 'Weight',      pars.m, 'Molar masses [g/mol]');
+    setalias(dGw, 'Sigma',   pars.sigma, 'Neutron scattering cross section [barns]');
+    setalias(dGw, 'IncidentWavevector', pars.ki, 'neutron incident wavevector [Angs-1]');
+    setalias(dGw, 'Wavelength', 2*pi/pars.ki, 'neutron incident wavelength [Angs]');
+    setalias(dGw, 'DetectionAngles', pars.phi, 'Detection Angles [deg]');
+    setalias(dGw, 'DebyeWallerCoeficient', gamma, ...
+      'Debye-Waller coefficient gamma=<u^2> [Angs^2]. Debye-Waller function is 2W(q)=gamma*q^2. Debye-Waller factor is exp(-gamma.q^2)');
     dGw.Title= [ 'gDOS [p=' num2str(p) ']' ];
     title(dGw, [ 'gDOS [p=' num2str(p) '] from ' titl ]);
     dGw.Label= [ 'gDOS [p=' num2str(p) ']' ];

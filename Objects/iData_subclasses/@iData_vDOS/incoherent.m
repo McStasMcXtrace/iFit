@@ -164,6 +164,8 @@ function [Sqw, Iqt, Wq, Tall] = incoherent(gw, varargin)
   setalias(Sqw, 'Temperature', pars.t, 'Temperature [K]');
   setalias(Sqw, 'Weight',      pars.m, 'Molar masses [g/mol]');
   setalias(Sqw, 'Sigma',   pars.sigma, 'Neutron scattering cross section [barns]');
+  setalias(Sqw, 'DebyeWallerCoeficient', gamma, ...
+      'Debye-Waller coefficient gamma=<u^2> [Angs^2]. Debye-Waller function is 2W(q)=gamma*q^2. Debye-Waller factor is exp(-gamma.q^2)');
   Sqw.Title= [ 'Elastic scattering function S(q,w) [p=0] from ' titl ];
   title(Sqw, [ 'S(q,w) [p=0] from ' titl ]);
   Sqw.Label= [ 'S(q,w) [p=0]' ];
@@ -190,6 +192,8 @@ function [Sqw, Iqt, Wq, Tall] = incoherent(gw, varargin)
     setalias(Iqt, 'Temperature', pars.t, 'Temperature [K]');
     setalias(Iqt, 'Weight',      pars.m, 'Molar masses [g/mol]');
     setalias(Iqt, 'Sigma',   pars.sigma, 'Neutron scattering cross section [barns]');
+    setalias(Iqt, 'DebyeWallerCoeficient', gamma, ...
+      'Debye-Waller coefficient gamma=<u^2> [Angs^2]. Debye-Waller function is 2W(q)=gamma*q^2. Debye-Waller factor is exp(-gamma.q^2)');
     Iqt.Title= [ 'Intermediate scattering function I(q,t) [p=0] from ' titl ];
     title(Iqt, [ 'I(q,t) [p=0] from ' titl ]);
     Iqt.Label= [ 'I(q,t) [p=0]' ];
@@ -234,6 +238,8 @@ function [Sqw, Iqt, Wq, Tall] = incoherent(gw, varargin)
     setalias(dSqw, 'Temperature', pars.t, 'Temperature [K]');
     setalias(dSqw, 'Weight',      pars.m, 'Molar masses [g/mol]');
     setalias(dSqw, 'Sigma',   pars.sigma, 'Neutron scattering cross section [barns]');
+    setalias(dSqw, 'DebyeWallerCoeficient', gamma, ...
+      'Debye-Waller coefficient gamma=<u^2> [Angs^2]. Debye-Waller function is 2W(q)=gamma*q^2. Debye-Waller factor is exp(-gamma.q^2)');
     dSqw.Title= [ 'Scattering function S(q,w) [p=' num2str(p) ']' ];
     title(dSqw, [ 'S(q,w) [p=' num2str(p) '] from ' titl ]);
     dSqw.Label= [ 'S(q,w) [p=' num2str(p) ']' ];
@@ -254,6 +260,8 @@ function [Sqw, Iqt, Wq, Tall] = incoherent(gw, varargin)
       setalias(dIqt, 'Temperature', pars.t, 'Temperature [K]');
       setalias(dIqt, 'Weight',      pars.m, 'Molar masses [g/mol]');
       setalias(dIqt, 'Sigma',   pars.sigma, 'Neutron scattering cross section [barns]');
+      setalias(dIqt, 'DebyeWallerCoeficient', gamma, ...
+      'Debye-Waller coefficient gamma=<u^2> [Angs^2]. Debye-Waller function is 2W(q)=gamma*q^2. Debye-Waller factor is exp(-gamma.q^2)');
       dIqt = dIqt';
       dIqt.Title= [ 'Intermediate scattering function I(q,t) [p=' num2str(p) ']' ];
       title(dIqt, [ 'I(q,t) [p=' num2str(p) '] from ' titl ]);
