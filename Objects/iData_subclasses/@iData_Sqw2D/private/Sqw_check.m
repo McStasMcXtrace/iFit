@@ -195,7 +195,7 @@ function s = Sqw_check(s, mode)
       setalias(s,'classical', classical);
     end
 
-    if ~isempty(T0) && ~isempty(T) && ~isnan(T) && ~(0.9 < T/T0 & T/T0 < 1.1)
+    if ~isempty(T0) && ~isempty(T) && ~isnan(T) && T>0 && ~(0.9 < T/T0 & T/T0 < 1.1)
       disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' S(|q|,w) 2D object from ' s.Source ]);
       disp(['    indicates a Temperature T=' num2str(T0) ' [K], but the analysis of the data provides T=' num2str(T) ' [K].' ]);
     end

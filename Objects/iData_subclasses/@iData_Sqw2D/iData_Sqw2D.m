@@ -73,7 +73,7 @@ classdef iData_Sqw2D < iData
   % sq  = structure_factor(s)
   %   Compute the structure factor S(q)
   %
-  % [inc, multi] = incoherent(s, q, T, sigma, m, n)
+  % [inc, multi] = incoherent(s, q, T, m, n)
   %   Compute an estimate of the incoherent neutron scattering law in the gaussian approximation (Sjolander)
   %
   % [coh] = coherent(inc, sq)
@@ -164,13 +164,15 @@ classdef iData_Sqw2D < iData
     function [inc, single, multi] = incoherent(s, varargin)
       % iData_Sqw2D: incoherent: incoherent neutron scattering law estimate in the incoherent gaussian approximation
       %
-      %   [inc, single, multiple] = incoherent(s, q, T, sigma, m, n, DW)
+      %   [inc, single, multiple] = incoherent(s, q, T, m, n, DW)
       %
       % compute: iData_Sqw2D -> generalised Density of States -> Incoherent approximation S(q,w)
       %
       % The result is the dynamic structure factor (scattering law) for neutrons, in
       %   the incoherent gaussian approximation. If you wish to obtain the intermediate
       %   scattering function I(q,t), use [inc, Iqt] = incoherent(dos(s), ...)
+      %   These should be e.g. multiplied by the neutron scattering bound cross 
+      %   section 'sigma_inc' [barns]. This calculation includes the Debye-Waller factor.
       %
       % This implementation is in principle exact for an isotropic monoatomic material,
       %   e.g. a liquid or powder.
@@ -197,8 +199,8 @@ classdef iData_Sqw2D < iData
       %
       % syntax:
       %   [inc, single, multi] = incoherent(sqw)
-      %   [inc, single, multi] = incoherent(sqw, q, T, sigma, m, n, DW)
-      %   [inc, single, multi] = incoherent(sqw, 'q', q, 'T', T, 'sigma', sigma, 'm', m, 'n', n, 'DW', dw)
+      %   [inc, single, multi] = incoherent(sqw, q, T, m, n, DW)
+      %   [inc, single, multi] = incoherent(sqw, 'q', q, 'T', T, 'm', m, 'n', n, 'DW', dw)
       %
       % Missing arguments (or given as [] empty), are searched within the initial 
       %   data set. Input arguments can be given in order, or with name-value 
@@ -208,7 +210,6 @@ classdef iData_Sqw2D < iData
       %   sqw:the scattering law S(q,w) [iData_Sqw2D]
       %   q:  the momentum axis [Angs-1, vector]
       %   T:  temperature [K]
-      %   sigma: bound neutron scattering cross section [barns]
       %   m:  mass of the scattering unit [g/mol]
       %   n:  number of iterations in the series expansion, e.g. 5
       %   DW: Debye-Waller coefficient gamma=<u^2> [Angs^2] e.g. 0.005
@@ -248,9 +249,18 @@ classdef iData_Sqw2D < iData
     function [coh] = coherent(self, sq)
       % iData_Sqw2D: coherent: compute the coherent scattering cross section from the incoherent and structure factor, in the Skold approximation
       %
-      % coh = coherent(inc, sq)
+      %   coh = coherent(inc, sq)
       %
-      % compute: iData_Sqw2D incoherent S(q,w)-> coherent S(q,w)
+      % compute: iData_Sqw2D incoherent S(q,w) + S(q) -> coherent S(q,w)
+      %
+      % The Skold approximation is:
+      %
+      %   Scoh(q,w) = Sinc(q/sqrt(S(q)), w) S(q)
+      %
+      % The result should be e.g. multiplied by the neutron scattering bound cross 
+      % section 'sigma_coh' [barns].
+      %
+      % Reference: K. Skold, Phys. Rev. Lett. 19, 1023 (1967).
       %
       % input:
       %   inc: incoherent S(q,w) [iData_Sqw2D]

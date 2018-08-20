@@ -1,7 +1,7 @@
 function [Gw, Tsym] = multi_phonons(gw, varargin)
 % iData_vDOS: multi_phonons: compute the integrated multi-phonon generalised density of states (gDOS) from an initial vibrational density of states (vDOS)
 %
-%   Gw = multi_phonons(gw, Ki, T, sigma, m, n)
+%   Gw = multi_phonons(gw, Ki, T, m, n)
 %
 % compute: Density of States -> multi-phonon gDOS terms
 %
@@ -21,6 +21,8 @@ function [Gw, Tsym] = multi_phonons(gw, varargin)
 %   of the momentum q or scattering angle theta.
 %   In practice, the measured I(q,w) contains both the single phonon and multi-phonon
 %   terms (and potentially multiple scattering).
+%   These should be e.g. multiplied by the neutron scattering bound cross section
+%   'sigma' [barns]. This calculation includes the Debye-Waller factor.
 %
 % The 1st element of the result 'Gw' is the generalised density of states, as computed
 %   in the Oskotskii formalism. The following terms are the multi-phonon contributions.
@@ -45,8 +47,8 @@ function [Gw, Tsym] = multi_phonons(gw, varargin)
 %   W. Reichardt, MUPHOCOR Karlsruhe Report 13.03.01p06L (1984)
 %
 % syntax:
-%   Gw = multi_phonons(gw, Ki, T, sigma, m, n)
-%   Gw = multi_phonons(gw, 'Ki',Ki, 'T',T, 'sigma',sigma, 'm',m, 'n',n)
+%   Gw = multi_phonons(gw, Ki, T, m, n)
+%   Gw = multi_phonons(gw, 'Ki',Ki, 'T',T, 'm',m, 'n',n)
 %   Gw = multi_phonons(gw, 'lambda', lambda)
 %
 % Missing arguments (or given as [] empty), are searched within the initial density 
@@ -57,7 +59,6 @@ function [Gw, Tsym] = multi_phonons(gw, varargin)
 %   gw:   the vibrational density of states per [meV] [iData]
 %   Ki:   incident wavevector [Angs-1]. Ki=2*pi/lambda=0.695*sqrt(Ei)
 %   T:    temperature [K]
-%   sigma: bound neutron scattering cross section [barns]
 %   m:    mass [g/mol]
 %   phi:  detector angles, min and max [deg]
 %   n:    number of iterations in the series expansion, e.g. 5
@@ -81,7 +82,7 @@ function [Gw, Tsym] = multi_phonons(gw, varargin)
   if isempty(gw), return; end
   
   % check input parameters
-  pars = varargin2struct({'Ki' 'T' 'sigma' 'm' 'phi' 'n' 'DW' 'lambda' 'Ei'}, varargin, true);
+  pars = varargin2struct({'Ki' 'T' 'm' 'phi' 'n' 'DW' 'lambda' 'Ei'}, varargin, true);
   
   if isfield(pars, 'gamma') && ~isempty(pars.gamma), pars.dw = pars.gamma; end
   if isfield(pars, 'u2')    && ~isempty(pars.u2),    pars.dw = pars.u2; end
@@ -93,7 +94,7 @@ function [Gw, Tsym] = multi_phonons(gw, varargin)
   VS2E = 5.22703725e-6;     % Convert (v[m/s])**2 to E[meV]
   
   % search in the vDOS data set in case missing properties are stored there
-  % Ki, T, mass, sigma
+  % Ki, T, mass
   if isempty(pars.ki)
     pars.ki = Sqw_getT(gw, {'wavevector','momentum','IncidentWavevector','Ki'});
   end
@@ -120,9 +121,6 @@ function [Gw, Tsym] = multi_phonons(gw, varargin)
   if isempty(pars.m) || pars.m<=0
     pars.m = Sqw_getT(gw, {'Masses','Molar_mass','Mass','Weight'});
   end
-  if isempty(pars.sigma) || all(pars.sigma<=0)
-    pars.sigma = Sqw_getT(gw, {'sigma_coh','sigma_inc','sigma'});
-  end
   if isempty(pars.phi)
     pars.phi = Sqw_getT(gw, {'DetectionAngles','Angle'});
   end
@@ -139,11 +137,7 @@ function [Gw, Tsym] = multi_phonons(gw, varargin)
     disp([ mfilename ': WARNING: Unspecified temperature (T). Using T=10 [K]' ]); 
     pars.t = 10;
   end
-  if isempty(pars.sigma) 
-    disp([ mfilename ': WARNING: Unspecified scattering cross section (sigma). Using sigma=1 [barn]. Scale result accordingly.' ]); 
-    pars.sigma = 1; 
-  end
-  if isempty(pars.n),    pars.n=5; end
+  if isempty(pars.n),   pars.n=5; end
   
   % conversion factors
   mn      = 1.674927471E-027; % neutron mass [kg]
@@ -225,12 +219,11 @@ function [Gw, Tsym] = multi_phonons(gw, varargin)
   for p=1:pars.n
     if pars.n==1, Tpsym = Tsym; else Tpsym = Tsym(p); end
     fact = fact*p;  % !p
-    dGw  = ((max(abs(pars.phi))-min(abs(pars.phi)))*pars.sigma/8/pi/pars.ki.^2).*exp(hw./2/kT) ...
+    dGw  = ((max(abs(pars.phi))-min(abs(pars.phi)))*1/8/pi/pars.ki.^2).*exp(hw./2/kT) ...
         .*(1/pars.m)^p/gamma^(p+1) ...
         .*(Ip(gamma*Qmax,p) - Ip(gamma*Qmin,p)).*Tpsym/fact;
     setalias(dGw, 'Temperature', pars.t, 'Temperature [K]');
     setalias(dGw, 'Weight',      pars.m, 'Molar masses [g/mol]');
-    setalias(dGw, 'Sigma',   pars.sigma, 'Neutron scattering cross section [barns]');
     setalias(dGw, 'IncidentWavevector', pars.ki, 'neutron incident wavevector [Angs-1]');
     setalias(dGw, 'Wavelength', 2*pi/pars.ki, 'neutron incident wavelength [Angs]');
     setalias(dGw, 'DetectionAngles', pars.phi, 'Detection Angles [deg]');
