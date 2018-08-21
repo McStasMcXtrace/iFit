@@ -186,6 +186,12 @@ function config = iLoad_ini
     PDB.patterns        ={'HEADER','COMPND','SOURCE','EXPDTA','AUTHOR','REVDAT'};
     PDB.postprocess     = 'load_xyen';
     
+    xye.name            ='Simple x/y/e column file';
+    xye.extension       ={'xye', 'xy'};
+    xye.method          ='read_anytext';
+    xye.patterns        ={};
+    xye.postprocess     = 'load_xyen';
+
     OFF_ascii.name      ='OFF 3D ascii';
     OFF_ascii.method    ='read_anytext';
     OFF_ascii.options   ='--fast --binary --headers --comment=NULL --metadata=OFF --silent';
@@ -349,7 +355,7 @@ function config = iLoad_ini
       NPY, ESRF_edf, ISIS_SQW, ILL_HBIN, Mar_CCD, Roper_SPE, Andor_SIF, ADSC_CCD, Matlab_FIG, ...
       Analyze, CBF, STL_binary, MRC, NifTI, Igor, lv_tdms, nmr_jeol, idl_sav, ...
       agilent_ms, thermo_ms, agilent_sdf, ...
-      nmr_bruker, nmr_varian, ftir_bruker, llb_tas };
+      nmr_bruker, nmr_varian, ftir_bruker, llb_tas, xye };
 	       
 	  config.UseSystemDialogs = 'yes'; % no: use uigetfiles, else defaults to 'uigetfile'
 	  config.FileName         = [ mfilename ' (default configuration from ' which(mfilename) ')' ];
