@@ -142,10 +142,10 @@ classdef iData_vDOS < iData
     
     function v = vdos(self, varargin)
       % iData_vDOS: vdos: compute the 'true' vibrational density of states from a gDOS estimate.
-      %   TODO: Not finished yet, not tested.
       %
       % Example:
-      %   gdos = dos(
+      %   gdos = dos(iData_Sqw2D)
+      %   vdos = vdos(g); % refine and remove multi-phonons
       %
       % input:
       %   self:   a generalised density of states (gDOS), e.g. \int q S(q,w) dq

@@ -5,6 +5,10 @@ classdef iFunc_Sqw4D < iFunc
   %
   % Example: s=sqw_cubic_monoatomic
   %
+  % As the estimate of a 4D S(q,w) model may be computationally intensive, most 
+  % methods below evaluate the model, and then derive a quantity as a Data set 
+  % (e.g. iData)
+  %
   % Useful methods for this iFunc flavour:
   %
   % methods(iFunc_Sqw4D)
