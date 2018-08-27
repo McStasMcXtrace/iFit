@@ -18,6 +18,8 @@ function signal=sqw_spinw(varargin)
 %         options.component: the component to use as intensity, as documented in 
 %              <a href="matlab:doc sw_egrid">sw_egrid</a>
 %              Default is 'Sperp'. Suggested is also 'Sxx+Syy+Szz'.
+%   You can get a default model (squareAF) with:
+%       s = sqw_spinw('defaults');
 %
 % Model evaluation (once created)
 % Once the model is created, you may evaluate it using the standard evaluation call:
@@ -56,7 +58,7 @@ function signal=sqw_spinw(varargin)
 
 if ~exist('sw') && ~exist('spinw')
   disp([ mfilename ': ERROR: requires SpinW to be installed.' ])
-  disp('  Get it at <https://www.psi.ch/spinw/spinw>.');
+  disp('  Get it at <https://github.com/tsdev/spinw>.');
   signal=[]; return
 end
 sq = [];
@@ -149,7 +151,7 @@ script_hkl{:}, ...
 'this.UserData.maxFreq=max(spec.omega(:));', ...
 'spec = sw_egrid(spec,''component'',this.UserData.component,''Evect'',t(:)'', ''T'', p(2));', ...
 'spec = sw_instrument(spec,''dE'',p(1),''ki'',this.UserData.ki);', ...
-'signal = reshape(spec.swConv,resize_me([4 1:3])); signal=p(3)*permute(signal,[2:4 1]);' };
+'signal = reshape(spec.swConv,resize_me([end 1:(end-1)])); signal=p(3)*permute(signal,[2:ndims(signal) 1]);' };
 
 signal=iFunc(signal);
 signal = iFunc_Sqw4D(signal); % overload Sqw4D flavour
