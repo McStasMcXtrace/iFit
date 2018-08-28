@@ -102,7 +102,7 @@ classdef iFunc_Sqw2D < iFunc
       if numel(varargin) <2, varargin{end+1} = linspace(0,0.5,30); end
       if numel(varargin) <3, varargin{end+1} = linspace(0.01,max(self)*1.2,11); end
       s = iFunc(self);
-      f =iData(s,varargin{:});
+      f = iData(s,varargin{:});
       xlabel(f, 'Q [Angs]');
       ylabel(f, 'Energy [meV]');
       title(f, self.Name);
@@ -111,40 +111,61 @@ classdef iFunc_Sqw2D < iFunc
         assignin('caller',inputname(1),self); % update in original object
       end
     end
-    
-    function [fig, s, k] = plot(self, varargin)
-      % iFunc_Sqw2D: plot: plot dispersions along principal axes and gDOS
-      if isempty(varargin), varargin = { 'plot meV' }; end
-      [s,k,fig]=band_structure(self, varargin{:});
-      if ~isempty(inputname(1))
-        assignin('caller',inputname(1),self); % update in original object
-      end
-    end % plot
   
     % methods for Sqw 2D
     
-    % we evaluate the model, extend its Expression:
-    % convert it to an iData_Sqw2D
-    % apply one of the following method:
+    % we evaluate the model, extend its Expression.
+    %   convert it to an iData_Sqw2D and apply one of the following method:
     
-    % Bosify
-    % deBosify
-    % dos/gdos -> 1D iFunc
-    % structure_factor/sq -> 1D iFunc
-    % thermochemistry -> 1D iFunc array
-    % moments -> 1D iFunc array
-    % dynamic_range
-    % scattering_cross_section -> 1D iFunc
-    % incoherent (->iData_Sqw2D->incoherent)
-    % coherent (+sq)
-    % multi_phonons
-    % symmetrize
-    % qw2phiw
-    % qw2qt
-    % qw2phi
-    % Sqw2ddcs
-    % ddcs2Sqw
-    % Sab
+    % methods that retain the type (q,w)
+    %   Bosify(T, method)
+    %   deBosify(T, method)
+    %   dynamic_range(Ei, angle_min, angle_max)
+    %   incoherent(q, T, m, n, DW)
+    %   coherent (iData sq or d-spacing value)
+    %   symmetrize
+    %   Sqw2ddcs(Ei)
+    %   ddcs2Sqw(Ei)
+    
+    % when changing type, the new object must compute back the (q,w) axes, then 
+    % evaluate the original iFunc_Sqw2D model, and apply the final conversion with
+    % 'new' axes.
+    
+    % methods that change the type (q,w) -> something else (iFunc 1D)
+    %   dos/gdos(T, DW, method) -> 1D iFunc(w)
+    %   multi_phonons -> 1D(w)
+    %   scattering_cross_section(Ei_min, Ei_max, Ei_n, Mass) -> 1D iFunc(Ei) -> new axis !!
+    %   moments(M,T, classical) -> 1D iFunc array ?
+    %   structure_factor/sq -> 1D iFunc
+    %   thermochemistry(T) -> 1D iFunc array ?
+    %   muphocor(T, amasi, sigi, conci) -> 1D array
+    
+    % methods that change the type (q,w) -> something else (iFunc 2D)
+    %   Sab(M,T)
+    %   qw2phiw(lambda)
+    %   qw2qt(lambda, chwidth, dist)
+    %   qw2phi(lambda)
+    
+    function f1 = addtoexpr(f0, method, varargin)
+      % addtoexpr: catenate a given iData_Sqw2D method to the iFunc object Expression
+      
+      % all parameters must be given explicitly, NOT from internal physical parameter search
+      % varargin = {'pars,value, ...}
+      %   add new parameters when value is scalar
+      %   add to UserData when not scalar (and get it back for eval of iData_Sqw2D method)
+      
+      % varargin must be stored in the UserData ? or added as parameters for single values ?
+      % this depends on the iData_Sqw2D method
+      % what about parseparams and Sqw_check for parameters ? -> iFunc parameters OK
+      
+      % we use the '+' with a char string to catenate the expression
+      f1            = f0 + [ ...
+        'q=x; w=y; signal = iData_Sqw2D(iData(q,w,signal));' ...
+        'signal = ' method '(signal, varargin);' ...
+        'signal = getaxis(signal, 0);' ...
+        ];
+
+    end
     
     
   end % methods
