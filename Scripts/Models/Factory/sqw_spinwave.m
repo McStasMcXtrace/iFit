@@ -64,6 +64,10 @@ s.UserData.template = template;
 s.UserData.dir      = ''; % will use temporary directory to generate files and run
 s.UserData.executable = find_executable;
 
+if isempty(s.UserData.executable)
+  error([ mfilename ': SPINWAVE is not available. Install it from <http://www-llb.cea.fr/logicielsllb/SpinWave/SW.html>' ])
+end
+
 % get code to read xyzt and build HKL list and convolve DHO line shapes
 script_hkl = sqw_phonons_templates;
 if ismac,      precmd = 'DYLD_LIBRARY_PATH= ;';
@@ -164,12 +168,14 @@ function executable = find_executable
   this_path   = fullfile(fileparts(which(mfilename)));
   
   % what we may use
-  for exe =  { 'spinwave', 'spinwave2p2' }
+  for exe =  { 'spinwave', 'spinwave2p2', [ 'spinwave_' computer('arch') ] }
     if ~isempty(executable), break; end
     for try_target={ ...
       fullfile(this_path, [ exe{1} ext ]), ...
       fullfile(this_path, [ exe{1} ]), ...
       [ exe{1} ext ], ... 
+      fullfile(this_path, 'private', [ exe{1} ext ]), ...
+      fullfile(this_path, 'private', [ exe{1} ]), ...
       exe{1} }
       
       [status, result] = system([ precmd try_target{1} ]);
@@ -184,7 +190,66 @@ function executable = find_executable
   
   end
   
+  if isempty(executable)
+    executable = compile_spinwave;
+  end
+  
   found_executable = executable;
   
 end % find_executable
 
+% ------------------------------------------------------------------------------
+function executable = compile_spinwave
+  % compile spinwave 2.2 from S. Petit LLB
+  executable = '';
+  if ismac,      precmd = 'DYLD_LIBRARY_PATH= ;';
+  elseif isunix, precmd = 'LD_LIBRARY_PATH= ; '; 
+  else           precmd=''; end
+  
+  if ispc, ext='.exe'; else ext=''; end
+
+  % search for a fortran compiler
+  fc = '';
+  for try_fc={getenv('FC'),'gfortran','g95','pgfc','ifort'}
+    if ~isempty(try_fc{1})
+      [status, result] = system([ precmd try_fc{1} ]);
+      if status == 4 || ~isempty(strfind(result,'no input file'))
+        fc = try_fc{1};
+        break;
+      end
+    end
+  end
+  if isempty(fc)
+    if ~ispc
+      disp([ mfilename ': ERROR: FORTRAN compiler is not available from PATH:' ])
+      disp(getenv('PATH'))
+      disp([ mfilename ': Try again after extending the PATH with e.g.' ])
+      disp('setenv(''PATH'', [getenv(''PATH'') '':/usr/local/bin'' '':/usr/bin'' '':/usr/share/bin'' ]);');
+    end
+    error('%s: Can''t find a valid Fortran compiler. Install any of: gfortran, g95, pgfc, ifort\n', ...
+    mfilename);
+  end
+  
+  % when we get there, target is spinwave_arch, not existing yet
+  this_path = fileparts(which(mfilename));
+  target = fullfile(this_path, 'private', [ 'spinwave_' computer('arch') ext ]);
+
+  % attempt to compile as local binary
+  if isempty(dir(fullfile(this_path,'private','spinwave'))) % no executable available
+    fprintf(1, '%s: compiling binary...\n', mfilename);
+    % gfortran -o spinwave -O2 -static spinwave.f90
+    cmd = {fc, '-o', target, '-O2', '-static', ...
+       fullfile(this_path,'private', 'spinwave.f90')}; 
+    disp([ sprintf('%s ', cmd{:}) ]);
+    [status, result] = system([ precmd sprintf('%s ', cmd{:}) ]);
+    if status ~= 0 % not OK, compilation failed
+      disp(result)
+      warning('%s: Can''t compile spinwave.f90 as binary\n       in %s\n', ...
+        mfilename, fullfile(this_path, 'private'));
+    else
+      delete(fullfile(this_path,'private', '*.mod'));
+      executable = target;
+    end
+  end
+  
+end % compile_spinwave
