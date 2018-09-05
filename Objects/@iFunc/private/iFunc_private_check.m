@@ -182,11 +182,11 @@ function a = iFunc_private_check(a)
 
   % return when model can not be defined
   if isempty(expr)
-    warning('iFunc:emptyModel', 'Expression does not contain any axes (x,y,z...). Empty model.'); 
+    warning('iFunc:emptyModel', 'Expression does not contain any axes (x,y,z...). Constant model ?'); 
     return
   end
   if nb_pars == 0
-    warning('iFunc:emptyModel', 'Expression does not contain any parameter (p). Empty model.'); 
+    warning('iFunc:emptyModel', 'Expression does not contain any parameter (p). Constant model ?'); 
     return
   end
   
