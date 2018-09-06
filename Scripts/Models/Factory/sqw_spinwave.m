@@ -18,13 +18,18 @@ if isempty(file)
   file = fullfile(pathname, filename);
 end
 
-% read the file content
-try
-  template = fileread(file);
-catch ME
-  disp([ mfilename ': ERROR: Can not read template ' file ]);
-  return
-end
+% check if this is a CIF/CFL/ShelX file
+template = cif2spinwave(file);
+
+if isempty(template)
+  % read the file content
+  try
+    template = fileread(file);
+  catch ME
+    disp([ mfilename ': ERROR: Can not read template ' file ]);
+    return
+  end
+end 
 
 % TEMPLATE ---------------------------------------------------------------------
 % remove any SCAN stuff
@@ -184,8 +189,8 @@ function executable = find_executable
   executable  = [];
   this_path   = fullfile(fileparts(which(mfilename)));
   
-  % what we may use
-  for exe =  { 'spinwave', 'spinwave2p2', [ 'spinwave_' computer('arch') ] }
+  % what we may use. Prefer local installation.
+  for exe =  { [ 'spinwave_' computer('arch') ], 'spinwave', 'spinwave2p2' }
     if ~isempty(executable), break; end
     for try_target={ ...
       fullfile(this_path, [ exe{1} ext ]), ...
@@ -270,3 +275,102 @@ function executable = compile_spinwave
   end
   
 end % compile_spinwave
+
+% ------------------------------------------------------------------------------
+
+function template = cif2spinwave(c)
+  % generate a SpinWave input file from a CIF/CFL/ShelX
+  template = '';
+  if exist(c,'file')
+    c = read_cif(c);
+  end
+  if ~isfield(c, 'structure'), return; end
+  
+  % c.cell is the cell definition
+  template = { ...
+   '# SpinWave input file S. Petit LLB <http://www-llb.cea.fr/logicielsllb/SpinWave/SW.html>', ...
+   '#' ...
+   [ '# ' datestr(now) ] ...
+   [ '# ' c.title ], ...
+   [ '# File:       ' c.file ], ...
+   [ '# Spacegroup: ' c.Spgr ], ...
+   '#' ...
+   '# ---------------------------------------------------------' ...
+   '# definition of the unit cell' ...
+   sprintf('AX  = %g', c.cell(1)) ...
+   sprintf('AY  = %g', c.cell(2)) ...
+   sprintf('AZ  = %g', c.cell(3)) ...
+   sprintf('ALFA= %g', c.cell(4)) ...
+   sprintf('BETA= %g', c.cell(5)) ...
+   sprintf('GAMA= %g', c.cell(6)) ...
+   '#' ...
+   '# ---------------------------------------------------------' ...
+   '# position of the spins' ...
+   '# NOM=name of the spin, SD2 = spin 1/2 ' ...
+   '# line format: I=,NOM=,X=,Y=,Z=,PHI=120,THETA=90,CZ=1' ...
+  };
+   
+  % add the atom locations, and their spin
+  % usual nuclear spin table: http://vamdc.eu/documents/standards/dataModel/vadcxsams/appAtoms.html
+  %
+  % from SpinWave manual: magnetic moment
+  %    Ion	J	    gJ 	  α
+  %   --------------------
+  %    ND	  9/2	  8/11	−7/(9 × 121)
+  %    ER	  15/2	6/5	  4/(9 × 25 × 7)
+  %    YB	  7/2	  8/7	  2/63
+  %    HO	  8	    5/4	  −1/(2 × 9 × 25)
+  %    TB	  6	    3/2	  −1/99
+  %    PR	  4	    4/5	  −4 × 13/(9 × 25 × 11)
+  %    DY	  15/2	4/3	  −2/(9 × 5 × 7)
+  %    CE	  5/2	  6/7	  1
+  %    S1	  1	    2	    1
+  %    S2	  2	    2	    1
+  %    S3	  3	    2	    1
+  %    S4	  4	    2	    1
+  %    S5	  5	    2	    1
+  %    S6	  6	    2	    1
+  %    S7	  7	    2	    1
+  %    S8	  8	    2	    1
+  %    S9	  9	    2	    1
+  %    S10	10	  2	    1
+  %    SD2	1/2	  2	    1
+  %    S3D2	3/2	  2	    1
+  %    S5D2	5/2	  2	    1
+  %    MN3	2	    2	    1
+  %    MN4	3/2	  2   	1
+  %    FE3	5/2	  2	    1
+
+  atoms = fieldnames(c.structure);
+  known='ND ER YB HO TB PR DY CE MN FE'; 
+  known = textscan(known, '%s','Delimiter',' '); known = known{1};
+  % except for known atoms, we use a J=1/2 
+  for index=1:numel(atoms)
+    name  = atoms{index};
+    xyz   = c.structure.(name); % x y z B occ Spin Charge
+    template{end+1} = sprintf('# atom: %s', name); 
+    found = find(strncmp(lower(known), lower(name), 2));
+    if ~isempty(found), name = known{found}; else name = 'SD2'; end
+    template{end+1} = sprintf('I=%i,NOM=%s,X=%g,Y=%g,Z=%g,PHI=120,THETA=90,CZ=1', ...
+      index, upper(name), xyz(1), xyz(2), xyz(3)); 
+  end % atom
+
+  % add comment on J to be edited by use
+  template{end+1} = '#';
+  template{end+1} = '# ---------------------------------------------------------';
+  template{end+1} = '# Couplings. Enter lines specifying J1 (and optionally J2) with cut-off distances';
+  template{end+1} = '# line format: I1=1 ,I2=4, J1=0, D1=4, J2=-4, D2=4.4';
+  template{end+1} = '#';
+  template{end+1} = '# ---------------------------------------------------------';
+  template{end+1} = '# calculation';
+  template{end+1} = '#';
+  template{end+1} = 'FFORM';
+  template{end+1} = '# method, with REG a regularization term (should be small compared to J)';
+  template{end+1} = 'CALC=2,REG1=0.05,REG2=0.05,REG3=0.05';
+  template{end+1} = '#';
+  template{end+1} = '# MF iterations to find the stable structure';
+  template{end+1} = 'MF,NITER=100';
+  
+  template = sprintf('%s\n', template{:});
+  
+end % cif2spinwave 
