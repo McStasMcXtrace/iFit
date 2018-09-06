@@ -118,7 +118,11 @@ classdef iFunc_Sqw4D < iFunc
       if numel(varargin) <4, varargin{end+1} = linspace(0,0.5,30)'; end
       if numel(varargin) <5, varargin{end+1} = linspace(0.01,max(self)*1.2,11); end
       s = iFunc(self);
-      f =iData(s,varargin{:});
+      try
+        f = iData(s,varargin{:});
+      catch
+        f = iData; return
+      end
       xlabel(f, 'QH [rlu]');
       ylabel(f, 'QK [rlu]');
       zlabel(f, 'QL [rlu]');
