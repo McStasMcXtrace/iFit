@@ -374,7 +374,7 @@ function [signal,iFunc_ax,p,this, duration] = iFunc_feval_expr(this, varargin)
 % private function to evaluate an expression in a reduced environment so that 
 % internal function variables do not affect the result.
 
-signal = [];
+signal = []; p=[]; duration = 0;
 % assign parameters and axes for the evaluation of the expression, in case this is model char
 % p already exists, we assign axes, re-assign varargin if needed
 iFunc_ax = 'x y z t u v w ';
