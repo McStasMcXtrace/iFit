@@ -81,7 +81,14 @@ else
 end
 
 
-% we should return a new iFunc Model (2D)
+% return a new iFunc Model (2D)
+
+% the sampling in HKL is here used as a regular mesh, which is very slow
+% better use 'n' points at |Q| with XYZ = randn(3,n); 
+%   XYZ = Q*bsxfun(@rdivide,XYZ,sqrt(sum(XYZ.^2,1)));
+%   qx = XYZ(1,:);
+%   qy = XYZ(2,:);
+%   qz = XYZ(3,:);
 r = [];
 if isfield(a.UserData, 'options') r.UserData.options = a.UserData.options; end
 if isfield(a.UserData, 'properties') r.UserData.properties = a.UserData.properties; end
