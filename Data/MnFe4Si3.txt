@@ -2,19 +2,20 @@
 # -------------------------------------------
 # MnFe4Si3 from N. Biniskos (ILL) Sept 2018
 #
-# definition of the magnetic unit cell
+# definition of the magnetic unit cell [Angs and deg]
 #
-AX  = 6.80592
-AY  = 6.80592
-AZ  = 4.71383
+AX  = (%AA=6.80592)
+AY  = (%BB=6.80592)
+AZ  = (%CC=4.71383)
 ALFA= 90.0
 BETA= 90.0
 GAMA= 120.0
 #                                                                                                                              
 # ------------------------------------------- 
-# position of the spins# position of the spins
+# position of the spins
 # NOM=name of the spin, SD2 = spin 1/2 !!
-# (SX,SY,SZ) initial guess of the spin directions
+# (X,Y,Z)    location of magnetic atom in reduced coordinates [0-1]
+# (SX,SY,SZ) or (PHI,THETA) initial guess of the spin directions
 # (CX,CY,CZ) CEF axis, B20 = stevens coefficient, describing the anisotropy
 #
 I= 1,NOM=S1, X= 0.23556  ,Y= 0.00000  ,Z=0.75    ,PHI=120, THETA=90,  CZ= 1, B20=0.1
@@ -41,23 +42,24 @@ I1=2 ,I2=5 ,  J1=0 ,D1=4, J2=-4 , D2=4.4
 I1=3 ,I2=6 ,  J1=0 ,D1=4, J2=-4 , D2=4.4
 #
 # -------------------------------------------
+# calculation
+#
+FFORM
+# method, with REG a regularization term (should be small compared to J)
+CALC=2,REG1=0.05,REG2=0.05,REG3=0.05
+# SIG=energy width [meV] for instrumental broadening
+SIG=(%Gamma,1)
+#
+# MF iterations to find the stable structure
+MF,NITER=100
+# -------------------------------------------
 # definition of the scan
 #
 Q0X=0.00,Q0Y=0.00,Q0Z=0.00
 DQX=0.0125,DQY=0.0,DQZ=0.00
 NP=1001
-#
-# -------------------------------------------
-# calculation
+# WMAX= max energy, NW number of energy points
+WMAX=20,NW=200
 #
 # name of the output file
 FICH=F_out.txt
-#
-FFORM
-# method, with REG a regularization term (should be small compared to J)
-CALC=2,REG1=0.05,REG2=0.05,REG3=0.05
-#
-# MF iterations to find the stable structure
-MF,NITER=100
-# WMAX= max energy, NW number of energy points, SIG=energy width
-WMAX=20,NW=200,SIG=1
