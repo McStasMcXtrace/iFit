@@ -1,16 +1,51 @@
-function s = sqw_spinwave(file)
+function s = sqw_spinwave(file, action)
 % sqw_spinwave: build a SpinWave model (S. Petit/LLB)
 %
-% s = sqw_spinwave(file)
+% Performs a SPINWAVE calculation using S. Petit/LLB code. The input file can be:
+%   * a spinwave input file, such as MnFe4Si3.txt (in Data)
+%   * a CIF/CFL/ShelX file. In this case only the structure is imported, and
+%       it is REQUIRED to edit the generated model in particular 
+%       the moment type 'NOM' and couplings J1,D1 (J2,D2) must be set.
+%   * 'defaults' will use an example.
+%
+% The input file may contain tokens to identify variable model patrameters.
+% The tokens format can be '$par' or '($par=val)' to specify default values.
+% 
+% You may edit the SPINWAVE input file anytime with: sqw_spinwave(model, 'edit')
+%
+% Reference: SpinWave, S. Petit LLB <http://www-llb.cea.fr/logicielsllb/SpinWave/SW.html>
+%
+% model = sqw_spinwave(file)
 %
 % input:
 %   file: file name of a SpinWave input file
 %
 % output:
-%   s: model [iFunc_Sqw4D]
+%   model: SpinWave model [iFunc_Sqw4D]
+%
+% Example:
+%   m = sqw_spinwave('defaults');
+%   m = sqw_spinwave('MnFe4Si3.txt'); S=iData(m, [], 0:.05:15, 0,0, 0:0.5:20);
+%   plot(log10(S));
 
 if nargin < 1, file = ''; end
-s = [];
+if nargin < 2, action = ''; end
+s = []; template = '';
+
+if isa(file, 'iFunc')
+  ud = file.UserData;
+  if isfield(ud,'spinwave_template')
+    template = ud.spinwave_template;
+  end
+  if isfield(ud,'spinwave_filename')
+    file = ud.spinwave_filename;
+  end
+  action = 'edit';
+end
+
+if strcmp(file, 'defaults')
+  file = 'MnFe4Si3.txt';
+end
 
 if isempty(file)
   [filename, pathname, filterindex] = uigetfile('*.*', 'Pick a SpinWave template file');
@@ -19,17 +54,27 @@ if isempty(file)
 end
 
 % check if this is a CIF/CFL/ShelX file
-template = cif2spinwave(file);
+if isempty(template)
+  template = cif2spinwave(file);
+  if ~isempty(template), action = 'edit'; end % NEED to edit the generated template
+end
 
 if isempty(template)
   % read the file content
   try
     template = fileread(file);
   catch ME
-    disp([ mfilename ': ERROR: Can not read template ' file ]);
+    disp([ mfilename ': ERROR: Can not read SPINWAVE template from ' file ]);
     return
   end
-end 
+end
+
+if iscellstr(template)
+  template = sprintf('%s\n', template{:});
+end
+if isempty(template) || ~ischar(template)
+  disp([ mfilename ': ERROR: Invalid SPINWAVE template from ' file ]);
+end
 
 % TEMPLATE ---------------------------------------------------------------------
 % remove any SCAN stuff
@@ -46,21 +91,57 @@ template(cellfun(@isempty, template)) = [];
 % rebuild single char
 template = sprintf('%s\n', template{:});
 
-% Search for $xx and %xx tokens in file. 
-% This can include 'SIG' for excitation broadening
-tokens1 = regexp(template, '\$\w*','match');
-tokens1 = strrep(tokens1,   '$', '');
-tokens2 = regexp(template, '\%\w*','match');
-tokens2 = strrep(tokens2,   '%', '');
+% EDIT template when requested to
+if strcmp(action, 'edit')
+  disp([ mfilename ': Modify the SPINWAVE template from file ' file ])
+  disp ' * Check cell parameters'
+  disp ' * remove non magnetic atoms (change the "I=" index for those remaining)'
+  disp ' * check magnetic moments type ("NOM=")'
+  disp ' * check/add coupling I1= I2= J1= and cut-off distance D1 (possibly and J2= D2=)'
+  disp ' * indicate variable parameters with syntax "($par=default_value)"'
+  disp ' * you do not need to enter HKLE scan specifications nor output file "FICH"'
+  disp 'You may edit the SPINWAVE template anytime with sqw_spinwave(model, ''edit'')'
+  h = TextEdit(template);
+  waitfor(h)
+end
+
+% Search for $xx and %xx tokens in file, as well as '(%par,value)' and '($par,value)'
+
+% get parameters with default values or not
+tokens1 = regexp(template, '\([\$|\%]\w*[=|:|,|\s]\d+\.?\d*\)','match');
+tokens2 = regexp(template, '[\$|\%]\w*','match');
+
+% clean up tokens: remove '%$():=,' and get default values or 0
+tokens = [ tokens1 tokens2 ]; 
+pars   = {};
+guess  = [];
+for index=1:numel(tokens)
+  tok = tokens{index};
+  tok = strtrim(regexprep(tok, '[\$|\%|\(|\)]',' '));
+  [tok,val] = strtok(tok, ':=, ');
+  val = str2double(val(2:end));
+  if ~isfinite(val), val = 0; end
+  % is this parameter already there or new one ?
+  found = find(strcmp(tok, pars));
+  if isempty(found)
+    pars{end+1}  = strtrim(tok);
+    guess(end+1) = val;
+  elseif guess(found) == 0 && val
+    guess(found)  = val; % upgrade default value
+  end
+  % change tokens in the template, now that we have the values
+  template = strrep(template, tokens{index}, [ '$' tok ]);
+end
 
 % Model structure --------------------------------------------------------------
 [p,f] = fileparts(file);
 
 s.Name       = [ 'SpinWave S.Petit (LLB) ' f ' [' mfilename ']' ];
 s.Description= 'A spin-wave dispersion(HKL) from S. Petit';
-s.Parameters = [ tokens1 tokens2 ];  % parameter names
+s.Parameters = pars;    % parameter names
+s.Guess      = guess;   % default values
+s.ParameterValues = guess;
 s.Dimension  = 4;
-s.Guess      = zeros(size(s.Parameters));
 
 disp([ 'Building: ' s.Name ' from ' file ])
 
@@ -90,12 +171,12 @@ s.Expression = { ...
   '  template = strrep(template, [ ''%'' this.Parameters{index} ], num2str(p(index)));' ...
   '  template = strrep(template, [ ''$'' this.Parameters{index} ], num2str(p(index)));' ...
   'end' ...
-  'template = [ template sprintf(''FICH=results.dat\n'') ];' ...
+  'template = [ template sprintf(''FICH=%s\n'', fullfile(target,''results.dat'')) ];' ...
   script_hkl{:}, ...
   'xu =unique(x(:)); yu=unique(y(:)); zu=unique(z(:)); tu=unique(t(:));', ...
   'dax={(max(xu)-min(xu))/numel(xu),(max(yu)-min(yu))/numel(yu),(max(zu)-min(zu))/numel(zu)};' ...
   'sz= [ numel(xu) numel(yu) numel(zu) ];', ...
-  'allvect = all(cellfun(@(c)max(size(c)) == numel(c), {x y z}));' ...
+  'allvect = all(cellfun(@(c)max(size(c)) == numel(c), {x y z})) && ((numel(unique(sz)) == 2 && min(sz)==1) || numel(unique(sz)) == 1);' ...
   'ax={xu,yu,zu}; N_id = ''XYZ'';' ...
   '[dummy,L_id] = min(sz);             % the smallest Q dimension (loop)', ...
   'G_id = find(L_id ~= 1:length(sz));  % the other 2 sizes in grid', ...
@@ -141,9 +222,9 @@ s.Expression = { ...
         [ 'cmd = [ ''' precmd s.UserData.executable ' < '' fullfile(target,''input.txt'') '' > '' fullfile(target,''spinwave.log'') ];' ] ...
         '[status,result] = system(cmd);', ...
         '% get result 5th column and catenate' ...
-        'cut2D = load(''results.dat'',''-ascii'');' ...
+        'cut2D = load(fullfile(target,''results.dat''),''-ascii'');' ...
         'cut2D = cut2D(:,5);' ...
-      'catch ME; disp(fileread(''spinwave.log'')); ', ...
+      'catch ME;', ...
         'disp([ ''model '' this.Name '' '' this.Tag '': FAILED running SPINWAVE'' target ]);' ...
         'disp([ ''  from '' target ]);' ...
         'disp(getReport(ME)); cut2D=[]; break;', ...
@@ -281,9 +362,10 @@ end % compile_spinwave
 function template = cif2spinwave(c)
   % generate a SpinWave input file from a CIF/CFL/ShelX
   template = '';
-  if exist(c,'file')
-    c = read_cif(c);
+  try
+    c = iLoad(c);
   end
+  if isfield(c, 'Data'), c=c.Data; end
   if ~isfield(c, 'structure'), return; end
   
   % c.cell is the cell definition
@@ -294,6 +376,15 @@ function template = cif2spinwave(c)
    [ '# ' c.title ], ...
    [ '# File:       ' c.file ], ...
    [ '# Spacegroup: ' c.Spgr ], ...
+   '#' ...
+   '# What you need to do:' ...
+   '# * Check cell parameters' ...
+   '# * remove non magnetic atoms (change the "I=" index for those remaining)' ...
+   '# * check magnetic moments type ("NOM=")' ...
+   '# * check/add coupling I1= I2= J1= and cut-off distance D1 (possibly and J2= D2=)' ...
+   '# * indicate variable parameters with syntax "($par=default_value)"' ...
+   '# * you do not need to enter HKLE scan specifications nor output file "FICH"' ...
+   '# You may edit the SPINWAVE template anytime with sqw_spinwave(model, ''edit'')' ...
    '#' ...
    '# ---------------------------------------------------------' ...
    '# definition of the unit cell' ...
