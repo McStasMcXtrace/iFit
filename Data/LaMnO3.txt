@@ -1,6 +1,11 @@
 # SpinWave input file S. Petit LLB <http://www-llb.cea.fr/logicielsllb/SpinWave/SW.html>
 # use: sqw_spinwave('LaMnO3.txt')           to build the 4D model
 #      sqw_spinwave('LaMnO3.txt', 'powder') to build the 2D model
+#
+# See: F. Moussa, M. Hennion, J. Rodriguez-Carvajal, H. Moudden, L. Pinsard
+# and A. Revcolevschi, Spin waves in the antiferromagnet perovskite LaMnO3: 
+# A neutron-scattering study., Phys. Rev. B. Condens. Matter 54, 15149 (1996).
+# COD: http://crystallography.net/cod/1006141.html
 # -------------------------------------------
 # LaMnO3
 #
