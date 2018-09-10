@@ -2,6 +2,7 @@ classdef iFunc_Sqw4D < iFunc
   % iFunc_Sqw4D: create an iFunc_Sqw4D from e.g. an iFunc 4D object
   %
   % The iFunc_Sqw4D class is a 4D model holding a S(q,w) dynamic structure factor.
+  % The axes are QH,QK,QL [e.g rlu] and Energy [e.g. meV].
   %
   % Example: s=sqw_cubic_monoatomic
   %
@@ -113,9 +114,9 @@ classdef iFunc_Sqw4D < iFunc
       
       % check for QH QK QL W grid
       if isempty(varargin),  varargin{end+1} = []; end
-      if numel(varargin) <2, varargin{end+1} = linspace(0,0.5,30); end
-      if numel(varargin) <3, varargin{end+1} = linspace(0,0.5,30); end
-      if numel(varargin) <4, varargin{end+1} = linspace(0,0.5,30)'; end
+      if numel(varargin) <2, varargin{end+1} = linspace(0,0.1,5); end
+      if numel(varargin) <3, varargin{end+1} = linspace(0,0.1,5); end
+      if numel(varargin) <4, varargin{end+1} = linspace(0,0.1,5)'; end
       if numel(varargin) <5, varargin{end+1} = linspace(0.01,max(self)*1.2,11); end
       s = iFunc(self);
       try

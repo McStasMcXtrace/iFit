@@ -97,7 +97,7 @@ for tok={'Q0X','Q0Y','Q0Z','WMAX','NP','DQX','DQY','DQZ','COUPE','EN0', ...
   template = regexprep(template, [ tok{1} '=\d+\.?\d*,?' ], '');
 end
 % must also remove 'FICH=filename' as we shall put our own
-template = regexprep(template, 'FICH=\w+\.?\w*,?', '');
+template = regexprep(template, 'FICH=.*,?[\n|\r]', '');
 % and remove any empty lines
 template = textscan(template, '%s', 'Delimiter', '\n\r'); template = strtrim(template{1});
 template(cellfun(@isempty, template)) = [];
@@ -150,15 +150,15 @@ if ~isempty(strfind(action, 'pow'))
   dim = 2; % explicitly given 'powder' mode
 end
 
-if dim ~= 2, 
-  dim = 4;
-  s.Description= 'A spin-wave dispersion(HKL) from S. Petit';
-else
-  s.Description= 'A spin-wave dispersion(|Q|) from S. Petit';
-end
-
 % Model structure --------------------------------------------------------------
 [p,f] = fileparts(file);
+
+if dim ~= 2, 
+  dim = 4;
+  s.Description= [ f ' spin-wave dispersion(HKL) from S. Petit' ];
+else
+  s.Description= [ f ' spin-wave dispersion(|Q|) from S. Petit' ];
+end
 
 s.Name       = [ 'SpinWave S.Petit (LLB) ' f ' [' mfilename ']' ];
 
