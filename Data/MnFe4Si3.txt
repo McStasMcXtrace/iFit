@@ -1,4 +1,6 @@
 # SpinWave input file S. Petit LLB <http://www-llb.cea.fr/logicielsllb/SpinWave/SW.html>
+# use: sqw_spinwave('MnFe4Si3.txt')           to build the 4D model
+#      sqw_spinwave('MnFe4Si3.txt', 'powder') to build the 2D model
 # -------------------------------------------
 # MnFe4Si3 from N. Biniskos (ILL) Sept 2018
 #
