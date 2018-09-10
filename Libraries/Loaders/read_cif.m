@@ -16,6 +16,8 @@ function [data, this] = read_cif(file)
 % The formula should be given in Hill notation, e.g. C, then H, then other
 % elements in alphabetical order.
 %
+%  data = read_cif('gui');        show a dialogue box to enter COD ID, formula, file path
+%
 % This requires proxy settings to be set (when behind a firewall)
 %   ProxyHost='proxy.ill.fr'; % Proxy address if you are behind a proxy [e.g. myproxy.mycompany.com or empty]
 %   ProxyPort=8888;           % Proxy port if you are behind a proxy [8888 or 0 or empty]
