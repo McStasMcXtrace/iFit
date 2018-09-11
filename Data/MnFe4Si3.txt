@@ -1,0 +1,67 @@
+# SpinWave input file S. Petit LLB <http://www-llb.cea.fr/logicielsllb/SpinWave/SW.html>
+# use: sqw_spinwave('MnFe4Si3.txt')           to build the 4D model
+#      sqw_spinwave('MnFe4Si3.txt', 'powder') to build the 2D model
+# -------------------------------------------
+# MnFe4Si3 from N. Biniskos (ILL) Sept 2018
+#
+# definition of the magnetic unit cell [Angs and deg]
+#
+AX  = (%AA=6.80592)
+AY  = (%BB=6.80592)
+AZ  = (%CC=4.71383)
+ALFA= 90.0
+BETA= 90.0
+GAMA= 120.0
+#                                                                                                                              
+# ------------------------------------------- 
+# position of the spins
+# NOM=name of the spin, SD2 = spin 1/2 !!
+# (X,Y,Z)    location of magnetic atom in reduced coordinates [0-1]
+# (SX,SY,SZ) or (PHI,THETA) initial guess of the spin directions
+# (CX,CY,CZ) CEF axis, B20 = stevens coefficient, describing the anisotropy
+#
+I= 1,NOM=S1, X= 0.23556  ,Y= 0.00000  ,Z=0.75    ,PHI=120, THETA=90,  CZ= 1, B20=0.1
+I= 2,NOM=S1, X= 0.00000  ,Y= 0.23556  ,Z=0.75    ,PHI=120, THETA=90 , CZ= 1, B20=0.1
+I= 3,NOM=S1, X= 0.76444  ,Y= 0.76444  ,Z=0.75    ,PHI=120, THETA=90 , CZ= 1, B20=0.1
+#
+I= 4,NOM=S1, X= 0.76444  ,Y= 0.00000  ,Z=0.25    ,PHI=120, THETA=90 , CZ= 1, B20=0.1
+I= 5,NOM=S1, X= 0.00000  ,Y= 0.76444  ,Z=0.25    ,PHI=120, THETA=90 , CZ= 1, B20=0.1
+I= 6,NOM=S1, X= 0.23556  ,Y= 0.23556  ,Z=0.25    ,PHI=120, THETA=90 , CZ= 1, B20=0.1
+#
+# -------------------------------------------
+# couplings (anisotropic in that case but diagonal)
+#
+I1=1 ,I2=5 ,  J1=-18 ,D1=2.9
+I1=2 ,I2=6 ,  J1=-18 ,D1=2.9
+I1=3 ,I2=4 ,  J1=-18 ,D1=2.9
+#
+I1=1 ,I2=6 ,  J1=-18 ,D1=2.9
+I1=2 ,I2=4 ,  J1=-18 ,D1=2.9
+I1=3 ,I2=5 ,  J1=-18 ,D1=2.9
+#
+I1=1 ,I2=4 ,  J1=0 ,D1=4, J2=-4 , D2=4.4
+I1=2 ,I2=5 ,  J1=0 ,D1=4, J2=-4 , D2=4.4
+I1=3 ,I2=6 ,  J1=0 ,D1=4, J2=-4 , D2=4.4
+#
+# -------------------------------------------
+# calculation
+#
+FFORM
+# method, with REG a regularization term (should be small compared to J)
+CALC=2,REG1=0.05,REG2=0.05,REG3=0.05
+# SIG=energy width [meV] for instrumental broadening
+SIG=(%Gamma,1)
+#
+# MF iterations to find the stable structure
+MF,NITER=100
+# -------------------------------------------
+# definition of the scan
+#
+Q0X=0.00,Q0Y=0.00,Q0Z=0.00
+DQX=0.0125,DQY=0.0,DQZ=0.00
+NP=1001
+# WMAX= max energy, NW number of energy points
+WMAX=20,NW=200
+#
+# name of the output file
+FICH=F_out.txt

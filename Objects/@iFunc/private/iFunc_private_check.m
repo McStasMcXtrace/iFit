@@ -29,11 +29,11 @@ function a = iFunc_private_check(a)
       elseif length(a.Constraint) == 1                % iFunc.Constraint = scalar (0 or 1)
         const.fixed = const.fixed*a.Constraint;
       elseif ~isempty(a.Constraint)
-        error(['iFunc:' mfilename ], [mfilename ': the model Constraint should be scalar or vector of length ' ...
+        error(['iFunc:' mfilename ], [mfilename ': the model ' a.Tag ' Constraint should be scalar or vector of length ' ...
           num2str(length(a.Parameters)) ' (Parameters).' ]);
       end
     else
-      error(['iFunc:' mfilename ], [mfilename ': the model Constraint should be a char or cellstr, function_handle, scalar or vector, but not a ' ...
+      error(['iFunc:' mfilename ], [mfilename ': the model ' a.Tag ' Constraint should be a char or cellstr, function_handle, scalar or vector, but not a ' ...
         class(a.Constraint) '.' ]);
     end
     a.Constraint = const;
@@ -62,7 +62,7 @@ function a = iFunc_private_check(a)
   elseif ischar(a.Expression) || iscellstr(a.Expression) 
     expr = char(a.Expression);
   else
-    error(['iFunc:' mfilename ], [mfilename ': the model Expression should be a char or function_handle or cellstr, not a class ' ...
+    error(['iFunc:' mfilename ], [mfilename ': the model ' a.Tag ' Expression should be a char or function_handle or cellstr, not a class ' ...
       class(a.Expression) '.' ]);
   end
 
@@ -89,7 +89,7 @@ function a = iFunc_private_check(a)
   end
   
   if ~isempty(pars) && ~iscellstr(pars)
-    disp([mfilename ': the model parameters should be a char or structure or cellstr, not a class ' ...
+    disp([mfilename ': the model ' a.Tag ' parameters should be a char or structure or cellstr, not a class ' ...
       class(pars) '. Setting new parameter names.' ]);
     pars = {};
   end
@@ -182,11 +182,11 @@ function a = iFunc_private_check(a)
 
   % return when model can not be defined
   if isempty(expr)
-    warning('iFunc:emptyModel', 'Expression does not contain any axes (x,y,z...). Empty model.'); 
+    warning('iFunc:emptyModel', [ 'model ' a.Tag ' Expression does not contain any axes (x,y,z...). Constant model ?' ]); 
     return
   end
   if nb_pars == 0
-    warning('iFunc:emptyModel', 'Expression does not contain any parameter (p). Empty model.'); 
+    warning('iFunc:emptyModel', [ 'model ' a.Tag ' Expression does not contain any parameter (p). Constant model ?' ]); 
     return
   end
   

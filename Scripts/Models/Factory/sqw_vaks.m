@@ -14,6 +14,7 @@ function signal=sqw_vaks(varargin)
 %   sqw_vaks('BaTiO3')  use parameters for BaTiO3 perovskite
 %   sqw_vaks('SrTiO3')  use parameters for SrTiO3 perovskite
 %   sqw_vaks([ ... ])   use a 12 values vector as model parameters
+%   sqw_vaks('defaults') selects KTaO3
 %
 % WARNING:
 %      Single intensity and line width parameters are used here.
@@ -184,7 +185,7 @@ if numel(varargin) && ischar(varargin{1})
     end
     signal = sqw_vaks(NumEval);
     return
-  case 'ktao3'
+  case {'ktao3','defaults'}
     St = 4828.100000; At = 1553.000000; Vt = 2450.700000;
 	  Sa = 8956.100000; Aa = 2264.900000; Va = -3087.300000;
 	  Al = 4551.600000;

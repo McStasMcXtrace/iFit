@@ -22,48 +22,55 @@ if numel(a) == 1
   sz = isvector(a);
   if sz > 1, return; end
   if ~sz, sz = length(size(a)); end
-  % this is a single iData object
-  if ndims(a) <= 2 && length(size(a)) ==2, return; end
-  s = get(a,'Signal');
-  sq= squeeze(s);
-  [dummy, sl] = getaxis(a, '0');  % signal definition/label
-  a = set(a,'Signal',sq, [  'squeeze(' sl ')' ]);
-  % check if we could update object
-  if ~isequal(subsref(a,struct('type','.','subs','Signal')), sq)
-    a = setalias(a, 'Signal', sq, [  'squeeze(' sl ')' ]);
-  end
-  % do the same on Error and Monitor
-  de=get(a,'Error'); 
-  if numel(de) > 1 && isnumeric(de) 
-    try % in case Error=sqrt(Signal), the Error is automatically changed when Signal is -> fail
-      d=squeeze(de); a=set(a,'Error', d); a = setalias(a, 'Error', d);
+  % squeeze the signal, error, monitor
+  if ndims(a) > 2 || length(size(a)) > 2
+    s = get(a,'Signal');
+    sq= squeeze(s);
+    [dummy, sl] = getaxis(a, '0');  % signal definition/label
+    a = set(a,'Signal',sq, [  'squeeze(' sl ')' ]);
+    % check if we could update object
+    if ~isequal(subsref(a,struct('type','.','subs','Signal')), sq)
+      a = setalias(a, 'Signal', sq, [  'squeeze(' sl ')' ]);
     end
-  end
-  clear de
+    clear s sq
+    % do the same on Error and Monitor
+    de=get(a,'Error'); 
+    if numel(de) > 1 && isnumeric(de) 
+      try % in case Error=sqrt(Signal), the Error is automatically changed when Signal is -> fail
+        d=squeeze(de); a=set(a,'Error', d); a = setalias(a, 'Error', d);
+      end
+    end
+    clear de
 
-  dm=get(a,'Monitor');
-  if numel(dm) > 1 && isnumeric(dm)
-    d=squeeze(dm); a=set(a,'Monitor', d);  a = setalias(a, 'Monitor', d);
+    dm=get(a,'Monitor');
+    if numel(dm) > 1 && isnumeric(dm)
+      d=squeeze(dm); a=set(a,'Monitor', d);  a = setalias(a, 'Monitor', d);
+    end
+    clear dm
   end
-  clear dm
   
   % move the un-used/scalar axes to the end (code from subsref)
   
+  % get the scalar axes and thos not
+  axis_scalar    = [];
+  axis_notscalar = [];
   % check if the sub indices supress an axis: move it further
-  for index=(sz-1):-1:1
+  for index=1:length(a.Alias.Axis)
     if index <= length(a.Alias.Axis)
       % axes to be moved: scalar, or all unique
       x = getaxis(a, index);
       if isscalar(x) || isempty(find(x ~= x(1), 1))
         % axis is constant, or scalar
-        xa=setaxis(a, index,x(1));  % scalar
-        a.Alias.Axis([index (index+1:length(a.Alias.Axis))])   = a.Alias.Axis([(index+1:length(a.Alias.Axis)) index]);
-        
+        a=setaxis(a, index,x(1));  % make it scalar
+        axis_scalar    = [ axis_scalar index ];
       else
         a=setaxis(a, index,squeeze(x));
+        axis_notscalar = [ axis_notscalar index ];
       end
     end
   end
+  % reorder axes
+  a.Alias.Axis = a.Alias.Axis([ axis_notscalar axis_scalar ]);
   
 else
   % this is an iData array

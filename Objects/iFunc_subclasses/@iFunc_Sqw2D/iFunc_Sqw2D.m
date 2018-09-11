@@ -2,6 +2,7 @@ classdef iFunc_Sqw2D < iFunc
   % iFunc_Sqw2D: create an iFunc_Sqw2D from e.g. an iFunc 2D object
   %
   % The iFunc_Sqw2D class is a 2D model holding a S(q,w) dynamic structure factor.
+  % The first axis is Q [e.g Angs-1], 2nd is Energy [e.g. meV].
   %
   % Useful methods for this iFunc flavour:
   %
@@ -99,10 +100,10 @@ classdef iFunc_Sqw2D < iFunc
       
       % check for Q W grid
       if isempty(varargin),  varargin{end+1} = []; end % parameters
-      if numel(varargin) <2, varargin{end+1} = linspace(0,0.5,30); end
-      if numel(varargin) <3, varargin{end+1} = linspace(0.01,max(self)*1.2,11); end
+      if numel(varargin) <2, varargin{end+1} = linspace(0,0.1,5); end
+      if numel(varargin) <3, varargin{end+1} = linspace(0.01,20,21); end
       s = iFunc(self);
-      f = iData(s,varargin{:});
+      f = transpose(iData(s,varargin{:}));
       xlabel(f, 'Q [Angs]');
       ylabel(f, 'Energy [meV]');
       title(f, self.Name);
