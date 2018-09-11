@@ -9,6 +9,14 @@ function hF = TextEdit(filename, options)
 %    Display the string inside a new Editor window
 %  TextEdit(..., name)
 %    Give the TextEdit a name
+%  TextEdit(..., options)
+%    with options have 'name' and 'appdata' fields (see below).
+%
+% It is possible to link the editor to a variable so that its content is transfered
+%   into it upon changes and close. To do so, speficy the
+%   options.appdata = 'name';
+% Then retrieve the content and clean it with:
+%   getappdata(0, options.appdata); rmappdata(options.appdata);
 %
 % $ Initially from: Jorge De Los Santos $
 % $ E-mail: delossantosmfq@gmail.com $
@@ -34,15 +42,15 @@ end
 hF=figure('MenuBar','none',...
     'Tag','TextEdit','NextPlot','new', ...
     'Name',options.name,'Resize','on',...
-    'Position',[0 0 600 400],'Color','w','CloseRequestFcn', 'delete(gcbf)');
+    'Position',[0 0 600 400],'Color','w','CloseRequestFcn',@textedit_close);
 centerfig();
 
 % Menu File
 hMA=uimenu(hF,'Label','File');
 uimenu(hMA,'Label','New','Callback','TextEdit', 'Accelerator','n');
 uimenu(hMA,'Label','Open...','Callback',@textedit_open, 'Accelerator','o');
-uimenu(hMA,'Label','Save','Callback',@textedit_save);
-uimenu(hMA,'Label','Save as...','Callback',@textedit_saveas, 'Accelerator','s');
+uimenu(hMA,'Label','Save','Callback',@textedit_save, 'Accelerator','s');
+uimenu(hMA,'Label','Save as...','Callback',@textedit_saveas);
 uimenu(hMA,'Label','Evaluate selection','Callback',@textedit_eval, 'Accelerator','e');
 
 % Menu Edit
@@ -158,10 +166,10 @@ if nargin && ischar(filename)
         textedit_load(filename);
         options.filename = filename;
       else
-        textedit_setText(options.display_pane, filename)
+        textedit_setText(options.display_pane, filename);
       end
   catch
-      textedit_setText(options.display_pane, filename)
+      textedit_setText(options.display_pane, filename);
   end
 end
 
@@ -189,15 +197,19 @@ end
             filename, numel(txt)));
         end
         set(hF,'Name', [ 'TextEdit: ' filename ]);
+        options.ref = txt;
     end
 
 % Save content into an existing text file
     function textedit_save(~,~)
+      txt = textedit_getText(options.display_pane);
       if isempty(options.filename) || ~ischar(options.filename)
-        textedit_saveas;
-        return;
+        if isfield(options, 'appdata')
+          setappdata(0, options.appdata, char(txt));
+        else
+          textedit_saveas;
+        end
       else
-        txt = textedit_getText(options.display_pane);
         fid=fopen(options.filename,'wt');
         if fid == -1
           error([ mfilename ': Could not open file ' options.filename ' for saving.' ]);
@@ -208,6 +220,8 @@ end
         fclose(fid);
         set(hF,'Name', [ 'TextEdit: ' options.filename ]);
       end
+      options.ref = txt;
+      disp([ mfilename ': saving' ]);
     end
     
 % Save content into a (new) text file
@@ -237,6 +251,8 @@ end
             fclose(fid);
             set(hF,'Name', [ 'TextEdit: ' fullfile(pathname,filename) ]);
             options.filename = fullfile(pathname,filename);
+            options.ref = txt;
+            disp([ mfilename ': saving as ' options.filename ]);
         end
     end
     
@@ -338,30 +354,51 @@ end
         str = { devel, e_mail, blog, nvrs };
         helpdlg(str, nvrs);
     end
-end
 
-% set/get text from both Java or Matlab-standard uicontrol
-function txt=textedit_getText(hTxt)
-  if isa(hTxt,'com.mathworks.widgets.SyntaxTextPane')
-    txt=hTxt.getText;
-  elseif ishandle(hTxt)
-    txt=get(hTxt,'String');
+
+  % set/get text from both Java or Matlab-standard uicontrol
+  function txt=textedit_getText(hTxt)
+    if isa(hTxt,'com.mathworks.widgets.SyntaxTextPane')
+      txt=hTxt.getText;
+    elseif ishandle(hTxt)
+      txt=get(hTxt,'String');
+    end
   end
-end
 
-function textedit_setText(hTxt, str)
-  if isa(hTxt,'com.mathworks.widgets.SyntaxTextPane')
-    
-    if ~iscell(str)
-      if isnumeric(str), str=num2str(str); end
-      str = char(str);
-      if size(str,1) > 1, 
-        str = cellstr(str);
+  function textedit_setText(hTxt, str)
+    if isa(hTxt,'com.mathworks.widgets.SyntaxTextPane')
+      
+      if ~iscell(str)
+        if isnumeric(str), str=num2str(str); end
+        str = char(str);
+        if size(str,1) > 1, 
+          str = cellstr(str);
+        end
+      end
+      if iscellstr(str), str=sprintf('%s\n', str{:}); end
+      hTxt.setText(str);
+    elseif ishandle(hTxt)
+      set(hTxt, 'String',str);
+    end
+    if isfield(options, 'appdata')
+      setappdata(0, options.appdata, char(str));
+    end
+    options.ref = str;
+  end
+  
+  function textedit_close(varargin)
+    txt = textedit_getText(options.display_pane);
+    if ~isequal(char(txt), char(options.ref))
+      ButtonName = questdlg('Editor content has been changed and is NOT saved !', ...
+                         [ mfilename ': Not Saved !' ], ...
+                         'OK: save it !','Cancel: Not important', ...
+                         'OK: save it !');
+      if strcmp(strtok(ButtonName), 'OK:')
+        disp([ mfilename ': saving on exit' ]);
+        textedit_save;
       end
     end
-    if iscellstr(str), str=sprintf('%s\n', str{:}); end
-    hTxt.setText(str);
-  elseif ishandle(hTxt)
-    set(hTxt, 'String',str);
+    delete(varargin{1});
   end
-end
+
+end % TextEdit
