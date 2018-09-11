@@ -104,6 +104,22 @@ template(cellfun(@isempty, template)) = [];
 % rebuild single char
 template = sprintf('%s\n', template{:});
 
+if ~isempty(strfind(action, 'pow'))
+  dim = 2; % explicitly given 'powder' mode
+end
+
+% Model structure --------------------------------------------------------------
+[p,f] = fileparts(file);
+
+if dim ~= 2, 
+  dim = 4;
+  s.Description= [ f ' spin-wave dispersion(HKL) from S. Petit' ];
+else
+  s.Description= [ f ' spin-wave dispersion(|Q|) from S. Petit' ];
+end
+
+s.Name       = [ 'SpinWave S.Petit (LLB) ' f ' [' mfilename ']' ];
+
 % EDIT template when requested to
 if ~isempty(strfind(action, 'edit'))
   disp([ mfilename ': Modify the SPINWAVE template from file ' file ])
@@ -114,8 +130,12 @@ if ~isempty(strfind(action, 'edit'))
   disp ' * indicate variable parameters with syntax "($par=default_value)"'
   disp ' * you do not need to enter HKLE scan specifications nor output file "FICH"'
   disp 'You may edit the SPINWAVE template anytime with sqw_spinwave(model, ''edit'')'
-  h = TextEdit(template);
+  options.name    = s.Name;
+  [~,options.appdata] = fileparts(tempname);
+  h = TextEdit(template, options);
   waitfor(h)
+  template = getappdata(0, options.appdata)
+  rmappdata(0, options.appdata);
 end
 
 % Search for $xx and %xx tokens in file, as well as '(%par,value)' and '($par,value)'
@@ -145,22 +165,6 @@ for index=1:numel(tokens)
   % change tokens in the template, now that we have the values
   template = strrep(template, tokens{index}, [ '$' tok ]);
 end
-
-if ~isempty(strfind(action, 'pow'))
-  dim = 2; % explicitly given 'powder' mode
-end
-
-% Model structure --------------------------------------------------------------
-[p,f] = fileparts(file);
-
-if dim ~= 2, 
-  dim = 4;
-  s.Description= [ f ' spin-wave dispersion(HKL) from S. Petit' ];
-else
-  s.Description= [ f ' spin-wave dispersion(|Q|) from S. Petit' ];
-end
-
-s.Name       = [ 'SpinWave S.Petit (LLB) ' f ' [' mfilename ']' ];
 
 s.Parameters = pars;    % parameter names
 s.Guess      = guess;   % default values
