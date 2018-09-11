@@ -132,6 +132,8 @@ classdef iFunc_Sqw4D < iFunc
     
     function [fig, s, k] = plot(self, varargin)
       % iFunc_Sqw4D: plot: plot dispersions along principal axes and vDOS
+      %
+      %   plot(sqw4d, {kpath, w, options})
       if isempty(varargin), varargin = { 'plot meV' }; end
       [s,k,fig]=band_structure(self, varargin{:});
       if ~isempty(inputname(1))
@@ -141,6 +143,8 @@ classdef iFunc_Sqw4D < iFunc
     
     function [h, f] = plot3(s, varargin)
       % iFunc_Sqw4D: plot3: plot a 3D view of the dispersions in H=0 plane
+      %
+      %   plot3(sqw4d, {'plot options'})
       f = feval_fast(s);
       % plot in 3D
       h = plot3(f, varargin{:}); % h=0
@@ -151,6 +155,8 @@ classdef iFunc_Sqw4D < iFunc
     
     function [h, f] = scatter3(s, varargin)
       % iFunc_Sqw4D: scatter3: plot a 3D scatter view of the dispersions in H=0 plane
+      %
+      %   scatter3(sqw4d, {'plot options'})
       f = feval_fast(s);
       % plot in 3D
       h = scatter3(f, varargin{:}); % h=0
