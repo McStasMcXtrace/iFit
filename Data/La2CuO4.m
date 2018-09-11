@@ -1,3 +1,4 @@
+function lacuo = La2CuO4
 % La2CuO4 spin-wave for spinw
 % From: https://www.psi.ch/spinw/tutorial-11
 
