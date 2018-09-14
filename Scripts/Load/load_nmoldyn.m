@@ -25,7 +25,7 @@ end
 % ======================================================================
 % searches for some 'known' nMoldyn symbols after import
 if isempty(findstr(a, 'nmoldyn')) && isempty(findstr(a, 'mdanse')) && isempty(findstr(a, 'dsf')) ...
-   && isempty(findstr(a, 'frequency'))
+   && isempty(findstr(a, 'frequency')) && isempty(findstr(a, 'MMTK'))
   return; 
 end
 
@@ -37,20 +37,20 @@ for index=f
 end
 
 % add any other 'fields' as aliases
-if ~isempty(s), 
+if ~isempty(s),
   a=setalias(a, 'jobinfo',s{1},'nMoldyn configuration');
 end
 
 % nMoldyn results: last search defines the Signal and Axes: we prefer S(q,w)
 a = load_nmoldyn_signal_axes(a, 'pdf_total', 'r');
 a = load_nmoldyn_signal_axes(a, 'msd_total', {'times','time'});
-a = load_nmoldyn_signal_axes(a, 'dos_total', 'frequency');
+a = load_nmoldyn_signal_axes(a, 'dos_total', {'omega','frequency'});
 a = load_nmoldyn_signal_axes(a, 'atomic_density', {'times','time'});
 a = load_nmoldyn_signal_axes(a, 'temperature', {'times','time'});
 a = load_nmoldyn_signal_axes(a, 'eisf_total', {'q','k'});
 a = load_nmoldyn_signal_axes(a, {'Sq_total','ssf_total'}, {'q','k'});
 a = load_nmoldyn_signal_axes(a, {'Fqt_total','f_q_t_total'},{'q','k'}, {'times','time'});
-a = load_nmoldyn_signal_axes(a, {'Sqw_total','s_q_f_total','dsf'}, {'q','k'}, 'frequency');
+a = load_nmoldyn_signal_axes(a, {'Sqw_total','s_q_f_total','dsf'}, {'q','k'}, {'omega','frequency'});
 
 % check if the 'q' axis is in Angs-1 or nm-1
 if isfield(a, 'q')
