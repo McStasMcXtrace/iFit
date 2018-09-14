@@ -22,7 +22,7 @@ classdef iData_vDOS < iData
   % t = thermochemistry(g)
   %   Compute and display thermochemistry quantities from the vDOS.
   %
-  % [Sqw,Iqt,DW] = incoherent(g, q, T, sigma, m, n)
+  % [Sqw,Iqt,DW] = incoherent(g, q, T, sigma, m, n, DW)
   %   Compute the incoherent gaussian approximation scattering law S(q,w) from an initial 
   %   density of states vDOS.
   %
@@ -53,7 +53,7 @@ classdef iData_vDOS < iData
   methods
   
     % main instantiation method
-    function obj = iData_vDOS(s)
+    function obj = iData_vDOS(s, varargin)
       % iData_vDOS: create the iData_vDOS subclass
       %
       % input:
@@ -71,6 +71,10 @@ classdef iData_vDOS < iData
       
       obj = obj@iData;
       obj.class = mfilename;
+      
+      if ~isa(s, 'iData')
+        s = iData(s, varargin{:});
+      end
       
       % convert/test
       m = [];

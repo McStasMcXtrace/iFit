@@ -77,7 +77,7 @@ function sqw = Sab2Sqw(s, M, T)
   
   % we must have s.classical = 1
   if (isfield(s,'classical') || ~isempty(findfield(s, 'classical')))
-    classical = get(s0,'classical');
+    classical = get(s,'classical');
   else classical = []; end
   if ~isempty(classical) && classical(1) == 0
     fprintf(1, '%s: %s: Data set is quantum/experimental. Use deBosify to obtain the classical/symmetric one.\n', mfilename, s.Title);
@@ -131,7 +131,7 @@ function sqw = Sab2Sqw(s, M, T)
     setalias(sqw,'classical',  classical(1), '[0=from measurement, with Bose factor included, 1=from MD, symmetric]');
   end
   sqw.Label='Sqw';
-  sqw = transpose(sqw);
+  % sqw = transpose(sqw);
   
   % copy initial aliases and UserData
   sqw.UserData = s.UserData;

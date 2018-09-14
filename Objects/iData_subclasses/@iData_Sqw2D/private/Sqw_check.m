@@ -43,7 +43,7 @@ function s = Sqw_check(s, mode)
   t_present=0;
   alpha_present=0;
   beta_present =0;
-  if isa(s, 'iData') && ndims(s) == 2
+  if isa(s, 'iData') && ndims(s) >= 2
     for index=1:2
       lab = lower(label(s,index));
       def = getaxis(s, num2str(index));

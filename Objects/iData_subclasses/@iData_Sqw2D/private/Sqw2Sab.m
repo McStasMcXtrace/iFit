@@ -65,7 +65,7 @@ function sab = Sqw2Sab(s, M, T)
   
   % test if classical
   if isfield(s,'classical') || ~isempty(findfield(s, 'classical'))
-    classical = get(s0,'classical');
+    classical = get(s,'classical');
   else classical = []; end
   if ~isempty(classical) && classical(1) == 0
     fprintf(1, '%s: WARNING: %s: Data set is experimental/quantum (contains Bose factor/detailed balance).\n    You may use deBosify(s) to obtain the classical/symmetric representation\n', mfilename, s.Title);
