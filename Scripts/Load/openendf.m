@@ -77,8 +77,8 @@ elseif ~isempty(out) && isfield(out.Data,'MF') && isfield(out.Data,'MT')
       end
     elseif MT == 4  % inelastic
       setalias(out,'Signal','Data.Sab','S(alpha,beta,T) Inelastic Scattering');
-      setalias(out,'alpha','Data.alpha','Unit-less wavevector [h2q2/AkT]');
-      setalias(out,'beta', 'Data.beta', 'Unit-less energy [hw/kT]');
+      setalias(out,'alpha','Data.alpha','Unit-less wavevector [h2q2/AkT] alpha');
+      setalias(out,'beta', 'Data.beta', 'Unit-less energy [hw/kT] beta');
       setalias(out,'Temperature','Data.T', 'Temperature [K]');
       setalias(out,'classical','~this.Data.LASYM', 'classical/symmetric[1] or quantum/asymmetric[0]');
       setalias(out,'weight','this.Data.B(3)','Standard material mass [g/mol]');
@@ -89,6 +89,7 @@ elseif ~isempty(out) && isfield(out.Data,'MF') && isfield(out.Data,'MT')
       setalias(out,'Scattering','(in)coherent inelastic');
       setaxis( out, 2, 'alpha');
       setaxis( out, 1, 'beta');
+      out = transpose(out);
     end
   end
   % must check if the input object should be split into temperatures
