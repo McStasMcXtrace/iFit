@@ -59,6 +59,7 @@
 
 
 
+
       dispersion from <i>ab-initio</i> force estimate and dynamical
       matrix<br>
     </h2>
@@ -70,6 +71,7 @@
       name of a configuration file describing the material lattice and
       atom positions. This file can be in any <a
         href="https://wiki.fysik.dtu.dk/ase/ase/io.html#module-ase.io">ASE
+
 
 
 
@@ -89,7 +91,7 @@
       This documentation lists all possible options.<br>
     </p>
     <table style="text-align: left; width: 1016px; height: 59px;"
-      border="1" cellpadding="2" cellspacing="2">
+      cellspacing="2" cellpadding="2" border="1">
       <tbody>
         <tr>
           <td style="vertical-align: top; font-weight: bold; font-style:
@@ -113,7 +115,7 @@
           <td valign="top"><b>sqw_phonons<br>
               <a href="https://wiki.fysik.dtu.dk/ase/index.html"><img
                   alt="ase" title="ase" src="images/ase256.png"
-                  border="0" height="80" width="80" align="middle"></a><br>
+                  height="80" align="middle" width="80" border="0"></a><br>
             </b></td>
           <td valign="top">Phonon dispersions from the Dynamical matrix,
             using forces estimated by <i>ab-initio </i>using <a
@@ -123,8 +125,8 @@
           <td valign="top"><font color="#33cc00">4D (HKLw)</font><br>
             <a href="images/Models_sqw_ph_ase.png"><img
                 src="images/Models_sqw_ph_ase.png" title="sqw_ph_ase Al
-                fcc" alt="sqw_ph_ase Al fcc" border="0" height="74"
-                width="100" align="left"></a></td>
+                fcc" alt="sqw_ph_ase Al fcc" height="74" align="left"
+                width="100" border="0"></a></td>
           <td valign="top">Creation: <a
               href="http://cms.mpi.univie.ac.at/vasp/guide/node59.html">POSCAR</a>,
             <a
@@ -156,6 +158,7 @@
         = - &#8721; D</i><i><sub>&#945;</sub></i><i><sub>&#946;</sub></i><i>.u</i><i><sub>&#946;</sub></i></blockquote>
     In order to simplify this expression, we assume a periodic motion:<br>
     <blockquote><i>u</i><i><sub>&#945;</sub></i><i>=U</i><i><sub>&#945;</sub></i><i>(k)
+
 
 
 
@@ -312,8 +315,8 @@
     <h3><a class="mozTocH5" name="mozTocId891630"></a><b><i><u>Syntax</u></i></b></h3>
     The simplest syntax to <b><i>create the model</i></b> is to call:<br>
     <blockquote><img alt="sqw_ph_ase_gui" title="sqw_ph_ase_gui"
-        src="images/Models_sqw_ph_ase_gui.png" height="168" width="200"
-        align="right">s = <font color="#3366ff">sqw_phonons</font>;
+        src="images/Models_sqw_ph_ase_gui.png" height="168"
+        align="right" width="200">s = <font color="#3366ff">sqw_phonons</font>;
       &nbsp;&nbsp; &nbsp;&nbsp;&nbsp; <i>% displays an entry dialog box</i><i>
         and proceeds with a fully automatic computation, and plots final
         results. With QuantumEspresso, a dialog may show up to select
@@ -328,6 +331,7 @@
     <blockquote>s = <font color="#3366ff">sqw_phonons</font>(configuration);<br>
     </blockquote>
     <blockquote>s = <font color="#3366ff">sqw_phonons</font>(configuration,
+
 
 
 
@@ -468,7 +472,7 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/ifit-web-
     can be given as a bulk, molecule, crystal and nano-tube constructors
     from ASE.<br>
     <br>
-    <table border="1" cellpadding="2" cellspacing="2" width="100%">
+    <table cellspacing="2" cellpadding="2" width="100%" border="1">
       <tbody>
         <tr>
           <td valign="top"><b>configuration</b><b><br>
@@ -482,7 +486,8 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/ifit-web-
           </td>
           <td valign="top">Any file in a format supported by ASE,
             including CIF, ETSF, Gromacs, LAMMPS, PDB, SHELX,
-            VASP/POSCAR, MaterialStudio, XYZ. See <a href="https://wiki.fysik.dtu.dk/ase/ase/io/io.html">full</a>
+            VASP/POSCAR, MaterialStudio, XYZ. See <a
+              href="https://wiki.fysik.dtu.dk/ase/ase/io/io.html">full</a>
             list. You can use as example (provided in iFit Data
             directory):<br>
             <blockquote><a href="../Data/POSCAR_Al">POSCAR_Al</a><br>
@@ -494,8 +499,94 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/ifit-web-
             </blockquote>
           </td>
         </tr>
-        <tr><td valign="top"><u><b>a COD ID</b></u><br><font color="#cc33cc">'cod:&nbsp;</font><font color="#cc33cc">1512124'</font><br><br></td><td valign="top">It is possible to retrieve a <a href="http://www.crystallography.net">Crystallography Open Database</a> (COD) entry by specifying its COD ID. <meta http-equiv="content-type" content="text/html; charset=windows-1252"><span style="color: rgb(0, 0, 0); font-size: medium; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; text-align: start; text-indent: 0px; text-transform: none; white-space: normal; word-spacing: 0px; -webkit-text-stroke-width: 0px; text-decoration-style: initial; text-decoration-color: initial; display: inline ! important; float: none;">This feature requires a valid network connection. See more details<span>&nbsp;</span></span><a href="Models_Phonons_Tutorial.html#mozTocId250682" style="font-size: medium; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; text-align: start; text-indent: 0px; text-transform: none; white-space: normal; word-spacing: 0px; -webkit-text-stroke-width: 0px;">here</a><span style="color: rgb(0, 0, 0); font-size: medium; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; text-align: start; text-indent: 0px; text-transform: none; white-space: normal; word-spacing: 0px; -webkit-text-stroke-width: 0px; text-decoration-style: initial; text-decoration-color: initial; display: inline ! important; float: none;">.</span></td></tr><tr><td valign="top"><u><b>a chemical formula</b></u><br><font color="#cc33cc">'cod: </font><font color="#cc33cc">O3 Sr Ti'</font></td><td valign="top">It is possible to retrieve a <a href="http://www.crystallography.net">Crystallography Open Database</a> (COD) entry by specifying its chemical formula, in <a href="https://en.wikipedia.org/wiki/Hill_formula">Hill notation</a>, i.e C and H first, then other elements in alphabetical order. A search is made on COD, and when multiple matches are found, a dialogue box pops-up to choose a structure from a list<span style="color: rgb(0, 0, 0); font-family: &quot;Times New Roman&quot;; font-size: medium; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; text-decoration-style: initial; text-decoration-color: initial; display: inline !important; float: none;">. </span><span style="color: rgb(0, 0, 0); font-size: medium; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; text-align: start; text-indent: 0px; text-transform: none; white-space: normal; word-spacing: 0px; -webkit-text-stroke-width: 0px; text-decoration-style: initial; text-decoration-color: initial; display: inline ! important; float: none;">This feature requires a valid network connection. See more details<span>&nbsp;</span></span><a href="Models_Phonons_Tutorial.html#mozTocId250682" style="font-size: medium; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; text-align: start; text-indent: 0px; text-transform: none; white-space: normal; word-spacing: 0px; -webkit-text-stroke-width: 0px;">here</a><span style="color: rgb(0, 0, 0); font-size: medium; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; text-align: start; text-indent: 0px; text-transform: none; white-space: normal; word-spacing: 0px; -webkit-text-stroke-width: 0px; text-decoration-style: initial; text-decoration-color: initial; display: inline ! important; float: none;">.</span></td></tr><tr>
-          <td valign="top"><font color="#cc33cc">'<a href="https://wiki.fysik.dtu.dk/ase/ase/build/build.html#ase.build.bulk"><b>bulk</b></a>("Cu",
+        <tr>
+          <td valign="top"><u><b>a COD ID</b></u><br>
+            <font color="#cc33cc">'cod:&nbsp;</font><font
+              color="#cc33cc">1512124'</font><br>
+            <br>
+          </td>
+          <td valign="top">It is possible to retrieve a <a
+              href="http://www.crystallography.net">Crystallography Open
+              Database</a> (COD) entry by specifying its COD ID.
+            <meta http-equiv="content-type" content="text/html;
+              charset=windows-1252">
+            <span style="color: rgb(0, 0, 0); font-size: medium;
+              font-style: normal; font-variant-ligatures: normal;
+              font-variant-caps: normal; font-weight: 400;
+              letter-spacing: normal; text-align: start; text-indent:
+              0px; text-transform: none; white-space: normal;
+              word-spacing: 0px; -webkit-text-stroke-width: 0px;
+              text-decoration-style: initial; text-decoration-color:
+              initial; display: inline ! important; float: none;">This
+              feature requires a valid network connection. See more
+              details<span>&nbsp;</span></span><a
+              href="Models_Phonons_Tutorial.html#mozTocId250682"
+              style="font-size: medium; font-style: normal;
+              font-variant-ligatures: normal; font-variant-caps: normal;
+              font-weight: 400; letter-spacing: normal; text-align:
+              start; text-indent: 0px; text-transform: none;
+              white-space: normal; word-spacing: 0px;
+              -webkit-text-stroke-width: 0px;">here</a><span
+              style="color: rgb(0, 0, 0); font-size: medium; font-style:
+              normal; font-variant-ligatures: normal; font-variant-caps:
+              normal; font-weight: 400; letter-spacing: normal;
+              text-align: start; text-indent: 0px; text-transform: none;
+              white-space: normal; word-spacing: 0px;
+              -webkit-text-stroke-width: 0px; text-decoration-style:
+              initial; text-decoration-color: initial; display: inline !
+              important; float: none;">.</span></td>
+        </tr>
+        <tr>
+          <td valign="top"><u><b>a chemical formula</b></u><br>
+            <font color="#cc33cc">'cod: </font><font color="#cc33cc">O3
+              Sr Ti'</font></td>
+          <td valign="top">It is possible to retrieve a <a
+              href="http://www.crystallography.net">Crystallography Open
+              Database</a> (COD) entry by specifying its chemical
+            formula, in <a
+              href="https://en.wikipedia.org/wiki/Hill_formula">Hill
+              notation</a>, i.e C and H first, then other elements in
+            alphabetical order. A search is made on COD, and when
+            multiple matches are found, a dialogue box pops-up to choose
+            a structure from a list<span style="color: rgb(0, 0, 0);
+              font-family: &quot;Times New Roman&quot;; font-size:
+              medium; font-style: normal; font-variant-ligatures:
+              normal; font-variant-caps: normal; font-weight: 400;
+              letter-spacing: normal; orphans: 2; text-align: start;
+              text-indent: 0px; text-transform: none; white-space:
+              normal; widows: 2; word-spacing: 0px;
+              -webkit-text-stroke-width: 0px; text-decoration-style:
+              initial; text-decoration-color: initial; display: inline
+              !important; float: none;">. </span><span style="color:
+              rgb(0, 0, 0); font-size: medium; font-style: normal;
+              font-variant-ligatures: normal; font-variant-caps: normal;
+              font-weight: 400; letter-spacing: normal; text-align:
+              start; text-indent: 0px; text-transform: none;
+              white-space: normal; word-spacing: 0px;
+              -webkit-text-stroke-width: 0px; text-decoration-style:
+              initial; text-decoration-color: initial; display: inline !
+              important; float: none;">This feature requires a valid
+              network connection. See more details<span>&nbsp;</span></span><a
+              href="Models_Phonons_Tutorial.html#mozTocId250682"
+              style="font-size: medium; font-style: normal;
+              font-variant-ligatures: normal; font-variant-caps: normal;
+              font-weight: 400; letter-spacing: normal; text-align:
+              start; text-indent: 0px; text-transform: none;
+              white-space: normal; word-spacing: 0px;
+              -webkit-text-stroke-width: 0px;">here</a><span
+              style="color: rgb(0, 0, 0); font-size: medium; font-style:
+              normal; font-variant-ligatures: normal; font-variant-caps:
+              normal; font-weight: 400; letter-spacing: normal;
+              text-align: start; text-indent: 0px; text-transform: none;
+              white-space: normal; word-spacing: 0px;
+              -webkit-text-stroke-width: 0px; text-decoration-style:
+              initial; text-decoration-color: initial; display: inline !
+              important; float: none;">.</span></td>
+        </tr>
+        <tr>
+          <td valign="top"><font color="#cc33cc">'<a
+                href="https://wiki.fysik.dtu.dk/ase/ase/build/build.html#ase.build.bulk"><b>bulk</b></a>("Cu",
+
 
 
 
@@ -529,24 +620,34 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/ifit-web-
 
 
               "fcc", a=3.6, cubic=True)'</font><br>
-            <div align="center"><a href="images/Models_Cubic.png"><img alt="bulk" title="bulk" src="images/Models_Cubic.png" border="0" height="77" width="77"></a><br>
+            <div align="center"><a href="images/Models_Cubic.png"><img
+                  alt="bulk" title="bulk" src="images/Models_Cubic.png"
+                  height="77" width="77" border="0"></a><br>
             </div>
           </td>
           <td valign="top">A bulk material, with formula (Cu, MgO,
             NaCl), lattice constant and structure (sc, fcc, bcc, hcp,
             diamond, zincblende, rocksalt, cesiumchloride, fluorite or
-            wurtzite). See description of <a href="https://wiki.fysik.dtu.dk/ase/ase/build/build.html#ase.build.bulk">bulk</a>.<br>
+            wurtzite). See description of <a
+              href="https://wiki.fysik.dtu.dk/ase/ase/build/build.html#ase.build.bulk">bulk</a>.<br>
             <blockquote>
               <pre><span class="n"><span class="highlighted">bulk</span></span><span class="p">(</span><span class="s1">"Cu"</span><span class="p">,</span> <span class="s1">"fcc"</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="mf">3.6</span><span class="p">)</span></pre>
             </blockquote>
           </td>
         </tr>
         <tr>
-          <td valign="top"><font color="#cc33cc">'<a href="https://wiki.fysik.dtu.dk/ase/ase/build/build.html#ase.build.molecule"><b>molecule</b></a>("isobutane")'</font><br>
-            <div align="center"><a href="images/Models_Molecule_butane.png"><img alt="molecule" title="molecule" src="images/Models_Molecule_butane.png" border="0" height="73" width="84"></a><br>
+          <td valign="top"><font color="#cc33cc">'<a
+href="https://wiki.fysik.dtu.dk/ase/ase/build/build.html#ase.build.molecule"><b>molecule</b></a>("isobutane")'</font><br>
+            <div align="center"><a
+                href="images/Models_Molecule_butane.png"><img
+                  alt="molecule" title="molecule"
+                  src="images/Models_Molecule_butane.png" height="73"
+                  width="84" border="0"></a><br>
             </div>
           </td>
-          <td valign="top">Any <a href="https://wiki.fysik.dtu.dk/ase/ase/build/build.html#ase.build.molecule">molecule
+          <td valign="top">Any <a
+href="https://wiki.fysik.dtu.dk/ase/ase/build/build.html#ase.build.molecule">molecule
+
 
 
 
@@ -628,7 +729,9 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/ifit-web-
           </td>
         </tr>
         <tr>
-          <td valign="top"><font color="#cc33cc">'<a href="https://wiki.fysik.dtu.dk/ase/ase/build/build.html#ase.build.nanotube"><b>nanotube</b></a>(6,
+          <td valign="top"><font color="#cc33cc">'<a
+href="https://wiki.fysik.dtu.dk/ase/ase/build/build.html#ase.build.nanotube"><b>nanotube</b></a>(6,
+
 
 
 
@@ -661,19 +764,25 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/ifit-web-
 
 
               0, length=4)'</font><br>
-            <div align="center"><a href="images/Models_Nanotube.png"><img alt="nanotube" title="nanotube" src="images/Models_Nanotube.png" border="0" height="71" width="136"></a><br>
+            <div align="center"><a href="images/Models_Nanotube.png"><img
+                  alt="nanotube" title="nanotube"
+                  src="images/Models_Nanotube.png" height="71"
+                  width="136" border="0"></a><br>
             </div>
             <br>
           </td>
           <td valign="top">A 1D carbon (or other material) nanotube. See
-            description of <a href="https://wiki.fysik.dtu.dk/ase/ase/build/build.html#ase.build.nanotube">nanotube</a>.<br>
+            description of <a
+href="https://wiki.fysik.dtu.dk/ase/ase/build/build.html#ase.build.nanotube">nanotube</a>.<br>
           </td>
         </tr>
         <tr>
-          <td valign="top"><font color="#cc33cc">'<a href="https://wiki.fysik.dtu.dk/ase/ase/spacegroup/spacegroup.html#module-ase.spacegroup"><b>crystal</b></a>(...)'</font><br>
+          <td valign="top"><font color="#cc33cc">'<a
+href="https://wiki.fysik.dtu.dk/ase/ase/spacegroup/spacegroup.html#module-ase.spacegroup"><b>crystal</b></a>(...)'</font><br>
           </td>
           <td valign="top">The generic crystal builder from ASE. See
-            description <a href="https://wiki.fysik.dtu.dk/ase/ase/spacegroup/spacegroup.html#module-ase.spacegroup">here</a>.<br>
+            description <a
+href="https://wiki.fysik.dtu.dk/ase/ase/spacegroup/spacegroup.html#module-ase.spacegroup">here</a>.<br>
             <i>NaCl:</i>
             <blockquote>
               <pre><span class="n"></span><span class="o"></span><span class="n">crystal</span><span class="p">([</span><span class="s1">"Na"</span><span class="p">,</span> <span class="s1">"Cl"</span><span class="p">],</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)],</span> <span class="n"><span class="highlighted">spacegroup</span></span><span class="o">=</span><span class="mi">225</span><span class="p">,</span> <span class="n">cellpar</span><span class="o">=</span><span class="p">[</span><span class="n">5.64,5.64,5.64</span><span class="n"></span><span class="p">,</span> <span class="mi">90</span><span class="p">,</span> <span class="mi">90</span><span class="p">,</span> <span class="mi">90</span><span class="p">])<br></span></pre>
@@ -694,7 +803,9 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/ifit-web-
     You may look at the following resources to get material structure
     files:<br>
     <ul>
-      <li><b>MaterialsProject</b>&lt;<a href="https://www.materialsproject.org/">https://www.materialsproject.org/</a>&gt;
+      <li><b>MaterialsProject</b>&lt;<a
+          href="https://www.materialsproject.org/">https://www.materialsproject.org/</a>&gt;
+
 
 
 
@@ -731,8 +842,12 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/ifit-web-
 
 
         using VASP.&nbsp; <span name="ISTEXInserted">A. Jain*, S.P.
-          Ong*, et al, APL Materials, 2013, 1(1), 011002. doi:<a href="http://dx.doi.org/10.1063/1.4812323" name="ISTEXVisited">10.1063/1.4812323</a></span></li>
-      <li><b>PhononDB</b> &lt;<a href="http://phonondb.mtl.kyoto-u.ac.jp/">http://phonondb.mtl.kyoto-u.ac.jp/</a>&gt;
+          Ong*, et al, APL Materials, 2013, 1(1), 011002. doi:<a
+            href="http://dx.doi.org/10.1063/1.4812323"
+            name="ISTEXVisited">10.1063/1.4812323</a></span></li>
+      <li><b>PhononDB</b> &lt;<a
+          href="http://phonondb.mtl.kyoto-u.ac.jp/">http://phonondb.mtl.kyoto-u.ac.jp/</a>&gt;
+
 
 
 
@@ -769,7 +884,9 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/ifit-web-
 
 
         using PhonoPy and VASP. Makes use of the MaterialsProject.</li>
-      <li><b>NoMaD</b> repository &lt;<a href="http://nomad-repository.eu/cms/">http://nomad-repository.eu/cms/</a>&gt;
+      <li><b>NoMaD</b> repository &lt;<a
+          href="http://nomad-repository.eu/cms/">http://nomad-repository.eu/cms/</a>&gt;
+
 
 
 
@@ -807,8 +924,10 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/ifit-web-
 
         can store any computational result from e.g. ABINIT,
         QuantumEspresso, VASP, and others.</li>
-      <li><b>ICSD</b> Inorganic Crystal Structure Database &lt;<a href="http://icsd.ill.fr">http://icsd.ill.fr</a>&gt; with
-        plenty of CIFs. requires a license.<br></li>
+      <li><b>ICSD</b> Inorganic Crystal Structure Database &lt;<a
+          href="http://icsd.ill.fr">http://icsd.ill.fr</a>&gt; with
+        plenty of CIFs. requires a license.<br>
+      </li>
       <li><b>AflowLib</b> &lt;<a href="http://aflowlib.org/">http://aflowlib.org/</a>&gt;
 
 
@@ -819,13 +938,19 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/ifit-web-
 
 
 
-        a calculation service using ICSD materials.</li><li><b>COD</b> &lt;<a href="http://www.crystallography.net">Crystallography Open Database</a>&gt; now contains nearly 400 000 structures, free access.<br></li></ul><h3><a class="mozTocH5" name="mozTocId577034"></a><u>Choosing a
-        calculator (DFT code)</u></h3>
 
+        a calculation service using ICSD materials.</li>
+      <li><b>COD</b> &lt;<a href="http://www.crystallography.net">Crystallography
+          Open Database</a>&gt; now contains nearly 400 000 structures,
+        free access.<br>
+      </li>
+    </ul>
+    <h3><a class="mozTocH5" name="mozTocId577034"></a><u>Choosing a
+        calculator (DFT code)</u></h3>
     <p>The <b>sqw_phonons</b> model may use any of the calculators
       listed below:<br>
     </p>
-    <table border="1" cellpadding="2" cellspacing="2" width="100%">
+    <table cellspacing="2" cellpadding="2" width="100%" border="1">
       <tbody>
         <tr>
           <td valign="top"><b><font color="#cc33cc">'calculator=...'</font></b><br>
@@ -834,32 +959,55 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/ifit-web-
           </td>
           <td valign="top"><b>time elapsed</b> [s]<br>
           </td>
-          <td valign="top">
-            
-            <b><a href="http://molmod.ugent.be/deltacodesdft">Delta </a></b>[meV/atom]</td>
+          <td valign="top"> <b><a
+                href="http://molmod.ugent.be/deltacodesdft">Delta </a></b>[meV/atom]</td>
         </tr>
-        <tr><td valign="top"><a href="https://www.vasp.at/"><img alt="vasp" title="vasp" src="images/vasp.png" border="0" height="50" width="77" align="middle"></a><b><a href="https://www.vasp.at/">VASP</a></b><br>
-          </td><td valign="top">Plane-wave PAW code. Used in&nbsp;<meta http-equiv="content-type" content="text/html; charset=windows-1252">spin polarized mode. <b><i>Requires a
-                specific licens</i></b><b>e.</b><br>
-          </td><td valign="top"><b><font color="#33cc00">525</font></b> <i>(4.6)</i><br>
-          </td><td valign="top"><br>
-          </td></tr>
-        
         <tr>
-          <td valign="top"><b><img alt="qe" title="qe" src="images/logo_qe.jpg" height="34" width="80" align="middle"><a href="http://www.quantum-espresso.org/">QuantumEspresso</a></b></td>
+          <td valign="top"><a href="https://www.vasp.at/"><img
+                alt="vasp" title="vasp" src="images/vasp.png"
+                height="50" align="middle" width="77" border="0"></a><b><a
+                href="https://www.vasp.at/">VASP</a></b><br>
+          </td>
+          <td valign="top">Plane-wave PAW code. Used in&nbsp;
+            <meta http-equiv="content-type" content="text/html;
+              charset=windows-1252">
+            spin polarized mode. <b><i>Requires a specific licens</i></b><b>e.</b><br>
+          </td>
+          <td valign="top"><b><font color="#33cc00">525</font></b> <i>(4.6)</i><br>
+          </td>
+          <td valign="top"><br>
+          </td>
+        </tr>
+        <tr>
+          <td valign="top"><b><img alt="qe" title="qe"
+                src="images/logo_qe.jpg" height="34" align="middle"
+                width="80"><a href="http://www.quantum-espresso.org/">QuantumEspresso</a></b></td>
           <td valign="top">Density-functional theory, plane waves, and
             pseudopotentials based code for electronic-structure
-            calculations and materials modeling. Used in&nbsp;spin polarized mode.
-          </td>
+            calculations and materials modeling. Used in&nbsp;spin
+            polarized mode. </td>
           <td valign="top"><font color="#33cc00">87</font><br>
           </td>
           <td valign="top">SSSP: <font color="#33cc00">0.3</font></td>
         </tr>
-        <tr><td valign="top"><a href="http://elk.sourceforge.net/"><img alt="elk" title="elk" src="images/elk.png" border="0" height="47" width="81" align="middle"></a><a href="http://elk.sourceforge.net/">&nbsp;<b>ELK</b></a></td><td valign="top">Full Potential-All Electrons LAPW code. Used in&nbsp;spin polarized mode.<i> A
-              very efficient all-electrons code. Slow but reliable.</i><br>
-          </td><td valign="top"><font color="#ff0000">9820</font><br>
-          </td><td valign="top"><font color="#33cc00">0.3</font></td></tr><tr>
-          <td valign="top"><a href="http://www.abinit.org/"><img alt="abinit" title="abinit" src="images/abinit.png" border="0" height="34" width="80" align="middle"></a><a href="http://www.abinit.org/">&nbsp;ABINIT</a></td>
+        <tr>
+          <td valign="top"><a href="http://elk.sourceforge.net/"><img
+                alt="elk" title="elk" src="images/elk.png" height="47"
+                align="middle" width="81" border="0"></a><a
+              href="http://elk.sourceforge.net/">&nbsp;<b>ELK</b></a></td>
+          <td valign="top">Full Potential-All Electrons LAPW code. Used
+            in&nbsp;spin polarized mode.<i> A very efficient
+              all-electrons code. Slow but reliable.</i><br>
+          </td>
+          <td valign="top"><font color="#ff0000">9820</font><br>
+          </td>
+          <td valign="top"><font color="#33cc00">0.3</font></td>
+        </tr>
+        <tr>
+          <td valign="top"><a href="http://www.abinit.org/"><img
+                alt="abinit" title="abinit" src="images/abinit.png"
+                height="34" align="middle" width="80" border="0"></a><a
+              href="http://www.abinit.org/">&nbsp;ABINIT</a></td>
           <td valign="top">Plane-wave pseudopotential code. Can be used
             with <a href="http://www.abinit.org/downloads/PAW2">JTH</a>
             and <a href="http://www.physics.rutgers.edu/gbrv/">GBRV</a>
@@ -867,21 +1015,24 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/ifit-web-
           </td>
           <td valign="top"><font color="#33cc00">64-87</font><br>
           </td>
-          <td valign="top">
-            
-            <span style="color: rgb(0, 0, 0); font-family: 'Times New
-              Roman'; font-size: medium; font-style: normal;
-              font-variant: normal; font-weight: normal; letter-spacing:
-              normal; line-height: normal; orphans: auto; text-align:
-              start; text-indent: 0px; text-transform: none;
-              white-space: normal; widows: 1; word-spacing: 0px;
-              -webkit-text-stroke-width: 0px; display: inline
-              !important; float: none;">pps=pawxml (JTH):<span class="Apple-converted-space">&nbsp;</span></span><b style="color: rgb(0, 0, 0); font-family: 'Times New
+          <td valign="top"> <span style="color: rgb(0, 0, 0);
+              font-family: 'Times New Roman'; font-size: medium;
+              font-style: normal; font-variant: normal; font-weight:
+              normal; letter-spacing: normal; line-height: normal;
+              orphans: auto; text-align: start; text-indent: 0px;
+              text-transform: none; white-space: normal; widows: 1;
+              word-spacing: 0px; -webkit-text-stroke-width: 0px;
+              display: inline !important; float: none;">pps=pawxml
+              (JTH):<span class="Apple-converted-space">&nbsp;</span></span><b
+              style="color: rgb(0, 0, 0); font-family: 'Times New
               Roman'; font-size: medium; font-style: normal;
               font-variant: normal; letter-spacing: normal; line-height:
               normal; orphans: auto; text-align: start; text-indent:
               0px; text-transform: none; white-space: normal; widows: 1;
-              word-spacing: 0px; -webkit-text-stroke-width: 0px;"><font color="#33cc00">0.4</font><span class="Apple-converted-space">&nbsp;</span></b><br style="color: rgb(0, 0, 0); font-family: 'Times New
+              word-spacing: 0px; -webkit-text-stroke-width: 0px;"><font
+                color="#33cc00">0.4</font><span
+                class="Apple-converted-space">&nbsp;</span></b><br
+              style="color: rgb(0, 0, 0); font-family: 'Times New
               Roman'; font-size: medium; font-style: normal;
               font-variant: normal; font-weight: normal; letter-spacing:
               normal; line-height: normal; orphans: auto; text-align:
@@ -895,12 +1046,15 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/ifit-web-
               start; text-indent: 0px; text-transform: none;
               white-space: normal; widows: 1; word-spacing: 0px;
               -webkit-text-stroke-width: 0px; display: inline
-              !important; float: none;">pps=paw (GBRV):<span class="Apple-converted-space">&nbsp;</span></span><font style="font-family: 'Times New Roman'; font-size: medium;
+              !important; float: none;">pps=paw (GBRV):<span
+                class="Apple-converted-space">&nbsp;</span></span><font
+              style="font-family: 'Times New Roman'; font-size: medium;
               font-style: normal; font-variant: normal; font-weight:
               normal; letter-spacing: normal; line-height: normal;
               orphans: auto; text-align: start; text-indent: 0px;
               text-transform: none; white-space: normal; widows: 1;
-              word-spacing: 0px; -webkit-text-stroke-width: 0px;" color="#33cc00"><b>0.8</b></font><span style="color:
+              word-spacing: 0px; -webkit-text-stroke-width: 0px;"
+              color="#33cc00"><b>0.8</b></font><span style="color:
               rgb(0, 0, 0); font-family: 'Times New Roman'; font-size:
               medium; font-style: normal; font-variant: normal;
               font-weight: normal; letter-spacing: normal; line-height:
@@ -911,57 +1065,102 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/ifit-web-
               pps=HGH.k: 2.1<br>
             </span></td>
         </tr>
-        
         <tr>
-          <td valign="top"><a href="http://wiki.fysik.dtu.dk/gpaw"><img alt="GPAW" title="GPAW" src="images/logo-gpaw.png" border="0" height="39" width="80" align="middle"> </a><a href="http://wiki.fysik.dtu.dk/gpaw">GPAW</a><a href="http://wiki.fysik.dtu.dk/gpaw"><br>
+          <td valign="top"><a href="http://wiki.fysik.dtu.dk/gpaw"><img
+                alt="GPAW" title="GPAW" src="images/logo-gpaw.png"
+                height="39" align="middle" width="80" border="0"> </a><a
+              href="http://wiki.fysik.dtu.dk/gpaw">GPAW</a><a
+              href="http://wiki.fysik.dtu.dk/gpaw"><br>
             </a></td>
-          <td valign="top">Real-space/plane-wave/LCAO PAW code. <br></td>
+          <td valign="top">Real-space/plane-wave/LCAO PAW code. <br>
+          </td>
           <td valign="top">465<br>
           </td>
           <td valign="top">1.5<br>
           </td>
         </tr>
-        
-        <tr><td valign="top"><img alt="emt" title="emt" src="images/emt.png" height="50" width="71" align="middle">&nbsp;<a href="https://wiki.fysik.dtu.dk/ase/ase/calculators/emt.html">EMT</a></td><td valign="top">Effective Medium Theory calculator (<b>only</b>
+        <tr>
+          <td valign="top"><img alt="emt" title="emt"
+              src="images/emt.png" height="50" align="middle" width="71">&nbsp;<a
+href="https://wiki.fysik.dtu.dk/ase/ase/calculators/emt.html">EMT</a></td>
+          <td valign="top">Effective Medium Theory calculator (<b>only</b>
             for Al,Cu,Ag,Au,Ni,Pd,Pt,H,C,N,O). <i>Very fast, but
               limited.</i><br>
-          </td><td valign="top">0.9<br>
-          </td><td valign="top"><br>
-          </td></tr><tr><td valign="top"><a href="http://octopus-code.org">Octopus</a><br></td><td valign="top">Used in&nbsp;spin polarized mode.
-          </td><td valign="top"><br></td><td valign="top"><br></td></tr><tr><td valign="top"><a href="https://departments.icmab.es/leem/siesta/">Siesta</a><br></td><td valign="top">Used in&nbsp;spin polarized mode.
-          </td><td valign="top"><br></td><td valign="top"><br></td></tr>
-        
+          </td>
+          <td valign="top">0.9<br>
+          </td>
+          <td valign="top"><br>
+          </td>
+        </tr>
+        <tr>
+          <td valign="top"><a href="http://octopus-code.org">Octopus</a><br>
+          </td>
+          <td valign="top">Used in&nbsp;spin polarized mode. </td>
+          <td valign="top"><br>
+          </td>
+          <td valign="top"><br>
+          </td>
+        </tr>
+        <tr>
+          <td valign="top"><a
+              href="https://departments.icmab.es/leem/siesta/">Siesta</a><br>
+          </td>
+          <td valign="top">Used in&nbsp;spin polarized mode. </td>
+          <td valign="top"><br>
+          </td>
+          <td valign="top"><br>
+          </td>
+        </tr>
       </tbody>
     </table>
     <div align="center"><i>The available calculators in </i><i><b>sqw_phonons</b></i><i>.
-        We recommend VASP, QuantumEspresso, and Elk</i><i>.</i><i>
-        The computation time is given for </i><i>(Al a=5.6) with 24
-        cores (2.8GHz), kpoints=4, supercell=3, ecut=default, and
-        'accurate' setting (using PhonoPy). These times depend on the pseudo potential
-        used, and are only given as estimates.<br>
+        We recommend VASP, QuantumEspresso, and Elk</i><i>.</i><i> The
+        computation time is given for </i><i>(Al a=5.6) with 24 cores
+        (2.8GHz), kpoints=4, supercell=3, ecut=default, and 'accurate'
+        setting (using PhonoPy). These times depend on the pseudo
+        potential used, and are only given as estimates.<br>
       </i></div>
     <br>
     Benchmarks indicate that, for phonon dispersions:<br>
-    <ul><li><a href="http://www.quantum-espresso.org/">Quantum Espresso</a>
-        is the fastest, with excellent parallelization and
-        accuracy.</li><li><a href="http://www.abinit.org/">ABINIT</a>, <a href="https://www.vasp.at/">VASP</a> and <a href="http://wiki.fysik.dtu.dk/gpaw">GPAW</a> are also very
-        efficient codes. VASP is solid rock. Results with ABINIT and GPAW may be unstable.<br></li><li>The all-electrons <a href="Elk">ELK</a> code is about 10
-        times slower than QuantumEspresso, but provides reasonable results.<br></li><li>Using <b>k-points=4</b> is both fast and ensures a reasonable
-        accuracy in phonons.</li><li>Similarly, a <b>supercell=3</b> is necessary for small
+    <ul>
+      <li><a href="http://www.quantum-espresso.org/">Quantum Espresso</a>
+        is the fastest, with excellent parallelization and accuracy.</li>
+      <li><a href="http://www.abinit.org/">ABINIT</a>, <a
+          href="https://www.vasp.at/">VASP</a> and <a
+          href="http://wiki.fysik.dtu.dk/gpaw">GPAW</a> are also very
+        efficient codes. VASP is solid rock. Results with ABINIT and
+        GPAW may be unstable.<br>
+      </li>
+      <li>The all-electrons <a href="Elk">ELK</a> code is about 10
+        times slower than QuantumEspresso, but provides reasonable
+        results.<br>
+      </li>
+      <li>Using <b>k-points=4</b> is both fast and ensures a reasonable
+        accuracy in phonons.</li>
+      <li>Similarly, a <b>supercell=3</b> is necessary for small
         lattice cells, but 2 could be enough for large ones.<br>
-      </li><li>Phonon dispersions are not too sensitive on the energy
+      </li>
+      <li>Phonon dispersions are not too sensitive on the energy
         cut-off. <b>ecut=340</b> eV is satisfactory. The computational
         time increases as <i>ecut</i><sup>1.6</sup> for <i>ecut</i>
         within 200 and 1500 eV, according to our benchmarks.<br>
-      </li><li>Elk can not handle large supercells without
-        recompiling. The Debian package we provide is done so.<br>
-      </li><li>Elk is hardly sensitive to the energy cut-off in
-        results and computational needs.</li><li>NWChem and Dacapo calculators are not supported as they do not provide reliable results for phonon calculations.</li><li>Refer to <a href="https://molmod.ugent.be/deltacodesdft">https://molmod.ugent.be/deltacodesdft</a>
+      </li>
+      <li>Elk can not handle large supercells without recompiling. The
+        Debian package we provide is done so.<br>
+      </li>
+      <li>Elk is hardly sensitive to the energy cut-off in results and
+        computational needs.</li>
+      <li>NWChem and Dacapo calculators are not supported as they do not
+        provide reliable results for phonon calculations.</li>
+      <li>Refer to <a href="https://molmod.ugent.be/deltacodesdft">https://molmod.ugent.be/deltacodesdft</a>
         for codes comparison. Currently, best codes are QE with SSSP,
-        Elk, Abinit with PAWXML JTH or GBRV, GPAW. VASP 5.2 with PAW2015 GW
-        is also excellent (when available).</li></ul><ul>
+        Elk, Abinit with PAWXML JTH or GBRV, GPAW. VASP 5.2 with PAW2015
+        GW is also excellent (when available).</li>
     </ul>
-    <h3><a class="mozTocH5" name="mozTocId912608"></a> <u><i> </i></u><u><i>Configuring the Calculator</i></u> </h3>
+    <ul>
+    </ul>
+    <h3><a class="mozTocH5" name="mozTocId912608"></a> <u><i> </i></u><u><i>Configuring
+          the Calculator</i></u> </h3>
     Other options, given as strings, or as a structure, allow to
     customise how to create the supercell and other computational tuning
     stuff.<br>
@@ -978,11 +1177,16 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/ifit-web-
         be given using e.g. the <font color="#cc33cc">'supercell=3'</font>
         (for a 3x3x3 supercell) argument, or <font color="#cc33cc">'supercell=[2
 
+
           3 2]'</font>. Let <i>supercell</i>=0 (default) to set
         automatically the <i>supercell</i> from the number of atoms in
         the material cell as (1000/N)^(1/6).</li>
-      <li><b>calculator</b>: the calculator to use, see <a href="#mozTocId577034">below</a>.</li>
-      <li><b>potentials</b>: pseudo potential directory to use, e.g. <font color="#cc33cc">'/usr/share/elk-lapw/species'</font>, <font color="#cc33cc">'/usr/share/abinit/psp'</font>, <font color="#cc33cc">'/usr/share/espresso/pseudo'</font>.</li>
+      <li><b>calculator</b>: the calculator to use, see <a
+          href="#mozTocId577034">below</a>.</li>
+      <li><b>potentials</b>: pseudo potential directory to use, e.g. <font
+          color="#cc33cc">'/usr/share/elk-lapw/species'</font>, <font
+          color="#cc33cc">'/usr/share/abinit/psp'</font>, <font
+          color="#cc33cc">'/usr/share/espresso/pseudo'</font>.</li>
       <li><b>diagonalization</b>: <font color="#cc33cc">'david'</font>
         or <font color="#cc33cc">'cg'</font>. or <font color="#cc33cc">'rmm-diis'</font>.
         The Davidson method is faster than the conjugate-gradient but
@@ -1005,11 +1209,15 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/ifit-web-
         should not be set).</li>
       <li><b>htmlreport:</b> when set to 1, creates a readable report as
         an HTML document '<i>sqw_phonons.html</i>' in the target
-        directory. The syntax <i>sqw_phonons</i>(..., <font color="#cc33cc">'report'</font>, ...) also works.<br>
+        directory. The syntax <i>sqw_phonons</i>(..., <font
+          color="#cc33cc">'report'</font>, ...) also works.<br>
       </li>
       <li><b>optimizer</b>: when set, performs a geometry optimization
-        before computing the forces. This option can be set to&nbsp; <font color="#cc33cc"> 'BFGS'</font>, <font color="#cc33cc">'LBFGS'</font>
-        (low memory BFGS), <font color="#cc33cc">'MDMin'</font> or <font color="#cc33cc">'FIRE'</font>, as explained in the <a href="https://wiki.fysik.dtu.dk/ase/ase/optimize.html">ASE
+        before computing the forces. This option can be set to&nbsp; <font
+          color="#cc33cc"> 'BFGS'</font>, <font color="#cc33cc">'LBFGS'</font>
+        (low memory BFGS), <font color="#cc33cc">'MDMin'</font> or <font
+          color="#cc33cc">'FIRE'</font>, as explained in the <a
+          href="https://wiki.fysik.dtu.dk/ase/ase/optimize.html">ASE
           Structure optimization page</a>. If the input configuration is
         not close to its equilibrium state, it is worth setting this
         option. We recommend to set it to BFGS or MDMin (which are fast)
@@ -1023,8 +1231,10 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/ifit-web-
 
 
 
+
             fast'</font></b> option (default) halves the number of
-        displacements and, when available, uses <a href="https://atztogo.github.io/phonopy/">PhonoPy</a>. The
+        displacements and, when available, uses <a
+          href="https://atztogo.github.io/phonopy/">PhonoPy</a>. The
         equilibrium forces are used to improve the accuracy of the force
         gradient. The<b><font color="#cc33cc"> 'accurate' </font></b>choice
 
@@ -1032,8 +1242,15 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/ifit-web-
 
 
 
+
         is longer to execute (e.g. 3-6 times slower), and computes all
-        forces ignoring symmetry. <br>
+        forces ignoring symmetry. All these accuracy settings display
+        the ETA before completion, but are <b>limited to 256
+          displacements</b>. This limit can be reached when computing
+        with large cells. In this case, you may use the <b><font
+            color="#cc33cc">'single_shot'</font></b> accuracy setting
+        which does all computations in one shot (no ETA is displayed).
+        This is usually a very fast solution as well.<br>
       </li>
       <li><b>use_phonopy</b>: when set to 1, or using directly <i>sqw_phonons</i>(...,
 
@@ -1041,11 +1258,14 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/ifit-web-
 
 
 
-        <font color="#cc33cc">'phonopy'</font>, ...), the <a href="https://atztogo.github.io/phonopy/">PhonoPy</a> library
+
+        <font color="#cc33cc">'phonopy'</font>, ...), the <a
+          href="https://atztogo.github.io/phonopy/">PhonoPy</a> library
         is used, which results in a <font color="#cc33cc">'very fast'</font>
         calculation (using forward difference force gradient), and all
         available symmetry operators. This requires PhonoPy to be
-        available. When not available, the default <font color="#cc33cc">'very fast'</font> accuracy choice will be
+        available. When not available, the default <font
+          color="#cc33cc">'very fast'</font> accuracy choice will be
         used (using PHON methodology).<br>
       </li>
     </ul>
@@ -1053,9 +1273,12 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/ifit-web-
     <ul>
       <li><b> occupations</b>: For metallic and insulator systems, the <i>electron
 
-          state occupations</i> should be set by using argument <font color="#cc33cc">'metal' </font>(0.3 eV)<font color="#cc33cc">
+
+          state occupations</i> should be set by using argument <font
+          color="#cc33cc">'metal' </font>(0.3 eV)<font color="#cc33cc">
           'semiconductor'</font> (0.1meV) or <font color="#cc33cc">'insulator'</font>,
-        or <font color="#cc33cc">'occupations=smearing'</font> or<font color="#cc33cc"> 'occupations=fixed'</font>. You can also
+        or <font color="#cc33cc">'occupations=smearing'</font> or<font
+          color="#cc33cc"> 'occupations=fixed'</font>. You can also
         directly specify the smearing width as <font color="#cc33cc">'occupations=&lt;value&gt;'</font>
         assuming a Fermi Dirac distribution. The unit is eV.</li>
       <li><b> kpoints</b>: The size of the <i>Monkhorst-Pack grid</i>
@@ -1073,7 +1296,8 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/ifit-web-
         e.g. default <font color="#cc33cc">'xc=PBE'</font>. Other
         choices<font color="#cc33cc"> 'LDA','revPBE','RPBE'</font>,...</li>
       <li><b> ecut</b>: The <i>kinetic energy cutoff</i> for
-        wavefunctions can also be specified using e.g. argument <font color="#cc33cc">'ecut=340'</font>. The unit is eV. A good
+        wavefunctions can also be specified using e.g. argument <font
+          color="#cc33cc">'ecut=340'</font>. The unit is eV. A good
         estimate is to use [200*the number of different atoms]. ABINIT
         with paw/pawxml potentials requires larger <b>ecut</b>
         (1000-1500eV) and <b>nsteps</b> (100).<br>
@@ -1099,44 +1323,121 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/ifit-web-
         options for ABINIT</u></h4>
     <ul>
     </ul>
-    We recommend the PAWXML PBE <a href="http://www.abinit.org/downloads/PAW2">JTH</a> and PAW PBE <a href="http://www.physics.rutgers.edu/gbrv/">GBRV</a> potentials.<br>
+    We recommend the PAWXML PBE <a
+      href="http://www.abinit.org/downloads/PAW2">JTH</a> and PAW PBE <a
+      href="http://www.physics.rutgers.edu/gbrv/">GBRV</a> potentials.<br>
     <ul>
-      <li><b>iscf</b>: type of self-consistent cycle. Can be <font color="#cc33cc">'NC'</font> (norm-conserving) and <font color="#cc33cc">'PAW'</font>.</li>
+      <li><b>iscf</b>: type of self-consistent cycle. Can be <font
+          color="#cc33cc">'NC'</font> (norm-conserving) and <font
+          color="#cc33cc">'PAW'</font>.</li>
       <li><b>potentials</b>: can be a directory path, as well as also
         one of <font color="#cc33cc">'NC' 'fhi' 'hgh' 'hgh.sc' 'hgh.k'
           'tm' 'paw'</font> <span class="st"><font color="#cc33cc">'pawxml'</font>
           which is then sent to <b>pps</b> below.</span>.</li>
-      <li><b>pps</b>: Type of pseudo potential database, any of<br></li><ul><li><font color="#cc33cc">'fhi' </font><span class="st">Fritz-Haber-Institute, </span><span class="st"><font color="#cc33cc"><font color="#000000">fast but not very accurate</font></font></span></li><li><font color="#cc33cc">'hgh' </font><span class="st">Hartwigsen-Goedeker-Hutter
-          (without semi-core valence electrons) rather fast and moderately accurate<br></span></li><li><font color="#cc33cc">'hgh.sc' </font><span class="st">Hartwigsen-Goedeker-Hutter
-          (with semi-core valence electrons)</span><span class="st"> rather fast and </span><span class="st"><span class="st">moderately </span>accurate</span></li><li><font color="#cc33cc">'hgh.k' </font><span class="st">Hartwigsen-Goedeker-Hutter
-          (high k)</span><span class="st"> rather fast and </span><span class="st"><span class="st">moderately </span>accurate</span></li><li><font color="#cc33cc">'tm' </font><span class="st">Troullier-Martins</span></li><li><font color="#cc33cc">'paw'</font><span class="st">&nbsp;</span><span class="st">Projector-Augmented-Wave from ATOMPAW, very good<br></span></li><li><span class="st"><font color="#cc33cc">'pawxml'</font> </span><span class="st"><a href="https://wiki.fysik.dtu.dk/gpaw/setups/pawxml.html">PAW
-            in XML</a> format (from GPAW)</span><span class="st"><span class="st"> the best, requires more iterations (e.g. <b>ecut=1500</b>; <b>nsteps=100</b>)</span></span><span class="st"><br>
-        </span></li></ul>
+      <li><b>pps</b>: Type of pseudo potential database, any of<br>
+      </li>
+      <ul>
+        <li><font color="#cc33cc">'fhi' </font><span class="st">Fritz-Haber-Institute,
+          </span><span class="st"><font color="#cc33cc"><font
+                color="#000000">fast but not very accurate</font></font></span></li>
+        <li><font color="#cc33cc">'hgh' </font><span class="st">Hartwigsen-Goedeker-Hutter
+
+            (without semi-core valence electrons) rather fast and
+            moderately accurate<br>
+          </span></li>
+        <li><font color="#cc33cc">'hgh.sc' </font><span class="st">Hartwigsen-Goedeker-Hutter
+
+            (with semi-core valence electrons)</span><span class="st">
+            rather fast and </span><span class="st"><span class="st">moderately
+            </span>accurate</span></li>
+        <li><font color="#cc33cc">'hgh.k' </font><span class="st">Hartwigsen-Goedeker-Hutter
+
+            (high k)</span><span class="st"> rather fast and </span><span
+            class="st"><span class="st">moderately </span>accurate</span></li>
+        <li><font color="#cc33cc">'tm' </font><span class="st">Troullier-Martins</span></li>
+        <li><font color="#cc33cc">'paw'</font><span class="st">&nbsp;</span><span
+            class="st">Projector-Augmented-Wave from ATOMPAW, very good<br>
+          </span></li>
+        <li><span class="st"><font color="#cc33cc">'pawxml'</font> </span><span
+            class="st"><a
+              href="https://wiki.fysik.dtu.dk/gpaw/setups/pawxml.html">PAW
+
+              in XML</a> format (from GPAW)</span><span class="st"><span
+              class="st"> the best, requires more iterations (e.g. <b>ecut=1500</b>;
+              <b>nsteps=100</b>)</span></span><span class="st"><br>
+          </span></li>
+      </ul>
     </ul>
     <h4><a class="mozTocH5" name="mozTocId486503"></a><u>Specific
         options for GPAW</u></h4>
     <ul>
-      <li><b>mode</b>: GPAW <a href="https://wiki.fysik.dtu.dk/gpaw/documentation/manual.html#manual-mode">computation
+      <li><b>mode</b>: GPAW <a
+href="https://wiki.fysik.dtu.dk/gpaw/documentation/manual.html#manual-mode">computation
+
 
           mode</a> as Plane-Wave, Finite Difference, or LCAO (linear
         combination of atomic orbitals). Can be <font color="#cc33cc">'pw','fd',</font>
-        or <font color="#cc33cc">'lcao'</font>. Default is <font color="#cc33cc">'pw'</font>. The <a href="https://wiki.fysik.dtu.dk/gpaw/documentation/lcao/lcao.html#lcao"><font color="#cc33cc">'lcao'</font></a> mode is fast for large
-        systems, and requires less memory.</li></ul>
-        <h4><a name="mozTocId269170" class="mozTocH5"></a><u>Specific options for Octopus</u></h4><ul><li><b>pps</b>: Type of pseudo potential database, any of <br></li><ul><li><font color="#cc33cc">'standard' </font>LDA only for H, Li, C, N, O, Na, Si, S, Ti, Se, Cd<font color="#cc33cc"><br></font></li><li><font color="#cc33cc">'hscv_pbe' </font>Hamann-Schlueter-Chiang-Vanderbilt</li><li><font color="#cc33cc">'hscv_lda' </font>Hamann-Schlueter-Chiang-Vanderbilt</li><li><font color="#cc33cc">'hgh_lda' </font>(Hartwigsen-Goedecker-Hutter LDA pseudopotentials for elements from H to Rn)<font color="#cc33cc"><br></font></li><li><font color="#cc33cc">'sg15'</font> (Optimized Norm-Conserving Vanderbilt PBE up to Bi, no Lanthanides)</li></ul></ul>
-        
-      <h4><a name="mozTocId227008" class="mozTocH5"></a><u>Specific options for Siesta</u></h4><ul><li>
-    <b>potentials</b>: should be defined as a path to a directory containing the pseudo-potentials, e.g. <font color="#cc33cc">'/usr/share/siesta/pseudo/'</font> </li><li><b>pps</b>: Type of pseudo potential database, any of <br></li><ul><li><font color="#cc33cc">'fhi' </font><span class="st">Fritz-Haber-Institute (from ABINIT)</span><span class="st">.<br></span></li><li><font color="#cc33cc">'tm' </font><span class="st"></span><span class="st">Troullier-Martins (from NNIN). <br></span></li></ul></ul><ul>
+        or <font color="#cc33cc">'lcao'</font>. Default is <font
+          color="#cc33cc">'pw'</font>. The <a
+          href="https://wiki.fysik.dtu.dk/gpaw/documentation/lcao/lcao.html#lcao"><font
+            color="#cc33cc">'lcao'</font></a> mode is fast for large
+        systems, and requires less memory.</li>
     </ul>
-    <h4><a name="mozTocId294368" class="mozTocH5"></a><u>Specific options for VASP</u></h4>
+    <h4><a name="mozTocId269170" class="mozTocH5"></a><u>Specific
+        options for Octopus</u></h4>
     <ul>
-      <li><b>pps:</b> can be a structure to define explicitly which flavour of pseudo-potentials have to be used, per element, such as&nbsp;</li></ul><blockquote><blockquote><i>struct('K','_pv', 'Ca',
-          '_pv', 'Rb', '_pv', 'Sr', '_sv', 'Y',&nbsp; '_sv', 'Zr',
-          '_sv', 'Nb', '_pv', 'Cs', '_sv', 'Ba', '_sv', 'Fr', '_sv',
-          'Ra', '_sv', 'Sc', '_sv')</i><br>
-      </blockquote></blockquote><ul></ul><blockquote><blockquote><font color="#cc33cc">or better</font> <i>struct('B','_h','C','_h','N','_h','O','_h','F','_h','H','_h','Li','_sv','Be','_sv','Na',
-
-
-
+      <li><b>pps</b>: Type of pseudo potential database, any of <br>
+      </li>
+      <ul>
+        <li><font color="#cc33cc">'standard' </font>LDA only for H, Li,
+          C, N, O, Na, Si, S, Ti, Se, Cd<font color="#cc33cc"><br>
+          </font></li>
+        <li><font color="#cc33cc">'hscv_pbe' </font>Hamann-Schlueter-Chiang-Vanderbilt</li>
+        <li><font color="#cc33cc">'hscv_lda' </font>Hamann-Schlueter-Chiang-Vanderbilt</li>
+        <li><font color="#cc33cc">'hgh_lda' </font>(Hartwigsen-Goedecker-Hutter
+          LDA pseudopotentials for elements from H to Rn)<font
+            color="#cc33cc"><br>
+          </font></li>
+        <li><font color="#cc33cc">'sg15'</font> (Optimized
+          Norm-Conserving Vanderbilt PBE up to Bi, no Lanthanides)</li>
+      </ul>
+    </ul>
+    <h4><a name="mozTocId227008" class="mozTocH5"></a><u>Specific
+        options for Siesta</u></h4>
+    <ul>
+      <li> <b>potentials</b>: should be defined as a path to a
+        directory containing the pseudo-potentials, e.g. <font
+          color="#cc33cc">'/usr/share/siesta/pseudo/'</font> </li>
+      <li><b>pps</b>: Type of pseudo potential database, any of <br>
+      </li>
+      <ul>
+        <li><font color="#cc33cc">'fhi' </font><span class="st">Fritz-Haber-Institute
+            (from ABINIT)</span><span class="st">.<br>
+          </span></li>
+        <li><font color="#cc33cc">'tm' </font><span class="st"></span><span
+            class="st">Troullier-Martins (from NNIN). <br>
+          </span></li>
+      </ul>
+    </ul>
+    <ul>
+    </ul>
+    <h4><a name="mozTocId294368" class="mozTocH5"></a><u>Specific
+        options for VASP</u></h4>
+    <ul>
+      <li><b>pps:</b> can be a structure to define explicitly which
+        flavour of pseudo-potentials have to be used, per element, such
+        as&nbsp;</li>
+    </ul>
+    <blockquote>
+      <blockquote><i>struct('K','_pv', 'Ca', '_pv', 'Rb', '_pv', 'Sr',
+          '_sv', 'Y',&nbsp; '_sv', 'Zr', '_sv', 'Nb', '_pv', 'Cs',
+          '_sv', 'Ba', '_sv', 'Fr', '_sv', 'Ra', '_sv', 'Sc', '_sv')</i><br>
+      </blockquote>
+    </blockquote>
+    <ul>
+    </ul>
+    <blockquote>
+      <blockquote><font color="#cc33cc">or better</font> <i>struct('B','_h','C','_h','N','_h','O','_h','F','_h','H','_h','Li','_sv','Be','_sv','Na',
 '_sv','Mg','_pv','K','_sv','Ca','_sv','Rb','_sv','Sr','_sv','Cs','_sv','Ba','_sv','Sc','_sv','Ti','_pv',
 'V','_pv','Cr','_pv','Mn','_pv','Fe','_pv','Ni','_pv','Cu','_pv','Y','_sv','Zr','_sv','Nb','_pv','Mo','_pv',
 'Tc','_pv','Ru','_pv','Rh','_pv','Pd','_pv','Hf','_pv','Ta','_pv','W','_pv','Re','_pv','Os','_pv','Al','_h',
@@ -1145,9 +1446,11 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/ifit-web-
     <ul>
     </ul>
     <ul>
-    </ul><h3><a class="mozTocH5" name="mozTocId715775"></a><u>Convergence
+    </ul>
+    <h3><a class="mozTocH5" name="mozTocId715775"></a><u>Convergence
         issues: what to try</u></h3>
-    <p>It is generally recommended to use the following settings for accurate phonon band computations:<br>
+    <p>It is generally recommended to use the following settings for
+      accurate phonon band computations:<br>
     </p>
     <ul>
       <li><b>kpoints</b>=6 (or at least 4x4x4). <i>kpoints=3</i> is
@@ -1157,7 +1460,10 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/ifit-web-
         and gradually increase value for better accuracy.<br>
       </li>
       <li><b>smearing</b>=0.27 [eV] for most materials. This helps
-        convergence.</li><li><b>toldfe</b>=1e-6 [eV] or lower. The default is 1e-5 for fast estimates.<br></li>
+        convergence.</li>
+      <li><b>toldfe</b>=1e-6 [eV] or lower. The default is 1e-5 for fast
+        estimates.<br>
+      </li>
     </ul>
     <p>If the SCF convergence fails, you may try: </p>
     <pre>  &gt;&gt; s=<font color="#3366ff">sqw_phonons</font>(POSCAR,<font color="#cc33cc"> 'nsteps=200; toldfe=1e-6; occupations=0.27; ecut=1500; </font><font color="#cc33cc">'</font>);</pre>
@@ -1165,13 +1471,34 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/ifit-web-
     eV.<br>
     If you are tight on the memory (e.g. the system is large), you may
     try:<br>
-    <pre>  &gt;&gt; s=<font color="#3366ff">sqw_phonons</font>(POSCAR,<font color="#cc33cc"><font color="#cc33cc"> </font></font><font color="#cc33cc">'ecut=500; diagonalization=cg'</font>);<br></pre>If the convergence can not be reached, relax the tolerance criteria on the energy 'toldfe'. However, the default value is already very relaxed (1e-5) and you should rather play with the other parameters. <br><br>If the phonon calculation does converge, but the results show many unstable modes, you may try to reduce the toldfe parameter to says 1e-6 or even lower (down to 1e-8).<br><h3><a name="mozTocId33057" class="mozTocH3"></a>Other tools: powder average, density of states, etc.</h3>The thermo-chemistry quantities (U,F,S,Cv) can be obtained with the <b>sqw_thermochemistry(s)</b> call.<br>The vibrational density of states can be obtained with the <b>sqw_phonon_dos(s)</b> call.<br>The standard dispersion curve plot along principal crystal directions can be obtained with the <b>sqw_kpath(s)</b> call.<br><br>See more details <a href="Models_Phonons_Tutorial.html#mozTocId438325">here</a>.<br><h4><a class="mozTocH5" name="mozTocId268977"></a><u>Powder average<br>
+    <pre>  &gt;&gt; s=<font color="#3366ff">sqw_phonons</font>(POSCAR,<font color="#cc33cc"><font color="#cc33cc"> </font></font><font color="#cc33cc">'ecut=500; diagonalization=cg'</font>);<br></pre>
+    If the convergence can not be reached, relax the tolerance criteria
+    on the energy 'toldfe'. However, the default value is already very
+    relaxed (1e-5) and you should rather play with the other parameters.
+    <br>
+    <br>
+    If the phonon calculation does converge, but the results show many
+    unstable modes, you may try to reduce the toldfe parameter to says
+    1e-6 or even lower (down to 1e-8).<br>
+    <h3><a name="mozTocId33057" class="mozTocH3"></a>Other tools: powder
+      average, density of states, etc.</h3>
+    The thermo-chemistry quantities (U,F,S,Cv) can be obtained with the
+    <b>sqw_thermochemistry(s)</b> call.<br>
+    The vibrational density of states can be obtained with the <b>sqw_phonon_dos(s)</b>
+    call.<br>
+    The standard dispersion curve plot along principal crystal
+    directions can be obtained with the <b>sqw_kpath(s)</b> call.<br>
+    <br>
+    See more details <a
+      href="Models_Phonons_Tutorial.html#mozTocId438325">here</a>.<br>
+    <h4><a class="mozTocH5" name="mozTocId268977"></a><u>Powder average<br>
       </u></h4>
     Once such a 4D S(hkl,w) <a href="iFunc.html">iFunc</a> model has
     been built, it is possible to compute the 2D powder average S(|q|,w)
     using:<br>
-    <pre>	&gt;&gt; s=<font color="#3366ff">sqw_phonons</font>([ ifitpath <font color="#cc33cc">'Data/POSCAR_Al'</font>],<font color="#cc33cc">'metal','EMT'</font>); <a href="images/Models_sqw_powder.png"><img alt="sqw_powder" title="sqw_powder" src="images/Models_sqw_powder.png" border="0" height="153" width="200" align="right"></a><br>	&gt;&gt; pow=<font color="#3366ff">sqw_powder</font>(s); <font color="#3366ff">plot</font>(log(pow));<br></pre>
-    The same procedure can be applied on an evaluated <a href="iData.html"><i>iData</i></a> object out of the model.<br>
+    <pre>	&gt;&gt; s=<font color="#3366ff">sqw_phonons</font>([ ifitpath <font color="#cc33cc">'Data/POSCAR_Al'</font>],<font color="#cc33cc">'metal','EMT'</font>); <a href="images/Models_sqw_powder.png"><img alt="sqw_powder" title="sqw_powder" src="images/Models_sqw_powder.png" height="153" align="right" width="200" border="0"></a><br>	&gt;&gt; pow=<font color="#3366ff">sqw_powder</font>(s); <font color="#3366ff">plot</font>(log(pow));<br></pre>
+    The same procedure can be applied on an evaluated <a
+      href="iData.html"><i>iData</i></a> object out of the model.<br>
     <pre>	&gt;&gt; qh=<font color="#3366ff">linspace</font>(0.01,3,50);qk=qh; ql=qh; w=<font color="#3366ff">linspace</font>(0.01,50,51);<br>	&gt;&gt; f=<font color="#3366ff">iData</font>(s,[],qh,qk,ql,w);<br>	&gt;&gt; pow=<font color="#3366ff">sqw_powder</font>(f); <font color="#3366ff">plot</font>(log(pow));
 </pre>
     In both cases, when the reciprocal lattice information is found in
@@ -1179,11 +1506,15 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/ifit-web-
     2pi/a units) to 'Angs<sup>-1</sup>' is automatically done (and this
     information is stored in the Model upon creation).
     <h3><a class="mozTocH5" name="mozTocId134538"></a><i><u>Examples</u></i></h3>
-    A usage example is:<a href="images/Models_sqw_ph_ase.png"><img alt="sqw_ph_ase Al fcc" title="sqw_ph_ase Al fcc" src="images/Models_sqw_ph_ase.png" border="0" height="153" width="200" align="right"></a><br>
+    A usage example is:<a href="images/Models_sqw_ph_ase.png"><img
+        alt="sqw_ph_ase Al fcc" title="sqw_ph_ase Al fcc"
+        src="images/Models_sqw_ph_ase.png" height="153" align="right"
+        width="200" border="0"></a><br>
     <pre>	&gt;&gt; s=<font color="#3366ff">sqw_phonons</font>(<font color="#cc33cc">'bulk("Cu", "fcc", a=3.6)'</font>,<font color="#cc33cc">'EMT','metal'</font>); 	<i>% create model from bulk</i><br>	&gt;&gt; qh=<font color="#3366ff">linspace</font>(0.01,.5,50);qk=qh; ql=qh'; w=<font color="#3366ff">linspace</font>(0.01,50,51);<br> 	&gt;&gt; f=<font color="#3366ff">iData</font>(s,[],qh,qk,ql,w); 		<i>% evaluate model into an iData</i><br>	&gt;&gt; <font color="#3366ff">plot3</font>(log(f(:,:,1,:)));	<i>	% plot ql=0 plane<br></i></pre>
     To get a system with acoustic and optical modes:<br>
     <pre>	&gt;&gt; s=<font color="#3366ff">sqw_phonons</font>(<font color="#cc33cc">[ ifitpath 'Data/POSCAR_AlN'</font>],<font color="#cc33cc">'EMT'</font>); 	<i>% create model from given POSCAR</i><br>	&gt;&gt; qh=<font color="#3366ff">linspace</font>(0.01,.5,50);qk=qh; ql=qh'; w=<font color="#3366ff">linspace</font>(0.01,50,51);<br> 	&gt;&gt; f=<font color="#3366ff">iData</font>(s,[],qh,qk,ql,w); 		<i>% evaluate model into an iData</i><br>	&gt;&gt; <font color="#3366ff">scatter3</font>(log(f(:,:,1,:)));	<i>	% plot ql=0 plane with acoustic and optical modes</i></pre>
-    In addition, the <a href="https://en.wikipedia.org/wiki/Density_of_states">phonon
+    In addition, the <a
+      href="https://en.wikipedia.org/wiki/Density_of_states">phonon
       Density of States</a> (aka phonon spectrum) is computed, when the
     model evaluation is requested on the whole Brillouin zone (HKL vary
     on [-.5 : 0.5]). The results are stored in the model <i>UserData.DOS</i>
@@ -1200,7 +1531,6 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/ifit-web-
     The <b>plot (surf), plot3, scatter3</b>, and <b>slice</b> methods
     for plotting all provide nice looking rendering of volume data. See
     <a href="Plot.html#mozTocId734523">Plot/3D</a> page.<br>
-    
     <h3><a class="mozTocH5" name="mozTocId168620"></a> <u><i><b>References</b></i></u></h3>
     <ul>
       <li> <a href="https://wiki.fysik.dtu.dk/ase">Atomic Simulation
@@ -1208,22 +1538,28 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/ifit-web-
           Sci. Eng.</i>, Vol. <b>4</b>, 56-66, 2002.</li>
       <li> <a href="http://wiki.fysik.dtu.dk/gpaw">GPAW</a>&nbsp; J. J.
         Mortensen et al, <i>Phys Rev B</i>, Vol. <b>71</b>, 035109
-        (2005). <a href="https://wiki.fysik.dtu.dk/gpaw/setups/setups.html">Pseudo-potentials</a>.</li>
-      
+        (2005). <a
+          href="https://wiki.fysik.dtu.dk/gpaw/setups/setups.html">Pseudo-potentials</a>.</li>
       <li> <a href="http://elk.sourceforge.net">Elk</a> cite
         &lt;http://elk.sourceforge.net&gt;. <i><b>NOTE:</b></i> The Elk
         executable should be compiled with e.g. elk/src/modmain.f90:289
-        maxsymcrys=10384 or larger to handle supercells. We provide an <a href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/elk-lapw_3.3.17-1_amd64.deb">Elk-3.3.17</a>
+        maxsymcrys=10384 or larger to handle supercells. We provide an <a
+href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/elk-lapw_3.3.17-1_amd64.deb">Elk-3.3.17</a>
         Debian package compiled with this setting.</li>
-      
       <li> <a href="http://www.abinit.org/">ABINIT</a> X. Gonze et al,
         <i>Computer Physics Communications</i> <b>180</b>, 2582-2615
-        (2009). <a href="http://www.abinit.org/downloads/psp-links/pseudopotentials">Pseudo-potentials
+        (2009). <a
+          href="http://www.abinit.org/downloads/psp-links/pseudopotentials">Pseudo-potentials
 
 
-          (JTH)</a>.Debiab packages: <a href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/abinit-psp_2_all.deb">abinit-psp</a>
-        <a href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/abinit-psp-jth_1.0_all.deb">abinit-psp-jth</a>
-        <a href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/abinit-psp-gbrv_1.5_all.deb">abinit-psp-gbrv</a>.<a href="http://www.abinit.org/downloads/psp-links/pseudopotentials"><br>
+
+          (JTH)</a>.Debiab packages: <a
+href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/abinit-psp_2_all.deb">abinit-psp</a>
+        <a
+href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/abinit-psp-jth_1.0_all.deb">abinit-psp-jth</a>
+        <a
+href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/abinit-psp-gbrv_1.5_all.deb">abinit-psp-gbrv</a>.<a
+href="http://www.abinit.org/downloads/psp-links/pseudopotentials"><br>
         </a></li>
     </ul>
     <ul>
@@ -1232,11 +1568,15 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/ifit-web-
 
 
 
-        (2009) [<a href="http://www.homepages.ucl.ac.uk/%7Eucfbdxa/pubblicazioni/cpc09_phon.pdf">pdf</a>].
+
+        (2009) [<a
+href="http://www.homepages.ucl.ac.uk/%7Eucfbdxa/pubblicazioni/cpc09_phon.pdf">pdf</a>].
+
 
 
 
         &lt;<a href="http://chianti.geol.ucl.ac.uk/%7Edario">http://chianti.geol.ucl.ac.uk/~dario</a>&gt;.
+
 
         <br>
       </li>
@@ -1247,14 +1587,18 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/ifit-web-
 
 
 
+
         <a href="http://www.quantum-espresso.org/pseudopotentials/">Pseudo-potentials</a>.
         We also recommend the <a href="http://materialscloud.org/">SSSP
-          library</a> for which we provide the <a href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/quantum-espresso-sssp_5.0.2-5build3_all.deb">quantum-espresso-sssp</a>
+          library</a> for which we provide the <a
+href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/quantum-espresso-sssp_5.0.2-5build3_all.deb">quantum-espresso-sssp</a>
         Debian package.</li>
       <li><a href="https://www.vasp.at/">VASP</a>: G. Kresse and J.
-        Hafner. <i>Phys. Rev. B</i>, <b>47</b>:558, 1993. &lt;<a href="https://www.vasp.at/">https://www.vasp.at/</a>&gt;</li>
+        Hafner. <i>Phys. Rev. B</i>, <b>47</b>:558, 1993. &lt;<a
+          href="https://www.vasp.at/">https://www.vasp.at/</a>&gt;</li>
       <li><a href="https://atztogo.github.io/phonopy/">PhonoPy</a>: A.
-        Togo and I. Tanaka, Scr. Mater., 108, 1-5 (2015) &lt;<a href="https://atztogo.github.io/phonopy/">https://atztogo.github.io/phonopy/</a>&gt;<br>
+        Togo and I. Tanaka, Scr. Mater., 108, 1-5 (2015) &lt;<a
+          href="https://atztogo.github.io/phonopy/">https://atztogo.github.io/phonopy/</a>&gt;<br>
       </li>
       <li>Phonon intensity estimate: H. Schober, <i>J Neut. Res.</i> <b>17</b>
         (2014) 109. <a href="http://dx.doi.org/10.3233/JNR-140016">DOI
@@ -1308,6 +1652,7 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/ifit-web-
 
 
 
+
             and installation</b></i></u></h3>
     Most DFT codes require a multi-core computer with about 2Gb/core
     memory. Use option e.g.<font color="#cc33cc"> 'mpi=8'</font> to make
@@ -1315,13 +1660,20 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/ifit-web-
     processors will be used by default.<br>
     <br>
     The <a href="https://wiki.fysik.dtu.dk/ase">ASE</a> must be
-    installed. Packages exist for
-    Ubuntu/Mint/Debian, RedHat/Fedora, OpenSUSE, MacOSX (brew), and
-    Windows (experimental). In addition, the <a href="https://pythonhosted.org/hdf5storage/">hdf5storage</a>
+    installed. Packages exist for Ubuntu/Mint/Debian, RedHat/Fedora,
+    OpenSUSE, MacOSX (brew), and Windows (experimental). In addition,
+    the <a href="https://pythonhosted.org/hdf5storage/">hdf5storage</a>
     python package must be installed as well. External calculators (e.g.
-    QE, ABINIT, VASP, ...) should be installed separately. <br><br>The installation is only described for Debian class systems, which is highly recommended as we provide the required packages.<br><br><h4><a name="mozTocId821315" class="mozTocH4"></a>Debian systems (Ubuntu/Debian/Mint)<br></h4>
-    
-    For Debian systems, we provide most packages at <a href="http://packages.mccode.org/">packages.mccode.org</a>
+    QE, ABINIT, VASP, ...) should be installed separately. <br>
+    <br>
+    The installation is only described for Debian class systems, which
+    is highly recommended as we provide the required packages.<br>
+    <br>
+    <h4><a name="mozTocId821315" class="mozTocH4"></a>Debian systems
+      (Ubuntu/Debian/Mint)<br>
+    </h4>
+    For Debian systems, we provide most packages at <a
+      href="http://packages.mccode.org/">packages.mccode.org</a>
     (currently validated on Ubuntu 14.04/Debian 8 and 16.04). To install
     all in one go, type (Ubuntu/Mint/Debian, replace <i>'xenial'</i> by
     <i>'trusty'</i> for 14.04 and Debian 8 systems):<br>
@@ -1340,19 +1692,32 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/ifit-web-
     </blockquote>
     If some of the packages do not install properly, you can skip them
     (except iFit and ASE). Then, you will still have access to the other
-    calculators.<br><br>
+    calculators.<br>
+    <br>
     The <a href="https://atztogo.github.io/phonopy/">PhonoPy</a>
     library can be used when installed. To install it, use:<br>
     <blockquote>
       <pre>% <span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">python</span><span class="o">-</span><span class="n">dev</span> <span class="n">python</span><span class="o">-</span><span class="n">numpy </span><span class="n">python</span><span class="o">-</span><span class="n">matplotlib</span> <span class="n">python</span><span class="o">-</span><span class="n">yaml</span> <span class="n">python</span><span class="o">-</span><span class="n">h5py </span><code class="docutils literal"><span class="pre">python-scipy<br></span></code><br>% sudo pip install phonopy</pre>
       or<br>
-      <pre>% sudo apt-get install python-phonopy (when using our <a href="http://packages.mccode.org/">packages.mccode.org</a> repository)<br></pre></blockquote><h4><a name="mozTocId692521" class="mozTocH4"></a>Other systems</h4>
-    In principle, it is possible to install the iFit Phonons infrastructure on RedHat class systems (e.g. Fedora), either by installing packages manually, or converting Debian packages into RPM ones using 'alien'.<br><br>We also suggest alternate solutions:<br><ul><li><b>A web based interface</b> can be set up very easily by
-    installing, on a Debian-type system, the <a href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/ifit-web-services_1.8_all.deb"><b><i>ifit-web-services</i></b></a>
-    package, and then browse to e.g. <i>http://localhost/ifit-web-services</i>.
-    This requires about 1.5 Gb disk for installation (DFT codes, pseudo
-    potentials, python-numpy, ASE, ifit, ...), and typically 8-16 Gb
-    memory.</li><li><b><i>A ready to run Live DVD/USB system</i></b> exists at <a href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/illcs-livedvd/">ILL/CS
+      <pre>% sudo apt-get install python-phonopy (when using our <a href="http://packages.mccode.org/">packages.mccode.org</a> repository)<br></pre>
+    </blockquote>
+    <h4><a name="mozTocId692521" class="mozTocH4"></a>Other systems</h4>
+    In principle, it is possible to install the iFit Phonons
+    infrastructure on RedHat class systems (e.g. Fedora), either by
+    installing packages manually, or converting Debian packages into RPM
+    ones using 'alien'.<br>
+    <br>
+    We also suggest alternate solutions:<br>
+    <ul>
+      <li><b>A web based interface</b> can be set up very easily by
+        installing, on a Debian-type system, the <a
+href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/ifit-web-services_1.8_all.deb"><b><i>ifit-web-services</i></b></a>
+        package, and then browse to e.g. <i>http://localhost/ifit-web-services</i>.
+        This requires about 1.5 Gb disk for installation (DFT codes,
+        pseudo potentials, python-numpy, ASE, ifit, ...), and typically
+        8-16 Gb memory.</li>
+      <li><b><i>A ready to run Live DVD/USB system</i></b> exists at <a
+href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/illcs-livedvd/">ILL/CS
 
 
 
@@ -1360,10 +1725,18 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/ifit-web-
 
 
 
-      Live DVD</a>. Get the ISO, burn or boot directly from a USB stick or Virtual machine. Contains all<i> Phonons, iFit</i> and <i>McStas</i> pre-installed, ready to run !</li></ul><blockquote> </blockquote><h4><a name="mozTocId265711" class="mozTocH4"></a>
-    <i><b>Pseudo potentials</b></i></h4>
+
+          Live DVD</a>. Get the ISO, burn or boot directly from a USB
+        stick or Virtual machine. Contains all<i> Phonons, iFit</i> and
+        <i>McStas</i> pre-installed, ready to run !</li>
+    </ul>
+    <blockquote> </blockquote>
+    <h4><a name="mozTocId265711" class="mozTocH4"></a> <i><b>Pseudo
+          potentials</b></i></h4>
     The ABINIT code requires to install an additional library of pseudo
-    potentials. We recommand to get it <a href="http://wiki.fysik.dtu.dk/abinit-files/abinit-pseudopotentials-2.tar.gz"><i>here
+    potentials. We recommand to get it <a
+href="http://wiki.fysik.dtu.dk/abinit-files/abinit-pseudopotentials-2.tar.gz"><i>here
+
 
 
 
@@ -1412,36 +1785,42 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/ifit-web-
 
 
         (ASE)</i></a> and extract it in <i>/usr/share/abinit/</i>. We
-    provide the <a href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/abinit-psp_2_all.deb">abinit-psp</a>
-    (<i>hgh</i> and <i>tm</i>)&nbsp; <a href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/abinit-psp-jth_1.0_all.deb">abinit-psp-jth</a>
-    (<i>pawxml</i>) and <a href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/abinit-psp-gbrv_1.5_all.deb">abinit-psp-gbrv</a>
+    provide the <a
+href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/abinit-psp_2_all.deb">abinit-psp</a>
+    (<i>hgh</i> and <i>tm</i>)&nbsp; <a
+href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/abinit-psp-jth_1.0_all.deb">abinit-psp-jth</a>
+    (<i>pawxml</i>) and <a
+href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/abinit-psp-gbrv_1.5_all.deb">abinit-psp-gbrv</a>
     (<i>paw</i>) packages for Debian. You may alternatively install for
-    ABINIT the package <a href="http://packages.ubuntu.com/vivid/all/abinit-data/download">abinit-data</a>
+    ABINIT the package <a
+      href="http://packages.ubuntu.com/vivid/all/abinit-data/download">abinit-data</a>
     (which provides a <i>limited</i> set of pseudo-potentials).<br>
     <br>
     The QuantumEspresso code requires to install an additional library
-    of pseudo potentials. We recommend the <a href="http://materialscloud.org/">SSSP library</a> for which we
-    provide the <a href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/quantum-espresso-sssp_5.0.2-5build3_all.deb">quantum-espresso-sssp</a>
+    of pseudo potentials. We recommend the <a
+      href="http://materialscloud.org/">SSSP library</a> for which we
+    provide the <a
+href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/quantum-espresso-sssp_5.0.2-5build3_all.deb">quantum-espresso-sssp</a>
     Debian package. <b><font color="#ff0000"><br>
         WARNING:</font></b> the <font color="#ff0000">quantum-espresso-data</font>
     Debian package <font color="#ff0000">conflicts</font> with the
     quantum-espresso-sssp one. It only provides a minimal
-    pseudo-potential list, and is generally less accurate.<br><br><hr style="width: 100%; height: 2px;">
+    pseudo-potential list, and is generally less accurate.<br>
+    <br>
+    <hr style="width: 100%; height: 2px;">
     <div style="text-align: center;">
       <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
 
 
+
           - iFit/fit models - </span><span style="font-style: italic;">
           $Date$ $Revision$ </span><span style="font-style: italic;"> </span>-
-        back to <a href="index.html">Main iFit Page </a><a href="http://www.ill.eu/"><img title="ILL, Grenoble, France
+        back to <a href="index.html">Main iFit Page </a><a
+          href="http://www.ill.eu/"><img title="ILL, Grenoble, France
             &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL,
             Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px
             solid ; width: 53px; height: 50px;" align="right"></a> </div>
     </div>
-  
-
-
-
-
-</body></html>
+  </body>
+</html>

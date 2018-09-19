@@ -25,11 +25,19 @@ function [options, sav] = sqw_phonons_get_forces(options, decl, calc)
   % Call phonons. Return number of remaining steps in 'ret', or 0 when all done.
   % handle accuracy requirement
   if isfield(options.available,'phonopy') && ~isempty(options.available.phonopy) ...
+    && options.use_phonopy && strcmpi(options.accuracy,'single_shot')
+    % use PhonoPy = very fast (forward difference) in a single calculation (no ETA)
+    ph_run = 'ret=ifit.phonopy_run(ph, single=False)\n';
+  elseif isfield(options.available,'phonopy') && ~isempty(options.available.phonopy) ...
     && options.use_phonopy
     % use PhonoPy = very fast (forward difference)
     ph_run = 'ret=ifit.phonopy_run(ph, single=True)\n';
   elseif isfield(options, 'accuracy') && strcmpi(options.accuracy,'very fast')
     % very fast: twice faster, but less accurate (assumes initial lattice at equilibrium)
+    options.use_phonopy = 0;
+    ph_run = 'ret=ifit.phonons_run(ph, single=True, difference="forward")\n'; 
+  elseif isfield(options, 'accuracy') && strcmpi(options.accuracy,'single_shot')
+    % very fast, and in a single shot mode (no ETA)
     options.use_phonopy = 0;
     ph_run = 'ret=ifit.phonons_run(ph, single=True, difference="forward")\n'; 
   elseif isfield(options, 'accuracy') && any(strcmpi(options.accuracy,{'slow','accurate'}))
@@ -216,7 +224,7 @@ function [options, sav] = sqw_phonons_get_forces(options, decl, calc)
       else
         [st, result] = system([ precmd options.available.python ' ' fullfile(target,'sqw_phonons_forces_iterate.py') ]);
       end
-      
+      disp(st)
       % the first return 'st' gives the max number of steps remaining
       % but one at least was done so far
       if ~nb_of_steps && st > 0, nb_of_steps = st+1; end

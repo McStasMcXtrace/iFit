@@ -45,7 +45,7 @@ end
 if ~isempty(s)
   % sort 's' to get the biggest
   [~,index] = max(cellfun(@numel, s));
-  a=setalias(a, 'jobinfo',s{index},'nMoldyn configuration');
+  a=setalias(a, 'jobinfo',s{index},'MDANSE/nMoldyn configuration');
 end
 
 % nMoldyn results: last search defines the Signal and Axes: we prefer S(q,w)

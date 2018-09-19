@@ -961,7 +961,7 @@ def phonopy_run_calculate(phonon, phonpy, supercell, single):
             disp = disps[d]
             scell = supercells[d]
             if rank == 0:
-                print "Moving  atom #%-3i %-3s    to " % \
+                print "[ASE/PhonoPy] Moving  atom #%-3i %-3s    to " % \
                     (disp[0], scell.get_chemical_symbols()[disp[0]]), disp[1:]
             
             cell = Atoms(symbols=scell.get_chemical_symbols(),

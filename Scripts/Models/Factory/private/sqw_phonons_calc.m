@@ -12,7 +12,8 @@ if isempty(calc_choice), calc_choice=options.calculator; end
 % unit conversions
 Ha = 27.2; Ry=Ha/2;
 
-if isempty(status.(lower(options.calculator))) && isempty(options.command)
+if isfield(status, lower(options.calculator)) && isempty(status.(lower(options.calculator))) ...
+  && isempty(options.command)
   sqw_phonons_error([ mfilename ': ' options.calculator ' not available. Check installation' ], options)
   return
 end
@@ -625,8 +626,12 @@ case 'VASP'
 
 
 otherwise
-  sqw_phonons_error([ mfilename ': Unknown calculator ' options.calculator ], options);
-  return
+  if isfield(options,'declaration')
+    decl = options.declaration;
+    calc = [ 'calc = ' options.calculator ];
+  else
+    sqw_phonons_error([ mfilename ': Unknown calculator ' options.calculator ], options);
+  end
 end
 % ------------------------------------------------------------------------------
 % end of specific parts for calculators
