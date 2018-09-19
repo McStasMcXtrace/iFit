@@ -30,15 +30,22 @@ if isempty(findstr(a, 'nmoldyn')) && isempty(findstr(a, 'mdanse')) && isempty(fi
 end
 
 % 'jobinfo'
-f = {'GlobalAttributes.Value','jobinfo','header'};
+f = {'GlobalAttributes.Value','jobinfo','header','Job information'};
 s = findfield(a, f);
 for index=f
   if isfield(a, index{1}), s{end+1} = get(a,index{1}); end
 end
+m = findstr(a, f);
+if ~iscell(m), m = { m }; end
+for index=1:numel(m)
+  if ~isempty(m{index}), s{end+1} = m{index}; end
+end
 
 % add any other 'fields' as aliases
-if ~isempty(s),
-  a=setalias(a, 'jobinfo',s{1},'nMoldyn configuration');
+if ~isempty(s)
+  % sort 's' to get the biggest
+  [~,index] = max(cellfun(@numel, s));
+  a=setalias(a, 'jobinfo',s{index},'nMoldyn configuration');
 end
 
 % nMoldyn results: last search defines the Signal and Axes: we prefer S(q,w)
