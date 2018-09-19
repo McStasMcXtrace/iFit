@@ -54,9 +54,7 @@ parameters = get(this, 'parameters');
 % call Sqw_parameters so that we have the final parameters and the comments
 %[~,~,fields] = Sqw_parameters(this);
 
-thisE = event(this);
-thisE = hist(this, w, q);
-
+thisE=this;
 sqw=getaxis(thisE,0); sqw(isnan(sqw))=0;
 w=getaxis(thisE,1); w=w(:)'; 
 q=getaxis(thisE,2); q=q(:)'; 
@@ -83,28 +81,22 @@ end
 fprintf(fid,'# Format: Sqw data file for Isotropic_Sqw <http://www.mcstas.org>\n');
 
 if isfield(parameters,'Phase') && isfield(parameters,'Material')
-  fprintf(fid,'# %s %s', parameters.Phase, parameters.Material);
-else
-  fprintf(fid,'#\n');
+  fprintf(fid,'# %s %s\n', parameters.Phase, parameters.Material);
 end
 if isfield(parameters,'MD_at') && isfield(parameters,'MD_duration') && isfield(parameters,'MD_box')
-  fprintf(fid,' molecular dynamics simulation using %g atoms for %g [ps]. box=%g Angs\n', ...
+  fprintf(fid,'# molecular dynamics simulation using %g atoms for %g [ps]. box=%g Angs\n', ...
     parameters.MD_at, parameters.MD_duration, parameters.MD_box);
-else
-  fprintf(fid, '\n');
 end
 if isfield(parameters,'Trajectory')
-  fprintf(fid, ', obtained from nMoldyn/MDANSE <http://forge.ill.fr/projects/nmoldyn>\n');
-else
-  fprintf(fid, '\n');
+  fprintf(fid, '# obtained from nMoldyn/MDANSE <http://mdanse.org>\n');
 end
-fprintf(fid,'#\n');
 
 if isfield(parameters,'Phase') && isfield(parameters,'Material') && isfield(parameters,'Scattering')
   fprintf(fid,'# title: %s %s: S(q,w) %s part\n', ...
     parameters.Phase, parameters.Material, parameters.Scattering);
 end
 
+fprintf(fid,'#\n');
 fprintf(fid,'# Date: %s\n', datestr(now));
 [p,f,e] =fileparts(this.Source);
 fprintf(fid,'# Source: %s%s\n', f,e);
