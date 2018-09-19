@@ -3,7 +3,9 @@ function [options, sav] = sqw_phonons_get_forces(options, decl, calc)
 %   requires atoms.pkl, supercell and calculator, creates the phonon.pkl
 
   target = options.target;
-  sav    = '';
+  % GPAW Bug: gpaw.aseinterface.GPAW does not support pickle export for 'input_parameters'. This is included in Phonon object -> set to None
+  % Also the case for other caculators such as LAMMPS
+  sav = sprintf('ph.calc=None\natoms.calc=None\nph.atoms.calc=None\n');
   
   % determine if the phonon.pkl exists. If so, nothing else to do
   if ~isempty(dir(fullfile(target, 'phonon.pkl')))
@@ -14,13 +16,7 @@ function [options, sav] = sqw_phonons_get_forces(options, decl, calc)
   % required to avoid Matlab to use its own libraries
   if ismac,      precmd = 'DYLD_LIBRARY_PATH= ; DISPLAY= ; ';
   elseif isunix, precmd = 'LD_LIBRARY_PATH= ; DISPLAY= ; '; 
-  else           precmd=''; end
-
-  % init calculator
-  if strcmpi(options.calculator, 'GPAW')
-    % GPAW Bug: gpaw.aseinterface.GPAW does not support pickle export for 'input_parameters'
-    sav = sprintf('ph.calc=None\natoms.calc=None\nph.atoms.calc=None\n');
-  end
+  else           precmd = ''; end
   
   % Call phonons. Return number of remaining steps in 'ret', or 0 when all done.
   % handle accuracy requirement
