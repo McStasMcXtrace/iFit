@@ -103,7 +103,7 @@ fprintf(fid,'# Source: %s%s\n', f,e);
 [p,f,e] =fileparts(filename);
 fprintf(fid,'# filename: %s%s\n', f,e);
 fprintf(fid,'# format: Sqw data file for Isotropic_Sqw (McStas)\n');
-fprintf(fid,'# signal: Min=%g; Max=%g; Mean=%g; sum=%g;\n', min(sqw), max(sqw), mean(sqw), sum(sqw));
+fprintf(fid,'# signal: Min=%g; Max=%g; Mean=%g; sum=%g;\n', min(sqw(:)), max(sqw(:)), mean(sqw(:)), sum(sqw(:)));
 fprintf(fid,'# type: array_2d(%i,%i)\n', length(q), length(w));
 fprintf(fid,'# xylimits: %g %g %g %g\n', min(q), max(q), min(w), max(w)); 
 fprintf(fid,'# xlabel: Wavevector [Angs-1]\n'); 
