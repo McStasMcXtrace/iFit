@@ -3,8 +3,9 @@ function [options, sav] = sqw_phonons_get_forces(options, decl, calc)
 %   requires atoms.pkl, supercell and calculator, creates the phonon.pkl
 
   target = options.target;
-  % GPAW Bug: gpaw.aseinterface.GPAW does not support pickle export for 'input_parameters'. This is included in Phonon object -> set to None
-  % Also the case for other caculators such as LAMMPS
+  % GPAW Bug: gpaw.aseinterface.GPAW does not support pickle export for 'input_parameters'. 
+  % Calculator is included in Phonon object, so pickle save fails -> set calc to None
+  % Also the case for other caculators such as LAMMPS. By default we thus clean up.
   sav = sprintf('ph.calc=None\natoms.calc=None\nph.atoms.calc=None\n');
   
   % determine if the phonon.pkl exists. If so, nothing else to do
@@ -21,7 +22,7 @@ function [options, sav] = sqw_phonons_get_forces(options, decl, calc)
   % Call phonons. Return number of remaining steps in 'ret', or 0 when all done.
   % handle accuracy requirement
   if isfield(options.available,'phonopy') && ~isempty(options.available.phonopy) ...
-    && options.use_phonopy && strcmpi(options.accuracy,'single_shot')
+    && options.use_phonopy && ~isempty(strfind(lower(options.accuracy),'single'))
     % use PhonoPy = very fast (forward difference) in a single calculation (no ETA)
     ph_run = 'ret=ifit.phonopy_run(ph, single=False)\n';
   elseif isfield(options.available,'phonopy') && ~isempty(options.available.phonopy) ...
@@ -32,7 +33,7 @@ function [options, sav] = sqw_phonons_get_forces(options, decl, calc)
     % very fast: twice faster, but less accurate (assumes initial lattice at equilibrium)
     options.use_phonopy = 0;
     ph_run = 'ret=ifit.phonons_run(ph, single=True, difference="forward")\n'; 
-  elseif isfield(options, 'accuracy') && strcmpi(options.accuracy,'single_shot')
+  elseif isfield(options, 'accuracy') && ~isempty(strfind(lower(options.accuracy),'single'))
     % very fast, and in a single shot mode (no ETA)
     options.use_phonopy = 0;
     ph_run = 'ret=ifit.phonons_run(ph, single=True, difference="forward")\n'; 
