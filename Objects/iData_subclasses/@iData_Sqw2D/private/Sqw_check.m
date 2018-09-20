@@ -56,7 +56,7 @@ function s = Sqw_check(s, mode)
         beta_present=index;
       elseif strcmpm(lab, {'wavevector','momentum','q','k','angs'})
         q_present=index;
-      elseif strcmpm(lab, {'energy','frequency','w','e','mev'})
+      elseif strcmpm(lab, {'energy','frequency','w','e','mev','omega'})
         w_present=index;
       elseif strcmpm(lab, {'time','sec','t','tof','channels','channel'})
         t_present=index;
