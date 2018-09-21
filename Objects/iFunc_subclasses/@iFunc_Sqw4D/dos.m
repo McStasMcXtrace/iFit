@@ -16,12 +16,17 @@ function [DOS, DOS_partials] = dos(s, n)
 %    To smooth the resulting distribution, use:
 %      sDOS = smooth(DOS); plot(sDOS);
 %
+%  You may also get a quick estimate of the total DOS by using:
+%    [m, DOS] = max(s);
+%
 % input:
 %   s: S(q,w) 4D model (iFunc_Sqw4D)
 %   n: number of energy values (integer). Optional. Default is nmodes*10
 %
 % output:
 %   DOS:   DOS(w)   (1D iData versus energy)
+%
+% See also: iFunc_Sqw4D/max
 %
 % Example: Sqw=sqw_cubic_monoatomic; D=dos(Sqw);
 % (c) E.Farhi, ILL. License: EUPL.
@@ -188,7 +193,5 @@ function [DOS, DOS_partials, s] = sqw_phonon_dos_4D(s, n)
       DOS = setalias(DOS, 'maxFreq', s.UserData.maxFreq, 'Maximum phonon frequency');
     end
   end
-  if isfield(s.UserData,'DOS_partials') && numel(s.UserData.DOS_partials) > 0
-    DOS_partials = iData_vDOS(s.UserData.DOS_partials);
-  end
+
    
