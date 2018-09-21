@@ -109,6 +109,7 @@ end
 
 function str=validstr(str)
   % validate a string as a single line
+  if iscellstr(str), str=sprintf('%s;', str{:}); end
   str=strrep(str(:)', sprintf('\n'), ';');
   index = find(str < 32 | str > 127);
   str(index) = ' ';
