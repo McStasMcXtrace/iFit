@@ -31,9 +31,9 @@ function [m, DOS] = max(s)
     end
   end
   
-  m = max(s.UserData.maxFreq);
+  [m,DOS] = max(s.UserData.maxFreq);
   
-  if nargout > 1
+  if nargout > 1 && ~isempty(s.UserData.FREQ)
     % get omega binning
     nmodes = size(s.UserData.FREQ,2);
     n = min(nmodes*10, 50);
