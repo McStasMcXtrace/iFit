@@ -80,9 +80,6 @@ function [DOS, DOS_partials] = dos(s, n)
     set(fig, 'NextPlot','new');
   end
   
-  DOS           = iData_vDOS(DOS);
-  DOS_partials  = iData_vDOS(DOS_partials);
-  
 % ------------------------------------------------------------------------------
 
 function [DOS, DOS_partials, s] = sqw_phonon_dos_4D(s, n)
@@ -118,9 +115,7 @@ function [DOS, DOS_partials, s] = sqw_phonon_dos_4D(s, n)
   % first get a quick estimate of the max frequency
   if  ~isfield(s.UserData,'DOS') || isempty(s.UserData.DOS) || (~isempty(n) && prod(size(s.UserData.DOS)) ~= n)
     maxFreq = max(s);
-    
     % evaluate the 4D model onto a mesh filling the Brillouin zone [-0.5:0.5 ]
-    s.UserData.DOS     = [];  % make sure we re-evaluate again on a finer grid
     qh=linspace(-0.5,.5,50);qk=qh; ql=qh; w=linspace(0.01,maxFreq*1.2,51);
     f=iData(s,[],qh,qk,ql',w);
     % force to evaluate on a finer grid
@@ -129,15 +124,15 @@ function [DOS, DOS_partials, s] = sqw_phonon_dos_4D(s, n)
       w =linspace(0.01,maxFreq*1.2,11);
       f =iData(s,[],qh,qk,ql',w);
     end
+    s.UserData.DOS     = [];  % make sure we re-evaluate again on a finer grid
   end
-  
+   
   if (~isfield(s.UserData,'DOS') || isempty(s.UserData.DOS)) ...
     && isfield(s.UserData,'FREQ') && ~isempty(s.UserData.FREQ)
     nmodes = size(s.UserData.FREQ,2);
     if isempty(n) || n == 0
       n = max(nmodes*10, 100);
     end
-    
     % compute the DOS histogram
     index           = find(imag(s.UserData.FREQ) == 0);
     dos_e           = s.UserData.FREQ(index);
@@ -154,7 +149,7 @@ function [DOS, DOS_partials, s] = sqw_phonon_dos_4D(s, n)
     DOS.Error             = 0;
     xlabel(DOS,'Energy [meV]'); 
     ylabel(DOS,[ 'Total DOS/unit cell ' strtok(s.Name) ]);
-    s.UserData.DOS=iData_vDOS(DOS);
+    s.UserData.DOS= iData_vDOS(DOS);
     % partial phonon DOS (per mode) when possible
     pDOS = [];
     for mode=1:nmodes
@@ -169,9 +164,10 @@ function [DOS, DOS_partials, s] = sqw_phonon_dos_4D(s, n)
       DOS.Error = 0;
       xlabel(DOS,'Energy [meV]'); 
       ylabel(DOS,[ 'Partial DOS[' num2str(mode) ']/unit cell ' strtok(s.Name) ]);
+      DOS = iData_vDOS(DOS);
       pDOS      = [ pDOS DOS ];
     end
-    s.UserData.DOS_partials=iData_vDOS(pDOS);
+    s.UserData.DOS_partials= pDOS;
     clear f1 index dos_e omega_e dos_factor DOS pDOS
   elseif ~isfield(s.UserData,'FREQ') || isempty(s.UserData.FREQ)
     error([ mfilename ': Can not compute the density of states as the bare frequencies are not available (UserData.FREQ)' ]);
@@ -192,6 +188,9 @@ function [DOS, DOS_partials, s] = sqw_phonon_dos_4D(s, n)
       DOS.UserData.maxFreq = s.UserData.maxFreq;
       DOS = setalias(DOS, 'maxFreq', s.UserData.maxFreq, 'Maximum phonon frequency');
     end
+  end
+  if isfield(s.UserData,'DOS_partials') && numel(s.UserData.DOS_partials)
+    DOS_partials = s.UserData.DOS_partials;
   end
 
    
