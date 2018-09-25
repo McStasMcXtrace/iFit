@@ -91,20 +91,11 @@ function [S, qLim, fig] = band_structure(f, qLim, E, options)
   end
   
   if isempty(E)
-    % make a quick evaluation in order to get the maxFreq
-    qh=linspace(0.01,1.5,10);qk=qh; ql=qh; w=linspace(0.01,1000,100);
-    % this also computes the DOS when not there yet. In case it was not there before, we remove it.
-    is_dos_there = isfield(f.UserData,'DOS') && ~isempty(f.UserData.DOS) ...
-      && isa(f.UserData.DOS, 'iData') && prod(size(f.UserData.DOS)) > 10000;
-    [S,f] = feval(f, get(f,'ParameterValues'), qh,qk,ql',w);
-    if ~is_dos_there, f.UserData.DOS=[]; end
     % search for maxFreq if exists
     if isfield(f.UserData, 'maxFreq')
       E = max(f.UserData.maxFreq)*1.2;
     else 
-      S = iData(w,squeeze(sum(sum(sum(S)))));
-      [half_width, center] = std(S);
-      E=center+half_width;
+      E = max(f);
     end
   end
   if numel(E) == 1

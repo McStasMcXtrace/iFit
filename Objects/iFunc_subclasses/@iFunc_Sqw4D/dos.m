@@ -113,10 +113,10 @@ function [DOS, DOS_partials, s] = sqw_phonon_dos_4D(s, n)
   end
   
   % first get a quick estimate of the max frequency
-  if  ~isfield(s.UserData,'DOS') || isempty(s.UserData.DOS) || (~isempty(n) && prod(size(s.UserData.DOS)) ~= n)
+  if  ~isfield(s.UserData,'DOS') || isempty(s.UserData.DOS) || (~isempty(n) && prod(size(s.UserData.DOS)) ~= n) || numel(s.UserData.FREQ) < 1e4
     maxFreq = max(s);
     % evaluate the 4D model onto a mesh filling the Brillouin zone [-0.5:0.5 ]
-    qh=linspace(-0.5,.5,50);qk=qh; ql=qh; w=linspace(0.01,maxFreq*1.2,51);
+    qh=linspace(-0.5,.5,45);qk=qh; ql=qh; w=linspace(0.01,maxFreq*1.2,51);
     f=iData(s,[],qh,qk,ql',w);
     % force to evaluate on a finer grid
     if ~isfield(s.UserData,'FREQ') || isempty(s.UserData.FREQ)
