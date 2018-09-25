@@ -1,92 +1,1001 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
   <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <title>iFit: iFunc_Sqw4D S(q,w) models</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet"
+href="file:////opt/MATLAB/R2010a/toolbox/matlab/helptools/private/helpwin.css">
+    <title>M-File Help: iFunc_Sqw4D</title>
   </head>
   <body>
-    <h1 style="text-align: center;">iFunc_Sqw4D flavour</h1>
-    <ol id="mozToc">
-      <!--mozToc h3 1 h4 2 h3 3 h4 4 h5 5 h6 6-->
-      <li><a href="#mozTocId143728">Creating 4D S(q,w) models</a></li>
-      <li><a href="#mozTocId66848">Using 4D S(q,w) models</a></li>
-      <li><a href="#mozTocId101585">Getting results</a>
-        <ol>
-          <li><a href="#mozTocId723425">Phonon dispersion along
-              principal axes (band_structure)</a></li>
-          <li><a href="#mozTocId530764">Plotting dispersions (plot3,
-              scatter3, slice)</a></li>
-          <li><a href="#mozTocId338318">Vibrational density of states
-              (vDOS)</a></li>
-          <li><a href="#mozTocId62241">Thermo-chemistry basic quantities
-              (vDOS,F,U,S,Cv) (thermochemistry)</a></li>
-          <li><a href="#mozTocId842809">Powder average (powder)</a></li>
-          <li><a href="#mozTocId755959">Full report (publish)</a></li>
-        </ol>
-      </li>
-    </ol>
-    <hr size="2" width="100%">
-    <p><br>
-      The <b>iFunc_Sqw4D</b> class is a model derived from <a
-        href="iFunc.html">iFunc</a>, intended to handle 4D <i>S(</i><i><b>q</b></i><i>,w)</i>
-      dynamic structure factors. It inherits all of its methods, and
-      adds a few specialized methods.<br>
-    </p>
-    <h3><a class="mozTocH3" name="mozTocId143728"></a>Creating 4D S(q,w)
-      models</h3>
-    <p>from an existing iFunc object<br>
-      from pre-defined S(q,w) models<br>
-    </p>
-    <h3><a class="mozTocH3" name="mozTocId66848"></a>Using 4D S(q,w)
-      models</h3>
-    <p>methods<br>
-    </p>
-    <h3><a class="mozTocH3" name="mozTocId101585"></a>Getting results<br>
-    </h3>
-    <h4><a class="mozTocH4" name="mozTocId723425"></a>Phonon dispersion
-      along principal axes (band_structure)</h4>
-    <h4><a class="mozTocH4" name="mozTocId530764"></a>Plotting
-      dispersions (plot3, scatter3, slice)<br>
-    </h4>
-    <h4><a class="mozTocH4" name="mozTocId338318"></a>Vibrational
-      density of states (vDOS)</h4>
-    <h4><a class="mozTocH4" name="mozTocId62241"></a>Thermo-chemistry
-      basic quantities (vDOS,F,U,S,Cv) (thermochemistry)<br>
-    </h4>
-    <h4><a class="mozTocH4" name="mozTocId842809"></a>Powder average
-      (powder)</h4>
-    <h4><a class="mozTocH4" name="mozTocId755959"></a>Full report
-      (publish)<br>
-    </h4>
-    <p><br>
-    </p>
-    <p><br>
-    </p>
-    <hr style="width: 100%; height: 2px;">
-    <div style="text-align: center;"><span style="font-style: italic;">E.
-Farhi
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        - iFit/iFunc objects - $Date$ $Revision:1.7 $ </span> - back to
-      <a href="index.html">Main iFit Page </a><a
-        href="http://www.ill.eu/"><img title="ILL, Grenoble, France
-          &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL,
-          Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid
-          ; width: 53px; height: 50px;" border="0" height="171"
-          width="182" align="right"></a> </div>
+    <big><big><big> </big></big></big><!--Single-page help-->
+    <div class="title"><big><big><big>iFunc_Sqw4D [from iFunc]<br>
+          </big></big></big></div>
+    <big><big><big> </big></big></big>
+    <div class="helptext">
+      <pre><!--helptext --><big><big><big>  <span class="helptopic">iFunc_Sqw4D</span>: create an <span class="helptopic">iFunc_Sqw4D</span> from e.g. an iFunc 4D object
+ 
+  The <span class="helptopic">iFunc_Sqw4D</span> class is a 4D model holding a S(q,w) dynamic structure factor.
+  The axes are QH,QK,QL [e.g rlu] and Energy [e.g. meV].
+ 
+  Example: s=sqw_cubic_monoatomic
+ 
+  As the estimate of a 4D S(q,w) model may be computationally intensive, most 
+  methods below evaluate the model, and then derive a quantity as a Data set 
+  (e.g. iData)
+ 
+  Useful methods for this iFunc flavour:
+ 
+  methods(<span class="helptopic">iFunc_Sqw4D</span>)
+    all iFunc methods can be used.
+  <span class="helptopic">iFunc_Sqw4D</span>(a)
+    convert a 4D model [a=iFunc class] into an <span class="helptopic">iFunc_Sqw4D</span> to give access to
+    the methods below.
+  <b>plot</b>(a)
+    plot the band structure and density of states
+  <b>plot3</b>(a)
+    plot the S(q,w) dispersion in the QH=0 plane in 3D
+  <b>scatter3</b>(a)
+    plot the S(q,w) dispersion in the QH=0 plane in 3D as coloured points
+  <b>slice</b>(a)
+    Slice and isosurface volume exploration of the S(q,w) dispersion in the QH=0 plane
+  b = <b>band_structure</b>(a)
+    Compute the band structure
+  d = <b>dos</b>(a)
+    Compute the density of states
+  m = <b>max</b>(a)
+    Evaluate the maximum S(q,w) dispersion energy
+  <b>powder</b>(a)
+    Compute the powder average of the 4D S(q,w) dispersion
+  <b>publish</b>(a)
+    Generate a readable document with all results
+  t = <b>thermochemistry</b>(a)
+    Compute and display thermochemistry quantities
+ 
+  syntax:<br>    sqw4d = iFunc_Sqw4D(a)<br>  input:
+    a: can be an iFunc or struct or any set of parameters to generate a Sqw4D object.
+    when not given an iFunc, the parameters to sqw_phonons are expected.
+ 
+  output: an <span class="helptopic">iFunc_Sqw4D</span> object</big></big></big></pre>
+    </div>
+    <!--after help --><!--seeAlso-->
+    <div class="footerlinktitle"><big><big><big>See also</big></big></big></div>
+    <div class="footerlink"><big><big><big> <a
+              href="Models_Phonons.html">sqw_phonons</a>, <a
+              href="Models_Phonons.html">sqw_cubic_monoatomic</a>, <a
+              href="iFunc.html">iFunc</a> <a href="iFunc_Sqw2D.html">iFunc_Sqw2D</a>
+            <a href="iFunc_McCode.html">iFunc_McCode</a><br>
+          </big></big></big></div>
+    <big><big><big> </big></big></big><!--Class-->
+    <div class="sectiontitle"><big><big><big>Class Details</big></big></big></div>
+    <big><big><big> </big></big></big>
+    <table class="class-details">
+      <big><big><big> </big></big></big><tbody>
+        <tr>
+          <big><big><big> </big></big></big><td
+            class="class-detail-label"><big><big><big>Superclasses</big></big></big></td>
+          <big><big><big> </big></big></big><td><big><big><big><a
+                    href="iFunc.html">iFunc</a></big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr>
+          <big><big><big> </big></big></big><td
+            class="class-detail-label"><big><big><big>Sealed</big></big></big></td>
+          <big><big><big> </big></big></big><td><big><big><big>false</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr>
+          <big><big><big> </big></big></big><td
+            class="class-detail-label"><big><big><big>Construct on load</big></big></big></td>
+          <big><big><big> </big></big></big><td><big><big><big>false</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big>
+      </tbody>
+    </table>
+    <!--Constructors-->
+    <div class="sectiontitle"><big><big><big><a name="constructors"></a>Constructor
+            Summary </big></big></big></div>
+    <big><big><big> </big></big></big>
+    <table class="summary-list">
+      <big><big><big> </big></big></big><tbody>
+        <tr class="summary-item">
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="iFunc_Sqw4D.html">iFunc_Sqw4D</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>:
+                  create an iFunc_Sqw4D from e.g. an iFunc 4D
+                  object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big>
+      </tbody>
+    </table>
+    <!--Properties-->
+    <div class="sectiontitle"><big><big><big><a name="properties"></a>Property
+            Summary </big></big></big></div>
+    <big><big><big> </big></big></big>
+    <table class="summary-list">
+      <big><big><big> </big></big></big><tbody>
+        <tr class="summary-item">
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iFunc_Sqw4D.Constraint%27%29">Constraint</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>Restraints/constraints
+                  to evaluate before computing the Expression, can be: a
+                  function_handle, a char/cellstr, a vector (length p),
+                  a structure with fields: min, max, fixed&nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.Date%27%29">Date</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>Creation
+                  date&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iFunc_Sqw4D.Description%27%29">Description</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>Description
+                  (long)&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iFunc_Sqw4D.Dimension%27%29">Dimension</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>Model
+                  dimensionality (1,2,3,4...) 0=scalar=empty. a negative
+                  dimension is used to indicate a variable
+                  dimensionality.&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iFunc_Sqw4D.Duration%27%29">Duration</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>Time
+                  spent for the evaluation&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.Eval%27%29">Eval</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>Code
+                  to evaluate for the model value&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iFunc_Sqw4D.Expression%27%29">Expression</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>Expression
+                  to evaluate to get the function value, char or
+                  function_handle(p, x,y, ...)&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.Guess%27%29">Guess</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>Default
+                  parameter set or expression or function handle, char
+                  or function_handle(x,y,..., signal, Parameters{}) or
+                  'automatic'&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.Name%27%29">Name</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>Model
+                  Name (short)&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iFunc_Sqw4D.ParameterValues%27%29">ParameterValues</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>Current
+                  parameter values&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iFunc_Sqw4D.Parameters%27%29">Parameters</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>Function
+                  parameters, a cellstr or words or a single string of
+                  words separated by spaces, or a structure with
+                  parameter values&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.Tag%27%29">Tag</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>Unique
+                  ID&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iFunc_Sqw4D.UserData%27%29">UserData</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>User
+                  data storage area&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.class%27%29">class</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>Class
+                  of the object, e.g iFunc or other derived class&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big>
+      </tbody>
+    </table>
+    <!--Methods-->
+    <div class="sectiontitle"><big><big><big><a name="methods"></a>Method
+            Summary </big></big></big></div>
+    <big><big><big> </big></big></big>
+    <table class="summary-list">
+      <big><big><big> </big></big></big><tbody>
+        <tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.abs%27%29">abs</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = abs(s) : absolute value of iFunc object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.acos%27%29">acos</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = acos(s) : computes the arc cosine of iFunc
+                  object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.acosh%27%29">acosh</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = acosh(s) : computes the inverse hyperbolic cosine of
+                  iFunc object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.asin%27%29">asin</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = asin(s) : computes the arc sine of iFunc
+                  object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.asinh%27%29">asinh</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = asinh(s) : computes the inverse hyperbolic sine of
+                  iFunc object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.atan%27%29">atan</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = atan(s) : computes the arc tangent of iFunc
+                  object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.atanh%27%29">atanh</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = atanh(s) : computes the inverse hyperbolic tangent
+                  of iFunc object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iFunc_Sqw4D.band_structure%27%29">band_structure</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>:
+                  evaluates a 4D S(q,w) model along specified k-path /
+                  bands&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.ceil%27%29">ceil</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = ceil(s) : upper integer round of iFunc object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.cellstr%27%29">cellstr</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>ret
+                  = cellstr(s) : convert iFunc into a cell of
+                  strings&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.char%27%29">char</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>ret
+                  = char(s) : convert iFunc into character&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.conj%27%29">conj</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = conj(s) : conjugate of iFunc object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.conv%27%29">conv</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>c
+                  = conv(a,b) : computes the convolution of iFunc
+                  models&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.convn%27%29">convn</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>c
+                  = convn(a,b) : computes the convolution of an iFunc
+                  object with a response function &nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.copyobj%27%29">copyobj</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = copyobj(s) : makes a copy of iFunc object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.cos%27%29">cos</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = cos(s) : computes the cosine of iFunc object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.cosh%27%29">cosh</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = cosh(s) : computes the hyperbolic cosine of iFunc
+                  object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iFunc_Sqw4D.ctranspose%27%29">ctranspose</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = ctranspose(s) : complex conjugate transpose of iFunc
+                  object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.del2%27%29">del2</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = del2(s) : computes the Discrete Laplacian of iFunc
+                  object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.disp%27%29">disp</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>(s)
+                  : display iFunc object (details)&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.display%27%29">display</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>d
+                  = display(s) : display iFunc object (from command
+                  line)&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.doc%27%29">doc</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>(iFunc):
+                  iFunc web page documentation&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.dos%27%29">dos</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>iFunc_Sqw4D:
+                  dos: compute the density of states (vDOS)&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.edit%27%29">edit</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>s
+                  = edit(s) : edit an iFunc model with a window
+                  dialogue&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.exp%27%29">exp</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = exp(s) : exponential value of iFunc object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.feval%27%29">feval</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>[signal,
+                  model, axes, name] = feval(model, parameters, x,y,
+                  ...) evaluate a function&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iFunc_Sqw4D.findfield%27%29">findfield</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>[match,
+                  types, nelements]=findfield(iFunc, field, option) :
+                  look for iFunc fields&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.findstr%27%29">findstr</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>[match,
+                  field]=findstr(s, str, option) : look for strings
+                  stored in iFunc&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.fits%27%29">fits</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>[pars,criteria,message,output]
+                  = fits(model, data, pars, options, constraints, ...) :
+                  fit a model on a data set&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.fix%27%29">fix</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = fix(s, parameters, ...) : sets parameter lock (fix)
+                  for further fit using the model 's'&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.fliplr%27%29">fliplr</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = fliplr(s) : Flip object in left/right
+                  direction&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.flipud%27%29">flipud</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = flipud(s) : Flip object in up/down direction&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.floor%27%29">floor</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = floor(s) : lower integer round of iFunc object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.fmax%27%29">fmax</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>[Maxmimum,FVAL,EXITFLAG,OUTPUT]
+                  = fmax(FUN,PARS,[OPTIONS],[X,Y,...]) Best
+                  maximizer&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.fmin%27%29">fmin</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>[MINIMUM,FVAL,EXITFLAG,OUTPUT]
+                  = FMIN(FUN,PARS,[OPTIONS],[X,Y,...]) Best
+                  optimizer&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.full%27%29">full</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = full(s) : Convert iFunc object storage to full
+                  matrix&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.get%27%29">get</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>[...]
+                  = get(s, 'PropertyName', ...) : get iFunc object
+                  properties&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.iData%27%29">iData</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>iFunc_Sqw4D:
+                  iData: evaluate a 4D Sqw into an iData object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.iFunc%27%29">iFunc</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>_Sqw4D:
+                  convert a single iFunc_Sqw4D back to iFunc&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.imag%27%29">imag</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = imag(s) : imaginary part of iFunc object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.imwrite%27%29">imwrite</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>f
+                  = imwrite(s, filename, format) : save iFunc object
+                  into an image&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.isempty%27%29">isempty</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>(s)
+                  : true for empty iFunc object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.isfield%27%29">isfield</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = isfield(s, field) : check existence of
+                  field/parameter in model objects&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.load%27%29">load</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>d
+                  = load(s, file): iFunc Model loader&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.log%27%29">log</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = log(s) : natural logarithm value of iFunc
+                  object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.log10%27%29">log10</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = log10(s) : base 10 logarithm value of iFunc
+                  object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.max%27%29">max</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>iFunc_Sqw4D:
+                  max: get a quick estimate of the max dispersion
+                  frequency&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.minus%27%29">minus</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>c
+                  = minus(a,b) : computes the difference of iFunc
+                  objects&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.mlock%27%29">mlock</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = mlock(s, parameters, ...) : sets parameter lock
+                  (fix) for further fit using the model 's'&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.mpower%27%29">mpower</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>c
+                  = mpower(a,b) : computes the power of iFunc
+                  objects&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iFunc_Sqw4D.mrdivide%27%29">mrdivide</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>c
+                  = mrdivide(a,b) : computes the ratio of iFunc
+                  objects&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.mtimes%27%29">mtimes</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>c
+                  = mtimes(a,b) : computes the multiplication of iFunc
+                  objects&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.munlock%27%29">munlock</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = munlock(s, parameters, ...) : free parameter lock
+                  (clear) for further fit using the model 's'&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.ndims%27%29">ndims</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>d
+                  = ndims(s) : get the dimensionality of iFunc
+                  object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.norm%27%29">norm</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = norm(s) : norm-2 of iFunc object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.not%27%29">not</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = not(s) : computes the logical 'not' of iFunc
+                  object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.ones%27%29">ones</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>s
+                  = ones(s,N,M,P,...) : initialize an iFunc array&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.plot%27%29">plot</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>iFunc_Sqw4D:
+                  plot: plot dispersions along principal axes and
+                  vDOS&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.plot3%27%29">plot3</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>iFunc_Sqw4D:
+                  plot3: plot a 3D view of the dispersions in H=0
+                  plane&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.plus%27%29">plus</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>c
+                  = plus(a,b) : computes the sum of iFunc objects&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.powder%27%29">powder</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>data
+                  = powder(model, p, q, w) : evaluate a 4D S(hkl,w)
+                  model/data set into a 2D S(|q|,w) data set for e.g.
+                  powders&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.power%27%29">power</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>c
+                  = power(a,b) : computes the power of iFunc
+                  objects&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.publish%27%29">publish</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>iFunc_Sqw4D:
+                  publish: generate a readable HTML document and export
+                  results to&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.rdivide%27%29">rdivide</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>c
+                  = rdivide(a,b) : computes the ratio of iFunc
+                  objects&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.real%27%29">real</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = real(s) : real value of iFunc object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.round%27%29">round</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = round(s) : upper integer round of iFunc object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.save%27%29">save</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>f
+                  = save(s, filename, format, options) : save iFunc
+                  object into various data formats&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.saveas%27%29">saveas</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>f
+                  = saveas(s, filename, format, options) : save iFunc
+                  object into various data formats&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iFunc_Sqw4D.scatter3%27%29">scatter3</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>iFunc_Sqw4D:
+                  scatter3: plot a 3D scatter view of the dispersions in
+                  H=0 plane&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.set%27%29">set</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>[s,...]
+                  = set(s, 'PropertyName', Propertyvalue, ...) : set
+                  iFunc properties&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.sign%27%29">sign</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = sign(s) : sign of iFunc object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.sin%27%29">sin</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = sin(s) : computes the sine of iFunc object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.sinh%27%29">sinh</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = sinh(s) : computes the hyperbolic sine of iFunc
+                  object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.slice%27%29">slice</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>iFunc_Sqw4D:
+                  slice: plot an editable 3D view of the dispersions in
+                  H=0 plane&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.sparse%27%29">sparse</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = sparse(s) : Convert iFunc object storage to
+                  sparse&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.sqrt%27%29">sqrt</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = sqrt(s) : square root value of iFunc object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.subplot%27%29">subplot</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>h
+                  = subplot(s) : plot iFunc array as subplots&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iFunc_Sqw4D.subsasgn%27%29">subsasgn</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = subsasgn(a,index,b) : iFunc indexed
+                  assignement&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.subsref%27%29">subsref</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = subsref(a,s) : iFunc indexed references&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.tan%27%29">tan</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = tan(s) : computes the tangent of iFunc object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.tanh%27%29">tanh</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = tanh(s) : computes the hyperbolic tangent of iFunc
+                  object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iFunc_Sqw4D.thermochemistry%27%29">thermochemistry</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>iFunc_Sqw4D/thermochemistry:
+                  compute thermodynamic quantities for 4D S(q,w)
+                  models.&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.times%27%29">times</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>c
+                  = times(a,b) : computes the multiplication of iFunc
+                  objects&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iFunc_Sqw4D.transpose%27%29">transpose</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = transpose(s) : non-conjugate transpose of iFunc
+                  object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.uminus%27%29">uminus</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = uminus(s) : opposite value of iFunc object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.uplus%27%29">uplus</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = uplus(s) : makes a copy of iFunc object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.xcorr%27%29">xcorr</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>c
+                  = xcorr(a,b) : computes the correlation of iFunc
+                  models&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.xlim%27%29">xlim</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = xlim(s, parameters, [min max], ...) : sets parameter
+                  bounds (min,max) for further fit using the model
+                  's'&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iFunc_Sqw4D.xmlwrite%27%29">xmlwrite</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>f
+                  = xmlwrite(s, filename) : save iFunc object into an
+                  XML file&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iFunc_Sqw4D.zeros%27%29">zeros</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>s
+                  = zeros(s,N,M,P,...) : initialize an iFunc array&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big>
+      </tbody>
+    </table>
   </body>
 </html>
