@@ -221,7 +221,7 @@ function [options, sav] = sqw_phonons_get_forces(options, decl, calc)
       else
         [st, result] = system([ precmd options.available.python ' ' fullfile(target,'sqw_phonons_forces_iterate.py') ]);
       end
-      disp(st)
+      
       % the first return 'st' gives the max number of steps remaining
       % but one at least was done so far
       if ~nb_of_steps && st > 0, nb_of_steps = st+1; end
