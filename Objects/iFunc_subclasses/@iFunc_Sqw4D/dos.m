@@ -1,4 +1,4 @@
-function [DOS, DOS_partials] = dos(s, n)
+function [DOS, DOS_partials] = dos(s, n, nQ)
 % iFunc_Sqw4D: dos: compute the density of states (vDOS)
 %
 %  The routine can be used with 4D models to compute the vibrational density of 
@@ -7,6 +7,7 @@ function [DOS, DOS_partials] = dos(s, n)
 %    DOS = dos(s)    returns the vibrational density of states (vDOS)
 %      the vDOS and the partials per mode are also stored in the UserData.
 %    DOS = dos(s, n) does the same with n-bins on the vDOS (n=100)
+%    DOS = dos(s, n, nQ) does the same with nQ-bins for the HKL average (n=45)
 %
 %    When the DOS has already been computed, it is used as is. To force a
 %    recomputation, specify a different number of bins 'n' or set:
@@ -20,8 +21,9 @@ function [DOS, DOS_partials] = dos(s, n)
 %    [m, DOS] = max(s);
 %
 % input:
-%   s: S(q,w) 4D model (iFunc_Sqw4D)
-%   n: number of energy values (integer). Optional. Default is nmodes*10
+%   s:  S(q,w) 4D model (iFunc_Sqw4D)
+%   n:  number of energy values (integer). Optional. Default is nmodes*10
+%   nQ: number of Q-grid binning (integer). Optional. Default is 45
 %
 % output:
 %   DOS:   DOS(w)   (1D iData versus energy)
@@ -39,11 +41,13 @@ function [DOS, DOS_partials] = dos(s, n)
   DOS=[]; DOS_partials=[];
   if nargin == 0, return; end
   if nargin < 2, n = []; end
+  if nargin < 3, nQ = []; end
+  if isempty(nQ), nQ=45; end
   
   % handle array of objects
   if numel(s) > 1
     for index=1:numel(s)
-      DOS = [ DOS feval(mfilename, s(index), n) ];
+      DOS = [ DOS feval(mfilename, s(index), n, nQ) ];
     end
     if ~isempty(inputname(1))
       assignin('caller',inputname(1),s);
@@ -52,7 +56,7 @@ function [DOS, DOS_partials] = dos(s, n)
   end
 
   % compute
-  [DOS, DOS_partials, s] = sqw_phonon_dos_4D(s, n);
+  [DOS, DOS_partials, s] = sqw_phonon_dos_4D(s, n, nQ);
   if ~isempty(inputname(1))
     assignin('caller',inputname(1),s);
   end
@@ -82,7 +86,7 @@ function [DOS, DOS_partials] = dos(s, n)
   
 % ------------------------------------------------------------------------------
 
-function [DOS, DOS_partials, s] = sqw_phonon_dos_4D(s, n)
+function [DOS, DOS_partials, s] = sqw_phonon_dos_4D(s, n, nQ)
   % sqw_phonon_dos_4D: compute the phonon/vibrational density of states (vDOS)
   %
   % input:
@@ -107,32 +111,40 @@ function [DOS, DOS_partials, s] = sqw_phonon_dos_4D(s, n)
     return
   end
   
-  if nargin < 2, n=[]; end
+  if nargin < 2, n =[]; end
+  if nargin < 3, nQ=45; end
   if strcmp(n, 'force') || (isscalar(n) && n == 0)
     s.UserData.DOS = [];
   end
   
-  % first get a quick estimate of the max frequency
-  if  ~isfield(s.UserData,'DOS') || isempty(s.UserData.DOS) || (~isempty(n) && prod(size(s.UserData.DOS)) ~= n) || numel(s.UserData.FREQ) < 1e4
-    maxFreq = max(s);
-    % evaluate the 4D model onto a mesh filling the Brillouin zone [-0.5:0.5 ]
-    qh=linspace(-0.5,.5,45);qk=qh; ql=qh; w=linspace(0.01,maxFreq*1.2,51);
-    f=iData(s,[],qh,qk,ql',w);
-    % force to evaluate on a finer grid
-    if ~isfield(s.UserData,'FREQ') || isempty(s.UserData.FREQ)
-      qk=linspace(0,0.5,30); qh=qk; ql=qk; 
-      w =linspace(0.01,maxFreq*1.2,11);
-      f =iData(s,[],qh,qk,ql',w);
-    end
-    s.UserData.DOS     = [];  % make sure we re-evaluate again on a finer grid
-  end
-   
-  if (~isfield(s.UserData,'DOS') || isempty(s.UserData.DOS)) ...
-    && isfield(s.UserData,'FREQ') && ~isempty(s.UserData.FREQ)
+  if isfield(s.UserData,'FREQ')
     nmodes = size(s.UserData.FREQ,2);
     if isempty(n) || n == 0
       n = max(nmodes*10, 100);
     end
+  end
+  
+  % first get a quick estimate of the max frequency
+  if  ~isfield(s.UserData,'DOS') || isempty(s.UserData.DOS) ...
+  || (~isempty(n) && prod(size(s.UserData.DOS)) ~= n) ...
+  || (isfield(s.UserData,'FREQ') && numel(s.UserData.FREQ) < 1e4)
+    [maxFreq, DOS] = max(s); % get an estimate of the DOS and max Freq
+    % evaluate the 4D model onto a mesh filling the Brillouin zone [-0.5:0.5 ]
+    qh=linspace(-0.5,0.5,min(nQ, 45));qk=qh; ql=qh; w=linspace(0.01,maxFreq*1.2,n);
+    f=iData(s,[],qh,qk,ql',w);
+    % when fail: force to evaluate on a coarser grid
+    if ~isfield(s.UserData,'FREQ') || isempty(s.UserData.FREQ)
+      qk=linspace(-0.5,0.5,min(ceil(nQ/2), 20)); qh=qk; ql=qk; 
+      w =linspace(0.01,maxFreq*1.2,min(ceil(n/2), 21));
+      f =iData(s,[],qh,qk,ql',w);
+    end
+    s.UserData.DOS     = [];  % make sure we re-evaluate again on a finer grid
+  end
+  
+  try % may fail with mem Allocation as POLAR is large
+  if (~isfield(s.UserData,'DOS') || isempty(s.UserData.DOS)) ...
+    && isfield(s.UserData,'FREQ') && ~isempty(s.UserData.FREQ)
+    
     % compute the DOS histogram
     index           = find(imag(s.UserData.FREQ) == 0);
     dos_e           = s.UserData.FREQ(index);
@@ -171,6 +183,10 @@ function [DOS, DOS_partials, s] = sqw_phonon_dos_4D(s, n)
     clear f1 index dos_e omega_e dos_factor DOS pDOS
   elseif ~isfield(s.UserData,'FREQ') || isempty(s.UserData.FREQ)
     error([ mfilename ': Can not compute the density of states as the bare frequencies are not available (UserData.FREQ)' ]);
+  end
+  catch ME
+    disp(getReport(ME))
+    disp([ mfilename ': fine DOS evaluation failed. Using coarse evaluation. No partials.' ])
   end
   
   if ~isempty(inputname(1))

@@ -168,9 +168,9 @@ function [g, fig] = dos(s, method, varargin)
   end % compute
 
   % plot total DOS when no output
-  if nargout == 0 && ~isempty(DOS)
+  if nargout == 0 && ~isempty(g)
     fig=figure; 
-    h=plot(DOS); set(h,'LineWidth',2);
+    h=plot(g); set(h,'LineWidth',2);
     set(fig, 'NextPlot','new');
   end
 
