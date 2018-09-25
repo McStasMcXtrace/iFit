@@ -117,9 +117,25 @@ classdef iFunc_McCode < iFunc
       %   or get model.UserData.monitors after the calculation.
       if numel(varargin) == 0
         [signal, self, ax, name] = feval@iFunc(self, [], nan);
-      elseif numel(varargin) == 1 && isvector(varargin{1})
+      elseif numel(varargin) == 1 && isnumeric(varargin{1}) && isvector(varargin{1})
         [signal, self, ax, name] = feval@iFunc(self, varargin{1}, nan);
-      else  
+      else % parameters are given as non numeric: string/struct
+        p = varargin{1};
+        if ischar(p)
+          p = str2struct(p);
+        end
+        if isstruct(p)
+          % send any Constant parameter to the proper place
+          if isfield(self.UserData,'Parameters_Constant') && isstruct(self.UserData.Parameters_Constant)
+            ct = fieldnames(self.UserData.Parameters_Constant);
+            for f = fieldnames(p)'
+              if any(strcmp(f{1}, ct))
+                self.UserData.Parameters_Constant.(f{1}) = p.(f{1});
+              end
+            end
+          end
+        end
+          
         [signal, self, ax, name] = feval@iFunc(self, varargin{:});
       end
       if ~isempty(inputname(1))
@@ -199,6 +215,21 @@ classdef iFunc_McCode < iFunc
       % iFunc_McCode/plot: runs the model in --trace mode and capture the output
       % grab all MCDISPLAY lines, and render the TRACE information into a figure (3D geometry view).
       [comps, fig, self]=plot(self, varargin{:});
+    end
+    
+    function disp(self)
+      disp@iFunc(self);
+      if isfield(self.UserData,'Parameters_Constant') && isstruct(self.UserData.Parameters_Constant)
+        disp('Other Parameters:')
+        for f=fieldnames(self.UserData.Parameters_Constant)'
+          val = self.UserData.Parameters_Constant.(f{1});
+          if ischar(val)
+            disp(sprintf('%20s: %s', f{1}, val))
+          else
+            disp(sprintf('%20s: %f', f{1}, val))
+          end
+        end
+      end
     end
   end
   

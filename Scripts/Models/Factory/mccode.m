@@ -43,6 +43,10 @@ function y = mccode(instr, options, parameters)
 %
 % The instrument parameters of type 'double' are used as model parameters. Other
 % parameters (e.g. of type string and int) are stored in UserData.Parameters_Constant
+% You may still specify their value when using e.g. syntax with a string or structure:
+%   feval(model, 'lambda=2.36; Powder="Al.laz"')
+%   iData(model, 'lambda=2.36; Powder="Al.laz"')
+%   iData(model, struct('lambda',2.36,'Powder','Al.laz'))
 %
 % The options ncount, seed, gravitation, monitor can be changed for the model 
 % evaluation, with e.g.:
@@ -64,6 +68,15 @@ function y = mccode(instr, options, parameters)
 % model(p, x,y,...) 
 %   evaluates the model and interpolates the McCode data set onto given axes.
 %
+% The model 'value' is the last monitor, or set from 
+%   model.UserData.options.monitor
+% It can be converted to an iData with iData(model, ...)
+
+% The raw monitors of the last simulation are stored as iData objects in 
+%   model.UserData.monitors
+% You can plot them all with e.g.:
+%   subplot(model)
+%
 % input:  p: variable instrument parameters (double, struct, char)
 %            p = [ double_type_instrument_parameters ]
 %         x,y,...: axes (double)
@@ -72,6 +85,7 @@ function y = mccode(instr, options, parameters)
 % ex:     model =mccode('templateDIFF'); 
 %         signal=iData(model, [], linspace(-10,100,100));
 %         signal=iData(model, [], nan); % to get the raw monitor
+%         signal=iData(model, 'lambda=2.36; Powder=Al.laz', nan); % to get the raw monitor
 %
 % MODEL GEOMETRY
 % ------------------------------------------------------------------------------
