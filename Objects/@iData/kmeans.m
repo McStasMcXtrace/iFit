@@ -86,7 +86,7 @@ if ndims(X) == 3
   end
 end
 
-if isempty(X) || all(X == 0)  % no cluster found
+if isempty(X) || all(X(:) == 0)  % no cluster found
   return
 end
 
