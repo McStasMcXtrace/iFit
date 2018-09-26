@@ -13,6 +13,8 @@ function [m, DOS] = max(s)
   %   DOS: quick estimate of vibrational density of states [iData_vDOS]
   %
   % See also: iFunc_Sqw4D/dos
+  
+  m = []; DOS = [];
   if  ~isfield(s.UserData,'maxFreq') || isempty(s.UserData.maxFreq) ...
     || all(s.UserData.maxFreq <= 0)
     qh=linspace(-.5,.5,10);qk=qh; ql=qh; w=linspace(0.01,50,11);
