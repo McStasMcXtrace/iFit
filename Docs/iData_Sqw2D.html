@@ -1,100 +1,2125 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
   <head>
-
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <title>iFit: iData_Sqw2D</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet"
+href="file:////opt/MATLAB/R2010a/toolbox/matlab/helptools/private/helpwin.css">
+    <title>M-File Help: iData_Sqw2D</title>
   </head>
   <body>
-    iData_Sqw2D: create a 2D S(q,w) data set (iData flavour)<br>
-    &nbsp;<br>
-    &nbsp; The iData_Sqw2D class is a 2D data set holding a S(q,w)
-    dynamic structure factor<br>
-    &nbsp;&nbsp;&nbsp; aka scattering function/law.<br>
-    &nbsp;&nbsp;&nbsp; The first&nbsp; axis (rows)&nbsp;&nbsp;&nbsp; is
-    the Momentum transfer [Angs-1] (wavevector). <br>
-    &nbsp;&nbsp;&nbsp; The second axis (columns) is the
-    Energy&nbsp;&nbsp; transfer [meV].<br>
-    &nbsp;<br>
-    &nbsp; This quantity usually derives from the double differential
-    neutron cross section<br>
-    &nbsp;<br>
-    &nbsp;&nbsp;&nbsp;&nbsp; d2 sigma <br>
-    &nbsp;&nbsp;&nbsp; ---------&nbsp;&nbsp; = N sigma /4pi kf/ki S(q,w)<br>
-    &nbsp;&nbsp;&nbsp; dOMEGA dEf<br>
-    &nbsp;<br>
-    &nbsp; conventions:<br>
-    &nbsp; w = omega = Ei-Ef = energy lost by the neutron [meV]<br>
-    &nbsp;&nbsp;&nbsp;&nbsp; omega &gt; 0, neutron looses energy, can
-    not be higher than Ei (Stokes)<br>
-    &nbsp;&nbsp;&nbsp;&nbsp; omega &lt; 0, neutron gains energy,
-    anti-Stokes<br>
-    &nbsp;<br>
-    &nbsp; Example: s=iData_Sqw2D('SQW_coh_lGe.nc')<br>
-    &nbsp;<br>
-    &nbsp; Useful methods for this iData flavour:<br>
-    &nbsp;<br>
-    &nbsp; methods(iData_Sqw2D)<br>
-    &nbsp;&nbsp;&nbsp; all iData methods can be used.<br>
-    &nbsp; iData_Sqw2D(s)<br>
-    &nbsp;&nbsp;&nbsp; convert input [e.g. a 2D iData object] into an
-    iData_Sqw2D to give access to<br>
-    &nbsp;&nbsp;&nbsp; the methods below.<br>
-    &nbsp;<br>
-    &nbsp; d&nbsp;&nbsp; = dos(s)<br>
-    &nbsp;&nbsp;&nbsp; Compute the generalized vibrational density of
-    states (gDOS).<br>
-    &nbsp;<br>
-    &nbsp; t&nbsp;&nbsp; = thermochemistry(s)<br>
-    &nbsp;&nbsp;&nbsp; Compute and display thermochemistry quantities
-    from the gDOS.<br>
-    &nbsp;<br>
-    &nbsp; m&nbsp;&nbsp; = moments(s)<br>
-    &nbsp;&nbsp;&nbsp; Compute the S(q,w) moments/sum rules (harmonic
-    frequencies).<br>
-    &nbsp;<br>
-    &nbsp; sym = symmetrize(s)<br>
-    &nbsp;&nbsp;&nbsp; Extend the S(|q|,w) in both energy sides.<br>
-    &nbsp;<br>
-    &nbsp; sb&nbsp; = Bosify(s)<br>
-    &nbsp;&nbsp;&nbsp; Apply the 'Bose' factor (detailed balance) to a
-    classical data set.<br>
-    &nbsp;<br>
-    &nbsp; s&nbsp;&nbsp; = deBosify(sb)<br>
-    &nbsp;&nbsp;&nbsp; Remove Bose factor (detailed balance) from an
-    'experimental/quantum' data set.<br>
-    &nbsp;<br>
-    &nbsp; p&nbsp;&nbsp; = parseparams(s)<br>
-    &nbsp;&nbsp;&nbsp; Search for physical quantities in S(q,w) data
-    set.<br>
-    &nbsp;<br>
-    &nbsp; sab = Sab(s)<br>
-    &nbsp;&nbsp;&nbsp; Convert to an S(alpha,beta) suitable for nuclear
-    data bases (ENDF, etc).<br>
-    &nbsp;<br>
-    &nbsp; xs&nbsp; = scattering_cross_section(s)<br>
-    &nbsp;&nbsp;&nbsp; Compute the total integrated scattering cross
-    section<br>
-    &nbsp;<br>
-    &nbsp; dr&nbsp; = dynamic_range(s, Ei, angles)<br>
-    &nbsp;&nbsp;&nbsp; Compute the dynamic range restricted to given
-    incident energy and detector angles<br>
-    &nbsp;<br>
-    &nbsp; sq&nbsp; = structure_factor(s)<br>
-    &nbsp;&nbsp;&nbsp; Compute the structure factor S(q)<br>
-    &nbsp;<br>
-    &nbsp; [inc, multi] = incoherent(s, q, T, sigma, m, n)<br>
-    &nbsp;&nbsp;&nbsp; Compute an estimate of the incoherent neutron
-    scattering law in the incoherent gaussian approximation<br>
-    &nbsp;<br>
-    &nbsp; [gDOS,M]&nbsp;&nbsp;&nbsp;&nbsp; = multi_phonons(ss)<br>
-    &nbsp;&nbsp;&nbsp; Compute the integrated multi-phonon DOS terms
-    from an initial density of states<br>
-    &nbsp;<br>
-    &nbsp; input:<br>
-    &nbsp;&nbsp;&nbsp; can be a 2D iData or filename to generate a 2D
-    Sqw object.<br>
-    &nbsp;<br>
-    &nbsp; output: an iData_Sqw2D object
+    <big><big><big> </big></big></big><!--Single-page help-->
+    <div class="title"><big><big><big>iData_Sqw2D [from <a
+              href="iData.html">iData</a>]<br>
+          </big></big></big></div>
+    <big><big><big> </big></big></big>
+    <div class="helptext"><big><big><big> </big></big></big>
+      <pre><!--helptext --><big><big><big>  <span class="helptopic">iData_Sqw2D</span>: create a 2D S(q,w) data set (iData flavour)
+ 
+  The <span class="helptopic">iData_Sqw2D</span> class is a 2D data set holding a S(q,w) dynamic structure factor
+    aka scattering function/law.
+    The first  axis (rows)    is the Energy   transfer [meV].
+    The second axis (columns) is the Momentum transfer [Angs-1] (wavevector). 
+ 
+  This quantity usually derives from the double differential neutron cross section
+ 
+     d2 sigma 
+    ---------   = N kf/ki [ sigma /4pi S(q,w)]
+    dOMEGA dEf
+ 
+  conventions:
+  w = omega = Ei-Ef = energy lost by the neutron [meV]
+     omega &gt; 0, neutron looses energy, can not be higher than Ei (Stokes)
+     omega &lt; 0, neutron gains energy, anti-Stokes
+ 
+  Example: s=<span class="helptopic">iData_Sqw2D</span>('SQW_coh_lGe.nc')
+ 
+  Useful methods for this iData flavour:
+ 
+  methods(<span class="helptopic">iData_Sqw2D</span>)
+    all iData methods can be used.
+  <span class="helptopic">iData_Sqw2D</span>(s)
+    convert input [e.g. a 2D iData object] into an <span class="helptopic">iData_Sqw2D</span> to give access to
+    the methods below.
+  Sqw = <b>ddcs2Sqw</b>(s)
+    convert a double differential neutron scattering cross section to a S(q,w) [Kf/Ki]
+  ddcs = <b>Sqw2ddcs</b>(s)
+    convert a S(q,w) to a double differential neutron scattering cross section [Kf/Ki]
+  spw = <b>qw2phiw</b>(s, lambda)
+    Convert a S(q,w) into a S(phi,w) iData (scattering angle)
+  sqt = <b>qw2qt</b>(s, lambda)
+    Compute S(q,tof) from S(q,w) for given wavelength [Angs]
+  [spt,spc] = <b>qw2phi</b>(s, lambda)
+    Compute S(phi,tof) from S(q,w) for given wavelength [Angs]. 
+    Also return the S(phi,channel) as 2nd arg.
+  sab = <b>Sab</b>(s, M, T)
+    Compute S(alpha,beta) [<a href="iData_Sab.html">iData_Sab</a>] from S(q,w) for given mass and temperature
+ 
+  d   = <b>dos</b>(s)
+    Compute the vibrational density of states.
+ 
+  t   = <b>thermochemistry</b>(s)
+    Compute and display thermochemistry quantities from the density of states.
+ 
+  m   = <b>moments</b>(s)
+    Compute the S(q,w) moments/sum rules (harmonic frequencies).
+ 
+  sym = <b>symmetrize</b>(s)
+    Extend the S(|q|,w) in both energy sides.
+ 
+  sb  = <b>Bosify</b>(s)
+    Apply the 'Bose' factor (detailed balance) to a classical data set.
+ 
+  s   = <b>deBosify</b>(sb)
+    Remove Bose factor (detailed balance) from an 'experimental/quantum' data set.
+ 
+  p   = <b>parseparams</b>(s)
+    Search for physical quantities in S(q,w) data set.
+ 
+  sab = <b>Sab</b>(s)
+    Convert to an S(alpha,beta) [<a href="iData_Sab.html">iData_Sab</a>] suitable for nuclear data bases (ENDF, etc).
+ 
+  xs  = <b>scattering_cross_section</b>(s)
+    Compute the total integrated scattering cross section
+ 
+  dr  = <b>dynamic_range</b>(s, Ei, angles)
+    Compute the dynamic range restricted to given incident energy and detector angles
+ 
+  sq  = <b>structure_factor</b>(s)
+    Compute the structure factor S(q)
+ 
+  [inc, multi] = <b>incoherent</b>(s, q, T, m, n)
+    Compute an estimate of the incoherent neutron scattering law in the gaussian approximation (Sjolander)
+ 
+  [coh] = <b>coherent</b>(inc, sq)
+    Compute an estimate of the coherent S(q,w) from an incoherent S(q,w) and a structure factor (Skold)
+ 
+  [gDOS,M]     = iData_Sab(s)
+    Compute the integrated multi-phonon DOS terms from an initial density of states (Sjolander)
+ 
+  <b>saveas</b>(s, filename, 'McStas'|'Sqw'|'inx'|'spe')
+    Save the S(q,w) as a McStas Sqw, INX or ISIS SPE file format
+ 
+  syntax:<br>    sqw2d = <b>iData_Sqw2D</b>(s)<br>  input:
+    s: can be a 2D iData or filename to generate a 2D Sqw object.
+ 
+  output: an <span class="helptopic">iData_Sqw2D</span> object</big></big></big></pre>
+      <big><big><big> </big></big></big></div>
+    <big><big><big> </big></big></big><!--after help --><!--seeAlso-->
+    <div class="footerlinktitle"><big><big><big>See also</big></big></big></div>
+    <big><big><big> </big></big></big>
+    <div class="footerlink"><big><big><big> <a href="iData.html">iData</a>,
+            <a href="iData_Sab.html">iData_Sab</a>, <a
+              href="iData_vDOS.html">iData_vDOS <br>
+            </a></big></big></big></div>
+    <big><big><big> </big></big></big><!--Class-->
+    <div class="sectiontitle"><big><big><big>Class Details</big></big></big></div>
+    <big><big><big> </big></big></big>
+    <table class="class-details">
+      <big><big><big> </big></big></big><tbody>
+        <big><big><big> </big></big></big><tr>
+          <big><big><big> </big></big></big><td
+            class="class-detail-label"><big><big><big>Superclasses</big></big></big></td>
+          <big><big><big> </big></big></big><td><big><big><big><a
+                    href="iData.html">iData</a></big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr>
+          <big><big><big> </big></big></big><td
+            class="class-detail-label"><big><big><big>Sealed</big></big></big></td>
+          <big><big><big> </big></big></big><td><big><big><big>false</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr>
+          <big><big><big> </big></big></big><td
+            class="class-detail-label"><big><big><big>Construct on load</big></big></big></td>
+          <big><big><big> </big></big></big><td><big><big><big>false</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big>
+      </tbody><big><big><big> </big></big></big>
+    </table>
+    <!--Constructors-->
+    <div class="sectiontitle"><big><big><big><a name="constructors"></a>Constructor
+
+            Summary </big></big></big></div>
+    <big><big><big> </big></big></big>
+    <table class="summary-list">
+      <big><big><big> </big></big></big><tbody>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="iData_Sqw2D.html">iData_Sqw2D</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>:
+                  create the iData_Sqw2D subclass&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big>
+      </tbody><big><big><big> </big></big></big>
+    </table>
+    <!--Properties-->
+    <div class="sectiontitle"><big><big><big><a name="properties"></a>Property
+            Summary </big></big></big></div>
+    <big><big><big> </big></big></big>
+    <table class="summary-list">
+      <big><big><big> </big></big></big><tbody>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.Alias%27%29">Alias</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>Holds
+                  all defined aliases&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.Command%27%29">Command</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>Matlab
+                  commands/history of the object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.Creator%27%29">Creator</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>Creator
+                  (program) name&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.Data%27%29">Data</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>Data
+                  storage area&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.Date%27%29">Date</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>Creation
+                  Date&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iData_Sqw2D.DisplayName%27%29">DisplayName</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>User
+                  name for handling data set as a variable and
+                  legends&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.Label%27%29">Label</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>User
+                  label (color, tag, ...)&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iData_Sqw2D.ModificationDate%27%29">ModificationDate</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>Modification
+                  Date&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.Source%27%29">Source</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>Origin
+                  of data (filename/path)&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.Tag%27%29">Tag</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>Unique
+                  ID&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.Title%27%29">Title</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>Data
+                  title&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.User%27%29">User</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>User
+                  ID&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iData_Sqw2D.UserData%27%29">UserData</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>User
+                  data storage area&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.class%27%29">class</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>Class
+                  of the object, e.g iData or other derived class&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big>
+      </tbody><big><big><big> </big></big></big>
+    </table>
+    <!--Methods-->
+    <div class="sectiontitle"><big><big><big><a name="methods"></a>Method
+            Summary </big></big></big></div>
+    <big><big><big> </big></big></big>
+    <table class="summary-list">
+      <big><big><big> </big></big></big><tbody>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.Bosify%27%29">Bosify</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>iData_Sqw2D:
+                  Bosify: apply the 'Bose' factor (detailed balance) to
+                  a classical data set.&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.Sab%27%29">Sab</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>iData_Sqw2D:
+                  Sab: convert a 2D S(q,w) into an S(alpha,beta). &nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iData_Sqw2D.Sqw2ddcs%27%29">Sqw2ddcs</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>iData_Sqw2D:
+                  Sqw2ddcs: convert a S(q,w) into a double differential
+                  cross-section (q,w)&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.abs%27%29">abs</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = abs(s) : absolute value of iData object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.acos%27%29">acos</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = acos(s) : computes the arc cosine of iData
+                  object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.acosh%27%29">acosh</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = acosh(s) : computes the inverse hyperbolic cosine of
+                  iData object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.asin%27%29">asin</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = asin(s) : computes the arc sine of iData
+                  object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.asinh%27%29">asinh</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = asinh(s) : computes the inverse hyperbolic sine of
+                  iData object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.atan%27%29">atan</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = atan(s) : computes the arc tangent of iData
+                  object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.atanh%27%29">atanh</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = atanh(s) : computes the inverse hyperbolic tangent
+                  of iData object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.avifile%27%29">avifile</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>f
+                  = avifile(s, filename, options) : save iData object
+                  into a movie&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.camproj%27%29">camproj</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>s
+                  = camproj(a,dim) : projection/radial integration of
+                  iData objects elements&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iData_Sqw2D.cart2sph%27%29">cart2sph</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>s
+                  = cart2sph(a,dim) : cartesian to polar/spherical
+                  representation of iData objects&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.cat%27%29">cat</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>s
+                  = cat(dim,a,...) : catenate iData objects elements
+                  along dimension&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.caxis%27%29">caxis</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>c
+                  = caxis(s, h) : Use the 2D/3D data as the colormap
+                  (CData property) in current object.&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.ceil%27%29">ceil</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = ceil(s) : upper integer round of iData object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.cell%27%29">cell</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>[content,fields]=cell(s)
+                  : convert iData objects into cells&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.char%27%29">char</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>c
+                  = char(s) : convert iData into character&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iData_Sqw2D.circshift%27%29">circshift</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b=circshift(a,
+                  rank, shift): shifts the axis of specified rank by a
+                  value&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.clabel%27%29">clabel</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = clabel(s,label) : Change iData C axis label&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.clim%27%29">clim</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = clim(s,[ cmin cmax ]) : Reduce iData C axis
+                  limits&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iData_Sqw2D.coherent%27%29">coherent</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>iData_Sqw2D:
+                  coherent: compute the coherent scattering cross
+                  section from the incoherent and structure factor, in
+                  the Skold approximation&nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.colon%27%29">colon</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = colon(s) : vector of arrays&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iData_Sqw2D.colormap%27%29">colormap</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>h=colormap(objects,
+                  colormaps, ..., options): Produce surfaces from iData
+                  2D objects with different colormaps&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.combine%27%29">combine</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>c
+                  = combine(a,b) : combines iData objects&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iData_Sqw2D.commandhistory%27%29">commandhistory</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>(s)
+                  : show the command history of iData object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.conj%27%29">conj</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = conj(s) : conjugate of iData object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.contour%27%29">contour</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>h
+                  = contour(s,option) : Plot a 2D/3D object as
+                  contour&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iData_Sqw2D.contour3%27%29">contour3</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>h
+                  = contour3(s,option) : Plot a 2D/3D object as 3D
+                  contour&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iData_Sqw2D.contourf%27%29">contourf</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>h
+                  = contourf(s,option) : Plot a 2D/3D object as filled
+                  contour&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.conv%27%29">conv</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>c
+                  = conv(a,b) : computes the convolution of iData
+                  objects&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.convn%27%29">convn</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>c
+                  = convn(a,b) : computes the convolution of an iData
+                  object with a response function &nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.copyobj%27%29">copyobj</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = copyobj(s) : makes a copy of iData object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iData_Sqw2D.corrcoef%27%29">corrcoef</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>c
+                  = corrcoef(a,b) : correlation coefficient with an
+                  iData object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.cos%27%29">cos</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = cos(s) : computes the cosine of iData object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.cosh%27%29">cosh</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = cosh(s) : computes the hyperbolic cosine of iData
+                  object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iData_Sqw2D.csvwrite%27%29">csvwrite</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>f
+                  = csvwrite(s, filename, options) : save iData object
+                  into a Comma Separated Values (CSV) file&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iData_Sqw2D.ctranspose%27%29">ctranspose</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = ctranspose(s) : complex conjugate transpose of iData
+                  object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.cumprod%27%29">cumprod</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>s
+                  = cumprod(a,dim) : computes the cumulative product of
+                  iData objects elements&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.cumsum%27%29">cumsum</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>s
+                  = cumsum(a,dim) : computes the cumulative sum of iData
+                  objects elements&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iData_Sqw2D.cumtrapz%27%29">cumtrapz</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>s
+                  = cumtrapz(a,dim) : computes the cumulative product of
+                  iData objects elements&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.cwt%27%29">cwt</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = cwt(s,dim,scales,wname,'wname',...) : Continuous
+                  wavelet transform&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iData_Sqw2D.ddcs2Sqw%27%29">ddcs2Sqw</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>iData_Sqw2D:
+                  ddcs2Sqw: convert a double differential cross-section
+                  (q,w) into a S(q,w)&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iData_Sqw2D.deBosify%27%29">deBosify</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>iData_Sqw2D:
+                  deBosify: remove Bose factor (detailed balance) from
+                  an 'experimental/quantum' data set.&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.deconv%27%29">deconv</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>c
+                  = deconv(a,b) : computes the deconvolution of iData
+                  objects&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.del2%27%29">del2</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = del2(s) : computes the Discrete Laplacian of iData
+                  object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.diff%27%29">diff</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = diff(s) : computes the difference long 1st axis of
+                  iData object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.disp%27%29">disp</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>(s)
+                  : display iData object (details)&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.display%27%29">display</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>d
+                  = display(s) : display iData object (from command
+                  line)&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.doc%27%29">doc</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>(iData):
+                  iData web page documentation&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.dog%27%29">dog</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>s=
+                  dog(dim,a) : split iData objects elements along
+                  dimension&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.dos%27%29">dos</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>iData_Sqw2D:
+                  dos: compute the generalised density of states (gDOS)
+                  from a S(q,w)&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.double%27%29">double</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>d
+                  = double(s) : convert iData into doubles&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iData_Sqw2D.dynamic_range%27%29">dynamic_range</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>iData_Sqw2D:
+                  dynamic_range: crop the S(|q|,w) to the available
+                  dynamic range&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.edit%27%29">edit</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>(s)
+                  : edit iData object Signal/Monitor&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.end%27%29">end</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = end(s,index,n) : end value for iData objects&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.eq%27%29">eq</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>c
+                  = eq(a,b) : equal comparison of iData objects&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.event%27%29">event</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>c
+                  = event(a) : build an event list &nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.exp%27%29">exp</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = exp(s) : exponential value of iData object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.fft%27%29">fft</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>c
+                  = fft(a) : computes the Discrete Fourier transform of
+                  iData objects&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iData_Sqw2D.fileattrib%27%29">fileattrib</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>[attribute,
+                  link] = fileattrib(s, field) : return a field
+                  Attribute&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.fill%27%29">fill</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>fill-in
+                  over missing data&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.find%27%29">find</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>d
+                  = find(s) : find iData signal non zeros values&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iData_Sqw2D.findfield%27%29">findfield</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>[match,
+                  types, nelements]=findfield(iData, field, option) :
+                  look for iData fields&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.findobj%27%29">findobj</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>[s,...]=findobj(s,...)
+                  : look for existing iData objects&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.findstr%27%29">findstr</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>[match,
+                  field]=findstr(s, str, option) : look for strings
+                  stored in iData&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.fits%27%29">fits</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>[pars,criteria,message,output]
+                  = fits(a, model, pars, options, constraints, ...) :
+                  fit data set on a model&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.fliplr%27%29">fliplr</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = fliplr(s) : Flip object in left/right
+                  direction&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.flipud%27%29">flipud</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = flipud(s) : Flip object in up/down direction&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.floor%27%29">floor</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = floor(s) : lower integer round of iData object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.full%27%29">full</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = full(s) : Convert iData object storage to full
+                  matrix&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.gdos%27%29">gdos</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>iData_Sqw2D:
+                  gdos: compute the generalised density of states (gDOS)
+                  from a S(q,w)&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.ge%27%29">ge</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>c
+                  = ge(a,b) : greater-than-or-equal comparison of iData
+                  objects&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.get%27%29">get</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>[...]
+                  = get(s, 'PropertyName', ...) : get iData object
+                  properties&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iData_Sqw2D.getalias%27%29">getalias</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>[link,
+                  label,names] = getalias(s, 'AliasName') : get iData
+                  alias&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.getaxis%27%29">getaxis</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>[val,
+                  lab] = getaxis(s, AxisIndex) : get iData axis value
+                  and label&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iData_Sqw2D.getframe%27%29">getframe</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>frame
+                  = getframe(s, dim, options) : create an iData object
+                  thumbnail/frame matrix&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iData_Sqw2D.gradient%27%29">gradient</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>g
+                  = gradient(a, dim) : computes the gradient
+                  (derivative) of iData objects&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.gt%27%29">gt</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>c
+                  = gt(a,b) : greater-than comparison of iData
+                  objects&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.help%27%29">help</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>c
+                  = help(s) : display iData information as a Dialogue
+                  window&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.hist%27%29">hist</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>(a,
+                  axis1, axis2, ...) computes the accumulated histogram
+                  from event data sets&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.iData%27%29">iData</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>_Sqw2D:
+                  iData: convert a iData_Sqw2D back to iData&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.ifft%27%29">ifft</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>c
+                  = ifft(a) : computes the inverse Discrete Fourier
+                  transform of iData objects&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.imag%27%29">imag</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = imag(s) : imaginary part of iData object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.image%27%29">image</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>h
+                  = image(r,g,b, option) : Plot up to 3 images overlayed
+                  on the RGB channels&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.imroi%27%29">imroi</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>:
+                  define a region of interest on a data set&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.imwrite%27%29">imwrite</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>f
+                  = imwrite(s, filename, format) : save iData object
+                  into an image&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iData_Sqw2D.incoherent%27%29">incoherent</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>iData_Sqw2D:
+                  incoherent: incoherent neutron scattering law estimate
+                  in the incoherent gaussian approximation&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.ind2sub%27%29">ind2sub</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>(s,index)
+                  : get indexed element in an iData array&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.interp%27%29">interp</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>[b...]
+                  = interp(s, ...) : interpolate iData object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iData_Sqw2D.intersect%27%29">intersect</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>[ai,bi]
+                  = intersect(a, b) : computes object intersection area
+                  and values&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.isempty%27%29">isempty</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>(s)
+                  : true for empty iData object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.isequal%27%29">isequal</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>c
+                  = isequal(a,b) : full numerical equality comparison of
+                  iData objects&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.isfield%27%29">isfield</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = isfield(s, field) : check existence of field/alias
+                  in iData objects&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iData_Sqw2D.isfinite%27%29">isfinite</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = isfinite(s) : True for finite iData object
+                  elements&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.isfloat%27%29">isfloat</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = isfloat(s) : True for float iData object
+                  elements&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.isinf%27%29">isinf</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = isinf(s) : True for infinite iData object
+                  elements&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iData_Sqw2D.isinteger%27%29">isinteger</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = isinterger(s) : True for integer iData object
+                  elements&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iData_Sqw2D.islogical%27%29">islogical</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = islogical(s) : True for logical iData object
+                  elements&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.isnan%27%29">isnan</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = isnan(s) : True for NaN iData object elements&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iData_Sqw2D.isnumeric%27%29">isnumeric</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = isnumeric(s) : True for numeric iData object
+                  elements&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.isreal%27%29">isreal</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = isreal(s) : True for real iData object
+                  elements&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iData_Sqw2D.isscalar%27%29">isscalar</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = isscalar(s) : True for scalar iData objects&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iData_Sqw2D.issparse%27%29">issparse</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = issparse(s) : True for sparse matrix iData
+                  object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iData_Sqw2D.isvector%27%29">isvector</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = isvector(s) : True for vector iData object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iData_Sqw2D.jacobian%27%29">jacobian</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>[b,
+                  j] = jacobian(a, new_axes, 'new_axes_labels'...) :
+                  computes the gradient (derivative) of iData
+                  objects&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.kmeans%27%29">kmeans</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>[b,c]
+                  = kmeans(X, k) : k-means clustering of iData
+                  object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.label%27%29">label</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = label(s, alias, label) : Change iData label for a
+                  given alias/axis&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.ldivide%27%29">ldivide</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>c
+                  = ldivide(a,b) : fast notation for combine iData
+                  objects&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.le%27%29">le</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>c
+                  = le(a,b) : lower-than-or-equal comparison of iData
+                  objects&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iData_Sqw2D.linspace%27%29">linspace</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>v
+                  = linspace(a,b,n) : creates a linearly spaced vector
+                  of objects&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.load%27%29">load</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>d
+                  = load(s, file, loader, ...): iData file loader&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.log%27%29">log</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = log(s) : natural logarithm value of iData
+                  object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.log10%27%29">log10</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = log10(s) : base 10 logarithm value of iData
+                  object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.logical%27%29">logical</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>d
+                  = logical(s) : convert iData into logical array&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iData_Sqw2D.logspace%27%29">logspace</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>v
+                  = logspace(a,b,n) : creates a logarithmically spaced
+                  vector of objects&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.lt%27%29">lt</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>c
+                  = lt(a,b) : lower-than comparison of iData
+                  objects&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.max%27%29">max</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>[m,id]
+                  = max(a,b, dim) : computes the maximum value of iData
+                  object(s)&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.mean%27%29">mean</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = mean(s, dim) : mean value of iData object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.median%27%29">median</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = median(s, dim) : median value of iData object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.mesh%27%29">mesh</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>h
+                  = mesh(s,option) : Plot a 2D/3D object as mesh&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iData_Sqw2D.meshgrid%27%29">meshgrid</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>s
+                  = meshgrid(a) : transforms an iData object so that its
+                  axes are grids&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.min%27%29">min</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>[m,id]
+                  = min(a,b, dim) : computes the maximum value of iData
+                  object(s)&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.minus%27%29">minus</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>c
+                  = minus(a,b) : computes the difference of iData
+                  objects&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iData_Sqw2D.mldivide%27%29">mldivide</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>c
+                  = mldivide(a,b) : a\b is fast notation for
+                  combine(a,b)&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.moments%27%29">moments</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>iData_Sqw2D:
+                  moments=moments(sqw, M, T, classical): compute Sqw
+                  moments/sum rules (harmonic frequencies)&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.mpower%27%29">mpower</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>c
+                  = mpower(a,b) : computes the matrix-power of iData
+                  objects&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iData_Sqw2D.mrdivide%27%29">mrdivide</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>c
+                  = mrdivide(a,b) : computes the division of iData
+                  objects&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.mtimes%27%29">mtimes</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>c
+                  = mtimes(a,b) : computes the matrix product of iData
+                  objects&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iData_Sqw2D.multi_phonons%27%29">multi_phonons</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>iData_Sqw2D:
+                  multi_phonons: compute the integrated multi-phonon
+                  intensity from a scattering law&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iData_Sqw2D.muphocor%27%29">muphocor</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>run
+                  MUPHOCOR on the given S(q,w) data set, incident
+                  wavelength and Temperature&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.ndims%27%29">ndims</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>d
+                  = ndims(s) : get the dimensionality of iData
+                  object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.ne%27%29">ne</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>c
+                  = ne(a,b) : not-equal comparison of iData
+                  objects&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.norm%27%29">norm</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = norm(s) : norm-2 of iData object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.not%27%29">not</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = not(s) : computes the logical 'not' of iData
+                  object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.ones%27%29">ones</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>s
+                  = ones(s,N,M,P,...) : initialize an iData array&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.pack%27%29">pack</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = pack(a) : compress iData storage to save
+                  memory&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iData_Sqw2D.parseparams%27%29">parseparams</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>iData_Sqw2D:
+                  parseparams: search for physical quantities in
+                  object.&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.pca%27%29">pca</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>[b]
+                  = pca(X, k) : Principal component analysis of iData
+                  object(s)&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.pcolor%27%29">pcolor</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>h
+                  = pcolor(s,option) : Plot a 2D/3D object as a flat
+                  matrix image&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.peaks%27%29">peaks</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>[half_width,
+                  center, amplitude, baseline] = peaks(s, dim, m) : peak
+                  position and width of iData&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.permute%27%29">permute</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>c
+                  = permute(a, order) : Permute object dimensions from
+                  iData objects/arrays&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.plot%27%29">plot</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>h
+                  = plot(s, method, ...) : plot iData object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.plot3%27%29">plot3</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>h
+                  = plot3(s,option) : Plot a 2D/3D object as separate
+                  points or semi-transparent volume&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.plus%27%29">plus</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>c
+                  = plus(a,b) : computes the sum of iData objects&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.power%27%29">power</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>c
+                  = power(a,b) : computes the power of iData
+                  objects&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.prod%27%29">prod</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>s
+                  = prod(a,dim) : computes the product of iData objects
+                  elements&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.publish%27%29">publish</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = publish(s) : export the Dataset object as an HTML
+                  document.&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.qw2phi%27%29">qw2phi</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>iData_Sqw2D:
+                  qw2phi: convert a S(q,w) into S(phi,tof) iData
+                  (scattering angle,ToF)&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.qw2phiw%27%29">qw2phiw</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>iData_Sqw2D:
+                  qw2phiw: convert a S(q,w) into a S(phi,w) iData
+                  (scattering angle)&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.qw2qt%27%29">qw2qt</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>iData_Sqw2D:
+                  qw2qt: convert a S(q,w) into a S(q,tof) iData
+                  (time-of-flight from sample)&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.rdivide%27%29">rdivide</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>c
+                  = rdivide(a,b) : computes the ratio of iData
+                  objects&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.real%27%29">real</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = real(s) : real value of iData object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iData_Sqw2D.reducevolume%27%29">reducevolume</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>h
+                  = reducevolume(s, factor) : reduce an iData object
+                  size&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.reshape%27%29">reshape</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>c
+                  = reshape(a) : reshape the object Signal&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.resize%27%29">resize</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>c
+                  = resize(a) : resize/rebin the object Signal&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.rmalias%27%29">rmalias</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>s
+                  = rmalias(s, AliasName) : removes iData aliases&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.rmaxis%27%29">rmaxis</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>s
+                  = rmaxis(s, Axis) : delete iData axes&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.rotate%27%29">rotate</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>s
+                  = rotate(a, theta) : computes the rotation of iData
+                  objects around the origin&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.round%27%29">round</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = round(s) : upper integer round of iData object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.save%27%29">save</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>f
+                  = save(s, filename, format, options) : save iData
+                  object into various data formats&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.saveas%27%29">saveas</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>iData_Sqw2D:
+                  saveas: save S(q,w) into a file.&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.scatter%27%29">scatter</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>h
+                  = scatter(s,option) : Plot a 2D/3D object as separate
+                  colored points&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iData_Sqw2D.scatter3%27%29">scatter3</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>h
+                  = scatter3(s,option) : Plot a 2D/3D object as separate
+                  colored points&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iData_Sqw2D.scattering_cross_section%27%29">scattering_cross_section</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>iData_Sqw2D:
+                  scattering_cross_section: compute the total neutron
+                  scattering cross section for&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.set%27%29">set</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>[s,...]
+                  = set(s, 'PropertyName', Propertyvalue, ...) : set
+                  iData properties&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iData_Sqw2D.setalias%27%29">setalias</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>[s,...]
+                  = setalias(s, AliasName, AliasLink, {AliasLabel}) :
+                  set iData aliases&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.setaxis%27%29">setaxis</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>s
+                  = setaxis(s, rank, alias, value) : set iData
+                  axes&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.sign%27%29">sign</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = sign(s) : sign of iData object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.sin%27%29">sin</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = sin(s) : computes the sine of iData object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.single%27%29">single</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>d
+                  = single(s) : convert iData into single floats&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.sinh%27%29">sinh</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = sinh(s) : computes the hyperbolic sine of iData
+                  object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.size%27%29">size</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>(s)
+                  : get iData object size (number of elements)&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.slice%27%29">slice</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>(s)
+                  : Plot a 2D/3D object with slice rendering&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.smooth%27%29">smooth</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>Z
+                  = smooth(Y) : smooth iData objects&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.sort%27%29">sort</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>s
+                  = sort(a,dim) : Sort iData objects axes in ascending
+                  or descending order&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.sparse%27%29">sparse</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = sparse(s) : Convert iData object storage to
+                  sparse&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.sqr%27%29">sqr</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>c
+                  = sqr(a) : computes the square of iData objects&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.sqrt%27%29">sqrt</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = sqrt(s) : square root value of iData object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.squeeze%27%29">squeeze</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>c
+                  = squeeze(a) : remove singleton dimensions from iData
+                  objects/arrays&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.std%27%29">std</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>[half_width,
+                  center] = std(s, dim) : standard deviation of
+                  iData&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.strfind%27%29">strfind</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>[match,
+                  field]=strfind(s, pattern, option) : search for
+                  pattern in iData&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iData_Sqw2D.structure_factor%27%29">structure_factor</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>iData_Sqw2D:
+                  structure_factor: compute the structure factor&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.subplot%27%29">subplot</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>h
+                  = subplot(s) : plot iData array as subplots&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iData_Sqw2D.subsasgn%27%29">subsasgn</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = subsasgn(a,index,b) : iData indexed
+                  assignement&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iData_Sqw2D.subsindex%27%29">subsindex</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>d
+                  = subsindex(s) : subscript index for iData
+                  objects&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.subsref%27%29">subsref</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = subsref(a,s) : iData indexed references&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.sum%27%29">sum</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>s
+                  = sum(a,dim) : computes the sum of iData objects
+                  elements&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.surf%27%29">surf</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>h
+                  = surf(s,option) : Plot a 2D/3D object as
+                  surface&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.surfc%27%29">surfc</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>h
+                  = surfc(s,option) : Plot a 2D/3D object as
+                  surface+contour&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.surfl%27%29">surfl</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>h
+                  = surfl(s,option) : Plot a 2D/3D object as surface
+                  with light&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iData_Sqw2D.symmetrize%27%29">symmetrize</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>iData_Sqw2D:
+                  symmetrize(s): extend the S(|q|,w) in both energy
+                  sides&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.tan%27%29">tan</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = tan(s) : computes the tangent of iData object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.tanh%27%29">tanh</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = tanh(s) : computes the hyperbolic tangent of iData
+                  object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iData_Sqw2D.thermochemistry%27%29">thermochemistry</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>iData_Sqw2D/thermochemistry:
+                  compute thermodynamic quantities for 2D S(q,w) data
+                  sets.&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.times%27%29">times</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>c
+                  = times(a,b) : computes the product of iData
+                  objects&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.title%27%29">title</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = title(s,label) : Change iData Signal label&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iData_Sqw2D.transpose%27%29">transpose</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = transpose(s) : non-conjugate transpose of iData
+                  object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.trapz%27%29">trapz</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>s
+                  = trapz(a,dim) : computes the integral of iData
+                  objects elements along given dimension&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.uminus%27%29">uminus</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = uminus(s) : opposite value of iData object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.union%27%29">union</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>[ai,bi]
+                  = union(a, b) : computes object union area and
+                  values&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.unique%27%29">unique</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>s
+                  = unique(a,dim) : set unique iData objects axes with
+                  no repetitions&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.uplus%27%29">uplus</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = uplus(s) : makes a copy of iData object&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.vdos%27%29">vdos</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>iData_Sqw2D:
+                  vdos: compute the 'true' vibrational density of
+                  states&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.version%27%29">version</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>v
+                  = version(iData): iData class version&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iData_Sqw2D.waterfall%27%29">waterfall</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>h
+                  = waterfall(s,option) : Plot a 2D/3D object as
+                  waterfall (side by side lines)&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.xcorr%27%29">xcorr</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>c
+                  = xcorr(a,b,shape) : computes the correlation of iData
+                  objects&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.xlabel%27%29">xlabel</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = xlabel(s,label) : Change iData X axis label&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.xlim%27%29">xlim</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = xlim(s,[ xmin xmax ]) : Reduce iData X axis
+                  limits&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+href="matlab:helpwin%28%27iData_Sqw2D.xmlwrite%27%29">xmlwrite</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>f
+                  = xmlwrite(s, filename) : save iData object into an
+                  XML file&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.ylabel%27%29">ylabel</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = ylabel(s,label) : Change iData Y axis label&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.ylim%27%29">ylim</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = ylim(s,[ ymin ymax ]) : Reduce iData Y axis
+                  limits&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.zeros%27%29">zeros</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>s
+                  = zeros(s,N,M,P,...) : initialize an iData array&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.zlabel%27%29">zlabel</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = zlabel(s,label) : Change iData Z axis label&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big><tr class="summary-item">
+          <big><big><big> </big></big></big><td class="attributes"><big><big><big>
+                  &nbsp; </big></big></big></td>
+          <big><big><big> </big></big></big><td class="name"><big><big><big><a
+                    href="matlab:helpwin%28%27iData_Sqw2D.zlim%27%29">zlim</a></big></big></big></td>
+          <big><big><big> </big></big></big><td class="m-help"><big><big><big>b
+                  = zlim(s,[ zmin zmax ]) : Reduce iData Z axis
+                  limits&nbsp;</big></big></big></td>
+          <big><big><big> </big></big></big></tr>
+        <big><big><big> </big></big></big>
+      </tbody><big><big><big> </big></big></big>
+    </table>
   </body>
 </html>
