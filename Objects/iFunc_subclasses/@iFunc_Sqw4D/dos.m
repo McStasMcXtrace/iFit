@@ -117,7 +117,7 @@ function [DOS, DOS_partials, s] = sqw_phonon_dos_4D(s, n, nQ)
     s.UserData.DOS = [];
   end
   
-  if isfield(s.UserData,'FREQ')
+  if isfield(s.UserData,'FREQ') && ~isempty(s.UserData.FREQ)
     nmodes = size(s.UserData.FREQ,2);
     if isempty(n) || n == 0
       n = max(nmodes*10, 100);
@@ -129,6 +129,11 @@ function [DOS, DOS_partials, s] = sqw_phonon_dos_4D(s, n, nQ)
   || (~isempty(n) && prod(size(s.UserData.DOS)) ~= n) ...
   || (isfield(s.UserData,'FREQ') && numel(s.UserData.FREQ) < 1e4)
     [maxFreq, DOS] = max(s); % get an estimate of the DOS and max Freq
+    
+    if isempty(n)
+        nmodes = size(s.UserData.FREQ,2);
+        n = max(nmodes*10, 100);
+    end
     % evaluate the 4D model onto a mesh filling the Brillouin zone [-0.5:0.5 ]
     qh=linspace(-0.5,0.5,min(nQ, 45));qk=qh; ql=qh; w=linspace(0.01,maxFreq*1.2,n);
     f=iData(s,[],qh,qk,ql',w);

@@ -31,7 +31,7 @@ function [m, DOS] = max(s)
     end
   end
   
-  [m,DOS] = max(s.UserData.maxFreq);
+  m = max(s.UserData.maxFreq);
   
   if nargout > 1 && ~isempty(s.UserData.FREQ)
     % get omega binning
