@@ -193,54 +193,13 @@ for index=1:size(FREQ,2)  % loop on modes
   % sum-up all contributions to signal: Fak Dorner 1997 Eq (2)
   signal = signal+ (n+1).*ZQ*4.*w.*sqrt(Gamma2)/pi ./ ((w.^2-W02).^2 + 4*w.^2.*Gamma2);
 end % for mode index
-clear POLAR W02 Gamma2 ZQ n w
-
-% compute the phonon DOS: total and partials. 
-% This requires that the Q range is large enough.
-Qrange1 = (max(HKL(:,1))-min(HKL(:,1)) >= 1 & ...
-           max(HKL(:,2))-min(HKL(:,2)) >= 1 & ...
-           max(HKL(:,3))-min(HKL(:,3)) >= 1);
-
-if Qrange1 && (~isfield(this.UserData,'DOS') || isempty(this.UserData.DOS)) && ...
-    size(HKL,1) >=500
-  disp([ strtok(this.Name) ': Computing the phonon DOS on ' num2str(size(HKL,1)) ' HKL points.' ]);
-  f = FREQ;
-  index= find(imag(f) == 0);
-  [dos_e,omega_e]=hist(f(index),100);
-  dos_factor = size(FREQ,2) / trapz(omega_e(:), dos_e(:));
-  dos_e = dos_e * dos_factor ; % 3n modes per unit cell
-  DOS=iData(omega_e,dos_e);
-  DOS.Title = [ 'Total DOS ' this.Name ];
-  DOS.Label = '';
-  xlabel(DOS,'Energy [meV]'); 
-  ylabel(DOS,[ 'Total DOS/unit cell ' strtok(this.Name) ]);
-  DOS.Error=0; this.UserData.DOS=DOS;
-  % partial phonon DOS (per mode)
-  pDOS = [];
-  for mode=1:size(FREQ,2)
-    f = FREQ(:,mode);
-    index = find(imag(f) == 0);
-    dos_e = hist(f(index),omega_e);
-    dos_e = dos_e * dos_factor ; % normalize to the total DOS
-    DOS=iData(omega_e,dos_e);
-    DOS.Title = [ 'Mode [' num2str(mode) '] DOS ' this.Name ]; 
-    DOS.Label = '';
-    xlabel(DOS,'Energy [meV]'); 
-    ylabel(DOS,[ 'Partial DOS[' num2str(mode) ']/unit cell ' strtok(this.Name) ]);
-    DOS.Error = 0;
-    pDOS = [ pDOS DOS ];
-  end
-  clear f index dos_e omega_e dos_factor DOS
-  this.UserData.DOS_partials=pDOS;
-  clear pDOS
-end
-
-clear HKL FREQ Qrange1
+clear POLAR W02 Gamma2 ZQ n w HKL FREQ
 
 % Amplitude
 if Amplitude
   signal = signal*Amplitude + Bkg;
 end
+signal(~isfinite(signal) | signal < 0 | signal > 1e10) = 0;
 if ~isempty(resize_me) && prod(resize_me) == numel(signal)
   signal = reshape(signal, resize_me); % initial 4D cube dimension = [ size(x) numel(t) ]
 end
