@@ -56,20 +56,27 @@ if isa(file, 'iFunc')
   action = [ action ' edit' ];
 end
 
+if strcmp(file, 'identify')
+  s = sqw_spinwave('defaults');
+  return;
+end
 if strcmp(file, 'defaults')
   file = 'MnFe4Si3.txt';
 end
 
 if isempty(file)
-  [filename, pathname, filterindex] = uigetfile('*.*', 'Pick a SpinWave template file');
+  [filename, pathname, filterindex] = uigetfile('*.*', 'Pick a SpinWave or CIF file');
   if isempty(filename) || isequal(filename, 0), return; end
   file = fullfile(pathname, filename);
 end
 
 % check if this is a CIF/CFL/ShelX file
 if isempty(template)
-  template = cif2spinwave(file);
-  if ~isempty(template), action = [ action ' edit' ]; end % NEED to edit the generated template
+  [p,f,e] = fileparts(file);
+  if strcmpi(e, '.cif')
+    template = cif2spinwave(file);
+    if ~isempty(template), action = [ action ' edit' ]; end % NEED to edit the generated template
+  end
 end
 
 if isempty(template)
@@ -180,8 +187,6 @@ s.UserData.executable = find_executable;
 if isempty(s.UserData.executable)
   error([ mfilename ': SPINWAVE is not available. Install it from <http://www-llb.cea.fr/logicielsllb/SpinWave/SW.html>' ])
 end
-
-disp([ 'Building: ' s.Name ' from ' file ])
 
 % get code to read xyzt and build HKL list and convolve DHO line shapes
 script_hkl = sqw_phonons_templates;
