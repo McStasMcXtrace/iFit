@@ -7,7 +7,8 @@ function [DOS, DOS_partials] = dos(s, n, nQ, method)
 %    DOS = dos(s)    returns the vibrational density of states (vDOS)
 %      the vDOS and the partials per mode are also stored in the model UserData.
 %    DOS = dos(s, n) 
-%      does the same with n-bins on the vDOS (n=100)
+%      does the same with n-bins on the vDOS (n=100). 
+%      'n' can also be a vector of energy values.
 %    DOS = dos(s, n, nQ) 
 %      does the same with nQ-bins for the HKL average (n=21)
 %    DOS = dos(s, n, nQ, method) 
@@ -21,7 +22,7 @@ function [DOS, DOS_partials] = dos(s, n, nQ, method)
 %
 % input:
 %   s:      S(q,w) 4D model (iFunc_Sqw4D)
-%   n:      number of energy values (integer). Optional. Default is nmodes*10
+%   n:      number/vector of energy values (scalar/vector). Optional. Default is nmodes*10
 %   nQ:     number of Q-grid binning (integer). Optional. Default is 21
 %   method: optional, can be '4D' (default) or 'powder' or 'fast'
 %
@@ -85,6 +86,13 @@ function [DOS, DOS_partials] = dos(s, n, nQ, method)
       clear FREQ
     end
 
+    % transfer UserData stuff
+    for f={'properties','calc','configuration','options','FORCES','dir','maxFreq'}
+      if isfield(s.UserData, f{1})
+        DOS.UserData.(f{1}) = s.UserData.(f{1});
+      end
+    end
+  
     if ~isempty(inputname(1))
       s.UserData.DOS          = DOS;
       s.UserData.DOS_partials = DOS_partials;
@@ -181,11 +189,21 @@ function [DOS, pDOS] = dos_getdos_from_FREQ(FREQ, n, Name)
   % compute the DOS histogram
   index           = find(imag(FREQ) == 0);
   dos_e           = FREQ(index);
-  omega_e         = linspace(min(dos_e(:)),max(dos_e(:))*1.2, n);
-  [dos_e,omega_e] = hist(dos_e,omega_e);
+  if isscalar(n)
+    omega_e         = linspace(min(dos_e(:)),max(dos_e(:))*1.2, n);
+    dn = 0;
+  else
+    omega_e = [ n(1)-1 sort(n) n(end)+1 ];  % first bin accumulates below, and last, above.
+    n = numel(omega_e)-2;
+  end
+  dos_e           = hist(dos_e,omega_e);
   N3              = size(FREQ,2); % number of modes = 3N
   dos_factor      = N3 / trapz(omega_e(:), dos_e(:));
   dos_e           = dos_e * dos_factor ; % 3n modes per unit cell
+  if n == numel(omega_e)-2
+    omega_e = omega_e(2:(end-1));
+    dos_e   = dos_e(2:(end-1));
+  end
   
   % create the object
   DOS                   = iData(omega_e,dos_e);
@@ -201,8 +219,11 @@ function [DOS, pDOS] = dos_getdos_from_FREQ(FREQ, n, Name)
   for mode=1:nmodes
     f1 = FREQ(:,mode);
     index = find(imag(f1) == 0);
-    dos_e = hist(f1(index),omega_e, n);
+    dos_e = hist(f1(index),omega_e);
     dos_e = dos_e * dos_factor ; % normalize to the total DOS
+    if n == numel(omega_e)-2
+      dos_e   = dos_e(2:(end-1));
+    end
     
     d       = iData(omega_e,dos_e);
     d.Title = [ 'Mode [' num2str(mode) '] DOS ' Name ]; 
@@ -214,4 +235,4 @@ function [DOS, pDOS] = dos_getdos_from_FREQ(FREQ, n, Name)
     pDOS      = [ pDOS d ];
   end
   
-    s.UserData.DOS_partials= pDOS;
+  s.UserData.DOS_partials= pDOS;

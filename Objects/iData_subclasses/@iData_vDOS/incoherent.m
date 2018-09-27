@@ -90,7 +90,7 @@ function [Sqw, Iqt, Wq, Tall] = incoherent(gw, varargin)
     pars.t = Sqw_getT(gw);
   end
   if isempty(pars.m) || pars.m<=0
-    pars.m = Sqw_getT(gw, {'Masses','Molar_mass','Mass','Weight'});
+    pars.m = sum(Sqw_getT(gw, {'Molar_mass','Masses','Mass','Weight'}));
   end
  
   % fail when missing information
@@ -171,6 +171,7 @@ function [Sqw, Iqt, Wq, Tall] = incoherent(gw, varargin)
   Sqw      = Sqw';
   setalias(Sqw, 'Temperature', pars.t, 'Temperature [K]');
   setalias(Sqw, 'Weight',      pars.m, 'Molar masses [g/mol]');
+  setalias(Sqw, 'Molar_mass',  pars.m, 'Molar masses [g/mol]');
   setalias(Sqw, 'DebyeWallerCoeficient', gamma, ...
       'Debye-Waller coefficient gamma=<u^2> [Angs^2]. Debye-Waller function is 2W(q)=gamma*q^2. Debye-Waller factor is exp(-gamma.q^2)');
   Sqw.Title= [ 'Elastic scattering function S(q,w) [p=0] from ' titl ];
@@ -178,6 +179,13 @@ function [Sqw, Iqt, Wq, Tall] = incoherent(gw, varargin)
   Sqw.Label= [ 'S(q,w) [p=0]' ];
   xlabel(Sqw, 'wavevector [Angs-1]'); ylabel(Sqw, 'energy [meV]');
   Sqw      = iData_Sqw2D(Sqw);
+  
+  % transfer UserData stuff
+  for f={'properties','calc','configuration','options','FORCES','dir','maxFreq'}
+    if isfield(gw.UserData, f{1})
+      Sqw.UserData.(f{1}) = gw.UserData.(f{1});
+    end
+  end
   
   % determine the I(q,t) p=0 term in [q,w] space -------------------------------
   % from T1 we can compute f(t) as the inverse FFT

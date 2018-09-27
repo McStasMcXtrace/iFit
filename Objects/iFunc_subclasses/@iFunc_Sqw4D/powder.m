@@ -121,6 +121,7 @@ r.Expression = { ...
 r.Name = [ 'powder(' a.Name ')' ];
 r.Description = [ 'powder(' a.Description ')' ];
 r.Parameters  = a.Parameters;
+r.ParameterValues = a.ParameterValues;
 r.Dimension   = 2;
 r = iFunc(r);
 r = iFunc_Sqw2D(r);
