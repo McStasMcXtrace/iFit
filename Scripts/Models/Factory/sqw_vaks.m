@@ -7,6 +7,8 @@ function signal=sqw_vaks(varargin)
 %      Hamiltonian, valid for e.g. |k|<.3 rlu in a cubic 
 %      crystal and provides energies of TA1,TA2,LA,TO1 and TO2 modes.
 %
+% MODEL CREATION
+%
 % To build a model, you may use:
 %   sqw_vaks('gui')     displays a dialogue box
 %   sqw_vaks            same as above ('gui')
@@ -26,13 +28,11 @@ function signal=sqw_vaks(varargin)
 %     Aa= (C11-C12-2C44)/rho
 %   with rho=density of the crystal [g/cm3]
 %
-% Example:
-% s=sqw_vaks('KTaO3'); qh=linspace(0,.5,50);qk=qh; ql=qh; w=linspace(0.01,10,51);
-% f=iData(s,[],qh,qk,ql,w); scatter3(log(f(:,:,1,:)),'filled');
+% MODEL EVALUATION
 %
-% References: E. Farhi et al, EPJB, 15 (2000) pp 615-623. DOI: 10.1007/s100510051164 
-%             A.K. Tagantsev et al, Nature Comm, 4 (2013) 2229. DOI: 10.1038/ncomms3229
-%             V.G. Vaks, Introduction to the Microscopic Theory of Ferroelectrics (Nauka, Moscow, 1973)
+% Once created, the model is used as:
+%   value = model(p, qh, qk, ql, w)
+%   value = iData(model, p, qh, qk, ql, w)
 %
 % input:  p: sqw_vaks model parameters (double)
 %           p(1)=At transverse acoustic [meV2/rlu2]
@@ -54,6 +54,14 @@ function signal=sqw_vaks(varargin)
 %         w:  axis along energy in meV (double)
 %    signal: when values are given, a guess of the parameters is performed (double)
 % output: signal: model value
+%
+% Example:
+% s=sqw_vaks('KTaO3'); qh=linspace(0,.5,50);qk=qh; ql=qh; w=linspace(0.01,10,51);
+% f=iData(s,[],qh,qk,ql,w); scatter3(log(f(:,:,1,:)),'filled');
+%
+% References: E. Farhi et al, EPJB, 15 (2000) pp 615-623. DOI: 10.1007/s100510051164 
+%             A.K. Tagantsev et al, Nature Comm, 4 (2013) 2229. DOI: 10.1038/ncomms3229
+%             V.G. Vaks, Introduction to the Microscopic Theory of Ferroelectrics (Nauka, Moscow, 1973)
 %
 % Version: $Date$
 % See also iData, iFunc/fits, iFunc/plot, gauss, sqw_phonons, sqw_sine3d

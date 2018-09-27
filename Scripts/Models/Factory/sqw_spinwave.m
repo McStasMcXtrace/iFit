@@ -1,6 +1,8 @@
 function s = sqw_spinwave(file, action)
 % sqw_spinwave: build a SpinWave model (S. Petit/LLB)
 %
+% MODEL CREATION
+%
 % Performs a SPINWAVE calculation using S. Petit/LLB code. The input file can be:
 %
 %   * a spinwave input file, such as MnFe4Si3.txt (in Data)
@@ -19,8 +21,8 @@ function s = sqw_spinwave(file, action)
 % The access to COD requires a valid network connection.
 %
 % The SPINWAVE model is built as S(q,w) 4D, or 2D when 'action' contains 'powder'.
-% 
-% You may edit the SPINWAVE input file anytime with: sqw_spinwave(model, 'edit')
+% The 4D model does not support the 'powder' iFunc_Sqw4D method, so the spinwave
+%   should instead use sqw_spinwave('file','powder')
 %
 % model = sqw_spinwave(file)
 %
@@ -30,12 +32,43 @@ function s = sqw_spinwave(file, action)
 %              and 'edit' to edit the SpinWave input file.
 %
 % output:
-%   model: SpinWave model [iFunc_Sqw4D or iFunc_Sqw2D (powder)]
+%   model: SpinWave model [iFunc_Sqw4D or iFunc_Sqw2D (powder)]. 
+%   The model parameters are set as '$par' symbols in the spinwave template, which
+%   you can edit with sqw_spinwave(mode, 'edit'). Remember to SAVE before closing.
+%
+% MODEL EVALUATION
+%
+% You may edit the SPINWAVE input file anytime with: sqw_spinwave(model, 'edit')
+%   Remember to SAVE before closing.
+%
+% Powder 2D case: Once created, the model is used as:
+%   value = model(p, q, w)
+%   value = iData(model, p, q, w)
+%
+% input:  p: spinwave model parameters set as '$par' symbols in the spinwave template (double)
+%         q:  axis along Q in [Angs-1] (row,double)
+%         w:  axis along energy in meV (column,double)
+%
+% Crystal 4D case: Once created, the model is used as:
+%   value = model(p, qh, qk, ql, w)
+%   value = iData(model, p, qh, qk, ql, w)
+%
+% input:  p: spinwave model parameters set as '$par' symbols in the spinwave template (double)
+%         qh: axis along QH in rlu (row,double)
+%         qk: axis along QK in rlu (column,double)
+%         ql: axis along QL in rlu (page,double)
+%         w:  axis along energy in meV (double)
+%    signal: when values are given, a guess of the parameters is performed (double)
+% output: signal: model value
 %
 % Example:
 %   m = sqw_spinwave('defaults');
 %   m = sqw_spinwave('MnFe4Si3.txt'); S=iData(m, [], 0:.05:4, 0,0, 0:0.5:20);
 %   plot(log10(S));
+%
+%   m = sqw_spinwave('MnFe4Si3.txt','powder'); 
+%   q = linspace(0.01:.25:3); w=0:.5:20;
+%   S=iData(m, [], q, w); S=iData_Sqw2D(S);
 %
 % Reference: SpinWave, S. Petit LLB <http://www-llb.cea.fr/logicielsllb/SpinWave/SW.html>
 % See also: read_cif, sqw_phonons, sqw_spinw

@@ -7,6 +7,8 @@ function y=ngauss(varargin)
 %   The HalfWidth parameters are the Gaussian square root variances (Sigma). 
 %   The 'true' half width are thus 1.177*HalfWidth.
 %
+% MODEL CREATION
+%
 % You may build a model using any of:
 %   ngauss('defaults')        builds a 2 Gaussians model
 %   ngauss(n)                 builds an n Gaussians model
@@ -14,6 +16,8 @@ function y=ngauss(varargin)
 %   ngauss([ ... ])           use a 3n+1 values parameters for n Gaussians
 %
 % Reference: http://en.wikipedia.org/wiki/Gaussian_function
+%
+% MODEL EVALUATION
 %
 % input:  p: multiple Gaussian model parameters (double)
 %            p = [ Amplitude1 Centre1 HalfWidth1 ... BackGround ]

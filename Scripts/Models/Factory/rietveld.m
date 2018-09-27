@@ -7,6 +7,8 @@ function y = rietveld(sample, instr, varargin)
 % The model can then be used for refinement as a usual fit model:
 %   fits(model, data_set, parameters, options, constraints)
 %
+% MODEL CREATION
+%
 % Any powder structure can be entered, and there is no limitation on the number
 %   of parameters/atoms in the cell. The powder/crystal model takes into account 
 %     Biso (thermal motions), charge, occupancy, spin
@@ -52,6 +54,11 @@ function y = rietveld(sample, instr, varargin)
 % * the string 'defaults' or 'gui' to use a default model, or pop-up dialogue box.
 %
 % * All additional arguments are sent to the instrument model.
+%
+% MODEL EVALUATION
+%
+% The dimensionality and axes of the model is that of the monitor in the instrument, 
+% and its parameters are that from the sample with that of the instrument.
 %
 % Example: refine a NaCaAlF powder structure with the templateDIFF McStas instrument
 %    Sample.title = 'Na2Ca3Al2F14';

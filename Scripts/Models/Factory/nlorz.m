@@ -6,6 +6,8 @@ function y=nlorz(varargin)
 %
 %   This expression assumes that the Amplitudes are independent from the Widths.
 %
+% MODEL CREATION
+%
 % You may build a model using any of:
 %   nlorz('defaults')       builds a 2 Lorentzians model
 %   nlorz(n)                builds an n Lorentzians model
@@ -13,6 +15,8 @@ function y=nlorz(varargin)
 %   nlorz([ ... ])          use a 3n+1 values parameters for n Lorentzians
 %
 % Reference: http://en.wikipedia.org/wiki/Lorenztian_function
+%
+% MODEL EVALUATION
 %
 % input:  p: multiple Lorentzian model parameters (double)
 %            p = [ Amplitude1 Centre1 HalfWidth1 ... BackGround ]

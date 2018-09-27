@@ -11,6 +11,8 @@ function y=gaussnd(varargin)
 % This model has no background, is centered, and has maximum intensity set to 1.
 % The parameters correspond to widths.
 %
+% MODEL CREATION
+%
 % gaussnd([w1 w2 ... wn ])
 %   builds a 'n' Dimensional orthogonal Gaussian with widths [w1 w2 ...]
 % gaussnd(M)
@@ -21,6 +23,8 @@ function y=gaussnd(varargin)
 %   builds a 2D Gaussian
 % gaussnd and gaussnd('gui')
 %   shows a Dialogue to enter the Gaussian matrix, widths or other option.
+%
+% MODEL EVALUATION
 %
 % input:  p: Gaussian model matrix (double, symmetric ndims*ndims)
 %            p = [ ndims(G) * ndims(G) values ]

@@ -7,6 +7,8 @@ function r=powder(a)
 %       'reciprocal_cell' in the input model.
 %
 %   Once created, the powder Model can be evaluated on a (q,w) range as any 2D model.
+%   value = model(p, q, w)
+%   value = iData(model, p, q, w)
 %
 % input:
 %  model: a 4D S(q,w) model (iFunc)

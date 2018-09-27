@@ -6,7 +6,8 @@ function signal=sqw_spinw(varargin)
 %   converted into an iFunc model for HKL evaluation. The intensity is computed
 %   for a neutron scattering experiment.
 %
-% Model creation:
+% MODEL CREATION:
+%
 %   To create the Model, the following syntax should be used:
 %       s = sqw_spinw(sq, options);
 %   or
@@ -21,12 +22,13 @@ function signal=sqw_spinw(varargin)
 %   You can get a default model (squareAF) with:
 %       s = sqw_spinw('defaults');
 %
-% Model evaluation (once created)
-% Once the model is created, you may evaluate it using the standard evaluation call:
-%   value = s(p, h,k,l,w)
-% or
-%   f=iData(s,s.p,qh,qk,ql,w); % to get an iData object back
-% with:
+% MODEL EVALUATION (once created):
+%
+%   Once the model is created, you may evaluate it using the standard evaluation call:
+%     value = s(p, h,k,l,w)
+%   or
+%     f=iData(s,p,qh,qk,ql,w); % to get an iData object back
+%   with:
 %         p: sqw_spinw model parameters (double)
 %             p(1)=Gamma       energy broadening [meV]
 %             p(2)=Temperature of the material [K]
@@ -42,9 +44,9 @@ function signal=sqw_spinw(varargin)
 %
 % Example:
 %   sq = sw_model('squareAF',2,0);  % create the SW object
-%   s=sqw_spinw(sq);                % create the Model
-%   qh=linspace(0.01,1.5,30);qk=qh; ql=qh'; w=linspace(0.01,10,50);
-%   f=iData(s,s.p,qh,qk,ql,w); plot(log(f(:,:,1,:))); % evaluate and plot
+%   s  = sqw_spinw(sq);                % create the Model
+%   qh = linspace(0.01,1.5,30);qk=qh; ql=qh'; w=linspace(0.01,10,50);
+%   f  = iData(s,s.p,qh,qk,ql,w); plot(log(f(:,:,1,:))); % evaluate and plot
 %
 % Reference: https://en.wikipedia.org/wiki/Phonon
 % SpinW <https://github.com/tsdev/spinw>
