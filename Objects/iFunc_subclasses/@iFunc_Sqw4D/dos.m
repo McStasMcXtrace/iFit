@@ -1,32 +1,30 @@
-function [DOS, DOS_partials] = dos(s, n, nQ)
+function [DOS, DOS_partials] = dos(s, n, nQ, method)
 % iFunc_Sqw4D: dos: compute the density of states (vDOS)
 %
 %  The routine can be used with 4D models to compute the vibrational density of 
 %   states (vDOS), aka phonon spectrum.
 %
 %    DOS = dos(s)    returns the vibrational density of states (vDOS)
-%      the vDOS and the partials per mode are also stored in the UserData.
-%    DOS = dos(s, n) does the same with n-bins on the vDOS (n=100)
-%    DOS = dos(s, n, nQ) does the same with nQ-bins for the HKL average (n=45)
-%
-%    When the DOS has already been computed, it is used as is. To force a
-%    recomputation, specify a different number of bins 'n' or set:
-%      s.UserData.DOS=[];
-%    or use DOS = dos(s,'force') or dos(s, 0)
+%      the vDOS and the partials per mode are also stored in the model UserData.
+%    DOS = dos(s, n) 
+%      does the same with n-bins on the vDOS (n=100)
+%    DOS = dos(s, n, nQ) 
+%      does the same with nQ-bins for the HKL average (n=21)
+%    DOS = dos(s, n, nQ, method) 
+%      specifies the method among '4d', 'powder' and 'fast' estimate.
 %
 %    To smooth the resulting distribution, use:
 %      sDOS = smooth(DOS); plot(sDOS);
 %
-%  You may also get a quick estimate of the total DOS by using:
-%    [m, DOS] = max(s);
-%
 % input:
-%   s:  S(q,w) 4D model (iFunc_Sqw4D)
-%   n:  number of energy values (integer). Optional. Default is nmodes*10
-%   nQ: number of Q-grid binning (integer). Optional. Default is 45
+%   s:      S(q,w) 4D model (iFunc_Sqw4D)
+%   n:      number of energy values (integer). Optional. Default is nmodes*10
+%   nQ:     number of Q-grid binning (integer). Optional. Default is 21
+%   method: optional, can be '4D' (default) or 'powder' or 'fast'
 %
 % output:
-%   DOS:   DOS(w)   (1D iData versus energy)
+%   DOS:          DOS(w)   (1D iData versus energy)
+%   DOS_partials: DOS(w) per mode (1D iData array, versus energy)
 %
 % See also: iFunc_Sqw4D/max
 %
@@ -40,9 +38,9 @@ function [DOS, DOS_partials] = dos(s, n, nQ)
 
   DOS=[]; DOS_partials=[];
   if nargin == 0, return; end
-  if nargin < 2, n = []; end
-  if nargin < 3, nQ = []; end
-  if isempty(nQ), nQ=45; end
+  if nargin < 2,  n  = []; end
+  if nargin < 3,  nQ = []; end
+  if nargin < 4, method='4D'; end
   
   % handle array of objects
   if numel(s) > 1
@@ -55,163 +53,153 @@ function [DOS, DOS_partials] = dos(s, n, nQ)
     return
   end
 
-  % compute
-  [DOS, DOS_partials, s] = sqw_phonon_dos_4D(s, n, nQ);
+  % compute frequencies
+  switch lower(method)
+  case '4d'
+    FREQ = sqw_phonon_dos_4D(s, nQ);
+  case 'fast'
+    FREQ=[];
+  otherwise
+    FREQ = sqw_phonon_dos_powder(s, nQ);
+  end
+  
+  if isempty(FREQ)
+    try
+      [~,DOS] = max(s);
+    end
+  else
+    % compute DOS
+    [DOS, DOS_partials] = dos_getdos_from_FREQ(FREQ, n, s.Name);
+    clear FREQ
+  end
+  
+  
+  
   if ~isempty(inputname(1))
+    s.UserData.DOS          = DOS;
+    s.UserData.DOS_partials = DOS_partials;
     assignin('caller',inputname(1),s);
   end
   
   % plot
   if nargout == 0 && ~isempty(DOS)
     fig=figure; 
-    DOS = s.UserData.DOS;
     xlabel(DOS,[ 'Energy' ]);
     % plot any partials first
-    if isfield(s.UserData,'DOS_partials') && numel(s.UserData.DOS_partials) > 0
-      d=s.UserData.DOS_partials;
-      for index=1:numel(d)
-        this_pDOS=d(index);
-        this_pDOS{1} = this_pDOS{1};
-        d(index) = this_pDOS;
-      end
-      h=plot(d);
-      if iscell(h), h=cell2mat(h); end
-      set(h,'LineStyle','--');
-      hold on
-    end
+    h=plot(DOS_partials);
+    if iscell(h), h=cell2mat(h); end
+    set(h,'LineStyle','--');
+    hold on
+
     % plot total DOS and rotate
     h=plot(DOS); set(h,'LineWidth',2);
     set(fig, 'NextPlot','new');
   end
-  
-% ------------------------------------------------------------------------------
 
-function [DOS, DOS_partials, s] = sqw_phonon_dos_4D(s, n, nQ)
+% ------------------------------------------------------------------------------
+function FREQ = sqw_phonon_dos_4D(s, nQ)
   % sqw_phonon_dos_4D: compute the phonon/vibrational density of states (vDOS)
   %
   % input:
   %   s: phonon S(q,w) (4D) Model or Data set (iFunc/iData)
   %
   % output:
-  %   DOS:          phonon/vibrational density of states (iData)
-  %   DOS_partials: phonon/vibrational density of state partials (iData array)
+  %   FREQ:         mode frequencies
   %
   % Example: DOS=sqw_phonon_dos(sqw_cubic_monoatomic('defaults'))
   % (c) E.Farhi, ILL. License: EUPL.
+
+  FREQ = [];
+  if isempty(nQ), nQ=21; end
   
+  qh = linspace(-0.5,0.5,nQ);qk=qh; ql=qh; 
+  w  = linspace(0.01,100,5);
+  try
+    f=feval(s,[],qh,qk,ql',w);  % this updates the object with mode frequencies
+    clear f
+  end
+  
+  % get bare frequencies
+  if isfield(s.UserData, 'FREQ')
+    FREQ = s.UserData.FREQ;
+  end
+  
+% ------------------------------------------------------------------------------
+function FREQ = sqw_phonon_dos_powder(s, nQ)
+  
+  FREQ = [];
+  if isempty(nQ), nQ=41; end
+  
+  % create a 4D hklw space grid
+  qx=[]; qy=qx; qz=qx;
+  w  = linspace(0.01,100,5); % no need for this energy axis, we use bare FREQ
+  n=100; % n points at constant |Q|
+  x = linspace(-0.5, 0.5, nQ);  % in [rlu]
+  for index=1:numel(x)
+    XYZ = randn(3,n);
+    XYZ = x(index)*bsxfun(@rdivide,XYZ,sqrt(sum(XYZ.^2,1)));
+    qx = [ qx XYZ(1,:) ];
+    qy = [ qy XYZ(2,:) ];
+    qz = [ qz XYZ(3,:) ];
+  end
+  clear XYZ
+
+  try
+    f = feval(s,[],qx,qy,qz,w);
+    clear f
+  end
+  
+  if isfield(s.UserData, 'FREQ')
+    FREQ = s.UserData.FREQ;
+  end
+  
+% ------------------------------------------------------------------------------
+function [DOS, pDOS] = dos_getdos_from_FREQ(FREQ, n, Name)
+
   % NOTE: for partial DOS per atom 'i', see Reichardt Eq (2.9) p 4
   %   see also: Schober JNR 2014 Eq (9.105)
   %   g_i(hw) = sum_j |e_i,j|^2 delta(hw - hw_j(q))
   % i.e. we weight the DOS with polarisation vector norms per atom
 
-  DOS = []; f=[]; DOS_partials = [];
-  
-  % must be 4D iFunc or iData
-  if ~nargin
-    return
+  nmodes = size(FREQ,2);
+  if isempty(n)
+    n = nmodes*10;
   end
   
-  if nargin < 2, n =[]; end
-  if nargin < 3, nQ=45; end
-  if strcmp(n, 'force') || (isscalar(n) && n == 0)
-    s.UserData.DOS = [];
-  end
+  % compute the DOS histogram
+  index           = find(imag(FREQ) == 0);
+  dos_e           = FREQ(index);
+  omega_e         = linspace(min(dos_e(:)),max(dos_e(:))*1.2, n);
+  [dos_e,omega_e] = hist(dos_e,omega_e);
+  N3              = size(FREQ,2); % number of modes = 3N
+  dos_factor      = N3 / trapz(omega_e(:), dos_e(:));
+  dos_e           = dos_e * dos_factor ; % 3n modes per unit cell
   
-  if isfield(s.UserData,'FREQ') && ~isempty(s.UserData.FREQ)
-    nmodes = size(s.UserData.FREQ,2);
-    if isempty(n) || n == 0
-      n = max(nmodes*10, 100);
-    end
-  end
+  % create the object
+  DOS                   = iData(omega_e,dos_e);
+  DOS.Title             = [ 'Total DOS ' Name ];
+  DOS.Label             = '';
+  DOS.Error             = 0;
+  xlabel(DOS,'Energy [meV]'); 
+  ylabel(DOS,[ 'Total DOS/unit cell ' strtok(Name) ]);
+  DOS= iData_vDOS(DOS);
   
-  % first get a quick estimate of the max frequency
-  if  ~isfield(s.UserData,'DOS') || isempty(s.UserData.DOS) ...
-  || (~isempty(n) && prod(size(s.UserData.DOS)) ~= n) ...
-  || (isfield(s.UserData,'FREQ') && numel(s.UserData.FREQ) < 1e4)
-    [maxFreq, DOS] = max(s); % get an estimate of the DOS and max Freq
+  % partial phonon DOS (per mode) when possible
+  pDOS   = [];
+  for mode=1:nmodes
+    f1 = FREQ(:,mode);
+    index = find(imag(f1) == 0);
+    dos_e = hist(f1(index),omega_e, n);
+    dos_e = dos_e * dos_factor ; % normalize to the total DOS
     
-    if isempty(n)
-        nmodes = size(s.UserData.FREQ,2);
-        n = max(nmodes*10, 100);
-    end
-    % evaluate the 4D model onto a mesh filling the Brillouin zone [-0.5:0.5 ]
-    qh=linspace(-0.5,0.5,min(nQ, 45));qk=qh; ql=qh; w=linspace(0.01,maxFreq*1.2,n);
-    f=iData(s,[],qh,qk,ql',w);
-    % when fail: force to evaluate on a coarser grid
-    if ~isfield(s.UserData,'FREQ') || isempty(s.UserData.FREQ)
-      qk=linspace(-0.5,0.5,min(ceil(nQ/2), 20)); qh=qk; ql=qk; 
-      w =linspace(0.01,maxFreq*1.2,min(ceil(n/2), 21));
-      f =iData(s,[],qh,qk,ql',w);
-    end
-    s.UserData.DOS     = [];  % make sure we re-evaluate again on a finer grid
+    d       = iData(omega_e,dos_e);
+    d.Title = [ 'Mode [' num2str(mode) '] DOS ' Name ]; 
+    d.Label = '';
+    d.Error = 0;
+    xlabel(d,'Energy [meV]'); 
+    ylabel(d,[ 'Partial DOS[' num2str(mode) ']/unit cell ' strtok(Name) ]);
+    d = iData_vDOS(d);
+    pDOS      = [ pDOS d ];
   end
   
-  try % may fail with mem Allocation as POLAR is large
-  if (~isfield(s.UserData,'DOS') || isempty(s.UserData.DOS)) ...
-    && isfield(s.UserData,'FREQ') && ~isempty(s.UserData.FREQ)
-    
-    % compute the DOS histogram
-    index           = find(imag(s.UserData.FREQ) == 0);
-    dos_e           = s.UserData.FREQ(index);
-    omega_e         = linspace(min(dos_e(:)),max(dos_e(:))*1.2, n);
-    [dos_e,omega_e] = hist(dos_e,omega_e);
-    N3              = size(s.UserData.FREQ,2); % number of modes = 3N
-    dos_factor      = N3 / trapz(omega_e(:), dos_e(:));
-    dos_e           = dos_e * dos_factor ; % 3n modes per unit cell
-    
-    % create the object
-    DOS                   = iData(omega_e,dos_e);
-    DOS.Title             = [ 'Total DOS ' s.Name ];
-    DOS.Label             = '';
-    DOS.Error             = 0;
-    xlabel(DOS,'Energy [meV]'); 
-    ylabel(DOS,[ 'Total DOS/unit cell ' strtok(s.Name) ]);
-    s.UserData.DOS= iData_vDOS(DOS);
-    % partial phonon DOS (per mode) when possible
-    pDOS = [];
-    for mode=1:nmodes
-      f1 = s.UserData.FREQ(:,mode);
-      index = find(imag(f1) == 0);
-      dos_e = hist(f1(index),omega_e, n);
-      dos_e = dos_e * dos_factor ; % normalize to the total DOS
-      
-      DOS       = iData(omega_e,dos_e);
-      DOS.Title = [ 'Mode [' num2str(mode) '] DOS ' s.Name ]; 
-      DOS.Label = '';
-      DOS.Error = 0;
-      xlabel(DOS,'Energy [meV]'); 
-      ylabel(DOS,[ 'Partial DOS[' num2str(mode) ']/unit cell ' strtok(s.Name) ]);
-      DOS = iData_vDOS(DOS);
-      pDOS      = [ pDOS DOS ];
-    end
     s.UserData.DOS_partials= pDOS;
-    clear f1 index dos_e omega_e dos_factor DOS pDOS
-  elseif ~isfield(s.UserData,'FREQ') || isempty(s.UserData.FREQ)
-    error([ mfilename ': Can not compute the density of states as the bare frequencies are not available (UserData.FREQ)' ]);
-  end
-  catch ME
-    disp(getReport(ME))
-    disp([ mfilename ': fine DOS evaluation failed. Using coarse evaluation. No partials.' ])
-  end
-  
-  if ~isempty(inputname(1))
-    assignin('caller',inputname(1),s);
-  end
-
-  % get the DOS and other output
-  if isfield(s.UserData,'DOS') && ~isempty(s.UserData.DOS)
-    % make it an iData vDOS flavour to access e.g. thermochemistry
-    DOS = s.UserData.DOS;
-    if isfield(s.UserData,'properties')
-      DOS.UserData.properties = s.UserData.properties;
-    end
-    if isfield(s.UserData,'maxFreq')
-      DOS.UserData.maxFreq = s.UserData.maxFreq;
-      DOS = setalias(DOS, 'maxFreq', s.UserData.maxFreq, 'Maximum phonon frequency');
-    end
-  end
-  if isfield(s.UserData,'DOS_partials') && numel(s.UserData.DOS_partials)
-    DOS_partials = s.UserData.DOS_partials;
-  end
-
-   
