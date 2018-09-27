@@ -177,12 +177,13 @@ for index=1:size(FREQ,2)  % loop on modes
         else  % when no b_coh, we only show DW*exp(-iQr)
           ZQ = ZQ + DW .* exp(-i*Q*positions(atom,:)');
         end
-      end
+      end % atom
       clear DW
       ZQ = abs(ZQ).^2;
     end
-  catch
-    disp('Failed intensity estimate (mode polarisation)');
+  catch ME
+    disp([ 'Failed intensity estimate (mode polarisation) for mode ' num2str(index) ]);
+    disp(getReport(ME))
     ZQ = 1;
   end
   if ~is_event
