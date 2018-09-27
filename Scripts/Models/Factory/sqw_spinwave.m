@@ -148,7 +148,7 @@ end
 % Search for $xx and %xx tokens in file, as well as '(%par,value)' and '($par,value)'
 
 % get parameters with default values or not
-tokens1 = regexp(template, '\([\$|\%]\w*[=|:|,|\s]\d+\.?\d*\)','match');
+tokens1 = regexp(template, '\([\$|\%]\w*[=|:|,|\s][+|-]?\d+\.?\d*\)','match');
 tokens2 = regexp(template, '[\$|\%]\w*','match');
 
 % clean up tokens: remove '%$():=,' and get default values or 0
