@@ -16,6 +16,9 @@ function [DOS, DOS_partials] = dos(s, n, nQ, method)
 %    To smooth the resulting distribution, use:
 %      sDOS = smooth(DOS); plot(sDOS);
 %
+%    If the DOS has already been calculated, it is re-used. To force calculation
+%    use a non-0 value or 'force' for 'n'.
+%
 % input:
 %   s:      S(q,w) 4D model (iFunc_Sqw4D)
 %   n:      number of energy values (integer). Optional. Default is nmodes*10
@@ -52,34 +55,42 @@ function [DOS, DOS_partials] = dos(s, n, nQ, method)
     end
     return
   end
+  
+  if isfield(s.UserData,'DOS') && ~isempty(s.UserData.DOS)
+    DOS = s.UserData.DOS;
+  end
+  if isfield(s.UserData,'DOS_partials') && numel(s.UserData.DOS_partials)
+    DOS_partials = s.UserData.DOS_partials;
+  end
+  
+  if ~isempty(n) || isempty(DOS)
 
-  % compute frequencies
-  switch lower(method)
-  case '4d'
-    FREQ = sqw_phonon_dos_4D(s, nQ);
-  case 'fast'
-    FREQ=[];
-  otherwise
-    FREQ = sqw_phonon_dos_powder(s, nQ);
-  end
-  
-  if isempty(FREQ)
-    try
-      [~,DOS] = max(s);
+    % compute frequencies
+    switch lower(method)
+    case '4d'
+      FREQ = sqw_phonon_dos_4D(s, nQ);
+    case 'fast'
+      FREQ=[];
+    otherwise
+      FREQ = sqw_phonon_dos_powder(s, nQ);
     end
-  else
-    % compute DOS
-    [DOS, DOS_partials] = dos_getdos_from_FREQ(FREQ, n, s.Name);
-    clear FREQ
-  end
-  
-  
-  
-  if ~isempty(inputname(1))
-    s.UserData.DOS          = DOS;
-    s.UserData.DOS_partials = DOS_partials;
-    assignin('caller',inputname(1),s);
-  end
+    
+    if isempty(FREQ)
+      try
+        [~,DOS] = max(s);
+      end
+    else
+      % compute DOS
+      [DOS, DOS_partials] = dos_getdos_from_FREQ(FREQ, n, s.Name);
+      clear FREQ
+    end
+
+    if ~isempty(inputname(1))
+      s.UserData.DOS          = DOS;
+      s.UserData.DOS_partials = DOS_partials;
+      assignin('caller',inputname(1),s);
+    end
+  end % else re-use existing stored DOS
   
   % plot
   if nargout == 0 && ~isempty(DOS)
@@ -162,6 +173,7 @@ function [DOS, pDOS] = dos_getdos_from_FREQ(FREQ, n, Name)
   % i.e. we weight the DOS with polarisation vector norms per atom
 
   nmodes = size(FREQ,2);
+  if ischar(n), n=[]; end
   if isempty(n)
     n = nmodes*10;
   end
