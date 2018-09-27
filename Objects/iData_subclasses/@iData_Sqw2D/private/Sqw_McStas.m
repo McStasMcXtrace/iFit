@@ -50,7 +50,7 @@ if std(dq) > mean(dq) % not a regular grid (std would be 0)
   q = linspace(min(q), max(q), min(size(this, 2)*5, round((max(q)-min(q))/mean(dq))));
 end
 
-parameters = get(this, 'parameters');
+parameters = parseparams(this);
 % call Sqw_parameters so that we have the final parameters and the comments
 this = Sqw_parameters(this, 'sqw');
 
@@ -120,11 +120,15 @@ if isstruct(parameters)
     comment = label(this, name);
     %[name, comment] = strtok(fields{field_index});
     comment = strtrim(comment);
+    t=comment; t(~isstrprop(t,'print')) = ' '; comment=t;
     if isfield(parameters, name)
       try
         val = get(this, name);
       catch
         val = parameters.(name);
+      end
+      if isnumeric(val) && numel(val) > 1
+        val = mat2str(val);
       end
       if isnumeric(val)
         if isfinite(val)
@@ -132,6 +136,9 @@ if isstruct(parameters)
           parameters.(name)=NaN;
         end
       else
+        if     iscell(val) && ischar(val{1}), val = sprintf('%s ', val{:});
+        elseif iscell(val) && isnumeric(val{1}), val = sprintf('%f ', val{:});
+        end
         t=val; t(~isstrprop(t,'print')) = ' '; val=t;
         fprintf(fid, '# %-13s %-s %s\n', name, val, comment);
         parameters.(name)=NaN;
