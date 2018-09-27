@@ -100,6 +100,7 @@ classdef iFunc_Sqw4D < iFunc
     function f = iFunc(self)
       % iFunc_Sqw4D: convert a single iFunc_Sqw4D back to iFunc
       f = iFunc;
+      warning off MATLAB:structOnObject
       self = struct(self);
       for p = fieldnames(self)'
         f.(p{1}) = self.(p{1});
