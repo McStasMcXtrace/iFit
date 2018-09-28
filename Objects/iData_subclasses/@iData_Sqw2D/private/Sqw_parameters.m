@@ -264,7 +264,8 @@ function [s, parameters] = Sqw_parameters_chemicalformula(s, parameters)
   
   if (isfield(parameters, 'At_number') && isnumeric(parameters.At_number)) ...
     && (~isfield(s, 'ChemicalFormula') || ~ischar(get(s,'ChemicalFormula'))) ...
-    && (~isfield(parameters, 'ChemicalFormula') || ~ischar(parameters.ChemicalFormula))
+    && (~isfield(parameters, 'ChemicalFormula') || ~ischar(parameters.ChemicalFormula)) ...
+    && all(parameters.At_number > 0)
     parameters.ChemicalFormula = sprintf('%s ', Z{parameters.At_number});
   end
 
