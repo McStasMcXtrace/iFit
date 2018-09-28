@@ -170,7 +170,7 @@ str = num2str(sqw);
 str(:,end+1) = sprintf('\n');
 str = str';
 str = str(:)';
-fprintf(fid, '%s\n', str);
+fprintf(fid, '%s', str);
 fprintf(fid, '# end of Sqw file %s\n', filename);
 fclose(fid);
 fprintf(1,'DONE %s\n', filename);
