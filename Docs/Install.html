@@ -96,6 +96,8 @@
 
 
 
+
+
         release of iFit</a><span style="font-weight: bold; font-style:
         italic;"><span style="font-weight: bold;"> </span>page for more
         information on the features and limitations.</span><br>
@@ -126,6 +128,8 @@
       (optional)</h4>
     <div style="margin-left: 40px;"> The CIF/CFL/PCR/ShelX file support
       is available when the <span style="font-style: italic;">cif2hkl </span>program
+
+
 
 
 
@@ -205,6 +209,8 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
+
       Live DVD</a> ready-to-run system with <i>Phonons</i>, <span
       style="font-style: italic;">McStas</span> and <i>iFit</i>
     (standalone) all pre-installed, to try-out.<br>
@@ -229,6 +235,8 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
         this version.</li>
       <li>our <a
 href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/illcs-livedvd/">ILL/CS
+
+
 
 
 
@@ -284,12 +292,16 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
+
                   bits</a>:</span></span><span style="font-weight:
               bold;"> </span><br>
             <span style="font-style: italic;">Debian: </span><b>see </b><b><a
                 href="#mozTocId73823">below</a></b>.<br>
             <span style="font-style: italic;">Other: </span>Use the <a
 href="http://ifit.mccode.org/Downloads/binary/glnx64/MCRInstaller-amd64.bin">MCR
+
+
 
 
 
@@ -314,6 +326,8 @@ href="http://ifit.mccode.org/Downloads/binary/glnx64/MCRInstaller-amd64.bin">MCR
           <td style="vertical-align: top;"><span style="font-weight:
               bold;"><span style="color: rgb(204, 51, 204);"><a
                   href="http://ifit.mccode.org/Downloads/binary/win64">64
+
+
 
 
 
@@ -356,6 +370,8 @@ href="http://ifit.mccode.org/Downloads/binary/glnx64/MCRInstaller-amd64.bin">MCR
 
 
 
+
+
                   bits</a>:</span></span><span style="font-weight:
               bold;"> </span>Use the iFit.app, which <b><i>includes</i></b>
             the MCR (no need to install it separately). Use
@@ -366,8 +382,8 @@ href="http://ifit.mccode.org/Downloads/binary/glnx64/MCRInstaller-amd64.bin">MCR
           <td valign="top"><a
 href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/illcs-livedvd/"><img
                 src="images/cd-to-usb-icon-120x120.png" title="iso-usb"
-                alt="iso-usb" border="2" height="50" width="50"
-                align="middle"></a> ISO/USB<br>
+                alt="iso-usb" border="2" align="middle" height="50"
+                width="50"></a> ISO/USB<br>
           </td>
           <td valign="top">For all computers and virtual machines. Get
             it <a
@@ -379,7 +395,21 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
             or <a href="https://www.qemu.org/">QEmu</a>
             <meta http-equiv="content-type" content="text/html;
               charset=windows-1252">
-            <span style="color: rgb(51, 51, 51); font-family: Consolas, Menlo, Monaco, &quot;Lucida Console&quot;, &quot;Liberation Mono&quot;, &quot;DejaVu Sans Mono&quot;, &quot;Bitstream Vera Sans Mono&quot;, &quot;Courier New&quot;, monospace; font-size: 14.4px; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: normal; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; white-space: pre; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; background-color: rgb(248, 248, 248); text-decoration-style: initial; text-decoration-color: initial; display: inline !important; float: none;">qemu-system-x86_64 -boot d -cdrom ubuntu-ifit.iso -m <i>8192</i></span><i><br>
+            <span style="color: rgb(51, 51, 51); font-family: Consolas,
+              Menlo, Monaco, &quot;Lucida Console&quot;,
+              &quot;Liberation Mono&quot;, &quot;DejaVu Sans Mono&quot;,
+              &quot;Bitstream Vera Sans Mono&quot;, &quot;Courier
+              New&quot;, monospace; font-size: 14.4px; font-style:
+              normal; font-variant-ligatures: normal; font-variant-caps:
+              normal; font-weight: normal; letter-spacing: normal;
+              orphans: 2; text-align: start; text-indent: 0px;
+              text-transform: none; white-space: pre; widows: 2;
+              word-spacing: 0px; -webkit-text-stroke-width: 0px;
+              background-color: rgb(248, 248, 248);
+              text-decoration-style: initial; text-decoration-color:
+              initial; display: inline !important; float: none;">qemu-system-x86_64
+
+              -boot d -cdrom ubuntu-ifit.iso -m <i>8192</i></span><i><br>
             </i></td>
         </tr>
         <tr>
@@ -414,6 +444,8 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
     <p>Debian-class systems (e.g. Ubuntu, Mint, Debian, etc...) are our
       best choice. To get a complete new system, first install e.g.
       Ubuntu (see <a href="https://www.ubuntu.com/download/desktop">here</a>),
+
+
       then apply the following procedure to add iFit. </p>
     <h4><a name="mozTocId73823" class="mozTocH4"></a><span
         style="font-weight: bold;">On Debian Linux systems</span><span
@@ -427,135 +459,291 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
     </blockquote>
     <blockquote>
       <blockquote>
-        <pre><meta http-equiv="content-type" content="text/html; charset=windows-1252">% cd /etc/apt/sources.list.d<br>% sudo wget <a href="http://packages.mccode.org/debian/mccode-xenial.list">http://packages.mccode.org/debian/mccode-xenial.list</a><br></pre>or for Ubuntu 14.04 Trusty/Debian 8 Jessie<br><meta http-equiv="content-type" content="text/html; charset=windows-1252"><pre>% sudo wget <a href="http://packages.mccode.org/debian/mccode.list">http://packages.mccode.org/debian/mccode.list</a><br></pre>then:<br><pre>% sudo apt-get update<br>% sudo apt-get install ifit mcrinstaller libxp6<br></pre>and for <a href="Models_Phonons.html">Phonons</a>, <a href="McStas.html">McStas</a> and nuclear engineering stuff<br><pre>% sudo apt-get install ifit-phonons pyne mcstas-suite</pre></blockquote><p>This can also be done from e.g. <i>Synaptic</i> (menu
-      Settings/repositories) and <i>Ubuntu Software Center</i> (menu
-      Edit/Software Sources) ; tab Other Software/Add... Then select
-      packages <i>ifit</i> and <i>mcrinstaller</i> and install them.<br>
-      If you use the Debian package installers (.deb), nothing else is
-      required. Double click the deb packages (MCR, then iFit) and wait.
-      Then you can start iFit from the Dash or from menu <span style="font-style: italic;">Applications/Education/iFit</span>.
-      Drag-n-drop of data files is possible on the iFit launcher, as
-      well as on operator icons from <span style="font-weight: bold;
-        font-style: italic;">/usr/local/ifit/</span>.<br>
+        <pre><meta http-equiv="content-type" content="text/html; charset=windows-1252">% cd /etc/apt/sources.list.d<br>% sudo wget <a href="http://packages.mccode.org/debian/mccode-xenial.list">http://packages.mccode.org/debian/mccode-xenial.list</a><br></pre>
+        or for Ubuntu 14.04 Trusty/Debian 8 Jessie<br>
+        <meta http-equiv="content-type" content="text/html;
+          charset=windows-1252">
+        <pre>% sudo wget <a href="http://packages.mccode.org/debian/mccode.list">http://packages.mccode.org/debian/mccode.list</a><br></pre>
+        then:<br>
+        <pre>% sudo apt-get update<br>% sudo apt-get install ifit mcrinstaller libxmu6 libxt6 libxp6 libxpm4
+</pre>
+        and for <a href="Models_Phonons.html">Phonons</a>, <a
+          href="McStas.html">McStas</a> and nuclear engineering stuff<br>
+        <pre>% sudo apt-get install ifit-phonons pyne mcstas-suite</pre>
+      </blockquote>
+      <p>This can also be done from e.g. <i>Synaptic</i> (menu
+        Settings/repositories) and <i>Ubuntu Software Center</i> (menu
+        Edit/Software Sources) ; tab Other Software/Add... Then select
+        packages <i>ifit</i> and <i>mcrinstaller</i> and install them.<br>
+        If you use the Debian package installers (.deb), nothing else is
+        required. Double click the deb packages (MCR, then iFit) and
+        wait. Then you can start iFit from the Dash or from menu <span
+          style="font-style: italic;">Applications/Education/iFit</span>.
+        Drag-n-drop of data files is possible on the iFit launcher, as
+        well as on operator icons from <span style="font-weight: bold;
+          font-style: italic;">/usr/local/ifit/</span>.<br>
+      </p>
+      <p>You can also install the packages manually by directly
+        accessing our <a
+          href="http://packages.mccode.org/debian/dists/stable/main/">Deb
+
+
+          repository</a>, get the Debian packages, e.g. ifit-x.y and
+        mcrinstaller, then (fix the file names):<br>
+      </p>
+      <pre style="margin-left: 40px;">% sudo dpkg -i ifit-x.y-amd64.deb mcrinstaller-7.13-amd64.deb</pre>
+      <p>If you do not have Matlab, the installer will ask you if you
+        wish to use iFit as a replacement, then will automatically
+        create a link:<br>
+      </p>
+      <pre style="margin-left: 40px;">% sudo ln -s /usr/local/ifit/ifit /usr/local/bin/matlab</pre>
+    </blockquote>
+    <h4><a name="mozTocId220105" class="mozTocH4"></a><span
+        style="font-weight: bold;">On Other Linux systems</span><span
+        style="font-weight: bold;"></span> <br>
+    </h4>
+    <blockquote>
+      <p>We recommend to install the MCR in<span style="font-style:
+          italic;"> /opt/MATLAB</span> (requires administrative
+        privileges).<br>
+      </p>
+    </blockquote>
+    <blockquote>
+      <pre style="margin-left: 40px;">chmod u+x MCRINstaller.bin<br>sudo ./MCRInstaller.bin<br></pre>
+      <p>Prefer the <span style="font-style: italic;">/opt/MATLAB</span>
+        location. <br>
+        Then install the iFit stand-alone package where-ever you wish
+        (/usr/local/ifit is recommended). Launch <span
+          style="font-style: italic;">ifit</span> from there.<br>
+        If you have not installed the MCR in <span style="font-style:
+          italic;">/opt/MATLAB</span>, you need to define the MCRROOT
+        environment variable to its location prior to starting iFit :<br>
+      </p>
+      <pre style="margin-left: 40px;">export MCRROOT=/opt/MATLAB/MATLAB_Compiler_Runtime/v713/<br>ifit<br></pre>
+      <p>If you do not have Matlab and wish to use iFit as a
+        replacement, create a link:<br>
+      </p>
+      <pre style="margin-left: 40px;">% sudo ln -s /usr/local/ifit/ifit /usr/local/bin/ifit<br>% sudo ln -s /usr/local/ifit/ifit /usr/local/bin/matlab</pre>
+    </blockquote>
+    <h4><a name="mozTocId350927" class="mozTocH4"></a><span
+        style="font-weight: bold;">On MacOSX systems</span><br>
+    </h4>
+    <blockquote>
+      <p>The prepared iFit App contains the Matlab Runtime which does <i><b>not</b></i>
+        need to be installed separately.</p>
+    </blockquote>
+    <blockquote>
+      <p>To Open the iFit App the first time and pass the authentication
+        step, press the left Ctrl key and click the iFit icon (after
+        extraction from the ZIP). Then select the Open button.</p>
+      <p>You can also place the iFit directory in <span
+          style="font-style: italic;">/Applications</span> or <span
+          style="font-style: italic;">/usr/local/ifit</span>, and create
+        links, especially if you do not have Matlab and wish to use iFit
+        as a replacement:<br>
+      </p>
+      <pre style="margin-left: 40px;">% sudo ln -s /usr/local/ifit/ifit /usr/local/bin/ifit<br>% sudo ln -s /usr/local/ifit/ifit /usr/local/bin/matlab<br></pre>
+      Recent MacOSX systems (El capitan, Sierra) provide a Java 7 or 8
+      version, whereas the standalone requires a Java 6. Install the
+      Java 6 from <a
+        href="http://ifit.mccode.org/Downloads/binary/mac64/javaforosx.dmg">here</a>,
+      then install iFit standalone.<br>
+      <br>
+      <font color="#ff0000">Warning</font>: install all DFT codes for
+      Phonons is not easy under Mac OSX. We then recommend you run a
+      VirtualBox machine (see below).<br>
+    </blockquote>
+    <div style="margin-left: 40px;"> </div>
+    <h4><a name="mozTocId719276" class="mozTocH4"></a><span
+        style="font-weight: bold;">On Windows systems</span><br>
+    </h4>
+    <blockquote>
+      <p>Install the MCR by double-clicking the corresponding <span
+          style="font-style: italic;">MCRInstaller.exe</span>. The
+        install location defaults to <span style="font-style: italic;">C:\Program
+
+
+          Files\MATLAB</span>. Then use the iFit installer.<br>
+      </p>
+      <p>To launch <a href="iFit.html">iFit</a>, click on the 'ifit'
+        icon in the installation directory. You can also drag-n-drop
+        files on the iFit icon to directly import data files and plot
+        them (Linux and Windows systems). This also works when using the
+        operators short cuts included in the iFit standalone directory
+        (under Linux).<br>
+      </p>
+      <p><font color="#ff0000">Warning</font>: install all DFT codes for
+        Phonons is not easy under Windows. We then recommend you run a
+        VirtualBox machine (see below), or use the Windows Subsystem
+        just below.<br>
+      </p>
+      <p><b>Alternate install: Using the Windows Subsystem for Linux
+          (WSL): Ubuntu</b> / Windows 10<br>
+      </p>
+      <p>When running Windows 10, you can install a <a
+          href="https://docs.microsoft.com/en-us/windows/wsl/install-win10">full
+
+          Linux/Ubuntu subsystem</a>. <br>
+        Then follow the above instructions for Debian/Ubuntu and get
+        packages from <a
+          href="http://packages.mccode.org/debian/dists/stable/main/">our
+
+          Debian main repository</a>.<br>
+        Install then with e.g.:<br>
+      </p>
+      <pre># sudo apt-add-repository -y <meta http-equiv="content-type" content="text/html; charset=windows-1252">http://packages.mccode.org/debian stable main<br># sudo update<br># sudo apt install ifit mcrinstaller libxmu6 libxt6 libxp6 libxpm4<br></pre>
+      and optionally<br>
+      <pre># sudo apt install ifit-phonons</pre>
+      Then launch iFit (and other commands) from the Linux subsystem
+      'bash':<br>
+      <pre># ifit</pre>
+      <p></p>
+    </blockquote>
+    <h3><a name="mozTocId903368" class="mozTocH3"></a>Installation - ISO
+      / USB / DVD / VirtualMachine<br>
+    </h3>
+    <p>It is possible to use an ISO distribution containing <i>iFit,</i>
+      <i>Phonons</i> and <i>McStas,</i> all pre-installed. Get it <a
+href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/illcs-livedvd/">HERE</a>.
+      <br>
     </p>
-    <p>You can also install the packages manually by directly accessing
-      our <a href="http://packages.mccode.org/debian/dists/stable/main/">Deb
-        repository</a>, get the Debian packages, e.g. ifit-x.y and
-      mcrinstaller, then (fix the file names):<br>
-    </p>
-    <pre style="margin-left: 40px;">% sudo dpkg -i ifit-x.y-amd64.deb mcrinstaller-7.13.deb</pre>
-    <p>If you do not have Matlab, the installer will ask you if you wish
-      to use iFit as a replacement, then will automatically create a
-      link:<br>
-    </p>
-    <pre style="margin-left: 40px;">% sudo ln -s /usr/local/ifit/ifit /usr/local/bin/matlab</pre></blockquote>
-    <h4><a name="mozTocId220105" class="mozTocH4"></a><span style="font-weight: bold;">On Other Linux systems</span><span style="font-weight: bold;"></span> <br></h4><blockquote><p>We recommend to install the
-      MCR in<span style="font-style: italic;"> /opt/MATLAB</span>
-      (requires administrative privileges).<br>
-    </p></blockquote>
-    <blockquote><pre style="margin-left: 40px;">chmod u+x MCRINstaller.bin<br>sudo ./MCRInstaller.bin<br></pre>
-    <p>Prefer the <span style="font-style: italic;">/opt/MATLAB</span>
-      location. <br>
-      Then install the iFit stand-alone package where-ever you wish
-      (/usr/local/ifit is recommended). Launch <span style="font-style:
-        italic;">ifit</span> from there.<br>
-      If you have not installed the MCR in <span style="font-style:
-        italic;">/opt/MATLAB</span>, you need to define the MCRROOT
-      environment variable to its location prior to starting iFit :<br>
-    </p>
-    <pre style="margin-left: 40px;">export MCRROOT=/opt/MATLAB/MATLAB_Compiler_Runtime/v713/<br>ifit<br></pre>
-    
-    <p>If you do not have Matlab and wish to use iFit as a replacement,
-      create a link:<br>
-    </p>
-    <pre style="margin-left: 40px;">% sudo ln -s /usr/local/ifit/ifit /usr/local/bin/ifit<br>% sudo ln -s /usr/local/ifit/ifit /usr/local/bin/matlab</pre></blockquote>
-    <h4><a name="mozTocId350927" class="mozTocH4"></a><span style="font-weight: bold;">On MacOSX systems</span><br></h4><blockquote><p>The
-      prepared iFit App contains the Matlab Runtime which does <i><b>not</b></i>
-      need to be installed separately.</p></blockquote><blockquote><p>To Open the iFit App the first
-      time and pass the authentication step, press the left Ctrl key and
-      click the iFit icon (after extraction from the ZIP). Then select
-      the Open button.</p>
-    <p>You can also place the iFit directory in <span style="font-style: italic;">/Applications</span> or <span style="font-style: italic;">/usr/local/ifit</span>, and create
-      links, especially if you do not have Matlab and wish to use iFit
-      as a replacement:<br>
-    </p>
-    <pre style="margin-left: 40px;">% sudo ln -s /usr/local/ifit/ifit /usr/local/bin/ifit<br>% sudo ln -s /usr/local/ifit/ifit /usr/local/bin/matlab<br></pre>
-    Recent MacOSX systems (El capitan, Sierra) provide a Java 7 or 8
-    version, whereas the standalone requires a Java 6. Install the Java
-    6 from <a href="http://ifit.mccode.org/Downloads/binary/mac64/javaforosx.dmg">here</a>,
-    then install iFit standalone.<br><br><font color="#ff0000">Warning</font>: install all DFT codes for Phonons is not easy under Mac OSX. We then recommend you run a VirtualBox machine (see below).<br>
-    </blockquote><div style="margin-left: 40px;"> </div>
-    <h4><a name="mozTocId719276" class="mozTocH4"></a><span style="font-weight: bold;">On Windows systems</span><br></h4><blockquote><p>Install the MCR by double-clicking the corresponding <span style="font-style: italic;">MCRInstaller.exe</span>. The install
-      location defaults to <span style="font-style: italic;">C:\Program
-        Files\MATLAB</span>. Then use the iFit installer.<br>
-    </p>
-    <p>To launch <a href="iFit.html">iFit</a>, click on the 'ifit' icon
-      in the installation directory. You can also drag-n-drop files on
-      the iFit icon to directly import data files and plot them (Linux
-      and Windows systems). This also works when using the operators
-      short cuts included in the iFit standalone directory (under
-      Linux).<br></p><p><font color="#ff0000">Warning</font>: install all DFT codes for Phonons is not easy under Windows. We then recommend you run a VirtualBox machine (see below).</p></blockquote><h3><a name="mozTocId903368" class="mozTocH3"></a>Installation - ISO / USB / DVD / VirtualMachine<br></h3><p>It is possible to use an ISO distribution containing <i>iFit,</i> <i>Phonons</i> and <i>McStas,</i> all pre-installed. Get it <a href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/illcs-livedvd/">HERE</a>. <br></p><h4><a name="mozTocId117671" class="mozTocH4"></a>Using a Virtual machine<br></h4><blockquote><p>Install e.g. <a href="http://virtualbox.org/">VirtualBox</a>. Then import <a href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/illcs-livedvd/">our VirtualBox Appliance</a> (OVA). This is a pre-installed Virtual machine with iFit, Phonons, McStas and PyNE. Assign it e.g. 4 Gb memory, 30 Gb disk, and all your CPU cores.<br></p></blockquote><h4><a name="mozTocId673490" class="mozTocH4"></a>Using the ISO to burn a DVD</h4><blockquote><p>Even though many computers do not have anymore DVD slots, you may still use a DVD on some machines. Use right-click on the ISO file and select "Burn disk" (on Windows and Debian/Ubuntu), or Disk Utility (on Mac OSX, Image menu). Then restart your computer and select the DVD as booting media (usually Esc, F1 or F12 key, or Alt/EFI menu on MacOSX). This way you use the host computer without any risk to interfere 
-with the physical system. However, the data you generate is temporary, 
-so make sure you get it back (on USB, through email or network) before 
-switching off the virtual machine, or all will be lost. <i>This system does not install properly, so it is reserved for testing and training.<br></i></p></blockquote><h4><a name="mozTocId339823" class="mozTocH4"></a>Using the ISO to create a bootable USB</h4><blockquote><p>You may write the ISO file into a USB key (8 Gb or more). Then use e.g. <a href="https://rufus.akeo.ie/">Rufus</a> (for Windows) or use the command <i>dd if=iso of=usbkey bs=1m</i> (for Linux and MacOSX). The USB key should then be bootable. Then restart your computer and select the USB key as booting media (usually Esc, F1, F2 or F12 key, or Alt/EFI menu on MacOSX, or install <a href="http://www.rodsbooks.com/refind/installing.html">rEFInd</a>). <i>This system does not install properly, so it is reserved for testing and training.</i></p></blockquote><h4><a name="mozTocId377839" class="mozTocH4"></a>Installing a new system from the ISO/DVD/USB key<br></h4><blockquote><p>We recommend you get an official <a href="http://ubuntu.com">Ubuntu</a> ISO distribution. Once you have started it, there is an <i>Install</i> icon on the Desktop. When clicked, you are proposed to install the system on your hard disk. Follow the instructions. A new partition will most probably be created on your disk. Have a look at the dedicated <a href="https://tutorials.ubuntu.com/tutorial/tutorial-install-ubuntu-desktop#0">Tutorial</a>.<font color="#ff0000"><font color="#000000"> Then add our <a href="http://packages.mccode.org">Debian repository</a> and e.g. packages <i>ifit-phonons</i>, <i>mcstas-suite</i> and <i>pyne</i>.</font><br><b>Warning:</b></font> we do not take <i>any</i> responsibility in case you loose data or make your computer un-bootable. Installing in a VirtualBox machine is safe.<br></p></blockquote>
+    <h4><a name="mozTocId117671" class="mozTocH4"></a>Using a Virtual
+      machine<br>
+    </h4>
+    <blockquote>
+      <p>Install e.g. <a href="http://virtualbox.org/">VirtualBox</a>.
+        Then import <a
+href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/illcs-livedvd/">our
+
+          VirtualBox Appliance</a> (OVA). This is a pre-installed
+        Virtual machine with iFit, Phonons, McStas and PyNE. Assign it
+        e.g. 4 Gb memory, 30 Gb disk, and all your CPU cores.<br>
+      </p>
+    </blockquote>
+    <h4><a name="mozTocId673490" class="mozTocH4"></a>Using the ISO to
+      burn a DVD</h4>
+    <blockquote>
+      <p>Even though many computers do not have anymore DVD slots, you
+        may still use a DVD on some machines. Use right-click on the ISO
+        file and select "Burn disk" (on Windows and Debian/Ubuntu), or
+        Disk Utility (on Mac OSX, Image menu). Then restart your
+        computer and select the DVD as booting media (usually Esc, F1 or
+        F12 key, or Alt/EFI menu on MacOSX). This way you use the host
+        computer without any risk to interfere with the physical system.
+        However, the data you generate is temporary, so make sure you
+        get it back (on USB, through email or network) before switching
+        off the virtual machine, or all will be lost. <i>This system
+          does not install properly, so it is reserved for testing and
+          training.<br>
+        </i></p>
+    </blockquote>
+    <h4><a name="mozTocId339823" class="mozTocH4"></a>Using the ISO to
+      create a bootable USB</h4>
+    <blockquote>
+      <p>You may write the ISO file into a USB key (8 Gb or more). Then
+        use e.g. <a href="https://rufus.akeo.ie/">Rufus</a> (for
+        Windows) or use the command <i>dd if=iso of=usbkey bs=1m</i>
+        (for Linux and MacOSX). The USB key should then be bootable.
+        Then restart your computer and select the USB key as booting
+        media (usually Esc, F1, F2 or F12 key, or Alt/EFI menu on
+        MacOSX, or install <a
+          href="http://www.rodsbooks.com/refind/installing.html">rEFInd</a>).
+
+        <i>This system does not install properly, so it is reserved for
+          testing and training.</i></p>
+    </blockquote>
+    <h4><a name="mozTocId377839" class="mozTocH4"></a>Installing a new
+      system from the ISO/DVD/USB key<br>
+    </h4>
+    <blockquote>
+      <p>We recommend you get an official <a href="http://ubuntu.com">Ubuntu</a>
+        ISO distribution. Once you have started it, there is an <i>Install</i>
+        icon on the Desktop. When clicked, you are proposed to install
+        the system on your hard disk. Follow the instructions. A new
+        partition will most probably be created on your disk. Have a
+        look at the dedicated <a
+href="https://tutorials.ubuntu.com/tutorial/tutorial-install-ubuntu-desktop#0">Tutorial</a>.<font
+          color="#ff0000"><font color="#000000"> Then add our <a
+              href="http://packages.mccode.org">Debian repository</a>
+            and e.g. packages <i>ifit-phonons</i>, <i>mcstas-suite</i>
+            and <i>pyne</i>.</font><br>
+          <b>Warning:</b></font> we do not take <i>any</i>
+        responsibility in case you loose data or make your computer
+        un-bootable. Installing in a VirtualBox machine is safe.<br>
+      </p>
+    </blockquote>
     <h3><a class="mozTocH3" name="mozTocId952907"></a>Installation -
       source distribution<br>
-    </h3><blockquote>
-    You just need to copy the <span style="font-style: italic;">iFit</span>
-    directory somewhere, say in <span style="font-style: italic;">/path/to</span>.
-    <br>
-    <ol>
-      <li>Extract first the <span style="font-style: italic;">iFit</span>
-        archive if needed.</li>
-      <li>Just drag-drop the <span style="font-style: italic;">iFit</span>
-        directory in the target location that suits you.</li>
-    </ol>
-    For our users who love challenges and command lines, this may be
-    achieved e.g. with<br>
-    <pre style="margin-left: 40px;">% unzip iFit.zip<br>% cp -r iFit /path/to<br></pre>
-    Start Matlab by clicking on its icon or typing the <span style="font-style: italic;">matlab</span> command in a terminal.<img style=" width: 45px; height: 38px;" alt="Matlab icon" title="Matlab icon" src="images/ml_icon.gif" align="right"><br>
-    <pre style="margin-left: 40px;">% matlab<br></pre>
-    In order to use iFit, you need to import all its methods into Matlab
-    each time you start it (this may be automated from the <span style="font-style: italic;">startup.m</span> file). <br>
-    <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">addpath</span>(<span style="color: rgb(51, 102, 255);">genpath</span>(<span style="color: rgb(204, 51, 204);">'/path/to/iFit'</span>))<br></pre>
-    This can also be done from the Matlab menu <span style="font-style:
-      italic;">File/Set Path.../Add with subfolders...</span> then enter
-    the iFit location, and Save. <span style="font-style: italic;">That's
-
-
-
-
-
-      all !</span><br>
-    <br>
-    A list of fixed bugs and release history is recorded in the <a href="Changes.html">Changes</a> page.<br>
-    </blockquote><h4><a class="mozTocH4" name="mozTocId359173"></a>Recompiling external commands<br>
+    </h3>
+    <blockquote> You just need to copy the <span style="font-style:
+        italic;">iFit</span> directory somewhere, say in <span
+        style="font-style: italic;">/path/to</span>. <br>
+      <ol>
+        <li>Extract first the <span style="font-style: italic;">iFit</span>
+          archive if needed.</li>
+        <li>Just drag-drop the <span style="font-style: italic;">iFit</span>
+          directory in the target location that suits you.</li>
+      </ol>
+      For our users who love challenges and command lines, this may be
+      achieved e.g. with<br>
+      <pre style="margin-left: 40px;">% unzip iFit.zip<br>% cp -r iFit /path/to<br></pre>
+      Start Matlab by clicking on its icon or typing the <span
+        style="font-style: italic;">matlab</span> command in a terminal.<img
+        style=" width: 45px; height: 38px;" alt="Matlab icon"
+        title="Matlab icon" src="images/ml_icon.gif" align="right"><br>
+      <pre style="margin-left: 40px;">% matlab<br></pre>
+      In order to use iFit, you need to import all its methods into
+      Matlab each time you start it (this may be automated from the <span
+        style="font-style: italic;">startup.m</span> file). <br>
+      <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">addpath</span>(<span style="color: rgb(51, 102, 255);">genpath</span>(<span style="color: rgb(204, 51, 204);">'/path/to/iFit'</span>))<br></pre>
+      This can also be done from the Matlab menu <span
+        style="font-style: italic;">File/Set Path.../Add with
+        subfolders...</span> then enter the iFit location, and Save. <span
+        style="font-style: italic;">That's all !</span><br>
+      <br>
+      A list of fixed bugs and release history is recorded in the <a
+        href="Changes.html">Changes</a> page.<br>
+    </blockquote>
+    <h4><a class="mozTocH4" name="mozTocId359173"></a>Recompiling
+      external commands<br>
     </h4>
-    <h5><a class="mozTocH5" name="mozTocId960709"></a><span style="font-weight: bold;">Windows 64 (XP, Vista, 7, 8)</span></h5>
+    <h5><a class="mozTocH5" name="mozTocId960709"></a><span
+        style="font-weight: bold;">Windows 64 (XP, Vista, 7, 8)</span></h5>
     The <a href="Loaders.html">Loaders</a> sub library and cif2hkl make
     use of MeX/external commands. Pre-compiled versions for Windows
     systems are shipped with the package but this binary may fail with
     some Matlab releases. <br>
     <br>
     It is possible for re-compilation to use the Matlab compilation
-    infrastructure 'mex'. In that case, it is required to <a href="http://www.mathworks.com/support/solutions/en/data/1-ECUGQX/">install
+    infrastructure 'mex'. In that case, it is required to <a
+      href="http://www.mathworks.com/support/solutions/en/data/1-ECUGQX/">install
+
+
 
 
 
 
 
       a compatible C compiler</a> (currently Microsoft Visual C++). The
-    required downloads are, in order, <a href="http://www.microsoft.com/express/Downloads/#2010-Visual-CPP">C++
+    required downloads are, in order, <a
+      href="http://www.microsoft.com/express/Downloads/#2010-Visual-CPP">C++
 
 
 
 
 
-      Express</a> then the <a href="http://www.microsoft.com/downloads/en/details.aspx?FamilyID=6b6c21d2-2006-4afa-9702-529fa782d63b&amp;displaylang=en">SDK</a>
-    (for Matlab &gt;= 2010). Older Microsoft Visual C++ 2008 [<a href="http://download.microsoft.com/download/8/b/5/8b5804ad-4990-40d0-a6aa-ce894cbbb3dc/VS2008ExpressENUX1397868.iso">ISO</a>]
+
+
+      Express</a> then the <a
+href="http://www.microsoft.com/downloads/en/details.aspx?FamilyID=6b6c21d2-2006-4afa-9702-529fa782d63b&amp;displaylang=en">SDK</a>
+    (for Matlab &gt;= 2010). Older Microsoft Visual C++ 2008 [<a
+href="http://download.microsoft.com/download/8/b/5/8b5804ad-4990-40d0-a6aa-ce894cbbb3dc/VS2008ExpressENUX1397868.iso">ISO</a>]
     can also be used together with the SDK for Windows 7 + NET 3.5
-    [amd64 <a href="http://download.microsoft.com/download/2/E/9/2E911956-F90F-4BFB-8231-E292A7B6F287/GRMSDKX_EN_DVD.iso">ISO</a>]).
+    [amd64 <a
+href="http://download.microsoft.com/download/2/E/9/2E911956-F90F-4BFB-8231-E292A7B6F287/GRMSDKX_EN_DVD.iso">ISO</a>]).
 Just
+
+
 
 
 
@@ -564,11 +752,16 @@ Just
     use the default installation settings, then use<br>
     <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">mex</span> -setup							<span style="font-style: italic;">% select compiler</span><br>[1] Microsoft Windows VS2008<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">addpath</span>(<span style="color: rgb(51, 102, 255);">genpath</span>(<span style="color: rgb(204, 51, 204);">'/location/to/iFit'</span>))			<span style="font-style: italic;">% install iFit</span><br>&gt;&gt; <span style="color: rgb(51, 102, 255);">iLoad</span> compile<span style="font-style: italic;">						% reload importer methods and recompile looktxt, cbf_uncompress and cif2hkl<br></span></pre>
     When <i>mex</i> is not configured, you may install any C compiler
-    of: <a href="http://www.mingw.org/">gcc</a>, <a href="https://software.intel.com/en-us/fortran-compilers">ifc</a>,
-    <a href="https://www.pgroup.com/products/winpgi.htm">pgcc</a>, <a href="http://clang.llvm.org/get_started.html">clang/llvm</a>, <a href="http://bellard.org/tcc/">tcc</a>.<br>
+    of: <a href="http://www.mingw.org/">gcc</a>, <a
+      href="https://software.intel.com/en-us/fortran-compilers">ifc</a>,
+    <a href="https://www.pgroup.com/products/winpgi.htm">pgcc</a>, <a
+      href="http://clang.llvm.org/get_started.html">clang/llvm</a>, <a
+      href="http://bellard.org/tcc/">tcc</a>.<br>
     To compile <i>cif2hkl</i>, you should install a Fortran compiler
     such as: <a href="https://gcc.gnu.org/wiki/GFortranBinariesWindows">gfortran</a>,
-    <a href="http://www.g95.org/">g95</a>, <a href="http://www.pgroup.com/">pgfc</a>, <a href="https://software.intel.com/en-us/fortran-compilers">ifort</a>.<br>
+    <a href="http://www.g95.org/">g95</a>, <a
+      href="http://www.pgroup.com/">pgfc</a>, <a
+      href="https://software.intel.com/en-us/fortran-compilers">ifort</a>.<br>
     <br>
     Then force the recompilation of external commands with:<br>
     <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">iLoad</span> compile</pre>
@@ -593,10 +786,13 @@ Just
 
 
 
+
+
       mex -setup</span>'. Send me the newly compiled looktxt MeX file in
     a tar.gz/zip archive, so that I update/add it to the distribution.<br>
     <br>
-    Refer to the related item in the <a href="Changes.html#mozTocId556618">Changes/Bugs</a> page,
+    Refer to the related item in the <a
+      href="Changes.html#mozTocId556618">Changes/Bugs</a> page,
     especially for manual compilation.<br>
     <h3><a class="mozTocH3" name="mozTocId635674"></a>What's next ?</h3>
     You may test the package integrity by issuing the command:<br>
@@ -605,19 +801,27 @@ Just
     documentation and report failures. In principle all should go right.
     Refer to the <a href="index.html#mozTocId66420">iFit Help</a> in
     case of trouble.<br>
-    You may start with the <a href="QuickStart.html">Quick Start</a>
-    or the <a href="miFit.html">miFit</a> page to learn what iFit can do for you.<br>
+    You may start with the <a href="QuickStart.html">Quick Start</a> or
+    the <a href="miFit.html">miFit</a> page to learn what iFit can do
+    for you.<br>
     <h3><a class="mozTocH3" name="mozTocId67587"></a>Subscribe to the
       user mailinglist</h3>
-    The <a href="http://mail.mccode.org/cgi-bin/mailman/listinfo/ifit-users">ifit-users</a>
+    The <a
+      href="http://mail.mccode.org/cgi-bin/mailman/listinfo/ifit-users">ifit-users</a>
     is the list set-up in order to exchange information (issues,
-    questions, announcements). Messages should be sent to <a href="mailto:ifit-users@mail.mccode.org">ifit-users@mail.mccode.org</a>.<br>
+    questions, announcements). Messages should be sent to <a
+      href="mailto:ifit-users@mail.mccode.org">ifit-users@mail.mccode.org</a>.<br>
     <br>
     You may register by entering your email address and press subscribe:
-    <form method="POST" action="http://mailman.mccode.org/cgi-bin/mailman/subscribe/ifit-users"><input name="email" size="30" type="Text"><input name="email-button" value="Subscribe" type="Submit"></form>
+    <form method="POST"
+      action="http://mailman.mccode.org/cgi-bin/mailman/subscribe/ifit-users"><input
+        name="email" size="30" type="Text"><input name="email-button"
+        value="Subscribe" type="Submit"></form>
     <hr style="width: 100%; height: 2px;">
     <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
+
+
 
 
 
@@ -630,7 +834,5 @@ Farhi
           &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL,
           Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px solid
           ; width: 53px; height: 50px;" align="right"></a> </div>
-  
-
-
-</body></html>
+  </body>
+</html>
