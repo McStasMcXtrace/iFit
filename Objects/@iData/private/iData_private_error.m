@@ -6,6 +6,8 @@ if nargin == 1
 end
 b = [ 'iData/' a ': ' b ];
 a = [ 'iData:' a ];
+a = strrep(a, '\', '/');
+b = strrep(b, '\', '/');
 try
   error(a,sprintf(b));
 catch

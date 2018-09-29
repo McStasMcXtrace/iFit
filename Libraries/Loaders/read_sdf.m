@@ -1957,8 +1957,8 @@ switch dataHdr.zz_dataType
             % Forcibly disable WINDOW correction, due to them already having been applied.
             % This hack is required when only one channel is used. See page B-30 (Note & final paragraph)
             WINDOW_corr = [1 1];
-            warning(['The property ''windowCorrMode'' has been ignored in ' ...
-                'SDF_Single_TraceY. (See B-30 of SDF Standard)']);
+            if 0, warning(['The property ''windowCorrMode'' has been ignored in ' ...
+                'SDF_Single_TraceY. (See B-30 of SDF Standard)']); end
         end
         % Make array of 1's and 0's on whether to apply correction.
         use_channel = (vctHdr.the_CHANNEL_record ~= -1);

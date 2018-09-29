@@ -2,13 +2,14 @@ function result=test_miFit
 
   % we must make sure the existing configuration is not lost
   % copy the .ini .mat and .log in tmp
-  t = tempname;
-  if isempty(dir(t))
-    mkdir(t)
-  end
   file = fullfile(prefdir, 'mifit.*');
-  copyfile(file, t);
-  delete(file);
+  if ~isempty(dir(file))
+    t = tempname;
+    mkdir(t);
+    copyfile(file, t);
+    delete(file);
+  else t = '';
+  end
   
   % now do the test
   h = mifit;
@@ -24,7 +25,10 @@ function result=test_miFit
   end
 
   % restore the mifit configuration files
-  copyfile(fullfile(t, 'mifit.*'), prefdir);
-  try
-    rmdir(t, 's');
+  if ~isempty(t)
+    copyfile(fullfile(t, 'mifit.*'), prefdir);
+    try
+      rmdir(t, 's');
+    end
   end
+  

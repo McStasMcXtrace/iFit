@@ -12,7 +12,7 @@ function filename = iData_private_saveas_html(a, filename, format)
   if nargin < 3, format = ''; else format=lower(format); end
 
   [Path, name, ext] = fileparts(filename);
-  target = Path;
+  target = strrep(Path, '\', '/');
   titl = char(a);
   titl(titl=='<')='[';
   titl(titl=='>')=']';
@@ -72,7 +72,7 @@ function filename = iData_private_saveas_html(a, filename, format)
     data.Title  = strtrim([ a.Title ' ' title(a) ]); end
   if ~isempty(a.Label) || ~isempty(a.DisplayName), 
     data.Label  = strtrim([ a.Label ' ' a.DisplayName ]); end
-  data.Source = a.Source;
+  data.Source = strrep(a.Source, '\', '/');;
   data.Date = datestr(now);
   if isnumeric(a.Date)
     data.Date   = datestr(a.Date);
@@ -131,8 +131,8 @@ function filename = iData_private_saveas_html(a, filename, format)
   % Export data ****************************************************************
   
   % create output from the figure: png pdf fig
-  basename     = fullfile(target, 'img', [ 'iFit_DataSet_' a.Tag ]);
-  basename_img = fullfile('img', [ 'iFit_DataSet_' a.Tag ]);
+  basename     = strrep(fullfile(target, 'img', [ 'iFit_DataSet_' a.Tag ]),'\','/');
+  basename_img = strrep(fullfile('img', [ 'iFit_DataSet_' a.Tag ]),'\','/');
   if ndims(a) == 2
     saveas(a, basename, 'png data');  % just the image for 2D data sets, else getframe
   elseif ndims(a) == 3

@@ -44,7 +44,7 @@ function [file_out, result] = cif2hkl(varargin)
 
 persistent compiled
 
-result = [];
+result = []; file_out=[];
 % required to avoid Matlab to use its own libraries
 if ismac,      precmd = 'DYLD_LIBRARY_PATH= ; DISPLAY= ; ';
 elseif isunix, precmd = 'LD_LIBRARY_PATH= ; DISPLAY= ; '; 
@@ -67,7 +67,8 @@ else
 end
 
 if isempty(varargin) || strcmp(varargin{1}, 'compile') || strcmp(varargin{1}, 'check') || strcmp(varargin{1}, 'identify')
-  result = cmd;
+  result   = cmd;
+  file_out = cmd;
   return;
 end
 
@@ -150,6 +151,8 @@ disp(cmd)
 if status ~= 0
   disp(result)
   error([ mfilename ' executable not available. Compile it with: "gfortran -O2 -o cif2hkl cif2hkl.F90 -lm" in ' fullfile(fileparts(which(mfilename))) ]);
+elseif any(strcmp(file_in, {'-h','--help','--version','check','compile','identify'}))
+  file_out = result;
 end
 
 % ------------------------------------------------------------------------------
@@ -173,7 +176,7 @@ function compiled=cif2hkl_check_compile(compile)
           [ 'cif2hkl' ext ]}
       
           [status, result] = system([ precmd try_target{1} ]);
-          if status == 0 && nargin == 0
+          if status == 0 && nargin == 0 && (~ispc || isempty(strfind(result, [ '''' try_target{1} '''' ])))
               % the executable is already there. No need to make it .
               target = try_target{1};
               compiled = target; 

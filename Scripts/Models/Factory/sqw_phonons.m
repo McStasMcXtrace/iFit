@@ -303,12 +303,16 @@ function signal=sqw_phonons(configuration, varargin)
 
 persistent status
 persistent link
+signal = [];
 
 if ~exist('status') || isempty(status) || ~isstruct(status)
-  [status, link] = sqw_phonons_requirements;
+  try
+    [status, link] = sqw_phonons_requirements;
+  catch ME
+    disp(getReport(ME))
+    return
+  end
 end
-
-signal = [];
 
 if nargin == 0, configuration = 'gui'; varargin{1} = 'emt'; 
 elseif strcmp(configuration, 'identify')
@@ -383,7 +387,7 @@ if ~isempty(dir(configuration)) % a file/directory
     end
   end
 end
-
+if isempty(status), return; end
 if isempty(status.mpirun) && isfield(options,'mpi') && ~isempty(options.mpi) && options.mpi > 1
   options.mpi=1;
   disp([ mfilename ': MPI parallelization is not available. Install e.g. OpenMPI first. Using mpi=1 (serial).' ]);

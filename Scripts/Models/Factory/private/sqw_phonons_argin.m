@@ -133,7 +133,11 @@ if isscalar(options.kpoints)
 end
 
 % make sure target is a fully qualified path
-if options.target(1) ~= filesep
+if usejava('jvm') && ~java.io.File(options.target).isAbsolute
+  options.target = fullfile(pwd, options.target);
+elseif ~ispc && ~any(options.target(1) == [ filesep '~' ])
+  options.target = fullfile(pwd, options.target);
+elseif ispc && length(options.target) >= 2 && options.target(2) ~= ':'
   options.target = fullfile(pwd, options.target);
 end
 if ~isdir(options.target)

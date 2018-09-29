@@ -438,7 +438,7 @@ function executable = find_executable
       
       [status, result] = system([ precmd try_target{1} ]);
 
-      if status ~= 127
+      if status ~= 127 && (~ispc || isempty(strfind(result, [ '''' try_target{1} '''' ])))
         % the executable is found
         executable = try_target{1};
         disp([ mfilename ': found ' exe{1} ' as ' try_target{1} ])

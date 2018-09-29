@@ -289,7 +289,7 @@ function compiled = read_anytext_compile_binary(compile)
       
     [status, result] = system([ try_target{1} ' --help' ]); % run from Matlab
 
-    if status == 0 && nargin == 0
+    if status == 0 && nargin == 0 && (~ispc || isempty(strfind(result, [ '''' try_target{1} '''' ])))
         % the executable is already there. No need to make it .
         compiled = try_target{1};
         return

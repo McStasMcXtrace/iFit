@@ -53,7 +53,7 @@ if ~isempty(columns_header)
 end
 
 if isempty(columns_header) || isempty(columns)
-  warning([ mfilename ': The loaded data set ' a.Tag ' ' a.Title ' is not an ILL TAS data format.' ]);
+  disp([ mfilename ': WARNING: The loaded data set ' a.Tag ' ' a.Title ' is not an ILL TAS data format.' ]);
   return; 
 end
 

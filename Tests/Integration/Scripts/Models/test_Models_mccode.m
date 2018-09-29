@@ -2,6 +2,10 @@ function result = test_Models_mccode
 
   % test McCode model builder
   y = mccode('defaults');
+  if isempty(y)
+    result = [ 'OK     ' mfilename ' (McCode / Instrument not found)' ];
+    return
+  end
   % set a specific monitor file name
   y.UserData.options.monitor='Diff_BananaTheta*';
   % create 3D view

@@ -3,6 +3,7 @@ function filename = iData_private_saveas_x3d(a, filename, format, options)
   % option can contain: axes (display axes), auto to rescale axes in range [0,1]
   % for aspect ratio 1.
   
+  a.Source = strrep(a.Source, '\', '/');
   titl = char(a);
   titl(titl=='<')='[';
   titl(titl=='>')=']';

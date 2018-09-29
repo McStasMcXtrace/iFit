@@ -198,6 +198,7 @@ else
   end
 end
 
+if isempty(options.instrument), return; end
 if iscell(options.instrument), options.instrument = options.instrument{1}; end
 disp([ mfilename ': Using instrument: ' options.instrument ] );        
         
@@ -239,7 +240,8 @@ if (isempty(info) && ~isempty(options.mccode)) || options.compile
   % identify and test the executable
   [info, exe] = instrument_get_info(options.instrument);
   if isempty(info)
-    error([ mfilename ': Compiled instrument ' exe ' from ' options.instrument ' is not executable'])
+    disp([ mfilename ': ERROR: Compiled instrument ' exe ' from ' options.instrument ' is not executable.'])
+    return
   end
   % store the source code, and binary (executable) in UserData
   UserData.instrument_source     = fileread(options.instrument);
@@ -247,7 +249,7 @@ elseif ~isempty(info)
   % store the executable, no source code given
   UserData.instrument_source     = '';
 else
-  error([ mfilename ': WARNING: no information could be retrieved from ' options.instrument ]);
+  disp([ mfilename ': WARNING: No information could be retrieved from ' options.instrument ]);
 end
 fid = fopen(exe, 'r'); 
 UserData.instrument_executable = fread(fid, Inf); fclose(fid);
@@ -488,7 +490,7 @@ function present = mccode_check(options)
     for ext={'','.pl','.py','.exe','.out'}
       % look for executable and test with various extensions
       [status, result] = system([ precmd totest{1} ext{1} ]);
-      if (status == 1 || status == 255) 
+      if (status == 1 || status == 255) && (~ispc || isempty(strfind(result, [ '''' totest{1} ext{1} '''' ])))
         present.mccode = [ totest{1} ext{1} ];
         break
       end
@@ -507,7 +509,7 @@ function present = mccode_check(options)
   for calc={options.mpirun, 'mpirun', 'mpiexec'}
     % now test executable
     [st,result]=system([ precmd 'echo "0" | ' calc{1} ]);
-    if any(st == 0:2)
+    if any(st == 0:2) && (~ispc || isempty(strfind(result, [ '''' calc{1} '''' ])))
         present.mpirun=calc{1};
         st = 0;
         disp([ '  MPI             (http://www.openmpi.org) as "' present.mpirun '"' ]);
@@ -586,7 +588,8 @@ function instr = mccode_search_instrument(instr, d)
   end
   
   if isempty(index)
-    error([ mfilename ': ERROR: Can not find instrument ' instr ]);
+    disp([ mfilename ': ERROR: Can not find instrument ' instr ]);
+    instr = '';
   end
   
 % ------------------------------------------------------------------------------
