@@ -76,7 +76,7 @@ function s = sqw_spinwave(file, action)
 if nargin < 1, file = '';   end
 if nargin < 2, action = ''; end
 s = []; template = ''; dim = 4;
-
+file0=file;
 if isa(file, 'iFunc')
   ud = file.UserData;
   dim= file.Dimension;  % initial model dimension
@@ -158,7 +158,7 @@ else
   s.Description= [ f ' spin-wave dispersion(|Q|) from S. Petit' ];
 end
 
-s.Name       = [ 'SpinWave S.Petit (LLB) ' f ' [' mfilename ']' ];
+s.Name       = [ 'Sqw_spinwave SpinWave S.Petit (LLB) ' f ' [' mfilename ']' ];
 
 % EDIT template when requested to
 if ~isempty(strfind(action, 'edit'))
@@ -174,7 +174,7 @@ if ~isempty(strfind(action, 'edit'))
   [~,options.appdata] = fileparts(tempname);
   h = TextEdit(template, options);
   waitfor(h)
-  template = getappdata(0, options.appdata)
+  template = getappdata(0, options.appdata);
   rmappdata(0, options.appdata);
 end
 
@@ -233,7 +233,7 @@ if dim == 2
     [ 'target = this.UserData.dir;' ], ...
     'if ~isdir(target), target = tempname; mkdir(target); this.UserData.dir=target; end', ...
     'xu =unique(x(:)); yu=unique(y(:));', ...
-    [ '% replace tokens as variable parameters in the template ' num2str(numel(s.Parameters)) ]...
+    [ '% replace tokens as variable parameters in the template p(' num2str(numel(s.Parameters)) ')' ]...
     'template = this.UserData.spinwave_template;' ...
     'for index=1:numel(this.Parameters)' ...
     '  template = strrep(template, [ ''%'' this.Parameters{index} ], num2str(p(index)));' ...
@@ -292,7 +292,7 @@ else
   s.Expression = { ...
     [ 'target = this.UserData.dir;' ], ...
     'if ~isdir(target), target = tempname; mkdir(target); this.UserData.dir=target; end', ...
-    [ '% replace tokens as variable parameters in the template ' num2str(numel(s.Parameters)) ]...
+    [ '% replace tokens as variable parameters in the template p(' num2str(numel(s.Parameters)) ')' ]...
     'template = this.UserData.spinwave_template;' ...
     'for index=1:numel(this.Parameters)' ...
     '  template = strrep(template, [ ''%'' this.Parameters{index} ], num2str(p(index)));' ...
@@ -395,6 +395,11 @@ else
   s = iFunc(s);
   s = iFunc_Sqw4D(s); % overload Sqw4D flavour
 end % 4D case
+
+if isa(file0, 'iFunc') && nargout == 0 && length(inputname(1))
+  assignin('caller',inputname(1),s);
+end
+
 
 end % sqw_spinwave
 
