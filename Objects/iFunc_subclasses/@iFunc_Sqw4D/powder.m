@@ -6,6 +6,11 @@ function r=powder(a)
 %     data set is done using the B=[a* b* c*] matrix. It is searched as 
 %       'reciprocal_cell' in the input model.
 %
+%   The methodology is to cast a number of random points on increasing |Q| spheres.
+%   These points are converted to the [rlu] space by applying the inverse B matrix
+%   with B=[a* b* c*]. Then the 4D S(q,w) model is evaluated at these points, and the  
+%   result is the energy histogram of the bare mode frequencies along all |Q|.
+%
 %   Once created, the powder Model can be evaluated on a (q,w) range as any 2D model.
 %   value = model(p, q, w)
 %   value = iData(model, p, q, w)

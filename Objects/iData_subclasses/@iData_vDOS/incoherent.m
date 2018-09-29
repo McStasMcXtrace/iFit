@@ -33,9 +33,21 @@ function [Sqw, Iqt, Wq, Tall] = incoherent(gw, varargin)
 %    w > 0, neutron looses energy, can not be higher than Ei (Stokes)
 %    w < 0, neutron gains energy, anti-Stokes
 %
+% Theory:
+%   T1(w) = g(w)./hw.*(nw+1)
+%   f0    = \int T1(w) dw
+%   fp    = f0^p
+%   W(q)  = h^2*q^2/2/m*f(0)
+%   Tp    = conv( T1, Tp-1 )
+%
+% The first term returned is the Elastic Incoherent [p=0]
+%    S(q,w)[p=0] = (1/4/pi)*exp(-2*W(q)).*delta(w)
+% the other terms are obtained by iterative auto-convolution by the vDOS
+%    S(q,w)[p]   = 1/4pi/!p exp(-2*W(q)).*(2*W(q)).^p*Tp(w)
+%
 % Reference:
 %   H. Schober, Journal of Neutron Research 17 (2014) 109–357
-%     DOI 10.3233/JNR-140016 (see espars. pages 328-331)
+%     DOI 10.3233/JNR-140016 (see esp. pages 328-331)
 %   V.S. Oskotskii, Sov. Phys. Solid State 9 (1967), 420.
 %   A. Sjolander, Arkiv for Fysik 14 (1958), 315.
 %
@@ -214,7 +226,7 @@ function [Sqw, Iqt, Wq, Tall] = incoherent(gw, varargin)
     xlabel(Iqt, 'q wavevector [Angs-1]'); ylabel(Iqt, 'time [s]');
   end
   
-  % compute the pars.t[p] terms iteratively -----------------------------------------
+  % compute the T[p] terms iteratively -----------------------------------------
   Tall = T1;
   
   % stop when requesting only the one-phonon term
