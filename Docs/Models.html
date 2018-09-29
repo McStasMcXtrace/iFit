@@ -22,6 +22,7 @@
           <li><a href="#mozTocId677670">Phonon/spin-wave dispersion
               (simple) </a></li>
           <li><a href="#mozTocId908192">Spin-wave model (SpinW) </a></li>
+          <li><a href="#mozTocId826778">Spin-wave model (SPINWAVE)</a></li>
           <li><a href="#mozTocId226848">Phonon dispersion in perovskites</a></li>
           <li><a href="#mozTocId885605">Acoustic phonon dispersion in
               mono-atomic cubic crystal</a></li>
@@ -49,6 +50,7 @@
     <hr style="width: 100%; height: 2px;">
     <div style="text-align: center;">Commands we use in this page: <span
         style="font-style: italic;">fits, <a href="#mozTocId775891">ifitmakefunc,
+
 
 
 
@@ -161,6 +163,7 @@
     <h3><a class="mozTocH3" name="mozTocId96090"></a><span
         style="font-weight: bold;">List of default fit models</span></h3>
     The 1D functions are <span style="font-style: italic;">signal=f(parameters,
+
 
 
 
@@ -331,6 +334,7 @@
 
 
 
+
               "x" unit)</span><br>
           </td>
         </tr>
@@ -378,6 +382,7 @@
           </td>
           <td style="vertical-align: top;"><a
               href="http://en.wikipedia.org/wiki/Stretched_exponential_function">Exponential
+
 
 
 
@@ -543,6 +548,7 @@
 
 
 
+
               distribution function</a> <br>
           </td>
           <td style="vertical-align: top; color: rgb(51, 204, 0);">1D<a
@@ -558,6 +564,7 @@
           </td>
           <td style="vertical-align: top;"><a
               href="http://en.wikipedia.org/wiki/Log-normal_distribution">Log-Normal
+
 
 
 
@@ -794,6 +801,7 @@
 
 
 
+
               Sine function</a> (exponential decay) <br>
           </td>
           <td style="vertical-align: top; color: rgb(51, 204, 0);">1D<a
@@ -840,6 +848,7 @@
           </td>
           <td style="vertical-align: top;"><a
               href="http://en.wikipedia.org/wiki/Rectangular_function">Top-Hat
+
 
 
 
@@ -1043,6 +1052,7 @@ href="http://en.wikipedia.org/wiki/Gaussian_function#Multi-dimensional_Gaussian_
 
 
 
+
               Gaussian</a><br>
           </td>
           <td valign="top"><font color="#cc33cc">nD</font><br>
@@ -1184,6 +1194,18 @@ href="http://en.wikipedia.org/wiki/Gaussian_function#Multi-dimensional_Gaussian_
           <td valign="top">Energy and location of 'gap', slopes,
             directions of slopes, DHO width, temperature, background</td>
         </tr>
+        <tr>
+          <td valign="top"><a href="#mozTocId826778"><b>sqw_spinwave</b></a><br>
+          </td>
+          <td valign="top">Spin-wave dispersion in HKL using <a
+              href="http://www-llb.cea.fr/logicielsllb/SpinWave/SW.html">SPINWAVE</a>
+            (LLB).<br>
+          </td>
+          <td valign="top"><font color="#33cc00">4D (HKLw)</font></td>
+          <td valign="top">Amplitude, and user defined parameters
+            (coupling...)<br>
+          </td>
+        </tr>
       </tbody>
     </table>
     <br>
@@ -1264,6 +1286,7 @@ href="http://en.wikipedia.org/wiki/Gaussian_function#Multi-dimensional_Gaussian_
 
 
 
+
         = P(q).S(q)</span><br>
     </p>
     <p style="text-align: left;">where <span style="font-style:
@@ -1273,6 +1296,7 @@ href="http://en.wikipedia.org/wiki/Gaussian_function#Multi-dimensional_Gaussian_
     <ul>
       <li><a href="http://kur.web.psi.ch/sans1/SANSSoft/sasfit.html">SASfit</a>,
         by <a href="http://kur.web.psi.ch/sans1/SANSSoft/KJ33.html">Joachim
+
 
 
 
@@ -1417,6 +1441,7 @@ href="http://en.wikipedia.org/wiki/Gaussian_function#Multi-dimensional_Gaussian_
 
 
 
+
             <br>
           </td>
           <td style="vertical-align: top;">structure factor of particles
@@ -1475,6 +1500,7 @@ href="http://en.wikipedia.org/wiki/Gaussian_function#Multi-dimensional_Gaussian_
         </tr>
         <tr>
           <td style="vertical-align: top; font-weight: bold;">ff_sphere&nbsp;
+
 
 
 
@@ -1640,6 +1666,7 @@ href="http://www.iucr.org/resources/commissions/crystallographic-computing/newsl
 
 
 
+
     <span style="font-style: italic;">'cell'</span>, followed with atoms
     (giving xyz Biso occupancy spin charge, where only xyz are
     mandatory, others are optional):<br>
@@ -1711,6 +1738,7 @@ Sample.Ca1&nbsp;&nbsp; = [0.46737&nbsp; 0.00000&nbsp; 0.25000&nbsp; 0.60046&nbsp
       word-spacing: 0px; -webkit-text-stroke-width: 0px;">
       <li>MaterialsProject&lt;<a
           href="https://www.materialsproject.org/">https://www.materialsproject.org/</a>&gt;
+
 
 
 
@@ -1920,6 +1948,7 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
 
 
 
+
         </i> and <i>Q_freq</i> parameters along axes.</li>
       <li>A 1D or 2D dispersion can be obtained when setting the
         frequencies (e.g. <i>QK_freq QL_freq</i>) to 0<br>
@@ -1929,6 +1958,7 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
     <blockquote>
       <p>&nbsp; p(&nbsp;
         1)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
 
 
 
@@ -2029,9 +2059,11 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
 
 
 
+
         <b>E1_qk</b> energy at QK half period [meV]<br>
         &nbsp; p(&nbsp;
         3)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
 
 
 
@@ -2131,9 +2163,11 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
 
 
 
+
         <b>E0</b> zone-centre energy gap [meV]<br>
         &nbsp; p(&nbsp;
         5)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
 
 
 
@@ -2233,6 +2267,7 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
 
 
 
+
         <b>QK0</b> QK zone-centre [rlu]<br>
         &nbsp; p(&nbsp;
         7)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -2283,9 +2318,11 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
 
 
 
+
         <b>QL0</b> QL zone-centre [rlu]<br>
         &nbsp; p(&nbsp;
         8)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
 
 
 
@@ -2386,6 +2423,7 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
 
 
 
+
         <b>QK_freq</b> QK frequency [multiples of pi]<br>
         &nbsp; p(
         10)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -2437,9 +2475,11 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
 
 
 
+
         <b>QL_freq</b> QL frequency [multiples of pi]<br>
         &nbsp; p(
         11)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
 
 
 
@@ -2656,6 +2696,7 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
 
 
 
+
       energy broadening (instrumental) [meV]<br>
       p(2)=&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; <b>Temperature</b>
       of the material [K]<br>
@@ -2695,30 +2736,12 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
       href="images/Models_sqw_sine3d_add.png"><img alt="sw" title="sw"
         src="images/Models_sqw_spinw.png" border="0" align="right"
         height="143" width="200"></a>
-    <blockquote>sq = <font color="#3366ff">sw_model</font>('squareAF',2,0);&nbsp;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
-      &nbsp;&nbsp;&nbsp; <i>% create the SW object</i><i> (using SpinW)</i><br>
+    <blockquote>sq = <font color="#3366ff">sw_model</font>(<font
+        color="#cc33cc">'squareAF'</font>,2,0);&nbsp; &nbsp;&nbsp;&nbsp;
+      &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; <i>%
+        create the SW object</i><i> (using SpinW)</i><br>
       s=<font color="#3366ff">sqw_spinw</font>(sq);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
 
 
 
@@ -2777,7 +2800,9 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
 
 
 
+
       or &lt;<a href="https://www.psi.ch/spinw/spinw">https://www.psi.ch/spinw/spinw</a>&gt;.
+
 
 
 
@@ -2799,8 +2824,220 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
       <br>
       The version 2.1 of SpinW is <b>included</b> in iFit, so that the
       <b><i>sqw_spinw</i></b> Model does not require any additional
-      installation.<br>
+      installation. Updating SpinW may affect the iFit-SpinW interface.<br>
     </blockquote>
+    <h4><a class="mozTocH4" name="mozTocId826778"></a>Spin-wave model
+      (SPINWAVE)</h4>
+    The <b>sqw_spinwave</b> model builder is an interface to the <a
+      href="http://www-llb.cea.fr/logicielsllb/SpinWave/SWnews.html">SPINWAVE</a>
+    LLB software from <a href="mailto:sylvain.petit@cea.fr">S. Petit</a>.
+    It works the same way as the <b>sqw_spinw</b> model above, but uses
+    a configuration file instead of a 'sw' object.<br>
+    <br>
+    <table style="text-align: left; width: 1016px; height: 59px;"
+      border="1" cellpadding="2" cellspacing="2">
+      <tbody>
+        <tr>
+          <td style="vertical-align: top; font-weight: bold; font-style:
+            italic; color: rgb(51, 102, 255); background-color: rgb(255,
+            204, 204);">S(q,w)<br>
+          </td>
+          <td style="vertical-align: top; background-color: rgb(255,
+            204, 204);"><span style="font-style: italic; font-weight:
+              bold; color: rgb(51, 102, 255);">Description</span><br>
+          </td>
+          <td style="vertical-align: top; font-weight: bold; font-style:
+            italic; color: rgb(51, 102, 255); background-color: rgb(255,
+            204, 204);">Dimensionality<br>
+          </td>
+          <td style="vertical-align: top; font-weight: bold; font-style:
+            italic; color: rgb(51, 102, 255); background-color: rgb(255,
+            204, 204);">Parameters<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top; font-weight: bold;"><b>sqw_spinwave<br>
+            </b><br>
+          </td>
+          <td style="vertical-align: top;">Spin-wave dispersion in HKL
+            using <a
+              href="http://www-llb.cea.fr/logicielsllb/SpinWave/SWnews.html">SPINWAVE</a>.
+            <br>
+          </td>
+          <td style="vertical-align: top; color: rgb(51, 204, 0);">4D
+            (HKL<i>w</i>)<br>
+          </td>
+          <td style="vertical-align: top;">Amplitude, and user defined
+            parameters (coupling...)<br>
+            Axes are in rlu.<br>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    The model is built from an initial description file (text), a CIF
+    file, or a chemical formula.<br>
+    <br>
+    <b>Creating the model using a SPINWAVE file</b><br>
+    <br>
+    The description of this file format is detailed in the SPINWAVE
+    manual. It basically contains an initial lattice description (cell
+    parameters) with AX,AY,AZ,ALFA,BETA,GAMA lines. Then there is a list
+    of the magnetic atoms which are given an index, their coordinates,
+    spin type and initial spin orientation. Then a block indicates the
+    coupling between the spins with e.g. 'J' parameters (in [meV]) and a
+    cut-off distance. An optional dispersion broadening parameter SIG
+    [meV] can also be specified.<br>
+    <br>
+    Once assembled, the file is used as syntax:<br>
+    <blockquote>model = <font color="#3366ff">sqw_spinwave</font>(<font
+        color="#cc33cc">'file'</font>);<br>
+    </blockquote>
+    which produces a 4D S(q,w) model [iFunc_Sqw4D]. For instance, you
+    may use as example:<br>
+    <blockquote>lmo = <font color="#3366ff">sqw_spinwave</font>(<font
+        color="#cc33cc">'LaMnO3.txt'</font>);<br>
+      mfs = <font color="#3366ff">sqw_spinwave</font>(<font
+        color="#cc33cc">'MnFe4Si3.txt'</font>);<br>
+    </blockquote>
+    A 2D S(q,w) powder model can be created the same way with syntax:<br>
+    <blockquote>model = <font color="#3366ff">sqw_spinwave</font>(<font
+        color="#cc33cc">'file'</font>,<font color="#cc33cc">'powder'</font>);<br>
+    </blockquote>
+    as the iFunc_Sqw4D <b><i>powder</i></b> method is not fully
+    supported by SPINWAVE.<br>
+    <br>
+    <b>Creating the model using a CIF file or chemical formula</b><br>
+    <br>
+    It is possible to create a model out of a CIF file using:<br>
+    <blockquote>model = <font color="#3366ff">sqw_spinwave</font>(<font
+        color="#cc33cc">'file.cif'</font>);<br>
+    </blockquote>
+    or from a chemical formula with:<br>
+    <blockquote>model = <font color="#3366ff">sqw_spinwave</font>(<font
+        color="#cc33cc">'cod: La Mn O3'</font>);<br>
+    </blockquote>
+    In both cases, it is then <b>necessary</b> to customize the
+    spin-wave description file, as the CIF does not include any magnetic
+    information.<br>
+    <br>
+    A text editor is then shown, which allows to add the missing
+    information. Beware that <i><b>all</b></i> atoms in the cell will
+    be listed. You will need to remove the non-magnetic ones, and adapt
+    the atom indices ('I=') accordingly. Then move to the coupling
+    parameters and fill the missing information. This step (see below)
+    also allows to define variable model parameters.<br>
+    <br>
+    <b>Editing a new or existing model</b><br>
+    <br>
+    When creating the model, it is possible to request an edition of the
+    description with syntax:<br>
+    <blockquote>model = <font color="#3366ff">sqw_spinwave</font>(<font
+        color="#cc33cc">'file'</font>,<font color="#cc33cc">'edit'</font>);<br>
+      model = <font color="#3366ff">sqw_spinwave</font>(<font
+        color="#cc33cc">'file'</font>,<font color="#cc33cc">'powder
+        edit'</font>);<br>
+    </blockquote>
+    It is also possible to edit an existing SPINWAVE description file
+    with:<br>
+    <blockquote>model = <font color="#3366ff">sqw_spinwave</font>(model,<font
+        color="#cc33cc">'edit'</font>);<br>
+    </blockquote>
+    The editor allows to replace numerical values by symbols which
+    indicate variable model parameters. Such symbols should be <b>$par</b>
+    to indicate a 'par' model parameter. Namely, an entry:<br>
+    <blockquote>... J1=-18 ...<br>
+    </blockquote>
+    can be replaced by<br>
+    <blockquote>... J1=<b>$J1</b> ...<br>
+    </blockquote>
+    One may as well specify an initial parameter value with syntax <b>($par=value)</b>
+    or ($par,value) such as:<br>
+    <blockquote>... J1=-18 ...<br>
+    </blockquote>
+    can be replaced by<br>
+    <blockquote>... J1=<b>($J1=-18)</b> ...</blockquote>
+    which defines the parameter name and its initial value. If you skip
+    this step, the model parameters are set to 0, but you may of course
+    change this with the iFunc parameter setting syntax such as:<br>
+    <blockquote>model.J1 = -18;<br>
+    </blockquote>
+    Then it is important to save the content of the editor (menu
+    File/Save). When closing the editor, the result of the <b>sqw_spinwave</b>
+    call is the modified object, with new parameters.<br>
+    <b><br>
+    </b><b>Evaluating the spin-wave</b><br>
+    <br>
+    Once created,<b> </b>the model can be evaluated and used for
+    fitting. <br>
+    The model parameters are:<br>
+    <blockquote>p(1)=&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+      &nbsp;&nbsp;&nbsp; <b>Amplitude</b><br>
+      p(...)=&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+      any other parameter defined with <b>$par</b> symbols<br>
+    </blockquote>
+    The axes needed for the evaluation are expressed in <i>rlu</i> for
+    QH,QK,QL and in meV for the energy [1 meV = 241.8 GHz = 11.604 K =
+    0.0965 kJ/mol]. The model can be evaluated by giving axes and model
+    parameters (see examples below). <br>
+    <ul>
+      <li>When all axes are given as vectors of same orientation <i>and</i>
+        same length, the HKLE set is assumed to be list of 'events'.</li>
+      <li>When the H K L axes are vectors of same length/orientation,
+        the HKL locations is assumed to be a q-path in the BZ, but the E
+        (energy) axis can be of different length/orientation to compute
+        the Model along (q,E) path, resulting in a 2D object. Typically,
+        the <b>sqw_kpath</b> function does this, to provide the phonon
+        dispersion curve along principal directions.</li>
+      <li>When the H K L E axes are given as mixed orientations/length,
+        as vectors or matrices, the Model evaluation is done on a HKLE
+        cube, which is well suited to visualize the whole dispersion
+        surfaces. <b>In the example below</b>, <i>ql</i> has a
+        different orientation (it is transposed) as <i>qh</i> and <i>qk</i>,
+        which triggers a 4D HKLE cube evaluation.</li>
+    </ul>
+    The Model evaluation is as usual (in 4D):
+    <blockquote><b>model</b>(p, qh, qk, ql, w)&nbsp;&nbsp;&nbsp; %
+      return a matrix. p can be [] to use guessed/default parameters<br>
+      <font color="#3366ff">iData</font>(<b>model</b>, p, qh, qk, ql,
+      w)&nbsp;&nbsp;&nbsp; % return an iData </blockquote>
+    The same applies to 2D S(q,w) 'powder' spin-wave models, but the Q
+    axis is then given in Angs<sup>-1</sup>.<br>
+    <blockquote><b>model</b>(p, q, w)&nbsp;&nbsp;&nbsp; % return a
+      matrix. p can be [] to use guessed/default parameters<br>
+      <font color="#3366ff">iData</font>(<b>model</b>, p, q,
+      w)&nbsp;&nbsp;&nbsp; % return an iData <br>
+    </blockquote>
+    Beware as the spin-wave evaluation can be long to compute.<br>
+    <br>
+    <b>Example</b><br>
+    <br>
+    We define a MnFe4Si3 spin-wave model and request to edit the
+    description. You will notice that the AX,AY,Az lines are using AA,BB
+    and CC model parameters with default values 6.8 and 4.7. Also, the
+    energy broadening is defined as the Gamma parameter with value 1. We
+    then evaluate the model along the QH line and a given energy range.<br>
+    <blockquote>mfs = <font color="#3366ff">sqw_spinwave</font>(<font
+        color="#cc33cc">'MnFe4Si3.txt', 'edit'</font>);<br>
+      d=<font color="#3366ff">iData</font>(mfs, [], 0:.05:4, 0,0,
+      0:0.5:20);<br>
+      plot(log10(squeeze(d))); <i>% 'squeeze' removes singleton QK and
+        QL axes</i><br>
+    </blockquote>
+    Next we compute the powder average of the spin-wave dispersions, and
+    plot them (takes 2 min).<br>
+    <blockquote>mfs = <font color="#3366ff">sqw_spinwave</font>(<font
+        color="#cc33cc">'MnFe4Si3.txt', 'powder'</font>);<br>
+      q = 0.01:0.25:3; <i>% from 0.01 to 3 Angs-1 with .25 steps</i><br>
+      w = 0:0.5:20;<br>
+      d=<font color="#3366ff">iData</font>(mfs, [], q, w);<br>
+      plot(d);<br>
+    </blockquote>
+    <b>Installation</b><br>
+    <br>
+    The SPINWAVE program (c) LLB is distributed with iFit, and does not
+    need to be installed separately.<br>
+    <blockquote> </blockquote>
     <h4><a class="mozTocH4" name="mozTocId226848"></a>Phonon dispersion
       in perovskites</h4>
     <p>The <b>sqw_vaks </b>model computes the dispersion of the 5
@@ -2917,9 +3154,11 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
 
 
 
+
       <b>At</b> transverse acoustic slope [meV<sup>2</sup>/rlu<sup>2</sup>]<br>
       &nbsp; p(&nbsp;
       2)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
 
 
 
@@ -3019,9 +3258,11 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
 
 
 
+
       <b>Aa</b> anisotropic acoustic slope [meV<sup>2</sup>/rlu<sup>2</sup>]<br>
       &nbsp; p(&nbsp;
       4)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
 
 
 
@@ -3121,9 +3362,11 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
 
 
 
+
       <b>Sa</b> soft mode&nbsp; anisotropic soft optical slope [meV<sup>2</sup>/rlu<sup>2</sup>]<br>
       &nbsp; p(&nbsp;
       6)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
 
 
 
@@ -3223,6 +3466,7 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
 
 
 
+
       <b>Va</b> entered as: anisotropic acoustic-optical coupling [meV<sup>2</sup>/rlu<sup>2</sup>]<br>
       &nbsp; p(&nbsp;
       8)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -3274,9 +3518,11 @@ sudo apt-get update<br>sudo apt-get install <b><font color="blue">mcstas-suite</
 
 
 
+
       <b>w0</b> soft mode frequency at q=0, depends on temperature [meV]<br>
       &nbsp; p(&nbsp;
       9)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
 
 
 
@@ -3427,6 +3673,7 @@ href="http://www.nature.com/ncomms/2013/130729/ncomms3229/abs/ncomms3229.html">D
 
 
 
+
           10.1038/ncomms3229</a></li>
       <li> V.G. Vaks,<i> Introduction to the Microscopic Theory of
           Ferroelectrics</i> (Nauka, Moscow, 1973)</li>
@@ -3439,6 +3686,7 @@ href="http://www.nature.com/ncomms/2013/130729/ncomms3229/abs/ncomms3229.html">D
     these 3 modes, plus additional DHO parameters. Each dispersion is
     basically:<br>
     <blockquote><i>w(k) = E<sub>max</sub>*sin(k.a) </i><i>&nbsp;&nbsp;&nbsp;
+
 
 
 
@@ -3493,6 +3741,7 @@ href="http://www.nature.com/ncomms/2013/130729/ncomms3229/abs/ncomms3229.html">D
     The model parameters are the following:<br>
     <blockquote>&nbsp; p(&nbsp;
       1)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
 
 
 
@@ -3600,9 +3849,11 @@ href="http://www.nature.com/ncomms/2013/130729/ncomms3229/abs/ncomms3229.html">D
 
 
 
+
       <b>E0</b> sqrt(C1/m) energy [meV]<br>
       &nbsp; p(&nbsp;
       3)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
 
 
 
@@ -3746,6 +3997,7 @@ href="http://www.nature.com/ncomms/2013/130729/ncomms3229/abs/ncomms3229.html">D
 
 
 
+
         2013</li>
       <li> Kittel, Solid State Physics, Wiley, New York, 7th ed. (1996),
         pp 99-103.</li>
@@ -3774,6 +4026,7 @@ href="http://www.nature.com/ncomms/2013/130729/ncomms3229/abs/ncomms3229.html">D
     where the <i>Slope</i> parameters are specified for 3 directions.
     The <i>hkl</i> directions can be rotated by specifying the <i>dir1</i>
     and <i>dir2</i> frame vectors. The <i>dir3</i> is built as <i>dir1
+
       x dir2</i>. Along <i>dir1</i> the dispersion is linear, along
     other directions it is quadratic (becomes linear far from HKL0). <br>
     <br>
@@ -3871,9 +4124,11 @@ href="http://www.nature.com/ncomms/2013/130729/ncomms3229/abs/ncomms3229.html">D
 
 
 
+
       Dispersion slope along 1st axis, linear [meV/rlu]<br>
       &nbsp; p(&nbsp;
       8)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>DC_Slope2</b>&nbsp;&nbsp;
+
 
 
 
@@ -3896,10 +4151,12 @@ href="http://www.nature.com/ncomms/2013/130729/ncomms3229/abs/ncomms3229.html">D
 
 
 
+
       Dispersion slope along 3rd axis (transverse to 1st, vertical)
       [meV/rlu]<br>
       &nbsp; p(
       10)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
 
 
 
@@ -3921,9 +4178,11 @@ href="http://www.nature.com/ncomms/2013/130729/ncomms3229/abs/ncomms3229.html">D
 
 
 
+
       <b>Ex_K0</b>&nbsp;&nbsp; Excitation location K [rlu]<br>
       &nbsp; p(
       12)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
 
 
 
@@ -3941,8 +4200,10 @@ href="http://www.nature.com/ncomms/2013/130729/ncomms3229/abs/ncomms3229.html">D
 
 
 
+
       Excitation location, Energy [meV]<br>
       &nbsp; p( 14)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>DHO_Amplitude
+
 
 
 
@@ -3963,8 +4224,10 @@ href="http://www.nature.com/ncomms/2013/130729/ncomms3229/abs/ncomms3229.html">D
 
 
 
+
       Excitation damping, half-width [meV]<br>
       &nbsp; p( 16)=&nbsp;&nbsp;&nbsp;&nbsp; <b>DHO_Temperature</b>&nbsp;&nbsp;
+
 
 
 
@@ -4055,6 +4318,7 @@ href="http://www.nature.com/ncomms/2013/130729/ncomms3229/abs/ncomms3229.html">D
       frame vectors. The <i>dir3</i> is built as <i>dir1 x dir2</i>.&nbsp;
 Along
 
+
       given directions the dispersion is quadratic (becomes linear far
       from HKL0).<br>
       <br>
@@ -4065,6 +4329,7 @@ Along
         <li>s=<font color="#3366ff">sqw_acoustopt</font>([H0 K0 L0 E0]);</li>
       </ul>
       To model an <i><b>acoustic</b></i> mode, use e.g. <i>H0=K0=L0=E0</i>=0
+
 
 
 
@@ -4171,9 +4436,11 @@ Along
 
 
 
+
         <b>Ex_H0</b>&nbsp;&nbsp; Minimum of the dispersion, H [rlu]<br>
         &nbsp; p(
         11)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
 
 
 
@@ -4195,6 +4462,7 @@ Along
 
 
 
+
         <b>Ex_L0</b>&nbsp;&nbsp; Minimum of the dispersion, L [rlu]<br>
         &nbsp; p( 13)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>Ex_E0_Center</b>&nbsp;&nbsp;
 
@@ -4203,8 +4471,10 @@ Along
 
 
 
+
         Minimum of the dispersion, Energy [meV]<br>
         &nbsp; p( 14)=&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>DHO_Amplitude
+
 
 
 
@@ -4225,8 +4495,10 @@ Along
 
 
 
+
         Excitation damping, half-width [meV]<br>
         &nbsp; p( 16)=&nbsp;&nbsp;&nbsp;&nbsp; <b>DHO_Temperature</b>&nbsp;&nbsp;
+
 
 
 
@@ -4304,6 +4576,7 @@ Along
       name of a configuration file describing the material lattice and
       atom positions. This file can be in any <a
         href="https://wiki.fysik.dtu.dk/ase/ase/io.html#module-ase.io">ASE
+
 
 
 
@@ -4521,6 +4794,7 @@ Along
       </li>
       <li><span style="font-weight: bold;">xcorr: </span>cross-correlation
 
+
         (calls fconv in correlation mode)<br>
       </li>
     </ul>
@@ -4559,6 +4833,7 @@ Along
     <div style="text-align: center;">
       <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
+
 
 
 
