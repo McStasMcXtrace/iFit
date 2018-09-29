@@ -135,6 +135,7 @@
 
 
 
+
             input IO</a> module for a full list of supported input
           formats.<br>
           <br>
@@ -144,6 +145,7 @@
         <ul>
           <li><b>MaterialsProject</b>&lt;<a
               href="https://www.materialsproject.org/">https://www.materialsproject.org/</a>&gt;
+
 
 
 
@@ -248,6 +250,7 @@
 
 
 
+
             using PhonoPy and VASP. <br>
           </li>
         </ul>
@@ -266,6 +269,7 @@
         </blockquote>
         <ul>
           <li><b>COD</b> &lt;<a href="http://www.crystallography.net">Crystallography
+
 
               Open Database</a>&gt; now contains nearly 400 000
             structures, free access. <br>
@@ -327,12 +331,14 @@
 
 
 
+
             can store any computational result from e.g. ABINIT,
             QuantumEspresso, VASP, and others.</li>
           <li><b>ICSD</b> Inorganic Crystal Structure Database &lt;<a
               href="http://icsd.ill.fr">http://icsd.ill.fr</a>&gt; with
             plenty of CIFs. requires a license.</li>
           <li><b>AflowLib</b> &lt;<a href="http://aflowlib.org/">http://aflowlib.org/</a>&gt;
+
 
 
 
@@ -405,6 +411,7 @@
                 the Terminal iFit prompt. This will probably crash iFit
               </font><font color="#ff0000">[<a
                   href="http://www.mathworks.com/support/bugreports/624817">bug
+
 
 
 
@@ -508,6 +515,7 @@
           where <font color="#cc33cc">'file'</font> is an atomic
           configuration file (POSCAR, CIF, PDB, Yaml, ... see all <a
             href="https://wiki.fysik.dtu.dk/ase/ase/io/io.html">available
+
 
             formats</a>) or directory containing such information.
           Additional arguments allow to specify the DFT calculator and
@@ -674,17 +682,23 @@ href="http://mail.mccode.org/cgi-bin/mailman/listinfo/ifit-users"
           the computer capabilities, the calculation may take from
           minutes to days/weeks. See below for examples.<br>
           <br>
+          <b>Other calculators</b><br>
+          <br>
           It is possible to use any ASE compliant calculator setting the
           'options' fields 'calculator' and 'declaration', as well as
           the path to the calculator executable in 'command'. Use double
           quotes strings ("...") if needed within the Python
           expressions.<br>
           <ul>
-            <li> options.declaration = 'from ase.calculators.lammpsrun
-              import LAMMPS';</li>
-            <li>options.calculator='LAMMPS()';</li>
-            <li>options.command= '/usr/bin/lammps'</li>
-            <li>s=sqw_phonons('lattice', options)</li>
+            <li> options.declaration =<font color="#cc33cc"> 'from
+                ase.calculators.lammpsrun import LAMMPS'</font>;</li>
+            <li>options.calculator=<font color="#cc33cc">'LAMMPS()'</font>;</li>
+            <li style="box-sizing: border-box; margin-top: 0.25em;
+              margin-left: 0px;"><font color="#3366ff">setenv</font>(<font
+                color="#cc33cc">'LAMMPS_COMMAND'</font>,<font
+                color="#cc33cc">'/usr/bin/lammps'</font>);</li>
+            <li>s=<font color="#3366ff">sqw_phonons</font>(<font
+                color="#cc33cc">'lattice'</font>, options)</li>
           </ul>
           We are continuously testing new calculators, and will report
           for their capabilities in the future (Octopus, Siesta, bigDFT,
@@ -711,6 +725,7 @@ href="http://mail.mccode.org/cgi-bin/mailman/listinfo/ifit-users"
             href="http://materialscloud.org/sssp/">MaterialsCloud SSSP</a>
           convergence tests indicate e.g. 100 Ry=1300-1500 eV. The <a
 href="https://www.materialsproject.org/docs/calculations#Total_Energy_Calculation_Details">MaterialsProject
+
 
             recommendation</a> is around 520 eV. Remember that 1 Ha =
           27.2 eV and 1 Ry=Ha/2=13.6 eV.<br>
@@ -781,6 +796,7 @@ href="https://www.materialsproject.org/docs/calculations#Total_Energy_Calculatio
             in a <i>k<sub>min</sub></i>=1/4/3=0.08. The K-points
             density per atom is then (1/<i>k<sub>min</sub></i>)<sup>3</sup>&nbsp;
 
+
             =1728 per atom in the cell.<br>
           </p>
           <p>The conclusion is that increasing either the supercell or
@@ -826,6 +842,7 @@ href="https://www.materialsproject.org/docs/calculations#Total_Energy_Calculatio
         <ul>
         </ul>
         <h4><a name="mozTocId99928" class="mozTocH4"></a><b>Pseudo-potential
+
 
             specification (XC/PPS)</b></h4>
         <blockquote>Most DFT codes come with their own set of
@@ -1029,6 +1046,7 @@ href="https://www.materialsproject.org/docs/calculations#Total_Energy_Calculatio
         <blockquote>
           <p>Once a model has been created using the <i>sqw_phonons </i>call,
 
+
             it is possible to derive a number of physical quantities to
             estimate the quality of the lattice dynamics model. In the
             following, we assume the model has been transferred into a
@@ -1110,6 +1128,7 @@ href="https://www.materialsproject.org/docs/calculations#Total_Energy_Calculatio
               title="MgO_qe_thermo" alt="MgO_qe_thermo" border="0"
               align="right" height="150" width="200"></a>Thermo-chemistry
 
+
           basic quantities (vDOS,F,U,S,Cv)</h4>
         <blockquote>In a similar way as for the vDOS above, the:<br>
           <ul>
@@ -1174,6 +1193,7 @@ href="https://www.materialsproject.org/docs/calculations#Total_Energy_Calculatio
             <li>a set of high symmetry points for the lattice space
               group (see <a
                 href="https://en.wikipedia.org/wiki/Brillouin_zone">here</a>),
+
 
               such as {'Gamma' 'K' 'M' 'Gamma' 'A' 'H' 'L' 'A' }, which
               uses the space group to define these points<br>
@@ -1304,6 +1324,7 @@ href="https://www.materialsproject.org/docs/calculations#Total_Energy_Calculatio
               allows an interactive volume exploration (<a
 href="https://fr.mathworks.com/matlabcentral/fileexchange/764-sliceomatic">sliceomatic</a>),
 
+
               e.g. <font color="#3366ff">slice</font>(<font
                 color="#3366ff">log</font>(f(25,:,:,:))). Click and move
               the mouse over the lower color scale to change the
@@ -1324,6 +1345,7 @@ href="https://fr.mathworks.com/matlabcentral/fileexchange/764-sliceomatic">slice
           <p>We have seen above that you may use any crystal structure
             stored as a file (POSCAR, CIF, PDB, Yaml, ... see all <a
               href="https://wiki.fysik.dtu.dk/ase/ase/io/io.html">available
+
 
               formats</a>), such as:<br>
           </p>
@@ -1425,6 +1447,7 @@ href="https://fr.mathworks.com/matlabcentral/fileexchange/764-sliceomatic">slice
           <p>It is possible to build a sqw_phonons model from an
             existing PhonoPy directory, such as available as archives at
             &lt;<a href="http://phonondb.mtl.kyoto-u.ac.jp/">http://phonondb.mtl.kyoto-u.ac.jp/</a>&gt;.
+
 
             This location should contain e.g. files:</p>
           <ul>
@@ -1570,6 +1593,7 @@ href="https://fr.mathworks.com/matlabcentral/fileexchange/764-sliceomatic">slice
             qh,qk,ql<b>'</b>,w);</li>
           <li><font color="#3366ff">plot3</font>(<font color="#3366ff">log10</font>(f(1,:,:,:)))<i>&nbsp;
 
+
               % qh ~ 0 plane</i><br>
           </li>
         </ul>
@@ -1606,6 +1630,7 @@ href="https://fr.mathworks.com/matlabcentral/fileexchange/764-sliceomatic">slice
 
 
 
+
                 </b>with <i>qh=0.01:0.5:1.5;qk=qh; ql=qh;
                   w=0.01:0.5:51;</i><i><br>
                 </i><i>f=s([], qh,qk,ql',w);</i></td>
@@ -1616,6 +1641,7 @@ href="https://fr.mathworks.com/matlabcentral/fileexchange/764-sliceomatic">slice
             <tr>
               <td valign="top">Reference from <a
                   href="http://www.computingformaterials.com/phoncfm/3fig/Xal.html">Phonon/Parlinski
+
 
 
 
@@ -1924,6 +1950,7 @@ src="images/phonons/Models_Phonons_Al_abinit_tm_plot3.png" border="0"
               f=s([], qh,qk,ql',w);</i></li>
           <li><font color="#3366ff">plot3</font>(<font color="#3366ff">log10</font>(f(1,:,:,:)))<i>&nbsp;
 
+
               % qh ~ 0 plane</i></li>
         </ul>
         <ul>
@@ -1962,6 +1989,7 @@ src="images/phonons/Models_Phonons_Al_abinit_tm_plot3.png" border="0"
 
 
 
+
                 </b>with <i>qh=0.01:0.5:1.5;qk=qh; ql=qh;
                   w=0.01:0.5:90;</i><i><br>
                 </i><i>f=s([], qh,qk,ql',w);</i></td>
@@ -1973,6 +2001,7 @@ src="images/phonons/Models_Phonons_Al_abinit_tm_plot3.png" border="0"
               <td valign="top">Reference from PhononDB<br>
                 <a
                   href="http://phonondb.mtl.kyoto-u.ac.jp/ph20170621/d001/mp-1265.html">MgO
+
 
 
 
@@ -2008,6 +2037,7 @@ src="images/phonons/Models_Phonons_Al_abinit_tm_plot3.png" border="0"
             <tr>
               <td valign="top">Reference from p50 in <a
                   href="http://dx.doi.org/10.1007/978-3-642-81347-4">Biltz
+
 
                   &amp; Kress, Springer Series 10 (1979)</a><br>
               </td>
@@ -2170,6 +2200,7 @@ src="images/phonons/Models_Phonons_MgO_Biltz_dos.png"
               f=s([], qh,qk,ql',w);</i></li>
           <li><font color="#3366ff">plot3</font>(<font color="#3366ff">log10</font>(f(1,:,:,:)))<i>&nbsp;
 
+
               % qh ~ 0 plane</i></li>
         </ul>
         <ul>
@@ -2205,6 +2236,7 @@ src="images/phonons/Models_Phonons_MgO_Biltz_dos.png"
 
 
 
+
                 </b>with <i>qh=0.01:0.5:1.50;qk=qh; ql=qh;
                   w=0.01:0.5:110;</i><i><br>
                 </i><i>f=s([], qh,qk,ql',w);</i></td>
@@ -2216,6 +2248,7 @@ src="images/phonons/Models_Phonons_MgO_Biltz_dos.png"
               <td valign="top">Reference from PhononDB<br>
                 <a
                   href="http://phonondb.mtl.kyoto-u.ac.jp/ph20170621/d005/mp-5229.html">SrTiO3
+
 
 
 
@@ -2252,6 +2285,7 @@ src="images/phonons/Models_Phonons_MgO_Biltz_dos.png"
             <tr>
               <td valign="top">Reference from p147 in <a
                   href="http://dx.doi.org/10.1007/978-3-642-81347-4">Biltz
+
 
                   &amp; Kress, Springer Series 10 (1979)</a></td>
               <td valign="top"><br>
@@ -2339,6 +2373,7 @@ src="images/phonons/Models_Phonons_SrTiO3_vasp_thermo.png" border="0"
 
 
 
+
           / Tb2SeO2</a> (<a
           href="http://phonondb.mtl.kyoto-u.ac.jp/_downloads/mp-755340.tar.lzma">lzma</a>):<br>
         <ul>
@@ -2355,6 +2390,7 @@ src="images/phonons/Models_Phonons_SrTiO3_vasp_thermo.png" border="0"
           <li><i>qh=0.01:0.5:1.5;qk=qh; ql=qh; w=0.01:0.5:51;</i><i>
               f=s([], qh,qk,ql',w);</i></li>
           <li><font color="#3366ff">plot3</font>(<font color="#3366ff">log10</font>(f(1,:,:,:)))<i>&nbsp;
+
 
               % qh ~ 0 plane</i></li>
         </ul>
@@ -2375,6 +2411,7 @@ src="images/phonons/Models_Phonons_SrTiO3_vasp_thermo.png" border="0"
               <td bgcolor="#ffffcc" valign="top"><b>sqw_thermochemistry(s)</b><b><br>
                 </b></td>
               <td bgcolor="#ffffcc" valign="top"><b>plot3(log10(f(1,:,:,:))
+
 
 
 
@@ -2452,6 +2489,7 @@ src="images/phonons/Models_Phonons_Tb2SeO2_vasp_plot3.png" border="0"
           complex models</h3>
         The models are <a href="iFunc.html">iFunc</a> objects, which
         have a large number of <a href="iFunc.html#mozTocId443357">mathematical
+
 
           operators</a>. For instance, it is possible to add models
         together (here a phonon and a spin-wave):<br>
