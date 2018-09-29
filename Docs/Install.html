@@ -98,6 +98,8 @@
 
 
 
+
+
         release of iFit</a><span style="font-weight: bold; font-style:
         italic;"><span style="font-weight: bold;"> </span>page for more
         information on the features and limitations.</span><br>
@@ -128,6 +130,8 @@
       (optional)</h4>
     <div style="margin-left: 40px;"> The CIF/CFL/PCR/ShelX file support
       is available when the <span style="font-style: italic;">cif2hkl </span>program
+
+
 
 
 
@@ -175,8 +179,7 @@
     <blockquote>In case you wish to perform lattice dynamics
       computations to estimate the phonon dispersion relations in solid
       state materials, you will need to install at least the ASE. Please
-      read the <a href="Models.html#mozTocId183326">Models/Phonons</a>
-      and our <a href="Models_Phonons.html">Phonons documentation</a>.
+      read the <a href="Models_Phonons.html">Phonons documentation</a>.
       <font color="#ff0000">Warning: </font>Most of the DFT codes are
       designed to run on Linux systems. We thus recommend you start from
       a Debian-class system, or use a Virtual machine.<br>
@@ -195,23 +198,8 @@
     handling large data sets, and performing <a
       href="http://www.mcstas.org/">McStas</a> optimizations, so that we
     fully use multi-core systems (e.g. through threads and MPI). You may
-    use our <a
-href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/illcs-livedvd/">ILL/CS
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      Live DVD</a> ready-to-run system with <i>Phonons</i>, <span
+    use our <a href="ftp://ftp.ill.fr/pub/cs/ubuntu_cs/">ILL/CS Live
+      Ubuntu-iFit</a> ready-to-run systems with <i>Phonons</i>, <span
       style="font-style: italic;">McStas</span> and <i>iFit</i>
     (standalone) all pre-installed, to try-out.<br>
     <br>
@@ -233,23 +221,8 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
         the installation instructions below. Refer to the <a
           href="iFit.html">iFit standalone</a> help for more about using
         this version.</li>
-      <li>our <a
-href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/illcs-livedvd/">ILL/CS
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-          Live DVD</a> ready-to-run system with <i>Phonons</i>, <span
+      <li>our <a href="ftp://ftp.ill.fr/pub/cs/ubuntu_cs/">ILL/CS Live
+          DVD</a> ready-to-run system with <i>Phonons</i>, <span
           style="font-style: italic;">McStas</span> and <i>iFit</i>
         (standalone) all pre-installed.</li>
     </ul>
@@ -294,12 +267,16 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
+
                   bits</a>:</span></span><span style="font-weight:
               bold;"> </span><br>
             <span style="font-style: italic;">Debian: </span><b>see </b><b><a
                 href="#mozTocId73823">below</a></b>.<br>
             <span style="font-style: italic;">Other: </span>Use the <a
 href="http://ifit.mccode.org/Downloads/binary/glnx64/MCRInstaller-amd64.bin">MCR
+
+
 
 
 
@@ -326,6 +303,8 @@ href="http://ifit.mccode.org/Downloads/binary/glnx64/MCRInstaller-amd64.bin">MCR
           <td style="vertical-align: top;"><span style="font-weight:
               bold;"><span style="color: rgb(204, 51, 204);"><a
                   href="http://ifit.mccode.org/Downloads/binary/win64">64
+
+
 
 
 
@@ -372,6 +351,8 @@ href="http://ifit.mccode.org/Downloads/binary/glnx64/MCRInstaller-amd64.bin">MCR
 
 
 
+
+
                   bits</a>:</span></span><span style="font-weight:
               bold;"> </span>Use the iFit.app, which <b><i>includes</i></b>
             the MCR (no need to install it separately). Use
@@ -387,7 +368,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
           </td>
           <td valign="top">For all computers and virtual machines. Get
             it <a
-href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/illcs-livedvd/">HERE</a>.
+              href="ftp://ftp.ill.fr/pub/cs/ubuntu_cs/ubuntu-16.04-ifit-1.10.iso">HERE</a>.
             This is for tutorials and testing.<br>
             <br>
             use from a virtual machine e.g. <a
@@ -418,7 +399,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
           <td valign="top">For all computers using <a
               href="https://www.virtualbox.org/">VirtualBox</a>. Get it
             <a
-href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/illcs-livedvd/">HERE</a>.
+              href="ftp://ftp.ill.fr/pub/cs/ubuntu_cs/Ubuntu-16.04-iFit.ova">HERE</a>.
             Assign at least 4 Gb mem, 30 Gb disk, all your CPU cores.
             Login 'lambda' with 'illill'.<br>
           </td>
@@ -446,6 +427,8 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
       Ubuntu (see <a href="https://www.ubuntu.com/download/desktop">here</a>),
 
 
+
+
       then apply the following procedure to add iFit. </p>
     <h4><a name="mozTocId73823" class="mozTocH4"></a><span
         style="font-weight: bold;">On Debian Linux systems</span><span
@@ -465,7 +448,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
           charset=windows-1252">
         <pre>% sudo wget <a href="http://packages.mccode.org/debian/mccode.list">http://packages.mccode.org/debian/mccode.list</a><br></pre>
         then:<br>
-        <pre>% sudo apt-get update<br>% sudo apt-get install ifit mcrinstaller libxmu6 libxt6 libxp6 libxpm4
+        <pre>% sudo apt-get update<br>% sudo apt-get install ifit mcrinstaller libxmu6 libxt6 libxp6 libxpm4 libxc1
 </pre>
         and for <a href="Models_Phonons.html">Phonons</a>, <a
           href="McStas.html">McStas</a> and nuclear engineering stuff<br>
@@ -486,6 +469,8 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
       <p>You can also install the packages manually by directly
         accessing our <a
           href="http://packages.mccode.org/debian/dists/stable/main/">Deb
+
+
 
 
           repository</a>, get the Debian packages, e.g. ifit-x.y and
@@ -551,8 +536,10 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
       <br>
       <font color="#ff0000">Warning</font>: install all DFT codes for
       Phonons is not easy under Mac OSX. We then recommend you run a
-      VirtualBox machine (see below).<br>
-    </blockquote>
+      VirtualBox machine (see below). Refer to the dedicated <a
+        href="Models_Phonons.html">phonon-oriented
+
+        installation</a>. </blockquote>
     <div style="margin-left: 40px;"> </div>
     <h4><a name="mozTocId719276" class="mozTocH4"></a><span
         style="font-weight: bold;">On Windows systems</span><br>
@@ -561,6 +548,8 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
       <p>Install the MCR by double-clicking the corresponding <span
           style="font-style: italic;">MCRInstaller.exe</span>. The
         install location defaults to <span style="font-style: italic;">C:\Program
+
+
 
 
           Files\MATLAB</span>. Then use the iFit installer.<br>
@@ -572,31 +561,12 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
         operators short cuts included in the iFit standalone directory
         (under Linux).<br>
       </p>
-      <p><font color="#ff0000">Warning</font>: install all DFT codes for
-        Phonons is not easy under Windows. We then recommend you run a
-        VirtualBox machine (see below), or use the Windows Subsystem
-        just below.<br>
+      <p><font color="#ff0000">Warning</font>: Phonons: installing all
+        DFT codes for Phonons is not easy under Windows. We then
+        recommend you run a VirtualBox machine (see below), or use the
+        Windows Subsystem. Refer to the dedicated <a
+          href="Models_Phonons.html">phonon-oriented installation</a>.<br>
       </p>
-      <p><b>Alternate install: Using the Windows Subsystem for Linux
-          (WSL): Ubuntu</b> / Windows 10<br>
-      </p>
-      <p>When running Windows 10, you can install a <a
-          href="https://docs.microsoft.com/en-us/windows/wsl/install-win10">full
-
-          Linux/Ubuntu subsystem</a>. <br>
-        Then follow the above instructions for Debian/Ubuntu and get
-        packages from <a
-          href="http://packages.mccode.org/debian/dists/stable/main/">our
-
-          Debian main repository</a>.<br>
-        Install then with e.g.:<br>
-      </p>
-      <pre># sudo apt-add-repository -y <meta http-equiv="content-type" content="text/html; charset=windows-1252">http://packages.mccode.org/debian stable main<br># sudo update<br># sudo apt install ifit mcrinstaller libxmu6 libxt6 libxp6 libxpm4<br></pre>
-      and optionally<br>
-      <pre># sudo apt install ifit-phonons</pre>
-      Then launch iFit (and other commands) from the Linux subsystem
-      'bash':<br>
-      <pre># ifit</pre>
       <p></p>
     </blockquote>
     <h3><a name="mozTocId903368" class="mozTocH3"></a>Installation - ISO
@@ -604,8 +574,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
     </h3>
     <p>It is possible to use an ISO distribution containing <i>iFit,</i>
       <i>Phonons</i> and <i>McStas,</i> all pre-installed. Get it <a
-href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/illcs-livedvd/">HERE</a>.
-      <br>
+        href="ftp://ftp.ill.fr/pub/cs/ubuntu_cs/">HERE</a>. <br>
     </p>
     <h4><a name="mozTocId117671" class="mozTocH4"></a>Using a Virtual
       machine<br>
@@ -613,7 +582,9 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
     <blockquote>
       <p>Install e.g. <a href="http://virtualbox.org/">VirtualBox</a>.
         Then import <a
-href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/illcs-livedvd/">our
+          href="ftp://ftp.ill.fr/pub/cs/ubuntu_cs/Ubuntu-16.04-iFit.ova">our
+
+
 
           VirtualBox Appliance</a> (OVA). This is a pre-installed
         Virtual machine with iFit, Phonons, McStas and PyNE. Assign it
@@ -648,6 +619,8 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
         media (usually Esc, F1, F2 or F12 key, or Alt/EFI menu on
         MacOSX, or install <a
           href="http://www.rodsbooks.com/refind/installing.html">rEFInd</a>).
+
+
 
         <i>This system does not install properly, so it is reserved for
           testing and training.</i></p>
@@ -724,9 +697,13 @@ href="https://tutorials.ubuntu.com/tutorial/tutorial-install-ubuntu-desktop#0">T
 
 
 
+
+
       a compatible C compiler</a> (currently Microsoft Visual C++). The
     required downloads are, in order, <a
       href="http://www.microsoft.com/express/Downloads/#2010-Visual-CPP">C++
+
+
 
 
 
@@ -742,6 +719,8 @@ href="http://download.microsoft.com/download/8/b/5/8b5804ad-4990-40d0-a6aa-ce894
     [amd64 <a
 href="http://download.microsoft.com/download/2/E/9/2E911956-F90F-4BFB-8231-E292A7B6F287/GRMSDKX_EN_DVD.iso">ISO</a>]).
 Just
+
+
 
 
 
@@ -788,6 +767,8 @@ Just
 
 
 
+
+
       mex -setup</span>'. Send me the newly compiled looktxt MeX file in
     a tar.gz/zip archive, so that I update/add it to the distribution.<br>
     <br>
@@ -820,6 +801,8 @@ Just
     <hr style="width: 100%; height: 2px;">
     <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
+
+
 
 
 
