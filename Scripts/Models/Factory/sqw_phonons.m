@@ -96,6 +96,11 @@ function signal=sqw_phonons(configuration, varargin)
 %   options.supercell=scalar or [nx ny nz] supercell size. Default is 0 (auto mode).
 %   options.calculator=string              EMT,GPAW,Elk,ABINIT,Quantum
 %     We recommend ABINIT,QE and Elk. Default set from installed software.
+%     The calculator can also be given as a Python string, which then 
+%     also requires to import the proper Python module. Use e.g.:
+%       options.declaration = 'from ase.calculators.lammpsrun import LAMMPS';
+%       options.calculator  = 'LAMMPS()';
+%       options.command     = '/usr/bin/lammps';
 %   options.potentials=string              Basis datasets or pseudopotentials.
 %     Elk:    path to potentials, e.g. /usr/share/elk-lapw/species (ELK_SPECIES_PATH)
 %     ABINIT: path to potentials, e.g. /usr/share/abinit/psp/      (ABINIT_PP_PATH)
@@ -119,7 +124,7 @@ function signal=sqw_phonons(configuration, varargin)
 %     The 'very fast' option halves the number of displacements. The equilibrium
 %     forces are used to improve the accuracy of the force gradient.
 %     When using the 'accurate','fast' or 'very fast' accuracy, the calculation
-%     is limited to 256 iteration steps. For more use 'single_shot' mode below.
+%     is limited to 256 iteration steps. For more, use 'single_shot' mode below.
 %     The 'single_shot' option performs all in a single call. No ETA is displayed, 
 %     but computation is the fastest, and allows more than 256 iterations.
 %     The 'accurate' choice is longer to execute (e.g. 3-6 times slower), but computes all forces.

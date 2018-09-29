@@ -86,7 +86,8 @@ end
 
 
 % handle input configuration: read
-if exist(configuration)
+if exist(configuration, 'file')
+  if ispc, configuration = strrep(configuration, '\','/'); end  % windows pathsep are also escape chars. Replace
   [~,~,e] = fileparts(configuration);
   if strcmp(e, '.pkl')
     read = sprintf('import pickle\nconfiguration = "%s"\natoms = pickle.load(open(configuration,"rb"))\n', configuration);

@@ -53,7 +53,7 @@ function status = sqw_phonons_requirements_safe(link)
   for calc={'python'}
     % now test executable
     [st,result]=system([ precmd 'echo "0" | ' calc{1} ]);
-    if any(st == 0:2)
+    if any(st == 0:2) && isempty(strfind(result, '''' calc{1} ''''))
         status.python=calc{1};
         st = 0;
         disp([ '  Python          (' link.python ') as "' status.python '"' ]);
@@ -83,7 +83,7 @@ function status = sqw_phonons_requirements_safe(link)
   for calc={'mpirun','mpiexec'}
     % now test executable
     [st,result]=system([ precmd 'echo "0" | ' calc{1} ]);
-    if any(st == 0:2)
+    if any(st == 0:2) && isempty(strfind(result, '''' calc{1} ''''))
         status.mpirun=calc{1};
         st = 0;
         disp([ '  MPI             (' link.mpirun ') as "' status.mpirun '"' ]);
@@ -150,7 +150,7 @@ function status = sqw_phonons_requirements_safe(link)
   for calc={'pw.x','pw.exe','pw','pwscf'}
     % now test executable
     [st,result]=system([ precmd 'echo "0" | ' calc{1} ]);
-    if any(st == 0:2)
+    if any(st == 0:2) && isempty(strfind(result, '''' calc{1} ''''))
         status.quantumespresso=calc{1};
         st = 0;
         disp([ '  QuantumEspresso (' link.quantumespresso ') as "' status.quantumespresso '"' ]);
@@ -179,7 +179,7 @@ function status = sqw_phonons_requirements_safe(link)
   
   % test for VASP
   [st, result] = system([ precmd 'vasp' ]);
-  if any(st == 0:2)
+  if any(st == 0:2) && isempty(strfind(result, '''' calc{1} ''''))
     status.vasp = 'vasp';
   else
     status.vasp = '';
@@ -196,7 +196,7 @@ function status = sqw_phonons_requirements_safe(link)
   for calc={'octopus','octopus_mpi'}  % octopus_mpi is obsolete, 2nd choice.
     % now test executable
     [st,result]=system([ precmd calc{1} ' -v' ]);
-    if any(st == 0:2)
+    if any(st == 0:2) && isempty(strfind(result, '''' calc{1} ''''))
         status.octopus=calc{1};
         st = 0;
         break;
@@ -211,7 +211,7 @@ function status = sqw_phonons_requirements_safe(link)
   for calc={'cp2k_shell','cp2k_shell.popt'}
     % now test executable
     [st,result]=system([ precmd 'echo EXIT | ' calc{1} ]);
-    if any(st == 0)
+    if any(st == 0) && isempty(strfind(result, '''' calc{1} ''''))
         status.cp2k=calc{1};
         st = 0;
         break;
@@ -226,7 +226,7 @@ function status = sqw_phonons_requirements_safe(link)
   for calc={'siesta'}
     % now test executable
     [st,result]=system([ precmd 'echo | ' calc{1} ]);
-    if any(st == 0:1)
+    if any(st == 0:1) && isempty(strfind(result, '''' calc{1} ''''))
         status.siesta=calc{1};
         st = 0;
         break;
