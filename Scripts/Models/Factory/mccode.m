@@ -29,7 +29,8 @@ function y = mccode(instr, options, parameters)
 %   options.monitor:     a single monitor name to read, or left empty for the last (string).
 %                        this can be a wildcard expression.
 %   options.mccode:      set the executable path to 'mcrun' (default, neutrons) or 'mxrun' (xrays)
-%   options.mpirun:      set the executable path to 'mpirun'
+%   options.mpirun:      set the executable path to 'mpirun'. You can set
+%                        it to 'none' to not use MPI.
 %   options.compile:     0 or 1 to compilation the executable. The default is to compile.
 %
 %   All options are stored and assignable in model.UserData.options.
@@ -156,6 +157,15 @@ if ischar(parameters)
   parameters = str2struct(parameters);
 end
 
+% check for McCode, only the fisrt time
+if isempty(mccode_present) || (nargin>0 && strcmp(instr, 'check'))
+  mccode_present = mccode_check(options);
+end
+
+if strcmp(instr, 'check') || strcmp(instr, 'config')
+  y = mccode_present;
+  return
+end
 % get the instrument. If not available, search for one in a McCode installation
 % stop if not found
 
@@ -209,16 +219,19 @@ try
   options.instrument = fullfile(options.dir,[f e]);
 end
 
-% check for McCode, only the fisrt time
-if isempty(mccode_present)
-  mccode_present = mccode_check(options);
-end
-
 if isempty(options.mpirun)
   options.mpirun = mccode_present.mpirun;
+else
+  if strcmp(options.mpirun, 'none')
+      options.mpirun='';
+  else
+    mccode_present.mpirun = options.mpirun;
+  end
 end
 if isempty(options.mccode)
   options.mccode = mccode_present.mccode;
+else
+  mccode_present.mccode = options.mccode;
 end
 % MPI: default to all available core (read from Java)
 if ~isempty(options.mpirun) && ~isfield(options,'mpi')
@@ -385,7 +398,11 @@ y.Expression = { ...
 '    try; eval([ expr '';'' ]); catch; disp([ ''ERROR: '' this.Tag '': mccode: Ignoring faulty monitor expression '' expr]); end', ...
 '  end', ...
 '  if all(isempty(signal)) || isempty(options.monitor)', ...
-'    signal = iData(fullfile(options.dir,''sim'',''mccode.sim''));', ...
+'    if ~isempty(dir(fullfile(options.dir,''sim'',''mccode.sim'')))' ...
+'      signal = iData(fullfile(options.dir,''sim'',''mccode.sim''));', ...
+'    elseif ~isempty(dir(fullfile(options.dir,''sim'',''mcstas.sim'')))' ...
+'      signal = iData(fullfile(options.dir,''sim'',''mcstas.sim''));', ...
+'    end' ...
 '  end', ...
 '  if options.use_tmpdir, rmdir(options.dir,''s''); end', ...
 '  this.UserData.monitors = signal;', ...
@@ -500,6 +517,8 @@ function present = mccode_check(options)
   if isempty(present.mccode)
     disp([ mfilename ': WARNING: ' options.mccode ' McStas/McXtrace executable is not installed. Get it at www.mccode.org' ]);
     disp('  The model can still be created if the instrument is given as an executable.')
+    disp([ mfilename ': You may try "mccode check" after extending the PATH with e.g.' ])
+    disp('setenv(''PATH'', [getenv(''PATH'') '':/usr/local/bin'' '':/usr/bin'' '':/usr/share/bin'' ]);');
   else
     disp([ '  McCode          (http://www.mccode.org) as "' present.mccode '"' ]);
   end
@@ -693,17 +712,23 @@ function result = instrument_compile(options)
   elseif isunix, precmd = 'LD_LIBRARY_PATH= ; DISPLAY= ; '; 
   else           precmd = ''; end
   
-  disp([ mfilename ': Compiling instrument from ' options.instrument ...
-    ' using ' options.mccode]);
-  % assemble the command line: compile, no particle generated
-  cmd = [ options.mccode ' --force-compile ' options.instrument ' --ncount=0' ];  
-  if isfield(options,'mpi') && options.mpi > 1
-    cmd = [ cmd ' --mpi=1' ];
+  if isempty(options.mccode)
+      status=1;
+      disp([ mfilename ': McCode (mcrun/mxrun) not found. Try "mccode check" first.' ])
+  else
+      disp([ mfilename ': Compiling instrument from ' options.instrument ...
+        ' using ' options.mccode]);
+      % assemble the command line: compile, no particle generated
+      cmd = [ options.mccode ' --force-compile ' options.instrument ' --ncount=0' ];  
+      if isfield(options,'mpi') && options.mpi > 1
+        cmd = [ cmd ' --mpi=1' ];
+      end
+      disp(cmd)
+      p=pwd;
+      [status, result] = system([ precmd cmd ]);
+      cd(p)
   end
-  disp(cmd)
-  p=pwd;
-  [status, result] = system([ precmd cmd ]);
-  cd(p)
+
   % stop if compilation fails...
   if (status ~= 0 && status ~= 255) 
     disp(result);

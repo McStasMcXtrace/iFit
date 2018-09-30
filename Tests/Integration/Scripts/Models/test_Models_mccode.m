@@ -1,7 +1,7 @@
 function result = test_Models_mccode
 
   % test McCode model builder
-  y = mccode('defaults');
+  y = mccode('defaults','mpirun=none');
   if isempty(y)
     result = [ 'OK     ' mfilename ' (McCode / Instrument not found)' ];
     return
