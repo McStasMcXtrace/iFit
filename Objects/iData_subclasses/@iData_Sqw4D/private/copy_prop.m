@@ -1,0 +1,1 @@
+../../@iData_Sqw2D/private/copy_prop.m
