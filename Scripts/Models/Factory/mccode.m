@@ -219,11 +219,14 @@ try
   options.instrument = fullfile(options.dir,[f e]);
 end
 
+if isfield(options, 'mpi') && options.mpi <= 1
+  options.mpirun = 'none'; % no MPI needed
+end
 if isempty(options.mpirun)
-  options.mpirun = mccode_present.mpirun;
+  options.mpirun = mccode_present.mpirun; % get MPIRUN from system
 else
   if strcmp(options.mpirun, 'none')
-      options.mpirun='';
+      options.mpirun=''; % no MPI use
   else
     mccode_present.mpirun = options.mpirun;
   end

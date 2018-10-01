@@ -20,6 +20,9 @@ function s = sqw_spinwave(file, action)
 % The tokens format can be '$par' or '($par=val)' to specify default values.
 % The access to COD requires a valid network connection.
 %
+% You can check for SPINWAVE installation with: sqw_spinwave check
+% You can compile   SPINWAVE              with: sqw_spinwave compile
+%
 % The SPINWAVE model is built as S(q,w) 4D, or 2D when 'action' contains 'powder'.
 % The 4D model does not support the 'powder' iFunc_Sqw4D method, so the spinwave
 %   should instead use sqw_spinwave('file','powder')
@@ -96,6 +99,15 @@ end
 if strcmp(file, 'defaults')
   file = 'MnFe4Si3.txt';
 end
+if strcmp(file, 'check')
+  s = find_executable;
+  return
+end
+if strcmp(file, 'compile')
+  s = compile_spinwave;
+  return
+end
+  
 
 if isempty(file)
   [filename, pathname, filterindex] = uigetfile('*.*', 'Pick a SpinWave or CIF file');
