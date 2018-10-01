@@ -28,6 +28,7 @@ create_help(ifitpath);
 % test MeX/binary external calls
 iLoad force
 ResLibCal compile
+sqw_spinwave check
 
 % activate some standalone only scripts (which are in principle forbidden by Matlab Compiler)
 cd(m);
