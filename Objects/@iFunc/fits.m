@@ -150,6 +150,8 @@ function [pars_out,criteria,message,output] = fits(model, a, pars, options, cons
 % a.Monitor (numeric)
 % a.Axes (cell of numeric)
 
+pars_out=[]; criteria=[]; message=[]; output=[]; 
+
 % single empty argument: show funcs/optim list =================================
 % handle default parameters, if missing
 if nargin == 1 && isempty(model)
@@ -360,6 +362,12 @@ end
 
 % handle parameters: from char, structure or vector
 [pars, pars_isstruct] = iFunc_private_get_pars(model, pars, a.Axes, a.Signal);
+if any(isnan(pars)) % some parameters are not set. Guess them.
+  index = find(isnan(pars));
+  pg = feval(model+0, 'guess', a.Axes{:}, a.Signal); % return Guess using data set
+  pars(index) = pg(index);      % set only those not set.
+  model.ParameterValues = pars; % update model
+end
 
 % handle options
 if isempty(options)
@@ -450,7 +458,6 @@ constraints.funcCount      = 0;
 
 % update the 'model' with starting parameter values
 model.ParameterValues = pars;
-% feval(model, pars, a.Axes{:}, a.Signal); 
 
 if strcmp(options.Display, 'iter') || strcmp(options.Display, 'final')
   fprintf(1, '** Starting fit of %s\n   using model    %s\n   with optimizer %s\n', ...
