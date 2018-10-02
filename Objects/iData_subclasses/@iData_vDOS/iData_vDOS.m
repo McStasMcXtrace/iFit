@@ -71,7 +71,7 @@ classdef iData_vDOS < iData
       
       obj = obj@iData;
       obj.class = mfilename;
-      
+      if ~nargin, return; end
       if ~isa(s, 'iData')
         s = iData(s, varargin{:});
       end

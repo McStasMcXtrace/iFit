@@ -433,7 +433,7 @@ function Phonon_kpath = sqw_phonons_htmlreport_kpath(fid, options, object, maxFr
       && isa(object.UserData.DOS, 'iData') && prod(size(object.UserData.DOS)) > 10000;
   if ~is_dos_there, object.UserData.DOS = []; end
   whos object
-  [Phonon_kpath,kpath,fig] = kpath(object, 0, [0.01 maxFreq],'plot');
+  [Phonon_kpath,kpath,fig] = band_structure(object, 0, [0.01 maxFreq],'plot');
   if isfinite(max(Phonon_kpath)) && max(Phonon_kpath)
     Phonon_kpath = log10(Phonon_kpath/max(Phonon_kpath)); 
   else Phonon_kpath = log10(Phonon_kpath); end
@@ -535,7 +535,7 @@ function sqw_phonons_htmlreport_eval_3D(fid, options, object)
 % ==============================================================================
 function Phonon_powder = sqw_phonons_htmlreport_eval_powder(fid, options, object, maxFreq)
   % the S(hklw) radial average
-  Phonon_powder = sqw_powder(object, [], [], [0 maxFreq]); 
+  Phonon_powder = powder(object); 
   log_Phonon_powder=log(Phonon_powder);
   
   fprintf(fid, '<h3><a name="powder"></a>The powder average S(q,w)</h3>\n');

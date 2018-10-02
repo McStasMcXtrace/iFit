@@ -3,7 +3,7 @@
   <head>
     <meta content="text/html; charset=windows-1252"
       http-equiv="content-type">
-    <title>iFit: Models: Phonons</title>
+    <title>iFit: Models: Phonons Tutorial</title>
   </head>
   <body>
     <h1 style="text-align: center;">iFit: Models: Phonons - Lattice
@@ -79,7 +79,7 @@
     <hr style="width: 100%; height: 2px;">
     <div style="text-align: center;">Commands we use in this page: <span
         style="font-style: italic;"><a href="Models.html#mozTocId990577">sqw_phonons</a>,
-        sqw_kpath, sqw_thermochemistry</span><br>
+        dos, band_structure, thermochemistry</span><br>
       <div align="left"><br>
         In this documentation, we explain in details how to compute the
         dynamical structure factor S(q,w) of Phonons in materials, using
@@ -136,6 +136,8 @@
 
 
 
+
+
             input IO</a> module for a full list of supported input
           formats.<br>
           <br>
@@ -145,6 +147,8 @@
         <ul>
           <li><b>MaterialsProject</b>&lt;<a
               href="https://www.materialsproject.org/">https://www.materialsproject.org/</a>&gt;
+
+
 
 
 
@@ -251,6 +255,8 @@
 
 
 
+
+
             using PhonoPy and VASP. <br>
           </li>
         </ul>
@@ -271,6 +277,8 @@
           <li><b>COD</b> &lt;<a href="http://www.crystallography.net">Crystallography
 
 
+
+
               Open Database</a>&gt; now contains nearly 400 000
             structures, free access. <br>
           </li>
@@ -286,6 +294,8 @@
         <ul>
           <li><b>NoMaD</b> repository &lt;<a
               href="http://nomad-repository.eu/cms/">http://nomad-repository.eu/cms/</a>&gt;
+
+
 
 
 
@@ -358,6 +368,8 @@
 
 
 
+
+
             a calculation service using ICSD materials.</li>
           <br>
           <li><b>CCDC </b><a href="https://www.ccdc.cam.ac.uk/">The
@@ -390,7 +402,7 @@
               standalone window (no Matlab license required)"
               src="images/iFit_standalone.png" style="border: 0px solid;
               border: 0px solid; width: 300px; height: 198px;"
-              border="0" align="right" height="492" width="747"></a>If
+              height="492" align="right" width="747" border="0"></a>If
           you do not have a Matlab license, start the iFit standalone by
           either clicking on its icon, or start a Terminal and type <br>
           <blockquote>
@@ -424,6 +436,8 @@
 
 
 
+
+
                   624817</a>].</font></li>
             <li><font color="#ff0000">Ctrl-C is use for stopping a
                 current computation, or exit iFit. Rather use the menu
@@ -437,8 +451,8 @@
           procedure above and type in the ifit/Matlab prompt:<a
             href="images/Models_sqw_ph_ase_gui.png"><img
               alt="sqw_ph_ase_gui" title="sqw_ph_ase_gui"
-              src="images/Models_sqw_ph_ase_gui.png" border="0"
-              align="right" height="168" width="200"></a>
+              src="images/Models_sqw_ph_ase_gui.png" height="168"
+              align="right" width="200" border="0"></a>
           <blockquote>
             <pre>&gt;&gt; <font color="#3366ff"><font color="#000000">s=</font>sqw_phonons</font>(<font color="#cc33cc">'gui'</font>)<br></pre>
           </blockquote>
@@ -460,8 +474,8 @@
         <blockquote>You can open a TextEdit window by typing:<a
             href="images/iFit_TextEdit.png"><img
               src="images/iFit_TextEdit.png" title="iFit_TextEdit"
-              alt="iFit_TextEdit" border="0" align="right" height="190"
-              width="250"></a>
+              alt="iFit_TextEdit" height="190" align="right" width="250"
+              border="0"></a>
           <blockquote>
             <pre>&gt;&gt; <font color="#3366ff">TextEdit</font></pre>
           </blockquote>
@@ -515,6 +529,8 @@
           where <font color="#cc33cc">'file'</font> is an atomic
           configuration file (POSCAR, CIF, PDB, Yaml, ... see all <a
             href="https://wiki.fysik.dtu.dk/ase/ase/io/io.html">available
+
+
 
 
             formats</a>) or directory containing such information.
@@ -727,6 +743,8 @@ href="http://mail.mccode.org/cgi-bin/mailman/listinfo/ifit-users"
 href="https://www.materialsproject.org/docs/calculations#Total_Energy_Calculation_Details">MaterialsProject
 
 
+
+
             recommendation</a> is around 520 eV. Remember that 1 Ha =
           27.2 eV and 1 Ry=Ha/2=13.6 eV.<br>
           <br>
@@ -797,6 +815,8 @@ href="https://www.materialsproject.org/docs/calculations#Total_Energy_Calculatio
             density per atom is then (1/<i>k<sub>min</sub></i>)<sup>3</sup>&nbsp;
 
 
+
+
             =1728 per atom in the cell.<br>
           </p>
           <p>The conclusion is that increasing either the supercell or
@@ -842,6 +862,8 @@ href="https://www.materialsproject.org/docs/calculations#Total_Energy_Calculatio
         <ul>
         </ul>
         <h4><a name="mozTocId99928" class="mozTocH4"></a><b>Pseudo-potential
+
+
 
 
             specification (XC/PPS)</b></h4>
@@ -1047,6 +1069,8 @@ href="https://www.materialsproject.org/docs/calculations#Total_Energy_Calculatio
           <p>Once a model has been created using the <i>sqw_phonons </i>call,
 
 
+
+
             it is possible to derive a number of physical quantities to
             estimate the quality of the lattice dynamics model. In the
             following, we assume the model has been transferred into a
@@ -1125,10 +1149,8 @@ href="https://www.materialsproject.org/docs/calculations#Total_Energy_Calculatio
         <h4><a name="mozTocId964599" class="mozTocH4"></a><a
             href="images/phonons/Models_Phonons_MgO_qe_thermo.png"><img
               src="images/phonons/Models_Phonons_MgO_qe_thermo.png"
-              title="MgO_qe_thermo" alt="MgO_qe_thermo" border="0"
-              align="right" height="150" width="200"></a>Thermo-chemistry
-
-
+              title="MgO_qe_thermo" alt="MgO_qe_thermo" height="150"
+              align="right" width="200" border="0"></a>Thermo-chemistry
           basic quantities (vDOS,F,U,S,Cv)</h4>
         <blockquote>In a similar way as for the vDOS above, the:<br>
           <ul>
@@ -1146,11 +1168,11 @@ href="https://www.materialsproject.org/docs/calculations#Total_Energy_Calculatio
         <blockquote> Once such a 4D S(hkl,w) <a href="iFunc.html">iFunc</a>
           model has been built, it is possible to compute the 2D powder
           average S(|q|,w) using the <b>powder</b> method:<br>
-          <pre>	&gt;&gt; s=<font color="#3366ff">sqw_phonons</font>([ ifitpath <font color="#cc33cc">'Data/POSCAR_Al'</font>],<font color="#cc33cc">'metal','EMT'</font>); <a href="images/Models_sqw_powder.png"><img alt="sqw_powder" title="sqw_powder" src="images/Models_sqw_powder.png" border="0" align="right" height="153" width="200"></a><br>	&gt;&gt; pow=<font color="#3366ff">powder</font>(s); <font color="#3366ff">plot</font>(log(pow));<br></pre>
+          <pre>	&gt;&gt; s=<font color="#3366ff">sqw_phonons</font>([ ifitpath <font color="#cc33cc">'Data/POSCAR_Al'</font>],<font color="#cc33cc">'metal','EMT'</font>); <a href="images/Models_sqw_powder.png"><img alt="sqw_powder" title="sqw_powder" src="images/Models_sqw_powder.png" height="153" align="right" width="200" border="0"></a><br>	&gt;&gt; pow=<font color="#3366ff">powder</font>(s); <font color="#3366ff">plot</font>(log(pow));<br></pre>
           The same procedure can be applied on an evaluated <a
             href="iData.html"><i>iData</i></a> object out of the model,
-          using the <b>sqw_powder</b> function.<br>
-          <pre>	&gt;&gt; qh=<font color="#3366ff">linspace</font>(0.01,3,50);qk=qh; ql=qh; w=<font color="#3366ff">linspace</font>(0.01,50,51);<br>	&gt;&gt; f=<font color="#3366ff">iData</font>(s,[],qh,qk,ql,w);<br>	&gt;&gt; pow=<font color="#3366ff">sqw_powder</font>(f); <font color="#3366ff">plot</font>(log(pow));
+          using the <b>powder</b> function.<br>
+          <pre>	&gt;&gt; qh=<font color="#3366ff">linspace</font>(0.01,3,50);qk=qh; ql=qh; w=<font color="#3366ff">linspace</font>(0.01,50,51);<br>	&gt;&gt; f=<font color="#3366ff">iData</font>(s,[],qh,qk,ql,w);<br>	&gt;&gt; pow=<font color="#3366ff">powder</font>(f); <font color="#3366ff">plot</font>(log(pow));
 </pre>
           In both cases, when the reciprocal lattice information is
           found in the object (matrix B=[a* b* c*]), the conversion from
@@ -1164,10 +1186,10 @@ href="https://www.materialsproject.org/docs/calculations#Total_Energy_Calculatio
         <blockquote><a
             href="images/phonons/Models_Phonons_MgO_qe_kpath.png"><img
               src="images/phonons/Models_Phonons_MgO_qe_kpath.png"
-              title="MgO_qe_kpath" alt="MgO_qe_kpath" border="0"
-              align="right" height="150" width="200"></a>It is possible
-          to evaluate and plot the phonon frequencies evaluated along
-          the high symmetry directions in the Brillouin zone (BZ). In
+              title="MgO_qe_kpath" alt="MgO_qe_kpath" height="150"
+              align="right" width="200" border="0"></a>It is possible to
+          evaluate and plot the phonon frequencies evaluated along the
+          high symmetry directions in the Brillouin zone (BZ). In
           addition, the neutron intensity is also calculated with:<br>
           <ul>
             <li><font color="#3366ff">band_structure</font>(s)</li>
@@ -1193,6 +1215,8 @@ href="https://www.materialsproject.org/docs/calculations#Total_Energy_Calculatio
             <li>a set of high symmetry points for the lattice space
               group (see <a
                 href="https://en.wikipedia.org/wiki/Brillouin_zone">here</a>),
+
+
 
 
               such as {'Gamma' 'K' 'M' 'Gamma' 'A' 'H' 'L' 'A' }, which
@@ -1252,9 +1276,9 @@ href="https://www.materialsproject.org/docs/calculations#Total_Energy_Calculatio
               q-path in the BZ, but the E (energy) axis can be of
               different length/orientation to compute the Model along
               (q,E) path, resulting in a 2D object which corresponds
-              with a q-cut. Typically, the <b>sqw_kpath</b> function
-              does this, to provide the phonon dispersion curve along
-              principal directions.</li>
+              with a q-cut. Typically, the <b>band_structure</b>
+              function does this, to provide the phonon dispersion curve
+              along principal directions.</li>
             <li>When the H K L E axes are given as mixed
               orientations/length, as vectors or matrices, the Model
               evaluation is done on a HKLE cube, which is well suited to
@@ -1310,8 +1334,8 @@ href="https://www.materialsproject.org/docs/calculations#Total_Energy_Calculatio
             <li><font color="#3366ff">plot</font>(<font color="#3366ff">log</font>(f(25,:,:,:)))<a
                 href="images/phonons/Models_Phonons_Al_emt_plot3.png"><img
                   src="images/phonons/Models_Phonons_Al_emt_plot3.png"
-                  title="Al_emt_plot3" alt="Al_emt_plot3" border="0"
-                  align="right" height="150" width="200"></a></li>
+                  title="Al_emt_plot3" alt="Al_emt_plot3" height="150"
+                  align="right" width="200" border="0"></a></li>
           </ul>
           To rotate the volume, use the 'rotate' icon in the toolbar (an
           arrow on a circle). Other <a href="Plot.html">plot</a> types
@@ -1323,6 +1347,8 @@ href="https://www.materialsproject.org/docs/calculations#Total_Energy_Calculatio
             <li>the <font color="#3366ff">slice</font> method which
               allows an interactive volume exploration (<a
 href="https://fr.mathworks.com/matlabcentral/fileexchange/764-sliceomatic">sliceomatic</a>),
+
+
 
 
               e.g. <font color="#3366ff">slice</font>(<font
@@ -1345,6 +1371,8 @@ href="https://fr.mathworks.com/matlabcentral/fileexchange/764-sliceomatic">slice
           <p>We have seen above that you may use any crystal structure
             stored as a file (POSCAR, CIF, PDB, Yaml, ... see all <a
               href="https://wiki.fysik.dtu.dk/ase/ase/io/io.html">available
+
+
 
 
               formats</a>), such as:<br>
@@ -1449,6 +1477,8 @@ href="https://fr.mathworks.com/matlabcentral/fileexchange/764-sliceomatic">slice
             &lt;<a href="http://phonondb.mtl.kyoto-u.ac.jp/">http://phonondb.mtl.kyoto-u.ac.jp/</a>&gt;.
 
 
+
+
             This location should contain e.g. files:</p>
           <ul>
             <li>FORCE_SETS</li>
@@ -1544,8 +1574,7 @@ href="https://fr.mathworks.com/matlabcentral/fileexchange/764-sliceomatic">slice
                 color="#cc33cc">'POSCAR_SrTiO3'</font>,<font
                 color="#cc33cc">'quantumespresso</font><font
                 color="#cc33cc">'</font>)</li>
-            <li><font color="#3366ff">sqw_phonons</font>(s,<font
-                color="#cc33cc"> <b>'report</b>'</font>)</li>
+            <li><font color="#3366ff">publish</font>(s)</li>
             <li><font color="#3366ff">web</font>(
               s.UserData.options.report )</li>
           </ul>
@@ -1587,11 +1616,13 @@ href="https://fr.mathworks.com/matlabcentral/fileexchange/764-sliceomatic">slice
           <li><b>s=</b><font color="#3366ff">sqw_phonons</font>(<font
               color="#cc33cc">'POSCAR_Al'</font>,<font color="#cc33cc">'quantumespresso</font><font
               color="#cc33cc">'</font>,<font color="#cc33cc">'metal'</font>)</li>
-          <li><font color="#3366ff">sqw_kpath</font>(s)</li>
-          <li><font color="#3366ff">sqw_thermochemistry</font>(s)</li>
+          <li><font color="#3366ff">band_structure</font>(s)</li>
+          <li><font color="#3366ff">thermochemistry</font>(s)</li>
           <li>qh=0.01:0.5:1.5; qk=qh; ql=qh; w=0.01:0.5:51; f=s([],
             qh,qk,ql<b>'</b>,w);</li>
           <li><font color="#3366ff">plot3</font>(<font color="#3366ff">log10</font>(f(1,:,:,:)))<i>&nbsp;
+
+
 
 
               % qh ~ 0 plane</i><br>
@@ -1604,20 +1635,22 @@ href="https://fr.mathworks.com/matlabcentral/fileexchange/764-sliceomatic">slice
         QuantumEspresso and AbInit calculators are the fastest.<br>
         <br>
         Results with different DFT codes<br>
-        <table border="1" cellpadding="2" cellspacing="2" height="541"
-          width="1102">
+        <table height="541" cellspacing="2" cellpadding="2" width="1102"
+          border="1">
           <tbody>
             <tr>
-              <td bgcolor="#ffffcc" valign="top"><b>Code</b><br>
+              <td valign="top" bgcolor="#ffffcc"><b>Code</b><br>
               </td>
-              <td bgcolor="#ffffcc" valign="top"><b>computation time <br>
+              <td valign="top" bgcolor="#ffffcc"><b>computation time <br>
                   (24 cores, 2.7 GHz)</b><br>
                 <br>
               </td>
-              <td bgcolor="#ffffcc" valign="top"><b>sqw_kpath(s)</b></td>
-              <td bgcolor="#ffffcc" valign="top"><b>sqw_thermochemistry(s)</b><b><br>
+              <td valign="top" bgcolor="#ffffcc"><b>band_structure(s)</b></td>
+              <td valign="top" bgcolor="#ffffcc"><b>thermochemistry(s)</b><b><br>
                 </b></td>
-              <td bgcolor="#ffffcc" valign="top"><b>plot3(log10(f(1,:,:,:)))
+              <td valign="top" bgcolor="#ffffcc"><b>plot3(log10(f(1,:,:,:)))
+
+
 
 
 
@@ -1634,13 +1667,15 @@ href="https://fr.mathworks.com/matlabcentral/fileexchange/764-sliceomatic">slice
                 </b>with <i>qh=0.01:0.5:1.5;qk=qh; ql=qh;
                   w=0.01:0.5:51;</i><i><br>
                 </i><i>f=s([], qh,qk,ql',w);</i></td>
-              <td bgcolor="#ffffcc" valign="top"><b>command:<br>
+              <td valign="top" bgcolor="#ffffcc"><b>command:<br>
                   s=</b><font color="#3366ff">sqw_phonons</font>(<font
                   color="#cc33cc">'POSCAR_Al',</font></td>
             </tr>
             <tr>
               <td valign="top">Reference from <a
                   href="http://www.computingformaterials.com/phoncfm/3fig/Xal.html">Phonon/Parlinski
+
+
 
 
 
@@ -1657,7 +1692,7 @@ href="https://fr.mathworks.com/matlabcentral/fileexchange/764-sliceomatic">slice
                   href="http://www.computingformaterials.com/phoncfm/3fig/refer/al1.gif"><img
                     alt="al1" title="al1"
                     src="http://www.computingformaterials.com/phoncfm/3fig/refer/al1.gif"
-                    border="0" height="133" width="200"></a><br>
+                    height="133" width="200" border="0"></a><br>
               </td>
               <td valign="top"><br>
               </td>
@@ -1667,7 +1702,7 @@ href="https://fr.mathworks.com/matlabcentral/fileexchange/764-sliceomatic">slice
               </td>
             </tr>
             <tr>
-              <td bgcolor="#ffcccc" valign="top"><b>QuantumEspresso</b><b>
+              <td valign="top" bgcolor="#ffcccc"><b>QuantumEspresso</b><b>
                   / SSSP</b></td>
               <td valign="top">87<br>
               </td>
@@ -1675,24 +1710,24 @@ href="https://fr.mathworks.com/matlabcentral/fileexchange/764-sliceomatic">slice
                   href="images/phonons/Models_Phonons_Al_qe_kpath.png"><img
                     alt="Al_qe_kpath" title="Al_qe_kpath"
                     src="images/phonons/Models_Phonons_Al_qe_kpath.png"
-                    border="0" height="150" width="200"></a><br>
+                    height="150" width="200" border="0"></a><br>
               </td>
               <td valign="top"><a
                   href="images/phonons/Models_Phonons_Al_qe_thermo.png"><img
                     alt="Al_qe_thermo" title="Al_qe_thermo"
                     src="images/phonons/Models_Phonons_Al_qe_thermo.png"
-                    border="0" height="150" width="200"></a><br>
+                    height="150" width="200" border="0"></a><br>
               </td>
               <td valign="top"><a
                   href="images/phonons/Models_Phonons_Al_qe_plot3.png"><img
                     alt="Al_qe_plot3" title="Al_qe_plot3"
                     src="images/phonons/Models_Phonons_Al_qe_plot3.png"
-                    border="0" height="150" width="200"></a><br>
+                    height="150" width="200" border="0"></a><br>
               </td>
               <td valign="top"><font color="#cc33cc">'qe','metal'</font>)</td>
             </tr>
             <tr>
-              <td bgcolor="#ffcccc" valign="top"><b>VASP (4.6)</b><b> /
+              <td valign="top" bgcolor="#ffcccc"><b>VASP (4.6)</b><b> /
                   PAW PBE</b></td>
               <td valign="top">525<br>
               </td>
@@ -1700,24 +1735,24 @@ href="https://fr.mathworks.com/matlabcentral/fileexchange/764-sliceomatic">slice
                   href="images/phonons/Models_Phonons_Al_vasp_kpath.png"><img
                     alt="Al_vasp_kpath" title="Al_vasp_kpath"
                     src="images/phonons/Models_Phonons_Al_vasp_kpath.png"
-                    border="0" height="150" width="200"></a><br>
+                    height="150" width="200" border="0"></a><br>
               </td>
               <td valign="top"><a
                   href="images/phonons/Models_Phonons_Al_vasp_thermo.png"><img
                     alt="Al_vasp_thermo" title="Al_vasp_thermo"
                     src="images/phonons/Models_Phonons_Al_vasp_thermo.png"
-                    border="0" height="150" width="200"></a><br>
+                    height="150" width="200" border="0"></a><br>
               </td>
               <td valign="top"><a
                   href="images/phonons/Models_Phonons_Al_vasp_plot3.png"><img
                     alt="Al_vasp_plot3" title="Al_vasp_plot3"
                     src="images/phonons/Models_Phonons_Al_vasp_plot3.png"
-                    border="0" height="150" width="200"></a><br>
+                    height="150" width="200" border="0"></a><br>
               </td>
               <td valign="top"><font color="#cc33cc">'vasp','metal'</font>)</td>
             </tr>
             <tr>
-              <td bgcolor="#ffcccc" valign="top"><b>Elk</b><b><br>
+              <td valign="top" bgcolor="#ffcccc"><b>Elk</b><b><br>
                 </b> </td>
               <td valign="top">9820<br>
               </td>
@@ -1725,24 +1760,24 @@ href="https://fr.mathworks.com/matlabcentral/fileexchange/764-sliceomatic">slice
                   href="images/phonons/Models_Phonons_Al_elk_kpath.png"><img
                     alt="Al_elk_kpath" title="Al_elk_kpath"
                     src="images/phonons/Models_Phonons_Al_elk_kpath.png"
-                    border="0" height="150" width="200"></a><br>
+                    height="150" width="200" border="0"></a><br>
               </td>
               <td valign="top"><a
                   href="images/phonons/Models_Phonons_Al_elk_thermo.png"><img
                     alt="Al_emlk_thermo" title="Al_elk_thermo"
                     src="images/phonons/Models_Phonons_Al_elk_thermo.png"
-                    border="0" height="150" width="200"></a><br>
+                    height="150" width="200" border="0"></a><br>
               </td>
               <td valign="top"><a
                   href="images/phonons/Models_Phonons_Al_elk_plot3.png"><img
                     alt="Al_elk_plot3" title="Al_elk_plot3"
                     src="images/phonons/Models_Phonons_Al_elk_plot3.png"
-                    border="0" height="150" width="200"></a><br>
+                    height="150" width="200" border="0"></a><br>
               </td>
               <td valign="top"><font color="#cc33cc">'elk','metal'</font>)</td>
             </tr>
             <tr>
-              <td bgcolor="#ffcccc" valign="top"><b>EMT</b><b><br>
+              <td valign="top" bgcolor="#ffcccc"><b>EMT</b><b><br>
                 </b> </td>
               <td valign="top">1<br>
               </td>
@@ -1750,26 +1785,26 @@ href="https://fr.mathworks.com/matlabcentral/fileexchange/764-sliceomatic">slice
                   href="images/phonons/Models_Phonons_Al_emt_kpath.png"><img
                     alt="Al_emt_kpath" title="Al_emt_kpath"
                     src="images/phonons/Models_Phonons_Al_emt_kpath.png"
-                    border="0" height="150" width="200"></a><br>
+                    height="150" width="200" border="0"></a><br>
               </td>
               <td valign="top"><a
                   href="images/phonons/Models_Phonons_Al_emt_thermo.png"><img
                     alt="Al_emt_thermo" title="Al_emt_thermo"
                     src="images/phonons/Models_Phonons_Al_emt_thermo.png"
-                    border="0" height="150" width="200"></a><br>
+                    height="150" width="200" border="0"></a><br>
               </td>
               <td valign="top"><a
                   href="images/phonons/Models_Phonons_Al_emt_plot3.png"><img
                     alt="Al_emt_plot3" title="Al_emt_plot3"
                     src="images/phonons/Models_Phonons_Al_emt_plot3.png"
-                    border="0" height="150" width="200"></a><br>
+                    height="150" width="200" border="0"></a><br>
               </td>
               <td valign="top"><font color="#cc33cc">'emt','metal'</font>)<br>
                 only for limited elements<br>
               </td>
             </tr>
             <tr>
-              <td bgcolor="#ffcccc" valign="top"><b>ABINIT&nbsp; / GGA
+              <td valign="top" bgcolor="#ffcccc"><b>ABINIT&nbsp; / GGA
                   FHI</b><b><br>
                 </b> </td>
               <td valign="top">78<br>
@@ -1778,19 +1813,19 @@ href="https://fr.mathworks.com/matlabcentral/fileexchange/764-sliceomatic">slice
                   href="images/phonons/Models_Phonons_Al_abinit_kpath.png"><img
                     alt="Al_abinit_kpath" title="Al_abinit_kpath"
                     src="images/phonons/Models_Phonons_Al_abinit_kpath.png"
-                    border="0" height="150" width="200"></a><br>
+                    height="150" width="200" border="0"></a><br>
               </td>
               <td valign="top"><a
                   href="images/phonons/Models_Phonons_Al_abinit_thermo.png"><img
                     alt="Al_abinit_thermo" title="Al_abinit_thermo"
                     src="images/phonons/Models_Phonons_Al_abinit_thermo.png"
-                    border="0" height="150" width="200"></a><br>
+                    height="150" width="200" border="0"></a><br>
               </td>
               <td valign="top"> <a
                   href="images/phonons/Models_Phonons_Al_abinit_plot3.png"><img
                     alt="Al_abinit_plot3" title="Al_abinit_plot3"
                     src="images/phonons/Models_Phonons_Al_abinit_plot3.png"
-                    border="0" height="150" width="200"></a><br>
+                    height="150" width="200" border="0"></a><br>
               </td>
               <td valign="top"><font color="#cc33cc">'abinit','metal'</font>)
                 <i><br>
@@ -1798,7 +1833,7 @@ href="https://fr.mathworks.com/matlabcentral/fileexchange/764-sliceomatic">slice
               </td>
             </tr>
             <tr>
-              <td bgcolor="#ffcccc" valign="top"><b>ABINIT / PAW (GBRV)</b><b><br>
+              <td valign="top" bgcolor="#ffcccc"><b>ABINIT / PAW (GBRV)</b><b><br>
                 </b> </td>
               <td valign="top">87<br>
               </td>
@@ -1807,26 +1842,26 @@ href="https://fr.mathworks.com/matlabcentral/fileexchange/764-sliceomatic">slice
                     alt="Al_abinit_paw_kpath"
                     title="Al_abinit_paw_kpath"
                     src="images/phonons/Models_Phonons_Al_abinit_paw_kpath.png"
-                    border="0" height="150" width="200"></a><br>
+                    height="150" width="200" border="0"></a><br>
               </td>
               <td valign="top"><a
                   href="images/phonons/Models_Phonons_Al_abinit_paw_thermo.png"><img
                     alt="Al_abinit_paw_thermo"
                     title="Al_abinit_paw_thermo"
                     src="images/phonons/Models_Phonons_Al_abinit_paw_thermo.png"
-                    border="0" height="150" width="200"></a><br>
+                    height="150" width="200" border="0"></a><br>
               </td>
               <td valign="top"><a
                   href="images/phonons/Models_Phonons_Al_abinit_paw_plot3.png"><img
                     alt="Al_abinit_paw_plot3"
                     title="Al_abinit_paw_plot3"
                     src="images/phonons/Models_Phonons_Al_abinit_paw_plot3.png"
-                    border="0" height="150" width="200"></a><br>
+                    height="150" width="200" border="0"></a><br>
               </td>
               <td valign="top"><font color="#cc33cc">'abinit','metal','pps=paw'</font>)</td>
             </tr>
             <tr>
-              <td bgcolor="#ffcccc" valign="top"><b>ABINIT / PAWXML
+              <td valign="top" bgcolor="#ffcccc"><b>ABINIT / PAWXML
                   (JTH)</b><b><br>
                 </b> </td>
               <td valign="top">84<br>
@@ -1836,26 +1871,26 @@ href="https://fr.mathworks.com/matlabcentral/fileexchange/764-sliceomatic">slice
                     alt="Al_abinit_pawxml_kpath"
                     title="Al_abinit_pawxml_kpath"
                     src="images/phonons/Models_Phonons_Al_abinit_pawxml_kpath.png"
-                    border="0" height="150" width="200"></a><br>
+                    height="150" width="200" border="0"></a><br>
               </td>
               <td valign="top"><a
                   href="images/phonons/Models_Phonons_Al_abinit_pawxml_thermo.png"><img
                     alt="Al_abinit_pawxml_thermo"
                     title="Al_abinit_pawxml_thermo"
                     src="images/phonons/Models_Phonons_Al_abinit_pawxml_thermo.png"
-                    border="0" height="150" width="200"></a><br>
+                    height="150" width="200" border="0"></a><br>
               </td>
               <td valign="top"><a
                   href="images/phonons/Models_Phonons_Al_abinit_pawxml_plot3.png"><img
                     alt="Al_abinit_pawxml_plot3"
                     title="Al_abinit_pawxml_plot3"
                     src="images/phonons/Models_Phonons_Al_abinit_pawxml_plot3.png"
-                    border="0" height="150" width="200"></a><br>
+                    height="150" width="200" border="0"></a><br>
               </td>
               <td valign="top"><font color="#cc33cc">'abinit','metal','pps=pawxml'</font>)</td>
             </tr>
             <tr>
-              <td bgcolor="#ffcccc" valign="top"><b>ABINIT / HGH</b><b><br>
+              <td valign="top" bgcolor="#ffcccc"><b>ABINIT / HGH</b><b><br>
                 </b> </td>
               <td valign="top">64<br>
               </td>
@@ -1864,50 +1899,50 @@ href="https://fr.mathworks.com/matlabcentral/fileexchange/764-sliceomatic">slice
                     alt="Al_abinit_hgh_kpath"
                     title="Al_abinit_hgh_kpath"
                     src="images/phonons/Models_Phonons_Al_abinit_hgh_kpath.png"
-                    border="0" height="150" width="200"></a> </td>
+                    height="150" width="200" border="0"></a> </td>
               <td valign="top"><a
                   href="images/phonons/Models_Phonons_Al_abinit_hgh_thermo.png"><img
                     alt="Al_abinit_hgh_thermo"
                     title="Al_abinit_hgh_thermo"
                     src="images/phonons/Models_Phonons_Al_abinit_hgh_thermo.png"
-                    border="0" height="150" width="200"></a><br>
+                    height="150" width="200" border="0"></a><br>
               </td>
               <td valign="top"><a
                   href="images/phonons/Models_Phonons_Al_abinit_hgh_plot3.png"><img
                     alt="Al_abinit_hgh_plot3"
                     title="Al_abinit_hgh_plot3"
                     src="images/phonons/Models_Phonons_Al_abinit_hgh_plot3.png"
-                    border="0" height="150" width="200"></a> </td>
+                    height="150" width="200" border="0"></a> </td>
               <td valign="top"><font color="#cc33cc">'abinit','metal','pps=hgh'</font>)</td>
             </tr>
             <tr>
-              <td bgcolor="#ffcccc" valign="top"><b>ABINIT / TM</b><b><br>
+              <td valign="top" bgcolor="#ffcccc"><b>ABINIT / TM</b><b><br>
                 </b> </td>
               <td valign="top">73<br>
               </td>
               <td valign="top"><a
                   href="images/phonons/Models_Phonons_Al_abinit_tm_kpath.png"><img
                     alt="Al_abinit_tm_kpath" title="Al_abinit_tm_kpath"
-src="images/phonons/Models_Phonons_Al_abinit_tm_kpath.png" border="0"
-                    height="150" width="200"></a><br>
+src="images/phonons/Models_Phonons_Al_abinit_tm_kpath.png" height="150"
+                    width="200" border="0"></a><br>
               </td>
               <td valign="top"><a
                   href="images/phonons/Models_Phonons_Al_abinit_tm_thermo.png"><img
                     alt="Al_abinit_tm_thermo"
                     title="Al_abinit_tm_thermo"
                     src="images/phonons/Models_Phonons_Al_abinit_tm_thermo.png"
-                    border="0" height="150" width="200"></a><br>
+                    height="150" width="200" border="0"></a><br>
               </td>
               <td valign="top"><a
                   href="images/phonons/Models_Phonons_Al_abinit_tm_plot3.png"><img
                     alt="Al_abinit_tm_plot3" title="Al_abinit_tm_plot3"
-src="images/phonons/Models_Phonons_Al_abinit_tm_plot3.png" border="0"
-                    height="150" width="200"></a><br>
+src="images/phonons/Models_Phonons_Al_abinit_tm_plot3.png" height="150"
+                    width="200" border="0"></a><br>
               </td>
               <td valign="top"><font color="#cc33cc">'abinit','metal','pps=tm'</font>)</td>
             </tr>
             <tr>
-              <td bgcolor="#ffccff" valign="top"><b>GPAW</b><br>
+              <td valign="top" bgcolor="#ffccff"><b>GPAW</b><br>
               </td>
               <td valign="top">465<br>
               </td>
@@ -1944,11 +1979,13 @@ src="images/phonons/Models_Phonons_Al_abinit_tm_plot3.png" border="0"
           <li><b>s=</b><font color="#3366ff">sqw_phonons</font>(<font
               color="#cc33cc">'POSCAR_MgO'</font>,<font color="#cc33cc">'quantumespresso</font><font
               color="#cc33cc">'</font>,<font color="#cc33cc">'insulator'</font>)</li>
-          <li><font color="#3366ff">sqw_kpath</font>(s)</li>
-          <li><font color="#3366ff">sqw_thermochemistry</font>(s)</li>
+          <li><font color="#3366ff">band_structure</font>(s)</li>
+          <li><font color="#3366ff">thermochemistry</font>(s)</li>
           <li><i>qh=0.01:0.5:1.5;qk=qh; ql=qh; w=0.01:0.5:51;</i><i>
               f=s([], qh,qk,ql',w);</i></li>
           <li><font color="#3366ff">plot3</font>(<font color="#3366ff">log10</font>(f(1,:,:,:)))<i>&nbsp;
+
+
 
 
               % qh ~ 0 plane</i></li>
@@ -1963,20 +2000,22 @@ src="images/phonons/Models_Phonons_Al_abinit_tm_plot3.png" border="0"
         reliable results or fail.<br>
         <ul>
         </ul>
-        <table border="1" cellpadding="2" cellspacing="2" height="541"
-          width="1102">
+        <table height="541" cellspacing="2" cellpadding="2" width="1102"
+          border="1">
           <tbody>
             <tr>
-              <td bgcolor="#ffffcc" valign="top"><b>Code</b><br>
+              <td valign="top" bgcolor="#ffffcc"><b>Code</b><br>
               </td>
-              <td bgcolor="#ffffcc" valign="top"><b>computation time <br>
+              <td valign="top" bgcolor="#ffffcc"><b>computation time <br>
                   (24 cores, 2.7 GHz)</b><br>
                 <br>
               </td>
-              <td bgcolor="#ffffcc" valign="top"><b>sqw_kpath(s)</b></td>
-              <td bgcolor="#ffffcc" valign="top"><b>sqw_thermochemistry(s)</b><b><br>
+              <td valign="top" bgcolor="#ffffcc"><b>band_structure(s)</b></td>
+              <td valign="top" bgcolor="#ffffcc"><b>thermochemistry(s)</b><b><br>
                 </b></td>
-              <td bgcolor="#ffffcc" valign="top"><b>plot3(log10(f(1,:,:,:)))
+              <td valign="top" bgcolor="#ffffcc"><b>plot3(log10(f(1,:,:,:)))
+
+
 
 
 
@@ -1993,7 +2032,7 @@ src="images/phonons/Models_Phonons_Al_abinit_tm_plot3.png" border="0"
                 </b>with <i>qh=0.01:0.5:1.5;qk=qh; ql=qh;
                   w=0.01:0.5:90;</i><i><br>
                 </i><i>f=s([], qh,qk,ql',w);</i></td>
-              <td bgcolor="#ffffcc" valign="top"><b>command:<br>
+              <td valign="top" bgcolor="#ffffcc"><b>command:<br>
                   s=</b><font color="#3366ff">sqw_phonons</font>(<font
                   color="#cc33cc">'POSCAR_MgO',</font></td>
             </tr>
@@ -2001,6 +2040,8 @@ src="images/phonons/Models_Phonons_Al_abinit_tm_plot3.png" border="0"
               <td valign="top">Reference from PhononDB<br>
                 <a
                   href="http://phonondb.mtl.kyoto-u.ac.jp/ph20170621/d001/mp-1265.html">MgO
+
+
 
 
 
@@ -2018,25 +2059,27 @@ src="images/phonons/Models_Phonons_Al_abinit_tm_plot3.png" border="0"
                   href="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-1265-band.png"><img
                     alt="mp-1265-band" title="mp-1265-band"
                     src="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-1265-band.png"
-                    border="0" height="103" width="200"></a><br>
+                    height="103" width="200" border="0"></a><br>
               </td>
               <td valign="top"><a
                   href="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-1265-tprops1.png"><img
                     alt="mp-1265-tprops1" title="mp-1265-tprops1"
                     src="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-1265-tprops1.png"
-                    border="0" height="133" width="200"></a><br>
+                    height="133" width="200" border="0"></a><br>
               </td>
               <td valign="top"><a
                   href="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-1265-dos1.png"><img
                     alt="mp-1265-dos1" title="mp-1265-dos1"
                     src="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-1265-dos1.png"
-                    border="0" height="112" width="200"></a></td>
+                    height="112" width="200" border="0"></a></td>
               <td valign="top"><br>
               </td>
             </tr>
             <tr>
               <td valign="top">Reference from p50 in <a
                   href="http://dx.doi.org/10.1007/978-3-642-81347-4">Biltz
+
+
 
 
                   &amp; Kress, Springer Series 10 (1979)</a><br>
@@ -2046,22 +2089,22 @@ src="images/phonons/Models_Phonons_Al_abinit_tm_plot3.png" border="0"
               <td valign="top"><a
                   href="/images/phonons/Models_Phonons_MgO_Bilz_kpath.png"><img
 src="images/phonons/Models_Phonons_MgO_Bilz_kpath.png"
-                    title="MgO_Bilz_kpat" alt="MgO_Bilz_kpat" border="0"
-                    height="152" width="200"></a><br>
+                    title="MgO_Bilz_kpat" alt="MgO_Bilz_kpat"
+                    height="152" width="200" border="0"></a><br>
               </td>
               <td valign="top"><br>
               </td>
               <td valign="top"><a
                   href="images/phonons/Models_Phonons_MgO_Biltz_dos.png"><img
 src="images/phonons/Models_Phonons_MgO_Biltz_dos.png"
-                    title="MgO_Biltz_dos" alt="MgO_Biltz_dos" border="0"
-                    height="118" width="200"></a><br>
+                    title="MgO_Biltz_dos" alt="MgO_Biltz_dos"
+                    height="118" width="200" border="0"></a><br>
               </td>
               <td valign="top"><br>
               </td>
             </tr>
             <tr>
-              <td bgcolor="#ffcccc" valign="top"><b>QuantumEspresso</b><b>
+              <td valign="top" bgcolor="#ffcccc"><b>QuantumEspresso</b><b>
                   / SSSP</b></td>
               <td valign="top">408<br>
               </td>
@@ -2069,24 +2112,24 @@ src="images/phonons/Models_Phonons_MgO_Biltz_dos.png"
                   href="images/phonons/Models_Phonons_MgO_qe_kpath.png"><img
                     alt="MgO_qe_kpath" title="MgO_qe_kpath"
                     src="images/phonons/Models_Phonons_MgO_qe_kpath.png"
-                    border="0" height="150" width="200"></a><br>
+                    height="150" width="200" border="0"></a><br>
               </td>
               <td valign="top"><a
                   href="images/phonons/Models_Phonons_MgO_qe_thermo.png"><img
                     alt="MgO_qe_thermo" title="MgO_qe_thermo"
                     src="images/phonons/Models_Phonons_MgO_qe_thermo.png"
-                    border="0" height="150" width="200"></a><br>
+                    height="150" width="200" border="0"></a><br>
               </td>
               <td valign="top"><a
                   href="images/phonons/Models_Phonons_MgO_qe_plot3.png"><img
                     alt="MgO_qe_plot3" title="MgO_qe_plot3"
                     src="images/phonons/Models_Phonons_MgO_qe_plot3.png"
-                    border="0" height="150" width="200"></a><br>
+                    height="150" width="200" border="0"></a><br>
               </td>
               <td valign="top"><font color="#cc33cc">'qe'</font>)</td>
             </tr>
             <tr>
-              <td bgcolor="#ffcccc" valign="top"><b>VASP (4.6)</b><b> /
+              <td valign="top" bgcolor="#ffcccc"><b>VASP (4.6)</b><b> /
                   PAW PBE</b></td>
               <td valign="top">636<br>
               </td>
@@ -2094,24 +2137,24 @@ src="images/phonons/Models_Phonons_MgO_Biltz_dos.png"
                   href="images/phonons/Models_Phonons_MgO_vasp_kpath.png"><img
                     alt="MgO_vasp_kpath" title="MgO_vasp_kpath"
                     src="images/phonons/Models_Phonons_MgO_vasp_kpath.png"
-                    border="0" height="150" width="200"></a><br>
+                    height="150" width="200" border="0"></a><br>
               </td>
               <td valign="top"><a
                   href="images/phonons/Models_Phonons_MgO_vasp_thermo.png"><img
                     alt="MgO_vasp_thermo" title="MgO_vasp_thermo"
                     src="images/phonons/Models_Phonons_MgO_vasp_thermo.png"
-                    border="0" height="150" width="200"></a><br>
+                    height="150" width="200" border="0"></a><br>
               </td>
               <td valign="top"><a
                   href="images/phonons/Models_Phonons_MgO_vasp_plot3.png"><img
                     alt="MgO_vasp_plot3" title="MgO_vasp_plot3"
                     src="images/phonons/Models_Phonons_MgO_vasp_plot3.png"
-                    border="0" height="150" width="200"></a><br>
+                    height="150" width="200" border="0"></a><br>
               </td>
               <td valign="top"><font color="#cc33cc">'vasp'</font>)</td>
             </tr>
             <tr>
-              <td bgcolor="#ffcccc" valign="top"><b>Elk</b><b><br>
+              <td valign="top" bgcolor="#ffcccc"><b>Elk</b><b><br>
                   <br>
                   <i>wrong at small q, </i><i>near Gamma.</i><br>
                 </b></td>
@@ -2121,24 +2164,24 @@ src="images/phonons/Models_Phonons_MgO_Biltz_dos.png"
                   href="images/phonons/Models_Phonons_MgO_elk_kpath.png"><img
                     alt="MgO_elk_kpath" title="MgO_elk_kpath"
                     src="images/phonons/Models_Phonons_MgO_elk_kpath.png"
-                    border="0" height="150" width="200"></a><br>
+                    height="150" width="200" border="0"></a><br>
               </td>
               <td valign="top"><a
                   href="images/phonons/Models_Phonons_MgO_elk_thermo.png"><img
                     alt="MgO_elk_thermo" title="MgO_elk_thermo"
                     src="images/phonons/Models_Phonons_MgO_elk_thermo.png"
-                    border="0" height="150" width="200"></a><br>
+                    height="150" width="200" border="0"></a><br>
               </td>
               <td valign="top"><a
                   href="images/phonons/Models_Phonons_MgO_elk_plot3.png"><img
                     alt="MgO_elk_plot3" title="MgO_elk_plot3"
                     src="images/phonons/Models_Phonons_MgO_elk_plot3.png"
-                    border="0" height="150" width="200"></a><br>
+                    height="150" width="200" border="0"></a><br>
               </td>
               <td valign="top"><font color="#cc33cc">'elk'</font>)</td>
             </tr>
             <tr>
-              <td bgcolor="#ffcccc" valign="top">ABINIT / PAW (GBRV)<br>
+              <td valign="top" bgcolor="#ffcccc">ABINIT / PAW (GBRV)<br>
                 <br>
                 <i><b>wrong</b></i><br>
               </td>
@@ -2149,21 +2192,21 @@ src="images/phonons/Models_Phonons_MgO_Biltz_dos.png"
                     alt="MgO_abinit_paw_kpath"
                     title="MgO_abinit_paw_kpath"
                     src="images/phonons/Models_Phonons_MgO_abinit_paw_kpath.png"
-                    border="0" height="150" width="200"></a><br>
+                    height="150" width="200" border="0"></a><br>
               </td>
               <td valign="top"><a
                   href="images/phonons/Models_Phonons_MgO_abinit_paw_thermo.png"><img
                     alt="MgO_abinit_paw_thermo"
                     title="MgO_abinit_paw_thermo"
                     src="images/phonons/Models_Phonons_MgO_abinit_paw_thermo.png"
-                    border="0" height="150" width="200"></a><br>
+                    height="150" width="200" border="0"></a><br>
               </td>
               <td valign="top"><a
                   href="images/phonons/Models_Phonons_MgO_abinit_paw_plot3.png"><img
                     alt="MgO_abinit_paw_plot3"
                     title="MgO_abinit_paw_plot3"
                     src="images/phonons/Models_Phonons_MgO_abinit_paw_plot3.png"
-                    border="0" height="150" width="200"></a><br>
+                    height="150" width="200" border="0"></a><br>
               </td>
               <td valign="top"><font color="#cc33cc">'abinit','pps=paw'</font>)</td>
             </tr>
@@ -2194,11 +2237,13 @@ src="images/phonons/Models_Phonons_MgO_Biltz_dos.png"
               color="#cc33cc">'POSCAR_SrTiO3'</font>,<font
               color="#cc33cc">'quantumespresso</font><font
               color="#cc33cc">'</font>,<font color="#cc33cc">'insulator'</font>)</li>
-          <li><font color="#3366ff">sqw_kpath</font>(s)</li>
-          <li><font color="#3366ff">sqw_thermochemistry</font>(s)</li>
+          <li><font color="#3366ff">band_structure</font>(s)</li>
+          <li><font color="#3366ff">thermochemistry</font>(s)</li>
           <li><i>qh=0.01:0.5:1.5;qk=qh; ql=qh; w=0.01:0.5:51;</i><i>
               f=s([], qh,qk,ql',w);</i></li>
           <li><font color="#3366ff">plot3</font>(<font color="#3366ff">log10</font>(f(1,:,:,:)))<i>&nbsp;
+
+
 
 
               % qh ~ 0 plane</i></li>
@@ -2210,20 +2255,22 @@ src="images/phonons/Models_Phonons_MgO_Biltz_dos.png"
         Other calculators provide questionable results or fail.<br>
         <ul>
         </ul>
-        <table border="1" cellpadding="2" cellspacing="2" height="541"
-          width="1102">
+        <table height="541" cellspacing="2" cellpadding="2" width="1102"
+          border="1">
           <tbody>
             <tr>
-              <td bgcolor="#ffffcc" valign="top"><b>Code</b><br>
+              <td valign="top" bgcolor="#ffffcc"><b>Code</b><br>
               </td>
-              <td bgcolor="#ffffcc" valign="top"><b>computation time <br>
+              <td valign="top" bgcolor="#ffffcc"><b>computation time <br>
                   (24 cores, 2.7 GHz)</b><br>
                 <br>
               </td>
-              <td bgcolor="#ffffcc" valign="top"><b>sqw_kpath(s)</b></td>
-              <td bgcolor="#ffffcc" valign="top"><b>sqw_thermochemistry(s)</b><b><br>
+              <td valign="top" bgcolor="#ffffcc"><b>band_structure(s)</b></td>
+              <td valign="top" bgcolor="#ffffcc"><b>thermochemistry(s)</b><b><br>
                 </b></td>
-              <td bgcolor="#ffffcc" valign="top"><b>plot3(log10(f(1,:,:,:))
+              <td valign="top" bgcolor="#ffffcc"><b>plot3(log10(f(1,:,:,:))
+
+
 
 
 
@@ -2240,7 +2287,7 @@ src="images/phonons/Models_Phonons_MgO_Biltz_dos.png"
                 </b>with <i>qh=0.01:0.5:1.50;qk=qh; ql=qh;
                   w=0.01:0.5:110;</i><i><br>
                 </i><i>f=s([], qh,qk,ql',w);</i></td>
-              <td bgcolor="#ffffcc" valign="top"><b>command:<br>
+              <td valign="top" bgcolor="#ffffcc"><b>command:<br>
                   s=</b><font color="#3366ff">sqw_phonons</font>(<font
                   color="#cc33cc">'POSCAR_SrTiO3',</font></td>
             </tr>
@@ -2248,6 +2295,8 @@ src="images/phonons/Models_Phonons_MgO_Biltz_dos.png"
               <td valign="top">Reference from PhononDB<br>
                 <a
                   href="http://phonondb.mtl.kyoto-u.ac.jp/ph20170621/d005/mp-5229.html">SrTiO3
+
+
 
 
 
@@ -2265,19 +2314,19 @@ src="images/phonons/Models_Phonons_MgO_Biltz_dos.png"
                   href="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-5229-band.png"><img
                     alt="mp-5229-band" title="mp-5229-band"
                     src="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-5229-band.png"
-                    border="0" height="83" width="200"></a><br>
+                    height="83" width="200" border="0"></a><br>
               </td>
               <td valign="top"><a
                   href="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-5229-tprops.png"><img
                     alt="mp-5229-tprops." title="mp-5229-tprops."
                     src="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-5229-tprops.png"
-                    border="0" height="133" width="200"></a><br>
+                    height="133" width="200" border="0"></a><br>
               </td>
               <td valign="top"><a
                   href="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-5229-dos1.png"><img
                     alt="mp-5229-dos1" title="mp-5229-dos1"
                     src="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-5229-dos1.png"
-                    border="0" height="112" width="200"></a><br>
+                    height="112" width="200" border="0"></a><br>
               </td>
               <td valign="top"><br>
               </td>
@@ -2287,6 +2336,8 @@ src="images/phonons/Models_Phonons_MgO_Biltz_dos.png"
                   href="http://dx.doi.org/10.1007/978-3-642-81347-4">Biltz
 
 
+
+
                   &amp; Kress, Springer Series 10 (1979)</a></td>
               <td valign="top"><br>
               </td>
@@ -2294,7 +2345,7 @@ src="images/phonons/Models_Phonons_MgO_Biltz_dos.png"
                   href="images/phonons/Models_Phonons_SrTiO3_Biltz_kpath.png"><img
 src="images/phonons/Models_Phonons_SrTiO3_Biltz_kpath.png"
                     title="SrTiO3_Biltz_kpath" alt="SrTiO3_Biltz_kpath"
-                    border="0" height="176" width="200"></a><br>
+                    height="176" width="200" border="0"></a><br>
               </td>
               <td valign="top"><br>
               </td>
@@ -2302,13 +2353,13 @@ src="images/phonons/Models_Phonons_SrTiO3_Biltz_kpath.png"
                   href="images/phonons/Models_Phonons_SrTiO3_Biltz_dos.png"><img
 src="images/phonons/Models_Phonons_SrTiO3_Biltz_dos.png"
                     title="SrTiO3_Biltz_dos" alt="SrTiO3_Biltz_dos"
-                    border="0" height="116" width="200"></a><br>
+                    height="116" width="200" border="0"></a><br>
               </td>
               <td valign="top"><br>
               </td>
             </tr>
             <tr>
-              <td bgcolor="#ffcccc" valign="top"><b>QuantumEspresso</b><b>
+              <td valign="top" bgcolor="#ffcccc"><b>QuantumEspresso</b><b>
                   / SSSP</b></td>
               <td valign="top">1410<br>
               </td>
@@ -2316,24 +2367,24 @@ src="images/phonons/Models_Phonons_SrTiO3_Biltz_dos.png"
                   href="images/phonons/Models_Phonons_SrTiO3_qe_kpath.png"><img
                     alt="SrTiO3_qe_kpath" title="SrTiO3_qe_kpath"
                     src="images/phonons/Models_Phonons_SrTiO3_qe_kpath.png"
-                    border="0" height="150" width="200"></a><br>
+                    height="150" width="200" border="0"></a><br>
               </td>
               <td valign="top"><a
                   href="images/phonons/Models_Phonons_SrTiO3_qe_thermo.png"><img
                     alt="SrTiO3_qe_thermo" title="SrTiO3_qe_thermo"
                     src="images/phonons/Models_Phonons_SrTiO3_qe_thermo.png"
-                    border="0" height="150" width="200"></a><br>
+                    height="150" width="200" border="0"></a><br>
               </td>
               <td valign="top"><a
                   href="images/phonons/Models_Phonons_SrTiO3_qe_plot3.png"><img
                     alt="SrTiO3_qe_plot3" title="SrTiO3_qe_plot3"
                     src="images/phonons/Models_Phonons_SrTiO3_qe_plot3.png"
-                    border="0" height="150" width="200"></a><br>
+                    height="150" width="200" border="0"></a><br>
               </td>
               <td valign="top"><font color="#cc33cc">'qe'</font>)</td>
             </tr>
             <tr>
-              <td bgcolor="#ffcccc" valign="top"><b>VASP (4.6)</b><b> /
+              <td valign="top" bgcolor="#ffcccc"><b>VASP (4.6)</b><b> /
                   PAW PBE</b></td>
               <td valign="top">2560<br>
               </td>
@@ -2341,19 +2392,19 @@ src="images/phonons/Models_Phonons_SrTiO3_Biltz_dos.png"
                   href="images/phonons/Models_Phonons_SrTiO3_vasp_kpath.png"><img
                     alt="SrTiO3_vasp_kpath" title="SrTiO3_vasp_kpath"
                     src="images/phonons/Models_Phonons_SrTiO3_vasp_kpath.png"
-                    border="0" height="150" width="200"></a><br>
+                    height="150" width="200" border="0"></a><br>
               </td>
               <td valign="top"><a
                   href="images/phonons/Models_Phonons_SrTiO3_vasp_thermo.png"><img
                     alt="SrTiO3_vasp_thermo" title="SrTiO3_vasp_thermo"
-src="images/phonons/Models_Phonons_SrTiO3_vasp_thermo.png" border="0"
-                    height="150" width="200"></a><br>
+src="images/phonons/Models_Phonons_SrTiO3_vasp_thermo.png" height="150"
+                    width="200" border="0"></a><br>
               </td>
               <td valign="top"><a
                   href="images/phonons/Models_Phonons_SrTiO3_vasp_plot3.png"><img
                     alt="SrTiO3_vasp_plot3" title="SrTiO3_vasp_plot3"
                     src="images/phonons/Models_Phonons_SrTiO3_vasp_plot3.png"
-                    border="0" height="150" width="200"></a><br>
+                    height="150" width="200" border="0"></a><br>
               </td>
               <td valign="top"><font color="#cc33cc">'vasp'</font>)</td>
             </tr>
@@ -2374,6 +2425,8 @@ src="images/phonons/Models_Phonons_SrTiO3_vasp_thermo.png" border="0"
 
 
 
+
+
           / Tb2SeO2</a> (<a
           href="http://phonondb.mtl.kyoto-u.ac.jp/_downloads/mp-755340.tar.lzma">lzma</a>):<br>
         <ul>
@@ -2385,11 +2438,13 @@ src="images/phonons/Models_Phonons_SrTiO3_vasp_thermo.png" border="0"
         <ul>
           <li>s=<font color="#3366ff">sqw_phonons</font>(<font
               color="#cc33cc">'mp-755340/phonon-05'</font>);</li>
-          <li><font color="#3366ff">sqw_kpath</font>(s)</li>
-          <li><font color="#3366ff">sqw_thermochemistry</font>(s)</li>
+          <li><font color="#3366ff">band_structure</font>(s)</li>
+          <li><font color="#3366ff">thermochemistry</font>(s)</li>
           <li><i>qh=0.01:0.5:1.5;qk=qh; ql=qh; w=0.01:0.5:51;</i><i>
               f=s([], qh,qk,ql',w);</i></li>
           <li><font color="#3366ff">plot3</font>(<font color="#3366ff">log10</font>(f(1,:,:,:)))<i>&nbsp;
+
+
 
 
               % qh ~ 0 plane</i></li>
@@ -2397,20 +2452,22 @@ src="images/phonons/Models_Phonons_SrTiO3_vasp_thermo.png" border="0"
         <i><b> Outcome: </b></i>The computation reconstruction provides
         the same results as PhonoPy.<br>
         <br>
-        <table border="1" cellpadding="2" cellspacing="2" height="541"
-          width="1102">
+        <table height="541" cellspacing="2" cellpadding="2" width="1102"
+          border="1">
           <tbody>
             <tr>
-              <td bgcolor="#ffffcc" valign="top"><b>Code</b><br>
+              <td valign="top" bgcolor="#ffffcc"><b>Code</b><br>
               </td>
-              <td bgcolor="#ffffcc" valign="top"><b>computation time <br>
+              <td valign="top" bgcolor="#ffffcc"><b>computation time <br>
                   (24 cores, 2.7 GHz)</b><br>
                 <br>
               </td>
-              <td bgcolor="#ffffcc" valign="top"><b>sqw_kpath(s)</b></td>
-              <td bgcolor="#ffffcc" valign="top"><b>sqw_thermochemistry(s)</b><b><br>
+              <td valign="top" bgcolor="#ffffcc"><b>band_structure(s)</b></td>
+              <td valign="top" bgcolor="#ffffcc"><b>thermochemistry(s)</b><b><br>
                 </b></td>
-              <td bgcolor="#ffffcc" valign="top"><b>plot3(log10(f(1,:,:,:))
+              <td valign="top" bgcolor="#ffffcc"><b>plot3(log10(f(1,:,:,:))
+
+
 
 
 
@@ -2443,43 +2500,43 @@ src="images/phonons/Models_Phonons_SrTiO3_vasp_thermo.png" border="0"
                   href="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-755340-band.png"><img
                     alt="mp-755340-band" title="mp-755340-band"
                     src="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-755340-band.png"
-                    border="0" height="79" width="206"></a><br>
+                    height="79" width="206" border="0"></a><br>
               </td>
               <td valign="top"><a
                   href="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-755340-tprops1.png"><img
                     alt="mp-755340-tprop" title="mp-755340-tprop"
                     src="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-755340-tprops1.png"
-                    border="0" height="133" width="200"></a><br>
+                    height="133" width="200" border="0"></a><br>
               </td>
               <td valign="top"><a
                   href="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-755340-dos1.png"><img
                     alt="mp-755340-dos1" title="mp-755340-dos1"
                     src="http://phonondb.mtl.kyoto-u.ac.jp/_images/mp-755340-dos1.png"
-                    border="0" height="112" width="200"></a> </td>
+                    height="112" width="200" border="0"></a> </td>
             </tr>
             <tr>
-              <td bgcolor="#ffcccc" valign="top"><b>VASP (4.6)</b><b> /
+              <td valign="top" bgcolor="#ffcccc"><b>VASP (4.6)</b><b> /
                   PAW PBE</b></td>
               <td valign="top">300 (reconstruction)<br>
               </td>
               <td valign="top"><a
                   href="images/phonons/Models_Phonons_Tb2SeO2_vasp_kpath.png"><img
                     alt="Tb2SeO2_vasp_kpath" title="Tb2SeO2_vasp_kpath"
-src="images/phonons/Models_Phonons_Tb2SeO2_vasp_kpath.png" border="0"
-                    height="150" width="200"></a><br>
+src="images/phonons/Models_Phonons_Tb2SeO2_vasp_kpath.png" height="150"
+                    width="200" border="0"></a><br>
               </td>
               <td valign="top"><a
                   href="images/phonons/Models_Phonons_Tb2SeO2_vasp_thermo.png"><img
                     alt="Tb2SeO2_vasp_thermo"
                     title="Tb2SeO2_vasp_thermo"
                     src="images/phonons/Models_Phonons_Tb2SeO2_vasp_thermo.png"
-                    border="0" height="150" width="200"></a><br>
+                    height="150" width="200" border="0"></a><br>
               </td>
               <td valign="top"><a
                   href="images/phonons/Models_Phonons_Tb2SeO2_vasp_plot3.png"><img
                     alt="Tb2SeO2_vasp_plot3" title="Tb2SeO2_vasp_plot3"
-src="images/phonons/Models_Phonons_Tb2SeO2_vasp_plot3.png" border="0"
-                    height="150" width="200"></a><br>
+src="images/phonons/Models_Phonons_Tb2SeO2_vasp_plot3.png" height="150"
+                    width="200" border="0"></a><br>
               </td>
             </tr>
           </tbody>
@@ -2489,6 +2546,8 @@ src="images/phonons/Models_Phonons_Tb2SeO2_vasp_plot3.png" border="0"
           complex models</h3>
         The models are <a href="iFunc.html">iFunc</a> objects, which
         have a large number of <a href="iFunc.html#mozTocId443357">mathematical
+
+
 
 
           operators</a>. For instance, it is possible to add models
@@ -2518,8 +2577,8 @@ src="images/phonons/Models_Phonons_Tb2SeO2_vasp_plot3.png" border="0"
           href="http://www.ill.eu/"><img title="ILL, Grenoble, France
             &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL,
             Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px
-            solid ; width: 53px; height: 50px;" border="0" align="right"
-            height="171" width="182"></a><br>
+            solid ; width: 53px; height: 50px;" height="171"
+            align="right" width="182" border="0"></a><br>
         <br>
       </div>
     </div>

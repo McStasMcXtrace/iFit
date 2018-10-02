@@ -42,18 +42,7 @@ classdef iFunc_Sqw2D < iFunc
       obj = obj@iFunc;
       
       if nargin == 0
-        m = sqw_cubic_monoatomic('defaults');
-      elseif nargin == 1 && isa(varargin{1}, mfilename)
-        % already an iFunc_Sqw2D
-        m = varargin{1};
-      elseif nargin == 1 && isa(varargin{1}, 'iFunc')
-        % convert from iFunc
-        m = varargin{1};
-      elseif nargin == 1 && isa(varargin{1}, 'struct')
-        m = iFunc(varargin{1});
-      else
-        % create new Sqw2D model and convert it to iFunc_Sqw2D
-        m = sqw_phonons(varargin{:}); 
+        return
       end
       
       % from here, we must have either an iFunc or an iFunc_Sqw2D
@@ -101,7 +90,7 @@ classdef iFunc_Sqw2D < iFunc
       
       % check for Q W grid
       if isempty(varargin),  varargin{end+1} = []; end % parameters
-      if numel(varargin) <2, varargin{end+1} = linspace(0,0.1,5); end
+      if numel(varargin) <2, varargin{end+1} = linspace(0,3,31); end
       if numel(varargin) <3, varargin{end+1} = linspace(0.01,20,21); end
       s = iFunc(self);
       f = transpose(iData(s,varargin{:}));

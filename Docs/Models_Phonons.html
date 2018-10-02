@@ -3,7 +3,7 @@
   <head>
     <meta http-equiv="content-type" content="text/html;
       charset=windows-1252">
-    <title>iFit: Models model functions</title>
+    <title>iFit: Models: Phonons</title>
   </head>
   <body>
     <h1 style="text-align: center;"><a class="mozTocH1"
@@ -66,6 +66,8 @@
 
 
 
+
+
       dispersion from <i>ab-initio</i> force estimate and dynamical
       matrix<br>
     </h2>
@@ -77,6 +79,8 @@
       name of a configuration file describing the material lattice and
       atom positions. This file can be in any <a
         href="https://wiki.fysik.dtu.dk/ase/ase/io.html#module-ase.io">ASE
+
+
 
 
 
@@ -100,7 +104,7 @@
       This documentation lists all possible options.<br>
     </p>
     <table style="text-align: left; width: 1016px; height: 59px;"
-      border="1" cellpadding="2" cellspacing="2">
+      cellspacing="2" cellpadding="2" border="1">
       <tbody>
         <tr>
           <td style="vertical-align: top; font-weight: bold; font-style:
@@ -124,7 +128,7 @@
           <td valign="top"><b>sqw_phonons<br>
               <a href="https://wiki.fysik.dtu.dk/ase/index.html"><img
                   alt="ase" title="ase" src="images/ase256.png"
-                  border="0" align="middle" height="80" width="80"></a><br>
+                  height="80" align="middle" width="80" border="0"></a><br>
             </b></td>
           <td valign="top">Phonon dispersions from the Dynamical matrix,
             using forces estimated by <i>ab-initio </i>using <a
@@ -134,8 +138,8 @@
           <td valign="top"><font color="#33cc00">4D (HKLw)</font><br>
             <a href="images/Models_sqw_ph_ase.png"><img
                 src="images/Models_sqw_ph_ase.png" title="sqw_ph_ase Al
-                fcc" alt="sqw_ph_ase Al fcc" border="0" align="left"
-                height="74" width="100"></a></td>
+                fcc" alt="sqw_ph_ase Al fcc" height="74" align="left"
+                width="100" border="0"></a></td>
           <td valign="top">Creation: <a
               href="http://cms.mpi.univie.ac.at/vasp/guide/node59.html">POSCAR</a>,
             <a
@@ -167,6 +171,8 @@
         = - &#8721; D</i><i><sub>&#945;</sub></i><i><sub>&#946;</sub></i><i>.u</i><i><sub>&#946;</sub></i></blockquote>
     In order to simplify this expression, we assume a periodic motion:<br>
     <blockquote><i>u</i><i><sub>&#945;</sub></i><i>=U</i><i><sub>&#945;</sub></i><i>(k)
+
+
 
 
 
@@ -264,7 +270,7 @@
         The neutron scattering intensity of the vibrational modes is
         evaluated as (with a damped harmonic oscillator line shape)<br>
         <br>
-        <div align="center">I(Q,<i>&#969;</i>) ~ <i>Amplitude *&nbsp;</i><i><sup></sup></i><i>
+        <div align="center">I(Q,<i>&#969;</i>) ~ <i>Amplitude *&nbsp;</i><i>
             &#8721; </i><i>|F(Q)|</i><i><sup><i>2</i></sup> </i><i>DHO(</i><i>&#969;</i><i><sub>0</sub></i><i>,&#915;)</i><i>
             [n(</i><i>&#969;)+1] / </i><i>&#969;<sub>0<br>
             </sub>|F(Q)|</i><i><sup><i>2</i></sup> = </i><i>| &#8721; </i><i>b<sub>coh</sub>
@@ -327,8 +333,8 @@
     <h3><a class="mozTocH5" name="mozTocId891630"></a><b><i><u>Syntax</u></i></b></h3>
     The simplest syntax to <b><i>create the model</i></b> is to call:<br>
     <blockquote><img alt="sqw_ph_ase_gui" title="sqw_ph_ase_gui"
-        src="images/Models_sqw_ph_ase_gui.png" align="right"
-        height="168" width="200">s = <font color="#3366ff">sqw_phonons</font>;
+        src="images/Models_sqw_ph_ase_gui.png" height="168"
+        align="right" width="200">s = <font color="#3366ff">sqw_phonons</font>;
       &nbsp;&nbsp; &nbsp;&nbsp;&nbsp; <i>% displays an entry dialog box</i><i>
         and proceeds with a fully automatic computation, and plots final
         results. With QuantumEspresso, a dialog may show up to select
@@ -343,6 +349,8 @@
     <blockquote>s = <font color="#3366ff">sqw_phonons</font>(configuration);<br>
     </blockquote>
     <blockquote>s = <font color="#3366ff">sqw_phonons</font>(configuration,
+
+
 
 
 
@@ -453,8 +461,8 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/ifit-web-
         the HKL locations is assumed to be a q-path in the BZ, but the E
         (energy) axis can be of different length/orientation to compute
         the Model along (q,E) path, resulting in a 2D object. Typically,
-        the <b>sqw_kpath</b> function does this, to provide the phonon
-        dispersion curve along principal directions.</li>
+        the <b>band_structure</b> function does this, to provide the
+        phonon dispersion curve along principal directions.</li>
       <li>When the H K L E axes are given as mixed orientations/length,
         as vectors or matrices, the Model evaluation is done on a HKLE
         cube, which is well suited to visualize the whole dispersion
@@ -466,10 +474,10 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/ifit-web-
         (DOS) is computed, and stored in <i>s.UserData.DOS</i>, as well
         as partial DOS in <i>s.UserData.DOS_partials</i> (per mode).</li>
       <li>The maximum phonon energy is stored as <i>s.UserData.maxFreq</i></li>
-      <li>You may evaluate the <b>powder dispersion</b> using the <b>sqw_powder</b><b>(s)</b>
+      <li>You may evaluate the <b>powder dispersion</b> using the <b>powder</b><b>(s)</b>
         call. <br>
       </li>
-      <li>The thermo-chemistry quantities can be obtained with the <b>sqw_thermochemistry(s)</b>
+      <li>The thermo-chemistry quantities can be obtained with the <b>thermochemistry(s)</b>
         call.<br>
       </li>
     </ul>
@@ -487,7 +495,7 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/ifit-web-
     can be given as a bulk, molecule, crystal and nano-tube constructors
     from ASE.<br>
     <br>
-    <table border="1" cellpadding="2" cellspacing="2" width="100%">
+    <table cellspacing="2" cellpadding="2" width="100%" border="1">
       <tbody>
         <tr>
           <td valign="top"><b>configuration</b><b><br>
@@ -637,10 +645,12 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/ifit-web-
 
 
 
+
+
               "fcc", a=3.6, cubic=True)'</font><br>
             <div align="center"><a href="images/Models_Cubic.png"><img
                   alt="bulk" title="bulk" src="images/Models_Cubic.png"
-                  border="0" height="77" width="77"></a><br>
+                  height="77" width="77" border="0"></a><br>
             </div>
           </td>
           <td valign="top">A bulk material, with formula (Cu, MgO,
@@ -659,12 +669,14 @@ href="https://wiki.fysik.dtu.dk/ase/ase/build/build.html#ase.build.molecule"><b>
             <div align="center"><a
                 href="images/Models_Molecule_butane.png"><img
                   alt="molecule" title="molecule"
-                  src="images/Models_Molecule_butane.png" border="0"
-                  height="73" width="84"></a><br>
+                  src="images/Models_Molecule_butane.png" height="73"
+                  width="84" border="0"></a><br>
             </div>
           </td>
           <td valign="top">Any <a
 href="https://wiki.fysik.dtu.dk/ase/ase/build/build.html#ase.build.molecule">molecule
+
+
 
 
 
@@ -787,11 +799,13 @@ href="https://wiki.fysik.dtu.dk/ase/ase/build/build.html#ase.build.nanotube"><b>
 
 
 
+
+
               0, length=4)'</font><br>
             <div align="center"><a href="images/Models_Nanotube.png"><img
                   alt="nanotube" title="nanotube"
-                  src="images/Models_Nanotube.png" border="0"
-                  height="71" width="136"></a><br>
+                  src="images/Models_Nanotube.png" height="71"
+                  width="136" border="0"></a><br>
             </div>
             <br>
           </td>
@@ -829,6 +843,8 @@ href="https://wiki.fysik.dtu.dk/ase/ase/spacegroup/spacegroup.html#module-ase.sp
     <ul>
       <li><b>MaterialsProject</b>&lt;<a
           href="https://www.materialsproject.org/">https://www.materialsproject.org/</a>&gt;
+
+
 
 
 
@@ -913,9 +929,13 @@ href="https://wiki.fysik.dtu.dk/ase/ase/spacegroup/spacegroup.html#module-ase.sp
 
 
 
+
+
         using PhonoPy and VASP. Makes use of the MaterialsProject.</li>
       <li><b>NoMaD</b> repository &lt;<a
           href="http://nomad-repository.eu/cms/">http://nomad-repository.eu/cms/</a>&gt;
+
+
 
 
 
@@ -975,8 +995,12 @@ href="https://wiki.fysik.dtu.dk/ase/ase/spacegroup/spacegroup.html#module-ase.sp
 
 
 
+
+
         a calculation service using ICSD materials.</li>
       <li><b>COD</b> &lt;<a href="http://www.crystallography.net">Crystallography
+
+
 
 
 
@@ -989,7 +1013,7 @@ href="https://wiki.fysik.dtu.dk/ase/ase/spacegroup/spacegroup.html#module-ase.sp
     <p>The <b>sqw_phonons</b> model may use any of the calculators
       listed below:<br>
     </p>
-    <table border="1" cellpadding="2" cellspacing="2" width="100%">
+    <table cellspacing="2" cellpadding="2" width="100%" border="1">
       <tbody>
         <tr>
           <td valign="top"><b><font color="#cc33cc">'calculator=...'</font></b><br>
@@ -1003,8 +1027,8 @@ href="https://wiki.fysik.dtu.dk/ase/ase/spacegroup/spacegroup.html#module-ase.sp
         </tr>
         <tr>
           <td valign="top"><a href="https://www.vasp.at/"><img
-                alt="vasp" title="vasp" src="images/vasp.png" border="0"
-                align="middle" height="50" width="77"></a><b><a
+                alt="vasp" title="vasp" src="images/vasp.png"
+                height="50" align="middle" width="77" border="0"></a><b><a
                 href="https://www.vasp.at/">VASP</a></b><br>
           </td>
           <td valign="top">Plane-wave PAW code. Used in&nbsp;
@@ -1019,7 +1043,7 @@ href="https://wiki.fysik.dtu.dk/ase/ase/spacegroup/spacegroup.html#module-ase.sp
         </tr>
         <tr>
           <td valign="top"><b><img alt="qe" title="qe"
-                src="images/logo_qe.jpg" align="middle" height="34"
+                src="images/logo_qe.jpg" height="34" align="middle"
                 width="80"><a href="http://www.quantum-espresso.org/">QuantumEspresso</a></b></td>
           <td valign="top">Density-functional theory, plane waves, and
             pseudopotentials based code for electronic-structure
@@ -1031,8 +1055,8 @@ href="https://wiki.fysik.dtu.dk/ase/ase/spacegroup/spacegroup.html#module-ase.sp
         </tr>
         <tr>
           <td valign="top"><a href="http://elk.sourceforge.net/"><img
-                alt="elk" title="elk" src="images/elk.png" border="0"
-                align="middle" height="47" width="81"></a><a
+                alt="elk" title="elk" src="images/elk.png" height="47"
+                align="middle" width="81" border="0"></a><a
               href="http://elk.sourceforge.net/">&nbsp;<b>ELK</b></a></td>
           <td valign="top">Full Potential-All Electrons LAPW code. Used
             in&nbsp;spin polarized mode.<i> A very efficient
@@ -1045,7 +1069,7 @@ href="https://wiki.fysik.dtu.dk/ase/ase/spacegroup/spacegroup.html#module-ase.sp
         <tr>
           <td valign="top"><a href="http://www.abinit.org/"><img
                 alt="abinit" title="abinit" src="images/abinit.png"
-                border="0" align="middle" height="34" width="80"></a><a
+                height="34" align="middle" width="80" border="0"></a><a
               href="http://www.abinit.org/">&nbsp;ABINIT</a></td>
           <td valign="top">Plane-wave pseudopotential code. Can be used
             with <a href="http://www.abinit.org/downloads/PAW2">JTH</a>
@@ -1107,7 +1131,7 @@ href="https://wiki.fysik.dtu.dk/ase/ase/spacegroup/spacegroup.html#module-ase.sp
         <tr>
           <td valign="top"><a href="http://wiki.fysik.dtu.dk/gpaw"><img
                 alt="GPAW" title="GPAW" src="images/logo-gpaw.png"
-                border="0" align="middle" height="39" width="80"> </a><a
+                height="39" align="middle" width="80" border="0"> </a><a
               href="http://wiki.fysik.dtu.dk/gpaw">GPAW</a><a
               href="http://wiki.fysik.dtu.dk/gpaw"><br>
             </a></td>
@@ -1120,7 +1144,7 @@ href="https://wiki.fysik.dtu.dk/ase/ase/spacegroup/spacegroup.html#module-ase.sp
         </tr>
         <tr>
           <td valign="top"><img alt="emt" title="emt"
-              src="images/emt.png" align="middle" height="50" width="71">&nbsp;<a
+              src="images/emt.png" height="50" align="middle" width="71">&nbsp;<a
 href="https://wiki.fysik.dtu.dk/ase/ase/calculators/emt.html">EMT</a></td>
           <td valign="top">Effective Medium Theory calculator (<b>only</b>
             for Al,Cu,Ag,Au,Ni,Pd,Pt,H,C,N,O). <i>Very fast, but
@@ -1221,6 +1245,8 @@ href="https://wiki.fysik.dtu.dk/ase/ase/calculators/emt.html">EMT</a></td>
 
 
 
+
+
           the Calculator</i></u> </h3>
     Other options, given as strings, or as a structure, allow to
     customise how to create the supercell and other computational tuning
@@ -1237,6 +1263,8 @@ href="https://wiki.fysik.dtu.dk/ase/ase/calculators/emt.html">EMT</a></td>
       <li><b>supercell</b>: The <i>dimension of the supercell</i> can
         be given using e.g. the <font color="#cc33cc">'supercell=3'</font>
         (for a 3x3x3 supercell) argument, or <font color="#cc33cc">'supercell=[2
+
+
 
 
 
@@ -1299,11 +1327,15 @@ href="https://wiki.fysik.dtu.dk/ase/ase/calculators/emt.html">EMT</a></td>
 
 
 
+
+
             fast'</font></b> option (default) halves the number of
         displacements and, when available, uses <a
           href="https://atztogo.github.io/phonopy/">PhonoPy</a>. The
         equilibrium forces are used to improve the accuracy of the force
         gradient. The<b><font color="#cc33cc"> 'accurate' </font></b>choice
+
+
 
 
 
@@ -1332,6 +1364,8 @@ href="https://wiki.fysik.dtu.dk/ase/ase/calculators/emt.html">EMT</a></td>
 
 
 
+
+
         <font color="#cc33cc">'phonopy'</font>, ...), the <a
           href="https://atztogo.github.io/phonopy/">PhonoPy</a> library
         is used, which results in a <font color="#cc33cc">'very fast'</font>
@@ -1345,6 +1379,8 @@ href="https://wiki.fysik.dtu.dk/ase/ase/calculators/emt.html">EMT</a></td>
     and more specific DFT related options:<br>
     <ul>
       <li><b> occupations</b>: For metallic and insulator systems, the <i>electron
+
+
 
 
 
@@ -1417,9 +1453,13 @@ href="https://wiki.fysik.dtu.dk/ase/ase/calculators/emt.html">EMT</a></td>
 
 
 
+
+
           </span><span class="st"><font color="#cc33cc"><font
                 color="#000000">fast but not very accurate</font></font></span></li>
         <li><font color="#cc33cc">'hgh' </font><span class="st">Hartwigsen-Goedeker-Hutter
+
+
 
 
 
@@ -1432,13 +1472,19 @@ href="https://wiki.fysik.dtu.dk/ase/ase/calculators/emt.html">EMT</a></td>
 
 
 
+
+
             (with semi-core valence electrons)</span><span class="st">
             rather fast and </span><span class="st"><span class="st">moderately
 
 
 
+
+
             </span>accurate</span></li>
         <li><font color="#cc33cc">'hgh.k' </font><span class="st">Hartwigsen-Goedeker-Hutter
+
+
 
 
 
@@ -1456,6 +1502,8 @@ href="https://wiki.fysik.dtu.dk/ase/ase/calculators/emt.html">EMT</a></td>
 
 
 
+
+
               in XML</a> format (from GPAW)</span><span class="st"><span
               class="st"> the best, requires more iterations (e.g. <b>ecut=1500</b>;
               <b>nsteps=100</b>)</span></span><span class="st"><br>
@@ -1467,6 +1515,8 @@ href="https://wiki.fysik.dtu.dk/ase/ase/calculators/emt.html">EMT</a></td>
     <ul>
       <li><b>mode</b>: GPAW <a
 href="https://wiki.fysik.dtu.dk/gpaw/documentation/manual.html#manual-mode">computation
+
+
 
 
 
@@ -1495,6 +1545,8 @@ href="https://wiki.fysik.dtu.dk/gpaw/documentation/manual.html#manual-mode">comp
 
 
 
+
+
           LDA pseudopotentials for elements from H to Rn)<font
             color="#cc33cc"><br>
           </font></li>
@@ -1512,6 +1564,8 @@ href="https://wiki.fysik.dtu.dk/gpaw/documentation/manual.html#manual-mode">comp
       </li>
       <ul>
         <li><font color="#cc33cc">'fhi' </font><span class="st">Fritz-Haber-Institute
+
+
 
 
 
@@ -1586,11 +1640,11 @@ href="https://wiki.fysik.dtu.dk/gpaw/documentation/manual.html#manual-mode">comp
     <h3><a name="mozTocId33057" class="mozTocH3"></a>Other tools: powder
       average, density of states, etc.</h3>
     The thermo-chemistry quantities (U,F,S,Cv) can be obtained with the
-    <b>sqw_thermochemistry(s)</b> call.<br>
-    The vibrational density of states can be obtained with the <b>sqw_phonon_dos(s)</b>
+    <b>thermochemistry(s)</b> call.<br>
+    The vibrational density of states can be obtained with the <b>dos(s)</b>
     call.<br>
     The standard dispersion curve plot along principal crystal
-    directions can be obtained with the <b>sqw_kpath(s)</b> call.<br>
+    directions can be obtained with the <b>band_structure(s)</b> call.<br>
     <br>
     See more details <a
       href="Models_Phonons_Tutorial.html#mozTocId438325">here</a>.<br>
@@ -1599,10 +1653,10 @@ href="https://wiki.fysik.dtu.dk/gpaw/documentation/manual.html#manual-mode">comp
     Once such a 4D S(hkl,w) <a href="iFunc.html">iFunc</a> model has
     been built, it is possible to compute the 2D powder average S(|q|,w)
     using:<br>
-    <pre>	&gt;&gt; s=<font color="#3366ff">sqw_phonons</font>([ ifitpath <font color="#cc33cc">'Data/POSCAR_Al'</font>],<font color="#cc33cc">'metal','EMT'</font>); <a href="images/Models_sqw_powder.png"><img alt="sqw_powder" title="sqw_powder" src="images/Models_sqw_powder.png" border="0" align="right" height="153" width="200"></a><br>	&gt;&gt; pow=<font color="#3366ff">sqw_powder</font>(s); <font color="#3366ff">plot</font>(log(pow));<br></pre>
+    <pre>	&gt;&gt; s=<font color="#3366ff">sqw_phonons</font>([ ifitpath <font color="#cc33cc">'Data/POSCAR_Al'</font>],<font color="#cc33cc">'metal','EMT'</font>); <a href="images/Models_sqw_powder.png"><img alt="sqw_powder" title="sqw_powder" src="images/Models_sqw_powder.png" height="153" align="right" width="200" border="0"></a><br>	&gt;&gt; pow=<font color="#3366ff">powder</font>(s); <font color="#3366ff">plot</font>(log(pow));<br></pre>
     The same procedure can be applied on an evaluated <a
       href="iData.html"><i>iData</i></a> object out of the model.<br>
-    <pre>	&gt;&gt; qh=<font color="#3366ff">linspace</font>(0.01,3,50);qk=qh; ql=qh; w=<font color="#3366ff">linspace</font>(0.01,50,51);<br>	&gt;&gt; f=<font color="#3366ff">iData</font>(s,[],qh,qk,ql,w);<br>	&gt;&gt; pow=<font color="#3366ff">sqw_powder</font>(f); <font color="#3366ff">plot</font>(log(pow));
+    <pre>	&gt;&gt; qh=<font color="#3366ff">linspace</font>(0.01,3,50);qk=qh; ql=qh; w=<font color="#3366ff">linspace</font>(0.01,50,51);<br>	&gt;&gt; f=<font color="#3366ff">iData</font>(s,[],qh,qk,ql,w);<br>	&gt;&gt; pow=<font color="#3366ff">powder</font>(f); <font color="#3366ff">plot</font>(log(pow));
 </pre>
     In both cases, when the reciprocal lattice information is found in
     the object (matrix B=[a* b* c*]), the conversion from 'rlu' (e.g.
@@ -1611,8 +1665,8 @@ href="https://wiki.fysik.dtu.dk/gpaw/documentation/manual.html#manual-mode">comp
     <h3><a class="mozTocH5" name="mozTocId134538"></a><i><u>Examples</u></i></h3>
     A usage example is:<a href="images/Models_sqw_ph_ase.png"><img
         alt="sqw_ph_ase Al fcc" title="sqw_ph_ase Al fcc"
-        src="images/Models_sqw_ph_ase.png" border="0" align="right"
-        height="153" width="200"></a><br>
+        src="images/Models_sqw_ph_ase.png" height="153" align="right"
+        width="200" border="0"></a><br>
     <pre>	&gt;&gt; s=<font color="#3366ff">sqw_phonons</font>(<font color="#cc33cc">'bulk("Cu", "fcc", a=3.6)'</font>,<font color="#cc33cc">'EMT','metal'</font>); 	<i>% create model from bulk</i><br>	&gt;&gt; qh=<font color="#3366ff">linspace</font>(0.01,.5,50);qk=qh; ql=qh'; w=<font color="#3366ff">linspace</font>(0.01,50,51);<br> 	&gt;&gt; f=<font color="#3366ff">iData</font>(s,[],qh,qk,ql,w); 		<i>% evaluate model into an iData</i><br>	&gt;&gt; <font color="#3366ff">plot3</font>(log(f(:,:,1,:)));	<i>	% plot ql=0 plane<br></i></pre>
     To get a system with acoustic and optical modes:<br>
     <pre>	&gt;&gt; s=<font color="#3366ff">sqw_phonons</font>(<font color="#cc33cc">[ ifitpath 'Data/POSCAR_AlN'</font>],<font color="#cc33cc">'EMT'</font>); 	<i>% create model from given POSCAR</i><br>	&gt;&gt; qh=<font color="#3366ff">linspace</font>(0.01,.5,50);qk=qh; ql=qh'; w=<font color="#3366ff">linspace</font>(0.01,50,51);<br> 	&gt;&gt; f=<font color="#3366ff">iData</font>(s,[],qh,qk,ql,w); 		<i>% evaluate model into an iData</i><br>	&gt;&gt; <font color="#3366ff">scatter3</font>(log(f(:,:,1,:)));	<i>	% plot ql=0 plane with acoustic and optical modes</i></pre>
@@ -1659,6 +1713,8 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/elk-lapw_
 
 
 
+
+
           (JTH)</a>.Debiab packages: <a
 href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/abinit-psp_2_all.deb">abinit-psp</a>
         <a
@@ -1678,8 +1734,12 @@ href="http://www.abinit.org/downloads/psp-links/pseudopotentials"><br>
 
 
 
+
+
         (2009) [<a
 href="http://www.homepages.ucl.ac.uk/%7Eucfbdxa/pubblicazioni/cpc09_phon.pdf">pdf</a>].
+
+
 
 
 
@@ -1693,11 +1753,15 @@ href="http://www.homepages.ucl.ac.uk/%7Eucfbdxa/pubblicazioni/cpc09_phon.pdf">pd
 
 
 
+
+
         <br>
       </li>
       <li><a href="http://www.quantum-espresso.org/">Quantum Espresso</a>:
         P. Giannozzi, et al, <i>J.Phys.:Condens.Matter,</i> <b>21</b>,
         395502 (2009). &lt;<a href="http://www.quantum-espresso.org/">http://www.quantum-espresso.org/</a>&gt;.
+
+
 
 
 
@@ -1724,6 +1788,8 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/quantum-e
       </li>
     </ul>
     <h3><a class="mozTocH5" name="mozTocId183326"></a> <u><i><b>Requirements
+
+
 
 
 
@@ -1865,6 +1931,8 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/quantum-e
 
 
 
+
+
       Live DVD</a> ready-to-run system with <i>Phonons</i>, <span
       style="font-style: italic;">McStas</span> and <i>iFit</i>
     (standalone) all pre-installed.<br>
@@ -1947,6 +2015,8 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/quantum-e
     <blockquote> </blockquote>
     <p>When running Windows 10, you can install a <a
         href="https://docs.microsoft.com/en-us/windows/wsl/install-win10">full
+
+
 
 
 
@@ -2045,6 +2115,8 @@ href="http://wiki.fysik.dtu.dk/abinit-files/abinit-pseudopotentials-2.tar.gz"><i
 
 
 
+
+
         (ASE)</i></a> and extract it in <i>/usr/share/abinit/</i>. We
     provide the <a
 href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/abinit-psp_2_all.deb">abinit-psp</a>
@@ -2072,6 +2144,8 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/quantum-e
     <div style="text-align: center;">
       <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
+
+
 
 
 

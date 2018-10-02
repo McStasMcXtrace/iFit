@@ -183,7 +183,7 @@ signal.UserData.resolution = [];
 
 % if dispersion.Dimension == 2 (liquid,powder,gas,glass,polymer...), then use |q|,w as axes. Should use spec frame
 if dispersion.Dimension == 2
-  % TODO: must use reciprocal space frame, as in sqw_powder
+  % TODO: must use reciprocal space frame, as in Sqw4d/powder
   plugin = { 'cloud{1} = sqrt(cloud{1}.^2+cloud{2}.^2+cloud{3}.^2); cloud(2:3)=[]; ' };
 else plugin={};
 end

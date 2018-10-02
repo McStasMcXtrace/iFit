@@ -229,12 +229,12 @@ function signal=sqw_phonons(configuration, varargin)
 %   does not require to recompute the forces, and is very fast. 
 % When all axes are vectors of same orientation, the HKL locations is assumed to be a q-path.
 % When axes are not all vectors, not same length, nor orientation, a 3D HKL cube is used.
-% To generate a powder 2D S(q,w) you may use: sqw_powder(model)
+% To generate a powder 2D S(q,w) you may use: powder(model)
 % To generate the dispersion curves along principal crystallographic directions,
-%   use: sqw_kpath(model)
+%   use: band_structure(model)
 %
-% The phonon density of states (DOS) is automatically computed when evaluating the 
-% model onto a grid HKL=[-.5 : 0.5]. It is stored in model.UserData.DOS as an 
+% The phonon density of states (DOS) is obtained with: dos(model)
+% by evaluation onto a grid HKL=[-.5 : 0.5]. It is stored in model.UserData.DOS as an 
 % iData object. Partial density of states (per mode) are stored in UserData.DOS_partials
 %
 % The neutron scattering cross sections should be automatically determined from 
@@ -267,12 +267,10 @@ function signal=sqw_phonons(configuration, varargin)
 %
 % Example (model creation and evaluation):
 %   s=sqw_phonons('bulk("Cu", "fcc", a=3.6, cubic=True)','EMT','metal');
-%   qh=linspace(-.5,.5,50);qk=qh; ql=qh; w=linspace(0.01,50,51);
-%   f=iData(s,[],qh,qk,ql',w); scatter3(log(f(1,:, :,:)),'filled');
-%   figure; plot(s.UserData.DOS); % plot the DOS
+%   plot3(s)            QH=0 plot of the Brillouin Zone
 %
-%   sqw_phonons(s, 'report') generates a full report for the given model.
-%   sqw_kpath(s)             plots the dispersion curves and density of states.
+%   publish(s)          generates a full report for the given model.
+%   band_structure(s)   plots the dispersion curves and density of states.
 %
 %   s=sqw_phonons('bulk("Si", "diamond", a=5.4, cubic=True)','semiconductor');
 %
@@ -280,7 +278,7 @@ function signal=sqw_phonons(configuration, varargin)
 %
 % Version: $Date$
 % See also iData, iFunc/fits, iFunc/plot, gauss, sqw_cubic_monoatomic, sqw_sine3d, sqw_vaks
-%   sqw_powder, <a href="matlab:doc(iFunc,'Models')">iFunc:Models</a>
+%   iFunc_Sqw4D/powder, <a href="matlab:doc(iFunc,'Models')">iFunc:Models</a>
 % (c) E.Farhi, ILL. License: EUPL.
 
 % Units: 1 Ry        = 13.6 eV
@@ -786,7 +784,7 @@ sqw_phonons_htmlreport('', 'results', options);
 
 % handle autoplot option
 if options.autoplot
-  [S, k, fig] = sqw_kpath(Phonon_Model,'','','plot THz');
+  [S, k, fig] = band_structure(Phonon_Model,'','','plot THz');
   if ishandle(options.gui), delete(options.gui); end
 else
   f = [];
