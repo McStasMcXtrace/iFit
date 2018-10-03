@@ -717,7 +717,7 @@ function result = instrument_compile(options)
   
   if isempty(options.mccode)
       status=1;
-      disp([ mfilename ': McCode (mcrun/mxrun) not found. Try "mccode check" first.' ])
+      result = [ mfilename ': McCode (mcrun/mxrun) not found. Try "mccode check" first.' ];
   else
       disp([ mfilename ': Compiling instrument from ' options.instrument ...
         ' using ' options.mccode]);
