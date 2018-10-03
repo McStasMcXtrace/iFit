@@ -43,6 +43,14 @@ classdef iFunc_Sqw2D < iFunc
       
       if nargin == 0
         return
+      elseif nargin == 1 && isa(varargin{1}, mfilename)
+        % already an iFunc_Sqw2D
+        m = varargin{1};
+      elseif nargin == 1 && isa(varargin{1}, 'iFunc')
+        % convert from iFunc
+        m = varargin{1};
+      elseif nargin == 1 && isa(varargin{1}, 'struct')
+        m = iFunc(varargin{1});
       end
       
       % from here, we must have either an iFunc or an iFunc_Sqw2D
