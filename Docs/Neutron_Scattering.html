@@ -53,7 +53,7 @@
                   from a density of states </a>
                 <ol>
                   <li><a href="#mozTocId332052">Incoherent scattering
-                      law estimate: monoatomic material</a></li>
+                      law estimate: monoatomic material </a></li>
                   <li><a href="#mozTocId42386">Incoherent scattering law
                       estimate: polyatomic material</a></li>
                   <li><a href="#mozTocId201715">Coherent scattering law
@@ -85,12 +85,16 @@
               refinement</a></li>
         </ol>
       </li>
+      <li><a href="#mozTocId687007">Neutron Triple-Axis Spectrometers</a></li>
+      <li><a href="#mozTocId148887">Neutron Scattering Instruments with
+          McStas</a></li>
     </ol>
     <hr style="width: 100%; height: 2px;">
     <div style="text-align: center;">Commands we use in this page: <span
         style="font-style: italic;">iData, <a href="Load.html">load</a>,
         <a href="Save.html">save</a>, <a href="Math.html">Math</a>, <a
           href="Models.html">Models</a>, </span><a href="Methods.html">methods,
+
 
 
 
@@ -105,6 +109,7 @@
         and methods to read and analyze S(q,w) dynamic structure
         factors, aka scattering laws, in the case of <a
           href="https://en.wikipedia.org/wiki/Inelastic_neutron_scattering">neutron
+
 
 
 
@@ -186,6 +191,7 @@
             from e.g. phonons and spin-waves in single-crystals</li>
         </ul>
         <h3><a class="mozTocH3" name="mozTocId301478"></a>Loading/generating
+
 
 
 
@@ -343,6 +349,7 @@ href="https://www.ill.eu/instruments-support/computing-for-science/cs-software/a
 
 
 
+
           then simply evaluate the model into an iData object, with
           default Model parameters [], or specified ones. Axes must be
           specified as momentum and energy values in [Angs-1] and [meV]
@@ -490,6 +497,7 @@ href="https://www.ill.eu/instruments-support/computing-for-science/cs-software/a
 
 
 
+
                 equally</i> Sqw{1} = - Sqw{1};</li>
           </ul>
         </div>
@@ -517,8 +525,7 @@ href="https://www.ill.eu/instruments-support/computing-for-science/cs-software/a
               <td valign="top"><b><font color="#3366ff">Sqw=load(iData,file)<br>
                     Sqw=iData(file)<br>
                     Sqw=</font></b><b><font color="#3366ff"><b><font
-                        color="#3366ff"><a
-                          href="iData_Sqw2D.html">iData_Sqw2D</a></font></b>(file)<br>
+                        color="#3366ff"><a href="iData_Sqw2D.html">iData_Sqw2D</a></font></b>(file)<br>
                   </font></b> </td>
               <td valign="top">file<br>
               </td>
@@ -588,16 +595,15 @@ href="https://www.ill.eu/instruments-support/computing-for-science/cs-software/a
             </tr>
             <tr>
               <td valign="top"><b><font color="#3366ff"><b><font
-                        color="#3366ff"><a
-                          href="iData_Sqw2D.html">iData_Sqw2D</a></font></b>(sqw2d)<br>
+                        color="#3366ff"><a href="iData_Sqw2D.html">iData_Sqw2D</a></font></b>(sqw2d)<br>
                   </font></b> <b><font color="#3366ff"><br>
                   </font></b> <b><font color="#3366ff"><b><font
-                        color="#3366ff"><a
-                          href="iData_Sqw2D.html">iData_Sqw2D</a></font></b>('file')</font></b></td>
+                        color="#3366ff"><a href="iData_Sqw2D.html">iData_Sqw2D</a></font></b>('file')</font></b></td>
               <td valign="top">S(|q|,w) or S*(|q|,w)</td>
               <td valign="top">S(|q|,w) or S*(|q|,w)</td>
               <td valign="top">Check the S(q,w) data set. Possibly
                 convert from experimental data <i>S(&#966;,channel), </i><i>S(&#966;,t)
+
 
 
 
@@ -704,6 +710,7 @@ href="https://www.ill.eu/instruments-support/computing-for-science/cs-software/a
 
 
 
+
                 the energy moments, and provide some of the
                 characteristic frequencies (recoil, isothermal,
                 longitudinal/harmonic, mean energy transfer)<br>
@@ -741,6 +748,7 @@ href="https://www.ill.eu/instruments-support/computing-for-science/cs-software/a
                         title="Treatment_Sqw_XS.png"
                         alt="Treatment_Sqw_XS.png" border="0"
                         align="right" height="60" width="80"></a></b></font>Compute
+
 
 
 
@@ -826,7 +834,7 @@ href="https://www.ill.eu/instruments-support/computing-for-science/cs-software/a
             </tr>
             <tr>
               <td valign="top"><b><font color="#3366ff"><a
-href="Neutron_Scattering.html#mozTocId260980">powder</a>(sqw4d)</font></b></td>
+                      href="Neutron_Scattering.html#mozTocId260980">powder</a>(sqw4d)</font></b></td>
               <td valign="top">iData_Sqw4D<br>
                 S(hkl,w) 4D </td>
               <td valign="top">iData_Sqw2D<br>
@@ -836,6 +844,7 @@ href="Neutron_Scattering.html#mozTocId260980">powder</a>(sqw4d)</font></b></td>
             </tr>
             <tr>
               <td valign="top"><b><font color="#3366ff">band_structure(sqw4d
+
 
 
 
@@ -863,6 +872,7 @@ href="Neutron_Scattering.html#mozTocId260980">powder</a>(sqw4d)</font></b></td>
             </tr>
             <tr>
               <td valign="top"><b><font color="#3366ff">thermochemistry(sqw4d
+
 
 
 
@@ -984,6 +994,7 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/Ge_
 
 
 
+
           McStas</a>. You can also try liquid Rubidium from <a
 href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/Rb_liq_coh.sqw">here</a>
         [8] and heavy water from <a
@@ -995,6 +1006,7 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
         </ul>
         Molecular Dynamics trajectories are usually computed in the NVE
         <a href="https://en.wikipedia.org/wiki/Microcanonical_ensemble">micro-canonical
+
 
 
 
@@ -1160,6 +1172,7 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
 
 
 
+
                     is the default.</i></b></td>
             </tr>
           </tbody>
@@ -1261,11 +1274,13 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
 
 
 
+
           correction</b>". Also, on a real experiment, the integration
         over momentum and angle is not identical, raising additional
         corrections.<br>
         <ul>
           <li><font color="#3366ff">plot</font>(<font color="#3366ff">structure_factor</font>([SqwT,
+
 
 
 
@@ -1332,6 +1347,7 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
 
 
 
+
             frequencies (moments)<br>
           </b></h5>
         From the dynamic structure factor, one can compute the energy
@@ -1340,6 +1356,7 @@ href="https://github.com/McStasMcXtrace/McCode/blob/master/mcstas-comps/data/D2O
         scattering units (here 72.64 g/mol for Ge). <br>
         <br>
         Using the 'quantum' scattering law S(q,w), we can define <i>n</i>-th
+
 
 
 
@@ -1491,6 +1508,7 @@ href="https://raw.githubusercontent.com/McStasMcXtrace/McCode/master/mcstas-comp
               color="#3366ff">dos</font>(SqwT, <font color="#cc33cc">'Carpenter'</font>))
 
 
+
             ];</li>
           <li><font color="#3366ff">plot</font>(g); xlim([0 Inf]);</li>
         </ul>
@@ -1615,10 +1633,8 @@ href="https://www.ill.eu/instruments-support/instruments-groups/instruments/in5"
         from the velocity auto-correlation function, as well as the
         incoherent and coherent scattering laws. Then, we can estimate
         from each S(q,w) the generalised density of states as <a
-href="Neutron_Scattering.html#mozTocId154363">defined
-
-
-          above</a>, and check that these two estimates are comparable.<br>
+          href="Neutron_Scattering.html#mozTocId154363">defined above</a>,
+        and check that these two estimates are comparable.<br>
         As a consequence, the density of states can be estimated
         similarly from incoherent, coherent and even total scattering
         integrals [17].<br>
@@ -1659,6 +1675,7 @@ href="Neutron_Scattering.html#mozTocId154363">defined
         <div align="center">S(Q,w) = N &#963;<sub>inc</sub> /4&#960; exp[ -hQ<sup>2</sup>/2m
 
 
+
           f(0) ] &#8747; e<sup>-iwt</sup> exp[ hQ<sup>2</sup>/2m f(t) ] dt<br>
           <br>
           <div align="left">where the function 'f' is computed from the
@@ -1675,7 +1692,9 @@ href="Neutron_Scattering.html#mozTocId154363">defined
           S(Q,w) = N &#963;<sub>inc</sub> /4&#960; exp[ -h<sup>2</sup>Q<sup>2</sup>/2m
 
 
+
           f(0) ] &#8721;<sub>p</sub> 1/p! &#8747; e<sup>-iwt</sup> [ h<sup>2</sup>Q<sup>2</sup>/2m
+
 
 
           f(t) ]<sup>p</sup> dt<br>
@@ -1717,6 +1736,7 @@ href="Neutron_Scattering.html#mozTocId154363">defined
         <div align="center">S(Q,w)<sub>[p=1]</sub> = N&#963;<sub>inc</sub>/8&#960;m
 
 
+
           Q<sup>2</sup> e<sup>-2W(Q)</sup> g(w)/w (n(w)+1)<br>
         </div>
         <br>
@@ -1724,6 +1744,7 @@ href="Neutron_Scattering.html#mozTocId154363">defined
         by the vDOS<br>
         <br>
         <div align="center">S(q,w)<sub>[p]</sub>&nbsp;&nbsp; = N&#963;<sub>inc</sub>/4&#960;/!p
+
 
 
           e<sup>-2W(Q)</sup> [2W(q)]<sup><sub>p</sub></sup> T<sub>p</sub>(w)<br>
@@ -1778,6 +1799,7 @@ href="Neutron_Scattering.html#mozTocId154363">defined
           <li>Sinc1 = <font color="#3366ff">incoherent</font>(gDOS, <font
               color="#cc33cc">'DW'</font>, 0.0001,<font color="#cc33cc">'q'</font>,Sinc{2});
 
+
             <i>% this is an array of 'p' terms, to be added with 'plus'</i></li>
           <li><font color="#3366ff">subplot</font>(log10([ Sinc0 <font
               color="#3366ff">deBosify<font color="#000000">(</font>ylim</font><font
@@ -1809,6 +1831,7 @@ href="Neutron_Scattering.html#mozTocId154363">defined
         <br>
         <div align="center">m = [&#8721;<sub>i</sub> C<sub>i</sub> &#963;<sub>i</sub>]/[&#8721;<sub>i</sub>
           C<sub>i</sub> &#963;<sub>i</sub>/m<sub>i</sub>]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
           <br>
           &#963; = &#8721;<sub>i</sub> C<sub>i</sub> &#963;<sub>i</sub><br>
         </div>
@@ -1823,6 +1846,7 @@ href="Neutron_Scattering.html#mozTocId154363">defined
         incoherent one and the structure factor S(q). <br>
         <br>
         <div align="center"> S<sub>coh</sub>(q,w) ~ S<sub>inc</sub>(q/&#8730;S(q),
+
           w) S(q)<br>
         </div>
         <br>
@@ -1856,6 +1880,7 @@ href="Neutron_Scattering.html#mozTocId154363">defined
               MD results</i></li>
           <li>Sinc1 = <font color="#3366ff">incoherent</font>(gDOS, <font
               color="#cc33cc">'DW'</font>, 0.0001,<font color="#cc33cc">'q'</font>,Sinc{2});
+
 
             <i>% this is an array of 'p' terms, to be added with 'plus'</i></li>
           <li>sq = <font color="#3366ff">structure_factor</font>(Scoh0);</li>
@@ -1930,9 +1955,11 @@ href="https://content.iospress.com/articles/journal-of-neutron-research/jnr016">
 
 
 
+
             See also Sears, <i>Neut. News</i> <b>3</b> (1992) 26, and
             the <a
 href="https://www.ill.eu/fileadmin/user_upload/ILL/1_About_ILL/Documentation/NeutronDataBooklet.pdf">ILL
+
 
 
               Neutron Data Bluebook</a>.<br>
@@ -2074,6 +2101,7 @@ href="https://raw.githubusercontent.com/McStasMcXtrace/McCode/master/mcstas-comp
 
 
 
+
         we may compute the constant W so that the total cross section
         converges to the free cross section at e.g. Ei=1eV (used in e.g.
         <a href="https://mit-crpg.github.io/openmc/">OpenMC</a>), then
@@ -2120,6 +2148,7 @@ href="https://raw.githubusercontent.com/McStasMcXtrace/McCode/master/mcstas-comp
 
 
 
+
           we compute<br>
           <div align="center">r<sup>2</sup> =
             (2*(1/(1+1))^2*80.2+(18/(18+1))^2*4.2)/(2*80.2+4.2) = 0.26<br>
@@ -2128,6 +2157,7 @@ href="https://raw.githubusercontent.com/McStasMcXtrace/McCode/master/mcstas-comp
             <br>
             <div align="left">In the case of heavy water we have two D
               atoms (A=2 &#963;<sub>b</sub>=7.64) and one O atom (A=16 &#963;<sub>b</sub>=4.2),
+
 
 
 
@@ -2288,10 +2318,12 @@ href="http://www.iaea.org/inis/collection/NCLCollectionStore/_Public/26/027/2602
 
 
 
+
             Indicates light water rotational vibrations at 205 and 408
             meV</li>
           <li>E. Liu (RPI) &lt;<a
 href="http://homepages.rpi.edu/%7Edanony/Papers/RND2011/ND_Sym_Liu_4_27_11.pdf">http://homepages.rpi.edu/~danony/Papers/RND2011/ND_Sym_Liu_4_27_11.pdf</a>&gt;
+
 
 
 
@@ -2377,6 +2409,7 @@ href="https://www.ill.eu/sites/fullprof/php/programs24b7.html?pagina=Crysfml">Cr
               color="#cc33cc">'powder'</font> or <font color="#cc33cc">'p'</font>=powder,
 
 
+
             <font color="#cc33cc">'xtal'</font> or<font color="#cc33cc">
               'x'</font>=single crystal</li>
         </ul>
@@ -2405,15 +2438,18 @@ href="http://mcstas.org/download/components/samples/Isotropic_Sqw.pure.html">Iso
             <li><font size="-1">ProxyPort=8888;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
 
+
                 % Proxy port if you are behind a proxy [8888 or 0 or
                 empty]</font></li>
             <li><font size="-1">java.lang.System.setProperty('http.proxyHost',
+
 
 
                 ProxyHost); </font></li>
             <li><font size="-1">com.mathworks.mlwidgets.html.HTMLPrefs.setUseProxy(true);</font></li>
             <li><font size="-1">com.mathworks.mlwidgets.html.HTMLPrefs.setProxyHost(ProxyHost);</font></li>
             <li><font size="-1">java.lang.System.setProperty('http.proxyPort',
+
 
 
                 num2str(ProxyPort));</font></li>
@@ -2424,7 +2460,8 @@ href="http://mcstas.org/download/components/samples/Isotropic_Sqw.pure.html">Iso
         </p>
         <ul>
           <li>lmo = <font color="#3366ff">cif2hkl</font>(<font
-              color="#cc33cc">'LaMnO3.cif'</font>)</li>
+              color="#cc33cc">'LaMnO3.cif'</font>)<br>
+          </li>
           <li>lmo = <font color="#3366ff">cif2hkl</font>(<font
               color="#cc33cc">'cod: La Mn O3'</font>)</li>
         </ul>
@@ -2438,6 +2475,25 @@ href="http://mcstas.org/download/components/samples/Isotropic_Sqw.pure.html">Iso
           it is based on a full McStas instrument model and goes much
           beyond the Caglioti formalism.<br>
         </p>
+        <h2><a class="mozTocH3" name="mozTocId687007"></a>Neutron
+          Triple-Axis Spectrometers<br>
+        </h2>
+        <p>The <a href="ResLibCal.html">ResLibCal</a> application
+          allows to model a conventional neutron scattering Triple-Axis
+          Spectrometer (TAS). It also allows to convolve a 4D S(q,w)
+          dynamic structure factor model with the resolution function
+          and perform fits. Read more in the dedicated <a
+            href="miFit.html#mozTocId89596">miFit example</a> for a
+          phonon data set.<br>
+        </p>
+        <h2><a class="mozTocH3" name="mozTocId148887"></a>Neutron
+          Scattering Instruments with McStas</h2>
+        <p>It is possible to control <a href="http://www.mcstas.org">McStas</a>
+          instrument models from within iFit. By doing so, you will be
+          able to perform parameter scans, optimisations, display the
+          instrument code as well as its geometry, and mode. Read more
+          at the <a href="McStas.html">McStas</a> page.<br>
+        </p>
         <ul>
         </ul>
       </div>
@@ -2445,6 +2501,7 @@ href="http://mcstas.org/download/components/samples/Isotropic_Sqw.pure.html">Iso
     <hr style="width: 100%; height: 2px;">
     <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
+
 
 
 
