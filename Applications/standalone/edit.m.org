@@ -31,7 +31,7 @@ else
   url = '';
 end
 
-if ishandle(url) && feature('ShowFigureWindows')
+if isnumeric(url) && ishandle(url) && feature('ShowFigureWindows')
   % activate hidden edit items in the figure
   search_list= [ findall(url,'type','uimenu') ; findall(url,'type','uitoggletool') ; findall(url,'type','uitogglesplittool') ];
   search_tags= get(search_list, 'Tag');
