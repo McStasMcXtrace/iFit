@@ -19,6 +19,7 @@ function y = mccode(instr, options, parameters)
 % mccode(description, options) also specifies additional McCode options, e.g.
 %   options.dir:         directory where to store results, or set automatically (string)
 %                          the last simulation files are stored therein 'sim'.
+%                        dir can also be 'pwd' for current, or 'tmp' for temporary location.
 %   options.ncount:      number of neutron events per iteration, e.g. 1e6 (double)
 %   options.mpi:         number of processors/cores to use with MPI on localhost (integer) 
 %                          when MPI is available, and mpi options is not given,
@@ -37,6 +38,12 @@ function y = mccode(instr, options, parameters)
 %   options can also be given as a string, e.g. 'ncount=1e6; monitor=*Theta*; compile=1'
 %   the 'monitor' option can also include further expressions, such as:
 %     options.monitor='*Theta*; signal=max(signal)/std(signal)^2;'
+%
+%   When the instrument file name contains a path specification, it is used for
+%   compilation and execution (recommended). If it is used as a single file name,
+%   or the target directory as no read, write or execute permissions,
+%   a temporary directory is created and the instrument is copied there, which may
+%   cause issues if local components are to be used.
 %
 % mccode(description, options, parameters) 
 %   Specifies the instrument parameters values to use as default. These values can
@@ -143,13 +150,7 @@ if isempty(options)
   options = struct();
 end
 options = instrument_parse_options(options);
-% use temporary directory to build/assemble parts.
-if isempty(options.dir), 
-  options.dir = tempname; 
-end
-if ~isdir(options.dir)
-  mkdir(options.dir);
-end
+
 if nargin < 3, 
   parameters = [];
 end
@@ -210,14 +211,41 @@ end
 
 if isempty(options.instrument), return; end
 if iscell(options.instrument), options.instrument = options.instrument{1}; end
-disp([ mfilename ': Using instrument: ' options.instrument ] );        
+disp([ mfilename ': Using instrument: ' options.instrument ] );  
+
+% target directory aliases
+if strcmp(options.dir, 'pwd')
+  options.dir = pwd;
+elseif any(strcmp(options.dir, {'tmp','temp','tempname'}))
+  options.dir = tempname;
+end     
+
+% determine if we use a fully qualified path in instrument, then sets it.
+[p,f,e] = fileparts( options.instrument );
+if ~isempty(p) && isempty(options.dir)
+  options.dir = p;
+end
+
+% test for directory permissions
+attr = fileattrib(options.dir);
+if ~isempty(options.dir) && (~attr.UserRead || ~attr.UserWrite || ~attr.UserExecute)
+  disp([ mfilename ': target directory ' options.dir 'is not accessible. Using temporary.' ]);
+  options.dir = ''; % will use temporary dir
+end
+
+% use temporary directory to build/assemble parts.
+if isempty(options.dir), 
+  options.dir = tempname; 
+end
+if ~isdir(options.dir)
+  mkdir(options.dir);
+end
         
 % copy file locally
 try
   copyfile(options.instrument, options.dir);
-  [p,f,e] = fileparts(options.instrument);
-  options.instrument = fullfile(options.dir,[f e]);
 end
+options.instrument = fullfile(options.dir,[f e]);
 
 if isfield(options, 'mpi') && options.mpi <= 1
   options.mpirun = 'none'; % no MPI needed
