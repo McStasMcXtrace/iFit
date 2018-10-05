@@ -1,27 +1,35 @@
-function [comps, fig, model]=plot(model, p, options)
+function [comps, fig, model]=plot(model, p, options, match)
 % iFunc_McCode/plot: runs the model in --trace mode and capture the output
 % grab all MCDISPLAY lines, and render the TRACE information into a figure.
 %
 %  plot(model)
 %     displays the given McCode model with its defaults/current parameters.
 %  plot(model, parameters)
-%     same as above, but uses the given parameters (vector, structure, cell)
+%     same as above, but uses the given parameters (vector, structure, cell, string)
+%  plot(model, parameters, options)
+%     same as above, and specifies an output file format to generate
+%  plot(model, parameters, options, match)
+%     same as above, and only plot component names that match 'match'
 %  plot(iFunc_McCode)
 %     displays the default instrument geometry (templateDIFF)
 %  [comps, fig] = plot(...)
 %     returns the list of components, figure used for display and updated model.
 %     
 % Example:
-%   model = mccode('instrument_file')
+%   model = mccode('templateDIFF')
 %   plot(model)
 %     a figure is generated, which shows the instrument geometry.
 %
+% syntax:
+%   [comps, fig, model]=plot(model, p, options, match)
+%
 % input:
-%   model: instrument simulation as obtained with 'mccode' (iFunc)
-%          or path to an instrument definition to compile.
-%   parameters: parameters to use, as a vector, cell, structure...
-%   options: rendering/export options. Can contain 
-%     'html','x3d','png','pdf','fig','tif','jpg','eps'
+%   model:      instrument simulation as obtained with 'mccode' (iFunc)
+%               or path to an instrument definition to compile.
+%   parameters: parameters to use, as a vector, cell, structure... or empty for default
+%   options:    rendering/export options. Can contain 
+%     'html','x3d','png','pdf','fig','tif','jpg','eps' or empty for no output
+%   match:      token to only render components that match it, or empty for all.
 %   
 % output:
 %   comps: a list of component specifications (structure array)
@@ -35,6 +43,7 @@ function [comps, fig, model]=plot(model, p, options)
   end
   if nargin < 2, p=[]; end
   if nargin < 3, options=''; end
+  if nargin < 3, match  =''; end
 
   % check if we have an iFunc McCode object
   if ischar(model) && ~isempty(dir(model))
@@ -134,6 +143,9 @@ function [comps, fig, model]=plot(model, p, options)
   colors='bgrcmk';
   for index=1:numel(comps)
     comp = comps(index);
+    if ~isempty(match) && isempty(strfind(comp.name, match))
+      continue
+    end
     disp([' Component: ' comp.name ' [' num2str(index) ']' ])
     r = [ comp.x ; comp.y ; comp.z ];
     if all(isnan(r)), continue; end

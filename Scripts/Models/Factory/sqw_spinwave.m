@@ -508,7 +508,7 @@ function executable = compile_spinwave
   if isempty(dir(fullfile(this_path,'private','spinwave'))) % no executable available
     fprintf(1, '%s: compiling binary...\n', mfilename);
     % gfortran -o spinwave -O2 -static spinwave.f90
-    cmd = {fc, '-o', target, '-O2', '-static', ...
+    cmd = {fc, '-o', target, '-O2', ...
        fullfile(this_path,'private', 'spinwave.f90')}; 
     disp([ sprintf('%s ', cmd{:}) ]);
     [status, result] = system([ precmd sprintf('%s ', cmd{:}) ]);
