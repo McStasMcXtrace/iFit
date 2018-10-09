@@ -17,6 +17,9 @@
     calculation.
 """
 
+# py3 compatibility
+from __future__ import print_function
+
 # we need spacegroup from ASE
 try:
     from ase.spacegroup import Spacegroup         # For ASE version 3.10 or later
@@ -354,17 +357,17 @@ def phonons_run(phonon, single=True, difference='central'):
                         # failed using symmetry to derive force. Trigger full computation.
                         force0 = None
                     elif rank == 0:
-                        print "[ASE] Imaging atom #%-3i %-3s    to " % \
+                        print("[ASE] Imaging atom #%-3i %-3s    to " % \
                             (offset + a, supercell.get_chemical_symbols()[a]), pos[a] + disp, \
-                            " (Angs) using rotation:"
-                        print rot
+                            " (Angs) using rotation:")
+                        print(rot)
                         
                 if force0 is None or rot is None: # compute forces
                     # move atom 'a' by 'disp'
                     supercell.positions[offset + a] = pos[a] + disp
                     if rank == 0:
-                        print "[ASE] Moving  atom #%-3i %-3s    to " % \
-                            (offset + a, supercell.get_chemical_symbols()[a]), pos[a] + disp, " (Angs)"
+                        print("[ASE] Moving  atom #%-3i %-3s    to " % \
+                            (offset + a, supercell.get_chemical_symbols()[a]), pos[a] + disp, " (Angs)")
                         
                     # Call derived class implementation of __call__
                     output = phonon.__call__(supercell)
@@ -377,7 +380,7 @@ def phonons_run(phonon, single=True, difference='central'):
                 
                 # append the forces to the force1 list
                 if output is None:
-                    print "[ASE] Warning: force1 is None !!"
+                    print("[ASE] Warning: force1 is None !!")
 
                 force1.append(output)
                 
@@ -882,7 +885,7 @@ def phonopy_run(phonon, single=True, filename='FORCE_SETS'):
     # save the PhonoPy object
     fid = opencew("phonopy.pkl")
     if fid is not None and rank == 0:
-        print "[ASE/Phonopy] Writing %s" % "phonopy.pkl"
+        print("[ASE/Phonopy] Writing %s" % "phonopy.pkl")
         pickle.dump(phonpy, fid, protocol=2)
         fid.close()
     
@@ -961,8 +964,8 @@ def phonopy_run_calculate(phonon, phonpy, supercell, single):
             disp = disps[d]
             scell = supercells[d]
             if rank == 0:
-                print "[ASE/PhonoPy] Moving  atom #%-3i %-3s    to " % \
-                    (disp[0], scell.get_chemical_symbols()[disp[0]]), disp[1:]
+                print("[ASE/PhonoPy] Moving  atom #%-3i %-3s    to " % \
+                    (disp[0], scell.get_chemical_symbols()[disp[0]]), disp[1:])
             
             cell = Atoms(symbols=scell.get_chemical_symbols(),
                          scaled_positions=scell.get_scaled_positions(),
@@ -981,7 +984,7 @@ def phonopy_run_calculate(phonon, phonpy, supercell, single):
                 try:
                     forces -= feq # forward difference, but assumes equilibrium is not always 0
                 except AttributeError:
-                    print "[ASE/PhonoPy] Can not use forward difference (equilibrium forces are mis-formatted)"
+                    print("[ASE/PhonoPy] Can not use forward difference (equilibrium forces are mis-formatted)")
 
             # save the forces in a pickle
             f = opencew(filename)

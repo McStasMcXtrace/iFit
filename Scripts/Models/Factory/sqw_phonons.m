@@ -320,7 +320,13 @@ elseif strcmp(configuration, 'identify')
 end
 
 options= sqw_phonons_argin(configuration, varargin{:});
-options.available = status;
+for f=fieldnames(status)'
+  if ~isfield(options, f{1})
+    options.available.(f{1}) = status.(f{1});
+  else
+    options.available.(f{1}) = options.(f{1});
+  end
+end
 % check if we re-use an existing iFunc Model
 if isa(configuration, 'iFunc') && configuration.Dimension == 4
   signal   = configuration;

@@ -140,6 +140,9 @@ elseif ~ispc && ~any(options.target(1) == [ filesep '~' ])
 elseif ispc && length(options.target) >= 2 && options.target(2) ~= ':'
   options.target = fullfile(pwd, options.target);
 end
+if ispc
+  options.target = strrep(options.target, '\', '/');
+end
 if ~isdir(options.target)
   mkdir(options.target);
 end
