@@ -65,6 +65,7 @@ function [comps, fig, model]=plot(model, p, options, match)
   end
   
   % switch to trace mode
+  ncount = model.UserData.options.ncount;
   model.UserData.options.trace  = 1;
   model.UserData.options.ncount = 1e3;  % create a new set of output files with reduced statistics
   % execute and capture output (TRACE)
@@ -72,6 +73,7 @@ function [comps, fig, model]=plot(model, p, options, match)
   disp([ mfilename ': running instrument ' strtok(model.Name) ' in Trace mode...' ])
   output = evalc('[val,model]=feval(model,[],nan);');
   model.UserData.options.trace = 0;
+  model.UserData.options.ncount= ncount;
   if isempty(monitors)
     monitors       = model.UserData.monitors;
   end
@@ -139,13 +141,31 @@ function [comps, fig, model]=plot(model, p, options, match)
   clear output_mcdisplay_section
 
   % PLOTTING: transform the points and plot them
-  fig = gcf; set(fig, 'Name',[ 'Instrument: ' model.Name ]);
+  fig = gcf; 
+  if ischar(match) match = cellstr(match); end
+  if ~iscellstr(match), match = {}; end
+  if ~isempty(match)
+    set(fig, 'Name',[ 'Instrument: ' model.Name ' ' sprintf('%s ', match{:}) ]);
+  else
+    set(fig, 'Name',[ 'Instrument: ' model.Name ]);
+  end
   colors='bgrcmk';
   for index=1:numel(comps)
     comp = comps(index);
-    if ~isempty(match) && isempty(strfind(comp.name, match))
-      continue
+
+    if ~isempty(match)
+      found = false;
+      for m=1:numel(match)
+        if ~isempty(strfind(comp.name, match{m}))
+          found = true;
+          break
+          
+        end
+      end
+    else found = true;
     end
+    if ~found, continue; end % not found match -> skip this comp
+    
     disp([' Component: ' comp.name ' [' num2str(index) ']' ])
     r = [ comp.x ; comp.y ; comp.z ];
     if all(isnan(r)), continue; end
@@ -207,7 +227,7 @@ function [comps, fig, model]=plot(model, p, options, match)
       t = [ t name '=' num2str(valp) ' ' ];
     end
   end
-  t = { sprintf([ 'Instrument: ' model.Name ' \n' ]) ; t };
+  t = { sprintf([ 'Instrument: ' model.Name ' ' sprintf('%s ', match{:}) '\n']) ; t };
   
   t = textwrap(t, 80);
   t = sprintf('%s\n', t{:});
@@ -271,6 +291,10 @@ function [comps, fig, model]=plot(model, p, options, match)
     end
   end
   axes(a0);
+  
+  if ~isempty(inputname(1)) && nargout < 3
+    assignin('caller',inputname(1),model); % update in original object
+  end
 
 end % plot
 
