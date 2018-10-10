@@ -44,6 +44,7 @@ function [comps, fig, model]=plot(model, p, options, match)
   if nargin < 2, p=[]; end
   if nargin < 3, options=''; end
   if nargin < 3, match  =''; end
+  comps = []; fig = [];
 
   % check if we have an iFunc McCode object
   if ischar(model) && ~isempty(dir(model))
@@ -64,16 +65,39 @@ function [comps, fig, model]=plot(model, p, options, match)
     monitors       = [];
   end
   
-  % switch to trace mode
-  ncount = model.UserData.options.ncount;
-  model.UserData.options.trace  = 1;
-  model.UserData.options.ncount = 1e3;  % create a new set of output files with reduced statistics
-  % execute and capture output (TRACE)
-  val = [];
-  disp([ mfilename ': running instrument ' strtok(model.Name) ' in Trace mode...' ])
-  output = evalc('[val,model]=feval(model,[],nan);');
-  model.UserData.options.trace = 0;
-  model.UserData.options.ncount= ncount;
+  if isfield(model.UserData, 'display_cache')
+    % to use cache, the same parameters must have been used
+    flag = true;
+    if ~isfield(model.UserData.display_cache, 'ParameterValues') ...
+      || ~isequal(model.UserData.display_cache.ParameterValues, model.ParameterValues)
+      flag = false;
+    end
+    if isfield(model.UserData, 'Parameters_Constant')
+      if ~isfield(model.UserData.display_cache, 'Parameters_Constant') ...
+      || ~isequal(model.UserData.display_cache.Parameters_Constant, model.UserData.Parameters_Constant)
+        flag = false;
+      end
+    end
+    
+    if flag && isfield(model.UserData.display_cache, 'comps')
+      disp([ mfilename ': re-using instrument ' strtok(model.Name) ' Trace from cache...' ])
+      comps = model.UserData.display_cache.comps;
+    end
+  end
+  
+  if isempty(comps)
+    % switch to trace mode when not in Cache
+    ncount = model.UserData.options.ncount;
+    model.UserData.options.trace  = 1;
+    model.UserData.options.ncount = 1e3;  % create a new set of output files with reduced statistics
+    % execute and capture output (TRACE)
+    val = [];
+    disp([ mfilename ': running instrument ' strtok(model.Name) ' in Trace mode...' ])
+    output = evalc('[val,model]=feval(model,[],nan);');
+    model.UserData.options.trace = 0;
+    model.UserData.options.ncount= ncount;
+  end
+  
   if isempty(monitors)
     monitors       = model.UserData.monitors;
   end
@@ -86,63 +110,65 @@ function [comps, fig, model]=plot(model, p, options, match)
   % first extract the portion 'start':'end'
   disp([ mfilename ': rendering geometry...' ])
   
-  index_start = strfind(output, 'MCDISPLAY: start');
-  index_end   = strfind(output, 'MCDISPLAY: end');
-  if numel(index_start) ~= 1 || numel(index_end) ~= 1
-    disp([ mfilename ': The MCDISPLAY section is invalid (incomplete or multiple). Aborting.' ]);
-    comps=output; fig=[];
-    return
-  end
-
-  output_mcdisplay_init = output(1:index_start);
-  output_mcdisplay_init = textscan(output_mcdisplay_init, '%s','Delimiter',sprintf('\n\r'));
-  output_mcdisplay_init = output_mcdisplay_init{1};
-
-  % initiate component structures
-  % we build a struct array, with one entry per component, and fields:
-  %   name: name
-  %   pos: pos(3)
-  %   rot: rot(3,3)
-  %   x,y,z: set of points
-  comps = mcdisplay_get_components(output_mcdisplay_init);
-  clear output_mcdisplay_init
-  
-  % restrict output to the MCDISPLAY so that all searches are faster
-  output_mcdisplay_section = output(index_start:index_end);
-  clear output
-  output_mcdisplay_section = textscan(output_mcdisplay_section, '%s','Delimiter','\n\r');
-  output_mcdisplay_section = output_mcdisplay_section{1};
-
-  % get the components in order, and identify the output section/lines
-  % which are separated by e.g. MCDISPLAY: component <blah>
-  index_mcdisplay_comp = find(~cellfun(@isempty, strfind(output_mcdisplay_section, 'MCDISPLAY: component ')));
-  if numel(index_mcdisplay_comp) ~= numel(comps)
-    disp([ mfilename ...
-      ': WARNING: not the same number of declared components (' num2str(numel(comps)) ...
-      ') and MCDISPLAY sections ' num2str(numel(index_mcdisplay_comp)) ])
-  end
-
-  % extract the multiline and circle stuff in each component mcdisplay section
-  for index=1:numel(index_mcdisplay_comp)
-    if index < numel(index_mcdisplay_comp), 
-      next = index_mcdisplay_comp(index+1);
-    else 
-      next = numel(output_mcdisplay_section); end
-    % get the MCDISPLAY section for a single component
-    section = output_mcdisplay_section(index_mcdisplay_comp(index):next);
-    % then we get the multiline and circle commands in this section
-    for token = {'multiline' ,'circle'}
-      [x,y,z] = mcdisplay_get_token(section, token{1});
-      comps(index).x = [ comps(index).x nan x ];
-      comps(index).y = [ comps(index).y nan y ];
-      comps(index).z = [ comps(index).z nan z ];
+  if isempty(comps)
+    index_start = strfind(output, 'MCDISPLAY: start');
+    index_end   = strfind(output, 'MCDISPLAY: end');
+    if numel(index_start) ~= 1 || numel(index_end) ~= 1
+      disp([ mfilename ': The MCDISPLAY section is invalid (incomplete or multiple). Aborting.' ]);
+      comps=output; fig=[];
+      return
     end
+
+    output_mcdisplay_init = output(1:index_start);
+    output_mcdisplay_init = textscan(output_mcdisplay_init, '%s','Delimiter',sprintf('\n\r'));
+    output_mcdisplay_init = output_mcdisplay_init{1};
+
+    % initiate component structures
+    % we build a struct array, with one entry per component, and fields:
+    %   name: name
+    %   pos: pos(3)
+    %   rot: rot(3,3)
+    %   x,y,z: set of points
+    comps = mcdisplay_get_components(output_mcdisplay_init);
+    clear output_mcdisplay_init
+    
+    % restrict output to the MCDISPLAY so that all searches are faster
+    output_mcdisplay_section = output(index_start:index_end);
+    clear output
+    output_mcdisplay_section = textscan(output_mcdisplay_section, '%s','Delimiter','\n\r');
+    output_mcdisplay_section = output_mcdisplay_section{1};
+
+    % get the components in order, and identify the output section/lines
+    % which are separated by e.g. MCDISPLAY: component <blah>
+    index_mcdisplay_comp = find(~cellfun(@isempty, strfind(output_mcdisplay_section, 'MCDISPLAY: component ')));
+    if numel(index_mcdisplay_comp) ~= numel(comps)
+      disp([ mfilename ...
+        ': WARNING: not the same number of declared components (' num2str(numel(comps)) ...
+        ') and MCDISPLAY sections ' num2str(numel(index_mcdisplay_comp)) ])
+    end
+
+    % extract the multiline and circle stuff in each component mcdisplay section
+    for index=1:numel(index_mcdisplay_comp)
+      if index < numel(index_mcdisplay_comp), 
+        next = index_mcdisplay_comp(index+1);
+      else 
+        next = numel(output_mcdisplay_section); end
+      % get the MCDISPLAY section for a single component
+      section = output_mcdisplay_section(index_mcdisplay_comp(index):next);
+      % then we get the multiline and circle commands in this section
+      for token = {'multiline' ,'circle'}
+        [x,y,z] = mcdisplay_get_token(section, token{1});
+        comps(index).x = [ comps(index).x nan x ];
+        comps(index).y = [ comps(index).y nan y ];
+        comps(index).z = [ comps(index).z nan z ];
+      end
+    end
+    clear output_mcdisplay_section
   end
-  clear output_mcdisplay_section
 
   % PLOTTING: transform the points and plot them
   fig = gcf; 
-  if ischar(match) match = cellstr(match); end
+  if ischar(match) && ~isempty(match), match = cellstr(match); end
   if ~iscellstr(match), match = {}; end
   if ~isempty(match)
     set(fig, 'Name',[ 'Instrument: ' model.Name ' ' sprintf('%s ', match{:}) ]);
@@ -156,10 +182,10 @@ function [comps, fig, model]=plot(model, p, options, match)
     if ~isempty(match)
       found = false;
       for m=1:numel(match)
-        if ~isempty(strfind(comp.name, match{m}))
+        match{m} = strtrim(match{m});
+        if isempty(match{m}) || ~isempty(strfind(comp.name, match{m}))
           found = true;
           break
-          
         end
       end
     else found = true;
@@ -220,19 +246,27 @@ function [comps, fig, model]=plot(model, p, options, match)
     t = [ t names{index} '=' num2str(valp) ' ' ];
   end
   % add static parameters
-  if ~isempty(model.UserData.Parameters_Constant) && ...
+  if isfield(model.UserData, 'Parameters_Constant') && ...
+     ~isempty(model.UserData.Parameters_Constant) && ...
      ~isempty(fieldnames(model.UserData.Parameters_Constant))
     for f=fieldnames(model.UserData.Parameters_Constant)
       name = f{1}; valp=model.UserData.Parameters_Constant.(name);
       t = [ t name '=' num2str(valp) ' ' ];
     end
   end
-  t = { sprintf([ 'Instrument: ' model.Name ' ' sprintf('%s ', match{:}) '\n']) ; t };
   
+  t = { sprintf([ 'Instrument: ' model.Name ' ' sprintf('%s ', match{:}) '\n']) ; t };
   t = textwrap(t, 80);
   t = sprintf('%s\n', t{:});
   title(t ,'Interpreter','None');
   model.UserData.title = t;
+  
+  % store Display info in cache
+  model.UserData.display_cache.ParameterValues = mp;
+  if isfield(model.UserData, 'Parameters_Constant')
+    model.UserData.display_cache.Parameters_Constant = model.UserData.Parameters_Constant;
+  end
+  model.UserData.display_cache.comps = comps;
 
   plot_contextmenu(gca, model.Name, t, monitors);
   [~,filename] = fileparts(strtok(model.Name));
