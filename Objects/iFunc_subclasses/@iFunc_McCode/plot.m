@@ -296,7 +296,7 @@ function [comps, fig, model]=plot(model, p, options, match)
       plot_exportmessage([ filename '.x3d' ])
     end
   end
-  if exist('plot2svg')
+  if exist('plot2svg') && ~isempty(strfind(options, 'svg'))
     plot2svg([ filename '.svg' ], fig);
     plot_exportmessage([ filename '.svg' ])
   end
