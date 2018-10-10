@@ -28,7 +28,7 @@ function [comps, fig, model]=plot(model, p, options, match)
 %               or path to an instrument definition to compile.
 %   parameters: parameters to use, as a vector, cell, structure... or empty for default
 %   options:    rendering/export options. Can contain 
-%     'html','x3d','png','pdf','fig','tif','jpg','eps' or empty for no output
+%     'html','x3d','png','pdf','fig','tif','jpg','eps', 'svg' or empty for no output
 %   match:      token to only render components that match it, or empty for all.
 %   
 % output:
@@ -43,7 +43,7 @@ function [comps, fig, model]=plot(model, p, options, match)
   end
   if nargin < 2, p=[]; end
   if nargin < 3, options=''; end
-  if nargin < 3, match  =''; end
+  if nargin < 4, match  =''; end
   comps = []; fig = [];
 
   % check if we have an iFunc McCode object
@@ -274,15 +274,31 @@ function [comps, fig, model]=plot(model, p, options, match)
   if isdir(model.UserData.options.dir)
     filename = fullfile(model.UserData.options.dir, filename); 
   end
+  if ~isempty(match)
+    filename = [ filename sprintf('%s', match{:}) ];
+  end
   
   % export options to x3d/xhtml
-  if ~isempty(strfind(options, 'html'))
-    t(t=='<')='[';
-    t(t=='>')=']';
-    figure2xhtml(filename, fig, ...
-      struct('title', model.Name, 'Description',t,'interactive',true));
-    plot_exportmessage([ filename '.xhtml' ])
-    plot_exportmessage([ filename '.x3d' ])
+  if exist('figure2xhtml')
+    if ~isempty(strfind(options, 'html'))
+      t(t=='<')='[';
+      t(t=='>')=']';
+      figure2xhtml(filename, fig, ...
+        struct('title', model.Name, 'Description',t,'interactive',true));
+      plot_exportmessage([ filename '.xhtml' ])
+      plot_exportmessage([ filename '.x3d' ])
+    end
+    if ~isempty(strfind(options, 'x3d'))
+      t(t=='<')='[';
+      t(t=='>')=']';
+      figure2xhtml(filename, fig, struct('interactive',true, ...
+        'output', 'x3d','title',model.Name,'Description',t));
+      plot_exportmessage([ filename '.x3d' ])
+    end
+  end
+  if exist('plot2svg')
+    plot2svg([ filename '.svg' ], fig);
+    plot_exportmessage([ filename '.svg' ])
   end
   
   % add the model value in a small insert (statistics will be limited as ncount=1e3)
