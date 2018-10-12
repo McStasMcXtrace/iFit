@@ -64,6 +64,7 @@ function [comps, fig, model]=plot(model, p, options, match)
   else
     monitors       = [];
   end
+  val = [];
   
   if isfield(model.UserData, 'display_cache')
     % to use cache, the same parameters must have been used
@@ -88,14 +89,16 @@ function [comps, fig, model]=plot(model, p, options, match)
   if isempty(comps)
     % switch to trace mode when not in Cache
     ncount = model.UserData.options.ncount;
+    raw    = model.UserData.options.raw;
     model.UserData.options.trace  = 1;
     model.UserData.options.ncount = 1e3;  % create a new set of output files with reduced statistics
+    model.UserData.options.raw    = '--no-output-files';  % much faster without data import
     % execute and capture output (TRACE)
-    val = [];
     disp([ mfilename ': running instrument ' strtok(model.Name) ' in Trace mode...' ])
     output = evalc('[val,model]=feval(model,[],nan);');
     model.UserData.options.trace = 0;
     model.UserData.options.ncount= ncount;
+    model.UserData.options.raw   =raw;
   end
   
   if isempty(monitors)
