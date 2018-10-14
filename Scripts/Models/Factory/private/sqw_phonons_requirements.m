@@ -56,23 +56,23 @@ function status = sqw_phonons_requirements_safe(link, options)
   disp('Available packages (system):');
 
   % test for python
-  status.python = '';
-  for calc={'python'}
-    % now test executable
-    [st,result]=system([ precmd 'echo "0" | ' calc{1} ]);
-    if any(st == 0:2) && (~ispc || isempty(strfind(result, [ '''' calc{1} '''' ])))
-        status.python=calc{1};
-        st = 0;
-        disp([ '  Python          (' link.python ') as "' status.python '"' ]);
-        break;
+  if isfield(options, 'python')
+    status.python = options.python;
+  else
+    status.python = '';
+    for calc={'python'}
+      % now test executable
+      [st,result]=system([ precmd 'echo "0" | ' calc{1} ]);
+      if any(st == 0:2) && (~ispc || isempty(strfind(result, [ '''' calc{1} '''' ])))
+          status.python=calc{1};
+          st = 0;
+          disp([ '  Python          (' link.python ') as "' status.python '"' ]);
+          break;
+      end
     end
   end
   if isempty(status.python)
     error([ mfilename ': Python not installed. This is required.' ]);
-  end
-  
-  if isfield(options, 'python')
-    status.python = options.python;
   end
 
   % test for ASE in Python
