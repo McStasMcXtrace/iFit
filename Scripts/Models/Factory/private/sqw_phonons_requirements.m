@@ -1,4 +1,4 @@
-function [status, link] = sqw_phonons_requirements
+function [status, link] = sqw_phonons_requirements(options)
 % sqw_phonons_requirements: check for availability of ASE and MD codes
 %
 % MPI, EMT, GPAW, Abinit, Elk, QE, VASP
@@ -28,25 +28,32 @@ link.siesta = 'https://departments.icmab.es/leem/siesta/';
 
 try
   cd(d)
-  status = sqw_phonons_requirements_safe(link);
+  status = sqw_phonons_requirements_safe(link, options);
 catch ME
   disp([ mfilename ': error analysing installed software' ]);
   disp(getReport(ME));
   status = [];
 end
 
+for f=fieldnames(options)'
+  if isfield(status, f{1})
+    status.(f{1}) = options.(f{1});
+    disp([ 'Using ' f{1} ' = ' status.(f{1}) ' (User definition)' ])
+  end
+end
+
 cd(p);
 rmdir(d, 's');
 
 % ==============================================================================
-function status = sqw_phonons_requirements_safe(link)
+function status = sqw_phonons_requirements_safe(link, options)
 
   % required to avoid Matlab to use its own libraries
   if ismac,      precmd = 'DYLD_LIBRARY_PATH= ; DISPLAY= ; ';
   elseif isunix, precmd = 'LD_LIBRARY_PATH= ; DISPLAY= ; '; 
   else           precmd=''; end
 
-  disp('Available packages:');
+  disp('Available packages (system):');
 
   % test for python
   status.python = '';
@@ -62,6 +69,10 @@ function status = sqw_phonons_requirements_safe(link)
   end
   if isempty(status.python)
     error([ mfilename ': Python not installed. This is required.' ]);
+  end
+  
+  if isfield(options, 'python')
+    status.python = options.python;
   end
 
   % test for ASE in Python

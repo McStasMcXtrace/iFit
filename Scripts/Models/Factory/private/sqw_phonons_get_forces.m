@@ -218,9 +218,13 @@ function [options, sav] = sqw_phonons_get_forces(options, decl, calc)
     try
       if strcmpi(options.calculator, 'GPAW') && isfield(options,'mpi') ...
         && ~isempty(options.mpi) && options.mpi > 1
-        [st, result] = system([ precmd options.available.mpirun ' -np ' num2str(options.mpi) ' '  options.available.gpaw ' ' fullfile(target,'sqw_phonons_forces_iterate.py') ]);
+        cmd=[ precmd options.available.mpirun ' -np ' num2str(options.mpi) ' '  options.available.gpaw ' ' fullfile(target,'sqw_phonons_forces_iterate.py') ];
+        disp(cmd);
+        [st, result] = system(cmd);
       else
-        [st, result] = system([ precmd options.available.python ' ' fullfile(target,'sqw_phonons_forces_iterate.py') ]);
+        cmd=[ precmd options.available.python ' ' fullfile(target,'sqw_phonons_forces_iterate.py') ];
+        disp(cmd);
+        [st, result] = system(cmd);
       end
       
       % the first return 'st' gives the max number of steps remaining
@@ -290,7 +294,9 @@ function [options, sav] = sqw_phonons_get_forces(options, decl, calc)
   sqw_phonons_htmlreport('', 'status', options);
   
   try
-    [st, result] = system([ precmd options.available.python ' ' fullfile(target,'sqw_phonons_forces_finalize.py') ]);
+    cmd=[ precmd options.available.python ' ' fullfile(target,'sqw_phonons_forces_finalize.py') ];
+    disp(cmd)
+    [st, result] = system(cmd);
     % display result
     disp(result)
     options.status = result;

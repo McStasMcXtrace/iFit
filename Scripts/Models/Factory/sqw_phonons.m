@@ -177,6 +177,14 @@ function signal=sqw_phonons(configuration, varargin)
 %     default=8. If you are tight with memory, you may reduce it to 4. A larger
 %     value will improve the SCF convergence, and use more memory (QuantumEspresso)
 %
+% Options to specify executables
+%   options.calculator                     Python/ASE calculator (see above)
+%   options.command='exe'                  Path to calculator executable
+%
+%   and executables can be specified for 'python','mpirun','gpaw','elk','abinit',
+%     'quantumespresso','vasp','octopus','cp2k','siesta', for instance:
+%   options.python='python3'
+%
 % The options can also be entered as strings with 'field=value; ...'.
 %
 % output (model creation):
@@ -303,15 +311,6 @@ persistent status
 persistent link
 signal = [];
 
-if ~exist('status') || isempty(status) || ~isstruct(status)
-  try
-    [status, link] = sqw_phonons_requirements;
-  catch ME
-    disp(getReport(ME))
-    return
-  end
-end
-
 if nargin == 0, configuration = 'gui'; varargin{1} = 'emt'; 
 elseif strcmp(configuration, 'identify')
   signal = sqw_phonons('defaults');
@@ -320,6 +319,16 @@ elseif strcmp(configuration, 'identify')
 end
 
 options= sqw_phonons_argin(configuration, varargin{:});
+
+if ~exist('status') || isempty(status) || ~isstruct(status)
+  try
+    [status, link] = sqw_phonons_requirements(options);
+  catch ME
+    disp(getReport(ME))
+    return
+  end
+end
+
 for f=fieldnames(status)'
   if ~isfield(options, f{1})
     options.available.(f{1}) = status.(f{1});
@@ -327,6 +336,7 @@ for f=fieldnames(status)'
     options.available.(f{1}) = options.(f{1});
   end
 end
+
 % check if we re-use an existing iFunc Model
 if isa(configuration, 'iFunc') && configuration.Dimension == 4
   signal   = configuration;

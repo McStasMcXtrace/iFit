@@ -147,8 +147,13 @@ def _get_spacegroup(atoms, symprec=1e-5, center=None):
         sg        = Spacegroup(nb)
         #
         # now we scan all atoms in the cell and look for equivalent sites
-        sites,kinds = sg.equivalent_sites(positions, 
+        try:
+          sites,kinds = sg.equivalent_sites(positions, 
                 onduplicates='keep', symprec=symprec)
+        except TypeError:
+          # ASE <= 3.9
+          sites,kinds = sg.equivalent_sites(positions, 
+                ondublicates='keep', symprec=symprec)
         #    
         # the equivalent sites should match all other atom locations in the cell
         # as the spacegroup transforms the unit cell in itself
@@ -240,7 +245,7 @@ def phonons_run_eq(phonon, supercell):
         sys.stdout.flush()
     else:
         # read previous data
-        output = pickle.load(open(filename))
+        output = pickle.load(open(filename, 'rb'))
         
     return output
         
@@ -699,7 +704,7 @@ def phonons_read(phonon, method='Frederiksen', symmetrize=3, acoustic=True,
     filename = phonon.name + '.eq.pckl'
     feq = 0
     if isfile(filename):
-        feq = pickle.load(open(filename))
+        feq = pickle.load(open(filename,'rb'))
         if method == 'frederiksen':
             for i, a in enumerate(phonon.indices):
                 feq[a] -= feq.sum(0)
@@ -711,11 +716,11 @@ def phonons_read(phonon, method='Frederiksen', symmetrize=3, acoustic=True,
             basename = '%s.%d%s' % (phonon.name, a, v)
             
             if isfile(basename + '-.pckl'):
-                fminus_av = pickle.load(open(basename + '-.pckl'))
+                fminus_av = pickle.load(open(basename + '-.pckl','rb'))
             else:
                 fminus_av = None
             if isfile(basename + '+.pckl'):
-                fplus_av = pickle.load(open(basename + '+.pckl'))
+                fplus_av = pickle.load(open(basename + '+.pckl','rb'))
             else:
                 fplus_av = None
             

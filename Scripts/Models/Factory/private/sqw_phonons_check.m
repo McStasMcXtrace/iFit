@@ -260,9 +260,10 @@ end
 % ------------------------------------------------------------------------------
 % call python: read/export initial configuration
 result = '';
-disp([ precmd options.available.python ' ' fullfile(target,'sqw_phonons_check.py') ])
+cmd=[ precmd options.available.python ' ' fullfile(target,'sqw_phonons_check.py') ];
+disp(cmd);
 try
-  [st, result] = system([ precmd options.available.python ' ' fullfile(target,'sqw_phonons_check.py') ]);
+  [st, result] = system(cmd);
 end
 % we test if the pickle file could be written. This way even if the export/save 
 % properties fail, we can proceed.
