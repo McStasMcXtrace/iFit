@@ -195,13 +195,13 @@ function [comps, fig, model]=plot(model, p, options, match)
     end
     if ~found, continue; end % not found match -> skip this comp
     
-    disp([' Component: ' comp.name ' [' num2str(index) ']' ])
     r = [ comp.x ; comp.y ; comp.z ];
     if all(isnan(r)), continue; end
     R = comp.rot*r;
     x = R(1,:)+comp.pos(1);
     y = R(2,:)+comp.pos(2);
     z = R(3,:)+comp.pos(3);
+    disp([' Component: ' comp.name ' [' num2str(index) '] AT (' sprintf('%g,%g,%g', comp.pos) ')'  ])
     c = mod(comp.index, numel(colors)); c=colors(c+1);
     h = plot3(z,x,y, [ c '-' ], 'DisplayName', comp.name);
     popup=uicontextmenu;
