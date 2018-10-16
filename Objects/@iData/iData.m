@@ -304,7 +304,11 @@ function [out, this_in]=iData_iFunc2iData(this_in, axes_in, varargin)
         axes_in{index} = ax1;
       end
     end
-    this_out = iData(axes_in{:}, signal); % make it an iData
+    if ~isempty(axes_in)
+      this_out = iData(axes_in{:}, signal); % make it an iData
+    else
+      this_out = iData(signal);
+    end
 
     % assign axes names
     if nargin > 2 % iData(iFunc,p,axes...)

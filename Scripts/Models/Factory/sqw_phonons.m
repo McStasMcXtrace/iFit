@@ -329,6 +329,10 @@ if ~exist('status') || isempty(status) || ~isstruct(status)
   end
 end
 
+if ~isstruct(status), 
+  disp([ mfilename ': Missing software to run. Aborting.' ])
+  return; 
+end
 for f=fieldnames(status)'
   if ~isfield(options, f{1})
     options.available.(f{1}) = status.(f{1});
@@ -401,7 +405,7 @@ if ~isempty(dir(configuration)) % a file/directory
     end
   end
 end
-if isempty(status), return; end
+
 if isempty(status.mpirun) && isfield(options,'mpi') && ~isempty(options.mpi) && options.mpi > 1
   options.mpi=1;
   disp([ mfilename ': MPI parallelization is not available. Install e.g. OpenMPI first. Using mpi=1 (serial).' ]);
