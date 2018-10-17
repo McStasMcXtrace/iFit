@@ -833,7 +833,7 @@ def phonopy_run(phonon, single=True, filename='FORCE_SETS'):
     # will then create the objects, which are subsequently updated until False.
     
     # Set calculator if provided
-    assert phonon.calc is not None, "Provide calculator in Phonon __init__ method"
+    # assert phonon.calc is not None, "Provide calculator in Phonon __init__ method"
     
     # Atoms in the supercell -- repeated in the lattice vector directions
     # beginning with the last

@@ -52,6 +52,12 @@ function [options, sav] = sqw_phonons_get_forces(options, decl, calc)
   if ~isempty(dir(fullfile(target, 'ifit.py')))
     options.script_ifitpy = fileread(fullfile(target, 'ifit.py')); % python
   end
+  % PhonoPy with FORCE_SETS: we do not need any calculator
+  if ~isempty(dir(fullfile(target, 'FORCE_SETS'))) && isfield(options.available,'phonopy') ...
+    && ~isempty(options.available.phonopy) && options.use_phonopy
+    decl = '';
+    calc = 'calc=None';
+  end
   
   % this scripts should be repeated as long as its return value is null (all is fine)
   options.script_get_forces_iterate = [ ...
@@ -217,7 +223,7 @@ function [options, sav] = sqw_phonons_get_forces(options, decl, calc)
   while st>0
     try
       if strcmpi(options.calculator, 'GPAW') && isfield(options,'mpi') ...
-        && ~isempty(options.mpi) && options.mpi > 1
+        && ~isempty(options.mpi) && options.mpi > 1 && ~isempty(options.available.mpirun)
         cmd=[ precmd options.available.mpirun ' -np ' num2str(options.mpi) ' '  options.available.gpaw ' ' fullfile(target,'sqw_phonons_forces_iterate.py') ];
         disp(cmd);
         [st, result] = system(cmd);

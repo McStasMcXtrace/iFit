@@ -3,7 +3,7 @@ Version: @IFIT_VERSION@
 Architecture: arch
 Installed-Size: 48100
 Depends: bash
-Recommends: mcrinstaller, libxmu6, libxp6, ipython-notebook, python-scipy
+Recommends: mcrinstaller, libxmu6, libxp6, ipython-notebook, python-scipy, libgfortran-5-dev
 Suggests: mcstas-suite, libopenmpi-dev
 Section: Science
 Priority: optional
