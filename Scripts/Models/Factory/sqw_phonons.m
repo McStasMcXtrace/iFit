@@ -321,16 +321,11 @@ end
 options= sqw_phonons_argin(configuration, varargin{:});
 
 if ~exist('status') || isempty(status) || ~isstruct(status)
-  try
-    [status, link] = sqw_phonons_requirements(options);
-  catch ME
-    disp(getReport(ME))
-    return
-  end
+  [status, link] = sqw_phonons_requirements(options);
 end
 
-if ~isstruct(status), 
-  disp([ mfilename ': Missing software to run. Aborting.' ])
+if isempty(status) || ~isstruct(status), 
+  disp([ mfilename ': ERROR: Missing software to run. Aborting.' ])
   return; 
 end
 for f=fieldnames(status)'

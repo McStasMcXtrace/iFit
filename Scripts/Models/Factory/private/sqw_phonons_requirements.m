@@ -25,14 +25,13 @@ link.vasp   = 'http://www.vasp.at/';
 link.octopus= 'http://octopus-code.org/';
 link.cp2k   = 'http://www.cp2k.org/';
 link.siesta = 'https://departments.icmab.es/leem/siesta/';
+link.hdf5storage='https://pythonhosted.org/hdf5storage/';
 
-try
-  cd(d)
-  status = sqw_phonons_requirements_safe(link, options);
-catch ME
-  disp([ mfilename ': error analysing installed software' ]);
-  disp(getReport(ME));
-  status = [];
+cd(d)
+status = sqw_phonons_requirements_safe(link, options);
+cd(p)
+if isempty(status)
+  return
 end
 
 for f=fieldnames(options)'
@@ -54,7 +53,7 @@ function status = sqw_phonons_requirements_safe(link, options)
   else           precmd=''; end
 
   disp('Available packages (system):');
-
+  status = [];
   % test for python
   if isfield(options, 'python')
     status.python = options.python;
@@ -72,21 +71,38 @@ function status = sqw_phonons_requirements_safe(link, options)
     end
   end
   if isempty(status.python)
-    error([ mfilename ': Python not installed. This is required.' ]);
+    disp([ mfilename ': ERROR: Python not installed. This is required.' ]);
+    status = [];
+    return
   end
 
   % test for ASE in Python
   [status.ase, result] = system([ precmd status.python ' -c "import ase"' ]);
   if status.ase ~= 0
-    disp([ mfilename ': error: requires ASE to be installed.' ])
+    disp([ mfilename ': ERROR: requires ASE to be installed.' ])
     disp([ '  Get it at <' link.ase '>.' ]);
     disp('  Packages exist for Debian/Mint/Ubuntu, RedHat/Fedora/SuSE, MacOSX and Windows.');
-    error([ mfilename ': ASE not installed. This is required.' ]);
+    disp([ mfilename ': ASE not installed. This is required.' ]);
+    status = [];
+    return
   end
     
   disp([ mfilename ': using ASE ' result ]);
   status.emt='ase-run';
   status.ase=sscanf(result,'%d.%d');
+  
+  % test for hdf5storage
+  [st, result] = system([ precmd status.python ' -c "import hdf5storage"' ]);
+  if any(st == 0)
+    status.hdf5storage = 'hdf5storage';
+    disp([ '  hdf5storage     (' link.hdf5storage ') as "' status.hdf5storage '"' ]);
+  else
+    disp([ mfilename ': ERROR: requires python-hdf5storage to be installed.' ])
+    disp('  Packages exist for Debian/Mint/Ubuntu, RedHat/Fedora/SuSE, Python PIP and conda.');
+    status = [];
+    return
+  end
+  
   disp('  EMT             only for Al,Cu,Ag,Au,Ni,Pd,Pt,H,C,N,O');
   
   % test for mpirun
