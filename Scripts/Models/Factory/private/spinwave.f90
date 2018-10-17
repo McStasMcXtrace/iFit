@@ -8,7 +8,7 @@
 	implicit none
 
 	integer   :: mxcar, mxcle, mxlmc,mxlvc
-	parameter (mxcar=132,mxcle=40,mxlmc=12,mxlvc=80)
+	parameter (mxcar=132,mxcle=40,mxlmc=12,mxlvc=800)
 	
 	end module m_borne
 !
