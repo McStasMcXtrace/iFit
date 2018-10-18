@@ -16,13 +16,27 @@ function frame = getframe(a, dim, options)
 % Version: $Date$
 % See also iData, iData/plot, getframe, image, imwrite
 
+persistent gl
+
 if nargin < 2, dim=0; end
 if nargin < 3, options=''; end
+
+% test if openGL is installed correctly
+if ~exist('gl') || isempty(gl)
+  gl = opengl('data');
+end
+
 if numel(a) > 1
   frame = cell(size(a));
   for index=1:numel(a)
     frame{index} = getframe(a(index), dim);
   end
+  return
+end
+
+if isfield(gl, 'Version') && isempty(gl.Version)
+  % installed incorrectly: will lead to SEGFAULT
+  frame = struct();
   return
 end
 
