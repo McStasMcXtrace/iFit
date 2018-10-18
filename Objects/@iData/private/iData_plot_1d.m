@@ -32,7 +32,7 @@ function [h, xlab, ylab, ret] = iData_plot_1d(a, method, this_method, varargin)
     % need to create this axis
     setalias(a, 'Axis_2', ax);
     setaxis(a, 2, 'Axis_2');
-    h = iData_plot_2D(a, method, this_method, varargin{:});
+    h = iData_plot_2d(a, method, this_method, varargin{:});
     ret = 1;
   else
     if all(e == 0 | ~isfinite(e)) || length(x) ~= length(e)
