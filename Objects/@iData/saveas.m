@@ -355,16 +355,20 @@ try
       disp([ mfilename ': Export into ' format ' is only possible for 2D objects, not for ' num2str(ndims(a)) 'D. Use resize to change dimensionality. Ignoring.' ]) 
     end
   case {'gif','bmp','pbm','pcx','pgm','pnm','ppm','ras','xwd','hdf4','tiff','png','art'}  % bitmap images
-    if ndims(a) == 2 && ~isempty(root) % 'data' option
+    b = [];
+    if ndims(a) ~= 2 || isempty(root)
+      f = getframe(a,[],options);
+      if isfield(f, 'cdata')
+        b = f.cdata;
+        if  strcmp(formatShort(1:3),'jpe')
+            b=sum(b,3);
+        end
+      end
+    end
+    if isempty(b) % 'data' option or getframe failed
       b = real(double(iData_private_cleannaninf(a,1)));
       b = round((b-min(b(:)))/(max(b(:))-min(b(:)))*256);
       b = flipud(b);
-    else
-      f = getframe(a,[],options);
-      b = f.cdata;
-      if  strcmp(formatShort(1:3),'jpe')
-          b=sum(b,3);
-      end
     end
     if strcmp(formatShort,'hdf4'), formatShort='hdf'; end
     if ~isempty(b)
