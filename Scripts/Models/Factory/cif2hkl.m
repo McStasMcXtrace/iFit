@@ -221,6 +221,8 @@ function compiled=cif2hkl_check_compile(compile)
       warning('%s: Can''t compile cif2hkl.F90 as binary\n       in %s\n', ...
         mfilename, fullfile(this_path));
     else
+      delete(fullfile(this_path, '*.mod'));
+      delete('*.mod');
       compiled = target;
     end
   end

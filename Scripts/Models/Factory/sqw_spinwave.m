@@ -518,6 +518,7 @@ function executable = compile_spinwave
         mfilename, fullfile(this_path, 'private'));
     else
       delete(fullfile(this_path,'private', '*.mod'));
+      delete('*.mod');
       executable = target;
     end
   end
