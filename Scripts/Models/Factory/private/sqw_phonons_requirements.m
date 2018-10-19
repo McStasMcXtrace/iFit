@@ -129,11 +129,20 @@ function status = sqw_phonons_requirements_safe(link, options)
   
   % test for GPAW
   [st, result] = system([ precmd status.python ' -c "from gpaw import GPAW"' ]);
+  status.gpaw='';
   if any(st == 0:2)
-    status.gpaw='gpaw-python';
+    % now test executable
+    for calc={'gpaw','gpaw-python'}
+      [st,result]=system([ precmd 'echo "0" | ' calc{1} ]);
+      if (st == 0 || st == 2) && (~ispc || isempty(strfind(result, [ '''' calc{1} '''' ])))
+          status.gpaw=calc{1};
+          st = 0;
+          break;
+      end
+    end
+  end
+  if ~isempty(status.gpaw)
     disp([ '  GPAW            (' link.gpaw ') as "' status.gpaw '"' ]);
-  else
-    status.gpaw='';
   end
   
   % test for Elk
