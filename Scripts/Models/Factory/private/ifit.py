@@ -848,7 +848,6 @@ def phonopy_run(phonon, single=True, filename='FORCE_SETS'):
     # using factor=6.46541380e-2=VaspToeV
     if os.path.exists('FORCE_SETS'):
         phonpy = Phonopy(cell, numpy.diag(phonon.N_c), 
-            is_auto_displacements=False,
             primitive_matrix= None,
             dynamical_matrix_decimals= None,
             force_constants_decimals= None,
