@@ -1,8 +1,13 @@
 #!/bin/sh
+
+# you may need to set manually the path here, such as:
+# exe_dir=/usr/local/ifit/Python
 exe_dir=`dirname "$0"`
 
 cd $exe_dir
 
-echo "Starting IPython notebook session. Think about stopping the server after use."
-ipython notebook --pylab=auto --pprint PyMatlab.ipynb
+echo "Starting IPython/Jupyter notebook session. Think about stopping the server after use."
+echo $pwd
+echo jupyter notebook PyMatlab.ipynb
+jupyter notebook PyMatlab.ipynb
 

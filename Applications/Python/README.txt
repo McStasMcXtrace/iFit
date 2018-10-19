@@ -1,6 +1,24 @@
 This class allows to communicate with a Matlab(R) instance, using a Pipe
 
-The normal usage is:
+Requirements:  python (2 or 3)
+Optional:      ipython, ipython notebook, jupyter
+
+Starting:
+  First navigate to this location. You may as well just copy the matlab.py (and 
+  optionally the PyMatlab.ipynb) file anywhere, and work from there.
+  
+  Then launch Python, e.g.:
+    # ipython
+
+  You can alternatively use a Python Notebook with:
+
+    jupyter notebook PyMatlab.ipynb
+  or 
+    ipython notebook PyMatlab.ipynb
+
+--------------------------------------------------------------------------------
+
+The normal usage is, within Python:
 
 >>> from matlab import Matlab
 >>> m=Matlab()
