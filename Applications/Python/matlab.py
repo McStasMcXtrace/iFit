@@ -128,8 +128,6 @@ class Matlab(object):
         # The os.setsid() is passed in the argument preexec_fn so
         # it's run after the fork() and before  exec() to run the shell.
         
-        os.setpgrp() # create new process group, become its leader
-        
         # merge stdout and stderr from Matlab process
         self.proc = subprocess.Popen([executable,'-nosplash','-nodesktop'], 
             preexec_fn=os.setsid, universal_newlines=True, 
