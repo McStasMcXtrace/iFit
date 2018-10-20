@@ -131,7 +131,7 @@ classdef iFunc_Sqw4D < iFunc
       clabel(f, 'Energy [meV]');
       title(f, self.Name);
       f.UserData = s.UserData;
-      f = iData_Sqw4D(f);
+      if ndims(f) == 4, try; f = iData_Sqw4D(f); end; end
       if ~isempty(inputname(1))
         assignin('caller',inputname(1),self); % update in original object
       end

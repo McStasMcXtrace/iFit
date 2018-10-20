@@ -56,21 +56,23 @@ else
 end
 
 fprintf(fid,'# Format: Sqw 4D data file for Single_crystal_inelastic <http://www.mcstas.org>\n');
-
+parameters.Phase = 'Single crystal';
 if isfield(parameters,'Phase') && isfield(parameters,'Material')
   fprintf(fid,'# %s %s\n', parameters.Phase, parameters.Material);
-end
-if isfield(parameters,'MD_at') && isfield(parameters,'MD_duration') && isfield(parameters,'MD_box')
-  fprintf(fid,'# molecular dynamics simulation using %g atoms for %g [ps]. box=%g Angs\n', ...
-    parameters.MD_at, parameters.MD_duration, parameters.MD_box);
-end
-if isfield(parameters,'Trajectory')
-  fprintf(fid, '# obtained from nMoldyn/MDANSE <http://mdanse.org>\n');
 end
 
 if isfield(parameters,'Phase') && isfield(parameters,'Material') && isfield(parameters,'Scattering')
   fprintf(fid,'# title: %s %s: S(q,w) %s part\n', ...
     parameters.Phase, parameters.Material, parameters.Scattering);
+end
+% check for lattice parameters
+if isfield(parameters, 'cell') && numel(parameters.cell) == 6
+  if ~isfield(parameters, 'lattice_a')  parameters.lattice_a = cell(1); end
+  if ~isfield(parameters, 'lattice_b')  parameters.lattice_b = cell(2); end
+  if ~isfield(parameters, 'lattice_c')  parameters.lattice_c = cell(3); end
+  if ~isfield(parameters, 'lattice_aa') parameters.lattice_aa = cell(4); end
+  if ~isfield(parameters, 'lattice_bb') parameters.lattice_bb = cell(5); end
+  if ~isfield(parameters, 'lattice_cc') parameters.lattice_cc = cell(6); end
 end
 
 fprintf(fid,'#\n');
@@ -82,9 +84,6 @@ fprintf(fid,'# filename: %s%s\n', f,e);
 fprintf(fid,'# format: Sqw 4D data file for Single_crystal_inelastic (McStas)\n');
 fprintf(fid,'# signal: Min=%g; Max=%g; Mean=%g; sum=%g;\n', min(sqw(:)), max(sqw(:)), mean(sqw(:)), sum(sqw(:)));
 fprintf(fid,'# type: event list(%i)\n', length(sqw));
-%fprintf(fid,'# xylimits: %g %g %g %g\n', min(q), max(q), min(w), max(w)); 
-fprintf(fid,'# xlabel: Wavevector [Angs-1]\n'); 
-fprintf(fid,'# ylabel: Energy [meV]\n'); 
 fprintf(fid,'#\n');
 
 if isstruct(parameters)
@@ -133,9 +132,10 @@ fprintf(fid, '# column_l 3\n');
 fprintf(fid, '# column_E 4\n');
 fprintf(fid, '# column_S 5\n');
 fprintf(fid, '#\n');
+fprintf(fid, '# ranges: h=[%g:%g] k=[%g:%g] l=[%g:%g] w=[%g:%g]\n', ...
+  min(h), max(h), min(k), max(k), min(l), max(l), min(w), max(w));
 fprintf(fid, '# h k l En S(q,w)\n');
-% fprintf(fid, '# \n',length(q), min(q),max(q));
-str = num2str([ h k l w sqw ])
+str = num2str([ h k l w sqw ], '%g ');
 str(:,end+1) = sprintf('\n');
 str = str';
 str = str(:)';
