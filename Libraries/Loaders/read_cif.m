@@ -198,6 +198,18 @@ function [data, this] = read_cif(file)
         data.structure.(f{j}) = this.(f{j}); remove_me = 1;
       elseif any(strcmpi(f{j}, {'cell','lattice'}))
         data.cell = this.(f{j}); remove_me = 1;
+        % compute reciprocal basis 'B'
+        alpha=data.cell(4);
+        beta =data.cell(5);
+        gamma=data.cell(6);
+        a_vec=data.cell(1)*[1; 0; 0];
+        b_vec=data.cell(2)*[cosd(gamma); sind(gamma); 0];
+        c1=cosd(beta);
+        c2=(cosd(alpha)-cosd(gamma)*cosd(beta))/sind(gamma);
+        c3=sqrt(1-c1^2-c2^2);
+        c_vec=data.cell(3)*[c1; c2; c3;];
+        V=dot(a_vec,cross(b_vec,c_vec));
+        data.reciprocal_cell=2*pi*[cross(b_vec,c_vec) cross(c_vec,a_vec) cross(a_vec,b_vec)]/V; % reciprocal basis, as columns
       elseif strcmpi(f{j}, 'title')
         data.title = strrep(this.(f{j}),'''','"'); remove_me = 1;
       elseif strcmpi(f{j}, 'file')

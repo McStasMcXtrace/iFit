@@ -248,6 +248,22 @@ function y = rietveld_cif2hkl(CFL, instr)
 
   % create iFunc object
   y = iFunc(y);
+  
+  % store cell and reciprocal basis 'B'
+  y.UserData.cell = Guess;
+  alpha=y.UserData.cell(4);
+  beta =y.UserData.cell(5);
+  gamma=y.UserData.cell(6);
+  a_vec=y.UserData.cell(1)*[1; 0; 0];
+  b_vec=y.UserData.cell(2)*[cosd(gamma); sind(gamma); 0];
+  c1=cosd(beta);
+  c2=(cosd(alpha)-cosd(gamma)*cosd(beta))/sind(gamma);
+  c3=sqrt(1-c1^2-c2^2);
+  c_vec=y.UserData.cell(3)*[c1; c2; c3;];
+  V=dot(a_vec,cross(b_vec,c_vec));
+  % reciprocal basis, as columns
+  y.UserData.reciprocal_cell=2*pi*[cross(b_vec,c_vec) cross(c_vec,a_vec) cross(a_vec,b_vec)]/V; 
+  y.UserData.volume = V;
 
   % restraint structure parameters: xyz in [0 1], angles in [0 180]
   %                                 Biso in [0 10], Occ in [0 1]

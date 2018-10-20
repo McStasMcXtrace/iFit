@@ -135,6 +135,21 @@ signal.Guess          = [ .3 0 1 nJ ];        % default parameters
 signal.UserData.component = options.component;
 signal.UserData.ki        = options.ki;
 signal.UserData.spinw     = sq;
+signal.UserData.cell      = [ sq.lattice.lat_const sq.lattice.angle*180/pi ];
+% compute reciprocal basis 'B'
+alpha=signal.UserData.cell(4);
+beta =signal.UserData.cell(5);
+gamma=signal.UserData.cell(6);
+a_vec=signal.UserData.cell(1)*[1; 0; 0];
+b_vec=signal.UserData.cell(2)*[cosd(gamma); sind(gamma); 0];
+c1=cosd(beta);
+c2=(cosd(alpha)-cosd(gamma)*cosd(beta))/sind(gamma);
+c3=sqrt(1-c1^2-c2^2);
+c_vec=signal.UserData.cell(3)*[c1; c2; c3;];
+V=dot(a_vec,cross(b_vec,c_vec));
+signal.UserData.reciprocal_cell=2*pi*[cross(b_vec,c_vec) cross(c_vec,a_vec) cross(a_vec,b_vec)]/V; % reciprocal basis, as columns
+signal.UserData.volume = V;
+
 
 % get code to read xyzt and build HKL list and convolve DHO line shapes
 [script_hkl, script_dho] = sqw_phonons_templates;
