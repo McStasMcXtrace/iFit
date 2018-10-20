@@ -35,15 +35,18 @@ classdef iData_Sqw4D < iData
       % convert/test
       if     isa(s, mfilename)   m = s;
       else
-        if ~isa(m, 'iData') || any(isempty(m)) || any(ndims(m) ~= 4)
+        if ~isa(s, 'iData') || any(isempty(s)) || any(ndims(s) ~= 4)
           error([ mfilename ': the given input ' class(s) ' does not seem to be convertible to iData_Sqw4D.' ])
         end
       end
       
       % copy all properties
-      obj = copy_prop(obj, m);
+      obj = copy_prop(obj, s);
       obj = commandhistory(obj, mfilename, s);
       label(obj, 0, [  mfilename '(' label(obj, 0) ')' ]);
+      
+      % search for Sqw parameters for further conversions
+      [obj, parameters] = Sqw_parameters(obj);
  
     end % iData_Sqw4D constructor
     
@@ -57,6 +60,18 @@ classdef iData_Sqw4D < iData
         f1   = commandhistory(f1, 'iData', self(index));
         label(f1, 0, [  'iData' '(' label(self(index), 0) ')' ]);
         f = [ f f1 ];
+      end
+    end
+    
+    % parameters (search for parameters in iData)
+    function parameters = parseparams(s)
+      % iData_Sqw4D: parseparams: search for physical quantities in object.
+      % This search is also done when creating iData_Sqw4D objects.
+      %
+      %   iData_Sqw4D -> physical parameters
+      [s,parameters,fields] = Sqw_parameters(s);
+      if length(inputname(1))
+        assignin('caller',inputname(1),s);
       end
     end
     

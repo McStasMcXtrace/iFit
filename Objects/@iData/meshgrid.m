@@ -5,6 +5,7 @@ function b = meshgrid(a, varargin)
 %     on a regular grid, as obtained from ndgrid. When the initial axes are not
 %     perpendicular/regular, the object Signal is interpolated on the new grid.
 %   meshgrid(a, 'vector' ...) forces all axes as vectors
+%   meshgrid(a, 'grid' ...)   forces all axes as grid with same size as Signal
 %   meshgrid(a, dims, ...)    specifies the size of the histogram
 %   meshgrid(a, 'fill' ...)   fills empty histogram bins (e.g. when converting from an event list)
 %   meshgrid(a, 'method' ...) uses specified method for interpolation as one of

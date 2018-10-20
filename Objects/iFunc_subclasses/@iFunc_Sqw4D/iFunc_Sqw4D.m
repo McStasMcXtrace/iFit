@@ -115,9 +115,9 @@ classdef iFunc_Sqw4D < iFunc
       
       % check for QH QK QL W grid
       if isempty(varargin),  varargin{end+1} = []; end
-      if numel(varargin) <2, varargin{end+1} = linspace(0,0.1,5); end
-      if numel(varargin) <3, varargin{end+1} = linspace(0,0.1,5); end
-      if numel(varargin) <4, varargin{end+1} = linspace(0,0.1,5)'; end
+      if numel(varargin) <2, varargin{end+1} = linspace(-0.5,0.5,20); end
+      if numel(varargin) <3, varargin{end+1} = linspace(-0.5,0.5,20); end
+      if numel(varargin) <4, varargin{end+1} = linspace(-0.5,0.5,20)'; end
       if numel(varargin) <5, varargin{end+1} = linspace(0.01,max(self)*1.2,11); end
       s = iFunc(self);
       try
@@ -130,7 +130,8 @@ classdef iFunc_Sqw4D < iFunc
       zlabel(f, 'QL [rlu]');
       clabel(f, 'Energy [meV]');
       title(f, self.Name);
-      self.UserData = s.UserData;
+      f.UserData = s.UserData;
+      f = iData_Sqw4D(f);
       if ~isempty(inputname(1))
         assignin('caller',inputname(1),self); % update in original object
       end
