@@ -65,7 +65,7 @@ if isempty(filename)
   if ~isdir(this.Source)
     [~,filename] = fileparts(this.Source);
   else
-    filename = [ 'Sqw_' b.Tag ];
+    filename = [ 'Sqw_' this.Tag ];
   end
   filename = [ filename '.sqw' ];
 end

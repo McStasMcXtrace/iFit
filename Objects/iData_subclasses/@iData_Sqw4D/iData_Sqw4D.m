@@ -75,6 +75,32 @@ classdef iData_Sqw4D < iData
       end
     end
     
+    function f = saveas(self, varargin)
+      % iData_Sqw4D: saveas: save S(h,k,l,w) into a file.
+      %
+      % convert: iData_Sqw4D S(h,k,l,w) -> file
+      %
+      % syntax: saveas(sqw4D, filename, format)
+      %
+      %   with format as mcstas, sqw or any other iData supported format.
+      %
+      % all iData.saveas formats are available, and in addition:
+      %
+      %   McStas (for Single_crystal_inelastic component)
+      %
+      if numel(varargin) >= 2
+        switch lower(varargin{2})
+        case {'mcstas','sqw'}
+          f = Sqw_McStas(self, varargin{1});
+        otherwise
+          f = saveas@iData(self, varargin{:});
+        end
+      else
+        f = saveas@iData(self, varargin{:});
+      end
+      
+    end
+    
   end
   
 end

@@ -32,19 +32,17 @@ h=getaxis(this,1);
 k=getaxis(this,2);
 l=getaxis(this,3);
 w=getaxis(this,4);
-
+sqw=getaxis(this,0);
 
 % call Sqw_parameters so that we have the final parameters and the comments
 parameters = parseparams(this);
-
-sqw=getaxis(thisE,0);
 
 % format filename
 if isempty(filename)
   if ~isdir(this.Source)
     [~,filename] = fileparts(this.Source);
   else
-    filename = [ 'Sqw4_' b.Tag ];
+    filename = [ 'Sqw4_' this.Tag ];
   end
   filename = [ filename '.sqw4' ];
 end
@@ -83,8 +81,8 @@ fprintf(fid,'# Source: %s%s\n', f,e);
 fprintf(fid,'# filename: %s%s\n', f,e);
 fprintf(fid,'# format: Sqw 4D data file for Single_crystal_inelastic (McStas)\n');
 fprintf(fid,'# signal: Min=%g; Max=%g; Mean=%g; sum=%g;\n', min(sqw(:)), max(sqw(:)), mean(sqw(:)), sum(sqw(:)));
-fprintf(fid,'# type: array_2d(%i,%i)\n', length(q), length(w));
-fprintf(fid,'# xylimits: %g %g %g %g\n', min(q), max(q), min(w), max(w)); 
+fprintf(fid,'# type: event list(%i)\n', length(sqw));
+%fprintf(fid,'# xylimits: %g %g %g %g\n', min(q), max(q), min(w), max(w)); 
 fprintf(fid,'# xlabel: Wavevector [Angs-1]\n'); 
 fprintf(fid,'# ylabel: Energy [meV]\n'); 
 fprintf(fid,'#\n');
@@ -136,8 +134,8 @@ fprintf(fid, '# column_E 4\n');
 fprintf(fid, '# column_S 5\n');
 fprintf(fid, '#\n');
 fprintf(fid, '# h k l En S(q,w)\n');
-fprintf(fid, '# \n',length(q), min(q),max(q));
-str = num2str([ h k l w sqw ]);
+% fprintf(fid, '# \n',length(q), min(q),max(q));
+str = num2str([ h k l w sqw ])
 str(:,end+1) = sprintf('\n');
 str = str';
 str = str(:)';
@@ -145,5 +143,4 @@ fprintf(fid, '%s', str);
 fprintf(fid, '# end of Sqw4 file %s\n', filename);
 fclose(fid);
 fprintf(1,'DONE %s\n', filename);
-
 
