@@ -5,7 +5,11 @@ function obj = copy_prop(obj0, m)
   w = warning;
   warning off;
   for index=1:numel(m)
-    this = m(index);
+    if numel(m) == 1
+      this = m;
+    else 
+      this = m(index);
+    end
 
     % transfer properties
     % this is a safe way to instantiate a subclass

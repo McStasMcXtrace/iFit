@@ -50,9 +50,9 @@ if std(dq) > mean(dq) % not a regular grid (std would be 0)
   q = linspace(min(q), max(q), min(size(this, 2)*5, round((max(q)-min(q))/mean(dq))));
 end
 
-parameters = parseparams(this);
+
 % call Sqw_parameters so that we have the final parameters and the comments
-this = Sqw_parameters(this, 'sqw');
+parameters = parseparams(this);
 
 thisE=this;
 sqw=getaxis(thisE,0)'; sqw(~isfinite(sqw) | sqw < 0)=0;
