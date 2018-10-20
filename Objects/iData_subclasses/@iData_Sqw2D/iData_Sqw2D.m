@@ -90,7 +90,7 @@ classdef iData_Sqw2D < iData
   %
   % output: an iData_Sqw2D object
   %
-  % See also: iData, iData_Sab, iData_vDOS
+  % See also: iData, iData_Sab, iData_vDOS, iFunc_Sqw2D
   % (c) E.Farhi, ILL. License: EUPL.
 
   properties

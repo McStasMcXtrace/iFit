@@ -9,7 +9,19 @@ classdef iData_Sqw4D < iData
   %    omega > 0, neutron looses energy, can not be higher than Ei (Stokes)
   %    omega < 0, neutron gains energy, anti-Stokes
   %
-  % See also: iData, iData_Sab, iData_vDOS
+  % Useful methods for this iData flavour:
+  %
+  % methods(iData_Sqw4D)
+  %   all iData methods can be used.
+  % iData_Sqw4D(s)
+  %   convert input [e.g. a 4D iData object] into an iData_Sqw4D to give access to
+  %   the methods below.
+  % p   = parseparams(s)
+  %   Search for physical quantities in S(q,w) data set.
+  % saveas(s, filename, 'McStas')
+  %   Save the S(q,w) as a McStas Sqw, or other file format
+  %
+  % See also: iData, iData_Sqw2D, iData_vDOS, iFunc_Sqw4D
   % (c) E.Farhi, ILL. License: EUPL.
 
   properties
