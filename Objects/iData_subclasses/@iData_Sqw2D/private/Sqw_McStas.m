@@ -69,6 +69,8 @@ if isempty(filename)
   end
   filename = [ filename '.sqw' ];
 end
+[~,~,e] = fileparts(filename);
+if isempty(e), filename = [ filename '.sqw' ]; end
 
 % write the file header --------------------------------------------------------
 [fid,message] = fopen(filename, 'w+');
@@ -78,7 +80,7 @@ else
   fprintf(1,'Opening %s\n', filename);
 end
 
-fprintf(fid,'# Format: Sqw data file for Isotropic_Sqw <http://www.mcstas.org>\n');
+fprintf(fid,'# Format: Sqw data file (2D) for Isotropic_Sqw <http://www.mcstas.org>\n');
 
 if isfield(parameters,'Phase') && isfield(parameters,'Material')
   fprintf(fid,'# %s %s\n', parameters.Phase, parameters.Material);
@@ -102,7 +104,7 @@ fprintf(fid,'# Date: %s\n', datestr(now));
 fprintf(fid,'# Source: %s%s\n', f,e);
 [p,f,e] =fileparts(filename);
 fprintf(fid,'# filename: %s%s\n', f,e);
-fprintf(fid,'# format: Sqw data file for Isotropic_Sqw (McStas)\n');
+fprintf(fid,'# format: Sqw data file (2D) for Isotropic_Sqw (McStas)\n');
 fprintf(fid,'# signal: Min=%g; Max=%g; Mean=%g; sum=%g;\n', min(sqw(:)), max(sqw(:)), mean(sqw(:)), sum(sqw(:)));
 fprintf(fid,'# type: array_2d(%i,%i)\n', length(q), length(w));
 fprintf(fid,'# xylimits: %g %g %g %g\n', min(q), max(q), min(w), max(w)); 

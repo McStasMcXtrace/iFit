@@ -46,6 +46,8 @@ if isempty(filename)
   end
   filename = [ filename '.sqw4' ];
 end
+[~,~,e] = fileparts(filename);
+if isempty(e), filename = [ filename '.sqw4' ]; end
 
 % write the file header --------------------------------------------------------
 [fid,message] = fopen(filename, 'w+');
@@ -55,14 +57,15 @@ else
   fprintf(1,'Opening %s\n', filename);
 end
 
-fprintf(fid,'# Format: Sqw 4D data file for Single_crystal_inelastic <http://www.mcstas.org>\n');
+fprintf(fid,'# Format: Sqw data file (4D) for Single_crystal_inelastic <http://www.mcstas.org>\n');
+fprintf(fid,'# title: %s\n', this.Title);
 parameters.Phase = 'Single crystal';
 if isfield(parameters,'Phase') && isfield(parameters,'Material')
   fprintf(fid,'# %s %s\n', parameters.Phase, parameters.Material);
 end
 
 if isfield(parameters,'Phase') && isfield(parameters,'Material') && isfield(parameters,'Scattering')
-  fprintf(fid,'# title: %s %s: S(q,w) %s part\n', ...
+  fprintf(fid,'# %s %s: S(q,w) %s part\n', ...
     parameters.Phase, parameters.Material, parameters.Scattering);
 end
 % check for lattice parameters
@@ -81,7 +84,7 @@ fprintf(fid,'# Date: %s\n', datestr(now));
 fprintf(fid,'# Source: %s%s\n', f,e);
 [p,f,e] =fileparts(filename);
 fprintf(fid,'# filename: %s%s\n', f,e);
-fprintf(fid,'# format: Sqw 4D data file for Single_crystal_inelastic (McStas)\n');
+fprintf(fid,'# format: Sqw data file (4D) for Single_crystal_inelastic (McStas)\n');
 fprintf(fid,'# signal: Min=%g; Max=%g; Mean=%g; sum=%g;\n', min(sqw(:)), max(sqw(:)), mean(sqw(:)), sum(sqw(:)));
 fprintf(fid,'# type: event list(%i)\n', length(sqw));
 fprintf(fid,'#\n');
@@ -132,7 +135,7 @@ fprintf(fid, '# column_l 3\n');
 fprintf(fid, '# column_E 4\n');
 fprintf(fid, '# column_S 5\n');
 fprintf(fid, '#\n');
-fprintf(fid, '# ranges: h=[%g:%g] k=[%g:%g] l=[%g:%g] w=[%g:%g]\n', ...
+fprintf(fid, '# limits: h=[%g:%g] k=[%g:%g] l=[%g:%g] w=[%g:%g]\n', ...
   min(h), max(h), min(k), max(k), min(l), max(l), min(w), max(w));
 fprintf(fid, '# h k l En S(q,w)\n');
 str = num2str([ h k l w sqw ], '%g ');

@@ -3,6 +3,11 @@ classdef iData_Sqw4D < iData
   %
   % The iData_Sqw4D class is a 4D data set holding a S(h,k,l,w) dynamic structure factor
   %   aka scattering function/law.
+  %   The axes are
+  %   1 QH (rows)    Momentum transfer along H [rlu] (wavevector). 
+  %   2 QK (columns) Momentum transfer along K [rlu] (wavevector). 
+  %   3 QK (pages)   Momentum transfer along K [rlu] (wavevector). 
+  %   4 EN           Energy transfer [meV]. 
   %
   % conventions:
   % w = omega = Ei-Ef = energy lost by the neutron [meV]
@@ -19,7 +24,7 @@ classdef iData_Sqw4D < iData
   % p   = parseparams(s)
   %   Search for physical quantities in S(q,w) data set.
   % saveas(s, filename, 'McStas')
-  %   Save the S(q,w) as a McStas Sqw, or other file format
+  %   Save the S(q,w) as a McStas Sqw 4D, or other file format
   %
   % See also: iData, iData_Sqw2D, iData_vDOS, iFunc_Sqw4D
   % (c) E.Farhi, ILL. License: EUPL.
@@ -43,7 +48,7 @@ classdef iData_Sqw4D < iData
       obj.class = mfilename;
       
       if ~nargin, return; end  % empty object
-      
+      if ischar(s), s = iData(s); end
       % convert/test
       if     isa(s, mfilename)   m = s;
       else
