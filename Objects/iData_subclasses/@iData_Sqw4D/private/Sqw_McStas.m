@@ -128,7 +128,9 @@ end
 
 % write the h,k,l,w,Sqw data -------------------------------------------------------
 
-% add q text
+% add text
+fprintf(fid, '#\n');
+fprintf(fid, '# File Format:\n');
 fprintf(fid, '# column_h 1\n');
 fprintf(fid, '# column_k 2\n');
 fprintf(fid, '# column_l 3\n');

@@ -120,7 +120,7 @@ function config = iLoad_ini
     
     mcstas_sqw.name       ='McCode Sqw table';
     mcstas_sqw.patterns   ={'Sqw data file'};
-    mcstas_sqw.options    ='--fast --binary  --headers --comment=NULL --silent ';
+    mcstas_sqw.options    ='--fast --binary  --headers --comment=NULL --silent --metadata=title ';
     mcstas_sqw.method     ='read_anytext';
     mcstas_sqw.postprocess='opensqw';
     mcstas_sqw.extension  ={'sqw','sqw4'};

@@ -68,6 +68,13 @@ elseif ~isempty(findstr(out,'Sqw'))
   elseif ~isempty(findstr(out, 'coherent')) title(out,'Sqw (coh)');
   else title(out,'Sqw');
   end
+  t = findstr(out, 'title');
+  try; 
+    t = out.Data.Attributes.MetaData.title;
+  catch
+    t = findstr(out, 'title'); t=t{1};
+  end
+  out.Title = t;
 
   setalias(out,'Error',0);
 else
