@@ -119,11 +119,11 @@ function config = iLoad_ini
     mcstas_sim.postprocess='opensim';
     
     mcstas_sqw.name       ='McCode Sqw table';
-    mcstas_sqw.patterns   ={'Sqw data file for Isotropic_Sqw'};
+    mcstas_sqw.patterns   ={'Sqw data file'};
     mcstas_sqw.options    ='--fast --binary  --headers --comment=NULL --silent ';
     mcstas_sqw.method     ='read_anytext';
     mcstas_sqw.postprocess='opensqw';
-    mcstas_sqw.extension  ='sqw';
+    mcstas_sqw.extension  ={'sqw','sqw4'};
     
     mcstas_powder.name       ='McCode powder table (LAZ/LAU)';
     mcstas_powder.patterns   ={'lattice_a','column_'};
