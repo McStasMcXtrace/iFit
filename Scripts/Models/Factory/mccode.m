@@ -228,7 +228,7 @@ end
 
 % test for directory permissions
 [~,attr] = fileattrib(options.dir);
-if ~isempty(options.dir) && (~attr.UserRead || ~attr.UserWrite || ~attr.UserExecute)
+if isstruct(attr) && ~isempty(options.dir) && (~attr.UserRead || ~attr.UserWrite || ~attr.UserExecute)
   disp([ mfilename ': target directory ' options.dir 'is not accessible. Using temporary.' ]);
   options.dir = ''; % will use temporary dir
 end
