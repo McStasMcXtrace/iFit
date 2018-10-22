@@ -151,7 +151,7 @@ disp(cmd)
 [status, result] = system([ precmd cmd ]);
 if status ~= 0
   disp(result)
-  error([ mfilename ' executable not available. Compile it with: "gfortran -O2 -o cif2hkl cif2hkl.F90 -lm" in ' fullfile(fileparts(which(mfilename))) ]);
+  error([ mfilename ' executable not available. Compile it with: "gfortran -O2 -o cif2hkl cif2hkl.F90 -lm" in ' fullfile(fileparts(which(mfilename)),'private') ]);
 elseif any(strcmp(file_in, {'-h','--help','--version','check','compile','identify'}))
   file_out = result;
 end
@@ -172,9 +172,14 @@ function compiled=cif2hkl_check_compile(compile)
   
   % look for executable, global and local
   % try in order: global(system), local, local_arch
-  for try_target={fullfile(this_path, [ 'cif2hkl_' computer('arch') ext ]), ...
+  for try_target={...
+          fullfile(this_path, [ 'cif2hkl_' computer('arch') ext ]), ...
           fullfile(this_path, [ 'cif2hkl' ext ]), ...
-          [ 'cif2hkl' ext ]}
+          [ 'cif2hkl' ext ], ...
+          fullfile(this_path, 'private', [ 'cif2hkl_' computer('arch') ext ]), ...
+          fullfile(this_path, 'private', [ exe{1} ext ]), ...
+          fullfile(this_path, 'private', [ exe{1} ]), ...
+          exe{1}}
       
           [status, result] = system([ precmd try_target{1} ]);
           if status == 0 && nargin == 0 && (~ispc || isempty(strfind(result, [ '''' try_target{1} '''' ])))
@@ -214,7 +219,7 @@ function compiled=cif2hkl_check_compile(compile)
   if isempty(dir(fullfile(this_path,mfilename))) % no executable available
     fprintf(1, '%s: compiling binary...\n', mfilename);
     cmd = {fc, '-o', target, ...
-       fullfile(this_path,'cif2hkl.F90'), '-lm', '-ffree-line-length-0'}; 
+       fullfile(this_path,'private','cif2hkl.F90'), '-lm', '-ffree-line-length-0'}; 
     disp([ sprintf('%s ', cmd{:}) ]);
     [status, result] = system([ precmd sprintf('%s ', cmd{:}) ]);
     if status ~= 0 % not OK, compilation failed
