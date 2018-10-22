@@ -72,7 +72,8 @@ elseif ~isempty(findstr(out,'Sqw'))
   try; 
     t = out.Data.Attributes.MetaData.title;
   catch
-    t = findstr(out, 'title'); t=t{1};
+    t = findstr(out, 'title'); 
+    if ~isempty(t), t=t{1}; end
   end
   out.Title = t;
 
