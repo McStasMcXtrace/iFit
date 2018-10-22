@@ -327,6 +327,7 @@ function [out, this_in]=iData_iFunc2iData(this_in, axes_in, varargin)
     this_out.Title = name;
     this_out.Label = name;
     this_out.DisplayName = name;
+    this_out.UserData=this_model.UserData;
     setalias(this_out,'Error', 0);
     if ~isempty(this_model.ParameterValues)
         par_val = this_model.ParameterValues;
