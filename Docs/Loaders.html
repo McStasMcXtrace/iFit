@@ -541,6 +541,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
             You can also read and write such files using <a
 href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/lamp/">LAMP</a>.</td>
           <td valign="top"><br>
@@ -553,6 +554,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
           </td>
           <td valign="top">Numpy binary array <a
               href="https://docs.scipy.org/doc/numpy/neps/npy-format.html">NPY
+
 
 
               format</a> (single array)<br>
@@ -706,10 +708,12 @@ href="http://www.ill.eu/instruments-support/instruments-groups/instruments/cyclo
               href="https://forge.ill.eu/projects/nmoldyn">nMoldyn, </a><a
               href="http://www.ill.eu/sites/fullprof/">FullProf,</a> <a
               href="http://icsd.ill.fr">ICSD</a> and <a
-              href="http://www.oxcryo.com/software/crystallographica">Crystallographica</a>.<br>
-          </td>
-          <td style="vertical-align: top;">Yes for <b>'sqw'</b><br>
-          </td>
+              href="http://www.oxcryo.com/software/crystallographica">Crystallographica</a>.
+            <i>The McStas Sqw </i><i>format is </i><i><b>not</b></i><i>
+              similar to the Sqw Horace objects.</i> </td>
+          <td style="vertical-align: top;">Yes for <b>'sqw'<br>
+            </b>Can create Lau nd Laz with <b><i>ci</i></b><b><i>f2hkl</i></b>.<b><br>
+            </b> </td>
         </tr>
         <tr>
           <td style="vertical-align: top;"><span style="font-weight:
@@ -725,6 +729,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
             format is a S(phi,w) simple format for reduced neutron
             time-of-flight data (see <a
 href="http://www.ill.eu/instruments-support/instruments-groups/groups/tof/software/inx/">example</a>).
+
 
 
 
@@ -802,7 +807,10 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
           <td valign="top">The SQW data format is obtained after
             processing ISIS RAW files with <a
               href="http://horace.isis.rl.ac.uk/">Horace</a> and <a
-              href="http://www.libisis.org/">LibISIS</a>.</td>
+              href="http://www.libisis.org/">LibISIS</a>. <i>This
+              format is binary, and is not similar to the Mcstas Sqw
+              format.</i><br>
+          </td>
           <td valign="top"><br>
           </td>
         </tr>
@@ -816,6 +824,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
           </td>
           <td style="vertical-align: top;"><a
               href="http://www.princetoninstruments.com/products/software/#1">Princeton/Roper
+
 
 
 
@@ -964,6 +973,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
               definition</a>. This format gathers <span
               style="font-style: italic;">CIF</span> and <span
               style="font-style: italic;">imgCIF</span> standards. These
@@ -985,6 +995,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
             'hdr' file requires an ssociated 'img' file. <a
               href="http://en.wikipedia.org/wiki/Analyze_%28imaging_software%29">Format</a>
             from the Analyze <a href="http://www.analyzedirect.com/">Biomedical
+
 
 
 
@@ -1132,6 +1143,7 @@ href="http://www.ill.eu/sites/fullprof/php/programs24b7.html?pagina=Crysfml">Cry
                 0px; text-transform: none; white-space: normal;
                 word-spacing: 0px; -webkit-text-stroke-width: 0px;">Crystallography
 
+
                 Open Database</a><span style="color: rgb(0, 0, 0);
                 font-size: medium; font-style: normal;
                 font-variant-ligatures: normal; font-variant-caps:
@@ -1201,6 +1213,7 @@ href="http://www.ill.eu/sites/fullprof/php/programs24b7.html?pagina=Crysfml">Cry
                 word-spacing: 0px; -webkit-text-stroke-width: 0px;
                 text-decoration-style: initial; text-decoration-color:
                 initial; display: inline ! important; float: none;"><span>&nbsp;</span>which
+
 
                 both require a valid network connection (and proxy if
                 any). See more details<span>&nbsp;</span></span><a
@@ -1350,6 +1363,7 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
 
 
 
+
               Nuclear Data File</a> with specific support for the
             thermal neutron scattering law (TSL) section (MF7, MT=2 and
             4). Can make use of <a href="http://pyne.io/">PyNE</a> when
@@ -1378,7 +1392,7 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
           </td>
           <td valign="top">VASP <a
               href="http://cms.mpi.univie.ac.at/vasp/guide/node59.html">POSCAR</a>
-            file for molecular modelling. See with&nbsp; <a
+            file for molecular modelling. See with <a
               href="http://www.ks.uiuc.edu/Research/vmd/">VMD</a>. </td>
           <td valign="top"><br>
           </td>
@@ -1405,6 +1419,18 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
             (LLB) input for to model spin-waves [text]<br>
           </td>
           <td valign="top"><br>
+          </td>
+        </tr>
+        <tr>
+          <td valign="top"><font color="#cc33cc"><b>SQW4D</b> McStas</font><br>
+          </td>
+          <td valign="top">text<br>
+          </td>
+          <td valign="top">Sqw 4D data set for McStas
+            Single_crystal_inelastic component. <i>This format is <b>not</b>
+              similar to the Sqw Horace objects.<br>
+            </i></td>
+          <td valign="top">Yes<br>
           </td>
         </tr>
       </tbody>
@@ -1462,6 +1488,7 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
               </font></b></td>
           <td valign="top">When numerical data blocks only use <a
               href="http://manpages.ubuntu.com/manpages/man3/isalpha.3.html">isspace</a>(3)
+
 
 
 
@@ -1705,6 +1732,7 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
 
 
 
+
         from <span style="color: rgb(51, 102, 255);">prefdir</span> or
         <span style="color: rgb(51, 102, 255);">ifitpath/Loaders</span>.</li>
       <li>Create a new structure (which you may name as you wish) and
@@ -1730,6 +1758,7 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
     <div style="text-align: center;">
       <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
+
 
 
 
