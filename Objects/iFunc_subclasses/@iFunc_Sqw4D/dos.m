@@ -92,7 +92,16 @@ function [DOS, DOS_partials] = dos(s, n, nQ, method)
         DOS.UserData.(f{1}) = s.UserData.(f{1});
       end
     end
-  
+
+    parameters = get(DOS, 'parameters');
+    for index=1:numel(s.ParameterValues)
+      if isfinite(s.ParameterValues(index))
+        parameters.(strtok(s.Parameters{index})) = s.ParameterValues(index);
+      end
+    end
+    setalias(DOS, 'parameters', parameters);
+    DOS.UserData.ModelParameters = parameters;
+    
     if ~isempty(inputname(1))
       s.UserData.DOS          = DOS;
       s.UserData.DOS_partials = DOS_partials;
