@@ -41,9 +41,9 @@
           components</a>
         <ol>
           <li><a href="#mozTocId336301">PowderN component: elastic
-              coherent scattering from a powder</a></li>
+              coherent scattering from a powder </a></li>
           <li><a href="#mozTocId317818">Single_crystal component:
-              elastic coherent scattering from a single crystal</a></li>
+              elastic coherent scattering from a single crystal </a></li>
           <li><a href="#mozTocId297488">Isotropic_Sqw component:
               coherent and incoherent scattering from an isotropic
               density material (liquid, gas, powder, amorphous)</a></li>
@@ -104,6 +104,7 @@
       </ul>
       This type of sub-class (derived from <a href="iFunc.html">iFunc</a>),
 
+
       provides all <a href="iFunc.html">iFunc</a> methods, but also
       specific methods adapted to McCode simulations:<br>
       <ul>
@@ -161,7 +162,7 @@
         <pre>&gt;&gt;  <span style="color: rgb(51, 102, 255);">mccode</span>(<span style="color: rgb(204, 51, 204);">'instrument'</span>, options)</pre>
       </blockquote>
       and the following options:<br>
-      <table border="1" cellpadding="2" cellspacing="2" width="100%">
+      <table cellspacing="2" cellpadding="2" width="100%" border="1">
         <tbody>
           <tr>
             <td valign="top"><b>options.dir</b></td>
@@ -262,6 +263,7 @@
         <li>model=<font color="#3366ff">mccode</font>(<font
             color="#cc33cc">'templateDIFF'</font>);&nbsp; <i>% </i><i>same
 
+
             as mccode('defaults')</i></li>
       </ul>
       In order to improve the computational efficiency, it is advised to
@@ -275,8 +277,8 @@
               McStas: evolution of a monitor"
               src="images/iFit_McStas_Monitor_scan.png" alt="iFit:
               McStas: evolution of a monitor" style="border: 0px solid ;
-              width: 200px; height: 177px;" border="0" align="right"
-              height="503" width="568"></a></li>
+              width: 200px; height: 177px;" height="503" align="right"
+              width="568" border="0"></a></li>
       </ul>
       or afterwards:<br>
       <ul>
@@ -288,6 +290,7 @@
       which in both cases will select monitor files which <i>match</i>
       the given string as an exact file name or match the pattern when
       using a wildcard expression ( <font color="#cc33cc">'*Theta*' </font>).
+
 
 
       In case the selection brings multiple files, the last one is used.
@@ -317,6 +320,7 @@
 
 
 
+
       (which are <a href="iData.html">iData</a> object(s)), such as in
       the following example where we sum all selected monitors from the
       pattern (when more than one are found), and define the criteria as
@@ -329,6 +333,7 @@
       <ul>
         <li>model=<font color="#3366ff">mccode</font>(<font
             color="#cc33cc">'templateDIFF'</font>,<font color="#cc33cc">'monitor=<b>"</b>*Theta*
+
 
 
           </font><span style="color: rgb(204, 51, 204);">signal=max(signal)/std(signal)^2<b>"</b></span><font
@@ -387,6 +392,7 @@
 
 
 
+
             parameters);</li>
         </ul>
       </div>
@@ -411,6 +417,7 @@
 
 
 
+
             <font color="#cc33cc">'RV=1; lambda=2.36'</font>, nan)&nbsp;
             <i>% the last monitor</i><br>
           </li>
@@ -426,8 +433,8 @@
                 title="iFit: McStas: evolution of a monitor"
                 src="images/iFit_McStas_Monitor_scan.png" alt="iFit:
                 McStas: evolution of a monitor" style="border: 0px solid
-                ; width: 200px; height: 177px;" border="0" align="right"
-                height="503" width="568"></a></li>
+                ; width: 200px; height: 177px;" height="503"
+                align="right" width="568" border="0"></a></li>
           <li>model.UserData.monitors<br>
           </li>
         </ul>
@@ -438,8 +445,8 @@
           <li><font color="#3366ff">subplot</font>(model.UserData.monitors)<a
               href="images/iFit_McStas_simulate.png"><img
                 alt="iFit_McStas_simulate" title="iFit_McStas_simulate"
-                src="images/iFit_McStas_simulate.png" border="0"
-                align="right" height="186" width="200"></a></li>
+                src="images/iFit_McStas_simulate.png" height="186"
+                align="right" width="200" border="0"></a></li>
         </ul>
         You can equally set the non numerical scalar parameters (e.g.
         strings and integers):<br>
@@ -466,8 +473,8 @@
         To display the instrument geometry, use the syntax:<a
           href="images/iFit_McStas_plot_geometry.png"><img
             alt="McStas_plot_geometry" title="McStas_plot_geometry"
-            src="images/iFit_McStas_plot_geometry.png" border="0"
-            align="right" height="180" width="200"></a><br>
+            src="images/iFit_McStas_plot_geometry.png" height="180"
+            align="right" width="200" border="0"></a><br>
         <pre style="margin-left: 40px;">&gt;&gt; model = <font color="#3366ff">mccode</font>(<font color="#cc33cc">'defaults'</font>)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(model<span style="color: rgb(204, 51, 204);"></span>);</pre>
         which open a geometrical representation of the instrument. The
         current model parameters are used. It can be given as well a set
@@ -531,7 +538,7 @@
         <pre>&gt;&gt; catenated = <font color="#3366ff">cat</font>(scan, 2);</pre>
       </blockquote>
       <pre style="margin-left: 40px;"><a href="images/iFit_McStas_scan2D_integral.png"><img title="iFit:          MsCtas scan: ploting the integral monitor value" src="images/iFit_McStas_scan2D_integral.png" alt="iFit: MsCtas          scan: ploting the integral monitor value" style="border: 0px
-          solid ; width: 200px; height: 177px;" border="0" align="right" height="503" width="568"></a></pre>
+          solid ; width: 200px; height: 177px;" height="503" align="right" width="568" border="0"></a></pre>
       Multidimensional scans are also possible. In the following
       example, we launch a quick 2D scan with parameters specified as a
       structure:<br>
@@ -551,6 +558,7 @@ of
 the
 number
 of
+
 
 
 
@@ -630,6 +638,7 @@ of
 
 
 
+
       else the optimizer can get lost, produce un-meaningful results, or
       return <span style="font-style: italic;">NaN</span> parameter
       values.<br>
@@ -654,6 +663,7 @@ of
             style="color: rgb(204, 51, 204);">'final';</span></li>
         <li><span style="color: rgb(204, 51, 204);"><span style="color:
               rgb(0, 0, 0);"><span style="font-weight: bold;">options.OutputFcn</span>=</span>'fminplot';
+
 
 
 
@@ -714,6 +724,7 @@ of
     addition, similarly with other iFit <a href="Optimizers.html">optimization
 
 
+
       methods</a>, the optimizer final status and optional returned
     information can be obtained with e.g.&nbsp;
     <pre style="margin-left: 40px;">&gt;&gt; model = <span style="color: rgb(51, 102, 255);">mccode</span>(<span style="color: rgb(204, 51, 204);">'templateDIFF'</span>,<font color="#cc33cc">'monitor=*Theta*'</font>);	% monitor contains 'Theta'<br>&gt;&gt; <font color="#3366ff">fix</font>(model, <font color="#cc33cc">'all'</font>); 				% fix all but RV L2<br>&gt;&gt; model.RV=<font color="#cc33cc">'free'</font>; model.RV=[0.5 0.8 1.5];	% set RV bounds and value in a single assignment<br>&gt;&gt; model.L2=<font color="#cc33cc">'free'</font>; model.L2=[1 3 4];<br>&gt;&gt; [parameters, fval, <span style="color: rgb(255, 0, 0);">status, output</span>]=<span style="color: rgb(51, 102, 255);">fmax</span>(model<span style="color: rgb(204, 51, 204);"></span>,<span style="color: rgb(51, 102, 255);">[], </span><span style="color: rgb(204, 51, 204);">'optimizer=fminimfil; OutputFcn=fminplot'</span>, <b>nan</b>);</pre>
@@ -735,10 +746,12 @@ of
 
 
 
+
     </span>and<span style="font-style: italic;"> </span><span
       style="font-style: italic;">output.parsHessianUncertainty</span>.<br>
     <br>
     To abort the optimization, just <span style="font-weight: bold;">close
+
 
 
 
@@ -782,6 +795,7 @@ of
 
 
 
+
     <a href="http://www.mcstas.org">McStas</a>/McXtrace use a
     Monte-Carlo technique (which means 'random'), the criteria is a
     noisy function. The stop conditions must then usually be quite
@@ -793,6 +807,7 @@ of
     recommend to constrain parameter ranges (<span style="color:
       rgb(255, 0, 0);">see <a href="#mozTocId359721">below</a></span>).
     Also, increasing the<span style="font-style: italic;"> 'ncount' </span>(which
+
 
     is 1e5 by default) may help the optimizer to search in a noisy
     criteria landscape.<br>
@@ -816,8 +831,8 @@ of
       href="images/iFit_McStas_optimize.png"><img
         src="images/iFit_McStas_optimize.png" alt="iFit: McStas wrapper:
         dynamic optimization evolution" style="border: 0px solid ;
-        width: 200px; height: 190px;" border="0" align="right"
-        height="483" width="508"></a>
+        width: 200px; height: 190px;" height="483" align="right"
+        width="508" border="0"></a>
     <ul>
       <li><font color="#3366ff">xlim</font>(model, <font
           color="#cc33cc">'par'</font>, [min max])</li>
@@ -855,11 +870,12 @@ of
     'Single_crystal') and LAZ ('Lazy/Pulvrx' from e.g. ICSD for
     PowderN). These files can be prepared using 'cif2hkl'. That tool is
     also included with the <a href="http://www.mcstas.org/">McStas</a>
-    distribution. <br>
+    distribution as executable. <br>
     <br>
-    The cif2hkl syntax is:<br>
+    <u>The cif2hkl syntax is:</u><br>
     <ul>
       <li>[file_out, result] = <font color="#3366ff">cif2hkl</font>(file_in,
+
         file_out, lambda, mode, verbose)</li>
     </ul>
     The iFit version can use as first argument <b>'file_in'</b>:<br>
@@ -869,6 +885,7 @@ of
       <li>a CFL file (FullProf)</li>
       <li>a INS/SHX/RES file (ShelX)</li>
       <li>a chemical formula with syntax e.g. <font color="#cc33cc">'cod:
+
           La Mn O3'</font> (Hill notation)</li>
       <li>a Crystallography.net ID with syntax e.g. <font
           color="#cc33cc">'cod: 1532356'</font></li>
@@ -887,7 +904,7 @@ of
       <li>'p' for powder mode to generate a LAZ file</li>
       <li>'x' for single crystal mode to generate a LAU file</li>
     </ul>
-    For example:<br>
+    <u>For example:</u><br>
     <ul>
       <li><font color="#3366ff">cif2hkl</font>(<font color="#cc33cc">'Al.cif'</font>)</li>
       <li><font color="#3366ff">cif2hkl</font>(<font color="#cc33cc">'Al.cif'</font>,
@@ -919,7 +936,8 @@ of
     format.<br>
     <ul>
       <li>d = <font color="#3366ff">iData</font>(<font color="#cc33cc">'file'</font>);</li>
-      <li>d = <font color="#3366ff">iData_Sqw2D</font>(d);</li>
+      <li>d = <font color="#3366ff">iData_Sqw2D</font>(d);<br>
+      </li>
       <li><font color="#3366ff">saveas</font>(d, <font color="#cc33cc">''</font>,
         <font color="#cc33cc">'mcstas'</font>);</li>
     </ul>
@@ -936,7 +954,472 @@ of
     <font color="#ff0000">WARNING:</font> it is essential to check the
     output file (text), especially the density, molar weight, cross
     sections, etc.<br>
+    <br>
+    Let's review in details the different strategies to generate these
+    files:<br>
+    <br>
+    <b>coherent scattering from 4D S(q,w) models</b><br>
+    <br>
+    The <a href="Models.html">Sqw4D models</a>, e.g. phonons [from DFT,
+    analytical, cubic, ...], spin-waves [SpinW, SpinWave] can be
+    evaluated on a whole Brillouin zone and averaged along momentum
+    transfer to generate a 'powder' representation of the crystal. We
+    also recommend that you have a look at the <a
+      href="Neutron_Scattering.html#mozTocId424180">Neutron Scattering</a>
+    page for more details about the theory.<br>
+    <br>
+    We first create a 4D S(q,w) model, such as:<br>
+    <br>
+    <table cellspacing="2" cellpadding="2" width="100%" border="1">
+      <tbody>
+        <tr>
+          <td valign="top"><u><i>Command to generate a S(hklw) 4D model</i></u><u><i><br>
+              </i></u></td>
+          <td valign="top"><u><i>Description</i></u><u><i><br>
+              </i></u></td>
+        </tr>
+        <tr>
+          <td valign="top">s = <font color="#3366ff">sqw_sine3d</font>(20);<br>
+          </td>
+          <td valign="top">a <a href="Models.html#mozTocId677670">simple
+              acoustic branch</a> ranging up to 20 meV<br>
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">s = <font color="#3366ff">sqw_sine3d</font>([
+            15 20 ]);<br>
+          </td>
+          <td valign="top">a <a href="Models.html#mozTocId677670">simple
+              optic branch </a>oscillating from 15 to 20 meV<br>
+          </td>
+        </tr>
+        <tr>
+          <td valign="top"><font style="font-size: medium; font-style:
+              normal; font-variant-ligatures: normal; font-variant-caps:
+              normal; font-weight: 400; letter-spacing: normal;
+              text-align: start; text-indent: 0px; text-transform: none;
+              white-space: normal; word-spacing: 0px;
+              -webkit-text-stroke-width: 0px; text-decoration-style:
+              initial; text-decoration-color: initial;" color="#3366ff"><span
+                style="color: rgb(0, 0, 0); font-size: medium;
+                font-style: normal; font-variant-ligatures: normal;
+                font-variant-caps: normal; font-weight: 400;
+                letter-spacing: normal; text-align: start; text-indent:
+                0px; text-transform: none; white-space: normal;
+                word-spacing: 0px; -webkit-text-stroke-width: 0px;
+                text-decoration-style: initial; text-decoration-color:
+                initial; display: inline ! important; float: none;">s =
+              </span><font style="font-size: medium; font-style: normal;
+                font-variant-ligatures: normal; font-variant-caps:
+                normal; font-weight: 400; letter-spacing: normal;
+                text-align: start; text-indent: 0px; text-transform:
+                none; white-space: normal; word-spacing: 0px;
+                -webkit-text-stroke-width: 0px; text-decoration-style:
+                initial; text-decoration-color: initial;"
+                color="#3366ff">sqw_spinw</font><span style="color:
+                rgb(0, 0, 0); font-size: medium; font-style: normal;
+                font-variant-ligatures: normal; font-variant-caps:
+                normal; font-weight: 400; letter-spacing: normal;
+                text-align: start; text-indent: 0px; text-transform:
+                none; white-space: normal; word-spacing: 0px;
+                -webkit-text-stroke-width: 0px; text-decoration-style:
+                initial; text-decoration-color: initial; display: inline
+                ! important; float: none;">(<font color="#3366ff"> </font></span>sw_model</font><span
+              style="color: rgb(0, 0, 0); font-size: medium; font-style:
+              normal; font-variant-ligatures: normal; font-variant-caps:
+              normal; font-weight: 400; letter-spacing: normal;
+              text-align: start; text-indent: 0px; text-transform: none;
+              white-space: normal; word-spacing: 0px;
+              -webkit-text-stroke-width: 0px; text-decoration-style:
+              initial; text-decoration-color: initial; display: inline !
+              important; float: none;">(</span><font style="font-size:
+              medium; font-style: normal; font-variant-ligatures:
+              normal; font-variant-caps: normal; font-weight: 400;
+              letter-spacing: normal; text-align: start; text-indent:
+              0px; text-transform: none; white-space: normal;
+              word-spacing: 0px; -webkit-text-stroke-width: 0px;
+              text-decoration-style: initial; text-decoration-color:
+              initial;" color="#cc33cc">'squareAF'</font><span
+              style="color: rgb(0, 0, 0); font-size: medium; font-style:
+              normal; font-variant-ligatures: normal; font-variant-caps:
+              normal; font-weight: 400; letter-spacing: normal;
+              text-align: start; text-indent: 0px; text-transform: none;
+              white-space: normal; word-spacing: 0px;
+              -webkit-text-stroke-width: 0px; text-decoration-style:
+              initial; text-decoration-color: initial; display: inline !
+              important; float: none;">,2,0) );&nbsp;</span><br>
+          </td>
+          <td valign="top">a <a href="Models.html#mozTocId908192">SpinW
+              model</a>, here AF. Any other 'sw' model can be used.<br>
+          </td>
+        </tr>
+        <tr>
+          <td valign="top"><span style="color: rgb(0, 0, 0); font-size:
+              medium; font-style: normal; font-variant-ligatures:
+              normal; font-variant-caps: normal; font-weight: 400;
+              letter-spacing: normal; text-align: start; text-indent:
+              0px; text-transform: none; white-space: normal;
+              word-spacing: 0px; -webkit-text-stroke-width: 0px;
+              text-decoration-style: initial; text-decoration-color:
+              initial; display: inline ! important; float: none;"><span
+                style="color: rgb(0, 0, 0); font-size: medium;
+                font-style: normal; font-variant-ligatures: normal;
+                font-variant-caps: normal; font-weight: 400;
+                letter-spacing: normal; text-align: start; text-indent:
+                0px; text-transform: none; white-space: normal;
+                word-spacing: 0px; -webkit-text-stroke-width: 0px;
+                text-decoration-style: initial; text-decoration-color:
+                initial; display: inline ! important; float: none;"><span>s
+                  = </span></span><font style="font-size: medium;
+                font-style: normal; font-variant-ligatures: normal;
+                font-variant-caps: normal; font-weight: 400;
+                letter-spacing: normal; text-align: start; text-indent:
+                0px; text-transform: none; white-space: normal;
+                word-spacing: 0px; -webkit-text-stroke-width: 0px;
+                text-decoration-style: initial; text-decoration-color:
+                initial;" color="#3366ff">sqw_spinwave</font><span
+                style="color: rgb(0, 0, 0); font-size: medium;
+                font-style: normal; font-variant-ligatures: normal;
+                font-variant-caps: normal; font-weight: 400;
+                letter-spacing: normal; text-align: start; text-indent:
+                0px; text-transform: none; white-space: normal;
+                word-spacing: 0px; -webkit-text-stroke-width: 0px;
+                text-decoration-style: initial; text-decoration-color:
+                initial; display: inline ! important; float: none;">(</span><font
+                style="font-size: medium; font-style: normal;
+                font-variant-ligatures: normal; font-variant-caps:
+                normal; font-weight: 400; letter-spacing: normal;
+                text-align: start; text-indent: 0px; text-transform:
+                none; white-space: normal; word-spacing: 0px;
+                -webkit-text-stroke-width: 0px; text-decoration-style:
+                initial; text-decoration-color: initial;"
+                color="#cc33cc">'MnFe4Si3.txt'</font><span style="color:
+                rgb(0, 0, 0); font-size: medium; font-style: normal;
+                font-variant-ligatures: normal; font-variant-caps:
+                normal; font-weight: 400; letter-spacing: normal;
+                text-align: start; text-indent: 0px; text-transform:
+                none; white-space: normal; word-spacing: 0px;
+                -webkit-text-stroke-width: 0px; text-decoration-style:
+                initial; text-decoration-color: initial; display: inline
+                ! important; float: none;">);</span></span><br>
+          </td>
+          <td valign="top">a <a href="Models.html#mozTocId826778">SPINWAVE</a>
+            (LLB) model<br>
+          </td>
+        </tr>
+        <tr>
+          <td valign="top">
+            <meta http-equiv="content-type" content="text/html;
+              charset=windows-1252">
+            s = <font color="#3366ff">sqw_vaks</font>(<font
+              color="#cc33cc">'KTaO3'</font>);</td>
+          <td valign="top">
+            <meta http-equiv="content-type" content="text/html;
+              charset=windows-1252">
+            a <a href="Models.html#mozTocId226848">Vaks perovskite</a>,
+            with KTaO3 parameters</td>
+        </tr>
+        <tr>
+          <td valign="top">
+            <meta http-equiv="content-type" content="text/html;
+              charset=windows-1252">
+            s = <font color="#3366ff">sqw_cubic_monoatomic</font>([ 3 3
+            ]);</td>
+          <td valign="top">
+            <meta http-equiv="content-type" content="text/html;
+              charset=windows-1252">
+            a <a href="Models.html#mozTocId885605">simple cubic monoatomic</a>,
+            with C1/C2=3 E0=3</td>
+        </tr>
+        <tr>
+          <td valign="top">
+            <meta http-equiv="content-type" content="text/html;
+              charset=windows-1252">
+            <font style="font-size: medium; font-style: normal;
+              font-variant-ligatures: normal; font-variant-caps: normal;
+              font-weight: 400; letter-spacing: normal; text-align:
+              left; text-indent: 0px; text-transform: none; white-space:
+              normal; word-spacing: 0px; -webkit-text-stroke-width: 0px;
+              text-decoration-style: initial; text-decoration-color:
+              initial;">s = </font><font style="font-size: medium;
+              font-style: normal; font-variant-ligatures: normal;
+              font-variant-caps: normal; font-weight: 400;
+              letter-spacing: normal; text-align: left; text-indent:
+              0px; text-transform: none; white-space: normal;
+              word-spacing: 0px; -webkit-text-stroke-width: 0px;
+              text-decoration-style: initial; text-decoration-color:
+              initial;" color="#3366ff">sqw_phonons</font><span
+              style="color: rgb(0, 0, 0); font-size: medium; font-style:
+              normal; font-variant-ligatures: normal; font-variant-caps:
+              normal; font-weight: 400; letter-spacing: normal;
+              text-align: left; text-indent: 0px; text-transform: none;
+              white-space: normal; word-spacing: 0px;
+              -webkit-text-stroke-width: 0px; text-decoration-style:
+              initial; text-decoration-color: initial; display: inline !
+              important; float: none;">(</span><font style="font-size:
+              medium; font-style: normal; font-variant-ligatures:
+              normal; font-variant-caps: normal; font-weight: 400;
+              letter-spacing: normal; text-align: left; text-indent:
+              0px; text-transform: none; white-space: normal;
+              word-spacing: 0px; -webkit-text-stroke-width: 0px;
+              text-decoration-style: initial; text-decoration-color:
+              initial;" color="#cc33cc">'Al.cif'</font><span
+              style="color: rgb(0, 0, 0); font-size: medium; font-style:
+              normal; font-variant-ligatures: normal; font-variant-caps:
+              normal; font-weight: 400; letter-spacing: normal;
+              text-align: left; text-indent: 0px; text-transform: none;
+              white-space: normal; word-spacing: 0px;
+              -webkit-text-stroke-width: 0px; text-decoration-style:
+              initial; text-decoration-color: initial; display: inline !
+              important; float: none;">,<font color="#cc33cc">'metal'</font>);</span></td>
+          <td valign="top">a <a href="Models_Phonons_Tutorial.html">DFT
+              phonon</a> (lattice dynamics). Can also import e.g.
+            PhonoPy calculation.<br>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <span style="color: rgb(0, 0, 0); font-family: &quot;Times New
+      Roman&quot;; font-size: medium; font-style: normal;
+      font-variant-ligatures: normal; font-variant-caps: normal;
+      font-weight: 400; letter-spacing: normal; orphans: 2; text-align:
+      start; text-indent: 0px; text-transform: none; white-space:
+      normal; widows: 2; word-spacing: 0px; -webkit-text-stroke-width:
+      0px; text-decoration-style: initial; text-decoration-color:
+      initial; display: inline !important; float: none;"><span
+        style="color: rgb(0, 0, 0); font-family: &quot;Times New
+        Roman&quot;; font-size: medium; font-style: normal;
+        font-variant-ligatures: normal; font-variant-caps: normal;
+        font-weight: 400; letter-spacing: normal; orphans: 2;
+        text-align: start; text-indent: 0px; text-transform: none;
+        white-space: normal; widows: 2; word-spacing: 0px;
+        -webkit-text-stroke-width: 0px; text-decoration-style: initial;
+        text-decoration-color: initial; display: inline !important;
+        float: none;"><br>
+      </span></span>Then convert the model to a powder one (2D Sqw):<br>
+    <ul>
+      <li>p = <font color="#3366ff">powder</font>(s);</li>
+    </ul>
+    Finally, evaluate the model on given momentum and energy axes, and
+    export:<br>
+    <ul>
+      <li>q = 0:0.05:10; % Angs-1<br>
+      </li>
+      <li>w = 0:0.25:50; % meV<br>
+      </li>
+      <li>d = <font color="#3366ff">iData</font>(p, [], q, w); <i>%
+          with default model parameters</i></li>
+      <li><font color="#3366ff">saveas</font>(d, <font color="#cc33cc">'myPowder.sqw'</font>,<font
+          color="#cc33cc">'sqw'</font>);<br>
+        <i></i></li>
+    </ul>
+    <b>incoherent scattering from lattice dynamics</b><br>
+    <br>
+    In the case of lattice dynamics, the vibrational density of states
+    can be computed directly:<br>
+    <ul>
+      <li><font style="font-size: medium; font-style: normal;
+          font-variant-ligatures: normal; font-variant-caps: normal;
+          font-weight: 400; letter-spacing: normal; text-align: left;
+          text-indent: 0px; text-transform: none; white-space: normal;
+          word-spacing: 0px; -webkit-text-stroke-width: 0px;
+          text-decoration-style: initial; text-decoration-color:
+          initial;">s = </font><font style="font-size: medium;
+          font-style: normal; font-variant-ligatures: normal;
+          font-variant-caps: normal; font-weight: 400; letter-spacing:
+          normal; text-align: left; text-indent: 0px; text-transform:
+          none; white-space: normal; word-spacing: 0px;
+          -webkit-text-stroke-width: 0px; text-decoration-style:
+          initial; text-decoration-color: initial;" color="#3366ff">sqw_phonons</font><span
+          style="color: rgb(0, 0, 0); font-size: medium; font-style:
+          normal; font-variant-ligatures: normal; font-variant-caps:
+          normal; font-weight: 400; letter-spacing: normal; text-align:
+          left; text-indent: 0px; text-transform: none; white-space:
+          normal; word-spacing: 0px; -webkit-text-stroke-width: 0px;
+          text-decoration-style: initial; text-decoration-color:
+          initial; display: inline ! important; float: none;">(</span><font
+          style="font-size: medium; font-style: normal;
+          font-variant-ligatures: normal; font-variant-caps: normal;
+          font-weight: 400; letter-spacing: normal; text-align: left;
+          text-indent: 0px; text-transform: none; white-space: normal;
+          word-spacing: 0px; -webkit-text-stroke-width: 0px;
+          text-decoration-style: initial; text-decoration-color:
+          initial;" color="#cc33cc">'Al.cif'</font><span style="color:
+          rgb(0, 0, 0); font-size: medium; font-style: normal;
+          font-variant-ligatures: normal; font-variant-caps: normal;
+          font-weight: 400; letter-spacing: normal; text-align: left;
+          text-indent: 0px; text-transform: none; white-space: normal;
+          word-spacing: 0px; -webkit-text-stroke-width: 0px;
+          text-decoration-style: initial; text-decoration-color:
+          initial; display: inline ! important; float: none;">,<font
+            color="#cc33cc">'metal','emt'</font>);</span></li>
+      <li><span style="color: rgb(0, 0, 0); font-size: medium;
+          font-style: normal; font-variant-ligatures: normal;
+          font-variant-caps: normal; font-weight: 400; letter-spacing:
+          normal; text-align: left; text-indent: 0px; text-transform:
+          none; white-space: normal; word-spacing: 0px;
+          -webkit-text-stroke-width: 0px; text-decoration-style:
+          initial; text-decoration-color: initial; display: inline !
+          important; float: none;">g = <font color="#3366ff">dos</font>(s);</span></li>
+    </ul>
+    <span style="color: rgb(0, 0, 0); font-size: medium; font-style:
+      normal; font-variant-ligatures: normal; font-variant-caps: normal;
+      font-weight: 400; letter-spacing: normal; text-align: left;
+      text-indent: 0px; text-transform: none; white-space: normal;
+      word-spacing: 0px; -webkit-text-stroke-width: 0px;
+      text-decoration-style: initial; text-decoration-color: initial;
+      display: inline ! important; float: none;">The so-called
+      'multi-phonon' expansion [Sjolander 1958] allows to estimate the
+      inelastic incoherent scattering contribution from the density of
+      states, possibly specifying the mass and temperature (when not
+      found in the model). The Debye-Waller coefficient can also be
+      specified.<br>
+    </span>
+    <ul>
+      <li><span style="color: rgb(0, 0, 0); font-size: medium;
+          font-style: normal; font-variant-ligatures: normal;
+          font-variant-caps: normal; font-weight: 400; letter-spacing:
+          normal; text-align: left; text-indent: 0px; text-transform:
+          none; white-space: normal; word-spacing: 0px;
+          -webkit-text-stroke-width: 0px; text-decoration-style:
+          initial; text-decoration-color: initial; display: inline !
+          important; float: none;">inc = <font color="#3366ff">incoherent</font>(g,
+          <font color="#cc33cc">'T'</font>, 10, <font color="#cc33cc">'DW'</font>,
+          0.05); <i>% all multi-phonon terms, to be summed-up</i></span></li>
+      <li><span style="color: rgb(0, 0, 0); font-size: medium;
+          font-style: normal; font-variant-ligatures: normal;
+          font-variant-caps: normal; font-weight: 400; letter-spacing:
+          normal; text-align: left; text-indent: 0px; text-transform:
+          none; white-space: normal; word-spacing: 0px;
+          -webkit-text-stroke-width: 0px; text-decoration-style:
+          initial; text-decoration-color: initial; display: inline !
+          important; float: none;">g = plus(inc);</span></li>
+      <li><span style="color: rgb(0, 0, 0); font-size: medium;
+          font-style: normal; font-variant-ligatures: normal;
+          font-variant-caps: normal; font-weight: 400; letter-spacing:
+          normal; text-align: left; text-indent: 0px; text-transform:
+          none; white-space: normal; word-spacing: 0px;
+          -webkit-text-stroke-width: 0px; text-decoration-style:
+          initial; text-decoration-color: initial; display: inline !
+          important; float: none;">saveas(g,<font color="#cc33cc">
+            'Al_pow_inc_10.sqw'</font>,<font color="#cc33cc">'sqw'</font>);</span></li>
+    </ul>
+    <b>coherent and incoherent scattering from molecular dynamics</b><br>
+    <br>
+    If you have access to a molecular dynamics trajectory, we recommend
+    that you use <a href="https://mdanse.org/">MDANSE</a>. The
+    procedure is as follows:<br>
+    <ol>
+      <li>First convert the input trajectory into a NetCDF file (<i>MDANSE/File/Trajectory
+          converters</i> menu). </li>
+      <li>Then open that file. </li>
+      <li>Double click the new entry in the Data panel (lower left). A
+        list of applicable items shows in the upper Plugins panel. </li>
+      <li>Open the <i>Analysis</i> item, then the <i>Scattering</i>
+        one. </li>
+      <li>Double click the <i>Dynamic Coherent Structure Factor</i>
+        (DCSF).</li>
+      <li>In the 'q vectors' panel, select 'New' and use the
+        'spherical_lattice' generator up to e.g. shells 100 (in nm<sup>-1</sup>,
+        i.e. 10 Angs<sup>-1</sup>). Give it a name, Generate and Save.</li>
+      <li>Back in the DCSF Algorithm dialog, set the output filename
+        (e.g. DCSF), and click Run. A NetCDF file is created.<br>
+      </li>
+      <li>Perform exactly the same steps for the <i>Dynamic Incoherent
+          Structure Factor</i> (DISF).<br>
+      </li>
+      <li>Close MDANSE.<br>
+      </li>
+    </ol>
+    Then import the coherent and incoherent NetCDF files from MDANSE,
+    then save it for McStas, e.g.:<br>
+    <ul>
+      <li>d = <font color="#3366ff">iData_Sqw2D</font>(<font
+          color="#cc33cc">'DCSF.nc'</font>)</li>
+      <li><font color="#3366ff">saveas</font>(d, <font color="#cc33cc">'DCSF.sqw'</font>,<font
+          color="#cc33cc">'sqw'</font>)</li>
+    </ul>
+    <b>incoherent scattering from experiment/density of states</b><br>
+    <br>
+    If you perform a neutron scattering experiment on a spectrometer,
+    you should reduce and correct the measurement data file. Then
+    convert it to S(q,w) and/or estimate the vibrational density of
+    states. Finally, follow the same procedure as the one for lattice
+    dynamics.<br>
+    <br>
+    <span style="color: rgb(0, 0, 0); font-size: medium; font-style:
+      normal; font-variant-ligatures: normal; font-variant-caps: normal;
+      font-weight: 400; letter-spacing: normal; text-align: left;
+      text-indent: 0px; text-transform: none; white-space: normal;
+      word-spacing: 0px; -webkit-text-stroke-width: 0px;
+      text-decoration-style: initial; text-decoration-color: initial;
+      display: inline ! important; float: none;">The so-called
+      'multi-phonon' expansion [Sjolander 1958] allows to estimate the
+      inelastic incoherent scattering contribution from the density of
+      states, possibly specifying the mass and temperature (when not
+      found in the model). The Debye-Waller coefficient can also be
+      specified. We assume the vDOS has been imported as variable 'g':<br>
+    </span>
+    <ul>
+      <li>g = <font color="#3366ff">iData_vDOS</font>(<font
+          color="#cc33cc">'dos_file'</font>);<br>
+        <span style="color: rgb(0, 0, 0); font-size: medium; font-style:
+          normal; font-variant-ligatures: normal; font-variant-caps:
+          normal; font-weight: 400; letter-spacing: normal; text-align:
+          left; text-indent: 0px; text-transform: none; white-space:
+          normal; word-spacing: 0px; -webkit-text-stroke-width: 0px;
+          text-decoration-style: initial; text-decoration-color:
+          initial; display: inline ! important; float: none;"></span></li>
+      <li><span style="color: rgb(0, 0, 0); font-size: medium;
+          font-style: normal; font-variant-ligatures: normal;
+          font-variant-caps: normal; font-weight: 400; letter-spacing:
+          normal; text-align: left; text-indent: 0px; text-transform:
+          none; white-space: normal; word-spacing: 0px;
+          -webkit-text-stroke-width: 0px; text-decoration-style:
+          initial; text-decoration-color: initial; display: inline !
+          important; float: none;">inc = <font color="#3366ff">incoherent</font>(g,
+          <font color="#cc33cc">'T'</font>, 10, <font color="#cc33cc">'DW'</font>,
+          0.05); <i>% all multi-phonon terms, to be summed-up</i></span></li>
+      <li><span style="color: rgb(0, 0, 0); font-size: medium;
+          font-style: normal; font-variant-ligatures: normal;
+          font-variant-caps: normal; font-weight: 400; letter-spacing:
+          normal; text-align: left; text-indent: 0px; text-transform:
+          none; white-space: normal; word-spacing: 0px;
+          -webkit-text-stroke-width: 0px; text-decoration-style:
+          initial; text-decoration-color: initial; display: inline !
+          important; float: none;">g = <font color="#3366ff">plus</font>(inc);</span></li>
+      <li><span style="color: rgb(0, 0, 0); font-size: medium;
+          font-style: normal; font-variant-ligatures: normal;
+          font-variant-caps: normal; font-weight: 400; letter-spacing:
+          normal; text-align: left; text-indent: 0px; text-transform:
+          none; white-space: normal; word-spacing: 0px;
+          -webkit-text-stroke-width: 0px; text-decoration-style:
+          initial; text-decoration-color: initial; display: inline !
+          important; float: none;"><font color="#3366ff">saveas</font>(g,<font
+            color="#cc33cc"> 'inc_10.sqw'</font>,<font color="#cc33cc">'sqw'</font>);</span></li>
+    </ul>
+    <b>coherent scattering from experiment</b><br>
+    <br>
+    If you perform a neutron scattering experiment on a spectrometer,
+    you should reduce and correct the measurement data file. Remove the
+    empty cell/container contribution. Then convert it to S(q,w),
+    possibly applying a radial momentum average. Estimate its density of
+    states, and the incoherent scattering (see above). Subtract the
+    incoherent scattering from the total scattering, to get an estimate
+    of the coherent scattering alone. Make it an iData_Sqw2D object, and
+    save it as a 'sqw' format file.<br>
+    <br>
+    <b>total scattering from experiment<br>
+    </b><br>
+    If you perform a neutron scattering experiment on a spectrometer,
+    you should reduce and correct the measurement data file. Remove the
+    empty cell/container contribution. Then convert it to S(q,w),
+    possibly applying a radial momentum average. When using the
+    Isotropic_Sqw, set the <i>sigma_inc</i> component parameter to 0,
+    and the <i>sigma_coh</i> as the total scattering cross-section.<b>
+    </b>
     <h4><a class="mozTocH4" name="mozTocId36233"></a>Single_crystal_inelastic
+
       component: coherent and incoherent scattering from a single
       crystal</h4>
     The Single_crystal_inelastic component is an experimental
@@ -952,8 +1435,10 @@ of
     <ul>
       <li>s = <font color="#3366ff">sqw_spinw</font>(<font
           color="#cc33cc">'defaults'</font>)</li>
-      <li>d = <font color="#3366ff">iData</font>(s);</li>
-      <li><font color="#3366ff">saveas</font>(d, <font color="#cc33cc">''</font>,
+      <li>d = <font color="#3366ff">iData</font>(s); <i>% use default
+          grid for axes</i><br>
+      </li>
+      <li><font color="#3366ff">saveas</font>(d, <font color="#cc33cc">'sx_coh.sqw4'</font>,
         <font color="#cc33cc">'mcstas'</font>);</li>
     </ul>
     <br>
@@ -961,6 +1446,7 @@ of
     <div style="text-align: center;">
       <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
+
 
 
 
