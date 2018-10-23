@@ -314,7 +314,16 @@ case 'netcdf'
   formatShort='nc';
 end
 
-% remove NaN values, which are usually not well supported by text based formats
+% iData_private_cleannaninf called in some exporters removes NaN values, which 
+% are usually not well supported by text based formats.
+
+% select a 'fast' and reliable renderer. OpenGL export often lead to black PDF/PNG...
+% we use Zbuffer when available (transparently replaced by OpenGL for > R2014b)
+if ndims(a) >= 2
+  renderer = 'zbuffer';
+else
+  renderer = 'painters';
+end
 
 % ==============================================================================
 % handle specific format actions
@@ -337,9 +346,9 @@ try
   case 'edf'  % EDF ESRF format
     filename = medfwrite(a, filename); % in private
   case 'epsc' % color encapsulated postscript file format, with TIFF preview
-    f=figure('visible','off');
-    plot(a,options);
-    set(f,'renderer','zbuffer');
+    f=figure('visible','off','Renderer', renderer);
+    plot(a,[ renderer ' ' options ]);
+    set(f,'renderer',renderer);
     print(f, '-depsc', filename); % tiff preview may be broken on some GPU
     close(f);
   case 'fig'  % Matlab figure format
@@ -396,9 +405,8 @@ try
       end
     else
       % rendering with getframe/imwrite failed. Fall back to saveas.
-      f = figure('visible','off');
-      b = plot(a, options);
-      set(f,'Renderer','zbuffer')
+      f = figure('visible','off','Renderer', renderer);
+      b = plot(a, [ renderer ' ' options ]);
       saveas(f, filename, formatShort);
       close(f);
     end
@@ -410,8 +418,16 @@ try
     % create a folder with the HTML doc, figures
     filename = iData_private_saveas_html(a, filename, [ format ' ' root ' ' options ]);
   case {'inx','mcstas','sqw','spe'}  % ILL INX / McStas / SPE
-      a = iData_Sqw2D(a);
-      filename = saveas(a, filename, formatShort);
+      if ndims(a) == 2
+        a = iData_Sqw2D(a);
+        filename = saveas(a, filename, formatShort);
+      elseif ndims(a) == 4
+        a = iData_Sqw4D(a);
+        filename = saveas(a, filename, formatShort);
+      else
+        disp([ mfilename ': export to McStas/Sqw is only available for 2D and 4D data sets.' ])
+      end
+      
   case 'json'
     mat2json(struct(a), filename );    % in private
   case 'kml'  % Google KML
@@ -447,9 +463,8 @@ try
   case 'npy'  % Numpy binary array NPY
     writeNPY(getaxis(iData_private_cleannaninf(a),0),filename);
   case {'ppt','pptx'}
-    f = figure('visible','off');
-    set(f,'renderer','zbuffer');
-    b = plot(a, options);
+    f = figure('visible','off','Renderer', renderer);
+    b = plot(a, [ renderer ' ' options ]);
     exportToPPTX('new');
     exportToPPTX('addslide');
     exportToPPTX('addtext', char(a));
@@ -460,17 +475,16 @@ try
     exportToPPTX('save',filename);
     exportToPPTX('close');
   case {'psc','pdf','ill','jpeg'}  % other bitmap and vector graphics formats (PDF, ...)
-    f=figure('visible','off');
-    plot(a,options);
-    set(f,'Renderer','zbuffer')
+    f=figure('visible','off','Renderer', renderer);
+    plot(a,[ renderer ' ' options ]);
+    set(f,'Renderer',renderer)
     saveas(f, filename, formatShort);
     close(f);
   case {'stl','stla','stlb','off','ply'} % STL ascii, binary, PLY, OFF
     filename = iData_private_saveas_stl(a, filename, formatShort);
   case 'svg'  % scalable vector graphics format (private function)
-    f=figure('visible','off');
-    plot(a,options);
-    set(f,'Renderer','zbuffer')
+    f=figure('visible','off','Renderer', renderer);
+    plot(a,[ renderer ' ' options ]);
     try
       saveas(f, filename, 'svg');
     catch
@@ -480,9 +494,8 @@ try
   case 'vtk'  % VTK volume
     filename = iData_private_saveas_vtk(a, filename);
   case {'vrml','wrl'} % VRML format
-    f=figure('visible','off');
-    h = plot(a,options);
-    set(f,'renderer','zbuffer');
+    f=figure('visible','off','Renderer', renderer);
+    h = plot(a,[ renderer ' ' options ]);
     g = gca;
     vrml(g,filename);
     close(f);

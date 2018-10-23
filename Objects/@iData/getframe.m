@@ -16,15 +16,8 @@ function frame = getframe(a, dim, options)
 % Version: $Date$
 % See also iData, iData/plot, getframe, image, imwrite
 
-persistent gl
-
 if nargin < 2, dim=0; end
 if nargin < 3, options=''; end
-
-% test if openGL is installed correctly
-if ~exist('gl') || isempty(gl)
-  gl = opengl('data');
-end
 
 if numel(a) > 1
   frame = cell(size(a));
@@ -34,13 +27,15 @@ if numel(a) > 1
   return
 end
 
-if isfield(gl, 'Version') && isempty(gl.Version)
-  % installed incorrectly: will lead to SEGFAULT
-  frame = struct();
-  return
+% select a 'fast' and reliable renderer. OpenGL export often lead to black PDF/PNG...
+% we use Zbuffer when available (transparently replaced by OpenGL for > R2014b)
+if ndims(a) >= 2
+  renderer = 'zbuffer';
+else
+  renderer = 'painters';
 end
 
-f=figure('menubar','none','toolbar','none','visible','off');
+f=figure('menubar','none','toolbar','none','visible','off','Renderer',renderer);
 % put window out of sight
 p=get(f,'Position'); p(1:2) = [-1000 -1000];
 set(f,'Position',p);
@@ -66,7 +61,7 @@ if dim
 end
 
 % plot the data
-plot(a, options); 
+plot(a, [ renderer ' ' options ]); 
 if ndims(a) <= 2, view(2); end
 drawnow
 if dim
@@ -77,20 +72,20 @@ if dim
   set(gca,'ytick',[]) ;
   axis tight;
 end
-% extract frame
 
+% extract frame
 filename = [ tempname '.avi' ]; 
 usegetframe = 1;
+set(f,'renderer',renderer);
 if exist('hardcopy')
   try
-    frame=im2frame(hardcopy(f, '-Dzbuffer', '-r0'));
+    frame=im2frame(hardcopy(f, [ '-Dzbuffer' ], '-r0'));
     usegetframe = 0;
   end
 end 
 if usegetframe
   % force figure to be 'onscreen'
   movegui(f);
-  set(f,'renderer','zbuffer');
   frame=getframe(f);
 end
 

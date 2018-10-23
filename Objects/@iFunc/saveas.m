@@ -185,6 +185,14 @@ end
 
 warning off MATLAB:structOnObject
 
+% select a 'fast' and reliable renderer. OpenGL export often lead to black PDF/PNG...
+% we use Zbuffer when available (transparently replaced by OpenGL for > R2014b)
+if ndims(a) >= 2
+  renderer = 'zbuffer';
+else
+  renderer = 'painters';
+end
+
 % ==============================================================================
 % handle specific format actions
 switch formatShort
@@ -254,20 +262,18 @@ case 'mat'  % single mat-file Matlab output (binary), with the full object descr
     save(filename, a.Tag);
   end
 case 'epsc' % color encapsulated postscript file format, with TIFF preview
-  f=figure('visible','off');
-  plot(a,options);
-  set(f,'Renderer','zbuffer')
+  f=figure('visible','off','Renderer', renderer);
+  plot(a,[ renderer ' ' options ]);
   print(f, '-depsc', '-tiff', filename);
   close(f);
 case {'png','tiff','jpeg','psc','pdf','ill','gif','bmp','pbm','pcx','pgm','pnm','ppm','ras','xwd','hdf'}  % bitmap and vector graphics formats (PDF, ...)
-  f=figure('visible','off');
-  plot(a,options);
-  set(f,'Renderer','zbuffer')
+  f=figure('visible','off','Renderer', renderer);
+  plot(a,[ renderer ' ' options ]);
   if strcmp(formatShort,'hdf4'), formatShort='hdf'; end
   print(f, [ '-d' formatShort ], filename);
   close(f);
 case 'fig'  % Matlab figure format
-  f=figure('visible','off');
+  f=figure('visible','off','Renderer', renderer);
   plot(a,options);
   saveas(f, filename, 'fig');
   close(f);
