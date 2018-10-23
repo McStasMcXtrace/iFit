@@ -3,7 +3,7 @@ function result = test_iFunc_fmin_fmax
   model= gauss1;
   fix(model, 'all'); model.Intensity='free';
   model.Intensity=1; model.HalfWidth=.5;
-  xlim(model, 'Intensity',[-2 2])
+  xlim(model, 'Intensity',[-2 2]);
   p  = fmin(model, [], 'fminpowell');
 
   p2 = fmax(model, [], 'fminpowell');

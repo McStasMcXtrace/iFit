@@ -72,6 +72,9 @@ for index=1:length(tests_list)
     end 
     waitbar(index/length(tests_list), h, ...
         [ 'iFit test: ' tests_list{index} ' (close to Abort)' ]);
+    try
+    set(h, 'Name', [ 'iFit: ' num2str(index) '/' num2str(length(tests_list)) ' ' f ]);
+    end
   end
   
   try

@@ -3,6 +3,7 @@ function result = test_Models_mccode
   % test McCode model builder
   options.mpirun='none';
   options.dir   = tempname;
+  options.ncount = 1e5;
   y = mccode('defaults',options);
   if isempty(y)
     result = [ 'OK     ' mfilename ' (McCode / Instrument not found)' ];
