@@ -98,6 +98,7 @@ function [S, qLim, fig] = band_structure(f, qLim, E, options)
       E = max(f);
     end
   end
+  
   if numel(E) == 1
     E = linspace(0.01,E, 100);
   elseif numel(E) == 2
@@ -202,12 +203,6 @@ function [S, qLim, fig] = band_structure(f, qLim, E, options)
   K = qOut(2,:);
   L = qOut(3,:);
 
-  % assemble all HKLw points (event list)
-  h=ones(numel(E),1)*H; h=h(:)';
-  k=ones(numel(E),1)*K; k=k(:)';
-  l=ones(numel(E),1)*L; l=l(:)';
-  w=E'*ones(1,numel(H)); w=w(:)';
-
   % now we evaluate the model, without the intensities
   if isfield(f.UserData, 'properties') && isfield(f.UserData.properties, 'b_coh')
     b_coh = f.UserData.properties.b_coh;
@@ -218,7 +213,8 @@ function [S, qLim, fig] = band_structure(f, qLim, E, options)
     f.UserData.properties.b_coh = 0; 
   end
 
-  [S, f, ax, name] = feval(f, get(f,'ParameterValues'), h,k,l,E);
+  [S, f, ax, name] = feval(f, get(f,'ParameterValues'), H,K,L,E);
+
   if isfield(f.UserData,'properties')
     f.UserData.properties.b_coh = b_coh;
   end
@@ -277,39 +273,49 @@ function [S, qLim, fig] = band_structure(f, qLim, E, options)
 
   if nargout == 0 || ~isempty(strfind(options, 'plot'))
     if ~isempty(strfind(options, 'newplot')) fig = figure; else fig = gcf; end
-    if isfinite(max(S)) && max(S), plot(log10(S/max(S)),'view2'); 
-    else plot(log10(S),'view2'); end
-    axis tight
+    if isfinite(max(S)) && max(S), plot(log10(S/max(S)),'view2 tight painters'); 
+    else plot(log10(S),'view2 tight painters'); end
+    
     add_contextmenu(gca);
     a0 = gca;
     hold on
+    
     if isfield(f.UserData,'FREQ') % overlay bare frequencies
       FREQ = f.UserData.FREQ*factor;
       if ~isempty(FREQ), plot(x, FREQ); end
     end
 
-    % plot DOS
-    if ~isfield(f.UserData,'DOS') || isempty(f.UserData.DOS)
+    % get DOS
+    if (~isfield(f.UserData,'DOS') || isempty(f.UserData.DOS))
       [DOS, DOS_partials] = dos(f);
+      f.UserData.DOS         =DOS;
+      f.UserData.DOS_partials=DOS_partials;
+      S.UserData.DOS         =DOS;
+      S.UserData.DOS_partials=DOS_partials;
     end
+    
+    % plot DOS
     if isfield(f.UserData,'DOS') && ~isempty(f.UserData.DOS)
       figure(fig);
       DOS = f.UserData.DOS;
-      DOS{1} = DOS{1}*factor; % change energy unit
+      DOS = setaxis(DOS,1, getaxis(DOS, 1)*factor); % change energy unit
       xlabel(DOS,[ 'Energy ' unit ]);
       % rescale dispersion curves and use same limits for DOS
       p = get(gca,'Position'); p(3) = 0.6; set(gca,'Position', p);
       y = ylim(gca);
       a = axes('position', [ 0.8 p(2) 0.15 p(4) ]);
+      
       % plot any partials first
-      if isfield(f.UserData,'DOS_partials') && numel(f.UserData.DOS_partials) > 0
-        d=f.UserData.DOS_partials;
+      if isfield(f.UserData,'DOS_partials') && numel(f.UserData.DOS_partials) > 1
+        d  = f.UserData.DOS_partials;
+        d1 = [];
         for index=1:numel(d)
-          this_pDOS=d(index);
-          this_pDOS{1} = this_pDOS{1}*factor;
-          d(index) = this_pDOS;
+          this_pDOS = d(index);
+          this_pDOS = setaxis(this_pDOS,1, getaxis(this_pDOS, 1)*factor);
+          d1 = [ d1 this_pDOS ];
         end
-        h=plot(d);
+        clear d this_pDOS
+        h = plot(d1); 
         if iscell(h)
             if isnumeric(h{1}), h=cell2mat(h); 
             else h = [ h{:} ]; end
@@ -317,6 +323,7 @@ function [S, qLim, fig] = band_structure(f, qLim, E, options)
         set(h,'LineStyle','--');
         hold on
       end
+      
       % plot total DOS and rotate
       h=plot(DOS); set(h,'LineWidth',2);
       xlabel(''); ylabel('DOS'); title('');
