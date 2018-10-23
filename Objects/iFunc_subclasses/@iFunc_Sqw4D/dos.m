@@ -44,12 +44,17 @@ function [DOS, DOS_partials] = dos(s, n, nQ, method)
   if nargin == 0, return; end
   if nargin < 2,  n  = []; end
   if nargin < 3,  nQ = []; end
-  if nargin < 4, method='4D'; end
+  if nargin < 4,  method=''; end
+  
+  if strcmp(n, 'force'), n=0; end
+  if ischar(n)  && isempty(method), method = n;  n=[]; end
+  if ischar(nQ) && isempty(method), method = nQ; nQ=[]; end
+  if isempty(method), method = '4D'; end
   
   % handle array of objects
   if numel(s) > 1
     for index=1:numel(s)
-      DOS = [ DOS feval(mfilename, s(index), n, nQ) ];
+      DOS = [ DOS feval(mfilename, s(index), n, nQ, method) ];
     end
     if ~isempty(inputname(1))
       assignin('caller',inputname(1),s);
@@ -92,7 +97,7 @@ function [DOS, DOS_partials] = dos(s, n, nQ, method)
         DOS.UserData.(f{1}) = s.UserData.(f{1});
       end
     end
-
+    DOS = iData_vDOS(DOS);
     parameters = get(DOS, 'parameters');
     for index=1:numel(s.ParameterValues)
       if isfinite(s.ParameterValues(index))
@@ -115,7 +120,7 @@ function [DOS, DOS_partials] = dos(s, n, nQ, method)
     xlabel(DOS,[ 'Energy' ]);
     % plot any partials first
     h=plot(DOS_partials);
-    if iscell(h), h=cell2mat(h); end
+    if iscell(h), h=[ h{:} ]; end
     set(h,'LineStyle','--');
     hold on
 
@@ -138,7 +143,7 @@ function FREQ = sqw_phonon_dos_4D(s, nQ)
   % (c) E.Farhi, ILL. License: EUPL.
 
   FREQ = [];
-  if isempty(nQ), nQ=21; end
+  if isempty(nQ) || nQ <= 0, nQ=21; end
   
   qh = linspace(-0.5,0.5,nQ);qk=qh; ql=qh; 
   w  = linspace(0.01,100,5);
@@ -156,7 +161,7 @@ function FREQ = sqw_phonon_dos_4D(s, nQ)
 function FREQ = sqw_phonon_dos_powder(s, nQ)
   
   FREQ = [];
-  if isempty(nQ), nQ=41; end
+  if isempty(nQ) || nQ <= 0, nQ=41; end
   
   % create a 4D hklw space grid
   qx=[]; qy=qx; qz=qx;
@@ -191,7 +196,7 @@ function [DOS, pDOS] = dos_getdos_from_FREQ(FREQ, n, Name)
 
   nmodes = size(FREQ,2);
   if ischar(n), n=[]; end
-  if isempty(n)
+  if isempty(n) || n <= 0
     n = nmodes*10;
   end
   
