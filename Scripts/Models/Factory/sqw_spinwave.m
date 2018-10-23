@@ -236,7 +236,7 @@ end
 % get code to read xyzt and build HKL list and convolve DHO line shapes
 script_hkl = sqw_phonons_templates;
 exe_path = fileparts(which(mfilename));
-if ismac,      precmd = [ 'DYLD_LIBRARY_PATH=' fullpath(exe_path, 'private') '; DISPLAY= ; ' ];
+if ismac,      precmd = [ 'DYLD_LIBRARY_PATH=' fullfile(exe_path, 'private') '; DISPLAY= ; ' ];
 elseif isunix, precmd = 'LD_LIBRARY_PATH= ; '; 
 else           precmd = ''; end
 

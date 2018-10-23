@@ -47,7 +47,7 @@ persistent compiled
 result = []; file_out=[];
 % required to avoid Matlab to use its own libraries
 exe_path = fileparts(which(mfilename));
-if ismac,      precmd = [ 'DYLD_LIBRARY_PATH=' fullpath(exe_path, 'private') '; DISPLAY= ; ' ];
+if ismac,      precmd = [ 'DYLD_LIBRARY_PATH=' fullfile(exe_path, 'private') '; DISPLAY= ; ' ];
 elseif isunix, precmd = 'LD_LIBRARY_PATH= ; DISPLAY= ; '; 
 else           precmd = ''; end
 
