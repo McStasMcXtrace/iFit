@@ -199,7 +199,10 @@ else
     if isequal(filename, 0), return; end
     options.instrument = fullfile(pathname, filename); 
   else
-    if strcmp(instr, 'defaults'), instr='templateDIFF.instr'; options.dir='pwd'; end
+    if strcmp(instr, 'defaults')
+      instr='templateDIFF.instr'; 
+      if ~isfield(options,'dir') options.dir='pwd'; end
+    end
 %    elseif strcmp(instr, 'identify')
 %      y = mccode('defaults');
 %      y.Name = [ 'McCode instrument [' mfilename ']' ];
