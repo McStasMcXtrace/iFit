@@ -99,10 +99,10 @@ function varargout = struct2xml( s, varargin )
     docRootNode = docNode.getDocumentElement;
 
     %append childs
-    parseStruct(s.(xmlname),docNode,docRootNode,[inputname(1) '.' xmlname '.']);
+    docNode = parseStruct(s.(xmlname),docNode,docRootNode,[inputname(1) '.' xmlname '.']);
 
     if(nargout == 0)
-        %save xml file
+        % save xml file
         xmlwrite(file,docNode);
     else
         varargout{1} = xmlwrite(docNode);
@@ -110,8 +110,9 @@ function varargout = struct2xml( s, varargin )
 end
 
 % ----- Subfunction parseStruct -----
-function [] = parseStruct(s,docNode,curNode,pName)
+function docNode = parseStruct(s,docNode,curNode,pName)
     
+    if ~isstruct(s), return; end
     fnames = fieldnames(s);
     for i = 1:length(fnames)
         curfield = fnames{i};
@@ -160,11 +161,11 @@ function [] = parseStruct(s,docNode,curNode,pName)
                 %single element
                 curElement = docNode.createElement(curfield_sc);
                 curNode.appendChild(curElement);
-                parseStruct(s.(curfield),docNode,curElement,[pName curfield '.'])
+                docNode = parseStruct(s.(curfield),docNode,curElement,[pName curfield '.']);
             elseif (iscell(s.(curfield)))
                 %multiple elements
                 for c = 1:length(s.(curfield))
-                    if ~isstruct(s.(curfield){c}) && ~ischar(s.(curfield){c}) && ~builtin('isnumeric', (s.(curfield){c}))
+                    if ~isstruct(s.(curfield){c}) && ~ischar(s.(curfield){c}) && ~builtin('isnumeric', s.(curfield){c})
                       try % try no convert object into a struct
                         s.(curfield){c} = struct(s.(curfield){c});
                       end
@@ -172,8 +173,8 @@ function [] = parseStruct(s,docNode,curNode,pName)
                     if (isstruct(s.(curfield){c}))
                         curElement = docNode.createElement(curfield_sc);
                         curNode.appendChild(curElement);
-                        parseStruct(s.(curfield){c},docNode,curElement,[pName curfield '{' num2str(c) '}.'])
-                    elseif ischar(s.(curfield){c}) || isnumeric(s.(curfield){c})
+                        docNode = parseStruct(s.(curfield){c},docNode,curElement,[pName curfield '{' num2str(c) '}.']);
+                    elseif ischar(s.(curfield){c}) || builtin('isnumeric', s.(curfield){c})
                         curElement = docNode.createElement([curfield_sc '_' num2str(c) ]);
                         curNode.appendChild(curElement);
                         [txt,succes] = val2str(s.(curfield){c});
@@ -212,7 +213,7 @@ function [str,succes] = val2str(val)
         return; %bugfix from H. Gsenger
     elseif (ischar(val))
         %do nothing
-    elseif (isnumeric(val))
+    elseif builtin('isnumeric', val)
         s = size(val);
         try
           if numel(s) == 2 && s(1) == 1     % vector: horizontal
@@ -227,10 +228,16 @@ function [str,succes] = val2str(val)
         end
     elseif isa(val, 'function_handle')
       val = func2str(val);
+    elseif isobject(val)
+      try
+        val = char(val);
+      catch
+        succes = false;
+      end
     else
         succes = false;
     end
-    
+
     if (ischar(val))
         %add line breaks to all lines except the last (for multiline strings)
         lines = size(val,1);

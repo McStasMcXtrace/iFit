@@ -200,7 +200,7 @@ function filename = iData_private_saveas_html(a, filename, format)
       case 'mat'
         builtin('save', basename, 'a');
       otherwise
-        save(a, basename, f);
+        saveas(a, basename, f);
       end
     end
   end

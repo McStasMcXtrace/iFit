@@ -514,7 +514,7 @@ try
     filename = [];
   end
 catch ME
-  disp(getReport(ME))
+  disp(ME.message)
   iData_private_warning(mfilename,[ 'Export of object ' inputname(1) ' ' a.Tag ' into format ' format ' failed. Ignoring.' ]);
   filename = [];
 end
