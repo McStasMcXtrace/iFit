@@ -162,7 +162,7 @@ function compiled=cif2hkl_check_compile(compile)
   compiled = '';
   this_path = fileparts(which(mfilename));
   % required to avoid Matlab to use its own libraries
-  if ismac,      precmd = 'DYLD_LIBRARY_PATH= ; DISPLAY= ; ';
+  if ismac,      precmd = [ 'DYLD_LIBRARY_PATH=' fullfile(this_path, 'private') '; DISPLAY= ; ' ];
   elseif isunix, precmd = 'LD_LIBRARY_PATH= ; DISPLAY= ; '; 
   else           precmd = ''; end
   
