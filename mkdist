@@ -97,7 +97,7 @@ else
 fi
 
 # create techdoc with m2html
-$MATLAB -nodesktop -nosplash -r "addpath(genpath('$TMPDIR/$IFIT_TARNAME-$IFIT_VERSION')); m2html('mFiles',{'Libraries','Objects/@iData','Objects/iData_subclasses/@iData_vDOS','Objects/iData_subclasses/@iData_Sqw2D','Objects/iData_subclasses/@iData_Sab','Objects/@iFunc','Objects/iFunc_subclasses/@iFunc_Sqw2D','Objects/iFunc_subclasses/@iFunc_Sqw4D','Objects/iFunc_subclasses/@iFunc_McCode','Objects/@Process','Scripts','Scripts/Load','Scripts/Models','Scripts/Models/Factory','Scripts/Models/Specialized','Applications/Python','Applications/ResLibCal','Applications/miFit','Applications/ResLibCal'},'htmldir','Docs/techdoc','recursive','on','source','off','ignoredDir','private','graph','off'); exit"
+$MATLAB -nodesktop -nosplash -r "addpath(genpath('$TMPDIR/$IFIT_TARNAME-$IFIT_VERSION')); m2html('mFiles',{'Libraries','Objects','Scripts','Applications','Tests'},'htmldir','Docs/techdoc','recursive','on','source','off','ignoredDir','private','graph','off'); exit"
 
 cd $TMPDIR
 
