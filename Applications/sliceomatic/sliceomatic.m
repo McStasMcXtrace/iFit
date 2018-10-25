@@ -177,6 +177,11 @@ function sliceomatic(p1,p2,xmesh,ymesh,zmesh)
     sliceomatic(v)
     return
   end
+  
+  if isa(p1, 'iData') % added EF to use the iData.slice method
+    slice(p1);
+    return;
+  end
 
   if isnumeric(p1)
 % $$$     if nargin==4
