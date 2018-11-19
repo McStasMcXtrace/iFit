@@ -115,12 +115,14 @@ if isstruct(parameters)
           parameters.(name)=NaN;
         end
       else
-        if     iscell(val) && ischar(val{1}), val = sprintf('%s ', val{:});
-        elseif iscell(val) && isnumeric(val{1}), val = sprintf('%f ', val{:});
+        if     iscell(val) && ~isempty(val) && ischar(val{1}), val = sprintf('%s ', val{:});
+        elseif iscell(val) && ~isempty(val) && isnumeric(val{1}), val = sprintf('%f ', val{:});
         end
-        t=val; t(~isstrprop(t,'print')) = ' '; val=t;
-        fprintf(fid, '# %-13s %-s %s\n', name, val, comment);
-        parameters.(name)=NaN;
+        if ~isempty(val)
+            t=val; t(~isstrprop(t,'print')) = ' '; val=t;
+            fprintf(fid, '# %-13s %-s %s\n', name, val, comment);
+            parameters.(name)=NaN;
+        end
       end
     end
   end
