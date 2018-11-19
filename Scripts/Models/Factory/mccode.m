@@ -66,6 +66,8 @@ function y = mccode(instr, options, parameters)
 % source, which you may view with:
 %   TextEdit(model.UserData.instrument_source)
 %
+% Example: model = mccode('templateDIFF');
+%
 % MODEL EVALUATION:
 % ------------------------------------------------------------------------------
 % model(p) 
@@ -79,7 +81,7 @@ function y = mccode(instr, options, parameters)
 % The model 'value' is the last monitor, or set from 
 %   model.UserData.options.monitor
 % It can be converted to an iData with iData(model, ...)
-
+%
 % The raw monitors of the last simulation are stored as iData objects in 
 %   model.UserData.monitors
 % You can plot them all with e.g.:
@@ -234,6 +236,12 @@ end
 if isstruct(attr) && ~isempty(options.dir) && (~attr.UserRead || ~attr.UserWrite || ~attr.UserExecute)
   disp([ mfilename ': target directory ' options.dir 'is not accessible. Using temporary.' ]);
   options.dir = ''; % will use temporary dir
+end
+% attempt to create a file there
+if ~isempty(options.dir)
+  testDir = ['deleteMe_', num2str(floor(rand*1e12))];
+  [isWritable,message,messageid] = mkdir(options.dir, testDir);
+  if ~isWritable, options.dir = ''; end
 end
 
 % use temporary directory to build/assemble parts.

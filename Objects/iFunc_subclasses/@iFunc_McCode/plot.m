@@ -19,6 +19,10 @@ function [comps, fig, model]=plot(model, p, options, match)
 %   model = mccode('templateDIFF')
 %   plot(model)
 %     a figure is generated, which shows the instrument geometry.
+%   plot(model, '','', 'Diff_')
+%   plot(model, '','', 'Monok:Sample')
+%   plot(model, '','', '3:inf')
+%   plot(model, '','', {'Diff_Mono_XY', 'Alpha',')
 %
 % syntax:
 %   [comps, fig, model]=plot(model, p, options, match)
@@ -29,7 +33,11 @@ function [comps, fig, model]=plot(model, p, options, match)
 %   parameters: parameters to use, as a vector, cell, structure... or empty for default
 %   options:    rendering/export options. Can contain 
 %     'html','x3d','png','pdf','fig','tif','jpg','eps', 'svg' or empty for no output
-%   match:      token to only render components that match it, or empty for all.
+%   match:      token(s) to only render components that match it, or empty for all.
+%               each token can be: 
+%                 a single component word for partial match, such as 'Monitor'
+%                 a component interval such as 'Monok:Sample' or 2:10 or '2:end'
+%               you may specify a cell of tokens for multiple matches.
 %   
 % output:
 %   comps: a list of component specifications (structure array)
@@ -43,7 +51,7 @@ function [comps, fig, model]=plot(model, p, options, match)
   end
   if nargin < 2, p=[]; end
   if nargin < 3, options=''; end
-  if nargin < 4, match  =''; end
+  if nargin < 4, match  ={}; end
   comps = []; fig = [];
 
   % check if we have an iFunc McCode object
@@ -171,22 +179,80 @@ function [comps, fig, model]=plot(model, p, options, match)
 
   % PLOTTING: transform the points and plot them
   fig = gcf; 
-  if ischar(match) && ~isempty(match), match = cellstr(match); end
-  if ~iscellstr(match), match = {}; end
   if ~isempty(match)
-    set(fig, 'Name',[ 'Instrument: ' model.Name ' ' sprintf('%s ', match{:}) ]);
+    if ischar(match),        match = cellstr(match); 
+    elseif isnumeric(match) match = { match }; 
+    end
+  end
+  if ~iscell(match)
+    disp([ mfilename ': invalid component token specification. Plotting all.' ]);
+    match = {}; 
+  end
+  
+  % handle match types: single name, range: i1:i2, range name1:name2
+  if ~isempty(match)
+    for m=1:numel(match)
+      if isnumeric(match{m})
+        new_match = ' ';
+        for c = 1:numel(comps)
+          if any(c == match{m})
+            new_match = [ new_match comps(c).name ' ' ];
+          end
+        end
+        match{m} = new_match;
+      elseif any(match{m} == ':')
+        [i1,i2] = strtok(match{m}, ':'); % get 'from:to' items
+        i2 = i2(2:end);
+        if ~isnan(str2double(i1)) 
+          i1 = str2double(i1);
+          if i1 < 1, i1=1; elseif i1 > numel(comps), i1=numel(comps); end
+          i1 = comps(i1).name;
+        end
+        if ischar(i2) && (strcmp(lower(i2), 'end') || strcmp(lower(i2), 'inf'))
+          i2 = numel(comps)
+        end
+        if ~isnan(str2double(i2)) 
+          i2 = str2double(i2);
+          if i2 < 1, i2=1; elseif i2 > numel(comps), i2=numel(comps); end
+          i2 = comps(i2).name;
+        end
+        
+        % now set all names in between
+        flag = false;
+        new_match = ' ';
+        for c = 1:numel(comps)
+          if ~flag && strcmp(comps(c).name, i1), flag = true; end
+          if flag, new_match = [ new_match comps(c).name ' ' ]; end
+          if flag  && strcmp(comps(c).name, i2), flag = false; break; end
+        end
+        match{m} = new_match; % replace range by list of names
+      end
+    end
+  end
+  
+  % create figure
+  if ~isempty(match)
+    t = sprintf('%s ', match{:});
+    if numel(t) > 160, t=[ t(1:150) ' ...' ]; end
+    set(fig, 'Name',[ 'Instrument: ' model.Name ': ' t ]);
   else
     set(fig, 'Name',[ 'Instrument: ' model.Name ]);
+    t = '';
   end
   colors='bgrcmk';
+  
+  % plot components
   for index=1:numel(comps)
     comp = comps(index);
 
     if ~isempty(match)
       found = false;
       for m=1:numel(match)
-        match{m} = strtrim(match{m});
-        if isempty(match{m}) || ~isempty(strfind(comp.name, match{m}))
+        match{m} = deblank(match{m});
+        % OK when no pattern, or pattern is in comp.name or ' comp.name ' is in pattern
+        if isempty(match{m}) ...
+        || (~any(match{m} == ' ') && ~isempty(strfind(comp.name, match{m}))) ...
+        || ( any(match{m} == ' ') && ~isempty(strfind(match{m}, [ ' ' comp.name ' ' ])))
           found = true;
           break
         end
@@ -261,8 +327,9 @@ function [comps, fig, model]=plot(model, p, options, match)
   t = { sprintf([ 'Instrument: ' model.Name ' ' sprintf('%s ', match{:}) '\n']) ; t };
   t = textwrap(t, 80);
   t = sprintf('%s\n', t{:});
-  title(t ,'Interpreter','None');
   model.UserData.title = t;
+  if numel(t) > 160, t = [ t(1:150) ' ...' ]; end
+  title(t ,'Interpreter','None');
   
   % store Display info in cache
   model.UserData.display_cache.ParameterValues = mp;
@@ -278,7 +345,9 @@ function [comps, fig, model]=plot(model, p, options, match)
     filename = fullfile(model.UserData.options.dir, filename); 
   end
   if ~isempty(match)
-    filename = [ filename sprintf('%s', match{:}) ];
+    t = sprintf('%s', match{:});
+    if numel(t) > 20, t = t(1:20); end
+    filename = [ filename t ];
   end
   
   % export options to x3d/xhtml
