@@ -148,10 +148,6 @@ methods
       end
 
       return
-    elseif ~isa(varargin{1}, 'iData') && isempty(varargin{1})
-      % iData([])
-      out = iData;
-      return
     elseif ischar(varargin{1}) % filename -> iData
     % iData('filename', ...)
       out = load(iData, varargin{:});        % load file(s) with additional arguments. Check included.
@@ -198,6 +194,10 @@ methods
       if ~isempty(inputname(1)) && numel(in) == numel(varargin{1})
          assignin('caller',inputname(1),in);
       end
+      return
+    elseif ~isa(varargin{1}, 'iData') && isempty(varargin{1})
+      % iData([])
+      out = iData;
       return
     else
       iData_private_warning(mfilename, [ 'import of ' inputname(1) ' of class ' class(varargin{1}) ' length ' mat2str(size(varargin{1})) ' is not supported. Ignore.' ]);
