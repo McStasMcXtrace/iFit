@@ -449,7 +449,7 @@ function executable = find_executable
       fullfile(this_path, 'private', [ exe{1} ]), ...
       exe{1} }
       
-      [status, result] = system([ precmd try_target{1} ]);
+      [status, result] = system([ precmd 'echo 0 | ' try_target{1} ]);
 
       if status ~= 127 && (~ispc || isempty(strfind(result, [ '''' try_target{1} '''' ])))
         % the executable is found
