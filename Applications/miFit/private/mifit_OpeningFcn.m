@@ -105,12 +105,17 @@ if isempty(fig) || ~ishandle(fig)
     % add predefined configurations to the File menu
     % search for item Configurations
     handle = findobj(fig, 'Tag','File_Configurations');
-    path_config = fullfile(fileparts(which(mfilename)),'..','configurations');
+    path_config_locations = { ...
+        fullfile(prefdir, 'mifit', 'configurations') ...
+        fullfile(fileparts(which(mfilename)),'..','configurations') };
     % insert Configurations items
-    for conf = dir(path_config)'
-      if ~conf.isdir && conf.name(end) ~= '~' % not dir nor temp file
-        uimenu(handle, 'Label', conf.name, ...
-                'Callback', [ 'mifit(''' fullfile(path_config, conf.name) ''');' ]);
+    for loc = path_config_locations
+      mifit_disp([ '[Init] Getting configurations from ' loc{1} ]);
+      for conf = dir(loc{1})'
+        if ~conf.isdir && conf.name(end) ~= '~' % not dir nor temp file
+          uimenu(handle, 'Label', conf.name, ...
+                  'Callback', [ 'mifit(''' fullfile(loc{1}, conf.name) ''');' ]);
+        end
       end
     end
     
