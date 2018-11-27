@@ -73,6 +73,7 @@
 
 
 
+
       dispersion from <i>ab-initio</i> force estimate and dynamical
       matrix<br>
     </h2>
@@ -84,6 +85,7 @@
       name of a configuration file describing the material lattice and
       atom positions. This file can be in any <a
         href="https://wiki.fysik.dtu.dk/ase/ase/io.html#module-ase.io">ASE
+
 
 
 
@@ -180,6 +182,7 @@
         = - &#8721; D</i><i><sub>&#945;</sub></i><i><sub>&#946;</sub></i><i>.u</i><i><sub>&#946;</sub></i></blockquote>
     In order to simplify this expression, we assume a periodic motion:<br>
     <blockquote><i>u</i><i><sub>&#945;</sub></i><i>=U</i><i><sub>&#945;</sub></i><i>(k)
+
 
 
 
@@ -362,6 +365,7 @@
     <blockquote>s = <font color="#3366ff">sqw_phonons</font>(configuration);<br>
     </blockquote>
     <blockquote>s = <font color="#3366ff">sqw_phonons</font>(configuration,
+
 
 
 
@@ -668,6 +672,7 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/ifit-web-
 
 
 
+
               "fcc", a=3.6, cubic=True)'</font><br>
             <div align="center"><a href="images/Models_Cubic.png"><img
                   alt="bulk" title="bulk" src="images/Models_Cubic.png"
@@ -696,6 +701,7 @@ href="https://wiki.fysik.dtu.dk/ase/ase/build/build.html#ase.build.molecule"><b>
           </td>
           <td valign="top">Any <a
 href="https://wiki.fysik.dtu.dk/ase/ase/build/build.html#ase.build.molecule">molecule
+
 
 
 
@@ -830,6 +836,7 @@ href="https://wiki.fysik.dtu.dk/ase/ase/build/build.html#ase.build.nanotube"><b>
 
 
 
+
               0, length=4)'</font><br>
             <div align="center"><a href="images/Models_Nanotube.png"><img
                   alt="nanotube" title="nanotube"
@@ -872,6 +879,7 @@ href="https://wiki.fysik.dtu.dk/ase/ase/spacegroup/spacegroup.html#module-ase.sp
     <ul>
       <li><b>MaterialsProject</b>&lt;<a
           href="https://www.materialsproject.org/">https://www.materialsproject.org/</a>&gt;
+
 
 
 
@@ -968,9 +976,11 @@ href="https://wiki.fysik.dtu.dk/ase/ase/spacegroup/spacegroup.html#module-ase.sp
 
 
 
+
         using PhonoPy and VASP. Makes use of the MaterialsProject.</li>
       <li><b>NoMaD</b> repository &lt;<a
           href="http://nomad-repository.eu/cms/">http://nomad-repository.eu/cms/</a>&gt;
+
 
 
 
@@ -1042,8 +1052,10 @@ href="https://wiki.fysik.dtu.dk/ase/ase/spacegroup/spacegroup.html#module-ase.sp
 
 
 
+
         a calculation service using ICSD materials.</li>
       <li><b>COD</b> &lt;<a href="http://www.crystallography.net">Crystallography
+
 
 
 
@@ -1339,6 +1351,7 @@ href="https://wiki.fysik.dtu.dk/ase/ase/calculators/emt.html">EMT</a></td>
 
 
 
+
           the Calculator</i></u> </h3>
     Other options, given as strings, or as a structure, allow to
     customise how to create the supercell and other computational tuning
@@ -1355,6 +1368,7 @@ href="https://wiki.fysik.dtu.dk/ase/ase/calculators/emt.html">EMT</a></td>
       <li><b>supercell</b>: The <i>dimension of the supercell</i> can
         be given using e.g. the <font color="#cc33cc">'supercell=3'</font>
         (for a 3x3x3 supercell) argument, or <font color="#cc33cc">'supercell=[2
+
 
 
 
@@ -1429,11 +1443,13 @@ href="https://wiki.fysik.dtu.dk/ase/ase/calculators/emt.html">EMT</a></td>
 
 
 
+
             fast'</font></b> option (default) halves the number of
         displacements and, when available, uses <a
           href="https://atztogo.github.io/phonopy/">PhonoPy</a>. The
         equilibrium forces are used to improve the accuracy of the force
         gradient. The<b><font color="#cc33cc"> 'accurate' </font></b>choice
+
 
 
 
@@ -1474,6 +1490,7 @@ href="https://wiki.fysik.dtu.dk/ase/ase/calculators/emt.html">EMT</a></td>
 
 
 
+
         <font color="#cc33cc">'phonopy'</font>, ...), the <a
           href="https://atztogo.github.io/phonopy/">PhonoPy</a> library
         is used, which results in a <font color="#cc33cc">'very fast'</font>
@@ -1487,6 +1504,7 @@ href="https://wiki.fysik.dtu.dk/ase/ase/calculators/emt.html">EMT</a></td>
     and more specific DFT related options:<br>
     <ul>
       <li><b> occupations</b>: For metallic and insulator systems, the <i>electron
+
 
 
 
@@ -1571,9 +1589,11 @@ href="https://wiki.fysik.dtu.dk/ase/ase/calculators/emt.html">EMT</a></td>
 
 
 
+
           </span><span class="st"><font color="#cc33cc"><font
                 color="#000000">fast but not very accurate</font></font></span></li>
         <li><font color="#cc33cc">'hgh' </font><span class="st">Hartwigsen-Goedeker-Hutter
+
 
 
 
@@ -1598,6 +1618,7 @@ href="https://wiki.fysik.dtu.dk/ase/ase/calculators/emt.html">EMT</a></td>
 
 
 
+
             (with semi-core valence electrons)</span><span class="st">
             rather fast and </span><span class="st"><span class="st">moderately
 
@@ -1609,8 +1630,10 @@ href="https://wiki.fysik.dtu.dk/ase/ase/calculators/emt.html">EMT</a></td>
 
 
 
+
             </span>accurate</span></li>
         <li><font color="#cc33cc">'hgh.k' </font><span class="st">Hartwigsen-Goedeker-Hutter
+
 
 
 
@@ -1640,6 +1663,7 @@ href="https://wiki.fysik.dtu.dk/ase/ase/calculators/emt.html">EMT</a></td>
 
 
 
+
               in XML</a> format (from GPAW)</span><span class="st"><span
               class="st"> the best, requires more iterations (e.g. <b>ecut=1500</b>;
               <b>nsteps=100</b>)</span></span><span class="st"><br>
@@ -1651,6 +1675,7 @@ href="https://wiki.fysik.dtu.dk/ase/ase/calculators/emt.html">EMT</a></td>
     <ul>
       <li><b>mode</b>: GPAW <a
 href="https://wiki.fysik.dtu.dk/gpaw/documentation/manual.html#manual-mode">computation
+
 
 
 
@@ -1691,6 +1716,7 @@ href="https://wiki.fysik.dtu.dk/gpaw/documentation/manual.html#manual-mode">comp
 
 
 
+
           LDA pseudopotentials for elements from H to Rn)<font
             color="#cc33cc"><br>
           </font></li>
@@ -1708,6 +1734,7 @@ href="https://wiki.fysik.dtu.dk/gpaw/documentation/manual.html#manual-mode">comp
       </li>
       <ul>
         <li><font color="#cc33cc">'fhi' </font><span class="st">Fritz-Haber-Institute
+
 
 
 
@@ -1867,6 +1894,7 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/elk-lapw_
 
 
 
+
           (JTH)</a>.Debiab packages: <a
 href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/abinit-psp_2_all.deb">abinit-psp</a>
         <a
@@ -1879,6 +1907,7 @@ href="http://www.abinit.org/downloads/psp-links/pseudopotentials"><br>
     <ul>
       <li><a href="http://chianti.geol.ucl.ac.uk/%7Edario">PHON</a>: D.
         Alfe, <i>Computer Physics Communications</i> <b>180</b>,2622-2633
+
 
 
 
@@ -1907,7 +1936,9 @@ href="http://www.homepages.ucl.ac.uk/%7Eucfbdxa/pubblicazioni/cpc09_phon.pdf">pd
 
 
 
+
         &lt;<a href="http://chianti.geol.ucl.ac.uk/%7Edario">http://chianti.geol.ucl.ac.uk/~dario</a>&gt;.
+
 
 
 
@@ -1924,6 +1955,7 @@ href="http://www.homepages.ucl.ac.uk/%7Eucfbdxa/pubblicazioni/cpc09_phon.pdf">pd
       <li><a href="http://www.quantum-espresso.org/">Quantum Espresso</a>:
         P. Giannozzi, et al, <i>J.Phys.:Condens.Matter,</i> <b>21</b>,
         395502 (2009). &lt;<a href="http://www.quantum-espresso.org/">http://www.quantum-espresso.org/</a>&gt;.
+
 
 
 
@@ -1956,6 +1988,7 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/quantum-e
       </li>
     </ul>
     <h3><a class="mozTocH5" name="mozTocId183326"></a> <u><i><b>Requirements
+
 
 
 
@@ -2077,7 +2110,8 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/quantum-e
         (our recommendation)</b></h4>
     The fastest way to have a running system for Phonon estimates using
     iFit is to download our <a
-href="https://drive.google.com/open?id=1-50ju30KPO_oSIGo0pJ0YVHl2XxuOL8v">ILL/CS
+      href="ftp://ftp.ill.fr/pub/cs/ubuntu_cs/Ubuntu-16.04-iFit.ova">ILL/CS
+
 
 
 
@@ -2208,6 +2242,7 @@ href="https://drive.google.com/open?id=1-50ju30KPO_oSIGo0pJ0YVHl2XxuOL8v">ILL/CS
 
 
 
+
         Linux/Ubuntu subsystem</a>. <br>
       Then follow the above instructions for Debian/Ubuntu and get
       packages from <a
@@ -2317,6 +2352,7 @@ href="http://wiki.fysik.dtu.dk/abinit-files/abinit-pseudopotentials-2.tar.gz"><i
 
 
 
+
         (ASE)</i></a> and extract it in <i>/usr/share/abinit/</i>. We
     provide the <a
 href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/abinit-psp_2_all.deb">abinit-psp</a>
@@ -2344,6 +2380,7 @@ href="http://packages.mccode.org/debian/dists/stable/main/binary-amd64/quantum-e
     <div style="text-align: center;">
       <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
+
 
 
 
