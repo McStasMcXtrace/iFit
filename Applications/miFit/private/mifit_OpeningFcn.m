@@ -17,15 +17,15 @@ if isempty(fig) || ~ishandle(fig)
     config=mifit_Preferences_Apply;
 
     % create the AppData default values
-    setappdata(fig, 'Data',    {});
+    setappdata(fig, 'Data',    {}); % all Data sets (cell of iData)
     setappdata(fig, 'History', {});
-    setappdata(fig, 'Models',  {});
+    setappdata(fig, 'Models',  {}); % all Models (cell of iFunc)
     setappdata(fig, 'CurrentOptimizer',   []);
     setappdata(fig, 'CurrentOptimizerCriteria',[]);
     setappdata(fig, 'CurrentOptimizerConfig',[]);
-    setappdata(fig, 'CurrentModel',       []);
+    setappdata(fig, 'CurrentModel',       []);  % iFunc
     setappdata(fig, 'CurrentModelHandle', []);
-    setappdata(fig, 'CurrentDataSet',     []);
+    setappdata(fig, 'CurrentDataSet',     []);  % iData
     setappdata(fig, 'CurrentDataSetIndex',[]);
     setappdata(fig, 'CurrentDataSetHandle',[]);
     

@@ -52,6 +52,7 @@ function mifit_List_Data_Files(varargin)
   if ~isempty(index_selected) && numel(d)
     d=d(1); index_selected=index_selected(1);
   end
+  if iscell(d), d=d{1}; end
   setappdata(mifit_fig, 'CurrentDataSet', d);
   setappdata(mifit_fig, 'CurrentDataSetIndex', index_selected);
   

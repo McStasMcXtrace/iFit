@@ -32,6 +32,7 @@ d = []; model = [];
 if ~isempty(getappdata(mifit_fig, 'CurrentDataSetIndex')) % Data set selection in List
   % get the single Model stored in the Dataset (after fit)
   d     = getappdata(mifit_fig, 'CurrentDataSet');
+  if iscell(d), d=d{1}; end
   if isfield(d, 'Model')
     model = get(d, 'Model');
   elseif ~isempty(findfield(d, 'Model'))

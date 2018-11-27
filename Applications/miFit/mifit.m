@@ -249,9 +249,9 @@ function mifit_Edit_Undo(varargin)
 % Edit/Undo: set the Data stack to the previous state from History
   mifit_History_pull();
   mifit_List_Data_UpdateStrings();
-  [d, index_selected]=mifit_List_Data_pull(); % get selected objects
+  [d, index_selected]=mifit_List_Data_pull(); % get selected objects (cell)
   if ~isempty(index_selected)
-    d=d{1};
+    d=d{1}; % more than one object is selected, get the first
     setappdata(mifit_fig, 'CurrentDataSet', d);
     setappdata(mifit_fig, 'CurrentDataSetIndex', index_selected);
     if ~isempty(mifit_fig('mifit_View_Parameters'))

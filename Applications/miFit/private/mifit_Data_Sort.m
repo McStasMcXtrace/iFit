@@ -119,8 +119,3 @@ function mifit_Data_Sort(varargin)
   mifit_Edit_Select_All([], sort(index_selected(index)));
   mifit_History_push;
   
-  % reset the CurrentDataSet
-  
-  
-  
-  
