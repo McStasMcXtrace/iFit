@@ -29,7 +29,7 @@ function signal=sqw_cubic_monoatomic(varargin)
 %         ql: axis along QL in rlu (page,double)
 %         w:  axis along energy in meV (double)
 %    signal: when values are given, a guess of the parameters is performed (double)
-% output: signal: model value
+% output: signal: model value [iFunc_Sqw4D]
 %
 % Version: $Date$
 % See also iData, iFunc/fits, iFunc/plot, gauss, sqw_phonons, sqw_sine3d, sqw_vaks
@@ -82,7 +82,7 @@ signal.Expression     = { ...
 signal.UserData.properties.spacegroup        = 'Cubic (230)';
 signal.UserData.properties.spacegroup_number = 230;
 
-signal=iFunc(signal);
+signal = iFunc(signal);
 signal = iFunc_Sqw4D(signal); % overload Sqw4D flavour
 
 if nargin == 0

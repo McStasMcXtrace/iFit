@@ -33,6 +33,7 @@
 
 
 
+
           - @IFIT_DATE@</span></span><br>
       <a href="http://ifit.mccode.org"><img alt="iFit" title="iFit"
           src="images/iFit-logo.png" height="64" width="116" border="0"></a><br>
@@ -81,6 +82,7 @@
 
 
 
+
         is a set of methods to load, analyze, plot, fit and optimize
         scientific data sets and models, and export results. <span
           style="font-style: italic;">iFit</span> is based on <a
@@ -95,6 +97,9 @@
         dimensionality can be handled, including event based data sets
         (even though not all methods do work for these). Any model can
         be assembled for fitting data sets.<br>
+        <br>
+        For the impatient: See the <b><a href="Install.html">Install</a></b>
+        page to download and install the package.<br>
         <div align="center"><img alt="Animated features" title="Animated
             features" src="images/animated.gif" height="420" width="560"><br>
         </div>
@@ -280,6 +285,15 @@
         href="QuickStart.html">Quick Start</a> page. Otherwise, the
       typical usage would be:</div>
     <pre style="margin-left: 80px;"><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">Start Matlab... or iFit stand-alone<br>&gt;&gt; </span>addpath</span>(<span style="color: rgb(51, 102, 255);">genpath</span>(<span style="color: rgb(204, 51, 204);">'/some/path/to/iFit'</span>)); <span style="font-style: italic;">% not needed for the stand-alone version</span><br><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">&gt;&gt; </span></span>a = <span style="color: rgb(51, 102, 255);">iData</span>(<span style="color: rgb(204, 51, 204);">[ ifitpath 'Data/ILL_IN6.dat' ]</span>);<span style="color: rgb(51, 102, 255);"></span><br><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">&gt;&gt; </span></span><span style="color: rgb(51, 102, 255);">plot</span>(log10(a))<br><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">&gt;&gt; </span></span>b=2*a+<span style="color: rgb(51, 102, 255);">log</span>(a)<br>&gt;&gt; plot(gauss2d)<br><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">&gt;&gt; </span></span>parameters=<span style="color: rgb(51, 102, 255);">fits</span>(a,<span style="color: rgb(204, 51, 204);">gauss2d</span>)<br><span style="color: rgb(51, 102, 255);"><span style="color: rgb(0, 0, 0);">&gt;&gt; </span></span><span style="color: rgb(51, 102, 255);">saveas</span>(a,<span style="color: rgb(204, 51, 204);">'filename.</span><span style="color: rgb(204, 51, 204);">pdf'</span>)<br></pre>
+    <blockquote>If you wish to reduce the amount of messaging, use:<br>
+    </blockquote>
+    <blockquote>
+      <blockquote>
+        <pre><font color="#3366ff">warning</font> on backtrace&nbsp;&nbsp;&nbsp; <i>% </i><i><b>lots</b></i><i> of output, with backtrace for each 'warning'</i></pre>
+        <pre><font color="#3366ff">warning</font> off backtrace&nbsp;&nbsp; <i>% normal messages, but no backtrace</i></pre>
+        <pre><font color="#3366ff">warning</font> off&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;<i>% minimal output, removes most of the messages but errors</i></pre>
+      </blockquote>
+    </blockquote>
     <h3><a class="mozTocH3" name="mozTocId639966"></a>For beginners</h3>
     <div style="margin-left: 40px;"><span style="font-weight: bold;
         font-style: italic;">If you do not know Matlab</span> already,
@@ -359,7 +373,8 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
         name="email" size="30" type="Text"><input name="email-button" value="Subscribe" type="Submit"></form>
     <br>
     <h3><a class="mozTocH3" name="mozTocId318588"></a>Obtaining the
-      package</h3>
+      package<img src="images/box.jpeg" title="box" alt="box"
+        height="100" align="right" width="128"></h3>
     To install the package, refer to the <b><a href="Install.html">Install</a></b>
     page. See the <a href="Changes.html">Changes</a>.<br>
     <br>
@@ -378,6 +393,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
     </h3>
     <span style="font-style: italic;">iFit</span> was invented by <a
 href="http://www.ill.eu/instruments-support/computing-for-science/people/emmanuel-farhi/">E.
+
 
 
 
@@ -412,7 +428,9 @@ href="http://www.ill.eu/instruments-support/computing-for-science/people/emmanue
 
 
 
+
       for Science</a> group at the <a href="http://www.ill.fr/">Institut
+
 
 
 
@@ -440,6 +458,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/people/emmanue
     i.e. login at <a href="https://github.com">GitHub</a>, <a
       href="https://github.com/McStasMcXtrace/iFit#fork-destination-box">fork
 
+
       your own iFit</a> repository, modify it at your convenience, and
     then <a
       href="https://github.com/McStasMcXtrace/iFit/pull/new/master">mark
@@ -452,12 +471,14 @@ href="http://www.ill.eu/instruments-support/computing-for-science/people/emmanue
     bullet-proof. In particular, expect many bugs - which should be
     reported to me <span style="font-weight: bold;">[farhi (at) ill.fr]</span>
     or as an <a href="https://github.com/McStasMcXtrace/iFit/issues">'issue'
+
       on GitHub</a> if you want them to be fixed quickly. Also, this
     prototype is known to be slow. This will be improved gradually...<br>
     <br>
     <hr style="width: 100%; height: 2px;">
     <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
+
 
 
 

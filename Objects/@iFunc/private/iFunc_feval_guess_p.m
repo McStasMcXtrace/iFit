@@ -145,7 +145,7 @@ if model.Dimension && ...
           end
         end
       catch ME
-        disp([ mfilename ': Guess: ' ME.message ])
+        warning([ mfilename ': Guess: ' ME.message ])
         p2 = [];
       end
       clear n

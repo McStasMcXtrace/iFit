@@ -100,8 +100,8 @@ try
     h = iFunc_plot_menu(h, a, name);
   end
 catch ME
-  disp(getReport(ME))
-  disp([ mfilename ': WARNING: could not plot Model ' name '. Skipping.' ])
+  warning(getReport(ME))
+  warning([ mfilename ': WARNING: could not plot Model ' name '. Skipping.' ])
 end
   
 
@@ -150,7 +150,7 @@ end
 if isempty(h)
   % we use iData plotting
   iD = iData(ax{:}, signal); sz = size(iD); sz(4:end) = 1;
-  disp([ 'iFunc.plot: ' name ': Reducing ' num2str(ndims(iD)) '-th dimensional data to 3D ' mat2str(sz) ]);
+  warning([ 'iFunc.plot: ' name ': Reducing ' num2str(ndims(iD)) '-th dimensional data to 3D ' mat2str(sz) ]);
   iD = resize(iD, sz);
   h=plot(iD);
 end

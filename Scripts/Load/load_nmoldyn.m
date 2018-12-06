@@ -70,7 +70,7 @@ if isfield(a, 'q')
   if max(q(:)) > 50
     % probably in nm-1
     set(a, 'q', q/10);
-    disp([ mfilename ': changing q axis from nm-1 to Angs-1. If this is wrong, multiply it back by 10.' ])
+    warning([ mfilename ': changing q axis from nm-1 to Angs-1. If this is wrong, multiply it back by 10.' ])
     label(a,'q', 'Wavevector [Angs-1]');
   end
 end

@@ -50,7 +50,7 @@ function [sxt, schan] =Sqw_e2t(s, varargin)
     t_valid = t(isfinite(t));
     p.chwidth = diff(unique(t_valid(:)));
     p.chwidth = mean(p.chwidth);
-    disp([ mfilename ': ' s.Tag ' ' s.Title ' Using ChannelWidth=' num2str(p.chwidth) ' [s]' ]);
+    warning([ mfilename ': ' s.Tag ' ' s.Title ' Using ChannelWidth=' num2str(p.chwidth) ' [s]' ]);
   end    % first channel
   
   dtdE    = t./(2.*Ef)*1e6;   % to be consistent with vnorm abs. calc. all times above calculated in sec.

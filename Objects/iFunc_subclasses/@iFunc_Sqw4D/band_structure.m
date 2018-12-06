@@ -77,7 +77,7 @@ function [S, qLim, fig] = band_structure(f, qLim, E, options)
   end
   
   if ndims(f) ~= 4 || ~isa(f,'iFunc')
-    disp([ mfilename ': Invalid model dimension. Should be iFunc 4D. It is currently ' class(f) ' ' num2str(ndims(f)) 'D' ]);
+    warning([ mfilename ': Invalid model dimension. Should be iFunc 4D. It is currently ' class(f) ' ' num2str(ndims(f)) 'D' ]);
     return
   end
   
@@ -172,7 +172,7 @@ function [S, qLim, fig] = band_structure(f, qLim, E, options)
         xticks = [ xticks qLim{index} ' ' ];
         qLim{index} = points.(qLim{index});
       else
-        disp([ mfilename ': Invalid BZ point ' qLim{index} ' in specified path. Removing it.' ]);
+        warning([ mfilename ': Invalid BZ point ' qLim{index} ' in specified path. Removing it.' ]);
         qLim{index}=[];
       end
     end
@@ -191,7 +191,7 @@ function [S, qLim, fig] = band_structure(f, qLim, E, options)
     end
   end
   if ~iscell(qLim) || isempty(qLim)
-    disp([ mfilename ': Invalid kpath argument. Should be a cell or nx3 matrix with HKL locations. It is currently ' class(qLim) ]);
+    warning([ mfilename ': Invalid kpath argument. Should be a cell or nx3 matrix with HKL locations. It is currently ' class(qLim) ]);
     return
   end
   

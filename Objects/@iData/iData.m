@@ -137,7 +137,7 @@ methods
                   && length(getaxis(out, 1)) ~= length(getaxis(out, 2))
         s=get(out,'Signal'); out = set(out, 'Signal', s'); clear s
         if ~isempty(out.Title)
-          disp([ 'iData: The Signal has been transposed to match the axes orientation in object ' out.Tag ' "' out.Title '".' ]);
+          iData_private_warning(mfilename,[ 'The Signal has been transposed to match the axes orientation in object ' out.Tag ' "' out.Title '".' ]);
         end
       end
       

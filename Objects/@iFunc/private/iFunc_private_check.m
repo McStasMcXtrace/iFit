@@ -89,7 +89,7 @@ function a = iFunc_private_check(a)
   end
   
   if ~isempty(pars) && ~iscellstr(pars)
-    disp([mfilename ': the model ' a.Tag ' parameters should be a char or structure or cellstr, not a class ' ...
+    warning([mfilename ': the model ' a.Tag ' parameters should be a char or structure or cellstr, not a class ' ...
       class(pars) '. Setting new parameter names.' ]);
     pars = {};
   end

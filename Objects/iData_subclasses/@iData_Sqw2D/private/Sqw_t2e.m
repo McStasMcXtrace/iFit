@@ -19,11 +19,11 @@ function sxw=Sqw_t2e(s, t_present)
     if ~isempty(chwidth) && chwidth
       t       = t.*chwidth;
       t_elast = t_elast.*chwidth;
-      disp([ mfilename ': the time axis is given in channels. Converting to time.' ]);
+      warning([ mfilename ': the time axis is given in channels. Converting to time.' ]);
     else
-      disp([ mfilename ': WARNING: ' s.Tag ' ' s.Title ' the time-of-flight Axis 1 is given in time channels.' ])
-      disp('    This is probably NOT what you want. I will still try to use it as it is...')
-      disp('    Define e.g. s.ChannelWidth=<channel width in time unit>');
+      warning([ mfilename ': WARNING: ' s.Tag ' ' s.Title ' the time-of-flight Axis 1 is given in time channels.' sprintf('\n') ...
+      '    This is probably NOT what you want. I will still try to use it as it is...' sprintf('\n') ...
+      '    Define e.g. s.ChannelWidth=<channel width in time unit>' ]);
     end
   end
   
@@ -34,15 +34,15 @@ function sxw=Sqw_t2e(s, t_present)
     % probably in milli-seconds
     t       = t/1000;
     t_elast = t_elast/1000;
-    disp('    Assuming time is in [ms].');
+    warning('    Assuming time is in [ms].');
   elseif all(abs(t < 100000))
     % probably in micro-seconds
     t       = t/1e6;
     t_elast = t_elast/1e6;
-    disp('    Assuming time is in [us].');
+    warning('    Assuming time is in [us].');
   else
-    disp([ mfilename ': WARNING: ' s.Tag ' ' s.Title ' the time-of-flight Axis 1 seems odd.' ])
-    disp('    Check that the time-of-flight is defined as the time from the sample to the detector, in [s].')
+    warning([ mfilename ': WARNING: ' s.Tag ' ' s.Title ' the time-of-flight Axis 1 seems odd.' sprintf('\n') ...
+    '    Check that the time-of-flight is defined as the time from the sample to the detector, in [s].' ])
   end
   
   % update time axis

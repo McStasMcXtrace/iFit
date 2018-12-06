@@ -138,6 +138,7 @@ classdef iFunc_Sqw2D < iFunc
     %   structure_factor/sq -> 1D iFunc
     %   thermochemistry(T) -> 1D iFunc array ?
     %   muphocor(T, amasi, sigi, conci) -> 1D array
+    %   Models: sqw_incoherent(vdos), sqw_recoil, sqw_sct, sqw_freegas, sqw_eisf, 
     
     % methods that change the type (q,w) -> something else (iFunc 2D)
     %   Sab(M,T)

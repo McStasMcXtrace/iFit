@@ -40,7 +40,7 @@ data.title = deblank(fread(fid, 80, '*char')');
 
 if any(~isstrprop(data.title,'print'))
   fclose(fid);
-  disp([ mfilename ': ' filename ': ERROR: the title format is not valid. Probably not an LLB/TAS file format.' ])
+  warning([ mfilename ': ' filename ': ERROR: the title format is not valid. Probably not an LLB/TAS file format.' ])
   return
 end
 
@@ -197,7 +197,7 @@ end
 D = date0(1); M=date0(2); Y=date0(3); H=date0(4); m=date0(5);
 if any([ D M Y H m ] <= 0) || D > 31 || M > 12 || m > 60
   data.date = date;
-  disp([ 'WARNING: ' mfilename ': ' f e ': the date format is not valid. Using today.' ])
+  warning([ 'WARNING: ' mfilename ': ' f e ': the date format is not valid. Using today.' ])
 end
 
 % close the file

@@ -249,7 +249,7 @@ if isstruct(filterspec) % callback use
       set(UD.Handle.Cancel, 'Position',   [bw2/2+bw2+10 5 bw2 bh]);
     end
   otherwise
-    disp(['Unsupported action: ' filterspec.action ]);
+    warning(['Unsupported action: ' filterspec.action ]);
   end
   filename = UD;
   return

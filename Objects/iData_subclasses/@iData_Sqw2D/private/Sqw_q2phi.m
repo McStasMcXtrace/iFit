@@ -11,7 +11,7 @@ function spw = Sqw_q2phi(s, lambda)
   end
 
   if isempty(lambda)
-    disp([ mfilename ': ' s.Tag ' ' s.Title ' Using lambda=2.36 [Angs].' ]);
+    warning([ mfilename ': ' s.Tag ' ' s.Title ' Using lambda=2.36 [Angs].' ]);
     lambda = 2.36;
   end
   

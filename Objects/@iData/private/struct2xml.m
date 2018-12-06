@@ -140,12 +140,12 @@ function docNode = parseStruct(s,docNode,curNode,pName)
                     if (succes)
                         curNode.setAttribute(cur_attr_sc,cur_str);
                     else
-                        disp([ mfilename ': Warning. The structure member ' pName curfield '.' cur_attr ' could not be processed.']);
+                        warning([ mfilename ': Warning. The structure member ' pName curfield '.' cur_attr ' could not be processed.']);
                     end
                 end
             else
-                disp([mfilename ': Warning. The attributes in ' pName curfield ' could not be processed.']);
-                disp(['The correct syntax is: ' pName curfield '.attribute_name = ''Some text''.']);
+                warning([mfilename ': Warning. The attributes in ' pName curfield ' could not be processed.']);
+                warning(['The correct syntax is: ' pName curfield '.attribute_name = ''Some text''.']);
             end
         elseif (strcmp(curfield,'Text'))
             %Text data
@@ -153,7 +153,7 @@ function docNode = parseStruct(s,docNode,curNode,pName)
             if (succes)
                 curNode.appendChild(docNode.createTextNode(txt));
             else
-                disp([ mfilename ': Warning. The text in ' pName curfield ' could not be processed.']);
+                warning([ mfilename ': Warning. The text in ' pName curfield ' could not be processed.']);
             end
         else
             %Sub-element
@@ -181,10 +181,10 @@ function docNode = parseStruct(s,docNode,curNode,pName)
                         if succes
                           curElement.appendChild(docNode.createTextNode(txt));
                         else
-                          disp([ mfilename ': Warning. The data in ' pName curfield ' could not be processed.']);
+                          warning([ mfilename ': Warning. The data in ' pName curfield ' could not be processed.']);
                         end
                     else
-                        disp([mfilename ': Warning. The cell ' pName curfield '{' num2str(c) '} could not be processed, since it is of class ' class(s.(curfield){c}) ' (only struct, char, numeric).']);
+                        warning([mfilename ': Warning. The cell ' pName curfield '{' num2str(c) '} could not be processed, since it is of class ' class(s.(curfield){c}) ' (only struct, char, numeric).']);
                     end
                 end
             else
@@ -196,7 +196,7 @@ function docNode = parseStruct(s,docNode,curNode,pName)
                 if (succes)
                     curElement.appendChild(docNode.createTextNode(txt));
                 else
-                    disp([ mfilename ': Warning. The text in ' pName curfield ' could not be processed.']);
+                    warning([ mfilename ': Warning. The text in ' pName curfield ' could not be processed.']);
                 end
             end
         end

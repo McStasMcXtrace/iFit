@@ -124,13 +124,11 @@ function sigma = scattering_cross_section(s, varargin)
   end
   
   if classical(1) == 1
-    disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ])
-    disp([ '    seems to be "classical". You should apply s=Bosify(s, temperature) before.' ]);
+    warning([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' seems to be "classical". You should apply s=Bosify(s, temperature) before.' ]);
   end
   
   if isempty(Sqw_getT(s))
-    disp([ mfilename ': WARNING: Temperature undefined: The data set ' s.Tag ' ' s.Title ' from ' s.Source ])
-    disp([ '    does not seem to have a Temperature defined. You may apply s=Bosify(s, temperature) before.' ]);
+    warning([ mfilename ': WARNING: Temperature undefined: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' does not seem to have a Temperature defined. You may apply s=Bosify(s, Temperature) before.' ]);
   end
   if isempty(p.m) || p.m<=0
     p.m = Sqw_getT(s, {'Masses','Molar_mass','Mass','Weight'});
@@ -139,9 +137,7 @@ function sigma = scattering_cross_section(s, varargin)
   w = getaxis(s,1);
   
   if min(w(:)) * max(w(:)) >= 0
-    disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ])
-    disp([ '    seems to have its energy range w=[' num2str([ min(w(:)) max(w(:)) ]) '] defined only on one side.' ])
-    disp('    Applying symmetrize first.');
+    warning([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' seems to have its energy range w=[' num2str([ min(w(:)) max(w(:)) ]) '] defined only on one side. Applying symmetrize first.' ]);
     s = symmetrize(s);
     w = getaxis(s,1);
   end

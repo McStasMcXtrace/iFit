@@ -34,7 +34,7 @@ function h = edit(a, option)
   end
   
   if ndims(a) > 2
-    disp([ mfilename ': iData object ' a.Tag ' dimension is ' num2str(ndims(a)) ' but should be 1 or 2 to be edited. Skipping.' ]);
+    warning([ mfilename ': iData object ' a.Tag ' dimension is ' num2str(ndims(a)) ' but should be 1 or 2 to be edited. Skipping.' ]);
     h = 0;
     return
   end

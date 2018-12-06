@@ -161,7 +161,7 @@ end
 if nargin <1 
     [filename, pathname] = uigetfile({'*.mrc';'*.rec';'*.ali';'*.*'}, 'Pick an MRC-file');
     if isequal(filename,0) | isequal(pathname,0) 
-	disp('No data loaded.'); return; 
+	warning('No data loaded.'); return; 
     end;
     mrc_name=[pathname filename];
 end;

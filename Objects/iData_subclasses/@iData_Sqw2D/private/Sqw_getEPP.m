@@ -32,7 +32,6 @@ function t_elast = Sqw_getEPP(s, t_present)
   % check the EPP when stored/computed as channels
   if ~isempty(t_elast0) && t_elast0 && t_elast0 > 1 && t_elast > 1 ...
     if abs(t_elast0 - t_elast)/t_elast0 > 1e-2
-      disp([ mfilename ': WARNING: ' s.Tag ' ' s.Title ' Elastic peak position mismatch. Using computed value.' ])
-      disp([ '  The Elastic peak position from the file Parameters is ' num2str(t_elast0) ]);
+      warning([ mfilename ': WARNING: ' s.Tag ' ' s.Title ' Elastic peak position mismatch. Using computed value. The Elastic peak position from the file Parameters is ' num2str(t_elast0) ]);
     else t_elast = mean([t_elast0 t_elast]); end
   end

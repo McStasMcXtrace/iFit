@@ -9,6 +9,10 @@ function a = permute(a, order)
 %     ORDER must be unique.
 %   PERMUTE is a generalization of transpose (.') 
 %
+% You mau as well use iData/squeeze to remove singleton dimensions, and
+% iData/reshape to reshape the elements, which total number is kept. To
+% resize the data set, use iData/resize or iData/redicevolume.
+%
 % input:  a: object or array (iData)
 %         order: index of dimensions to swap/permute. 
 %                Default is [2 1], that is transpose.
@@ -16,7 +20,8 @@ function a = permute(a, order)
 % ex:     c=permute(iData(rand(2,3,4)),[2 3 1]);
 %
 % Version: $Date$
-% See also iData, iData/size, iData/reshape, iData/resize
+% See also iData, iData/size, iData/reshape, iData/resize,
+% iData/reducevolume, iData/squeeze
 
 % handle iData array: use built-in permute
 if nargin ==1, order=[]; end

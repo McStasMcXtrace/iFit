@@ -111,8 +111,8 @@ if 1 < length(out) && length(i1) < length(out)
   removed = find(i == 0);
   i       = unique(i(i>0));
   if length(out) > length(i)
-    disp(sprintf('%s: Removing duplicated data sets %i -> %i', mfilename, length(out), length(i)))
-    disp(char(out(removed)))
+    iData_private_warning(mfilename, sprintf('%s: Removing duplicated data sets %i -> %i', mfilename, length(out), length(i)))
+    iData_private_warning(mfilename, char(out(removed)))
     out = out(i);
   end
 end
@@ -183,7 +183,7 @@ function this = load_eval_postprocess(this, postprocess)
       this = iData_private_history(this, postprocess, this);
     end
   catch ME
-    disp(getReport(ME));
+    warning(getReport(ME));
     warning([mfilename ': Error when calling post-process ' postprocess '. file: ' this.Source ]);
   end
   

@@ -21,13 +21,13 @@ function filename = iData_private_saveas_m(a, filename, name, options)
   [fid, message]=fopen(filename,'w+');
   if fid == -1
     iData_private_warning(mfilename,[ 'Error opening file ' filename ' to save object ' a.Tag 'in format ' format ]);
-    disp(message)
+    warning(message)
     return
   end
   fprintf(fid, '%s', str);
   fclose(fid);
   if isdeployed
-    disp([ 'Warning: The standalone/deployed version of iFit does not allow to read back' NL ...
+    warning([ 'Warning: The standalone/deployed version of iFit does not allow to read back' NL ...
            '  function definitions. This m-file has been converted to a script that you can' NL ...
            '  import as "this" by typing: run ' filename ]);
   end

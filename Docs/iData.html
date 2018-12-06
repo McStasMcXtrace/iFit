@@ -99,6 +99,9 @@
         a liquid/powder/amorphous <a
           href="https://en.wikipedia.org/wiki/Dynamic_structure_factor">dynamic
 
+
+
+
           structure factor</a> 2D <i>S(q,w)</i> data set. This class
         can compute structure factors, density of states, incoherent
         Gaussian approximation and multi-phonons, dynamic range and
@@ -109,6 +112,9 @@
       <li><a href="iData_Sab.html">iData_Sab</a>: a data set holding a
         liquid/powder/amorphous <a
           href="https://en.wikipedia.org/wiki/Dynamic_structure_factor">dynamic
+
+
+
 
           structure factor</a> 2D <i>S(alpha,beta)</i> data set, used
         e.g. in nuclear data bases (ENDF, JEFF, ...). This class has
@@ -173,6 +179,9 @@ to
 
 
 
+
+
+
         <span style="font-style: italic;">Aliases</span> or other <span
           style="font-style: italic;">Data</span> parts. These Axes
         indicate how to interpret the <span style="font-style: italic;">Signal</span>
@@ -207,6 +216,9 @@ to
     In the following, we shall present how to manipulate iData objects,
     enrich them with additional information, define relations between
     the object parts as <span style="font-style: italic;">Aliases, </span>define
+
+
+
     the object <span style="font-style: italic;">Signal</span> and its
     associated <span style="font-style: italic;">Axes.</span><br>
     <br>
@@ -243,8 +255,8 @@ to
       <pre>&gt;&gt; <span style="color: rgb(51, 102, 255);">get</span>(a)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">disp</span>(a)<br></pre>
     </div>
     which both result in the following output<br>
-    <table style="text-align: left; width: 100%;" border="1"
-      cellpadding="2" cellspacing="2">
+    <table style="text-align: left; width: 100%;" cellspacing="2"
+      cellpadding="2" border="1">
       <tbody>
         <tr>
           <td style="vertical-align: top;">
@@ -457,6 +469,9 @@ to
 
 
 
+
+
+
     </span>so that their value follow the target one.<br>
     <h5><a class="mozTocH5" name="mozTocId794385"></a>Links to external
       resources</h5>
@@ -622,8 +637,8 @@ to
     handle, and the associated requirements regarding <span
       style="font-style: italic;">Axes.</span><br>
     <br>
-    <table style="text-align: left; width: 100%;" border="1"
-      cellpadding="2" cellspacing="2">
+    <table style="text-align: left; width: 100%;" cellspacing="2"
+      cellpadding="2" border="1">
       <tbody>
         <tr>
           <td style="vertical-align: top; font-weight: bold; font-style:
@@ -713,7 +728,11 @@ to
     </table>
     <br>
     The first dimension refers to rows, the second to columns, the third
-    to pages,&nbsp; and so on.<br>
+    to pages, and so on. <br>
+    <br>
+    The <b>resize</b> method allows to change the dimensions of an
+    object by extra/interpolation. The <b>squeeze</b> method removes
+    singleton dimensions.<br>
     <h4><a class="mozTocH4" name="mozTocId696835"></a>Error bars
       definition</h4>
     The <span style="font-style: italic;">Signal</span> is attached to
@@ -734,6 +753,9 @@ to
 
 
 
+
+
+
     A constant <span style="font-style: italic;">Error</span> can be
     set, an expression (including using <span style="font-style:
       italic;">Data</span> or <span style="font-style: italic;">this</span>)
@@ -744,6 +766,9 @@ to
     Similarly, a <span style="font-style: italic;">Monitor</span> is
     attached to the <span style="font-style: italic;">Signal. </span>It
 represents
+
+
+
 
 
 
@@ -759,6 +784,9 @@ represents
     <br>
     The <span style="font-style: italic;">Monitor</span> defaults to 1
     when not set (that is <span style="font-style: italic;">a.Monitor=[]</span>).
+
+
+
 
 
 
@@ -816,6 +844,9 @@ represents
           style="font-weight: bold;">getting an axis</span><span
           style="font-weight: bold;"></span></h4>
       &nbsp; As they are basically <span style="font-style: italic;">Aliases,
+
+
+
 
 
 
@@ -901,6 +932,9 @@ represents
       <pre style="margin-left: 40px;">&gt;&gt; b = [ a 2*a ];<br></pre>
     </ul>
     <h3 align="center"><a class="mozTocH3" name="mozTocId410494"></a>Handling
+
+
+
       event lists</h3>
     <blockquote>
       <p>Some data sets contain lists of 'events', that is a set of
@@ -937,10 +971,53 @@ represents
       </h3>
       A comprehensive list of most methods is shown in the <a
         href="Methods.html">Methods</a> page. In total there are about
-      120 of these available, which can be listed with<br>
+      200 methods available, which can be listed with<br>
       <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">methods</span> iData</pre>
       We shall present in particular a few additional methods of general
-      use that may be useful.<br>
+      use that may be useful. <br>
+      <br>
+      Compressing/resizing/cleaning data sets: <br>
+    </ul>
+    <blockquote>
+      <ul>
+        <li><span style="font-weight: bold;"><span style="color: rgb(51,
+              102, 255);">sparse</span>(a)</span>: convert the iData to
+          sparse matrix storage.</li>
+        <li><span style="font-weight: bold;"><span style="color: rgb(51,
+              102, 255);">full</span>(a)</span>: convert the iData to
+          full matrix storage.</li>
+        <li><span style="font-weight: bold;"><span style="color: rgb(51,
+              102, 255);">pack</span>(a)</span>: test whether a full or
+          sparse storage is best for all fields that compose the object,
+          in order to reduce the memory usage.</li>
+        <li><a style="font-style: italic;"
+            href="techdoc/Objects/@iData/resize.html"><span
+              style="font-weight: bold;">resize</span></a><span
+            style="font-style: italic;">: </span>fast rebinning of an
+          object, which also performs an data interpolation/smoothing.</li>
+        <li><i><span style="font-weight: bold;"><a
+                href="techdoc/Objects/@iData/fill.html">fill:</a></span></i>
+          clean/ replaces <i>NaN</i> values in object Signal with a
+          neighbouring interpolation. This is especially useful after
+          building an histogram from an event list. You may as well use
+          <a style="font-style: italic;"
+            href="techdoc/Objects/@iData/resize.html"><span
+              style="font-weight: bold;">resize</span></a>, which is
+          faster.</li>
+        <li><a style="font-weight: bold; font-style: italic;"
+            href="techdoc/Objects/@iData/reducevolume.html">reducevolume:</a>
+          rebins the object into smaller or larger binning, or less that
+          1e6 elements. You may as well use <a style="font-style:
+            italic;" href="techdoc/Objects/@iData/resize.html"><span
+              style="font-weight: bold;">resize</span></a>.</li>
+        <li><a style="font-weight: bold; font-style: italic;"
+            href="techdoc/Objects/@iData/squeeze.html">squeeze: </a>removes
+          singleton dimension from iData object or array<br>
+        </li>
+      </ul>
+    </blockquote>
+    <ul id="mozToc">
+      Other methods:<br>
       <br>
       <ul>
         <li><span style="font-weight: bold;"><span style="color: rgb(51,
@@ -982,20 +1059,8 @@ represents
           character strings in the field contents, including comments
           found in the initial files<br>
         </li>
-        <li><span style="font-weight: bold;"><span style="color: rgb(51,
-              102, 255);">full</span>(a)</span>: convert the iData to
-          full matrix storage</li>
         <li><b><font color="#3366ff">imroi</font>(a)</b>: interactively
-          select a region of interest (ROI) in a 1D-2D-3D data set.<br>
-        </li>
-        <li><span style="font-weight: bold;"><span style="color: rgb(51,
-              102, 255);">pack</span>(a)</span>: test whether a full or
-          sparse storage is best for all fields that compose the object,
-          in order to reduce the memory usage</li>
-        <li><span style="font-weight: bold;"><span style="color: rgb(51,
-              102, 255);">sparse</span>(a)</span>: convert the iData to
-          sparse matrix storage<br>
-        </li>
+          select a region of interest (ROI) in a 1D-2D-3D data set.</li>
         <li><span style="font-weight: bold;"><span style="color: rgb(51,
               102, 255);">version</span>(<span style="color: rgb(51,
               102, 255);">iData</span>)</span>: return the iFit/iData
@@ -1012,6 +1077,9 @@ represents
       <hr style="width: 100%; height: 2px;">
       <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
+
+
+
 
 
 

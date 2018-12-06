@@ -47,8 +47,8 @@ function s=symmetrize(s)
   if isfield(s,'classical') || ~isempty(findfield(s, 'classical'))
     classical = get(s,'classical');
     if ~isempty(classical) && classical(1) == 0
-      disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' does NOT seem to be classical.']);
-      disp([ mfilename ':   It may already contain the Bose factor in which case the symmetrisation will be wrong.' ]);
+      warning([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' does NOT seem to be classical.' sprintf('\n') ...
+      ' It may already contain the Bose factor in which case the symmetrisation will be wrong.' ]);
     end
   else
     s     = setalias(s,'classical', 1);

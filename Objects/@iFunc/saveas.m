@@ -221,7 +221,7 @@ case 'm'  % single m-file Matlab output (text), with the full object description
   [fid, message]=fopen(filename,'w+');
   if fid == -1
     warning([ mfilename ': Error opening file ' filename ' to save object ' a.Tag 'in format ' format ]);
-    disp(message)
+    warning(message)
     return
   end
   fprintf(fid, '%s', str);
@@ -231,7 +231,7 @@ case 'm'  % single m-file Matlab output (text), with the full object description
   fprintf(fid, '%s', class2str('this', a));
   fclose(fid);
   if isdeployed
-    disp([ 'Warning: The standalone/deployed version of iFit does not allow to read back' NL ...
+    warning([ 'Warning: The standalone/deployed version of iFit does not allow to read back' NL ...
            '  function definitions. This m-file has been converted to a script that you can' NL ...
            '  import as "this" by typing: run ' filename ]);
   end
@@ -248,7 +248,7 @@ case 'dat'  % flat text file with commented blocks
   [fid, message]=fopen(filename,'w+');
   if fid == -1
     warning(mfilename,[ 'Error opening file ' filename ' to save object ' a.Tag 'in format ' format ]);
-    disp(message)
+    warning(message)
     return
   end
   fprintf(fid, '%s', str);

@@ -170,7 +170,7 @@ end
 % check of input arguments =====================================================
 
 if isempty(model)
-  disp([ 'iFunc:' mfilename ': Using default gaussian model as fit function.' ]);
+  warning([ 'iFunc:' mfilename ': Using default gaussian model as fit function.' ]);
   model = gauss;
 end
 
@@ -348,7 +348,7 @@ if abs(model.Dimension) > ndimS
 % handle case when model dimensionality is smaller than actual Signal
 elseif abs(model.Dimension) < ndimS && rem(ndimS, model.Dimension) == 0
   % extend model to match Signal dimensions
-  disp(sprintf('iFunc:%s: Extending model %s dimensionality %d to data %s dimensionality %d.\n', ...
+  warning(sprintf('iFunc:%s: Extending model %s dimensionality %d to data %s dimensionality %d.\n', ...
     mfilename, model.Name, model.Dimension, a.Name, ndimS));
   new_model=model;
   for index=2:(ndimS/abs(model.Dimension))
@@ -776,7 +776,7 @@ function iFunc_private_fminplot(a,model,p,ModelValue,options,criteria)
     end
     hold off
   elseif ~isfinite(best_criteria) % TODO
-    disp([ mfilename ': data set dimensionality > 2. Not supported yet' ])
+    warning([ mfilename ': data set dimensionality > 2. Not supported yet' ])
   end
   options.updated = clock;
   if length(p) > 20, p= p(1:20); end

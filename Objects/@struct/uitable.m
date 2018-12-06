@@ -227,7 +227,7 @@ function structure = uitable(structure,options)
         try
           Data{index} = eval(Data{index});
         catch
-          disp([ mfilename ': failed evaluation of ' fields{index} ' new value "' Data{index} '". Skipping.' ]);
+          warning([ mfilename ': failed evaluation of ' fields{index} ' new value "' Data{index} '". Skipping.' ]);
         end
       end
     end

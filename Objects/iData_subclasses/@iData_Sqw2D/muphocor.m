@@ -65,6 +65,9 @@ function g = muphocor(s, varargin)
   %   sigi:    optional total scattering cross section [barns]
   %   conci:   optional material concentration [1]
   %
+  % output:
+  %   g:       gDOS, vDOS and multi-phonon terms [iData array]
+  %
   % References:
   %   H. Schober, Journal of Neutron Research 17 (2014) 109–357
   %     DOI 10.3233/JNR-140016 (see esp. pages 328-331)
@@ -107,7 +110,7 @@ function g = muphocor(s, varargin)
   end
   if isempty(p.temp0)
     p.temp0 = 293;
-    disp([ mfilename ': WARNING: Using Temperature=' num2str(p.temp0) ' [K] for data set ' s.Tag ' ' s.Title ' from ' s.Source ]);
+    warning([ mfilename ': WARNING: Using Temperature=' num2str(p.temp0) ' [K] for data set ' s.Tag ' ' s.Title ' from ' s.Source ]);
   end
   
   % check for other required parameters: mass/we0ght, b_inc, concentration
@@ -150,7 +153,7 @@ function g = muphocor(s, varargin)
   w    = getaxis(s, 1);
   q    = getaxis(s, 2);
   if all(w(:) >=0) || all(w(:) <= 0)
-    disp([ mfilename ': WARNING: the data set is given only on an energy side. Symmetrizing and applying Temperature Bose factor.' ])
+    warning([ mfilename ': WARNING: the data set is given only on an energy side. Symmetrizing and applying Temperature Bose factor.' ])
     s = symmetrize(s);
     s = Bosify(s, p.temp0);
     w = getaxis(s, 1);

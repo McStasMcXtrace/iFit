@@ -119,8 +119,8 @@ function [g, fig] = dos(s, method, varargin)
       p.t = Sqw_getT(s);
     end
     if isempty(p.t) && ~isempty(strfind(p.method, 'Carpenter')) 
-      disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source  ])
-      disp(['    has no Temperature defined. Will assume 1/[1+p.n(w)] ~ w.' ])
+      warning([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source  ...
+      '  has no Temperature defined. Will assume 1/[1+p.n(w)] ~ w.' ])
     end
     
     switch lower(p.method)
@@ -281,7 +281,7 @@ function [g, w] = sqw_phonon_dos_Bredov(s, T, DW)
     if numel(x) ~= length(x), hist_me=true; break; end
   end
   if hist_me
-    disp([ mfilename ': INFO: Re-sampling on regular grid ' s.Tag ' ' s.Title ' from ' s.Source ])
+    warning([ mfilename ': INFO: Re-sampling on regular grid ' s.Tag ' ' s.Title ' from ' s.Source ])
     s   = hist(s, size(s));  % the data set is well covered here and interpolation works well.
   end
   

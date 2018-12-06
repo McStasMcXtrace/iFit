@@ -79,14 +79,17 @@ classdef iData_Sqw2D < iData
   % [coh] = coherent(inc, sq)
   %   Compute an estimate of the coherent S(q,w) from an incoherent S(q,w) and a structure factor (Skold)
   %
-  % [gDOS,M]     = multi_phonons(ss)
+  % [gDOS_total,gDOS_multi, gDOS_1]     = multi_phonons(s)
   %   Compute the integrated multi-phonon DOS terms from an initial density of states (Sjolander)
+  %
+  % g = muphocor(s)
+  %   Compute the gDOS, vDOS and multi-phonon terms using MUPHOCOR (same as multi_phonons method)
   %
   % saveas(s, filename, 'McStas'|'Sqw'|'inx'|'spe')
   %   Save the S(q,w) as a McStas Sqw, INX or ISIS SPE file format
   %
   % input:
-  %   can be a 2D iData or filename to generate a 2D Sqw object.
+  %   can be a 2D iData or filename to generate a 2D Sqw data object.
   %
   % output: an iData_Sqw2D object
   %
@@ -225,7 +228,7 @@ classdef iData_Sqw2D < iData
       %   s   = iData_Sqw2D('D2O_liq_290_coh.sqw.zip');
       %   inc = incoherent(s); plot(log10(inc));
       %
-      % See also: iData_Sqw2D/multi_phonons_dos
+      % See also: iData_Sqw2D/multi_phonons
       % (c) E.Farhi, ILL. License: EUPL.
       g   = dos(s, varargin{:});
       inc = incoherent(g, varargin{:});
@@ -327,6 +330,8 @@ classdef iData_Sqw2D < iData
       % iData_Sqw2D: multi_phonons: compute the integrated multi-phonon intensity from a scattering law
       %
       % compute: iData_Sqw2D -> generalised Density of States -> multi-phonons DOS
+      %
+      % This methodology is equivalent to an iteration of the MUPHOCOR code.
       %
       % output:
       %   G:      total gDOS [sum p=1..Inf]
@@ -459,7 +464,7 @@ classdef iData_Sqw2D < iData
       end
       if isempty(lambda)
         lambda   = 2.36;
-        disp([ mfilename ': ' s.Tag ' ' s.Title ' using <wavelength>               =' num2str(lambda) ' [Angs]']);
+        warning([ mfilename ': ' s.Tag ' ' s.Title ' using <wavelength>               =' num2str(lambda) ' [Angs]']);
       end
 
       SE2V = 437.393377;        % Convert sqrt(E)[meV] to v[m/s]

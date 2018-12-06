@@ -16,13 +16,13 @@ function s = Bosify(s0, varargin)
 %         
 % The semi-classical correction, Q, aka 'quantum' correction factor, 
 % can be selected from the optional   'type' argument:
-%    Q = exp(hw_kT/2)                 'Schofield' or 'Boltzmann'
-%    Q = hw_kT./(1-exp(-hw_kT))       'harmonic'  or 'Bader'
-%    Q = 2./(1+exp(-hw_kT))           'standard'  or 'Frommhold' (default)
+%    Q = exp(hw/kT/2)                 'Schofield' or 'Boltzmann'
+%    Q = hw/kT./(1-exp(-hw/kT))       'harmonic'  or 'Bader'
+%    Q = 2./(1+exp(-hw/kT))           'standard'  or 'Frommhold' (default)
 %
-% The 'Boltzmann' correction leads to a divergence of the S(q,w) for e.g. w above 
-% few 100 meV. The 'harmonic' correction provides a reasonable correction but does
-% not fully avoid the divergence at large energies.
+% The 'Boltzmann' correction leads to a divergence of the S(q,w) for energies above 
+% kT (few 100 meV). The 'harmonic' correction provides a reasonable correction but
+% does not fully avoid the divergence at large energies.
 %
 %  Bose factor: n(w) = 1./(exp(w*11.605/T) -1) ~ exp(-w*11.605/T)
 %               w in [meV], T in [K]
@@ -93,7 +93,7 @@ function s = Bosify(s0, varargin)
     if (isempty(T0) || T0 == 0)
       T0 = 293;
     end
-    disp([ mfilename ': INFO: Using Temperature=' num2str(T0) ' [K] for data set ' s.Tag ' ' s.Title ' from ' s.Source ]);
+    warning([ mfilename ': INFO: Using Temperature=' num2str(T0) ' [K] for data set ' s.Tag ' ' s.Title ' from ' s.Source ]);
     p.t=T0;
   else T0=p.t; end  
   
@@ -107,12 +107,13 @@ function s = Bosify(s0, varargin)
     % Bosify   must be applied on classical
     % deBosify must be applied on quantum
     classical = get(s0,'classical');
+    NL = sprintf('\n');
     if (~isempty(classical) && classical(1) == 0 && do_bosify)
-      disp([ mfilename ': WARNING: Not "classical/symmetric": The data set ' s.Tag ' ' s.Title ' from ' s.Source ' does not seem to be classical (classical=0).' ]);
-      disp([ mfilename ':   It may ALREADY contain the Bose factor in which case the detailed balance will be wrong.' ]);
+      warning([ mfilename ': WARNING: Not "classical/symmetric": The data set ' s.Tag ' ' s.Title ' from ' s.Source ' does not seem to be classical (classical=0).' NL ...
+      '   It may ALREADY contain the Bose factor in which case the detailed balance will be wrong.' ]);
     elseif (~isempty(classical) && classical(1) == 1 && ~do_bosify)
-      disp([ 'de' mfilename ': WARNING: Not "quantum": The data set ' s.Tag ' ' s.Title ' from ' s.Source ' seems to be classical/symmetric (classical=1).' ]);
-      disp([ 'de' mfilename ':   The Bose factor may NOT NEED to be removed in which case the detailed balance will be wrong.' ]);
+      warning([ 'de' mfilename ': WARNING: Not "quantum": The data set ' s.Tag ' ' s.Title ' from ' s.Source ' seems to be classical/symmetric (classical=1).' NL ...
+      '   The Bose factor may NOT NEED to be removed in which case the detailed balance will be wrong.' ]);
     end
   end
   

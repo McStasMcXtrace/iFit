@@ -36,7 +36,7 @@ if isempty(target)
   % test in order: global(system), local, local_arch
   for try_target = { [ cmd '_' computer('arch') ext ], [ cmd ext ], [ 'looktxt' ext ]}
       [status, result] = system(try_target{1});
-      if status == 0
+      if status == 0 && (~ispc || isempty(strfind(result, [ '''' try_target{1} '''' ])))
           target = try_target{1};
           disp([ mfilename ': Bin is valid from ' target ]);
           break
@@ -48,7 +48,7 @@ if isempty(target)
   end
 end
 cmd       = [ target ' ' sprintf('%s ', varargin{:}) ];
-disp(cmd)
+% disp(cmd)
 
 % launch the command
 [status, result] = system([ cmd ]);

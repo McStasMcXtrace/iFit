@@ -30,7 +30,7 @@ if ischar(this),
 elseif isempty(this), this=iData(''); end
 
 if ~isa(this, 'iData')
-  disp([ mfilename ': ERROR: The data set should be an iData object, and not a ' class(this) ]);
+  warning([ mfilename ': ERROR: The data set should be an iData object, and not a ' class(this) ]);
   filename = [];
   return; 
 end

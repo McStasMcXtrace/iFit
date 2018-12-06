@@ -122,7 +122,7 @@ function filename = publish(self, filename, section, message)
       publish(self, filename, 'status', ...
         sprintf('<hr><h2>ERROR: %s %s FAILED</h2>\n', calculator, configuration) );
     otherwise
-      disp([ mfilename ': INFO: ignoring section ' section{index} ]);
+      warning([ mfilename ': INFO: ignoring section ' section{index} ]);
     end % switch
     if fid ~= -1, fclose(fid);
     if ~isempty(message), dummy = publish@iFunc(self, filename, 'message', message); end
@@ -311,13 +311,13 @@ function publish_dos(self, fid, options)
   try
     Sqw4D_DOS = dos(self);
   catch ME
-    disp([ mfilename ': ERROR: can not get the vDOS for object ' class(self) ]);
+    warning([ mfilename ': ERROR: can not get the vDOS for object ' class(self) ]);
     return
   end
   try
     [thermo, fig] = thermochemistry(self, 1:1000, 'plot');
   catch ME
-    disp([ mfilename ': WARNING: can not get the Thermo-Chemistry quantities for object ' class(self) ]);
+    warning([ mfilename ': WARNING: can not get the Thermo-Chemistry quantities for object ' class(self) ]);
     thermo = [];
   end
   if ~isempty(Sqw4D_DOS)
@@ -358,7 +358,7 @@ function publish_dos(self, fid, options)
         save(val, fullfile(options.target, 'img', [ name '.dat']), 'dat data');
         save(val, fullfile(options.target, 'img', [ name '.h5']), 'mantid');
       catch
-        disp([ mfilename ': ERROR when exporting ' name ' into HTML. Skipping.' ])
+        warning([ mfilename ': ERROR when exporting ' name ' into HTML. Skipping.' ])
         continue
       end
       switch name

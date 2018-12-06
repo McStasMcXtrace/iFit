@@ -53,11 +53,12 @@ function [s,lambda,distance,chwidth,energy,wavevector] = Sqw_search_lambda(s)
   end
   
   if isempty(lambda)
-    disp([ mfilename ': WARNING: ' s.Tag ' ' s.Title ' undefined incident neutron wavelength/wavevector/energy.' ]);
-    disp('    Define e.g. s.Wavelength=<lambda in Angs> or s.IncidentEnergy=<energy in meV>');
+    warning([ mfilename ': WARNING: ' s.Tag ' ' s.Title ...
+        ' undefined incident neutron wavelength/wavevector/energy. ' ...
+        'Define e.g. s.Wavelength=<lambda in Angs> or s.IncidentEnergy=<energy in meV>' ]);
   else
     lambda = mean(lambda(:));
-    disp([ mfilename ': ' s.Tag ' ' s.Title ' using <wavelength>               =' num2str(lambda) ' [Angs]']);
+    warning([ mfilename ': ' s.Tag ' ' s.Title ' using <wavelength>               =' num2str(lambda) ' [Angs]']);
     if ~isfield(s, 'IncidentWavelength')
       setalias(s, 'IncidentWavelength', lambda, 'Incident neutron Wavelength [Angs-1]');
     end
@@ -79,7 +80,7 @@ function [s,lambda,distance,chwidth,energy,wavevector] = Sqw_search_lambda(s)
   % search for a sample-to-detector distance
   if ~isempty(distance)
     distance = mean(distance(:));
-    disp([ mfilename ': ' s.Tag ' ' s.Title ' using <sample-detector distance> =' num2str(distance) ' [m]' ]);
+    warning([ mfilename ': ' s.Tag ' ' s.Title ' using <sample-detector distance> =' num2str(distance) ' [m]' ]);
     if ~isfield(s, 'Distance')
       setalias(s, 'Distance', distance, '[m] Sample-Detector distance'); 
     end
@@ -88,7 +89,7 @@ function [s,lambda,distance,chwidth,energy,wavevector] = Sqw_search_lambda(s)
   % search for the Channel Width
   if ~isempty(chwidth)
     chwidth = mean(chwidth);
-    disp([ mfilename ': ' s.Tag ' ' s.Title ' using <channel width>            =' num2str(chwidth) ' [time unit: s, ms or us]']);
+    warning([ mfilename ': ' s.Tag ' ' s.Title ' using <channel width>            =' num2str(chwidth) ' [time unit: s, ms or us]']);
     if ~isfield(s, 'ChannelWidth')
       setalias(s, 'ChannelWidth', chwidth, '[time unit] ToF Channel Width');
     end

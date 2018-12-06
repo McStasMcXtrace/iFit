@@ -59,7 +59,7 @@ function sab = Sqw2Sab(s, M, T)
     return
   end
   if isempty(T) || T<=0
-    disp([ mfilename ': WARNING: Temperature undefined: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' does not have any temperature defined. Using T=300K. Use Sab(Sqw, M, T) for other setting.' ]);
+    warning([ mfilename ': WARNING: Temperature undefined: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' does not have any temperature defined. Using T=300K. Use Sab(Sqw, M, T) for other setting.' ]);
     T = 300;
   end
   
@@ -68,7 +68,7 @@ function sab = Sqw2Sab(s, M, T)
     classical = get(s,'classical');
   else classical = []; end
   if ~isempty(classical) && classical(1) == 0
-    fprintf(1, '%s: WARNING: %s: Data set is experimental/quantum (contains Bose factor/detailed balance).\n    You may use deBosify(s) to obtain the classical/symmetric representation\n', mfilename, s.Title);
+    warning([ mfilename ': WARNING: ' s.Title ': Data set is experimental/quantum (contains Bose factor/detailed balance).\n    You may use deBosify(s) to obtain the classical/symmetric representation\n' ]);
     % s = deBosify(s, T); % make it classical/symmetric
   end
   

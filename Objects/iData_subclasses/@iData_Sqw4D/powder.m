@@ -39,7 +39,7 @@ end
 % input argument can be:
 % an iFunc: evaluate on x=1:3 rlu. The iFunc must be ndims(a) == 4
 if ~isa(a,'iData') || ndims(a) ~= 4
-  disp([ mfilename ': The input ' class(a) ' object ' inputname(1) ' ' a.Tag ' must be a 4D iData, but has ndims=' num2str(ndims(a)) ]);
+  warning([ mfilename ': The input ' class(a) ' object ' inputname(1) ' ' a.Tag ' must be a 4D iData, but has ndims=' num2str(ndims(a)) ]);
   return
 end
 

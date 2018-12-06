@@ -94,7 +94,7 @@ if isempty(filename),
     [fname,pathname]=uigetfile('*.*','Select IDL saved file to restore');
     filename=fullfile(pathname,fname);
 end
-disp(filename);
+% disp(filename);
 if isempty(filename), return; end
 
 fid=fopen(filename);
@@ -104,7 +104,7 @@ if verbose, disp(['SIGNATURE = ' signature]), end
 alldone=0;
  % convert all variable names to lowercase
 if ~strcmp(signature,'SR'),
-    disp(['unrecognized signature - terminating.']);
+    warning(['unrecognized signature - terminating.']);
     alldone=1;
 end
 
@@ -143,8 +143,7 @@ while (1)
     switch rhdr
         case 10    %timestamp
             if (nextptr < 1024),
-                disp('version offset < 1024... probably a compressed file');
-                disp('sorry, can''t deal with this.  if possible, save without the "/COMPRESS" flag.')
+                warning([ mfilename ': version offset < 1024... probably a compressed file. sorry, can''t deal with this. if possible, save without the "/COMPRESS" flag.' ])
                 return
             end
             unknown=fread(fid,256,'uint32');

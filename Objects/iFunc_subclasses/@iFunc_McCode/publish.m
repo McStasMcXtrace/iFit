@@ -170,7 +170,7 @@ function filename = publish(self, filename)
       publish(self, filename, 'status', ...
         sprintf('<hr><h2>ERROR: %s %s FAILED</h2>\n', calculator, configuration) );
     otherwise
-      disp([ mfilename ': INFO: ignoring section ' section{index} ]);
+      warning([ mfilename ': INFO: ignoring section ' section{index} ]);
     end % switch
     if fid ~= -1, fclose(fid);
     if ~isempty(message), dummy = publish@iFunc(self, filename, 'message', message); end

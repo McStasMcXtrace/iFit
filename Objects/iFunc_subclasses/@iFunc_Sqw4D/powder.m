@@ -62,7 +62,7 @@ end
 % input argument can be:
 % an iFunc: evaluate on x=1:3 rlu. The iFunc must be ndims(a) == 4
 if ~isa(a, 'iFunc') || ndims(a) ~= 4
-  disp([ mfilename ': The input ' class(a) ' object ' inputname(1) ' ' a.Tag ' must be a 4D iFunc, but has ndims=' num2str(ndims(a)) ]);
+  warning([ mfilename ': The input ' class(a) ' object ' inputname(1) ' ' a.Tag ' must be a 4D iFunc, but has ndims=' num2str(ndims(a)) ]);
   return
 end
 
@@ -82,7 +82,7 @@ elseif ~isempty(findfield(a, 'reciprocal_cell'))
   if iscell(index), index=index{1}; end
   B = get(a, index);
 else
-  disp([ mfilename ': WARNING: no reciprocal_cell information found. Assuming cubic a=2*pi.' ]);
+  warning([ mfilename ': WARNING: no reciprocal_cell information found. Assuming cubic a=2*pi.' ]);
   B = eye(3); % assume cubic, a=b=c=2*pi, 90 deg, then a*=2pi/a=1...
 end
 

@@ -73,7 +73,7 @@ function varargout = ImportThermo(varargin)
 if isempty(file)
     varargout{1} = [];
     
-    disp('Error: Input file invalid.');
+    warning('Error: Input file invalid.');
     return
 end
 
@@ -87,7 +87,7 @@ file.name = fopen(file.name, 'r', 'l', 'UTF-8');
 if isempty(file.key)
     varargout{1} = [];
     fclose(file.name);
-    disp([mfilename ': Input data of type ''V.', num2str(file.version), ''' is currently unsupported.']);
+    warning([mfilename ': Input data of type ''V.', num2str(file.version), ''' is currently unsupported.']);
     return
 end
 
@@ -706,7 +706,7 @@ if ~isempty(input('precision'))
             file.precision = abs(precision);
         else
             file.precision = 3;
-            disp('Input arguments of type ''precision'' invalid. Value set to: ''3''.');
+            warning('Input arguments of type ''precision'' invalid. Value set to: ''3''.');
         end
         
     elseif precision > 0 && log10(precision) < 0
@@ -716,7 +716,7 @@ if ~isempty(input('precision'))
             file.precision = abs(log10(precision));
         else
             file.precision = 3;
-            disp('Input arguments of type ''precision'' invalid. Value set to: ''3''.');
+            warning('Input arguments of type ''precision'' invalid. Value set to: ''3''.');
         end
         
     elseif precision > 9
@@ -726,7 +726,7 @@ if ~isempty(input('precision'))
             file.precision = log10(precision);
         else
             file.precision = 3;
-            disp('Input arguments of type ''precision'' invalid. Value set to: ''3''.');
+            warning('Input arguments of type ''precision'' invalid. Value set to: ''3''.');
         end
     else
         file.precision = precision;

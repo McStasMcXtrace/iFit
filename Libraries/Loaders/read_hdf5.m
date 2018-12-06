@@ -82,7 +82,7 @@ end
             val    = H5D.read(dataID, 'H5ML_DEFAULT', 'H5S_ALL', 'H5S_ALL', 'H5P_DEFAULT');
             H5D.close(dataID);
           else
-            disp([ mfilename ': ' filename ': ignoring invalid DataSet ' data_info.Datasets(i).Name ]);
+            warning([ mfilename ': ' filename ': ignoring invalid DataSet ' data_info.Datasets(i).Name ]);
             val = [];
           end
           % H5F.close(fileID); done after reading all groups
@@ -116,7 +116,7 @@ end
         elseif isfield(data_info.Links(i),'Target')
           val  = char(data_info.Links(i).Target);
         else
-            disp([ mfilename ': ' filename ': ignoring link ' name ]);
+            warning([ mfilename ': ' filename ': ignoring link ' name ]);
             continue; 
         end
         % handle the HDF5 link so that it contains valid names

@@ -14,8 +14,12 @@ function s = reducevolume(a, R)
 %    When omitted, the volume/size reduction is performed on bigger axes until
 %    the final object contains less than 1e6 elements.
 %
+% You may also use iData/squeeze to remove singleton dimensions,
+% iData/resize to compress/expand its size, and iData/pack to compress its
+% storage.
+%
 % Version: $Date$
-% See also iData, reducevolume,plot, iData/plot, iData/size
+% See also iData, iData/squeeze, iData/pack, iData/resize, iData/size
 
 % rebinning object so that its number of elements is smaller 
 

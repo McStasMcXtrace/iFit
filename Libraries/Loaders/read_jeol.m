@@ -143,7 +143,7 @@ if ~isempty(file)
         %at least 3D data - lets assume pureshift DOSY for now
         jeoldata.ngrad=length(jeoldata.procpar.z_list);
         jeoldata.arraydim=str2double(jeoldata.procpar.y_curr_points)*jeoldata.ngrad;
-        disp('Hi')
+        % disp('Hi')
         
     elseif isfield(jeoldata.procpar, 'y_list')
         ngradtmp=length(jeoldata.procpar.y_list);
@@ -218,8 +218,7 @@ if ~isempty(file)
     end
     
     
-    disp('Using the JEOL referencing has not been implemented')
-    disp('The spectrum will be set to start at -1 ppm')
+    warning('Using the JEOL referencing has not been implemented. The spectrum will be set to start at -1 ppm')
     jeoldata.sp=-1;
     
     % Acquisition time [at] (s)
@@ -329,8 +328,7 @@ if ~isempty(file)
                     error([ 'Unknown unit ' unit ])
             end
         else
-            disp('WARNING! delta is missing from the parameter set')
-            disp('Setting the diffusion encoding time to default value of 1 ms')
+            warning('WARNING! delta is missing from the parameter set. Setting the diffusion encoding time to default value of 1 ms')
             jeoldata.delta=0.001;
         end
         
@@ -364,8 +362,7 @@ if ~isempty(file)
                     error([ 'Unknown unit ' unit ])
             end
         else
-            disp('WARNING! delta_large is missing from the parameter set')
-            disp('Setting the diffusion time to default value of 0.1 s')
+            warning('WARNING! delta_large is missing from the parameter set. Setting the diffusion time to default value of 0.1 s')
             jeoldata.DELTA=0.1;
         end
         
@@ -375,7 +372,7 @@ if ~isempty(file)
             case '1H'
                 jeoldata.gamma=267524618.573;
             otherwise
-                disp('unknown nucleus - defaulting to proton')
+                warning('unknown nucleus - defaulting to proton')
                 jeoldata.gamma=267524618.573;
         end
         
@@ -408,13 +405,12 @@ if ~isempty(file)
                     error([ 'Unknown unit ' unit ])
             end
         else
-            disp('Dtau is missing from the parameter set')
-            disp('Setting the tau default value of 0')
+            warning('Dtau is missing from the parameter set. Setting the tau default value of 0')
             jeoldata.tau=0;
         end
         
         if isfield(procpar, 'st_coef')
-            disp('Calculating dosyconstant as st_coef*delta^2. This may not be correct in all cases as theresems to be a couple of different variants of the pulse sequence out'); 
+            warning('Calculating dosyconstant as st_coef*delta^2. This may not be correct in all cases as theresems to be a couple of different variants of the pulse sequence out'); 
             tmp(1)=find(procpar.st_coef=='[');
             tmp(2)=find(procpar.st_coef==']');
             jeoldata.st_coef=str2double(procpar.st_coef(1:tmp(1)-1));
@@ -434,13 +430,12 @@ if ~isempty(file)
             jeoldata.dosyconstant=jeoldata.gamma.^2*jeoldata.st_coef*jeoldata.delta.^2;            
             
         else
-            disp('st_coef is missing from the parameter set')
-            disp('Setting the tau default value of 0')
+            warning('st_coef is missing from the parameter set. Setting the tau default value of 0')
             if isfield(procpar, 'Dtau') || isfield(procpar, 'dtau')
-                disp('Tau value present - assuming bipolar sequence')
+                warning('Tau value present - assuming bipolar sequence')
                 jeoldata.dosyconstant=jeoldata.gamma.^2.*jeoldata.delta.^2.*(eoldata.DELTA-jeoldata.delta/3-jeoldata.tau/2);
             else
-                disp('assuing monopolar sequence')
+                warning('assuing monopolar sequence')
                 jeoldata.dosyconstant=jeoldata.gamma.^2*jeoldata.delta.^2*(jeoldata.DELTA-jeoldata.delta/3);
                 jeoldata.tau=0;
             end            
@@ -535,7 +530,7 @@ if ~isempty(file)
         fclose(fileid_FID);
     else
         %unknown
-        disp('unknown file format')
+        warning('unknown file format')
     end
     %jeoldata
     close(hp)
@@ -746,12 +741,12 @@ for k=1:nparams
             fread(fileid,4);
             
         case 4 %Infinity
-            disp('Infinity - not sure how to handle this')
+            warning('Infinity - not sure how to handle this')
             Value=fread(fileid,1,'int32')';
             fread(fileid,16);
             
         otherwise
-            disp('Unknkown Value_Type')
+            warning('Unknkown Value_Type')
             fread(fileid,20);
     end    
     Name=fread(fileid,28,'char=>char')';
@@ -770,7 +765,7 @@ end
 switch Data_Format
     
     case 1 %1D
-        disp('1D')
+        % disp('1D')
         if Data_Type==0 %64-bit
              jeoldata.arraydim=1
             jeoldata.ngrad=1
@@ -816,7 +811,7 @@ switch Data_Format
             
             
         elseif Data_Type==1 %32-bit
-            disp('32bit data - untested import')
+            warning('32bit data - untested import')
             
         else
             fclose(fileid);
@@ -824,12 +819,12 @@ switch Data_Format
         end
         
     case 2 %2D
-        disp('2D')
+        % disp('2D')
         
     case 12 %2D
          jeoldata.arraydim=10
          jeoldata.ngrad=10
-        disp('small 2D')
+        % disp('small 2D')
         twoDsize=Data_Offset_Stop(2) - Data_Offset_Start(2)+1
          twoDsize=12
         readpoints= Data_Offset_Stop(1)-Data_Offset_Start(1)+1
@@ -964,8 +959,7 @@ fclose(fileid);
  
  
  
-   disp('Using the JEOL referencing has not been implemented')
-    disp('The spectrum will be set to start at -1 ppm')
+   warning('Using the JEOL referencing has not been implemented. The spectrum will be set to start at -1 ppm')
     jeoldata.sp=-1;
  
  jeoldata.FID=DATA;

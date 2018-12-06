@@ -388,9 +388,10 @@ if iFunc_dim
     % remove axes from varargin -> leaves additional optional arguments to the function
     varargin(1:iFunc_dim) = [];
   else
-    disp([ mfilename ': WARNING: Model ' num2str(ndims(this)) 'D but Axes ' num2str(numel(varargin)) 'D !!' ])
-    disp([ '  the model ' this.Name ' ' this.Tag ' is ' num2str(ndims(this)) 'D but' ]);
-    disp([ '  the axes provide only ' num2str(numel(varargin)) ' dimensions.' ]);
+    NL = sprintf('\n');
+    warning([ mfilename ': WARNING: Model ' num2str(ndims(this)) 'D but Axes ' num2str(numel(varargin)) 'D !!' NL ...
+    '  the model ' this.Name ' ' this.Tag ' is ' num2str(ndims(this)) 'D but' NL ...
+    '  the axes provide only ' num2str(numel(varargin)) ' dimensions.' ]);
   end
 end
 

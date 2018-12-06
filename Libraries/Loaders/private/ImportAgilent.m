@@ -666,7 +666,7 @@ if ~isempty(input('precision'))
             options.precision = abs(precision);
         else
             options.precision = 3;
-            disp('Input arguments of type ''precision'' invalid. Value set to: ''3''.');
+            warning('Input arguments of type ''precision'' invalid. Value set to: ''3''.');
         end
         
     elseif precision > 0 && log10(precision) < 0
@@ -676,7 +676,7 @@ if ~isempty(input('precision'))
             options.precision = abs(log10(precision));
         else
             options.precision = 3;
-            disp('Input arguments of type ''precision'' invalid. Value set to: ''3''.');
+            warning('Input arguments of type ''precision'' invalid. Value set to: ''3''.');
         end
         
     elseif precision > 9
@@ -686,7 +686,7 @@ if ~isempty(input('precision'))
             options.precision = log10(precision);
         else
             options.precision = 3;
-            disp('Input arguments of type ''precision'' invalid. Value set to: ''3''.');
+            warning('Input arguments of type ''precision'' invalid. Value set to: ''3''.');
         end
     else
         options.precision = precision;

@@ -7,21 +7,22 @@ function [varargout] = verbosity(level, varargin)
 %
 % Get the current verbosity level:
 %
-%  v = verbosity; % return the verbosity level (number)
+%  level = verbosity; % return the verbosity level (number)
 %
 % Output a message when it is allowed by the current verbosity level:
 %
 %  verbosity('normal',  'message')
 %  verbosity('verbose', 'message %g %s', arg1, arg2)
+%  verbosity(2,         'message %g %s', arg1, arg2) % same as 'info'
 %
 % Verbosity levels:
 %
-%  0 error (no message except errors)
-%  1 warning
-%  2 normal
-%  3 verbose
+%  0 error    (no message except errors)
+%  1 warning  (important messages not being errors)
+%  2 info     (normal messages)
+%  3 verbose  (messages for e.g. debugging)
 %
-% (c) E.Farhi, ILL. License: EUPL.
+% (c) E.Farhi, ILL. License: BSD.
 
 persistent verbosity_level  % stored as a number (faster to process)
 persistent verbosity_levels % a list of meaningfull verbosity names
@@ -52,9 +53,9 @@ if nargin >= 1 && ~isnumeric(level)
   switch level
   case {'0','quiet','silent','mute','error','fatal'}
     level = 0;
-  case {'1','essential','low','basic','warning'}
+  case {'1','essential','low','basic','warning','off'}
     level = 1;
-  case {'2','info','normal','medium'}
+  case {'2','info','normal','medium','on'}
     level = 2;
   case {'3','verbose','detail','debug','all','diagnostics','high'}
     level = 3;

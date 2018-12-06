@@ -2,12 +2,15 @@ function c=fill(a, n)
 % FILL fill-in over missing data
 %   Y = FILL(X) replaces the missing data in X by extra/interpolating
 %   the non-missing elements. The non finite values (NaN or Inf) in X are
-%   considered as missing data.
+%   considered as missing data. The method is using a using a N-D discrete
+%   cosine transform.
 %
 %   FILL uses an iterative process that converges toward the solution.
 %   Y = FILL(X,N) uses N iterations. By default, N = 100. If you
 %   estimate that FILL did not totally converge, increase N:
 %   Y = FILL(X,1000);
+%
+%   For a faster fill-in, you may use iData/resize instead.
 %
 % input:  a: object or array (iData)
 %         n: number of iterations (integer)

@@ -38,7 +38,7 @@ if nargin < 3, options=[]; end
 
 % must be 2D or 4D iFunc/iData.
 if ~isa(s,'iData') || ndims(s) ~= 1
-  disp([ mfilename ': Invalid model dimension. Should be iData 1D . It is currently ' class(s) ' ' num2str(ndims(s)) 'D' ]);
+  warning([ mfilename ': Invalid model dimension. Should be iData 1D . It is currently ' class(s) ' ' num2str(ndims(s)) 'D' ]);
   return
 end
 

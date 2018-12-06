@@ -44,7 +44,7 @@ function sigma=moments(data, varargin)
 % Example: m = moments(iData_Sqw2D('SQW_coh_lGe.nc'), 72.6, 1235); subplot(m);
 % (c) E.Farhi, ILL. License: EUPL.
 
-  sigma = [];
+  sigma = []; NL = sprintf('\n');
   if isempty(data), return; end
   p = varargin2struct({'M' 'T' 'classical'}, varargin, true);
   
@@ -61,9 +61,8 @@ function sigma=moments(data, varargin)
   
   % check input parameters
   if isempty(p.t) || p.t<=0
-    disp([ mfilename ': ERROR: Temperature undefined: The data set ' data.Tag ' ' data.Title ' from ' data.Source ]);
-    disp('    does not have any temperature defined. Use moments(data, M, T, classical).' );
-    return
+    error([ mfilename ': ERROR: Temperature undefined: The data set ' data.Tag ' ' data.Title ' from ' data.Source NL ...
+    '    does not have any temperature defined. Use moments(data, M, T, classical).' ]);
   end
   
   kT      = p.t/11.604;   % kbT in meV;
@@ -88,10 +87,9 @@ function sigma=moments(data, varargin)
   end
   
   if isempty(p.classical)
-    disp([ mfilename ': ERROR: The data set ' data.Tag ' ' data.Title ' from ' data.Source ])
-    disp('   does not provide information about classical/quantum data set.');
-    disp('   Use moments(data, M, T, classical=0 or 1)');
-    return
+    error([ mfilename ': ERROR: The data set ' data.Tag ' ' data.Title ' from ' data.Source NL ...
+    '   does not provide information about classical/quantum data set.' NL ...
+    '   Use moments(data, M, T, classical=0 or 1)' ]);
   else p.classical=p.classical(1);
   end
   
@@ -105,16 +103,15 @@ function sigma=moments(data, varargin)
     C       = e/1000/kb/p.t;
     p.m       = mean(q.*q*q2toE./M1);
     if p.m >= 1 && p.m < 2000
-      disp([ mfilename ': INFO: The data set ' data.Tag ' ' data.Title ' from ' data.Source  ]);
-      disp([ '    Recoil provides a mass M=' num2str(p.m) ' [g/mol]. Wq may be wrong.' ]);
+      warning([ mfilename ': INFO: The data set ' data.Tag ' ' data.Title ' from ' data.Source  sprintf('\n') '    Recoil provides a mass M=' num2str(p.m) ' [g/mol]. Wq may be wrong.' ]);
     else
       p.m = [];
     end
   end
   if isempty(p.m)
-    disp([ mfilename ': WARNING: Mass undefined: The data set ' data.Tag ' ' data.Title ' from ' data.Source ]);
-    disp('    does not provide information about the material molar weight. Use Sqw_moments(data, M).')
-    disp('    Ignoring: The Wq frequency will be empty.');
+    warning([ mfilename ': WARNING: Mass undefined: The data set ' data.Tag ' ' data.Title ' from ' data.Source NL ...
+    '    does not provide information about the material molar weight. Use Sqw_moments(data, M).' NL ...
+    '    Ignoring: The Wq frequency will be empty.' ]);
   end
   M2      = abs(trapz(w.^2.*data)); % M2 cl = wc^2
   M3      =     trapz(w.^3.*data);

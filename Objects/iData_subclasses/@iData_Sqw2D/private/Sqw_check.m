@@ -66,6 +66,7 @@ function s = Sqw_check(s, mode)
     end
   end
   
+  NL = sprintf('\n');
   % search for Sqw parameters for further conversions
   if ~isfield(s, 'parameters')
     [s, parameters] = Sqw_parameters(s);
@@ -73,7 +74,7 @@ function s = Sqw_check(s, mode)
   % conversions: S(a,b) -> S(q,w) when expecting 'qw'
   if alpha_present && beta_present && ~w_present && ~q_present
     if strcmp(mode, 'qw')
-      disp([ mfilename ': S(alpha,beta) data set detected: converting to S(q,w)' ]);
+      warning([ mfilename ': S(alpha,beta) data set detected: converting to S(q,w)' ]);
       s = Sab2Sqw(s); % convert from S(alpha,beta) to S(q,w)
       s = feval(mfilename, s, mode);
       return
@@ -82,7 +83,7 @@ function s = Sqw_check(s, mode)
   % conversions: S(q,w) -> S(a,b) when expecting 'ab'
   if ~alpha_present && ~beta_present && w_present && q_present
     if strcmp(mode, 'ab')
-      disp([ mfilename ': S(q,w) data set detected: converting to S(alpha,beta)' ]);
+      warning([ mfilename ': S(q,w) data set detected: converting to S(alpha,beta)' ]);
       s = Sqw2Sab(s); % convert from S(alpha,beta) to S(q,w)
       s = feval(mfilename, s, mode);
       return
@@ -90,26 +91,26 @@ function s = Sqw_check(s, mode)
   end
   if ~w_present && t_present
     % convert from S(xx,t) to S(xx,w): t2e requires L2=Distance
-    disp([ mfilename ': time/channel data set detected: converting axis "' label(s,t_present) '" to energy.' ]);
+    warning([ mfilename ': time/channel data set detected: converting axis "' label(s,t_present) '" to energy.' ]);
     s = Sqw_t2e(s, t_present);
     if ~isempty(s), w_present = t_present; end
   end
   if ~q_present && a_present && w_present
     % convert from S(phi,w) to S(q,w). WARNING: phi = 2*theta is the angle at the detector.
-    disp([ mfilename ': S(phi,w) data set detected: converting angle axis "' label(s,a_present) '" to wavevector.' ]);
+    warning([ mfilename ': S(phi,w) data set detected: converting angle axis "' label(s,a_present) '" to wavevector.' ]);
     s = Sqw_phi2q(s, [], a_present, w_present);
     if ~isempty(s), q_present = a_present; end
   end
   if (strcmp(mode, 'qw') && (~w_present || ~q_present)) ...
   || (strcmp(mode, 'ab') && (~alpha_present || ~beta_present))
-    disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ]);
-    disp('    does not seem to be an isotropic neutron scattering law 2D object. Ignoring.');
-    disp([ '    Energy    axis present:' num2str(w_present) ])
-    disp([ '    Time      axis present:' num2str(t_present) ])
-    disp([ '    Angle     axis present:' num2str(a_present) ])
-    disp([ '    Momentum  axis present:' num2str(q_present) ])
-    disp([ '    Alpha     axis present:' num2str(alpha_present) ])
-    disp([ '    Beta      axis present:' num2str(beta_present) ])
+    warning([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source NL ...
+    '    does not seem to be an isotropic neutron scattering law 2D object. Ignoring.' NL ...
+    '    Energy    axis present:' num2str(w_present) NL ...
+    '    Time      axis present:' num2str(t_present) NL ...
+    '    Angle     axis present:' num2str(a_present) NL ...
+    '    Momentum  axis present:' num2str(q_present) NL ...
+    '    Alpha     axis present:' num2str(alpha_present) NL ...
+    '    Beta      axis present:' num2str(beta_present) ])
     s = [];
     return
   end
@@ -148,10 +149,10 @@ function s = Sqw_check(s, mode)
     w1 = max(w(:)); w2 = max(-w(:)); % should have w1 < w2
     if w1 > w2*2
       % we assume the measurement range is at least [-2*Ei:Ei]
-      disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ]);
-      disp('    indicates that the energy range is mostly in the positive side.')
-      disp('    Check that it corresponds with the neutron loss/sample gain Stokes side');
-      disp('    and if not, revert energy axis with e.g. setaxis(s, 1, -s{1})');
+      warning([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source NL ...
+      '    indicates that the energy range is mostly in the positive side.' NL ...
+      '    Check that it corresponds with the neutron loss/sample gain Stokes side' NL ...
+      '    and if not, revert energy axis with e.g. setaxis(s, 1, -s{1})' ])
     end
   end
 
@@ -164,9 +165,9 @@ function s = Sqw_check(s, mode)
     if isempty(T), T=nan; end
 
     if isfinite(T) && T < -0.1
-      disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ]);
-      disp([ '    indicates a negative temperature T=' num2str(T) ' K. ' ]);
-      disp(  '    Check the definition of the energy: Stokes=neutron losses energy=positive energy side');
+      warning([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source NL ...
+      '    indicates a negative temperature T=' num2str(T) ' K. ' NL ...
+      '    Check the definition of the energy: Stokes=neutron losses energy=positive energy side' ]);
       T = Sqw_getT(s);
     end
 
@@ -189,18 +190,18 @@ function s = Sqw_check(s, mode)
     if ~isempty(classical0) && ~isempty(classical) && classical0 ~= classical
       if   classical0, classical_str='classical/symmetric';
       else             classical_str='experimental/Bose/quantum/asymmetric'; end
-      disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ]);
-      disp(['    indicates a ' classical_str ' S(|q|,w) 2D object, but the analysis of the data shows it is not.' ]);
+      warning([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source NL ...
+      '    indicates a ' classical_str ' S(|q|,w) 2D object, but the analysis of the data shows it is not.' ]);
     elseif isempty(classical0) && ~isempty(classical)
       setalias(s,'classical', classical);
     end
 
     if ~isempty(T0) && ~isempty(T) && ~isnan(T) && T>0 && ~(0.9 < T/T0 & T/T0 < 1.1)
-      disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' S(|q|,w) 2D object from ' s.Source ]);
-      disp(['    indicates a Temperature T=' num2str(T0) ' [K], but the analysis of the data provides T=' num2str(T) ' [K].' ]);
+      warning([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' S(|q|,w) 2D object from ' s.Source NL ...
+      '    indicates a Temperature T=' num2str(T0) ' [K], but the analysis of the data provides T=' num2str(T) ' [K].' ]);
     end
     if isempty(T0) && ~isempty(T) && ~isnan(T) && T > 0.1 && T < 3000
-      disp([ mfilename ': INFO: Setting temperature T=' num2str(T) ' [K] for data set ' s.Tag ' ' s.Title ' S(|q|,w) 2D object from ' s.Source ]);
+      warning([ mfilename ': INFO: Setting temperature T=' num2str(T) ' [K] for data set ' s.Tag ' ' s.Title ' S(|q|,w) 2D object from ' s.Source ]);
       s.Temperature = T;
     end
     

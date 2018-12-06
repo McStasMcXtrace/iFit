@@ -56,7 +56,7 @@ endf = [];
 try
   content  = fileread(filename);
 catch
-  disp([ mfilename ': could not read file ' filename ]);
+  warning([ mfilename ': could not read file ' filename ]);
   return;
 end
 

@@ -248,7 +248,7 @@ function d=read_anytext_eval(str)
   
 function d=bin_ref(f,b,m,n)
   [fid,mess]=fopen(f,'rb');
-  if fid == -1, disp([ 'Error opening bin file ' f ': ' mess ]); d=[]; return; end
+  if fid == -1, warning([ 'Error opening bin file ' f ': ' mess ]); d=[]; return; end
   fseek(fid,b,-1);
   d=fread(fid,m*n,'double'); fclose(fid);
   if m*n ~= numel(d), 
@@ -277,7 +277,7 @@ function compiled = read_anytext_compile_binary(compile)
   % test if we still have a looktxt MeX: remove it as it will probably give SEGV
   % check if it exists and is valid
   if exist(which('looktxt')) == 3
-    disp([ mfilename ': WARNING: Removing conflicting MeX file ' which('looktxt') ])
+    warning([ mfilename ': WARNING: Removing conflicting MeX file ' which('looktxt') ])
     delete(which('looktxt')); compiled = '';
   end
   

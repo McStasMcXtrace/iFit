@@ -126,15 +126,15 @@ function [Gw, Tsym] = multi_phonons(gw, varargin)
   end
   if isempty(pars.phi)
     pars.phi = [ 10 120 ];
-    disp([ mfilename ': using detector angular range phi=' mat2str(pars.phi) ' [deg] incident neutron wavelength.' ]);
+    warning([ mfilename ': using detector angular range phi=' mat2str(pars.phi) ' [deg] incident neutron wavelength.' ]);
   end
   % fail when missing information
   if isempty(pars.m) || pars.m<=0    
-    disp([ mfilename ': WARNING: Unspecified molar mass (m). Using m=12 [g/mol]' ]); 
+    warning([ mfilename ': WARNING: Unspecified molar mass (m). Using m=12 [g/mol]' ]); 
     pars.m = 12;
   end
   if isempty(pars.t) || pars.t<=0    
-    disp([ mfilename ': WARNING: Unspecified temperature (T). Using T=10 [K]' ]); 
+    warning([ mfilename ': WARNING: Unspecified temperature (T). Using T=10 [K]' ]); 
     pars.t = 10;
   end
   if isempty(pars.n),   pars.n=5; end

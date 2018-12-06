@@ -2,12 +2,16 @@ function a = reshape(a, varargin)
 % c = reshape(a) : reshape the object Signal
 %
 %   @iData/reshape function to reshape the object Signal array
-%     reshape(a, m,n,p,...) reshapes the Signal as an m*n*p*... array
-%       the number of elements in the initial Signal must be m*n*p*...
-%     reshape(a, [m n p ...]) is the same thing.
+%     reshape(a, m,n,p,...) 
+%       reshapes the Signal as an m*n*p*... array the number of elements in
+%       the initial Signal must be m*n*p*...
+%     reshape(a, [m n p ...]) 
+%       is the same thing as above
 %
-%     the resulting object has the elements of the initial one reordered so that
-%       the final size is that requested.
+%     The resulting object has the elements of the initial data reordered
+%     so that the final size is that requested. The number of elements must
+%     not change. To change the number of elements, use iData/resize or
+%     iData/reducevolume instead. To permute dimensions, use iData/permute.
 %
 % input:  a:   object or array (iData)
 %         m,n,p...: dimensions (integers)
@@ -15,7 +19,8 @@ function a = reshape(a, varargin)
 % ex:     a=iData(peaks(60)); b=reshape(a, 75, 48);
 %
 % Version: $Date$
-% See also iData, iData/squeeze, iData/size, iData/permute, iData/resize, iData/reducevolume
+% See also iData, iData/squeeze, iData/size, iData/permute, iData/resize,
+% iData/reducevolume
 
 % first get dimensions from varargin
 dims = [];
@@ -34,7 +39,8 @@ end
 sz = size(a);
 if prod(sz) ~= prod(dims)
   iData_private_error(mfilename,[ 'To RESHAPE the number of elements must not change. Object ' ...
-      a.Tag ' "' a.Title ' has dimension ' mat2str(size(a)) ' but requested to reshape into ' mat2str(dims) '. You can rather try the resize method.' ]) ;
+      a.Tag ' "' a.Title ' has dimension ' mat2str(size(a)) ' but requested to reshape into ' ...
+      mat2str(dims) '. You can rather try the iData/resize method.' ]) ;
 end
 
 a  = iData_private_unary(a, 'reshape', dims(:)');

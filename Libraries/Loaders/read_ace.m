@@ -42,8 +42,8 @@ function status = read_ace_pyne_present
   if status ~= 0  % not present
     status = 0;
     disp([ mfilename ': warning: would make good use of PyNE.' ])
-  disp('  Get it at <http://pyne.io/>.');
-  disp('  Package exists for Debian/Mint/Ubuntu at <http://packages.mccode.org>.');
+    disp('  Get it at <http://pyne.io/>.');
+    disp('  Package exists for Debian/Mint/Ubuntu at <http://packages.mccode.org>.');
   else
     status = 1;
   end
@@ -92,7 +92,7 @@ function ace = read_ace_pyne(filename)
   end
   disp(result);
   if status ~= 0  % error occured
-    disp([ mfilename ': ERROR: could not read file ' filename ' using PyNE. Trying pure Matlab method.' ]);
+    warning([ mfilename ': ERROR: could not read file ' filename ' using PyNE.' ]);
     ace = [];
     return
   end

@@ -89,7 +89,7 @@ function [comps, fig, model]=plot(model, p, options, match)
     end
     
     if flag && isfield(model.UserData.display_cache, 'comps')
-      disp([ mfilename ': re-using instrument ' strtok(model.Name) ' Trace from cache...' ])
+      warning([ mfilename ': re-using instrument ' strtok(model.Name) ' Trace from cache...' ])
       comps = model.UserData.display_cache.comps;
     end
   end
@@ -125,7 +125,7 @@ function [comps, fig, model]=plot(model, p, options, match)
     index_start = strfind(output, 'MCDISPLAY: start');
     index_end   = strfind(output, 'MCDISPLAY: end');
     if numel(index_start) ~= 1 || numel(index_end) ~= 1
-      disp([ mfilename ': The MCDISPLAY section is invalid (incomplete or multiple). Aborting.' ]);
+      warning([ mfilename ': The MCDISPLAY section is invalid (incomplete or multiple). Aborting.' ]);
       comps=output; fig=[];
       return
     end
@@ -153,7 +153,7 @@ function [comps, fig, model]=plot(model, p, options, match)
     % which are separated by e.g. MCDISPLAY: component <blah>
     index_mcdisplay_comp = find(~cellfun(@isempty, strfind(output_mcdisplay_section, 'MCDISPLAY: component ')));
     if numel(index_mcdisplay_comp) ~= numel(comps)
-      disp([ mfilename ...
+      warning([ mfilename ...
         ': WARNING: not the same number of declared components (' num2str(numel(comps)) ...
         ') and MCDISPLAY sections ' num2str(numel(index_mcdisplay_comp)) ])
     end
@@ -185,7 +185,7 @@ function [comps, fig, model]=plot(model, p, options, match)
     end
   end
   if ~iscell(match)
-    disp([ mfilename ': invalid component token specification. Plotting all.' ]);
+    warning([ mfilename ': invalid component token specification. Plotting all.' ]);
     match = {}; 
   end
   
@@ -495,7 +495,7 @@ function [X,Y,Z]=circle(plane, x0,y0,z0, radius)
     X=zero; Y=x; Z=y;
   otherwise
     X=[]; Y=[]; Z=[]; 
-    disp([ mfilename ': unknown plane: ' plane ]);
+    warning([ mfilename ': unknown plane: ' plane ]);
     return
   end
   X=X+x0; Y=Y+y0; Z=Z+z0;

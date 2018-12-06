@@ -230,7 +230,7 @@ function filename = iData_private_saveas_html(a, filename, format)
       fprintf(fid, [ '<li><b><a href="' basename_img '.' strtok(export{index}) '">' export{index} '</a></b>: ' ...
         export_label{index} '</li>\n' ]);
     elseif isempty(strfind(format, 'data'))
-      disp([ mfilename ': skipping ' basename '.' strtok(export{index}) ])
+      warning([ mfilename ': skipping ' basename '.' strtok(export{index}) ])
     end
   end
   fprintf(fid, '</ul></p>\n');

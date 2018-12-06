@@ -32,7 +32,7 @@ function signal=sqw_recoil(varargin)
 %             p(4)= Temperature  Temperature [K]  
 %         q:  axis along wavevector/momentum in Angs-1 (row,double)
 %         w:  axis along energy in meV (column,double)
-% output: signal: model value
+% output: signal: model value [iFunc_Sqw2D]
 %
 %
 % Example:

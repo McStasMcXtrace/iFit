@@ -127,8 +127,7 @@ function [data, format] = iLoad(filename, loader, varargin)
         config.external.cbf = read_cbf('check');
         disp([ mfilename ': CBF     importer  is functional as ' config.external.cbf ]);
       catch ME
-        disp([ mfilename ': CBF     importer  is functional as read_cbf (failed mex)' ]);
-        disp(getReport(ME))
+        disp([ mfilename ': CBF     importer  is functional as read_cbf.m (failed mex)' ]);
       end
       try
         config.external.looktxt = read_anytext('check');
@@ -379,7 +378,7 @@ function [data, format] = iLoad(filename, loader, varargin)
           url = true;
         catch ME
           fprintf(1, 'iLoad: Can''t extract file "%s" (%s).\n', filename,cmd);
-          disp(ME.message)
+          warning(ME.message)
           return
         end
       elseif exist(cmd)
@@ -388,7 +387,7 @@ function [data, format] = iLoad(filename, loader, varargin)
           filenames = feval(cmd, filename, tempdir);
         catch ME
           fprintf(1, 'iLoad: Can''t extract file "%s" (%s).\n', filename,cmd);
-          disp(ME.message)
+          warning(ME.message)
           return
         end
         [data, format] = iLoad(filenames, loader, varargin{:}); % is now local
@@ -397,7 +396,7 @@ function [data, format] = iLoad(filename, loader, varargin)
             delete(filenames{index});
           catch ME
             fprintf(1,'iLoad: Can''t delete temporary file "%s" (%s).\n', filename{index},cmd);
-            disp(ME.message)
+            warning(ME.message)
           end
         end
         return
@@ -463,7 +462,7 @@ function [data, format] = iLoad(filename, loader, varargin)
     delete(filename);
     catch ME
     fprintf(1,'iLoad: Can''t delete temporary file "%s".\n', filename);
-    disp(ME.message);
+    warning(ME.message);
     end
   end
   
@@ -509,8 +508,8 @@ function [data, format] = iLoad(filename, loader, varargin)
           data = iLoad_import(filename, this_loader, varargin{:});
         catch ME
           l=ME;
-          disp(l.message);
-          disp(getReport(ME))
+          warning(l.message);
+          warning(getReport(ME))
           [dummy, name_short, ext] = fileparts(filename);
           if verbose
             fprintf(1, 'iLoad: Failed to import file %s with method %s (%s). Ignoring.\n', name_short, this_loader.name, char(this_loader.method));

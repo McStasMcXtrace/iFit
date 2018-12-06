@@ -12,7 +12,7 @@ function filename = iData_private_saveas_stl(a, filename, format)
       [y, ylab] = getaxis(a,1); y=double(y);
       [z, zlab] = getaxis(a,3); z=double(z);
     else
-      disp([ mfilename ': Export into ' format ' is only possible for 2D+ objects, not for ' num2str(ndims(a)) 'D. Ignoring.' ])
+      warning([ mfilename ': Export into ' format ' is only possible for 2D+ objects, not for ' num2str(ndims(a)) 'D. Ignoring.' ])
       return
     end
     if any(strcmp(format, {'stl','stlb'}))
@@ -41,7 +41,7 @@ function filename = iData_private_saveas_stl(a, filename, format)
       [fid, message]=fopen(filename,'w+');
       if fid == -1
         iData_private_warning(mfilename,[ 'Error opening file ' filename ' to save object ' a.Tag 'in format ' format ]);
-        disp(message)
+        warning(message)
         return
       end
       % write header

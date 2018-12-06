@@ -361,7 +361,7 @@ try
       b = real(double(iData_private_cleannaninf(a,1))); % Signal/Monitor
       fitswrite(b', filename);
     else
-      disp([ mfilename ': Export into ' format ' is only possible for 2D objects, not for ' num2str(ndims(a)) 'D. Use resize to change dimensionality. Ignoring.' ]) 
+      warning([ mfilename ': Export into ' format ' is only possible for 2D objects, not for ' num2str(ndims(a)) 'D. Use resize to change dimensionality. Ignoring.' ]) 
     end
   case {'gif','bmp','pbm','pcx','pgm','pnm','ppm','ras','xwd','hdf4','tiff','png','art'}  % bitmap images
     b = [];
@@ -425,7 +425,7 @@ try
         a = iData_Sqw4D(a);
         filename = saveas(a, filename, formatShort);
       else
-        disp([ mfilename ': export to McStas/Sqw is only available for 2D and 4D data sets.' ])
+        warning([ mfilename ': export to McStas/Sqw is only available for 2D and 4D data sets.' ])
       end
       
   case 'json'
@@ -452,7 +452,7 @@ try
       varg{2} = a.Tag;
     end
     if isempty(dir(filename))
-      disp([ mfilename ': The file ' filename ' has been serialized. You MUST import it with load(iData, ''' filename ''')' ])
+      warning([ mfilename ': The file ' filename ' has been serialized. You MUST import it with load(iData, ''' filename ''')' ])
     else varg{3} = '-append';
     end
     save(varg{:});
@@ -514,7 +514,7 @@ try
     filename = [];
   end
 catch ME
-  disp(ME.message)
+  warning(ME.message)
   iData_private_warning(mfilename,[ 'Export of object ' inputname(1) ' ' a.Tag ' into format ' format ' failed. Ignoring.' ]);
   filename = [];
 end

@@ -171,7 +171,7 @@ classdef iFunc_McCode < iFunc
       % write the comtent of the current object in the temporary file
       fid=fopen(filename, 'w');
       if fid==-1, 
-        disp([ mfilename ': WARNING: model ' self.Name ' ' self.Tag ' could not write ' filename ]);
+        warning([ mfilename ': WARNING: model ' self.Name ' ' self.Tag ' could not write ' filename ]);
         return
       else 
         fprintf(fid, '%s\n', source);

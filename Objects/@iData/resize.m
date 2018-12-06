@@ -2,9 +2,21 @@ function b = resize(a, varargin)
 % c = resize(a) : resize/rebin the object Signal
 %
 %   @iData/resize function to resize/rebin the object Signal array
-%     resize(a, m,n,p,...) resizes the Signal as an m*n*p*... array
-%       using a N-D discrete cosine transform.
-%     resize(a, [m n p ...]) is the same thing.
+%     resize(a, m,n,p,...) 
+%       resizes the Signal as an m*n*p*... array using a N-D discrete
+%       cosine transform.
+%     resize(a, [m n p ...])
+%       is the same thing as above.
+%     resize(a) 
+%       interpolates the data using a discrete cosine transform, retaining
+%       object dimensions. To further 'clean' the object, you may use
+%       iData/fill, which is slower.
+%
+% The new dimensions can change the total number of elements, and the
+% dimensionality. To reduce uniformly the dimension of the object, you may
+% also use iData/reducevolume. To reshape a data set keeping its
+% dimensions, you may use iData/reshape. To permute dimensions, use
+% iData/permute. To remove singleton dimensions, use iData/squeeze.
 %
 % input:  a:   object or array (iData)
 %         m,n,p...: dimensions (integers)
@@ -12,7 +24,8 @@ function b = resize(a, varargin)
 % ex:     a=iData(peaks); b=resize(a, 10,90);
 %
 % Version: $Date$
-% See also iData, iData/squeeze, iData/size, iData/permute, iData/reshape, iData/reducevolume
+% See also iData, iData/squeeze, iData/size, iData/permute, iData/reshape,
+% iData/reducevolume, iData/fill, iData/resize
 
 % first get dimensions from varargin
 dims = [];

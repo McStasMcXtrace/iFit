@@ -30,9 +30,9 @@ elseif isfield(out.Data, 'header') && isfield(out.Data, 'Par') && isfield(out.Da
   Data.wavelength  = sqrt(81.805./Data.IncidentEnergy);
   % a few checks for consistency
   if abs(2*pi/mean(Data.wavelength) - Data.IncidentWavevector) > 0.01*Data.IncidentWavevector
-    disp([ mfilename ': WARNING: The loaded data set ' out.Tag ' from ' out.Source ' has an inconsistent Energy:' ])
-    disp(sprintf('  Incident Energy=%g [meV] Wavevector=%g [Angs-1] Wavelength=%g [Angs]', ...
-      mean(Data.IncidentEnergy), mean(Data.IncidentWavevector), mean(Data.wavelength)));
+    warning([ mfilename ': WARNING: The loaded data set ' out.Tag ' from ' out.Source ' has an inconsistent Energy:' ...
+    sprintf('\n  Incident Energy=%g [meV] Wavevector=%g [Angs-1] Wavelength=%g [Angs]', ...
+      mean(Data.IncidentEnergy), mean(Data.IncidentWavevector), mean(Data.wavelength)) ]);
   end
   if ~Data.angle  % this is an Angle data set, not Energy
     isAngleData = 1;

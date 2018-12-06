@@ -230,7 +230,7 @@ if path
             variandata.Gzlvl=procpar.gzlvl1*procpar.DAC_to_G*0.01;
             variandata.DAC_to_G=procpar.DAC_to_G;
         else
-            disp('Warning, no DAC_to_G parameter (possibly a conmverted data set), assuming values in Gauss cm^-1')
+            warning('Warning, no DAC_to_G parameter (possibly a conmverted data set), assuming values in Gauss cm^-1')
             variandata.Gzlvl=procpar.gzlvl1*0.01;
             variandata.DAC_to_G=1;
         end
@@ -241,13 +241,13 @@ if path
         if isfield(procpar,'del')
             variandata.DELTA=procpar.del;
         else
-            disp('Warning, no del parameter (possibly a converted data set), setting to default of 100 ms')
+            warning('Warning, no del parameter (possibly a converted data set), setting to default of 100 ms')
             variandata.DELTA=0.1;
         end
         if isfield(procpar,'gt1')
             variandata.delta=procpar.gt1;
         else
-            disp('Warning, no gt1 parameter (possibly a converted data set), setting to default of 1 ms')
+            warning('Warning, no gt1 parameter (possibly a converted data set), setting to default of 1 ms')
             variandata.delta=0.001;
         end
     else %probably a H experiment
@@ -292,7 +292,7 @@ if path
     
     %MN 17Nov09 Now checking whether DELTA is numeric
     if isnumeric(variandata.DELTA) && length(variandata.DELTA)>1       % DRONE dataset
-        disp('Assuming a DRONE type of data set ([1] M. Nilsson, A. Botana, G.A. Morris, Analytical Chemistry 81 (2009) 8119-8125.)')
+        warning('Assuming a DRONE type of data set ([1] M. Nilsson, A. Botana, G.A. Morris, Analytical Chemistry 81 (2009) 8119-8125.)')
         %restructuring for array definition
         nt2=1;
         for k=1:length(variandata.DELTA)

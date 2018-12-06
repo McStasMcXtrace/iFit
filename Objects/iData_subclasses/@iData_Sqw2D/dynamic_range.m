@@ -70,10 +70,10 @@ function [s, sphi] = dynamic_range(s, varargin)
   % check if the energy range is limited
   w = getaxis(s,1);
   if all(w(:) >= 0) || all(w(:) <= 0)
-    
-    disp([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ])
-    disp([ '    seems to have its energy range w=[' num2str([ min(w(:)) max(w(:)) ]) '] defined only on one side.' ])
-    disp('    Applying symmetrize first.');
+    NL = sprintf('\n');
+    warning([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source NL ...
+    '    seems to have its energy range w=[' num2str([ min(w(:)) max(w(:)) ]) '] defined only on one side.' NL ...
+    '    Applying symmetrize first.' ]);
     s = symmetrize(s);
     w = getaxis(s,1);
   end
@@ -107,7 +107,7 @@ function [s, sphi] = dynamic_range(s, varargin)
         if isempty(p.ei) || p.ei<=0
           w  = getaxis(s, 1);
           p.ei = max(abs(w(:)));
-          disp([ mfilename ': using Ei=' num2str(p.ei) ' [meV] incident neutron energy.' ]);
+          warning([ mfilename ': using Ei=' num2str(p.ei) ' [meV] incident neutron energy.' ]);
         end
         Ki = SE2V*V2K*sqrt(p.ei);
       end

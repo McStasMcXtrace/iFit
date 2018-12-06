@@ -15,7 +15,7 @@ function filename = Sqw_McStas(this, filename)
 
 
 if ~isa(this, 'iData')
-  disp([ mfilename ': ERROR: The data set should be an iData object, and not a ' class(this) ]);
+  warning([ mfilename ': ERROR: The data set should be an iData object, and not a ' class(this) ]);
   filename = [];
   return; 
 end

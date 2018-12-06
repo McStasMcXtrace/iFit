@@ -3,14 +3,15 @@ function a = sparse(a)
 %
 %   @iData/sparse function to use sparse storage, which only stores
 %   non zeros elements in Signal, Error and Monitor. This may be usefull
-%   for event based storage where most events are zeros.
+%   for event based storage where most events are zeros. Use iData/full to
+%   revert to full matrix storage.
 %
 % input:  s: object or array (iData)
 % output: b: object or array (iData)
 % ex:     b=sparse(a);
 %
 % Version: $Date$
-% See also iData, iData/full, iData/sparse
+% See also iData, iData/full, iData/pack
 
 a = iData_private_unary(a, 'sparse');
 

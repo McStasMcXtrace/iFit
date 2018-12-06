@@ -6,7 +6,7 @@ function filename=iData_private_saveas_vtk(a, filename)
 
 if ndims(a) ~= 2 & ndims(a) ~= 3
   filename=[];
-  warning([ mfilename, ': Can only export 2D and 3D objects to VTK format.\n\tObject ' a.Tag ' has ndims=' num2str(ndims(a)) ]);
+  iData_private_warning(mfilename, [ 'Can only export 2D and 3D objects to VTK format.\n\tObject ' a.Tag ' has ndims=' num2str(ndims(a)) ]);
   return
 end
 
@@ -114,7 +114,7 @@ if strcmp(fmt, 'ASCII')
       fwrite(fid, nl);
       
       % Display progress.
-      disp([num2str(round(100*z/O)) '%']);
+      % disp([num2str(round(100*z/O)) '%']);
   end
 else % BINARY
   tp = class(matrix);

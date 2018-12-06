@@ -62,6 +62,10 @@ elseif strcmp(a, 'exit')
   warn.lastwarn='';
 elseif nargin == 2     % normal warning message ===============================
   if ~strcmp(lastwarn, warn.lastwarn)
+    q  = warning('query');
+    if numel(q) == 1 && strcmp(q.state, 'off')
+      return % no message when warning off
+    end
     b = [ 'iData/' a ': ' b ];  % MSG
     if any(strcmp(a,{'setaxis','getaxis'}))
       if length(warn.level) < 3

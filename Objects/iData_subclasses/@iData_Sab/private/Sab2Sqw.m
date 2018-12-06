@@ -57,11 +57,11 @@ function sqw = Sab2Sqw(s, M, T)
   
   % check input parameters
   if isempty(M) || M<=0
-    disp([ mfilename ': ERROR: Mass undefined: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' does not provide information about the material molar weight. Use Sqw(Sab, M).' ]);
+    warning([ mfilename ': ERROR: Mass undefined: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' does not provide information about the material molar weight. Use Sqw(Sab, M).' ]);
     return
   end
   if isempty(T) || T<=0
-    disp([ mfilename ': ERROR: Temperature undefined: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' does not have any temperature defined. Use Sqw(Sab, M, T).' ]);
+    warning([ mfilename ': ERROR: Temperature undefined: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' does not have any temperature defined. Use Sqw(Sab, M, T).' ]);
     return
   end
   
@@ -80,7 +80,7 @@ function sqw = Sab2Sqw(s, M, T)
     classical = get(s,'classical');
   else classical = []; end
   if ~isempty(classical) && classical(1) == 0
-    fprintf(1, '%s: %s: Data set is quantum/experimental. Use deBosify to obtain the classical/symmetric one.\n', mfilename, s.Title);
+    warning([ mfilename ': ' s.Title ': Data set is quantum/experimental. Use deBosify to obtain the classical/symmetric one.\n' ]);
   end
 
   % some constants 
