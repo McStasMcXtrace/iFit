@@ -13,6 +13,10 @@ function signal=sab_diffusion(varargin)
 %   An incoherent solid type diffusion is obtained for small 'c' values (e.g. 0.01).
 %   The model satisfies the detailed balance.
 %
+%   The characteristic time for a diffusion step is t0=MD/kT, usually around 
+%   t0 = 1-4 E-12 s in liquids.
+%   The diffusion constant D is usally around D= 1 -10  1E-3 mm2/s in liquids.
+%
 %   The dispersion has the form:
 %      S(a,b) = 2*c*wt/pi*a * exp(2*c^2*a-b/2) 
 %               * sqrt( (c^2+1/4)./(b^2+4*c^2*wt^2*a^2) )
