@@ -64,7 +64,8 @@ function [data, format] = iLoad(filename, loader, varargin)
   persistent config
 
   if isempty(config)
-    config  = iLoad_config_load; 
+    config  = iLoad_config_load;
+    warning off backtrace % limit level of output messages 
   end
 
   data = []; format = [];

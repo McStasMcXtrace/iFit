@@ -17,7 +17,8 @@ if nargin == 0
 end
 
 if isempty(warn)  % create the persistent variable the first time
-  warn.level  ={};  % will hold the caller history
+  warn.level  ={};      % will hold the caller history
+  warning off backtrace % this will limit the amount of output as default
 end
 
 % ==============================================================================
