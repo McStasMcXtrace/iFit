@@ -2,17 +2,27 @@ function signal=sqw_recoil(varargin)
 % model = sqw_recoil(p, q ,w, {signal}) : Recoil dispersion(Q) for a single harmonic oscillator
 %
 %   iFunc/sqw_recoil: a 2D S(q,w) with a recoil dispersion, isotropic harmonic oscillator 
+%     This is a pure incoherent scattering law (no structure).
 %
 %   This is a 2D recoil model for a single harmonic oscillator particle with given mass.
-%   The mass defines the dispersion energy, while the harmonic oscillator energy
-%   defines the Debye-Waller function, i.e. intensity vs Q.
+%   The mass M defines the dispersion energy, while the harmonic oscillator energy
+%   w0 defines the Debye-Waller function, i.e. intensity vs Q.
 %   This model is also known as 'impulse approximation' or 'short time' Gaussian. 
+%   The model satisfies the detailed balance.
 %
 %   The dispersion has the form:
 %      S(q,w) = 1/sqrt(2*pi*delta2).*exp( -(w - Er).^2/2./delta2 )
-%   where
-%      Er     = h2 q2/2/m
-%      delta2 = Er.*coth(w0/2/kT)
+%
+%   where (h stands for hbar):
+%      Er     = h2 q2/2/M            recoil energy
+%      delta2 = Er.*coth(hw0/2/kT)   recoil width
+%      M      = mass of the scattering target [g/mol]
+%      w0     = Harmonic Excitation Energy [meV]
+%
+% conventions:
+% w = omega = Ei-Ef = energy lost by the neutron [meV]
+%     omega > 0, neutron looses energy, can not be higher than Ei (Stokes)
+%     omega < 0, neutron gains energy, anti-Stokes
 %
 %   You can build a recoil model for a given mass and oscillator energy with syntax:
 %      sqw = sqw_recoil(mass)
@@ -26,10 +36,10 @@ function signal=sqw_recoil(varargin)
 %     sqw(p, q, w)
 %
 % input:  p: sqw_recoil model parameters (double)
-%             p(1)= Mass       Mass of the scattering unit [g/mol]
-%             p(2)= Ex_Energy  Harmonic Excitation Energy [meV]
+%             p(1)= M             Mass of the scattering unit [g/mol]
+%             p(2)= w0            Harmonic Excitation Energy [meV]
 %             p(3)= Amplitude 
-%             p(4)= Temperature  Temperature [K]  
+%             p(4)= Temperature   Temperature [K]  
 %         q:  axis along wavevector/momentum in Angs-1 (row,double)
 %         w:  axis along energy in meV (column,double)
 % output: signal: model value [iFunc_Sqw2D]
@@ -37,7 +47,7 @@ function signal=sqw_recoil(varargin)
 %
 % Example:
 %   s=sqw_recoil(2); % Deuterium mass
-%   plot(iData(s, [], 0:.1:20, (0:100)))  % q=0:20, energy=0:100
+%   plot(log10(iData(s, [], 0:.1:20, -50:50)))  % q=0:20, energy=-50:50
 %
 % Reference: Schober, JNR 17 (2014) 109–357 - DOI 10.3233/JNR-140016
 %
@@ -50,10 +60,10 @@ signal.Name           = [ 'sqw_recoil dispersion(Q) for given mass and excitatio
 signal.Description    = 'A 2D S(q,w) with a recoil dispersion.';
 
 signal.Parameters     = {  ...
-'Mass             Mass of the scattering unit [g/mol]' ...
-'Ex_Energy        Harmonic Excitation Energy [meV]' ...
-'Amplitude' ...
-'Temperature  Temperature [K]' };
+  'M            Mass of the scattering unit [g/mol]' ...
+  'w0           Harmonic Excitation Energy [meV]' ...
+  'Amplitude' ...
+  'Temperature  Temperature [K]' };
   
 signal.Dimension      = 2;         % dimensionality of input space (axes) and result
 signal.Guess = [ 1 10 1 10 ];
