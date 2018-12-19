@@ -75,7 +75,7 @@ signal.Expression     = { ...
 signal= iFunc(signal);
 signal= iFunc_Sab(signal); % overload Sab flavour
 
-if nargin == 1 && isnumeric(varargin)
+if nargin == 1 && isnumeric(varargin{1})
   p = varargin{1};
   if numel(p) >= 1, signal.ParameterValues(1) = p(1); end
 end

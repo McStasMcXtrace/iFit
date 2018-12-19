@@ -87,7 +87,7 @@ signal.Expression     = { ...
 signal= iFunc(signal);
 signal= iFunc_Sqw2D(signal); % overload Sqw2D flavour
 
-if nargin == 1 && isnumeric(varargin)
+if nargin == 1 && isnumeric(varargin{1})
   p = varargin{1};
   if numel(p) >= 1, signal.ParameterValues(1) = p(1); end
   if numel(p) >= 2, signal.ParameterValues(2) = p(2); end
