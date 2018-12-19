@@ -6,6 +6,7 @@ function signal=sab_recoil(varargin)
 %   This is a 2D free-gas model appropriate to model the scattering law of a gas
 %     molecule, as well as the translational component of a liquid. 
 %     This is a pure incoherent scattering law (no structure).
+%     This model is equivalent to the NJOY/LEAPR "free-gas translation".
 %
 %   The input parameter 'wt' is the translational weight, which quantifies the 
 %   fraction of the scattering originating from recoil/diffusion, e.g. wt=Mdiff/M

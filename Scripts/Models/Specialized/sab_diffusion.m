@@ -4,6 +4,7 @@ function signal=sab_diffusion(varargin)
 %   iFunc/sab_diffusion: a 2D S(alpha,beta) with a diffusion dispersion
 %     based on the Egelstaff-Schofield Langevin equation for Brownian motion model.
 %     This is a pure incoherent Gaussian scattering law (no structure).
+%     This model is equivalent to the NJOY/LEAPR "diffusion effective width model".
 %
 %   The input parameter 'wt' is the translational weight, which quantifies the 
 %   fraction of the scattering originating from recoil/diffusion, e.g. wt=Mdiff/M
@@ -86,7 +87,7 @@ signal.Parameters     = {  ...
 signal.Dimension      = 2;         % dimensionality of input space (axes) and result
 signal.Guess          = [ 1 1 1 ];
 
-% Egelstaff and Schofield NSE (1962) , Eq (4.9)
+% Egelstaff and Schofield NSE (1962) , Eq (4.8)
 signal.Expression     = { ...
  'a = x; b = y; wt = p(2); c = p(3);' ...
  'if isvector(a) && isvector(b) && numel(a) ~= numel(b), [a,b] = meshgrid(a,b); end' ...
