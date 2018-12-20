@@ -1,5 +1,5 @@
 function signal=sab_diffusion(varargin)
-% model = sab_diffusion(p, alpha ,beta, {signal}) : Free-gas/recoil dispersion(Q)
+% model = sab_diffusion(p, alpha ,beta, {signal}) : Brownian diffusion dispersion(Q)
 %
 %   iFunc/sab_diffusion: a 2D S(alpha,beta) with a diffusion dispersion
 %     based on the Egelstaff-Schofield Langevin equation for Brownian motion model.
@@ -18,7 +18,7 @@ function signal=sab_diffusion(varargin)
 %   t0 = 1-4 1E-12 s in liquids.
 %   The diffusion constant D is usally around D= 1-10  1E-3 mm2/s in liquids.
 %
-%   The dispersion has the form:
+%   The dispersion has the form (Egelstaff and Schofield NSE 1962, Eq 4.8):
 %      S(a,b) = 2*c*wt/pi*a * exp(2*c^2*a-b/2) 
 %               * sqrt( (c^2+1/4)./(b^2+4*c^2*wt^2*a^2) )
 %               * K1( sqrt( (c^2+0.25)*(b^2+4*c^2*wt^2*a^2) ) )
@@ -71,12 +71,12 @@ function signal=sab_diffusion(varargin)
 %  
 %
 % Version: $Date$
-% See also iData, iFunc, sab_diffusion, sab_recoil, sqw_recoil
+% See also iData, iFunc, sqw_diffusion, sab_recoil, sqw_recoil
 %   <a href="matlab:doc(iFunc,'Models')">iFunc:Models</a>
 % (c) E.Farhi, ILL. License: EUPL.
 
-signal.Name           = [ 'sab_diffusion dispersion(Q) free-gas dispersion [' mfilename ']' ];
-signal.Description    = 'A 2D S(alpha,beta) free-gas/translational dispersion.';
+signal.Name           = [ 'sab_diffusion dispersion(Q) Brownian diffusion dispersion [' mfilename ']' ];
+signal.Description    = 'A 2D S(alpha,beta) Brownian diffusion dispersion.';
 
 signal.Parameters     = {  ...
   'Amplitude' ...

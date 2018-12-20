@@ -12,7 +12,7 @@ function signal=sab_recoil(varargin)
 %   fraction of the scattering originating from recoil/diffusion, e.g. wt=Mdiff/M
 %   A pure recoil is obtained with wt=1. The model satisfies the detailed balance.
 %
-%   The dispersion has the form:
+%   The dispersion has the form (Egelstaff book Eq 10.14):
 %      S(alpha,beta) = 1/sqrt(4*pi*wt*alpha)*exp( (wt*alpha + beta)^2/4/wt/a)
 %
 %   where we commonly define (h stands for hbar):
@@ -48,9 +48,9 @@ function signal=sab_recoil(varargin)
 %   plot(log10(iData(s, [], 0:.1:20, -50:50)))  % alpha=0:20, beta=-50:50
 %
 % Reference: 
+%  P.A.Egelstaff, An introduction to the liquid state, 2nd ed., Oxford (2002)
 %  M.Mattes and J.Keinert, IAEA INDC (NDS)-0470 (2005) https://www-nds.iaea.org/publications/indc/indc-nds-0470/
 %  R.E.McFarlane, LA-12639-MS (ENDF 356) (March 1994) https://t2.lanl.gov/nis/publications/thermal.pdf
-%  
 %
 % Version: $Date$
 % See also iData, iFunc
@@ -67,6 +67,7 @@ signal.Parameters     = {  ...
 signal.Dimension      = 2;         % dimensionality of input space (axes) and result
 signal.Guess          = [ 1 1 ];
 
+% Egelstaff Eq 10.14
 signal.Expression     = { ...
  'a = x; b = y; wt = p(1);' ...
  'if isvector(a) && isvector(b) && numel(a) ~= numel(b), [a,b] = meshgrid(a,b); end' ...

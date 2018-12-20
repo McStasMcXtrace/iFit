@@ -1,8 +1,8 @@
 function signal=sqw_recoil(varargin)
-% model = sqw_recoil(p, q ,w, {signal}) : Recoil dispersion(Q) for a single harmonic oscillator
+% model = sqw_recoil(p, q ,w, {signal}) : Recoil/free-gas dispersion(Q) for a single harmonic oscillator
 %
-%   iFunc/sqw_recoil: a 2D S(q,w) with a recoil dispersion, isotropic harmonic oscillator 
-%     This is a pure incoherent scattering law (no structure).
+%   iFunc/sqw_recoil: a 2D S(q,w) with a recoil dispersion/free-gas, isotropic 
+%   harmonic oscillator.  This is a pure incoherent scattering law (no structure).
 %
 %   This is a 2D recoil model for a single harmonic oscillator particle with given mass.
 %   The mass M defines the dispersion energy, while the harmonic oscillator energy
@@ -10,7 +10,7 @@ function signal=sqw_recoil(varargin)
 %   This model is also known as 'impulse approximation' or 'short time' Gaussian. 
 %   The model satisfies the detailed balance.
 %
-%   The dispersion has the form:
+%   The dispersion has the form (Schober JNR 2014 Eq 10.25):
 %      S(q,w) = 1/sqrt(2*pi*delta2).*exp( -(w - Er).^2/2./delta2 )
 %
 %   where (h stands for hbar):
@@ -49,7 +49,9 @@ function signal=sqw_recoil(varargin)
 %   s=sqw_recoil(2); % Deuterium mass
 %   plot(log10(iData(s, [], 0:.1:20, -50:50)))  % q=0:20, energy=-50:50
 %
-% Reference: Schober, JNR 17 (2014) 109–357 - DOI 10.3233/JNR-140016
+% References: 
+%  Schober, JNR 17 (2014) 109–357 - DOI 10.3233/JNR-140016
+%  P.A.Egelstaff, An introduction to the liquid state, 2nd ed., Oxford (2002)
 %
 % Version: $Date$
 % See also iData, iFunc
@@ -57,7 +59,7 @@ function signal=sqw_recoil(varargin)
 % (c) E.Farhi, ILL. License: EUPL.
 
 signal.Name           = [ 'sqw_recoil dispersion(Q) for given mass and excitation energy [' mfilename ']' ];
-signal.Description    = 'A 2D S(q,w) with a recoil dispersion.';
+signal.Description    = 'A 2D S(q,w) with a recoil/free-gas dispersion.';
 
 signal.Parameters     = {  ...
   'M            Mass of the scattering unit [g/mol]' ...
@@ -68,6 +70,7 @@ signal.Parameters     = {  ...
 signal.Dimension      = 2;         % dimensionality of input space (axes) and result
 signal.Guess = [ 1 10 1 10 ];
 
+% Schober Eq 10.25
 signal.Expression     = { ...
  'm = p(1); w0= p(2); T = p(4);' ...
  'q = x; w = y;' ...

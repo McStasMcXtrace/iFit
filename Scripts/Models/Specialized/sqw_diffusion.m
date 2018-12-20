@@ -16,7 +16,7 @@ function signal=sqw_diffusion(varargin)
 %   The mean free path is computed as l0 = sqrt(6*t0*D) and is around 0.1-0.5 nm.
 %   The diffusion constant D is usally around D=1-10 E-9 m^2/s in liquids.
 %
-%   The dispersion has the form: (Egelstaff Eq (11.32), p 227.)
+%   The dispersion has the form: (Egelstaff book Eq 11.32, p 227.)
 %      S(q,w) = exp(Dq^2/w0).Dq^2/w0/sqrt(w^2+(Dq^2)^2).K1(sqrt(w^2+(Dq^2)^2)/w0)
 %
 %   where we commonly define:
@@ -28,7 +28,7 @@ function signal=sqw_diffusion(varargin)
 %     omega > 0, neutron looses energy, can not be higher than Ei (Stokes)
 %     omega < 0, neutron gains energy, anti-Stokes
 %
-%   You can build a diffusive model for a given translational weight and diffusion
+%   You can build a diffusive model for a given diffusion energy and
 %   coefficient:
 %      sqw = sqw_diffusion([ w0 D ])
 %
@@ -56,15 +56,14 @@ function signal=sqw_diffusion(varargin)
 %  J.I. Marquez-Damian et al, Ann. Nuc. En. 92 (2016) 107 <http://dx.doi.org/10.1016/j.anucene.2016.01.036>
 %  M.Mattes and J.Keinert, IAEA INDC (NDS)-0470 (2005) https://www-nds.iaea.org/publications/indc/indc-nds-0470/
 %  R.E.McFarlane, LA-12639-MS (ENDF 356) (March 1994) https://t2.lanl.gov/nis/publications/thermal.pdf
-%  
 %
 % Version: $Date$
 % See also iData, iFunc, sqw_recoil, sab_diffusion, sab_recoil
 %   <a href="matlab:doc(iFunc,'Models')">iFunc:Models</a>
 % (c) E.Farhi, ILL. License: EUPL.
 
-signal.Name           = [ 'sqw_diffusion dispersion(Q) free-gas dispersion [' mfilename ']' ];
-signal.Description    = 'A 2D S(alpha,beta) free-gas/translational dispersion.';
+signal.Name           = [ 'sqw_diffusion dispersion(Q) Brownian diffusion dispersion [' mfilename ']' ];
+signal.Description    = 'A 2D S(alpha,beta) Brownian diffusion dispersion.';
 
 signal.Parameters     = {  ...
   'Amplitude' ...
