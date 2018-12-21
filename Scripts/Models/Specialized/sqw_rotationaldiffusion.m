@@ -8,25 +8,27 @@ function signal=sqw_rotationaldiffusion(varargin)
 %   The model is classical, e.g. symmetric in energy, and does not satisfy the
 %   detailed balance.
 %
-%   The dispersion has the form: (Egelstaff book Eq 11.13 and 11.16, p 222)
-%      j_l is the spherical Bessel function of the 1st kind
-%      j_l(x) = sqrt(pi/(2x))J_{n+1/2} (x)
-%      J_n is the Bessel function of the first kind
+%   The dispersion has the form: 
+%     Egelstaff book Eq 11.13 and 11.16, p 222
+%     Egelstaff J Chem Phys 1970 Eq 6b, 14 and 18b 
+%
+%   S(q,w) = j_0^2(qd) delta(w) + sum_l (2l+1) j_l(qd)^2 Fl(w)
+%   Fl(w)  = exp(l(l+1)Dr/w0)/pi/w0
+%            * l(l+1)Dr/sqrt(w^2+(l(l+1)Dr)^2)
+%            * K1(sqrt((w^2+(l(l+1)Dr)^2)/w0))
 %
 %   where we commonly define:
-%     Dr             Rotational diffusion energy width [meV]
+%     j_l is the spherical Bessel function of the 1st kind
+%     K1  is the modified  Bessel function of the 2nd kind
+%     Dr             Rotational diffusion constant [meV]
 %     d              Rotator length [Angs]
-%     t0             Rotational time step [ps]. When t0 = 0 a simple angular diffusion is used (continuous)
+%     w0             Rotational diffusion gap [meV]
 %
 %   The characteristic energy for a jump step is w0, usually around 
-%   few meV in liquids, which inverse time t0 characterises the residence time 
-%   step between jumps, t0 ~ 1-4 ps. 
+%   few meV in liquids, which inverse time t0 characterises the angular residence  
+%   time step between jumps, t0 ~ 1-4 ps. 
 %
-%   The mean free path is l0 is around 0.1-5 Angs. 
-%
-%   When q l0 is small, f(q) -> w0 q^2 l0^2 which behaves as a free-diffusion
-%   Fick's law with an equivalent diffusion constant D=w0.l0^2 usally around 
-%   D=1-10 E-9 m^2/s in liquids.
+%   When w0 >> Dr, the model is a simple, continuous rotational diffusion (Brownian)
 %
 % conventions:
 % w = omega = Ei-Ef = energy lost by the neutron [meV]
@@ -83,8 +85,8 @@ signal.UserData.lmax      = 100;
 %  and Egelstaff J Chem Phys 1970 Eq 6b, 14 and 18b 
 %  loop on 'l' and automatically stop when new term is smaller than threshold
 
-% spherical/rotational Bessel function
-js2 = @(nu,x)pi./(2* x).*besselj(nu + 0.5, x).^2;
+% spherical/rotational Bessel function, squared
+% js2 = @(nu,x)pi./(2* x).*besselj(nu + 0.5, x).^2;
 
 
 signal.Expression     = { ...
