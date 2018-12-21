@@ -75,7 +75,7 @@ function signal=sab_diffusion(varargin)
 %   <a href="matlab:doc(iFunc,'Models')">iFunc:Models</a>
 % (c) E.Farhi, ILL. License: EUPL.
 
-signal.Name           = [ 'sab_diffusion dispersion(Q) Brownian diffusion dispersion [' mfilename ']' ];
+signal.Name           = [ 'sab_diffusion Brownian diffusion dispersion [' mfilename ']' ];
 signal.Description    = 'A 2D S(alpha,beta) Brownian diffusion dispersion.';
 
 signal.Parameters     = {  ...

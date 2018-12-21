@@ -1,8 +1,26 @@
 classdef iFunc_Sab < iFunc
   % iFunc_Sab: create an iFunc_Sab from e.g. an iFunc 2D object
   %
-  % The iFunc_Sab class is a 2D model holding a S(q,w) dynamic structure factor.
-  % The first axis is Q [e.g Angs-1], 2nd is Energy [e.g. meV].
+  % The iFunc_Sab class is a 2D model holding a S(alpha,beta) dynamic structure factor.
+  % The first axis is alpha [e.g unitless moment], 2nd is beta [e.g. unitless energy].
+  %
+  % We commonly define (h stands for hbar):
+  %     alpha=  h2q2/2MkT = (Ei+Ef-2*mu*sqrt(Ei*Ef))/AkT   unit-less moment
+  %     beta = -hw/kT     = (Ef-Ei)/kT                     unit-less energy
+  %     A    = M/m                
+  %     mu   = cos(theta) = (Ki.^2 + Kf.^2 - q.^2) ./ (2*Ki.*Kf)
+  %     m    = mass of the neutron
+  %     M    = mass of the scattering target [g/mol]
+  %
+  % The 'quantum' dynamic structure factor S(a,b) should obey the following rules:
+  %
+  %   \int S(a,b) db   = 1      for a pure incoherent scatterer
+  %   \int S(a,b) b db = -a
+  %   S(a,b) = exp(-b) S(a,-b)  so-called detailed balance
+  %
+  % The symmetric/classical S*(a,b) can be defined as:
+  %   S*(a,b) = exp(b/2) S(a,b) 
+  % but other 'quantum corrections' are possible.
   %
   % Useful methods for this iFunc flavour:
   %

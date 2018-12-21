@@ -4,6 +4,15 @@ classdef iFunc_Sqw2D < iFunc
   % The iFunc_Sqw2D class is a 2D model holding a S(q,w) dynamic structure factor.
   % The first axis is Q [e.g Angs-1], 2nd is Energy [e.g. meV].
   %
+  % The 'quantum' dynamic structure factor S(q,w) should obey the following rules:
+  %   S(q) = \int S(q,w) dw = <S(q,w)>                 structure factor [moment 0]
+  %   Er   = \int w*S(q,w) dw = <wS(q,w)> = h2q2/2M       recoil energy [moment 1]
+  %   S(q,-w) = exp(-hw/kT) S(q,w)                      so-called detailed balance
+  %
+  % The symmetric/classical S*(q,w) can be defined as:
+  %   S*(q,w) = exp(hw/2kT) S(q,w)
+  % but other 'quantum corrections' are possible.
+  %
   % Useful methods for this iFunc flavour:
   %
   % methods(iFunc_Sqw2D)

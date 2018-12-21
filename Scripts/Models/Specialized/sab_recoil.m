@@ -57,7 +57,7 @@ function signal=sab_recoil(varargin)
 %   <a href="matlab:doc(iFunc,'Models')">iFunc:Models</a>
 % (c) E.Farhi, ILL. License: EUPL.
 
-signal.Name           = [ 'sab_recoil dispersion(Q) free-gas/recoil dispersion [' mfilename ']' ];
+signal.Name           = [ 'sab_recoil free-gas/recoil dispersion [' mfilename ']' ];
 signal.Description    = 'A 2D S(alpha,beta) recoil/free-gas/translational dispersion.';
 
 signal.Parameters     = {  ...

@@ -8,8 +8,8 @@ function signal=sqw_diffusion(varargin)
 %   The model is classical, e.g. symmetric in energy, and does not satisfy the
 %   detailed balance.
 %
-%   The characteristic energy for a diffusion step is w0, usually around 
-%   few meV in liquids, corresponds to a friction, which inverse time t0
+%   The characteristic energy for a translational diffusion step is w0, usually  
+%   around few meV in liquids, corresponds to a friction, which inverse time t0
 %   characterises the diffusion step, t0 ~ 1-4 ps. Usually, one can write
 %   w0 = 1/t0 = MD/2kT.
 %
@@ -17,7 +17,10 @@ function signal=sqw_diffusion(varargin)
 %   The diffusion constant D is usally around D=1-10 E-9 m^2/s in liquids.
 %
 %   The dispersion has the form: (Egelstaff book Eq 11.32, p 227.)
-%      S(q,w) = exp(Dq^2/w0).Dq^2/w0/sqrt(w^2+(Dq^2)^2).K1(sqrt(w^2+(Dq^2)^2)/w0)
+%
+%      S(q,w) = exp(Dq^2/w0) Dq^2/w0/sqrt(w^2+(Dq^2)^2) K1(sqrt(w^2+(Dq^2)^2)/w0)
+%
+%   where K1 is a modified Bessel function of the second kind.
 %
 %   where we commonly define:
 %     w0   = Diffusion characteristic energy, MD/2kT e.g. few [meV]
@@ -62,12 +65,12 @@ function signal=sqw_diffusion(varargin)
 %   <a href="matlab:doc(iFunc,'Models')">iFunc:Models</a>
 % (c) E.Farhi, ILL. License: EUPL.
 
-signal.Name           = [ 'sqw_diffusion dispersion(Q) Brownian diffusion dispersion [' mfilename ']' ];
-signal.Description    = 'A 2D S(alpha,beta) Brownian diffusion dispersion.';
+signal.Name           = [ 'sqw_diffusion Brownian diffusion dispersion [' mfilename ']' ];
+signal.Description    = 'A 2D S(q,w) Brownian diffusion dispersion.';
 
 signal.Parameters     = {  ...
   'Amplitude' ...
-  'w0             Diffusion characteristic energy [meV]' ...
+  'w0             Diffusion characteristic energy width [meV]' ...
   'D              Diffusion constant [m^2/s]' ...
    };
   

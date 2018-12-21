@@ -17,7 +17,7 @@ function signal=sqw_recoil(varargin)
 %      Er     = h2 q2/2/M            recoil energy
 %      delta2 = Er.*coth(hw0/2/kT)   recoil width
 %      M      = mass of the scattering target [g/mol]
-%      w0     = Harmonic Excitation Energy [meV]
+%      w0     = Harmonic Excitation Energy Width [meV]
 %
 % conventions:
 % w = omega = Ei-Ef = energy lost by the neutron [meV]
@@ -37,7 +37,7 @@ function signal=sqw_recoil(varargin)
 %
 % input:  p: sqw_recoil model parameters (double)
 %             p(1)= M             Mass of the scattering unit [g/mol]
-%             p(2)= w0            Harmonic Excitation Energy [meV]
+%             p(2)= w0            Harmonic Excitation Energy Width [meV]
 %             p(3)= Amplitude 
 %             p(4)= Temperature   Temperature [K]  
 %         q:  axis along wavevector/momentum in Angs-1 (row,double)
@@ -58,12 +58,12 @@ function signal=sqw_recoil(varargin)
 %   <a href="matlab:doc(iFunc,'Models')">iFunc:Models</a>
 % (c) E.Farhi, ILL. License: EUPL.
 
-signal.Name           = [ 'sqw_recoil dispersion(Q) for given mass and excitation energy [' mfilename ']' ];
+signal.Name           = [ 'sqw_recoil recoil for given mass and excitation energy [' mfilename ']' ];
 signal.Description    = 'A 2D S(q,w) with a recoil/free-gas dispersion.';
 
 signal.Parameters     = {  ...
   'M            Mass of the scattering unit [g/mol]' ...
-  'w0           Harmonic Excitation Energy [meV]' ...
+  'w0           Harmonic Excitation Energy Width [meV]' ...
   'Amplitude' ...
   'Temperature  Temperature [K]' };
   
