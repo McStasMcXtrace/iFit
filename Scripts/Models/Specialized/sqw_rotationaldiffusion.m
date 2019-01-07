@@ -80,6 +80,8 @@ signal.Dimension          = 2;         % dimensionality of input space (axes) an
 signal.Guess              = [ 1 1 1 1 ];
 signal.UserData.threshold = 1e-4;
 signal.UserData.lmax      = 100;
+signal.UserData.classical     = true;
+signal.UserData.DebyeWaller   = false;
 
 % Expression of S(q,w) is found in Egelstaff, Intro to Liquids, Eq (11.37), p 236.
 %  and Egelstaff J Chem Phys 1970 Eq 6b, 14 and 18b 

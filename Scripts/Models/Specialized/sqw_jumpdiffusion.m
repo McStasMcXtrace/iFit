@@ -18,7 +18,8 @@ function signal=sqw_jumpdiffusion(varargin)
 %
 %   The characteristic energy for a jump step is w0, usually around 
 %   few meV in liquids, which inverse time t0 characterises the residence time 
-%   step between jumps, t0 ~ 1-4 ps. 
+%   step between jumps, t0 ~ 1-4 ps. The half width of the Lorentizian
+%   follows a law similar to Dq^2.
 %
 %   The mean free path is l0 is around 0.1-5 Angs. 
 %
@@ -73,6 +74,8 @@ signal.Parameters     = {  ...
   
 signal.Dimension      = 2;         % dimensionality of input space (axes) and result
 signal.Guess          = [ 1 1 1 ];
+signal.UserData.classical     = true;
+signal.UserData.DebyeWaller   = false;
 
 % Expression of S(q,w) is found in Egelstaff, Intro to Liquids, Eq (11.13)+(11.16), p 227.
 signal.Expression     = { ...

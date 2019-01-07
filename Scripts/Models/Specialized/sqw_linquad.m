@@ -5,6 +5,8 @@ function signal=sqw_linquad(varargin)
 %      quadratic dependency, and a DHO line shape. 
 %      This dispersion corresponds with a local description of an excitation, 
 %      centered around an (H0,K0,L0,E0) point.
+%   The model does not includes the Debye-Waller structure factor, but satisfies  
+%     the detailed balance. Pure inelastic coherent 4D model.
 %
 %   The model requires to define a direction corresponding with a Slope1 linear 
 %   dependency as well as a second direction. An ortho-normal coordinate basis 
@@ -117,6 +119,9 @@ script_hkl{:}, ...
 'clear wq dvx dvy dvz bx by bz dx dy dz', ...
 'Gamma=p(15); T=p(16); Amplitude=p(14); Bkg=p(17);', ...
 script_dho{:} };
+
+signal.UserData.classical     = false;
+signal.UserData.DebyeWaller   = false;
 
 signal = iFunc(signal);
 signal = iFunc_Sqw4D(signal); % overload Sqw4D flavour

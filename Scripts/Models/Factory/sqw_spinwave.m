@@ -27,6 +27,9 @@ function s = sqw_spinwave(file, action)
 % The 4D model does not support the 'powder' iFunc_Sqw4D method, so the spinwave
 %   should instead use sqw_spinwave('file','powder')
 %
+% The model does not include the Debye-Waller structure factor, nor satisfies  
+%   the detailed balance (classical). Pure inelastic coherent 4D or 2D model.
+%
 % model = sqw_spinwave(file)
 %
 % input:
@@ -228,6 +231,8 @@ s.UserData.spinwave_template = template;
 s.UserData.spinwave_filename = file;
 s.UserData.dir      = ''; % will use temporary directory to generate files and run
 s.UserData.executable = find_executable;
+signal.UserData.classical   = true;
+signal.UserData.DebyeWaller = false;
 
 if isempty(s.UserData.executable)
   error([ mfilename ': SPINWAVE is not available. Install it from <http://www-llb.cea.fr/logicielsllb/SpinWave/SW.html>' ])

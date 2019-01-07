@@ -115,6 +115,9 @@ script_hkl{:}, ...
 'Gamma=p(11); T=p(12); Amplitude=p(13); Bkg=p(14);', ...
 script_dho{:} };
 
+signal.UserData.classical     = false;
+signal.UserData.DebyeWaller   = false;
+
 signal = iFunc(signal);
 signal = iFunc_Sqw4D(signal); % overload Sqw4D flavour
 

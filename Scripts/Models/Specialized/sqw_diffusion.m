@@ -11,7 +11,8 @@ function signal=sqw_diffusion(varargin)
 %   The characteristic energy for a translational diffusion step is w0, usually  
 %   around few meV in liquids, corresponds to a friction, which inverse time t0
 %   characterises the diffusion step, t0 ~ 1-4 ps. Usually, one can write
-%   w0 = 1/t0 = MD/2kT.
+%   w0 = 1/t0 = MD/2kT. The half width of the Lorentizian follows a law similar 
+%   to Dq^2.
 %
 %   The mean free path is computed as l0 = sqrt(6*t0*D) and is around 0.1-0.5 nm.
 %   The diffusion constant D is usally around D=1-10 E-9 m^2/s in liquids.
@@ -76,6 +77,8 @@ signal.Parameters     = {  ...
   
 signal.Dimension      = 2;         % dimensionality of input space (axes) and result
 signal.Guess          = [ 1 1 1E-9 ];
+signal.UserData.classical     = true;
+signal.UserData.DebyeWaller   = true;
 
 % Expression of S(q,w) is found in Egelstaff, Intro to Liquids, Eq (11.32), p 227.
 

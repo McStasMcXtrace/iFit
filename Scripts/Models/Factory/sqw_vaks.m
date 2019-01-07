@@ -6,6 +6,8 @@ function signal=sqw_vaks(varargin)
 %      compounds. This parameterisation is based on a quadratic expansion of the
 %      Hamiltonian, valid for e.g. |k|<.3 rlu in a cubic 
 %      crystal and provides energies of TA1,TA2,LA,TO1 and TO2 modes.
+%   The model does not include the Debye-Waller structure factor, but satisfies  
+%     the detailed balance. Pure inelastic coherent 4D model.
 %
 % MODEL CREATION
 %
@@ -151,6 +153,8 @@ signal.Expression     = { ...
 
 signal.UserData.properties.spacegroup        = 'Cubic (230)';
 signal.UserData.properties.spacegroup_number = 230;
+signal.UserData.classical   = false;
+signal.UserData.DebyeWaller = false;
 
 signal = iFunc(signal);
 signal = iFunc_Sqw4D(signal); % overload Sqw4D flavour

@@ -5,6 +5,8 @@ function signal=sqw_spinw(varargin)
 %   spinw package from S. Toth. A SpinW object must first be created, and is then
 %   converted into an iFunc model for HKL evaluation. The intensity is computed
 %   for a neutron scattering experiment.
+%   The model does not includes the Debye-Waller structure factor, but satisfies  
+%     the detailed balance. Pure inelastic coherent 4D model.
 %
 % MODEL CREATION:
 %
@@ -149,6 +151,8 @@ c_vec=signal.UserData.cell(3)*[c1; c2; c3;];
 V=dot(a_vec,cross(b_vec,c_vec));
 signal.UserData.reciprocal_cell=2*pi*[cross(b_vec,c_vec) cross(c_vec,a_vec) cross(a_vec,b_vec)]/V; % reciprocal basis, as columns
 signal.UserData.volume = V;
+signal.UserData.classical   = false;
+signal.UserData.DebyeWaller = false;
 
 
 % get code to read xyzt and build HKL list and convolve DHO line shapes

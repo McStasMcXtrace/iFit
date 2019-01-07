@@ -1,11 +1,13 @@
 function signal=sqw_phonons(configuration, varargin)
 % model=sqw_phonons(configuration, calculator, ..., options)
 %
-%   iFunc/sqw_phonons: computes phonon dispersions using the ASE.
+%   iFunc/sqw_phonons: computes phonon 4D dispersions using the ASE.
 %   A model which computes phonon dispersions from the Hellmann-Feynman forces acting 
 %     between atoms. The input argument is any configuration file describing the
 %     material, e.g. CIF, PDB, POSCAR, ... supported by ASE. Alternatively, a
 %     Crystallography Open Database ID or chemical formulae can be entered.
+%   The model includes the Debye-Waller structure factor, and satisfies the 
+%     detailed balance. Pure inelastic coherent 4D model.
 %
 %   This models can compute the coherent inelastic phonons dispersions for
 %     any crystalline (powder or single crystal) material, in the harmonic and
@@ -650,6 +652,8 @@ signal.UserData.dir           = target;
 signal.UserData.options       = options;
 signal.UserData.calc          = calc;
 signal.UserData.properties    = orderfields(properties);
+signal.UserData.classical     = false;
+signal.UserData.DebyeWaller   = true;
 
 if options.use_phonopy
   c = [ 'PhonoPy/' options.calculator ];
