@@ -86,6 +86,8 @@ signal.Parameters     = {  ...
   
 signal.Dimension      = 2;         % dimensionality of input space (axes) and result
 signal.Guess          = [ 1 1 1 ];
+signal.UserData.classical     = false;
+signal.UserData.DebyeWaller   = true;
 
 % Egelstaff and Schofield NSE (1962) , Eq (4.8)
 signal.Expression     = { ...

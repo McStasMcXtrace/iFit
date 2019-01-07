@@ -66,6 +66,8 @@ signal.Parameters     = {  ...
   
 signal.Dimension      = 2;         % dimensionality of input space (axes) and result
 signal.Guess          = [ 1 1 ];
+signal.UserData.classical     = false;
+signal.UserData.DebyeWaller   = false;
 
 % Egelstaff Eq 10.14
 signal.Expression     = { ...
