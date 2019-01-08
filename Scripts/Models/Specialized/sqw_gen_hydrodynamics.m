@@ -3,7 +3,7 @@ function signal=sqw_gen_hydrodynamics(varargin)
 %
 %  iFunc/sqw_gen_hydrodynamics Generalized Hydrodynamics model with Rayleigh-Brillouin triplet
 %    This model can be used to fit e.g. a spectrum with a central non dispersive 
-%    quasi elastic line  (lorentizian shape) and two dispersive (e.g. acoustic)
+%    quasi elastic line  (lorentzian shape) and two dispersive (e.g. acoustic)
 %    Stokes and anti-Stokes lines. This model is suited for e.g dense fluids at 
 %    small Q momentum values.
 %
@@ -16,6 +16,12 @@ function signal=sqw_gen_hydrodynamics(varargin)
 %    sqw = sqw_gen_hydrodynamics .* bose;
 %  where the Temperature is then given in [x units]. If 'x' is an energy in [meV]
 %  then the Temperature parameter is T[K]/11.6045
+%
+% In practice, parameter a0 should be around 1, and 'as' is much smaller, but 
+%  rather constant. The structure factor sq is around 0.1-2 in most fluids. 
+% The sound frequency ws ~ cq where c is the sound velocity. 
+% The damping parameters z0 and zs should roughly follow a Dq^2 law where D is
+%   a diffusion constant.
 %
 %  To add a 'background' use e.g.
 %    sqw = sqw_gen_hydrodynamics + constant('Background');
@@ -37,7 +43,7 @@ function signal=sqw_gen_hydrodynamics(varargin)
 % (c) E.Farhi, ILL. License: EUPL.
 
 signal.Name           = [ 'Sqw_gen_hydrodynamics Generalized Hydrodynamics - Rayleight-Brillouin triplet [' mfilename ']' ];
-signal.Description    = 'Generalized Hydrodynamics model with a central line, and two dispersive acoutic lines, suited for e.g. dense fluids';
+signal.Description    = 'Generalized Hydrodynamics model with a central line, and two dispersive acoustic lines, suited for e.g. dense fluids';
 
 signal.Parameters     = {  ...
   'sq     structure factor S(q)' ...
@@ -45,7 +51,7 @@ signal.Parameters     = {  ...
   'z0     half-width(q) of central Lorentzian, thermal non propagating' ...
   'zs     damping(q)    of the sound mode' ...
   'ws     frequency(q)  of the sound mode' ...
-  'as     amplitude(q) of the inelastic line' ...
+  'as     amplitude(q)  of the inelastic line' ...
   'bs     asymmetry factor of the inelastic line' ...
 };
   
@@ -55,7 +61,7 @@ signal.Dimension      = 1;         % dimensionality of input space (axes) and re
 % then we use 'deal' on the cell array to distribute all parameters
 signal.Expression = { ...
   '% the energy axis' ...
-  'w = x; bs = p(7);' ...
+  'w = x; bs=p(7);' ...
   'pc =num2cell(p); [sq a0 z0 zs ws as bs] = deal(pc{:});' ...
   'signal  = sq/pi.*( ...' ...
   '              a0 * z0 ./ (z0.^2 + w.^2) ...' ...
@@ -74,8 +80,8 @@ signal.Guess          = @(x,signal)[ ...
 signal=iFunc(signal);
 
 if nargin == 1 && isnumeric(varargin{1})
-  y.ParameterValues = varargin{1};
+  signal.ParameterValues = varargin{1};
 elseif nargin > 1
-  y = y(varargin{:});
+  signal = signal(varargin{:});
 end
 

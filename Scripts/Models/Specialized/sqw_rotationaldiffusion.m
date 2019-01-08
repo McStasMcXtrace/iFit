@@ -13,6 +13,9 @@ function signal=sqw_rotationaldiffusion(varargin)
 %     Egelstaff J Chem Phys 1970 Eq 6b, 14 and 18b 
 %
 %   S(q,w) = j_0^2(qd) delta(w) + sum_l (2l+1) j_l(qd)^2 Fl(w)
+%
+%   where:
+%
 %   Fl(w)  = exp(l(l+1)Dr/w0)/pi/w0
 %            * l(l+1)Dr/sqrt(w^2+(l(l+1)Dr)^2)
 %            * K1(sqrt((w^2+(l(l+1)Dr)^2)/w0))

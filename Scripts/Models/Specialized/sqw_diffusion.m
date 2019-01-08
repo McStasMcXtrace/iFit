@@ -15,7 +15,7 @@ function signal=sqw_diffusion(varargin)
 %   to Dq^2.
 %
 %   The mean free path is computed as l0 = sqrt(6*t0*D) and is around 0.1-0.5 nm.
-%   The diffusion constant D is usally around D=1-10 E-9 m^2/s in liquids.
+%   The diffusion constant D is usually around D=1-10 E-9 m^2/s in liquids.
 %
 %   The dispersion has the form: (Egelstaff book Eq 11.32, p 227.)
 %
