@@ -16,6 +16,7 @@ if ~isa(in, 'iData')
   whos in
   in=[]; return; 
 end
+cl = in.class;
 % update ModifDate
 in.ModificationDate = clock;
 % check type of fields
@@ -238,6 +239,13 @@ if ndims(in)>=2 && ~isvector(in)
       setaxis(in, index, x2);
       clear x1 x2
     end
+  end
+end
+
+% restore flavour
+if ~strcmp(cl, 'iData')
+  try
+  in = feval(cl, in);
   end
 end
 

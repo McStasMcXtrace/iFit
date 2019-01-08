@@ -133,7 +133,7 @@ else
           % check object when modifying key member
           cl = b.class;
           b = iFunc(b);
-          if ~strcmp(cl, 'iFunc'), b = feval(cl, b); end
+          if ~strcmp(cl, 'iFunc'), try; b = feval(cl, b); end; end
         end
       elseif any(strcmp(fieldname, strtok(b.Parameters))) % b.<parameter name> = <value>
         index=find(strcmp(fieldname, strtok(b.Parameters)));
@@ -183,7 +183,7 @@ else
         % check object when modifying key member
         cl = b.class;
         b = iFunc(b);
-        if ~strcmp(cl, 'iFunc'), b = feval(cl, b); end
+        if ~strcmp(cl, 'iFunc'), try; b = feval(cl, b); end; end
       elseif strcmp(fieldname, 'p')
         if numel(S) > 1
           index=S(2).subs;
