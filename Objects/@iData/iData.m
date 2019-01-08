@@ -289,7 +289,7 @@ function [out, this_in]=iData_iFunc2iData(this_in, axes_in, varargin)
     
     % create iData object from signal and axes
     % check axes against signal size
-    if numel(axes_in) == 1 && all(isnan(axes_in{1})), axes_in = []; end
+    if numel(axes_in) == 1 && isvector(axes_in{1}) && all(isnan(axes_in{1})), axes_in = []; end
     if isempty(axes_in) && ~isempty(ax), axes_in = ax; end
     for index=1:numel(axes_in)
       ax1 = axes_in{index};
