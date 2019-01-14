@@ -1,5 +1,5 @@
 function [data, this] = read_cif(file)
-% read_cif Wrapper to read CIF files
+% read_cif Wrapper to read CIF/CFL/ShelX files
 %   data = read_cif(file)
 % the data is a simplified representation of the crystal structure, generated using cif2hkl.
 %
@@ -166,7 +166,7 @@ function [data, this] = read_cif(file)
     if nargin == 0, return; end
     
     if ischar(file) && ~isempty(dir(file))
-      this = cif2hkl(file,[],[],'-',1);
+      [~, this] = cif2hkl(file,[],[],'-',1);  % verbose output to stdout -> this
       this = str2struct(this);
       this.file   = file;
       this.source = fileread(file);
