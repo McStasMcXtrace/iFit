@@ -85,6 +85,7 @@ end
 
 y.Name      = sprintf('%i Gaussians (1D) [%s(%i)]', n, mfilename, n);
 y.Description=sprintf('%i 1D Gaussians model', n);
+y.Dimension = 1;
 
 % create the multiple gaussian function
 

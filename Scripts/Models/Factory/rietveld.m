@@ -130,6 +130,7 @@ if nargin == 0
   
 elseif ischar(sample) && strcmp(sample,'defaults')
   sample = [ ifitpath 'Data/Na2Ca3Al2F14.cfl' ];
+  disp([ mfilename ': Sample description file not defined, using ''' sample '''.' ]);
   instr  = 'templateDIFF.instr';
   varargin = { 'Powder=reflections.laz; lambda="2.36"; monitor=BananaTheta; mpi=8' };
 elseif ischar(sample) && strcmp(sample,'identify')

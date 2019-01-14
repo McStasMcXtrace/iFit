@@ -84,6 +84,7 @@ end
 
 y.Name      = sprintf('%i Lorentzians (1D) [%s(%i)]', n, mfilename, n);
 y.Description=sprintf('%i 1D Lorentzians model', n);
+y.Dimension = 1;
 
 % create the multiple Lorentzian function
 
