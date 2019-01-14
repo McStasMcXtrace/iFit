@@ -135,6 +135,23 @@ classdef iFunc_Sqw4D < iFunc
       if ~isempty(inputname(1))
         assignin('caller',inputname(1),self); % update in original object
       end
+    end % iData
+    
+    function [signal, model, ax, name] = feval(self, varargin)
+      % iFunc_Sqw4D: feval: evaluate the Model on HKLW grid
+      if isempty(varargin)
+        [signal, ax] = feval_fast(self, 'linear');
+        model = self;
+        signal= double(signal);
+        name = self.Name;
+      else
+        % varargin{1} is not empty
+        if numel(varargin) <2, varargin{end+1} = linspace(-0.5,0.5,20); end
+        if numel(varargin) <3, varargin{end+1} = linspace(-0.5,0.5,20); end
+        if numel(varargin) <4, varargin{end+1} = linspace(-0.5,0.5,20)'; end
+        if numel(varargin) <5, varargin{end+1} = linspace(0.01,max(self)*1.2,31); end
+        [signal, model, ax, name] = feval@iFunc(self, varargin{:});
+      end
     end
     
     function [fig, s, k] = plot(self, varargin)
