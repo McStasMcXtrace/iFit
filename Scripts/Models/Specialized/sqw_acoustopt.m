@@ -93,7 +93,7 @@ signal.Parameters     = {  ...
 signal.Dimension      = 4;         % dimensionality of input space (axes) and result
 
 % get code to read xyzt and build HKL list and convolve DHO line shapes
-  [script_hkl, script_dho] = sqw_phonons_templates;
+[script_hkl, script_dho] = sqw_phonons_templates;
 
 signal.Expression     = { ...
 '% x=qh; y=qk; z=ql; t=w', ...
@@ -124,14 +124,17 @@ script_hkl{:}, ...
 'Gamma=p(15); T=p(16); Amplitude=p(14); Bkg=p(17);', ...
 script_dho{:} };
 
-signal = iFunc(signal);
-signal = iFunc_Sqw4D(signal); % overload Sqw4D flavour
-
 p = [ 1 0 0 ...
       0 1 0 ...
       20 10 10 ...
       0 0 0 5 ...
       1 0.05 10 0];
+signal.Guess = p;
+
+signal = iFunc(signal);
+signal = iFunc_Sqw4D(signal); % overload Sqw4D flavour
+
+
 if nargin == 0
   signal.ParameterValues=p;
   signal = fix(signal, [1:6]);

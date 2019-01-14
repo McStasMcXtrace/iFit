@@ -3,14 +3,26 @@ function signal=sqw_visco_elastic(varargin)
 %
 %  iFunc/sqw_visco_elastic Visco Elastic model in the linear response theory of liquids.
 %    This model can be used to fit e.g. a spectrum with a central non dispersive 
-%    quasi elastic line  (lorentzian shape) and two dispersive (e.g. acoustic)
+%    quasi elastic line  (lorentzian shape) and two linear dispersive (e.g. acoustic)
 %    Stokes and anti-Stokes lines. This model is suited for e.g dense fluids at 
 %    small Q momentum values.
 %  The expression is derived from the Egelstaff longitudinal modes theory in 
 %   liquids (Eq 15.27).
 %
-%  S(q,w)/S(q) = (1-1/CpCv) * Dq2 / (Dq2^2 + w^2) 
-%              + 1/2/CpCv*gq2* (1./((w+cq)^2+gq2^2) + 1/((w-cq)^2+gq2^2) )
+%  S(q,w)/S(q) = (1-1/CpCv) Dt q2 / ((Dt q2)^2 + w^2) 
+%              + 1/2/CpCv Dl q2 (1/((w+cq)^2+(Dl q2)^2) + 1/((w-cq)^2+(Dl q2)^2) )
+%
+%  where:
+%    CpCv=gamma is the Laplace coefficient usually in 1.1-1.67
+%    c*q        is the acoustic linear dispersion
+%    Dt         is the entropy fluctuation (thermal) diffusion coefficient
+%                 the central line half width is then Dt*q^2
+%    Dl         is the longitudinal diffusion coefficient
+%                 the acoustic mode half width is then Dl*q^2
+%
+%  Usually Dt = lambda/Cp.rho with lambda the thermal conductivity [W/m/K] and 
+%  rho the material density [g/cm3]. Also, the sound velocity c is sqrt(1/m rho Chi)
+%  where m is the material mass [g/mol] and Chi is the isothermal compressibility [1/Pa]
 %
 %  The diffusion constant D is usually around D=1-10 E-9 [m^2/s] in liquids. Its 
 %  value in [meV/Angs^2] is D*4.1356e+08.The sound velocity is usually around 
@@ -56,6 +68,23 @@ function signal=sqw_visco_elastic(varargin)
 % See also iData, iFunc/fits, iFunc/plot, gauss, sqw_phonons, sqw_cubic_monoatomic, sqw_vaks
 %   <a href="matlab:doc(iFunc,'Models')">iFunc:Models</a>, sqw_gen_hydrodynamics
 % (c) E.Farhi, ILL. License: EUPL.
+
+
+% NOTES ************************************************************************
+% Copley Lovesey Rep Prog Phys Eq 2.39: w = f(q) acoustic dispersion/characteristic
+%
+% wl^2 = 3*q.^2*kT/m+w0^2*( 1-3*sin(q*R)./q/R-6*cos(q*R)./(q*R).^2+6*cos(q*R)/(q*R).^3 )
+%
+% R = 3.4 Angs in l-Rb
+%
+% cq = sqrt(wl^2)*q
+% Percus Yevick Copley Lovesey Eq 2.30 p 472. eta is unitless.
+% Egelstaff: eta = pi rho sigma^3/6 Eq 5.50    rho in 1/Angs^3  rho.sigma^3 ~ 0.8
+%   sigma=LJ finite distance at which the inter-particle potential is zero 
+%   -> interatomic equilibrium distance 
+% S(0)  = 1/alpha
+% alpha = (1+2*eta)^2/(1-eta)^4
+% Isotropic_Sqw line 1000 -> S(0): ChiT= S(0)/(kT*rho*1e30) [Pa-1] (Egelstaff  p201 Eq 10.21)
 
 signal.Name           = [ 'sqw_visco_elastic Visco Elastic - Rayleight-Brillouin triplet [' mfilename ']' ];
 signal.Description    = 'Visco Elastic model with a central line, and two dispersive acoustic lines, suited for e.g. dense fluids';
