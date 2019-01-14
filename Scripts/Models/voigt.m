@@ -15,10 +15,10 @@ function y=voigt(varargin)
 %         x: axis (double)
 %         y: when values are given and p='guess', a guess of the parameters is performed (double)
 % output: y: model value
-% ex:     y=voigt([1 0 1 1], -10:10); or plot(voigt);
+% ex:     y=voigt([1 0 0.5 0.5 0], -10:10); or plot(voigt);
 %
 % Version: $Date$
-% See also iFunc, iFunc/fits, iFunc/plot
+% See also iFunc, iFunc/fits, iFunc/plot, pseudovoigt, gauss, lorz, pseudovoigt2d
 % (c) E.Farhi, ILL. License: EUPL.
 
 y.Name      = [ 'Voigt (1D) [' mfilename ']' ];
@@ -41,7 +41,13 @@ y.Expression= { ...
 m1 = @(x,s) sum(s(:).*x(:))/sum(s(:));
 m2 = @(x,s) sqrt(abs( sum(x(:).*x(:).*s(:))/sum(s(:)) - m1(x,s).^2 ));
 
-y.Guess     = @(x,s) [ NaN m1(x, s-min(s(:))) m2(x, s-min(s(:))) m2(x, s-min(s(:))) NaN ];
+% use ifthenelse anonymous function
+% <https://blogs.mathworks.com/loren/2013/01/10/introduction-to-functional-programming-with-anonymous-functions-part-1/>
+% iif( cond1, exec1, cond2, exec2, ...)
+iif = @(varargin) varargin{2 * find([varargin{1:2:end}], 1, 'first')}();
+y.Guess     = @(x,s) iif(...
+  ~isempty(s), @() [ NaN m1(x, s-min(s(:))) m2(x, s-min(s(:))) m2(x, s-min(s(:))) NaN ], ...
+  true            , @() [1 0 0.5 0.5 0]);
 
 
 y = iFunc(y);

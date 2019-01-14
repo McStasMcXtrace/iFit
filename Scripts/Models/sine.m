@@ -24,7 +24,15 @@ y.Parameters     = {'Amplitude','Phase_Shift','Period','Background'};
 y.Dimension      = 1;
 y.Description    = 'Sine function';
 y.Expression     = @(p,x) p(4) + p(1)*sin((x - p(2))/p(3));
-y.Guess          =  @(x,y) [ max(y(:))-min(y(:)) mean(x(:)) std(x(:))/4 min(y(:)) ];
+
+% use ifthenelse anonymous function
+% <https://blogs.mathworks.com/loren/2013/01/10/introduction-to-functional-programming-with-anonymous-functions-part-1/>
+% iif( cond1, exec1, cond2, exec2, ...)
+iif = @(varargin) varargin{2 * find([varargin{1:2:end}], 1, 'first')}();
+y.Guess     = @(x,y) iif(...
+  ~isempty(y), @() [ max(y(:))-min(y(:)) mean(x(:)) std(x(:))/4 min(y(:)) ], ...
+  true            , @() [1 0 1 0]);
+
 y = iFunc(y);
 
 if nargin == 1 && isnumeric(varargin{1})

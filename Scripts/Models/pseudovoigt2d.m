@@ -25,17 +25,25 @@ function signal=pseudovoigt2d(varargin)
 %         y: axis along columns (double)
 %    signal: when values are given, a guess of the parameters is performed (double)
 % output: signal: model value
-% ex:     signal=pseudovoigt2d([1 2 .5 .2 .3 30 .2], -2:.1:2, -3:.1:3); or plot(pseudovoigt2d);
+% ex:     signal=pseudovoigt2d([1 2 .5 .2 .3 30 .2 .5], -2:.1:2, -3:.1:3); or plot(pseudovoigt2d);
 %
 % Version: $Date$
-% See also iData, iFunc/fits, iFunc/plot, lorz
+% See also iData, iFunc/fits, iFunc/plot, lorz, pseudovoigt, gauss, voigt
 % (c) E.Farhi, ILL. License: EUPL.
 
 signal.Name           = [ 'Pseudo-Voigt-2D function with tilt angle (2D) [' mfilename ']' ];
 signal.Parameters     = {  'Amplitude' 'Centre_X' 'Center_Y' 'HalfWidth_X' 'HalfWidth_Y' 'Angle tilt in [deg]' 'Background' 'LorentzianRatio' };
 signal.Description    = '2D Pseudo Voigt function with tilt angle (convolution of gauss and lorz approx.). Ref: P. Thompson, D.E. Cox, J.B. Hastings, J. Appl. Cryst. 1987, 20, 79.';
 signal.Dimension      = 2;         % dimensionality of input space (axes) and result
-signal.Guess          = @(x,y,signal)[ max(signal(:))-min(signal(:)) mean(x(:)) mean(y(:)) std(x(:)) std(y(:)) 20*randn min(signal(:)) 0.5 ];;        % default parameters
+
+% use ifthenelse anonymous function
+% <https://blogs.mathworks.com/loren/2013/01/10/introduction-to-functional-programming-with-anonymous-functions-part-1/>
+% iif( cond1, exec1, cond2, exec2, ...)
+iif = @(varargin) varargin{2 * find([varargin{1:2:end}], 1, 'first')}();
+signal.Guess     = @(x,y,signal) iif(...
+  ~isempty(signal), @() [ max(signal(:))-min(signal(:)) mean(x(:)) mean(y(:)) std(x(:)) std(y(:)) 20*randn min(signal(:)) 0.5 ], ...
+  true            , @() [1 2 .5 .2 .3 30 .2 .5]);
+  
 signal.Expression     = {'x0=p(2); y0=p(3); sx=p(4); sy=p(5);', ...
   'if isvector(x) && isvector(y) && numel(x) ~= numel(y), [x,y] = meshgrid(x,y); end' ...
   'theta = p(6)*pi/180;', ...

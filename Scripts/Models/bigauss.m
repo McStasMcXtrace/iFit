@@ -14,23 +14,30 @@ function y=bigauss(varargin)
 %         x: axis (double)
 %         y: when values are given and p='guess', a guess of the parameters is performed (double)
 % output: y: model value
-% ex:     y=bigauss([1 0 1 1], -10:10); or plot(bigauss)
+% ex:     y=bigauss([1 0 1 1 0], -10:10); or plot(bigauss)
 %
 % Ref: T. S. Buys, K. De Clerk, Bi-Gaussian fitting of skewed peaks, Anal. Chem., 1972, 44 (7), pp 1273–1275
 %
 % Version: $Date$
-% See also iFunc, iFunc/fits, iFunc/plot
+% See also iFunc, iFunc/fits, iFunc/plot, gauss
 % (c) E.Farhi, ILL. License: EUPL.
 
 y.Name      = [ 'Bi-Gaussian (1D) [' mfilename ']' ];
 y.Description='Bi-Gaussian/asymmetric fitting function. Ref: T. S. Buys, K. De Clerk, Bi-Gaussian fitting of skewed peaks, Anal. Chem., 1972, 44 (7), pp 1273–1275';
 y.Parameters= { 'Amplitude', 'Centre', 'HalfWidth1', 'HalfWidth2', 'BackGround' };
 y.Expression= @(p, x) p(1)*exp(-0.5*((x-p(2)) ./ (p(3)*(x < p(2)) + p(4) * (x >= p(2)))).^2) + p(5);
+y.Dimension  = 1;  
 % moments of distributions
 m1 = @(x,s) sum(s(:).*x(:))/sum(s(:));
 m2 = @(x,s) sqrt(abs( sum(x(:).*x(:).*s(:))/sum(s(:)) - m1(x,s).^2 ));
 
-y.Guess     = @(x,s) [ NaN m1(x, s-min(s(:))) m2(x, s-min(s(:)))/1.5 m2(x, s-min(s(:)))*1.5 NaN ];
+% use ifthenelse anonymous function
+% <https://blogs.mathworks.com/loren/2013/01/10/introduction-to-functional-programming-with-anonymous-functions-part-1/>
+% iif( cond1, exec1, cond2, exec2, ...)
+iif = @(varargin) varargin{2 * find([varargin{1:2:end}], 1, 'first')}();
+y.Guess     = @(x,s) iif(...
+  ~isempty(s), @() [ NaN m1(x, s-min(s(:))) m2(x, s-min(s(:)))/1.5 m2(x, s-min(s(:)))*1.5 NaN ], ...
+  true            , @() [1 0 1 1 0]);
 
 y=iFunc(y);
 

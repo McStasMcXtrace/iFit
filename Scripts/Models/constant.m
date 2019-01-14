@@ -27,9 +27,10 @@ else
   y.Parameters= {'Constant'};
 end
 
-y.Guess     = [];
+y.Guess     = [0];
 y.Description='Constant/User value';
 y.Expression= 'p(1)';
+y.Dimension  = 1;  
 
 y = iFunc(y);
 

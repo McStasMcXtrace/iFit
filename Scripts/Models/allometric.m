@@ -26,7 +26,15 @@ y.Name      = [ 'Allometric/Freundlich (1D) [' mfilename ']' ];
 y.Description='Power/Freundlich/Belehradek fitting function to describe power and asymptotic laws. Ref: Ratkowksy, David A. 1990. Handbook of Nonlinear Regression Models. Marcel Dekker, Inc. 4.3.1 ';
 y.Parameters= {'Amplitude','Offset','Exponent','Background'};
 y.Expression= @(p,x) p(1)*(x-p(2)).^p(3) + p(4); 
-y.Guess     = @(x,signal) [ max(signal(:))-min(signal(:)) min(x(:))-mean(x(:))/10 .1 min(signal(:)) ];
+
+% use ifthenelse anonymous function
+% <https://blogs.mathworks.com/loren/2013/01/10/introduction-to-functional-programming-with-anonymous-functions-part-1/>
+% iif( cond1, exec1, cond2, exec2, ...)
+iif = @(varargin) varargin{2 * find([varargin{1:2:end}], 1, 'first')}();
+y.Guess     = @(x,signal) iif(...
+  ~isempty(signal), @() [ max(signal(:))-min(signal(:)) min(x(:))-mean(x(:))/10 .1 min(signal(:)) ], ...
+  true            , @() [1 0 1 1]);
+y.Dimension = 1;
  
 y = iFunc(y);
 

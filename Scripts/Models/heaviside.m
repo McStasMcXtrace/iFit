@@ -15,7 +15,7 @@ function y=heaviside(varargin)
 %         x: axis (double)
 %         y: when values are given and p='guess', a guess of the parameters is performed (double)
 % output: y: model value
-% ex:     y=heaviside([1 0 1 1], -10:10); or plot(heaviside);
+% ex:     y=heaviside([1 0 1 0], -10:10); or plot(heaviside);
 %
 % Version: $Date$
 % See also iFunc, iFunc/fits, iFunc/plot
@@ -27,12 +27,19 @@ y.Description='Heaviside model. The Width parameter sign indicates if this is a 
 y.Expression= {'signal = zeros(size(x))+p(4);', ...
   'if p(3) >= 0, signal(find(x >= p(2))) = p(1);', ...
   'else signal(find(x <= p(2))) = p(1); end' };
+y.Dimension  = 1;
 
 % moments of distributions
 m1 = @(x,s) sum(s(:).*x(:))/sum(s(:));
 m2 = @(x,s) sqrt(abs( sum(x(:).*x(:).*s(:))/sum(s(:)) - m1(x,s).^2 ));
 
-y.Guess     = @(x,s) [ NaN m1(x, s-min(s(:))) m2(x, s-min(s(:))) NaN ];
+% use ifthenelse anonymous function
+% <https://blogs.mathworks.com/loren/2013/01/10/introduction-to-functional-programming-with-anonymous-functions-part-1/>
+% iif( cond1, exec1, cond2, exec2, ...)
+iif = @(varargin) varargin{2 * find([varargin{1:2:end}], 1, 'first')}();
+y.Guess     = @(x,s) iif(...
+  ~isempty(s), @()  [ NaN m1(x, s-min(s(:))) m2(x, s-min(s(:))) NaN ], ...
+  true            , @() [1 0 1 0]);
 
 y = iFunc(y);
 

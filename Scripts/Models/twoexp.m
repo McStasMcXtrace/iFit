@@ -13,7 +13,7 @@ function y=twoexp(varargin)
 %         x: axis (double)
 %         y: when values are given and p='guess', a guess of the parameters is performed (double)
 % output: y: model value
-% ex:     signal=twoexp([1 0 1 1], -10:10); or plot(twoexp)
+% ex:     signal=twoexp([2 0.1 1 0.5 0], -10:10); or plot(twoexp)
 %
 % Version: $Date$
 % See also iData, iFunc/fits, iFunc/plot, expon, sinedamp
@@ -24,12 +24,20 @@ y.Parameters     = {'Amplitude1' 'Tau1 decay in inverse "x" unit' 'Amplitude2' '
 y.Dimension      = 1;         % dimensionality of input space (axes) and result
 y.Description    = '2 Exponential decay';
 y.Expression     = @(p,x) p(1)*exp(-x/p(2))+p(3)*exp(-x/p(4)) + p(5);
-y.Guess          = @(x,y)[ ...
+    
+% use ifthenelse anonymous function
+% <https://blogs.mathworks.com/loren/2013/01/10/introduction-to-functional-programming-with-anonymous-functions-part-1/>
+% iif( cond1, exec1, cond2, exec2, ...)
+iif = @(varargin) varargin{2 * find([varargin{1:2:end}], 1, 'first')}();
+y.Guess     = @(x,y) iif(...
+  ~isempty(y), @() [ ...
    exp(subsref(polyfit(x(:),log(y(:)-min(y(:))+0.01*abs(min(y(:)))),1), struct('type','()', 'subs',{{2}})))*0.66 ...
    -1/(subsref(polyfit(x(:),log(y(:)-min(y(:))+0.01*abs(min(y(:)))),1), struct('type','()', 'subs',{{1}}))-(abs(subsref(polyfit(x(:),log(y(:)-min(y(:))+0.01*abs(min(y(:)))),1), struct('type','()', 'subs',{{1}}))) < 1e-2)*.1) ...
    exp(subsref(polyfit(x(:),log(y(:)-min(y(:))+0.01*abs(min(y(:)))),1), struct('type','()', 'subs',{{2}})))/3 ...
    -2/(subsref(polyfit(x(:),log(y(:)-min(y(:))+0.01*abs(min(y(:)))),1), struct('type','()', 'subs',{{1}}))-(abs(subsref(polyfit(x(:),log(y(:)-min(y(:))+0.01*abs(min(y(:)))),1), struct('type','()', 'subs',{{1}}))) < 1e-2)*.2) ...
-    min(y(:)) ];
+    min(y(:)) ], ...
+  true            , @() [2 0.1 1 0.5 0]);
+  
 y = iFunc(y);
 
 if nargin == 1 && isnumeric(varargin{1})

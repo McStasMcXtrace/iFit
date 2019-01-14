@@ -15,7 +15,7 @@ function y=lognormal(varargin)
 %         x: axis (double)
 %         y: when values are given and p='guess', a guess of the parameters is performed (double)
 % output: y: model value
-% ex:     y=lognormal([1 0 1 1], -10:10); or plot(lognormal);
+% ex:     y=lognormal([1 0 1 0], -10:10); or plot(lognormal);
 %
 % Version: $Date$
 % See also iFunc, iFunc/fits, iFunc/plot
@@ -25,7 +25,15 @@ y.Name      = [ 'Log-Normal distribution function (1D) [' mfilename ']' ];
 y.Parameters={'Amplitude','Centre','Width','Background'};
 y.Description='Log-Normal distribution function. Ref: http://en.wikipedia.org/wiki/Log_normal';
 y.Expression= @(p,x) real(p(4)+ p(1)/sqrt(2)/p(3)./x .* exp( -log(x/p(2)).^2 /2/p(3)/p(3) ));
-y.Guess     = @(x,y) [ (max(y(:))-min(y(:)))/2 mean(abs(x(:))) std(x(:))/2 min(y(:)) ];
+y.Dimension  = 1;
+
+% use ifthenelse anonymous function
+% <https://blogs.mathworks.com/loren/2013/01/10/introduction-to-functional-programming-with-anonymous-functions-part-1/>
+% iif( cond1, exec1, cond2, exec2, ...)
+iif = @(varargin) varargin{2 * find([varargin{1:2:end}], 1, 'first')}();
+y.Guess     = @(x,y) iif(...
+  ~isempty(y), @()  [ (max(y(:))-min(y(:)))/2 mean(abs(x(:))) std(x(:))/2 min(y(:)) ], ...
+  true            , @() [1 0 1 0]);
 
 y = iFunc(y);
 

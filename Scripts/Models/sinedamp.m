@@ -13,7 +13,7 @@ function y=sinedamp(varargin)
 %         x: axis (double)
 %         y: when values are given and p='guess', a guess of the parameters is performed (double)
 % output: y: model value
-% ex:     y=sinedamp([1 0 1 1], -10:10); or plot(sinedamp);
+% ex:     y=sinedamp([1 0 1 1 0.2], -10:10); or plot(sinedamp);
 %
 % Version: $Date$
 % See also iData, iFunc/fits, iFunc/plot, sine, expon
@@ -24,7 +24,15 @@ y.Parameters     = {'Amplitude','Phase_Shift','Period','Background','Decay'};
 y.Dimension      = 1;
 y.Description    = 'Damped Sine function';
 y.Expression     = @(p,x) p(4) + p(1)*sin((x - p(2))/p(3)).*exp(-x/p(5));
-y.Guess          =  @(x,y) [ max(y(:))-min(y(:)) mean(x(:)) std(x(:))/4 min(y(:)) std(x(:))*4 ];
+
+% use ifthenelse anonymous function
+% <https://blogs.mathworks.com/loren/2013/01/10/introduction-to-functional-programming-with-anonymous-functions-part-1/>
+% iif( cond1, exec1, cond2, exec2, ...)
+iif = @(varargin) varargin{2 * find([varargin{1:2:end}], 1, 'first')}();
+y.Guess     = @(x,y) iif(...
+  ~isempty(y), @() [ max(y(:))-min(y(:)) mean(x(:)) std(x(:))/4 min(y(:)) std(x(:))*4 ], ...
+  true            , @() [1 0 1 0 0.2]);
+  
 y = iFunc(y);
 
 if nargin == 1 && isnumeric(varargin{1})

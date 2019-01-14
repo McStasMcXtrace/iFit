@@ -27,7 +27,13 @@ y.Dimension  = 1;
 % moments of distributions
 m1 = @(x,s) sum(s(:).*x(:))/sum(s(:));
 
-y.Guess      = @(x,signal) [ NaN m1(x, signal-min(signal(:))) ];
+% use ifthenelse anonymous function
+% <https://blogs.mathworks.com/loren/2013/01/10/introduction-to-functional-programming-with-anonymous-functions-part-1/>
+% iif( cond1, exec1, cond2, exec2, ...)
+iif = @(varargin) varargin{2 * find([varargin{1:2:end}], 1, 'first')}();
+y.Guess     = @(x,signal) iif(...
+  ~isempty(signal), @() [ NaN m1(x, signal-min(signal(:))) ], ...
+  true            , @() [1 0]);
 
 y = iFunc(y);
 

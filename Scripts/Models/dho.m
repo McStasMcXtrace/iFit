@@ -15,7 +15,7 @@ function y=dho(varargin)
 %         x: axis (double)
 %         y: when values are given and p='guess', a guess of the parameters is performed (double)
 % output: y: model value
-% ex:     y=dho([1 0 1 1], -10:10); or y=plot(dho);
+% ex:     y=dho([1 0 1 1 1], -10:10); or y=plot(dho);
 %
 % Version: $Date$
 % See also iData, iFunc/fits, iFunc/plot
@@ -34,7 +34,13 @@ y.Dimension  = 1;
 m1 = @(x,s) sum(s(:).*x(:))/sum(s(:));
 m2 = @(x,s) sqrt(abs( sum(x(:).*x(:).*s(:))/sum(s(:)) - m1(x,s).^2 ));
 
-y.Guess     = @(x,s) [ NaN m1(x, s-min(s(:))) m2(x, s-min(s(:))) NaN 1 ];
+% use ifthenelse anonymous function
+% <https://blogs.mathworks.com/loren/2013/01/10/introduction-to-functional-programming-with-anonymous-functions-part-1/>
+% iif( cond1, exec1, cond2, exec2, ...)
+iif = @(varargin) varargin{2 * find([varargin{1:2:end}], 1, 'first')}();
+y.Guess     = @(x,s) iif(...
+  ~isempty(s), @() [ NaN m1(x, s-min(s(:))) m2(x, s-min(s(:))) NaN 1 ], ...
+  true            , @() [1 0 1 1 1]);
 
 y = iFunc(y);
 

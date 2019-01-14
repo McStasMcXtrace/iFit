@@ -17,22 +17,29 @@ function y=lorz(varargin)
 %         x: axis (double)
 %         y: when values are given and p='guess', a guess of the parameters is performed (double)
 % output: y: model value
-% ex:     y=lorz([1 0 1 1], -10:10); or plot(lorz)
+% ex:     y=lorz([1 0 1 0], -10:10); or plot(lorz)
 %
 % Version: $Date$
-% See also iFunc, iFunc/fits, iFunc/plot
+% See also iFunc, iFunc/fits, iFunc/plot, lorz1, gauss
 % (c) E.Farhi, ILL. License: EUPL.
 
 y.Name       = [ 'Lorentzian (1D) [' mfilename ']' ];
 y.Parameters = {'Amplitude','Centre','HalfWidth','Background'};
 y.Description= 'Single 1D Lorentzian model';
 y.Expression = @(p,x) p(1) ./ (1+ ((x-p(2)).^2/p(3)^2) ) + p(4);
+y.Dimension  = 1;
 
 % moments of distributions
 m1 = @(x,s) sum(s(:).*x(:))/sum(s(:));
 m2 = @(x,s) sqrt(abs( sum(x(:).*x(:).*s(:))/sum(s(:)) - m1(x,s).^2 ));
 
-y.Guess     = @(x,s) [ NaN m1(x, s-min(s(:))) m2(x, s-min(s(:))) NaN ];
+% use ifthenelse anonymous function
+% <https://blogs.mathworks.com/loren/2013/01/10/introduction-to-functional-programming-with-anonymous-functions-part-1/>
+% iif( cond1, exec1, cond2, exec2, ...)
+iif = @(varargin) varargin{2 * find([varargin{1:2:end}], 1, 'first')}();
+y.Guess     = @(x,s) iif(...
+  ~isempty(s), @() [ NaN m1(x, s-min(s(:))) m2(x, s-min(s(:))) NaN ], ...
+  true            , @() [1 0 1 0]);
 
 y = iFunc(y);
 

@@ -27,12 +27,19 @@ y.Name       = [ 'Lorentzian1 (1D) [' mfilename ']' ];
 y.Parameters = {'Intensity','Centre','HalfWidth'};
 y.Description= '1D Lorentzian1 model';
 y.Expression = @(p,x) p(1)*p(3)/2/pi ./ ((x-p(2)).^2 +(p(3)/2).^2);
+y.Dimension  = 1;
 
 % moments of distributions
 m1 = @(x,s) sum(s(:).*x(:))/sum(s(:));
 m2 = @(x,s) sqrt(abs( sum(x(:).*x(:).*s(:))/sum(s(:)) - m1(x,s).^2 ));
 
-y.Guess     = @(x,s) [ NaN m1(x, s-min(s(:))) m2(x, s-min(s(:))) ];
+% use ifthenelse anonymous function
+% <https://blogs.mathworks.com/loren/2013/01/10/introduction-to-functional-programming-with-anonymous-functions-part-1/>
+% iif( cond1, exec1, cond2, exec2, ...)
+iif = @(varargin) varargin{2 * find([varargin{1:2:end}], 1, 'first')}();
+y.Guess     = @(x,s) iif(...
+  ~isempty(s), @() [ NaN m1(x, s-min(s(:))) m2(x, s-min(s(:))) ], ...
+  true            , @() [1 0 1]);
 
 y = iFunc(y);
 

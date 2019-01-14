@@ -33,7 +33,13 @@ y.Parameters = {'Tau h/2pi/kT'};
 % (n+1) converges to 0 for w -> -Inf, and to 1 for w-> +Inf. It diverges at w=0
 y.Expression = @(p,x) 1 ./ (exp(x/p(1)) - 1);
 y.Dimension  = 1;   
-y.Guess      = @(x,signal) abs(log(1./mean(signal(:))+1)/mean(abs(x(:))));
+% use ifthenelse anonymous function
+% <https://blogs.mathworks.com/loren/2013/01/10/introduction-to-functional-programming-with-anonymous-functions-part-1/>
+% iif( cond1, exec1, cond2, exec2, ...)
+iif = @(varargin) varargin{2 * find([varargin{1:2:end}], 1, 'first')}();
+y.Guess     = @(x,signal) iif(...
+  ~isempty(signal), @() abs(log(1./mean(signal(:))+1)/mean(abs(x(:)))), ...
+  true            , @() 25);
 
 y = iFunc(y);
 
