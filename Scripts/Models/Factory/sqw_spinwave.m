@@ -231,8 +231,9 @@ s.UserData.spinwave_template = template;
 s.UserData.spinwave_filename = file;
 s.UserData.dir      = ''; % will use temporary directory to generate files and run
 s.UserData.executable = find_executable;
-signal.UserData.classical   = true;
-signal.UserData.DebyeWaller = false;
+s.UserData.classical   = true;
+s.UserData.DebyeWaller = false;
+s.UserData.maxFreq  = 30; % will avoid 'max' to be too long...
 
 if isempty(s.UserData.executable)
   error([ mfilename ': SPINWAVE is not available. Install it from <http://www-llb.cea.fr/logicielsllb/SpinWave/SW.html>' ])
