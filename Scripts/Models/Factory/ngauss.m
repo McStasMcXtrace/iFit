@@ -28,7 +28,7 @@ function y=ngauss(varargin)
 % ex:     y=ngauss([1 0 1 0.5 2 0.5 0], -10:10); or plot(ngauss)
 %
 % Version: $Date$
-% See also iFunc, iFunc/fits, iFunc/plot, nlorz
+% See also iFunc, iFunc/fits, iFunc/plot, nlorz, lorz, gauss
 % (c) E.Farhi, ILL. License: EUPL.
 y=[];
 if nargin > 0

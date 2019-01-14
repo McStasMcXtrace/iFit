@@ -1,7 +1,9 @@
 function [f, ax] = feval_fast(s, flag_lin)
   % iFunc_Sqw4D: feval_fast: quickly evaluate a 4D Sqw(h=0)
   
-  [maxFreq, ~, f, ax] = max(s); % perhaps this will do the job when evaluating maxFreq
+  % perhaps 'max' will do the job when evaluating maxFreq ?
+  % can be lenghty as 10x10x10x11 HKLW grid...
+  [maxFreq, ~, f, ax] = max(s); 
   
   if isempty(f) % if no evaluation yet, do it...
   
