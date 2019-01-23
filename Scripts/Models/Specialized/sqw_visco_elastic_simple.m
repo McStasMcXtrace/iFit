@@ -1,7 +1,8 @@
-function signal=sqw_visco_elastic(varargin)
-% model = sqw_visco_elastic(p, q, w, {signal}) : Visco Elastic model
+function signal=sqw_visco_elastic_simple(varargin)
+% model = sqw_visco_elastic_simple(p, q, w, {signal}) : Visco Elastic model for Lennard-Jones model.
 %
-%  iFunc/sqw_visco_elastic Visco Elastic model in the linear response theory of liquids.
+%  iFunc/sqw_visco_elastic_simple Visco Elastic model in the linear response 
+%    theory of liquids for a Lennard-Jones/Percus-Yevick simple model.
 %    This model can be used to fit e.g. a spectrum with a central non dispersive 
 %    quasi elastic line  (lorentzian shape) and two linear dispersive (e.g. acoustic)
 %    Stokes and anti-Stokes lines. This model is suited for e.g dense fluids at 
@@ -14,7 +15,8 @@ function signal=sqw_visco_elastic(varargin)
 %
 %  where:
 %    CpCv=gamma is the Laplace coefficient usually in 1.1-1.67
-%    c*q        is the acoustic linear dispersion
+%    cq         is the acoustic linear longitudinal dispersion so that
+%      cq^2 = c0^2*q^2+w0^2*(1-3*sin(qR)/(qR) - 6*cos(qR)/(qR)^2+6*sin(qR)/(qR)^3 )
 %    Dt         is the entropy fluctuation (thermal) diffusion coefficient
 %                 the central line half width is then Dt*q^2
 %    Dl         is the longitudinal diffusion coefficient
@@ -30,7 +32,7 @@ function signal=sqw_visco_elastic(varargin)
 %
 %  In this implementation, S(q) is assumed to be 1, however, it is possible to 
 %  set S(q) over a full q-range when creating the model:
-%    s = sqw_visco_elastic(sq)
+%    s = sqw_visco_elastic_simple(sq)
 %  where 'sq' is an iData [q,s(q)] in [Angs^-1], which is stored in UserData.Sq
 %  The S(q) can be also changed or set anytime as:
 %    s.UserData.Sq = iData(q,Sq);
@@ -38,28 +40,28 @@ function signal=sqw_visco_elastic(varargin)
 %
 %  The S(q,w) is computed in its symmetrized expression (so-called classical). 
 %  To get the 'true' quantum S(q,w) definition, use e.g.
-%    sqw = sqw_visco_elastic .* bose';
+%    sqw = sqw_visco_elastic_simple .* bose';
 %  where the Temperature is then given in [x units]. If 'x' is an energy in [meV]
 %  then the Temperature parameter is T[K]/11.6045
 %
 %  To add a 'background' use e.g.
-%    sqw = sqw_visco_elastic + constant('Background');
+%    sqw = sqw_visco_elastic_simple + constant('Background');
 %
 %  To convolute with a pseudo-Voigt or Gaussian instrumental line width, use e.g.
-%    sqw = convn(sqw_visco_elastic, gauss2d)
+%    sqw = convn(sqw_visco_elastic_simple, gauss2d)
 % or
-%    sqw = convn(sqw_visco_elastic, pseudovoigt2d)
+%    sqw = convn(sqw_visco_elastic_simple, pseudovoigt2d)
 %
 % Reference: 
 %  P.A.Egelstaff, An introduction to the liquid state, 2nd ed., Oxford (2002)
 %
 % Example:simple liquid with d=1 Angs inter-atomic distance and static S(q)
 %  sq = iData(sf_hard_spheres, [1 0.4], 0:0.01:20); % a simple liquid with d=1 Angs
-%  s  = sqw_visco_elastic(sq);
+%  s  = sqw_visco_elastic_simple(sq);
 %  plot(log10(iData(s, [], 0:.01:4, -50:50)))
 %
 % Example: simple liquid with parameterized S(q)
-%  s1 = sqw_visco_elastic; s1.ParameterValues=s1.Guess;
+%  s1 = sqw_visco_elastic_simple; s1.ParameterValues=s1.Guess;
 %  s2 = sf_hard_spheres;   s2.ParameterValues=[4 .4];
 %  s  = s1.*s2; 
 %  plot(log10(iData(s, [], 0:.01:4, -50:50)))
@@ -69,6 +71,26 @@ function signal=sqw_visco_elastic(varargin)
 %   <a href="matlab:doc(iFunc,'Models')">iFunc:Models</a>, sqw_gen_hydrodynamics
 % (c) E.Farhi, ILL. License: EUPL.
 
+
+% NOTES ************************************************************************
+% Copley Lovesey Rep Prog Phys Eq 2.39 p476: w = f(q) acoustic dispersion/characteristic
+%
+% wl^2 = 3*q.^2*kT/m+w0^2*( 1-3*sin(q*R)./(q*R) - 6*cos(q*R)./(q*R).^2+6*sin(q*R)./(q*R).^3 )
+%      ~ 3*q.^2*kT/m+w0^2.*(q*R).^2/4
+%
+% so c ~ sqrt(3*kT/m+w0^2*R^2/4)
+%    c^2    = 3*kT/m+w0^2*R^2/4
+%
+% R = 3.4 Angs in l-Rb
+%
+% cq = sqrt(wl^2)
+% Percus Yevick Copley Lovesey Eq 2.30 p 472. eta is unitless.
+% Egelstaff: eta = pi rho sigma^3/6 Eq 5.50    rho in 1/Angs^3  rho.sigma^3 ~ 0.8
+%   sigma=LJ finite distance at which the inter-particle potential is zero 
+%   -> interatomic equilibrium distance 
+% S(0)  = 1/alpha
+% alpha = (1+2*eta)^2/(1-eta)^4
+% Isotropic_Sqw line 1000 -> S(0): ChiT= S(0)/(kT*rho*1e30) [Pa-1] (Egelstaff  p201 Eq 10.21)
 
 % treat input argument at model creation
 for index=1:nargin
@@ -80,8 +102,8 @@ for index=1:nargin
   end
 end
 
-signal.Name           = [ 'sqw_visco_elastic Visco Elastic - Rayleight-Brillouin triplet [' mfilename ']' ];
-signal.Description    = 'Visco Elastic model with a central line, and two dispersive acoustic lines, suited for e.g. dense fluids';
+signal.Name           = [ 'sqw_visco_elastic_simple Visco Elastic/Lennard-Jones - Rayleight-Brillouin triplet [' mfilename ']' ];
+signal.Description    = 'Visco Elastic/Lennard-Jones model with a central line, and two dispersive acoustic lines, suited for e.g. dense fluids';
 
 signal.Parameters     = {  ...
   'Amplitude' ...
@@ -89,6 +111,8 @@ signal.Parameters     = {  ...
   'Dt     Diffusion coefficient for thermal central line [m^2/s]' ...
   'Dl     Diffusion coefficient for longitudinal mode [m^2/s]' ...
   'gamma  Laplace coefficient Cp/Cv [1]' ...
+  'R      Inter-atomic/molecule distance [Angs]' ...
+  'w0     Maximum acoustic phonon energy [meV]' ...
 };
   
 signal.Dimension      = 2;         % dimensionality of input space (axes) and result
@@ -98,10 +122,14 @@ signal.UserData.DebyeWaller   = false;
 % we must provide a p(xx) expression to tell iFunc to validate xx parameters
 signal.Expression = { ...
   '% the energy axis' ...
-  'q = x; w=y; c=p(2); D=p(3); g=p(4); CpCv=p(5);' ...
+  'q = x; w=y; c=p(2); D=p(3); g=p(4); CpCv=p(5); R=p(6); w0=p(7);' ...
   'if isvector(q) && isvector(w) && numel(q) ~= numel(w), [q,w] = meshgrid(q,w); end' ...
   'dq2 = D*q.^2*1E20/241.8E9; % in meV, with q in Angs-1 and D in m2/s' ...
-  'cq  = c*q/142.1622;        % m/s -> meV.Angs' ...
+  '% compute c0 constant c0^2=3*kT/m and c^2 = c0^2+w0^2*R^2/4' ...
+  'c02 = (c/142.1622)^2 - w0^2*R^2/4; % m/s -> meV.Angs' ...
+  'if c02 < 0, c02 = 0; end' ...
+  'wl2 = c02*q.^2+w0^2*( 1-3*sin(q*R)./(q*R) - 6*cos(q*R)./(q*R).^2+6*sin(q*R)./(q*R).^3 );' ...
+  'cq  = sqrt(wl2);' ...
   'gq2 = g*q.^2*1E20/241.8E9; % in meV, with q in Angs-1 and D in m2/s' ...
   'signal = (1-1/CpCv) * dq2 ./ (dq2.^2 + w.^2);' ...
   'signal = signal + 1/2/CpCv.*gq2.* (1./((w+cq).^2+gq2.^2) + 1./((w-cq).^2+gq2.^2) );' ...  
@@ -115,11 +143,15 @@ signal.Expression = { ...
       'signal = signal .* sq;' ...
       'end' ...
     'end' ...
+  'else % use LJ S(q)' ...
+    '' ...
   'end' ...
 };
 
-signal.Guess          = [ 1 500 1e-9 1e-9 1.5 ]; % default parameters
+signal.Guess          = [ 1 2000 1e-9 1e-9 1.5 3.4 10 ]; % default parameters
 
 signal=iFunc(signal);
 signal=iFunc_Sqw2D(signal);
+
+
 

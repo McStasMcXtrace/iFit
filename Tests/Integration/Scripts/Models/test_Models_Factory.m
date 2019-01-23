@@ -13,27 +13,26 @@ function result = test_Models_Factory
     % name of Model script
     [~,this] = fileparts(m{index});
     
+    value = []; model = [];
     try
       model = feval(this,'defaults'); % needed to avoid GUI dialogue
     catch
-      model = [];
       failed_instantiate{end+1} = this;
     end
     
-    try
-      value = feval(model);
-    catch
-      value = [];
-      failed_eval{end+1} = this;
+    if ~isempty(model)
+      try
+        value = feval(model);
+      catch
+        failed_eval{end+1} = this;
+      end
+      
+      if ~isempty(value), success{end+1}=this; end
     end
-    
-    if ~isempty(value), success{end+1}=this; end
     
   end
   
-  if numel(success) == numel(m)
-    result = [ 'OK     ' mfilename ' (' num2str(numel(m)) ' models in ' p ')' ];
-  else
+  if ~isempty(failed_instantiate) || ~isempty(failed_eval)
     result = [ 'FAILED ' mfilename ];
     disp('Failed instantiate:')
     fprintf(1, '%s ', failed_instantiate{:});
@@ -41,4 +40,8 @@ function result = test_Models_Factory
     disp('Failed evaluate:')
     fprintf(1, '%s ', failed_eval{:});
     disp(' ')
+  elseif numel(success) == numel(m)
+    result = [ 'OK     ' mfilename ' (' num2str(numel(m)) ' models in ' p ')' ];
+  else
+    result = [ 'OK     ' mfilename ' (' num2str(numel(success)) '/' num2str(numel(m)) ' models in ' p ')' ];
   end
