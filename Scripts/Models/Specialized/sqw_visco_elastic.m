@@ -21,7 +21,7 @@ function signal=sqw_visco_elastic(varargin)
 %                 the acoustic mode half width is then Dl*q^2
 %
 %  Usually Dt = lambda/Cp.rho with lambda the thermal conductivity [W/m/K] and 
-%  rho the material density [g/cm3]. Also, the sound velocity c is sqrt(1/m rho Chi)
+%  rho the material density [g/cm3]. Also, the sound velocity c is 1/sqrt(m rho Chi)
 %  where m is the material mass [g/mol] and Chi is the isothermal compressibility [1/Pa]
 %
 %  The diffusion constant D is usually around D=1-10 E-9 [m^2/s] in liquids. Its 

@@ -4,7 +4,8 @@ function y=sf_hard_spheres(varargin)
 %   iFunc/sf_hard_spheres Hard Sphere structure factor, suited for simple liquids
 %     The 'x' wave-vector/momentum axis is usually in nm-1 or Angs-1.
 %     The parameter RHS is given in inverse unit of the axis (that is nm or Angs).
-%     Typical values for parameters are R=3-50 Angs, rho=0.2. rho is within [0 1]
+%     Typical values for parameters are R=3-50 Angs, rho=0.2. rho is within [0 1].
+%     A valur of rho close to 1 is for a cristalline material.
 %     The Hard Sphere model corresponds with the Sticky Hard Sphere model with large tau.
 %     The model returns the S(q) structure factor.
 %
