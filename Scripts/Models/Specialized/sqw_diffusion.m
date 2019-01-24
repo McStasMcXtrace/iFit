@@ -1,5 +1,5 @@
 function signal=sqw_diffusion(varargin)
-% model = sqw_diffusion(p, q ,w, {signal}) : Brownian diffusion dispersion(Q)
+% model = sqw_diffusion(p, q ,w, {signal}) : Brownian diffusion dispersion(Q) Sqw2D
 %
 %   iFunc/sqw_diffusion: a 2D S(q,w) with a diffusion dispersion
 %     based on the Egelstaff-Schofield Langevin equation for Brownian motion model.

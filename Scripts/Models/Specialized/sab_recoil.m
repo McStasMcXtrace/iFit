@@ -1,5 +1,5 @@
 function signal=sab_recoil(varargin)
-% model = sab_recoil(p, alpha ,beta, {signal}) : Free-gas/recoil dispersion(Q)
+% model = sab_recoil(p, alpha ,beta, {signal}) : Free-gas/recoil dispersion(Q) Sab
 %
 %   iFunc/sab_recoil: a 2D S(alpha,beta) with a free-gas/recoil dispersion
 %
@@ -41,7 +41,6 @@ function signal=sab_recoil(varargin)
 %         alpha:  axis along unitless wavevector/momentum (row,double)
 %         beta:   axis along unitless energy (column,double)
 % output: signal: model value [iFunc_Sab]
-%
 %
 % Example:
 %   s=sab_recoil;

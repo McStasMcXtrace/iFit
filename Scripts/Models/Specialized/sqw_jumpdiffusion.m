@@ -1,5 +1,5 @@
 function signal=sqw_jumpdiffusion(varargin)
-% model = sqw_jumpdiffusion(p, q ,w, {signal}) : jump/Fick-law diffusion dispersion(Q)
+% model = sqw_jumpdiffusion(p, q ,w, {signal}) : jump/Fick-law diffusion dispersion(Q) Sqw2D
 %
 %   iFunc/sqw_jumpdiffusion: a 2D S(q,w) with a jump diffusion dispersion
 %     based on the Egelstaff model. It can also model a simple Fick's law.

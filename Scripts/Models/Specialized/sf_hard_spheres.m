@@ -1,11 +1,15 @@
 function y=sf_hard_spheres(varargin)
-% y = sf_hard_spheres(p, x, [y]) : Hard Sphere structure factor [Percus-Yevick]
+% y = sf_hard_spheres(p, x, [y]) : Hard Sphere structure factor [Percus-Yevick] S(q)
 %
-%   iFunc/sf_hard_spheres Hard Sphere structure factor, suited for simple liquids
+%   iFunc/sf_hard_spheres Hard Sphere structure factor S(q), suited for simple liquids.
+%     It corresponds to hard spheres in a Lennard-Jones potential.
 %     The 'x' wave-vector/momentum axis is usually in nm-1 or Angs-1.
-%     The parameter RHS is given in inverse unit of the axis (that is nm or Angs).
-%     Typical values for parameters are R=3-50 Angs, rho=0.2. rho is within [0 1].
-%     A valur of rho close to 1 is for a cristalline material.
+%     The parameter 'R' is given in inverse unit of the axis (that is nm or Angs)
+%       and corresponds with the typical distance between scattering objects.
+%     The parameter 'rho' is a reduced density. A value of rho close to 1 is for 
+%       a cristalline material. A value of 0 corresponds with a perfect liquid/gas S(q)=1.
+%
+%     Typical values for parameters are R=3-50 Angs, rho=0.4.
 %     The Hard Sphere model corresponds with the Sticky Hard Sphere model with large tau.
 %     The model returns the S(q) structure factor.
 %

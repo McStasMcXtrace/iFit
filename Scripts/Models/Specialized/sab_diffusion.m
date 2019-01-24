@@ -1,5 +1,5 @@
 function signal=sab_diffusion(varargin)
-% model = sab_diffusion(p, alpha ,beta, {signal}) : Brownian diffusion dispersion(Q)
+% model = sab_diffusion(p, alpha ,beta, {signal}) : Brownian diffusion dispersion(Q) Sab
 %
 %   iFunc/sab_diffusion: a 2D S(alpha,beta) with a diffusion dispersion
 %     based on the Egelstaff-Schofield Langevin equation for Brownian motion model.
@@ -52,11 +52,9 @@ function signal=sab_diffusion(varargin)
 %             p(1)= Amplitude 
 %             p(2)= wt        Translational weight wt=Mdiff/M [1]
 %             p(3)= c         Unitless diffusion constant, c=MD/h [typically 0-4]
-
 %         alpha:  axis along unitless wavevector/momentum (row,double)
 %         beta:   axis along unitless energy (column,double)
 % output: signal: model value [iFunc_Sab]
-%
 %
 % Example:
 %   s=sab_diffusion;
@@ -69,7 +67,6 @@ function signal=sab_diffusion(varargin)
 %  M.Mattes and J.Keinert, IAEA INDC (NDS)-0470 (2005) https://www-nds.iaea.org/publications/indc/indc-nds-0470/
 %  R.E.McFarlane, LA-12639-MS (ENDF 356) (March 1994) https://t2.lanl.gov/nis/publications/thermal.pdf
 %  
-%
 % Version: $Date$
 % See also iData, iFunc, sqw_diffusion, sab_recoil, sqw_recoil
 %   <a href="matlab:doc(iFunc,'Models')">iFunc:Models</a>

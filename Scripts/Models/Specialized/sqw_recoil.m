@@ -1,5 +1,5 @@
 function signal=sqw_recoil(varargin)
-% model = sqw_recoil(p, q ,w, {signal}) : Recoil/free-gas dispersion(Q) for a single harmonic oscillator
+% model = sqw_recoil(p, q ,w, {signal}) : Recoil/free-gas dispersion(Q) for a single harmonic oscillator Sqw2D
 %
 %   iFunc/sqw_recoil: a 2D S(q,w) with a recoil dispersion/free-gas, isotropic 
 %   harmonic oscillator.  This is a pure incoherent scattering law (no structure).
@@ -39,7 +39,7 @@ function signal=sqw_recoil(varargin)
 %             p(1)= M             Mass of the scattering unit [g/mol]
 %             p(2)= w0            Harmonic Excitation Energy Width [meV]
 %             p(3)= Amplitude 
-%             p(4)= Temperature   Temperature [K]  
+%             p(4)= Temperature   [K]  
 %         q:  axis along wavevector/momentum in Angs-1 (row,double)
 %         w:  axis along energy in meV (column,double)
 % output: signal: model value [iFunc_Sqw2D]

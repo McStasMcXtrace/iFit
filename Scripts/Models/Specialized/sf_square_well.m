@@ -1,11 +1,15 @@
 function y=sf_square_well(varargin)
-% y = sf_square_well(p, x, [y]) : structure factor of particles interacting with a square well potential [Sharma]
+% y = sf_square_well(p, x, [y]) : structure factor of particles interacting with a square well potential [Sharma] S(q)
 %
-%   iFunc/sf_square_well structure factor of particles interacting with a 
+%   iFunc/sf_square_well structure factor S(q) of particles interacting with a 
 %       square well potential [Sharma]
 %     The 'x' wave-vector/momentum axis is usually in nm-1 or Angs-1.
+%     The parameter 'R' is given in inverse unit of the axis (that is nm or Angs)
+%       and corresponds with the typical distance between scattering objects.
+%     The parameter 'rho' is a reduced density. A value of rho close to 1 is for 
+%       a cristalline material. A value of 0 corresponds with a perfect liquid/gas S(q)=1.
 %     Typical values for parameters are 
-%       R=10 Angs, rho=0.02, epsilon=1.5*T, Delta=1.2*RHS
+%       R=10 Angs, rho=0.02, epsilon=1.5*T, Delta=1.2*R
 %     The model returns the S(q) structure factor.
 %
 %     Ref: Sharma, R. V.; Sharma, K. C. Physica, 89A, 213. (1977).

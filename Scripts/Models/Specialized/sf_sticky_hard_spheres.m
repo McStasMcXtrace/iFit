@@ -1,9 +1,14 @@
 function y=sf_sticky_hard_spheres(varargin)
-% y = sf_sticky_hard_spheres(p, x, [y]) : Sticky Hard Sphere structure factor [Baxter/Menon]
+% y = sf_sticky_hard_spheres(p, x, [y]) : Sticky Hard Sphere structure factor [Baxter/Menon] S(q)
 %
-%   iFunc/sf_sticky_hard_spheres Sticky Hard Sphere structure factor 
+%   iFunc/sf_sticky_hard_spheres Sticky Hard Sphere structure factor S(q)
 %          (for e.g. spheres in dielectric liquids)
 %     The 'x' wave-vector/momentum axis is usually in nm-1 or Angs-1.
+%     The parameter 'R' is given in inverse unit of the axis (that is nm or Angs)
+%       and corresponds with the typical distance between scattering objects.
+%     The parameter 'rho' is a reduced density. A value of rho close to 1 is for 
+%       a cristalline material. A value of 0 corresponds with a perfect liquid/gas S(q)=1.
+%
 %     Typical values for parameters are R=50 Angs, rho=0.04, tau=0.15
 %     The Sticky Hard Sphere model converges to the Hard Sphere model [PY] with
 %       increasing tau (e.g. tau > 10).

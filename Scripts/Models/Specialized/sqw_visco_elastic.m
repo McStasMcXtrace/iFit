@@ -1,40 +1,50 @@
 function signal=sqw_visco_elastic(varargin)
-% model = sqw_visco_elastic(p, q, w, {signal}) : Visco Elastic model
+% model = sqw_visco_elastic(p, q, w, {signal}) : Visco Elastic model Sqw2D
 %
-%  iFunc/sqw_visco_elastic Visco Elastic model in the linear response theory of liquids.
+%  iFunc/sqw_visco_elastic: S(q,w) Visco Elastic model in the linear response theory of liquids.
 %    This model can be used to fit e.g. a spectrum with a central non dispersive 
 %    quasi elastic line  (lorentzian shape) and two linear dispersive (e.g. acoustic)
 %    Stokes and anti-Stokes lines. This model is suited for e.g dense fluids at 
-%    small Q momentum values.
+%    small Q momentum values, for coherent processes.
 %  The expression is derived from the Egelstaff longitudinal modes theory in 
-%   liquids (Eq 15.27).
+%    liquids (Eq 15.27).
+%
+%  Model and parameters:
+%  ---------------------
 %
 %  S(q,w)/S(q) = (1-1/CpCv) Dt q2 / ((Dt q2)^2 + w^2) 
-%              + 1/2/CpCv Dl q2 (1/((w+cq)^2+(Dl q2)^2) + 1/((w-cq)^2+(Dl q2)^2) )
+%              +  1/2/CpCv  Dl q2 ( 1/((w+cq)^2+(Dl q2)^2) + 1/((w-cq)^2+(Dl q2)^2) )
 %
 %  where:
 %    CpCv=gamma is the Laplace coefficient usually in 1.1-1.67
-%    c*q        is the acoustic linear dispersion
+%    c*q        is the longitudinal acoustic linear dispersion. To suppress the acoustic mode
+%                 fix c=0 or Dl=0
 %    Dt         is the entropy fluctuation (thermal) diffusion coefficient
-%                 the central line half width is then Dt*q^2
-%    Dl         is the longitudinal diffusion coefficient
-%                 the acoustic mode half width is then Dl*q^2
+%                 the central line half width is then Dt*q^2. To suppress it fix Dt=0
+%    Dl         is the longitudinal acoustic diffusion coefficient
+%                 the acoustic mode half width is then Dl*q^2. To suppress it fix Dl=0
 %
 %  Usually Dt = lambda/Cp.rho with lambda the thermal conductivity [W/m/K] and 
-%  rho the material density [g/cm3]. Also, the sound velocity c is 1/sqrt(m rho Chi)
-%  where m is the material mass [g/mol] and Chi is the isothermal compressibility [1/Pa]
+%  rho the material density [g/cm3]. Also, the sound velocity c is 1/sqrt(rho Chi)
+%  where Chi is the isothermal compressibility [1/Pa].
 %
 %  The diffusion constant D is usually around D=1-10 E-9 [m^2/s] in liquids. Its 
-%  value in [meV/Angs^2] is D*4.1356e+08.The sound velocity is usually around 
+%  value in [meV.Angs^2] is D*4.1356e+08.The sound velocity is usually around 
 %  1000 [m/s]. Its value in [meV.Angs] is c/142.1622.
 %
+%  Structure factor:
+%  -----------------
+%
 %  In this implementation, S(q) is assumed to be 1, however, it is possible to 
-%  set S(q) over a full q-range when creating the model:
+%  set S(q) from a data set over a full q-range when creating the model:
 %    s = sqw_visco_elastic(sq)
 %  where 'sq' is an iData [q,s(q)] in [Angs^-1], which is stored in UserData.Sq
 %  The S(q) can be also changed or set anytime as:
 %    s.UserData.Sq = iData(q,Sq);
 %  It is also possible to multiply this model with a S(q) model (see Examples below).
+%
+%  Additional remarks:
+%  -------------------
 %
 %  The S(q,w) is computed in its symmetrized expression (so-called classical). 
 %  To get the 'true' quantum S(q,w) definition, use e.g.
@@ -52,13 +62,10 @@ function signal=sqw_visco_elastic(varargin)
 %
 % input:  p: sqw_visco_elastic model parameters (double)
 %             p(1)=Amplitude
-%             p(2)=c      sound velocity in [m/s]
+%             p(2)=c      Sound velocity in [m/s]
 %             p(3)=Dt     Diffusion coefficient for thermal central line [m^2/s]
 %             p(4)=Dl     Diffusion coefficient for longitudinal mode [m^2/s]
 %             p(5)=gamma  Laplace coefficient Cp/Cv [1]
-%             p(6)=R      Inter-atomic/molecule distance [Angs]
-%             p(7)=w0     Maximum acoustic phonon energy [meV]
-%             p(8)=eta    Reduced density [0-1]
 %         q:  axis along wavevector/momentum (row,double) [Angs-1]
 %         w:  axis along energy (column,double) [meV]
 % output: signal: model value [iFunc_Sqw2D]
@@ -67,11 +74,11 @@ function signal=sqw_visco_elastic(varargin)
 %  P.A.Egelstaff, An introduction to the liquid state, 2nd ed., Oxford (2002)
 %
 % Example:simple liquid with d=1 Angs inter-atomic distance and static S(q)
-%  sq = iData(sf_hard_spheres, [1 0.4], 0:0.01:20); % a simple liquid with d=1 Angs
+%  sq = iData(sf_hard_spheres, [1 0.4], 0:0.01:20); % a LJ/PY simple liquid S(q) with d=1 Angs
 %  s  = sqw_visco_elastic(sq);
 %  plot(log10(iData(s, [], 0:.01:4, -50:50)))
 %
-% Example: simple liquid with parameterized S(q)
+% Example: simple liquid with parameterized S(q), here a Percus-Yevick hard spheres
 %  s1 = sqw_visco_elastic; s1.ParameterValues=s1.Guess;
 %  s2 = sf_hard_spheres;   s2.ParameterValues=[4 .4];
 %  s  = s1.*s2; 
@@ -79,7 +86,7 @@ function signal=sqw_visco_elastic(varargin)
 %
 % Version: $Date$
 % See also iData, iFunc/fits, iFunc/plot, gauss, sqw_phonons, sqw_cubic_monoatomic, sqw_vaks
-%   <a href="matlab:doc(iFunc,'Models')">iFunc:Models</a>, sqw_gen_hydrodynamics
+%   <a href="matlab:doc(iFunc,'Models')">iFunc:Models</a>, sqw_gen_hydrodynamics, sqw_visco_elastic_simple
 % (c) E.Farhi, ILL. License: EUPL.
 
 
@@ -98,7 +105,7 @@ signal.Description    = 'Visco Elastic model with a central line, and two disper
 
 signal.Parameters     = {  ...
   'Amplitude' ...
-  'c      sound velocity in [m/s]' ...
+  'c      Sound velocity in [m/s]' ...
   'Dt     Diffusion coefficient for thermal central line [m^2/s]' ...
   'Dl     Diffusion coefficient for longitudinal mode [m^2/s]' ...
   'gamma  Laplace coefficient Cp/Cv [1]' ...
@@ -116,8 +123,13 @@ signal.Expression = { ...
   'dq2 = D*q.^2*1E20/241.8E9; % in meV, with q in Angs-1 and D in m2/s' ...
   'cq  = c*q/142.1622;        % m/s -> meV.Angs' ...
   'gq2 = g*q.^2*1E20/241.8E9; % in meV, with q in Angs-1 and D in m2/s' ...
-  'signal = (1-1/CpCv) * dq2 ./ (dq2.^2 + w.^2);' ...
-  'signal = signal + 1/2/CpCv.*gq2.* (1./((w+cq).^2+gq2.^2) + 1./((w-cq).^2+gq2.^2) );' ...  
+  'signal = 0;' ...
+  'if D>0' ...
+    'signal = (1-1/CpCv) * dq2 ./ (dq2.^2 + w.^2);' ...
+  'end' ...
+  'if g>0 && c>0' ...
+    'signal = signal + 1/2/CpCv.*gq2.* (1./((w+cq).^2+gq2.^2) + 1./((w-cq).^2+gq2.^2) );' ...  
+  'end' ...
   'signal = signal*p(1)/pi; ' ...
   'if isfield(this.UserData,''Sq'')' ...
     'sq = this.UserData.Sq;' ...

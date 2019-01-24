@@ -1,5 +1,5 @@
 function signal=sqw_rotationaldiffusion(varargin)
-% model = sqw_rotationaldiffusion(p, q ,w, {signal}) : molecule rotational diffusion dispersion(Q)
+% model = sqw_rotationaldiffusion(p, q ,w, {signal}) : molecule rotational diffusion dispersion(Q) Sqw2D
 %
 %   iFunc/sqw_rotationaldiffusion: a 2D S(q,w) with a molecule rotational diffusion 
 %     dispersion based on the Egelstaff model.
