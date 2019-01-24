@@ -12,6 +12,11 @@ function y=bose(varargin)
 %         
 % When 'x' is an energy in meV, the parameter p should be T/11.6045
 %
+% Energy conventions:
+%   x = omega = Ei-Ef = energy lost by the neutron [meV]
+%       omega > 0, neutron looses energy, can not be higher than Ei (Stokes)
+%       omega < 0, neutron gains energy, anti-Stokes
+%
 % Reference: http://en.wikipedia.org/wiki/Bose-Einstein_statistics
 %
 % input:  p: Bose model parameters (double)
@@ -28,10 +33,16 @@ function y=bose(varargin)
 
 y.Name       = [ 'Bose (1D) [' mfilename ']' ];
 y.Description='Bose-Einstein distribution fitting function. Ref: http://en.wikipedia.org/wiki/Bose%E2%80%93Einstein_statistics';
-y.Parameters = {'Tau h/2pi/kT'};
+y.Parameters = {'Temperature [x unit, 2pi*kT/h]'};
 % the Bose factor is negative for w<0, positive for w>0
 % (n+1) converges to 0 for w -> -Inf, and to 1 for w-> +Inf. It diverges at w=0
-y.Expression = @(p,x) 1 ./ (exp(x/p(1)) - 1);
+y.Expression = { ...
+  'if exist(''y'')' ...
+  'if isvector(x) && isvector(y) && ~isempty(y) && numel(x) ~= numel(y), [x,y] = meshgrid(x,y); x=y; end' ...
+  'end' ...
+  'signal = 1 ./ (exp(x/p(1)) - 1);' ...
+  'signal(find(x==0)) = 1;
+};
 y.Dimension  = 1;   
 % use ifthenelse anonymous function
 % <https://blogs.mathworks.com/loren/2013/01/10/introduction-to-functional-programming-with-anonymous-functions-part-1/>
