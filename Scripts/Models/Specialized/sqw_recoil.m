@@ -10,6 +10,9 @@ function signal=sqw_recoil(varargin)
 %   This model is also known as 'impulse approximation' or 'short time' Gaussian. 
 %   The model satisfies the detailed balance.
 %
+%  Model and parameters:
+%  ---------------------
+%
 %   The dispersion has the form (Schober JNR 2014 Eq 10.25):
 %      S(q,w) = 1/sqrt(2*pi*delta2).*exp( -(w - Er).^2/2./delta2 )
 %
@@ -19,10 +22,10 @@ function signal=sqw_recoil(varargin)
 %      M      = mass of the scattering target [g/mol]
 %      w0     = Harmonic Excitation Energy Width [meV]
 %
-% conventions:
-% w = omega = Ei-Ef = energy lost by the neutron [meV]
-%     omega > 0, neutron looses energy, can not be higher than Ei (Stokes)
-%     omega < 0, neutron gains energy, anti-Stokes
+%   Energy conventions:
+%   w = omega = Ei-Ef = energy lost by the neutron [meV]
+%       omega > 0, neutron looses energy, can not be higher than Ei (Stokes)
+%       omega < 0, neutron gains energy, anti-Stokes
 %
 %   You can build a recoil model for a given mass and oscillator energy with syntax:
 %      sqw = sqw_recoil(mass)
@@ -35,6 +38,11 @@ function signal=sqw_recoil(varargin)
 %   Evaluate the model with syntax:
 %     sqw(p, q, w)
 %
+% Usage:
+% ------
+% s = sqw_recoil; 
+% value = s(p,q,w); or value = iData(s,p,q,w)
+%
 % input:  p: sqw_recoil model parameters (double)
 %             p(1)= M             Mass of the scattering unit [g/mol]
 %             p(2)= w0            Harmonic Excitation Energy Width [meV]
@@ -43,7 +51,6 @@ function signal=sqw_recoil(varargin)
 %         q:  axis along wavevector/momentum in Angs-1 (row,double)
 %         w:  axis along energy in meV (column,double)
 % output: signal: model value [iFunc_Sqw2D]
-%
 %
 % Example:
 %   s=sqw_recoil(2); % Deuterium mass

@@ -46,9 +46,11 @@ function signal=sqw_visco_elastic(varargin)
 %  Additional remarks:
 %  -------------------
 %
-%  The S(q,w) is computed in its symmetrized expression (so-called classical). 
+%  The S(q,w) is computed in its symmetrized expression (so-called classical)
+%    and does NOT satisfy the detailed balance.
+%
 %  To get the 'true' quantum S(q,w) definition, use e.g.
-%    sqw = sqw_visco_elastic .* bose';
+%    sqw = sqw_visco_elastic .* bose;
 %  where the Temperature is then given in [x units]. If 'x' is an energy in [meV]
 %  then the Temperature parameter is T[K]/11.6045
 %
@@ -59,6 +61,11 @@ function signal=sqw_visco_elastic(varargin)
 %    sqw = convn(sqw_visco_elastic, gauss2d)
 % or
 %    sqw = convn(sqw_visco_elastic, pseudovoigt2d)
+%
+% Usage:
+% ------
+% s = sqw_visco_elastic; 
+% value = s(p,q,w); or value = iData(s,p,q,w)
 %
 % input:  p: sqw_visco_elastic model parameters (double)
 %             p(1)=Amplitude

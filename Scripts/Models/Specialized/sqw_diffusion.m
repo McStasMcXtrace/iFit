@@ -5,17 +5,8 @@ function signal=sqw_diffusion(varargin)
 %     based on the Egelstaff-Schofield Langevin equation for Brownian motion model.
 %     This is a classical pure incoherent Gaussian scattering law (no structure).
 %
-%   The model is classical, e.g. symmetric in energy, and does not satisfy the
-%   detailed balance.
-%
-%   The characteristic energy for a translational diffusion step is w0, usually  
-%   around few meV in liquids, corresponds to a friction, which inverse time t0
-%   characterises the diffusion step, t0 ~ 1-4 ps. Usually, one can write
-%   w0 = 1/t0 = MD/2kT. The half width of the Lorentizian follows a law similar 
-%   to Dq^2.
-%
-%   The mean free path is computed as l0 = sqrt(6*t0*D) and is around 0.1-0.5 nm.
-%   The diffusion constant D is usually around D=1-10 E-9 m^2/s in liquids.
+%  Model and parameters:
+%  ---------------------
 %
 %   The dispersion has the form: (Egelstaff book Eq 11.32, p 227.)
 %
@@ -27,10 +18,14 @@ function signal=sqw_diffusion(varargin)
 %     w0   = Diffusion characteristic energy, MD/2kT e.g. few [meV]
 %     D    = Diffusion coefficient e.g. few 1E-9 [m^2/s]
 %
-% conventions:
-% w = omega = Ei-Ef = energy lost by the neutron [meV]
-%     omega > 0, neutron looses energy, can not be higher than Ei (Stokes)
-%     omega < 0, neutron gains energy, anti-Stokes
+%   The characteristic energy for a translational diffusion step is w0, usually  
+%   around few meV in liquids, corresponds to a friction, which inverse time t0
+%   characterises the diffusion step, t0 ~ 1-4 ps. Usually, one can write
+%   w0 = 1/t0 = MD/2kT. The half width of the Lorentizian follows a law similar 
+%   to Dq^2.
+%
+%   The mean free path is computed as l0 = sqrt(6*t0*D) and is around 0.1-0.5 nm.
+%   The diffusion constant D is usually around D=1-10 E-9 m^2/s in liquids.
 %
 %   You can build a diffusive model for a given diffusion energy and
 %   coefficient:
@@ -40,6 +35,27 @@ function signal=sqw_diffusion(varargin)
 %
 %   Evaluate the model with syntax:
 %     sqw(p, q, w)
+%
+%  Additional remarks:
+%  -------------------
+%
+%  The model is classical, e.g. symmetric in energy, and does NOT satisfy the
+%  detailed balance. It includes a Debye Waller factor.
+%
+%  To get the 'true' quantum S(q,w) definition, use e.g.
+%    sqw = sqw_diffusion .* bose;
+%  where the Temperature is then given in [x units]. If 'x' is an energy in [meV]
+%  then the Temperature parameter is T[K]/11.6045
+%
+%  Energy conventions:
+%   w = omega = Ei-Ef = energy lost by the neutron [meV]
+%       omega > 0, neutron looses energy, can not be higher than Ei (Stokes)
+%       omega < 0, neutron gains energy, anti-Stokes
+%
+% Usage:
+% ------
+% s = sqw_diffusion; 
+% value = s(p,q,w); or value = iData(s,p,q,w)
 %
 % input:  p: sqw_diffusion model parameters (double)
 %             p(1)= Amplitude 

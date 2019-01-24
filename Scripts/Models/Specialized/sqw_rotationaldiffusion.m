@@ -5,8 +5,8 @@ function signal=sqw_rotationaldiffusion(varargin)
 %     dispersion based on the Egelstaff model.
 %     This is a classical pure incoherent Lorentzian scattering law (no structure).
 %
-%   The model is classical, e.g. symmetric in energy, and does not satisfy the
-%   detailed balance.
+%  Model and parameters:
+%  ---------------------
 %
 %   The dispersion has the form: 
 %     Egelstaff book Eq 11.13 and 11.16, p 222
@@ -33,11 +33,6 @@ function signal=sqw_rotationaldiffusion(varargin)
 %
 %   When w0 >> Dr, the model is a simple, continuous rotational diffusion (Brownian)
 %
-% conventions:
-% w = omega = Ei-Ef = energy lost by the neutron [meV]
-%     omega > 0, neutron looses energy, can not be higher than Ei (Stokes)
-%     omega < 0, neutron gains energy, anti-Stokes
-%
 %   You can build a jump diffusion model for a given translational weight and 
 %   diffusion coefficient:
 %      sqw = sqw_rotationaldiffusion([ w0 l0 ])
@@ -46,6 +41,27 @@ function signal=sqw_rotationaldiffusion(varargin)
 %
 %   Evaluate the model with syntax:
 %     sqw(p, q, w)
+%
+%  Additional remarks:
+%  -------------------
+%
+%  The model is classical, e.g. symmetric in energy, and does NOT satisfy the
+%  detailed balance.
+%
+%  To get the 'true' quantum S(q,w) definition, use e.g.
+%    sqw = sqw_visco_elastic .* bose;
+%  where the Temperature is then given in [x units]. If 'x' is an energy in [meV]
+%  then the Temperature parameter is T[K]/11.6045
+%
+%  Energy conventions:
+%   w = omega = Ei-Ef = energy lost by the neutron [meV]
+%       omega > 0, neutron looses energy, can not be higher than Ei (Stokes)
+%       omega < 0, neutron gains energy, anti-Stokes
+%
+% Usage:
+% ------
+% s = sqw_rotationaldiffusion; 
+% value = s(p,q,w); or value = iData(s,p,q,w)
 %
 % input:  p: sqw_rotationaldiffusion model parameters (double)
 %             p(1)= Amplitude 
