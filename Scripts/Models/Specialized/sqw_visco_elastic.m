@@ -50,6 +50,19 @@ function signal=sqw_visco_elastic(varargin)
 % or
 %    sqw = convn(sqw_visco_elastic, pseudovoigt2d)
 %
+% input:  p: sqw_visco_elastic model parameters (double)
+%             p(1)=Amplitude
+%             p(2)=c      sound velocity in [m/s]
+%             p(3)=Dt     Diffusion coefficient for thermal central line [m^2/s]
+%             p(4)=Dl     Diffusion coefficient for longitudinal mode [m^2/s]
+%             p(5)=gamma  Laplace coefficient Cp/Cv [1]
+%             p(6)=R      Inter-atomic/molecule distance [Angs]
+%             p(7)=w0     Maximum acoustic phonon energy [meV]
+%             p(8)=eta    Reduced density [0-1]
+%         q:  axis along wavevector/momentum (row,double) [Angs-1]
+%         w:  axis along energy (column,double) [meV]
+% output: signal: model value [iFunc_Sqw2D]
+%
 % Reference: 
 %  P.A.Egelstaff, An introduction to the liquid state, 2nd ed., Oxford (2002)
 %

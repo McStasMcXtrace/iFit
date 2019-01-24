@@ -30,13 +30,14 @@ function signal=sqw_visco_elastic_simple(varargin)
 %  value in [meV/Angs^2] is D*4.1356e+08.The sound velocity is usually around 
 %  1000 [m/s]. Its value in [meV.Angs] is c/142.1622.
 %
-%  In this implementation, S(q) is assumed to be 1, however, it is possible to 
-%  set S(q) over a full q-range when creating the model:
+%  In this implementation, the structure factor is modelled from a Lennard-Jones/Percus-Yevick
+%  model for hard spheres. The parameter 'eta' ranges from 0 [ideal liquid S(q)=1]
+%    to 1 [pure crystalline solid with sharp Bragg peaks].
+%  However, it is also possible to set S(q) over a full q-range when creating the model:
 %    s = sqw_visco_elastic_simple(sq)
 %  where 'sq' is an iData [q,s(q)] in [Angs^-1], which is stored in UserData.Sq
 %  The S(q) can be also changed or set anytime as:
 %    s.UserData.Sq = iData(q,Sq);
-%  It is also possible to multiply this model with a S(q) model (see Examples below).
 %
 %  The S(q,w) is computed in its symmetrized expression (so-called classical). 
 %  To get the 'true' quantum S(q,w) definition, use e.g.
@@ -52,18 +53,25 @@ function signal=sqw_visco_elastic_simple(varargin)
 % or
 %    sqw = convn(sqw_visco_elastic_simple, pseudovoigt2d)
 %
+% input:  p: sqw_visco_elastic_simple model parameters (double)
+%             p(1)=Amplitude
+%             p(2)=c      sound velocity in [m/s]
+%             p(3)=Dt     Diffusion coefficient for thermal central line [m^2/s]
+%             p(4)=Dl     Diffusion coefficient for longitudinal mode [m^2/s]
+%             p(5)=gamma  Laplace coefficient Cp/Cv [1]
+%             p(6)=R      Inter-atomic/molecule distance [Angs]
+%             p(7)=w0     Maximum acoustic phonon energy [meV]
+%             p(8)=eta    Reduced density [0-1]
+%         q:  axis along wavevector/momentum (row,double) [Angs-1]
+%         w:  axis along energy (column,double) [meV]
+% output: signal: model value [iFunc_Sqw2D]
+%
 % Reference: 
 %  P.A.Egelstaff, An introduction to the liquid state, 2nd ed., Oxford (2002)
+%  Copley and Lovesey, Rep. Prog. Phys. 38 (1975) 461
 %
-% Example:simple liquid with d=1 Angs inter-atomic distance and static S(q)
-%  sq = iData(sf_hard_spheres, [1 0.4], 0:0.01:20); % a simple liquid with d=1 Angs
-%  s  = sqw_visco_elastic_simple(sq);
-%  plot(log10(iData(s, [], 0:.01:4, -50:50)))
-%
-% Example: simple liquid with parameterized S(q)
-%  s1 = sqw_visco_elastic_simple; s1.ParameterValues=s1.Guess;
-%  s2 = sf_hard_spheres;   s2.ParameterValues=[4 .4];
-%  s  = s1.*s2; 
+% Example:simple liquid
+%  s  = sqw_visco_elastic_simple;
 %  plot(log10(iData(s, [], 0:.01:4, -50:50)))
 %
 % Version: $Date$
@@ -113,6 +121,7 @@ signal.Parameters     = {  ...
   'gamma  Laplace coefficient Cp/Cv [1]' ...
   'R      Inter-atomic/molecule distance [Angs]' ...
   'w0     Maximum acoustic phonon energy [meV]' ...
+  'eta    Reduced density [0-1]' ...
 };
   
 signal.Dimension      = 2;         % dimensionality of input space (axes) and result
@@ -122,7 +131,7 @@ signal.UserData.DebyeWaller   = false;
 % we must provide a p(xx) expression to tell iFunc to validate xx parameters
 signal.Expression = { ...
   '% the energy axis' ...
-  'q = x; w=y; c=p(2); D=p(3); g=p(4); CpCv=p(5); R=p(6); w0=p(7);' ...
+  'q = x; w=y; c=p(2); D=p(3); g=p(4); CpCv=p(5); R=p(6); w0=p(7); fp=p(8);' ...
   'if isvector(q) && isvector(w) && numel(q) ~= numel(w), [q,w] = meshgrid(q,w); end' ...
   'dq2 = D*q.^2*1E20/241.8E9; % in meV, with q in Angs-1 and D in m2/s' ...
   '% compute c0 constant c0^2=3*kT/m and c^2 = c0^2+w0^2*R^2/4' ...
@@ -144,9 +153,6 @@ signal.Expression = { ...
       'end' ...
     'end' ...
   'else % use LJ S(q). Code from sf_hard_spheres' ...
-    'S0 = sqrt(c02)/3/(c/142.1622);' ...
-    'if S0>0, fp = -log(S0)/8; % approx S(0) = (1-eta)^4/(1+2*eta)^2 ~ exp(-8*eta)' ...
-    'else fp=0; end; ' ...
     'fp=max(0, min(fp, 1));' ...
     'if (fp <= 0.0 || fp >= 1) sq=ones(size(q)); else ' ...
       'A=abs(R*q); '...
@@ -160,7 +166,7 @@ signal.Expression = { ...
   'end' ...
 };
 
-signal.Guess          = [ 1 2500 1e-9 1e-9 1.5 3.4 10 ]; % default parameters
+signal.Guess          = [ 1 2500 1e-9 1e-9 1.5 3.4 10 0.4 ]; % default parameters
 
 signal=iFunc(signal);
 signal=iFunc_Sqw2D(signal);
