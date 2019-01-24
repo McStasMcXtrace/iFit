@@ -119,6 +119,17 @@ classdef iFunc_Sqw2D < iFunc
         assignin('caller',inputname(1),self); % update in original object
       end
     end
+    
+    function [signal, self, ax, name] = feval(self, varargin)
+      % iFunc_Sqw2D: feval: evaluate the Model on QW grid
+      if isempty(varargin),  varargin{end+1} = []; end % parameters
+      if numel(varargin) <2, varargin{end+1} = linspace(0,3,31); end
+      if numel(varargin) <3, varargin{end+1} = linspace(0.01,20,21); end
+      [signal, self, ax, name] = feval@iFunc(self, varargin{:});
+      if ~isempty(inputname(1))
+        assignin('caller',inputname(1),self); % update in original object
+      end
+    end
   
     % methods for Sqw 2D
     
