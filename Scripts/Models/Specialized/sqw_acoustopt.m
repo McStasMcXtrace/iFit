@@ -1,7 +1,7 @@
 function signal=sqw_acoustopt(varargin)
-% model = sqw_acoustopt(p, h,k,l,w, {signal}) : acoutsic/optic dispersion(HKL) with DHO(energy)
+% model = sqw_acoustopt(p, h,k,l,w, {signal}) : acoutsic/optic dispersion(HKL) with DHO(energy) Sqw4D
 %
-%   iFunc/sqw_acoustopt: a 4D S(q,w) with a 3D HKL dispersion with 
+%   iFunc/sqw_acoustopt: a 4D S(q,w) dispersion with 
 %      quadratic dependency, and a DHO line shape. 
 %      This dispersion corresponds with a local description of an excitation, 
 %      with its minimum around an (H0,K0,L0,E0) point.

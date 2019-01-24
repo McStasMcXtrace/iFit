@@ -1,7 +1,7 @@
 function signal=sqw_linquad(varargin)
-% model = sqw_linquad(p, h,k,l,w, {signal}) : linear-quadratic dispersion(HKL) with DHO(energy)
+% model = sqw_linquad(p, h,k,l,w, {signal}) : linear-quadratic dispersion(HKL) with DHO(energy) Sqw4D
 %
-%   iFunc/sqw_linquad: a 4D S(q,w) with a 3D HKL dispersion with linear or 
+%   iFunc/sqw_linquad: a 4D S(q,w) dispersion with linear or 
 %      quadratic dependency, and a DHO line shape. 
 %      This dispersion corresponds with a local description of an excitation, 
 %      centered around an (H0,K0,L0,E0) point.

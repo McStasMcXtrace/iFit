@@ -1,7 +1,7 @@
 function signal=sqw_spinw(varargin)
-% model = sqw_spinw(sw, options) : 3D dispersion(HKL) spin-wave
+% model = sqw_spinw(sw, options) : S(q,w) dispersion(HKL) spin-wave Sqw4D
 %
-%   iFunc/sqw_spinw: a 4D S(q,w) with a 3D HKL dispersion obtained from the
+%   iFunc/sqw_spinw: a 4D S(q,w) dispersion obtained from the
 %   spinw package from S. Toth. A SpinW object must first be created, and is then
 %   converted into an iFunc model for HKL evaluation. The intensity is computed
 %   for a neutron scattering experiment.

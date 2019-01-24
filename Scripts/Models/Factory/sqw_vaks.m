@@ -1,5 +1,5 @@
 function signal=sqw_vaks(varargin)
-% model = sqw_vaks(p, h,k,l,w, {signal}) : dispersion(HKL) in perovskites ABX3 with DHO(energy)
+% model = sqw_vaks(p, h,k,l,w, {signal}) : dispersion(HKL) in perovskites ABX3 with DHO(energy) Sqw4D
 %
 %   iFunc/sqw_vaks: a 4D S(q,w) with a HKL dispersion, and a DHO line
 %      shape, based on a parameterisation by Vaks, suited for ABX3 perovskite 

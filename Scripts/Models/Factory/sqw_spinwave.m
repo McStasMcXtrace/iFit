@@ -1,5 +1,5 @@
 function s = sqw_spinwave(file, action)
-% sqw_spinwave: build a SpinWave model (S. Petit/LLB)
+% sqw_spinwave: build a SpinWave model (S. Petit/LLB) Sqw4D
 %
 % MODEL CREATION
 %

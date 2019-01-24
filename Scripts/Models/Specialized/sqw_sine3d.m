@@ -1,7 +1,7 @@
 function signal=sqw_sine3d(varargin)
-% model = sqw_sine3d(p, h,k,l,w, {signal}) : sine dispersion(HKL) with DHO(energy)
+% model = sqw_sine3d(p, h,k,l,w, {signal}) : sine dispersion(HKL) with DHO(energy) Sqw4D
 %
-%   iFunc/sqw_sine3d: a 4D S(q,w) with a 3D HKL sine dispersion, and a DHO line
+%   iFunc/sqw_sine3d: a 4D S(q,w) sine dispersion, and a DHO line
 %      shape. The sine dispersion can be tuned with energy gaps at zone centre
 %      and boundary, as well as a periodicity of the sine wave.
 %
