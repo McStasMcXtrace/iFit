@@ -23,5 +23,5 @@ function mifit_File_Exit(varargin)
   % clearing the Models appdata may lead to a crash
   rmappdata(fig, 'Models');
   rmappdata(fig, 'DnDControl');
-  close(fig);
+  delete(fig);
   
