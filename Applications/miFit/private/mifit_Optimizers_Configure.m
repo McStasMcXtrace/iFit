@@ -6,6 +6,7 @@ function mifit_Optimizers_Configure(varargin)
   options    = getappdata(mifit_fig, 'CurrentOptimizerConfig');
   config     = getappdata(mifit_fig, 'Preferences');
   o.FontSize = config.FontSize;
+  o.ColumnEditable = true;
   o.Name     = [ mfilename ': Optimizer "' CurrentOptimizer '" configuration' ];
   NL = sprintf('\n');
   o.TooltipString = [ 'Most relevant "' CurrentOptimizer '" configuration items:' NL ...

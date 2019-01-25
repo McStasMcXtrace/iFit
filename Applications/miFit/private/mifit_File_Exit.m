@@ -21,7 +21,10 @@ function mifit_File_Exit(varargin)
     delete(mifit_fig('mifit_View_Parameters'))
   end
   % clearing the Models appdata may lead to a crash
-  rmappdata(fig, 'Models');
-  rmappdata(fig, 'DnDControl');
+  ad = getappdata(fig);
+  delete(ad.DnDControl); 
+  for f=fieldnames(ad)'
+    setappdata(fig, f{1}, []);
+  end
   delete(fig);
   

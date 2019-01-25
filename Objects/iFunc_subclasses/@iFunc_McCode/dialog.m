@@ -23,6 +23,7 @@ p1 = cell2struct(num2cell(m.ParameterValues(:)), strtok(m.Parameters(:)), 1);
 % and finally numel(fieldnames(m.UserData.Parameters_Constant)) others
 p2 = m.UserData.Parameters_Constant;
 dlg.Name = m.Name;
+dlg.ColumnEditable = true;
 dlg.TooltipString = m.Name;
 dlg.ColumnFormat = 'char';  % this way we can change parameter values from scalar to vectors
 disp([ mfilename ': To abort, select the CANCEL context menu item (right-click), or press Ctrl-C.' ])
