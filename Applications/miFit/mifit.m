@@ -371,8 +371,18 @@ function mifit_Models_Edit(varargin)
   % create new Models after edition
   
 function mifit_Models_Plot(varargin)
-  % TODO
-  disp([ mfilename ': Models_Plot: TODO' ])
+  % update the model alone
+  model = getappdata(mifit_fig, 'CurrentModel');
+  h = mifit_fig([ 'plot_' model.Tag ]);
+  if isempty(h)
+    h = figure('Tag', [ 'plot_' model.Tag ]);
+    az = [];
+  else 
+    set(0,'CurrentFigure', h);
+    [az,el] = view;
+  end
+  plot(model);
+  if ~isempty(az), view(az,el); end
   
 function mifit_Models_Plot_Parameters(varargin)
   % TODO

@@ -46,7 +46,12 @@ function mifit_Data_AssignModel(varargin)
   if numel(D) == 0 || isempty(index_selected), 
     mifit_disp([ 'Selected Model "' model.Name '".' ]);
     mifit_Models_View_Parameters('update');
-    figure; plot(model);
+    h = mifit_fig([ 'plot_' model.Tag ]);
+    if isempty(h)
+      h = figure('Tag', [ 'plot_' model.Tag ]);
+    else set(0,'CurrentFigure', h);
+    end
+    plot(model);
     return; 
   end
   mifit_disp([ 'Assigning Model "' model.Name '" to ' num2str(numel(index_selected)) ' Data set(s):' ]);

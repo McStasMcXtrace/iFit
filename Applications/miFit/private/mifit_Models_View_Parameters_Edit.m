@@ -28,7 +28,7 @@ Data{event.Indices(1),event.Indices(2)} = event.NewData;
 % when no selection, we should store the modified Model Parameters in 
 %   getappdata(mifit_fig, 'CurrentModelHandle') when UserData holds an iFunc
 
-d = []; model = [];
+d = []; model = []; update_model = 0;
 if ~isempty(getappdata(mifit_fig, 'CurrentDataSetIndex')) % Data set selection in List
   % get the single Model stored in the Dataset (after fit)
   d     = getappdata(mifit_fig, 'CurrentDataSet');
@@ -77,7 +77,7 @@ end
 if ~isempty(d)
   d = setalias(d, 'Model', model);
   % update the modelValue when the evaluation time is small (< .5 sec)
-  if model.Duration > 0 && model.Duration < 0.5
+  if model.Duration >= 0 && model.Duration < 0.5
     try
       % evaluate model with its parameters (Edit) and Data set axes
       if ndims(d) == ndims(model)
@@ -87,6 +87,8 @@ if ~isempty(d)
           h = mifit_fig([ 'plot_' d.Tag ]);
           if ~isempty(h)
             plot(d,'light transparent grid tight replace');
+          else
+            update_model = 1;
           end
           % and put back focus to the Parameter Window
           figure(mifit_fig('mifit_View_Parameters'));
@@ -150,5 +152,24 @@ if ~isempty(d)
   setappdata(mifit_fig, 'Data', D);
   setappdata(mifit_fig, 'CurrentDataSet',d);
 elseif ~isempty(handle), 
-  set(handle, 'UserData',model);
+  update_model = 1;
+  builtin('set', handle, 'UserData', model);
+else
+  update_model = 1;
+end
+
+if update_model && model.Duration >= 0 && model.Duration < 0.5
+  % update the model alone
+  h = mifit_fig([ 'plot_' model.Tag ]);
+  if isempty(h)
+    h = figure('Tag', [ 'plot_' model.Tag ]);
+    az = [];
+  else
+    set(0,'CurrentFigure', h);
+    [az,el] = view;
+  end
+  plot(model);
+  if ~isempty(az), view(az,el); end
+  % and put back focus to the Parameter Window
+  figure(mifit_fig('mifit_View_Parameters'));
 end
