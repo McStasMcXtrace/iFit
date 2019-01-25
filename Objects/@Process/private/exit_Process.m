@@ -76,7 +76,7 @@ function kill_external(pid)
         if ispc
           cmd=sprintf('taskkill /PID %i /F', pid(index));
         else
-          cmd=sprintf('skill -p %i', pid(index));
+          cmd=sprintf('kill %i', pid(index));  % kill from PID
         end
         disp(cmd)
         system(cmd);
@@ -85,7 +85,7 @@ function kill_external(pid)
       if ispc
         cmd=sprintf('taskkill /im /f %s', pid);
       else
-        cmd=sprintf('skill -c %s', pid);
+        cmd=sprintf('pkill %s', pid); % kill from name
       end
       disp(cmd)
       system(cmd);

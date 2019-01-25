@@ -57,7 +57,7 @@ function d = display(s_in, name)
       if iscellstr(UserData.command), c=sprintf('%s ', UserData.command{:});
       else c = char(UserData.command); end
       if numel(c)>30, c=[ c(1:27) '...' ]; end
-      d = [ d sprintf('%30s ', num2str(UserData.command)) ];                   % cmd;
+      d = [ d sprintf('%30s ', num2str(c)) ];                   % cmd;
 
       if UserData.isActive
         d = [ d 'Run    ' ];

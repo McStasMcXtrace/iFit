@@ -36,21 +36,38 @@ else
   [response, tasks] = system('ps -ef');
 end
 
+tasks0 = tasks; PID = nan;
+
 % now extract the PID and command
 % split as lines
-tasks = textscan(tasks, '%s', 'Delimiter',sprintf('\n')); tasks = tasks{1};
+tasks = textscan(tasks0, '%s', 'Delimiter',sprintf('\n')); tasks = tasks{1};
+tasks = tasks(~cellfun(@isempty, tasks)); % ignore empty lines
+header = '';
 
 % should skip empty lines, those with 'PID' or '========'
 if ispc
   % windows: processes are listed from line {4}. Lines {1:3} are comments.
   %   command is 1:25, PID is word following
-  header= tasks{2};
-  tasks = tasks(4:end);
+  if numel(tasks) >= 4
+    header= tasks{2};
+    tasks = tasks(4:end);
+  end
 else
   % Unix/MacOSX: processes are listed from line {2}. Lines {1} is comment.
   %   look for PID in task{1} (before). Look for CMD and get position (after)
-  header  = tasks{1};
-  tasks   = tasks(2:end);
+  if numel(tasks) >= 2
+    header  = tasks{1};
+    tasks   = tasks(2:end);
+  end
+end
+
+% look for the PID and CMD in the header
+index_PID = strfind(lower(header), ' pid ');
+if isempty(index_PID)
+  warning([ mfilename ': Can not locate "PID" column in process list.' ]);
+  return;
+else
+  index_PID = index_PID(1);
 end
 
 % reduce the search list to PID/command matches
@@ -64,14 +81,7 @@ index = find(~cellfun(@isempty, m));
 if isempty(index), command = {}; return; end
 tasks = tasks(index);
 
-% look for the PID and CMD in the header
-index_PID = strfind(lower(header), ' pid ');
-if isempty(index_PID)
-  disp(header)
-  warning([ mfilename ': Can not locate PID in process list.' ]);
-else
-  index_PID = index_PID(1);
-end
+PID = [];
 
 for line = 1:numel(tasks)
   task = tasks{line};

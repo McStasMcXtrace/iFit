@@ -73,6 +73,8 @@ function pid = refresh_Process_external(pid)
   [PID, command] = get_command(pid);
   UserData = get(pid,'UserData');
   
+  if isnan(PID), return; end  % warning: could not get the PID from task list
+  
   if isempty(PID) && isempty(command)
     UserData.isActive  = 0;
     UserData.exitValue = 1;
