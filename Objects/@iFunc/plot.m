@@ -119,7 +119,12 @@ elseif isvector(signal)
   if all(~isfinite(signal)) signal = zeros(size(signal)); end
   h = plot(ax{1}, signal);
 elseif ndims(signal) == 2
-  h = surf(ax{2}, ax{1}, signal);
+  if isvector(ax{1}) && isvector(ax{2}) && numel(ax{1}) ~= numel(ax{2}) ...
+          & size(signal,1) == numel(ax{2})
+      h = surf(ax{1}, ax{2}, signal);
+  else
+      h = surf(ax{2}, ax{1}, signal);
+  end
   view(3)
   set(h,'EdgeColor','None');
 elseif ndims(signal) == 3
