@@ -22,16 +22,6 @@ classdef iFunc_Sqw2D < iFunc
   %   the methods below.
   % plot(a)
   %   plot the band structure and density of states
-  % b = band_structure(a)
-  %   Compute the band structure
-  % d = dos(a)
-  %   Compute the density of states
-  % m = max(a)
-  %   Evaluate the maximum S(q,w) dispersion energy
-  % publish(a)
-  %   Generate a readable document with all results
-  % t = thermochemistry(a)
-  %   Compute and display thermochemistry quantities
   %
   % input:
   %   can be an iFunc or struct or any set of parameters to generate a Sqw2D object.
@@ -131,7 +121,7 @@ classdef iFunc_Sqw2D < iFunc
       end
     end
   
-    % methods for Sqw 2D
+    % methods for iFunc Sqw 2D, similar to the iData Sqw2D ones
     
     % we evaluate the model, extend its Expression.
     %   convert it to an iData_Sqw2D and apply one of the following method:
