@@ -22,7 +22,7 @@ function a = fix(a, varargin)
 % ex:     b=fix(a,'Intensity');
 %
 % Version: $Date$
-% See also iFunc, iFunc/fits, iFunc/munlock, iFunc/xlim
+% See also iFunc, iFunc/fits, iFunc/munlock, iFunc/xlim, iFunc/free, iFunc/mlock
 
 % calls subsasgn with 'fix' for each parameter given
 
