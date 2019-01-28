@@ -1,8 +1,8 @@
 function self=Bosify(self, type)
-% iFunc_Sqw2D: Bosify: apply the 'Bose' factor (detailed balance) to a classical S(q,w) model.
-%   The initial model should obey S*=S(q,w) = S(q,-w), i.e. be 'classical'.
-%   The resulting model is 'quantum/experimental' and satisfies the detailed
-%   balance. It contains the temperature effect (population).
+% iFunc_Sqw2D: Bosify: remove the 'Bose' factor (detailed balance) to a classical S(q,w) model.
+%   The initial model should be 'quantum/experimental' and satisfy the detailed balance.
+%   The resulting model obeys S*=S(q,w) = S(q,-w), i.e. is 'classical'.
+%   It suppresses the temperature effect (population).
 %
 % conventions:
 % omega = Ei-Ef = energy lost by the neutron, given in [meV]
@@ -47,7 +47,7 @@ function self=Bosify(self, type)
 %   type: 'Schofield' or 'harmonic' or 'standard' (default)
 %
 % output:
-%   sqw_T: quantum Sqw model (non classical, iFunc_Sqw2D).
+%   sqw_T: quantum Sqw model (quantum, non classical, iFunc_Sqw2D).
 %
 % Example: s=sqw_difusion; sb=Bosify(s);
 %
@@ -55,6 +55,12 @@ function self=Bosify(self, type)
 % (c) E.Farhi, ILL. License: EUPL.
 
   if nargin < 2, type = 'standard'; end
+  
+  % handle deBosify as well
+  if strfind(lower(type),'debosify')
+    do_bosify=0;
+    type = strtrim(strrep(lower(type), 'debosify','')); % remove debosify occurence
+  else do_bosify=1; end
   
   % check if Temperature is already a parameter.
   T = findfield(self, 'Temperature','first');
@@ -71,17 +77,14 @@ function self=Bosify(self, type)
   classical = findfield(self, 'classical','first');
   if ~isempty(classical)
     classical = get(self, classical);
-    if ~classical
+    if ~classical(1) && do_bosify
       warning([ mfilename ': WARNING: Not "classical/symmetric": The model ' self.Tag ' ' self.Title ' does not seem to be classical (classical=0).' NL ...
   '   It may ALREADY contain the Bose factor in which case the detailed balance will be wrong.' ]);
+    elseif classical(1) && ~do_bosify
+      warning([ 'de' mfilename ': WARNING: Not "quantum": The model ' self.Tag ' ' self.Title ' seems to be classical/symmetric (classical=1).' NL ...
+      '   The Bose factor may NOT NEED to be removed in which case the detailed balance will be wrong.' ]);
     end
   end
-  
-  % handle deBosify as well
-  if strfind(lower(type),'debosify')
-    do_bosify=0;
-    type = strtrim(strrep(lower(type), 'debosify','')); % remove debosify occurence
-  else do_bosify=1; end
   
   % select the proper correction
   if strcmpi(type, 'Schofield') || strcmpi(type, 'exp') || strcmpi(type, 'Boltzmann') 
@@ -114,6 +117,12 @@ function self=Bosify(self, type)
   
   if isvector(self.Guess) && isnumeric(self.Guess)
     self.Guess(T_index) = 300;
+  end
+  
+  if do_bosify
+    self.UserData.classical     = false; % result is quantum
+  else
+    self.UserData.classical     = true;  % result is classical
   end
   
   if nargout == 0 && ~isempty(inputname(1)) && isa(self,'iFunc')
