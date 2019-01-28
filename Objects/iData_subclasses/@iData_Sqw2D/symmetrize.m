@@ -17,7 +17,7 @@ function s=symmetrize(s)
 %
 % input:
 %   s:  Sqw data set (classical, often labelled as S*)
-%        2D data set with w as 1st axis (rows, meV), q as 2nd axis (Angs-1).
+%        Sqw 2D data set with q as 1st axis (Angs-1), w as 2nd axis (meV).
 % output:
 %   s:  S(|q|,w) symmetrised in energy, classical.
 %
@@ -55,21 +55,21 @@ function s=symmetrize(s)
   end
 
   % test if the data set has single energy side: much faster to symmetrise
-  w = getaxis(s,1); % should be a row vector
+  w = getaxis(s,2); % should be a row vector
   w0= w;
   if isvector(w) && (all(w(:) >= 0) || all(w(:) <= 0))
     signal    = get(s, 'Signal');
-    signal    = [ signal ; signal ];
-    [w,index] = unique([ w0 ; -w0 ]);
-    s = setaxis(s, 1, w);
-    s = setaxis(s, 'Signal', signal(index,:));
+    signal    = [ signal signal ];
+    [w,index] = unique([ w0 -w0 ]);
+    s = setaxis(s, 2, w);
+    s = setaxis(s, 'Signal', signal(:,index));
     clear signal
     
     if ~isempty(getalias(s,'Error')) && ~strcmp(getalias(s,'Error'),'sqrt(this.Signal)')
        err = get(s, 'Error');
        if all(err(:) > 0 )
          err=[ err ; err ];
-         s = setalias(s, 'Error', err(index,:));
+         s = setalias(s, 'Error', err(:,index));
        end
     end
     clear err
@@ -78,13 +78,13 @@ function s=symmetrize(s)
       m = get(s, 'Monitor');
       if all(m(:) > 0 )
         m=[ m ; m ];
-        s = setalias(s, 'Monitor', m(index,:));
+        s = setalias(s, 'Monitor', m(:,index));
       end
     end
     clear m
   else
     % create a new object with an opposite energy axis
-    s     = combine(s, setaxis(s, 1, -getaxis(s,1)));
+    s     = combine(s, setaxis(s, 2, -getaxis(s,2)));
   end
   
   

@@ -116,7 +116,7 @@ function s = Sqw_check(s, mode)
   end
 
   % check if we need to transpose the S(q,w)
-  if (w_present==2 && q_present==1) || (beta_present==2 && alpha_present==1)
+  if (w_present==1 && q_present==2) || (beta_present==1 && alpha_present==2)
     s = transpose(s);
   end
   
@@ -139,7 +139,7 @@ function s = Sqw_check(s, mode)
   end
   if numel(classical0) > 1, classical0=classical0(1); end
   
-  w  = getaxis(s,1);
+  w  = getaxis(s,2);
   % checks that we have 0<w<Ei for Stokes, and w<0 can be lower (anti-Stokes)
   if any(w(:) < 0) && any(w(:) > 0) && strcmp(mode, 'qw')
     % for experimental data we should get w1=max(w) < Ei and w2 can be as low as
@@ -152,12 +152,12 @@ function s = Sqw_check(s, mode)
       warning([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source NL ...
       '    indicates that the energy range is mostly in the positive side.' NL ...
       '    Check that it corresponds with the neutron loss/sample gain Stokes side' NL ...
-      '    and if not, revert energy axis with e.g. setaxis(s, 1, -s{1})' ])
+      '    and if not, revert energy axis with e.g. setaxis(s, 2, -s{2})' ])
     end
   end
 
   % can we guess if this is classical data ? get temperature ?
-  w = getaxis(s,1);
+  w = getaxis(s,2);
 
   if any(w(:) < 0) && any(w(:) > 0)  && strcmp(mode, 'qw')
     % compute Temperature from the detailed balance (Bose)

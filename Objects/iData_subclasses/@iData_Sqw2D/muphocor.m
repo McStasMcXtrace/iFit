@@ -58,7 +58,7 @@ function g = muphocor(s, varargin)
   %      UN0:       TIME DEPENDENT BACKGROUND (if fun = 1)
   %
   % input:
-  %   s:      iData_Sqw2D object S(q,w)
+  %   s:       Sqw 2D data set with q as 1st axis (Angs-1), w as 2nd axis (meV).
   %   lambda:  optional incident neutron wavelength [Angs]
   %   temp0:   optional Temperature [K]
   %   amasi:   optional material mass [g/mol]
@@ -150,13 +150,13 @@ function g = muphocor(s, varargin)
   p.amasi = sum(alpha .* p.amasi);  % Reichardt eq (2.13-2.15)
 
   % test if data set is only w > 0 or w < 0. Then print a warning and symmetrize, and Bosify
-  w    = getaxis(s, 1);
-  q    = getaxis(s, 2);
+  w    = getaxis(s, 2);
+  q    = getaxis(s, 1);
   if all(w(:) >=0) || all(w(:) <= 0)
     warning([ mfilename ': WARNING: the data set is given only on an energy side. Symmetrizing and applying Temperature Bose factor.' ])
     s = symmetrize(s);
     s = Bosify(s, p.temp0);
-    w = getaxis(s, 1);
+    w = getaxis(s, 2);
   end
   
   % data must be [\int sin(theta) S(theta,t) dtheta] that is start from time distribution
@@ -187,7 +187,7 @@ function g = muphocor(s, varargin)
   if hist_me
     St   = hist(St, size(St));  % the data set is well covered here and interpolation works well.
   end
-  St   = trapz(St, 2);
+  St   = trapz(St, 1);
   
   % Elastic peak position
   EPP = Sqw_getT(s, {'ElasticPeakPosition' 'Elastic_peak_channel' 'Elastic_peak' 'Peak_channel' 'Elastic'});
@@ -207,7 +207,7 @@ function g = muphocor(s, varargin)
   end
 
   % we get the angle range
-  phi = getaxis(qw2phiw(s, p.lambda), 2);
+  phi = getaxis(qw2phiw(s, p.lambda), 1);
   
   % This is equivalent to: S(q,w) -> S(phi,channel)
   %   [~,spc] = qw2phi(s, p.lambda);           

@@ -3,8 +3,8 @@ classdef iData_Sqw2D < iData
   %
   % The iData_Sqw2D class is a 2D data set holding a S(q,w) dynamic structure factor
   %   aka scattering function/law.
-  %   The first  axis (rows)    is the Energy   transfer [meV].
-  %   The second axis (columns) is the Momentum transfer [Angs-1] (wavevector). 
+  %   The first  axis (rows)    is the Momentum transfer [Angs-1] (wavevector). 
+  %   The second axis (columns) is the Energy   transfer [meV].
   %
   % This quantity usually derives from the double differential neutron cross section
   %
@@ -276,7 +276,7 @@ classdef iData_Sqw2D < iData
       
       % make sure we use a regular grid
       inc = meshgrid(self,'vector');
-      q   = getaxis(inc, 2);
+      q   = getaxis(inc, 1);
       
       if isempty(sq)
         sq = [ 3 .2]; % will use Percus-Yevick
@@ -316,7 +316,7 @@ classdef iData_Sqw2D < iData
       coh = set(coh, 'Signal', signal_coh);
       
       % interpolation method: compute the new Sinc with modified q axis
-      % qinc = getaxis(inc, 2)./sqrt(sq);
+      % qinc = getaxis(inc, 1)./sqrt(sq);
       % sinc = interp(s, qinc, w).*sq;
       % interpolate on the initial grid
       % coh  = interp(coh, q,w);
@@ -476,7 +476,7 @@ classdef iData_Sqw2D < iData
       Vi   = K2V*Ki;
       Ei   = VS2E*Vi.^2;
       % compute final energy
-      hw   = getaxis(s, 1);
+      hw   = getaxis(s, 2);
       Ef   = Ei - hw;
       kikf = sqrt(Ei./Ef);
       if inverse

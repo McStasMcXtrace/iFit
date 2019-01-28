@@ -4,7 +4,7 @@ function sxw=Sqw_t2e(s, t_present)
   sxw = [];
   if isempty(s), return; end
   [s,lambda,distance,chwidth] = Sqw_search_lambda(s);
-  if nargin < 2, t_present=1; end
+  if nargin < 2, t_present=2; end
 
   disp([ mfilename ': ' s.Tag ' ' s.Title ' Converting Axis ' num2str(t_present) ...
     ' "' label(s,t_present) '": time [sec] to energy [meV].' ]);

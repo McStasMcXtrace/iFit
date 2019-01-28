@@ -4,8 +4,8 @@ function sqw = Sqw_phi2q(s, lambda, a_present, w_present)
   sqw = [];
   if isempty(s), return; end
   if nargin < 2, lambda=[]; end
-  if nargin < 3, a_present = 2; end
-  if nargin < 4, w_present = 1; end
+  if nargin < 3, a_present = 1; end
+  if nargin < 4, w_present = 2; end
   
   if isempty(lambda)
     [s,lambda] = Sqw_search_lambda(s);

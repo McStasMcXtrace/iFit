@@ -42,7 +42,7 @@ function s = deBosify(s, varargin)
 %
 % input:
 %   sqw_T: Sqw data set (non classical, including T Bose factor e.g from experiment)
-%           e.g. 2D data set with w as 1st axis (rows, meV), q as 2nd axis (Angs-1).
+%           e.g. Sqw 2D data set with q as 1st axis (Angs-1), w as 2nd axis (meV).
 %   T:     when given, Temperature to use for Bose. When not given, the Temperature
 %           is searched in the object.
 %   type: 'Schofield' or 'harmonic' or 'standard' (default)

@@ -18,12 +18,12 @@ function spw = Sqw_q2phi(s, lambda)
   disp([ mfilename ': ' s.Tag ' ' s.Title ' Converting Axis 2 "' label(s, 2) ...
     '": wavevector [Angs-1] to scattering angle [deg].' ]);
   Ei    = 81.805./lambda.^2;
-  q     = s{2}; % wavevector
-  hw    = s{1};
+  q     = s{1}; % wavevector
+  hw    = s{2};
   if isvector(hw) && isvector(q)
     s = meshgrid(s);
-    q     = s{2}; % angle
-    hw    = s{1};
+    q     = s{1}; % angle
+    hw    = s{2};
   end
   % we use: cos(phi) = (Ki.^2 + Kf.^2 - q.^2) ./ (2*Ki.*Kf);
   Ki = 2*pi./lambda; % direct geometry (monochromatic input)
@@ -36,7 +36,7 @@ function spw = Sqw_q2phi(s, lambda)
   spw = iData(copyobj(s)); % make it a true iData
   spw = setalias(spw, 'phi', phi, 'Scattering Angle [deg]');
   spw = setalias(spw, 'IncidentWavelength', lambda);
-  spw = setaxis(spw, 2, 'phi');
+  spw = setaxis(spw, 1, 'phi');
   
   spw = commandhistory(spw, 'qw2phiw', s, lambda);
   spw.Label = 'S(phi, w)';

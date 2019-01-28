@@ -30,7 +30,7 @@ function sigma=moments(data, varargin)
 %   m = moments(sqw, 'M', M, 'T', T, 'classical', classical)
 %
 % input:
-%   sqw:  Sqw data set e.g. 2D data set with w as 1st axis (rows, meV), q as 2nd axis (Angs-1).
+%   sqw:  Sqw 2D data set with q as 1st axis (Angs-1), w as 2nd axis (meV).
 %   M:    molar weight of the material atom/molecule in [g/mol].
 %           when omitted or empty, it is searched 'weight' or 'mass' is the object.
 %   T:    when given, Temperature to use. When not given or empty, the Temperature
@@ -66,8 +66,8 @@ function sigma=moments(data, varargin)
   end
   
   kT      = p.t/11.604;   % kbT in meV;
-  q       = getaxis(data,2);
-  w       = getaxis(data,1);
+  q       = getaxis(data,1);
+  w       = getaxis(data,2);
   
   % clean low level data
   i=find(log(data) < -15);
@@ -75,11 +75,11 @@ function sigma=moments(data, varargin)
   S.subs={ i };
   data = subsasgn(data, S, 0);
   
-  sq      = abs(trapz(data)); % S(q) from the data itself
+  sq      = abs(trapz(data,2)); % S(q) from the data itself
   M0      = sq;
   % w2R = 2 kT M1
   % w2R 1/2/kT = wS = M1 and w0^2 = 1/S(q) w2R = 1/S(q) 2 kT M1 = q2 kT/p.m/M0
-  M1      = trapz(w.*data);    % = h2q2/2/p.m recoil when non-classical, 0 for classical symmetrized
+  M1      = trapz(w.*data,2);    % = h2q2/2/p.m recoil when non-classical, 0 for classical symmetrized
   
   % check if symmetric
   if isempty(p.classical) && abs(mean(M1)) < 1e-6
@@ -113,9 +113,9 @@ function sigma=moments(data, varargin)
     '    does not provide information about the material molar weight. Use Sqw_moments(data, M).' NL ...
     '    Ignoring: The Wq frequency will be empty.' ]);
   end
-  M2      = abs(trapz(w.^2.*data)); % M2 cl = wc^2
-  M3      =     trapz(w.^3.*data);
-  M4      = abs(trapz(w.^4.*data));
+  M2      = abs(trapz(w.^2.*data,2)); % M2 cl = wc^2
+  M3      =     trapz(w.^3.*data,2);
+  M4      = abs(trapz(w.^4.*data,2));
   
   % half width from normalized 2nd frequency moment J-P.Hansen and I.R.McDonald 
   % Theory of simple liquids Academic Press New York 2006.

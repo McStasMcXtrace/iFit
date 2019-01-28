@@ -37,7 +37,7 @@ function [s, sphi] = dynamic_range(s, varargin)
 %   [sqw_Ei,sphiw]=dynamic_range(s, 'lambda', lambda)
 %
 % input:
-%   s:      Sqw data set, e.g. 2D data set with w as 1st axis (rows, meV), q as 2nd axis (Angs-1).
+%   s:      Sqw 2D data set with q as 1st axis (Angs-1), w as 2nd axis (meV).
 %   Ei:     incoming neutron energy [meV]
 %   angles: scattering detection range in [deg] as a vector. Min and Max values are used.
 %   'lambda','Ki': additional named arguments to specify the incident energy
@@ -68,14 +68,14 @@ function [s, sphi] = dynamic_range(s, varargin)
   if isempty(s), return; end
   
   % check if the energy range is limited
-  w = getaxis(s,1);
+  w = getaxis(s,2);
   if all(w(:) >= 0) || all(w(:) <= 0)
     NL = sprintf('\n');
     warning([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source NL ...
     '    seems to have its energy range w=[' num2str([ min(w(:)) max(w(:)) ]) '] defined only on one side.' NL ...
     '    Applying symmetrize first.' ]);
     s = symmetrize(s);
-    w = getaxis(s,1);
+    w = getaxis(s,2);
   end
   
   % compute Ei, Ef, Ki, Kf
@@ -105,7 +105,7 @@ function [s, sphi] = dynamic_range(s, varargin)
       else
         p.ei = Sqw_getT(s, {'IncidentEnergy','Ei'});
         if isempty(p.ei) || p.ei<=0
-          w  = getaxis(s, 1);
+          w  = getaxis(s, 2);
           p.ei = max(abs(w(:)));
           warning([ mfilename ': using Ei=' num2str(p.ei) ' [meV] incident neutron energy.' ]);
         end
@@ -126,8 +126,8 @@ function [s, sphi] = dynamic_range(s, varargin)
   end
   
   % get axes
-  w = getaxis(s,1);
-  q = getaxis(s,2);
+  w = getaxis(s,2);
+  q = getaxis(s,1);
 
   % compute Vi
   if isempty(Ki), return; end

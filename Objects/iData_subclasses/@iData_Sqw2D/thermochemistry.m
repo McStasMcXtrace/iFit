@@ -23,7 +23,7 @@ function [t, fig]=thermochemistry(s, T, options)
 %   t = thermochemistry(s, Tmin:Tmax)
 %
 % input:
-%   s: a 2D sqw data set [|Q|,Energy] (iData_Sqw2D)
+%   s: Sqw 2D data set with q as 1st axis (Angs-1), w as 2nd axis (meV).
 %   T: temperature range. When not given, T=1:500 [K]
 %   options: can be 'plot' to display the results.
 %         The 'newplot' option does the same but opens a new figure instead of

@@ -74,7 +74,7 @@ function  T = Sqw_getT(s, prop, raw)
 function T = Sqw_getT_Bose(s)
   % Compute the temperature from the Bose factor
   
-  w = getaxis(s,1);
+  w = getaxis(s,2);
   T = [];
   
   if any(w(:) < 0) && any(w(:) > 0)
@@ -82,18 +82,18 @@ function T = Sqw_getT_Bose(s)
     w1 = max(w(:)); w2 = max(-w(:)); w_max = min([w1 w2]);
 
     if w1 ~= w_max || w2 ~= w_max
-      s_res  = ylim(s, [-w_max w_max]); % restricted to [-w:w] range
+      s_res  = xlim(s, [-w_max w_max]); % restricted to [-w:w] range
     else
       s_res = s;
     end
     % get axes
-    w = getaxis(s_res,1);
+    w = getaxis(s_res,2);
     
     % we compare the s(q,w) and s(q,-w)
-    s_opp = setaxis(s_res, 1, -w);
-    s_opp = sum(s_opp,2); s_opp = sort(s_opp, 1);
+    s_opp = setaxis(s_res, 2, -w);
+    s_opp = sum(s_opp,1); s_opp = sort(s_opp, 1);
 
-    s_res = sum(s_res,2); s_res = sort(s_res, 1);
+    s_res = sum(s_res,1); s_res = sort(s_res, 1);
 
     % the ratio should be S(q,w)/S(q,-w) = exp(hw/kT)
     % so log(S(q,w)) - log(S(q,-w)) = hw/kT

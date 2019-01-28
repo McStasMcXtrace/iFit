@@ -12,7 +12,7 @@ function s = structure_factor(s)
 %   sq = structure_factor(s)
 %
 % input:
-%   s:  Sqw data set e.g. 2D data set with w as 1st axis (rows, meV), q as 2nd axis (Angs-1).
+%   s:  Sqw 2D data set with q as 1st axis (Angs-1), w as 2nd axis (meV).
 % output:
 %   sq: S(q) data set
 %
@@ -35,7 +35,7 @@ function s = structure_factor(s)
   if isempty(s), return; end
 
   % compute integral
-  s = iData(trapz(s,1)); % on q
+  s = iData(trapz(s,2)); % on q
   
   % reset axes
   title(s,'S(q)');

@@ -39,7 +39,7 @@ function [sxt, schan] =Sqw_e2t(s, varargin)
   Ei   = VS2E*Vi.^2;
   
   % compute final energy
-  hw   = getaxis(s, 1);
+  hw   = getaxis(s, 2);
   Ef   = Ei - hw;
   t_sample_detector = p.distance/Vi;      % this is the time for the elastic peak
   t    = Ei./Ef;
@@ -63,7 +63,7 @@ function [sxt, schan] =Sqw_e2t(s, varargin)
   setalias(sxt, 'IncidentWavelength', p.lambda);
   setalias(sxt, 'ChannelWidth',       p.chwidth);
   setalias(sxt, 'Distance',           p.distance);
-  setaxis(sxt, 1, 'time');
+  setaxis(sxt, 2, 'time');
   
   sxt = commandhistory(sxt, 'e2t', s, p.lambda);
   sxt.Label = 'S(x, tof)';
@@ -87,7 +87,7 @@ function [sxt, schan] =Sqw_e2t(s, varargin)
     schan = copyobj(sxt);
     setalias(schan, 'Channel', round(t), 'Time Channel [1]');
     setalias(schan, 'ElasticPeakPosition', EPP, '[chan] Channel for the elastic');
-    setaxis(schan, 1, 'Channel');
+    setaxis(schan, 2, 'Channel');
     sxt.Label = 'S(x, tof_chan)';
     label(sxt, 0, [  'e2t[channel]' '(' label(s, 0) ')' ]);
   end

@@ -41,11 +41,11 @@ if isempty(this), return; end
 if nargin < 2, filename = ''; end
 
 % interpolate on a square regular grid
-w=getaxis(this,1); w=unique(w(:)); dw = diff(w);
+w=getaxis(this,2); w=unique(w(:)); dw = diff(w);
 if std(dw) > mean(dw) % not a regular grid (std would be 0)
   w = linspace(min(w), max(w), min(size(this, 1)*5, round((max(w)-min(w))/mean(dw))));
 end
-q=getaxis(this,2); q=unique(q(:)); dq = diff(q);
+q=getaxis(this,1); q=unique(q(:)); dq = diff(q);
 if std(dq) > mean(dq) % not a regular grid (std would be 0)
   q = linspace(min(q), max(q), min(size(this, 2)*5, round((max(q)-min(q))/mean(dq))));
 end
@@ -56,8 +56,8 @@ parameters = parseparams(this);
 
 thisE=this;
 sqw=getaxis(thisE,0)'; sqw(~isfinite(sqw) | sqw < 0)=0;
-w=getaxis(thisE,1); w=w(:)'; 
-q=getaxis(thisE,2); q=q(:)'; 
+w=getaxis(thisE,2); w=w(:)'; 
+q=getaxis(thisE,1); q=q(:)'; 
 clear thisE
 
 % format filename

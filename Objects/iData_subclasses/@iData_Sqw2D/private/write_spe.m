@@ -12,8 +12,8 @@ if isempty(filename), filename = [ 'iFit_' spe.Tag '.spe' ]; end
 % s.Par        = Double real matrix of Param: Angle, Ei, etc.
 % s.Mat        = Double real matrix of results (3D).
 
-phi = getaxis(spe, 2);
-w   = getaxis(spe, 1);
+phi = getaxis(spe, 1);
+w   = getaxis(spe, 2);
 signal = getaxis(spe, 0);
 err    = getaxis(spe, 'Error');
 

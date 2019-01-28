@@ -55,7 +55,7 @@ function [g, fig] = dos(s, method, varargin)
 %   g = dos(s, 'method', method, 'n', n, 'T', T, 'DW', dw)
 %
 % input:
-%   s:      Sqw data set e.g. 2D data set with w as 1st axis (rows, meV), q as 2nd axis (Angs-1).
+%   s:      Sqw 2D data set with q as 1st axis (Angs-1), w as 2nd axis (meV).
 %   method: 'Carpenter','Bellissent' or 'Bredov' (default)
 %   n:      number of low-angle values to integrate (integer). Default is 10 when omitted.
 %           when 0 or 'force', the gDOS is re-computed. Only for Carpenter/Bellissent.

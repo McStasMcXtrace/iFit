@@ -44,7 +44,7 @@ function s = Bosify(s0, varargin)
 %
 % input:
 %   sqw:  Sqw data set (classical, symmetric in energy, no T Bose factor)
-%           e.g. 2D data set with w as 1st axis (rows, meV), q as 2nd axis (Angs-1).
+%           e.g. 2D data set with q as 1st axis (Angs-1), w as 2nd axis (meV).
 %   T:    when given, Temperature to use for Bose. When not given, the Temperature
 %           is searched in the object. The temperature is in [K]. 1 meV=11.605 K.
 %   type: 'Schofield' or 'harmonic' or 'standard' (default)
@@ -129,7 +129,7 @@ function s = Bosify(s0, varargin)
   
   T2E       = (1/11.6045);           % Kelvin to meV = 1000*K_B/e
   kT        = p.t*T2E;
-  hw_kT     = getaxis(s,1)./kT;               % hbar omega / kT
+  hw_kT     = getaxis(s,2)./kT;               % hbar omega / kT
   
   % apply sqrt(Bose) factor to get experimental-like
   % semi-classical corrections, aka quantum correction factor

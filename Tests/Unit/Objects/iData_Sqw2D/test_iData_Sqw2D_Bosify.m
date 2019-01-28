@@ -5,9 +5,11 @@ function result=test_iData_Sqw2D_Bosify
   s =Bosify(symmetrize(s0), T0);
   
   % now compute the temperature from the Bose factor (code from Sqw_getT)
-  w = getaxis(s,1);
+  w = getaxis(s,2);
   % restrict the energy axis to the common +/- range
-  w1 = max(w(:)); w2 = max(-w(:)); w_max = min([w1 w2]);
+  w1 = max(w(:)); w2 = max(-w(:)); 
+  if w2==0, w2=inf; end
+  w_max = min([w1 w2]);
 
   if w1 ~= w_max || w2 ~= w_max
     s_res  = ylim(s, [-w_max w_max]); % restricted to [-w:w] range
@@ -15,13 +17,15 @@ function result=test_iData_Sqw2D_Bosify
     s_res = s;
   end
   % get axes
-  w = getaxis(s_res,1);
+  w = getaxis(s_res,2);
   
   % we compare the s(q,w) and s(q,-w)
-  s_opp = setaxis(s_res, 1, -w);
-  s_opp = sum(s_opp,2); s_opp = sort(s_opp, 1);
+  s_opp = setaxis(s_res, 2, -w);
+  s_opp = sum(s_opp,1)
+  s_opp = sort(s_opp, 1);
 
-  s_res = sum(s_res,2); s_res = sort(s_res, 1);
+  s_res = sum(s_res,1); 
+  s_res = sort(s_res, 1);
 
   % the ratio should be S(q,w)/S(q,-w) = exp(hw/kT)
   % so log(S(q,w)) - log(S(q,-w)) = hw/kT

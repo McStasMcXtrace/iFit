@@ -72,8 +72,8 @@ function sab = Sqw2Sab(s, M, T)
     % s = deBosify(s, T); % make it classical/symmetric
   end
   
-  E = getaxis(s,1); 
-  q = getaxis(s,2); 
+  E = getaxis(s,2); 
+  q = getaxis(s,1); 
   Z = getaxis(s,0);                 % S(q,w) value (axis rank 0)
   
   if numel(q) ~= size(Z,2) || numel(E) ~= size(Z,1)
@@ -118,8 +118,8 @@ function sab = Sqw2Sab(s, M, T)
   setalias(sab, 'beta',  beta,  'beta [-hw/kT]');
   setalias(sab, 'Sab',   Z,     'S(alpha,beta)');  % Z(alpha,beta)
   setaxis(sab, 0, 'Sab');
-  setaxis(sab, 2, 'alpha');
-  setaxis(sab, 1, 'beta');
+  setaxis(sab, 1, 'alpha');
+  setaxis(sab, 2, 'beta');
   sab.Title = s.Title;
   setalias(sab,'Temperature',T, '[K] Temperature');
   setalias(sab,'weight',     M, '[g/mol] Material molar weight');

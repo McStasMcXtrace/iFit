@@ -20,8 +20,8 @@ if isempty(filename), filename = [ 'iFit_' spe.Tag '.inx' ]; end
 
 % we have a 2D input [Energy,Angle]
 spe = meshgrid(spe);    % make it a square grid, spe=Sqw_q2phi(s)
-w   = getaxis(spe, 1);
-phi = getaxis(spe, 2);
+w   = getaxis(spe, 2);
+phi = getaxis(spe, 1);
 sig = getaxis(spe, 0);
 err = getaxis(spe, 'Error');
 titl= title(spe);
@@ -33,7 +33,7 @@ if isempty(chwidth), chwidth = 1.0; end
 if isempty(distance),distance= 4.0; end
 Temperature=Sqw_getT(spe);        % [K]         Temperature
 
-Npoints = size(spe,1);
+Npoints = size(spe,2);
 
 [FID,mess] = fopen(filename,'w');
 if FID == -1, 

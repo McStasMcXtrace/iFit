@@ -61,7 +61,7 @@ function sigma = scattering_cross_section(s, varargin)
 %
 % input:
 %   s: Sqw data set (non classical, with T Bose factor e.g from experiment)
-%        e.g. 2D data set with w as 1st axis (rows, meV), q as 2nd axis (Angs-1).
+%        e.g. Sqw 2D data set with q as 1st axis (Angs-1), w as 2nd axis (meV).
 %   Ei: incoming neutron energy [meV]
 %   M: molar weight of the atom/molecule in [g/mol].
 %     when given empty, it is searched 'weight' or 'mass' is the object.
@@ -114,7 +114,7 @@ function sigma = scattering_cross_section(s, varargin)
   end
   if isempty(classical)
     % compute the 1st moment, should be 0 for classical (Recoil)
-    w       = getaxis(s,1);
+    w       = getaxis(s,2);
     M1      = trapz(w.*s);    % = h2q2/2/M recoil when non-classical, 0 for classical symmetrized
   
     % check if symmetric
@@ -134,12 +134,12 @@ function sigma = scattering_cross_section(s, varargin)
     p.m = Sqw_getT(s, {'Masses','Molar_mass','Mass','Weight'});
   end
   
-  w = getaxis(s,1);
+  w = getaxis(s,2);
   
   if min(w(:)) * max(w(:)) >= 0
     warning([ mfilename ': WARNING: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' seems to have its energy range w=[' num2str([ min(w(:)) max(w(:)) ]) '] defined only on one side. Applying symmetrize first.' ]);
     s = symmetrize(s);
-    w = getaxis(s,1);
+    w = getaxis(s,2);
   end
 
   % do the total XS computation there...
@@ -165,7 +165,7 @@ function sigma = Sqw_scatt_xs_single(s, Ei, M)
 
   % restrict to dynamic range
   s = dynamic_range(s, Ei, []);
-  sq= trapz(iData(s)); % integrate over energy w {1} in the 2D Sqw
+  sq= trapz(iData(s),2); % integrate over energy w {2} in the 2D Sqw
 
   % constants
   SE2V = 437.393377;        % Convert sqrt(E)[meV] to v[m/s]

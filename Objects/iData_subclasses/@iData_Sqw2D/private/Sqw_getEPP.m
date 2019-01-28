@@ -1,7 +1,7 @@
 function t_elast = Sqw_getEPP(s, t_present)
 % Sqw_getEPP: compute the elastic peak position (EPP) and centre the time axis
   
-  if nargin < 2, t_present=1; end
+  if nargin < 2, t_present=2; end
   
   t = getaxis(s, t_present);
   
