@@ -608,6 +608,12 @@ classdef iData_Sqw2D < iData
         f = saveas@iData(self, varargin{:});
       end
       
+    end % saveas
+    
+    function h = plot(self, varargin)
+      % iData_Sqw2D: plot: display a S(q,w) 2D data set
+      
+      h=plot@iData(transpose(self), varargin{:});
     end
     
   end
