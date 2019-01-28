@@ -388,8 +388,8 @@ if iFunc_dim
   if numel(varargin) >= iFunc_dim
     eval([ '[' iFunc_ax(1:(2*iFunc_dim)) ']=deal(varargin{' mat2str(1:iFunc_dim) '});' ]);
     % remove axes from varargin -> leaves additional optional arguments to the function
-    varargin(1:iFunc_dim) = [];
   else
+    eval([ '[' iFunc_ax(1:(2*numel(varargin))) ']=deal(varargin{' mat2str(1:numel(varargin)) '});' ]);
     NL = sprintf('\n');
     warning([ mfilename ': WARNING: Model ' num2str(ndims(this)) 'D but Axes ' num2str(numel(varargin)) 'D !!' NL ...
     '  the model ' this.Name ' ' this.Tag ' is ' num2str(ndims(this)) 'D but' NL ...
@@ -397,7 +397,12 @@ if iFunc_dim
   end
 end
 
-
+% special case for vector type input that should be made a grid
+if numel(varargin) == 2 
+  if isvector(x) && isvector(y) && numel(x) ~= numel(y)
+    [x,y] = meshgrid(x,y); 
+  end
+end
 
 % EVALUATE now ...
 % in the evaluation:
