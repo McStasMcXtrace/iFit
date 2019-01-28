@@ -40,7 +40,7 @@ else
   a.Name       = [ op '(' u ')' ];
 end
 if iscell(a.Expression)
-  a.Expression = [ a.Expression ; sprintf('\nsignal=%s(signal);', op) ];
+  a.Expression = [ a.Expression(:) ; sprintf('\nsignal=%s(signal);', op) ];
 else
   a.Expression = [ a.Expression sprintf('\nsignal=%s(signal);', op) ];
 end
