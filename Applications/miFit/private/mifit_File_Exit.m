@@ -22,9 +22,9 @@ function mifit_File_Exit(varargin)
   end
   % clearing the Models appdata may lead to a crash
   ad = getappdata(fig);
-  delete(ad.DnDControl); 
   for f=fieldnames(ad)'
     setappdata(fig, f{1}, []);
+    disp(f{1});
   end
   delete(fig);
-  
+  delete(ad.DnDControl);
