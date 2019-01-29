@@ -239,8 +239,6 @@ if isempty(s.UserData.executable)
   error([ mfilename ': SPINWAVE is not available. Install it from <http://www-llb.cea.fr/logicielsllb/SpinWave/SW.html>' ])
 end
 
-% get code to read xyzt and build HKL list and convolve DHO line shapes
-script_hkl = sqw_phonons_templates;
 exe_path = fileparts(which(mfilename));
 if ismac,      precmd = [ 'DYLD_LIBRARY_PATH=' fullfile(exe_path, 'private') '; DISPLAY= ; ' ];
 elseif isunix, precmd = 'LD_LIBRARY_PATH= ; '; 
@@ -307,6 +305,9 @@ if dim == 2
   s = iFunc(s);
   s = iFunc_Sqw2D(s); % overload Sqw2D flavour
 else
+  % get code to read xyzt and build HKL list
+  script_hkl = sqw_phonons_templates;
+  
   % the Model expression, calling spinwave executable: 4D
   s.Expression = { ...
     [ 'target = this.UserData.dir;' ], ...
