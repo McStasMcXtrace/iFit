@@ -48,10 +48,7 @@ function signal=sqw_visco_elastic_simple(varargin)
 %    and does NOT satisfy the detailed balance.
 %
 %  To get the 'true' quantum S(q,w) definition, use e.g.
-%
-%    sqw = sqw_visco_elastic_simple .* bose;
-%  where the Temperature is then given in [x units]. If 'x' is an energy in [meV]
-%  then the Temperature parameter is T[K]/11.6045
+%    sqw = Bosify(sqw_visco_elastic_simple);
 %
 %  To add a 'background' use e.g.
 %    sqw = sqw_visco_elastic_simple + constant('Background');

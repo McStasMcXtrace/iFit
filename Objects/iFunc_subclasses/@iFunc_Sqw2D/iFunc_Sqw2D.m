@@ -130,11 +130,12 @@ classdef iFunc_Sqw2D < iFunc
     %   Bosify(T, method)
     %   deBosify(T, method)
     %   dynamic_range(Ei, angle_min, angle_max)
-    %   incoherent(q, T, m, n, DW)
+    %   incoherent(q, T, m, n, DW, vDOS )
     %   coherent (iData sq or d-spacing value)
     %   symmetrize
     %   Sqw2ddcs(Ei)
     %   ddcs2Sqw(Ei)
+    %   DebyeWaller(u2)
     
     % when changing type, the new object must compute back the (q,w) axes, then 
     % evaluate the original iFunc_Sqw2D model, and apply the final conversion with

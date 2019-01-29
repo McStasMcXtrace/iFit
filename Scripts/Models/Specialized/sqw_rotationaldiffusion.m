@@ -49,7 +49,7 @@ function signal=sqw_rotationaldiffusion(varargin)
 %  detailed balance.
 %
 %  To get the 'true' quantum S(q,w) definition, use e.g.
-%    sqw = sqw_visco_elastic .* bose;
+%    sqw = Bosify(sqw_rotationaldiffusion);
 %  where the Temperature is then given in [x units]. If 'x' is an energy in [meV]
 %  then the Temperature parameter is T[K]/11.6045
 %

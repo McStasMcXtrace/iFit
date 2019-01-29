@@ -43,9 +43,7 @@ function signal=sqw_diffusion(varargin)
 %  detailed balance. It includes a Debye Waller factor.
 %
 %  To get the 'true' quantum S(q,w) definition, use e.g.
-%    sqw = sqw_diffusion .* bose;
-%  where the Temperature is then given in [x units]. If 'x' is an energy in [meV]
-%  then the Temperature parameter is T[K]/11.6045
+%    sqw = Bosify(sqw_diffusion);
 %
 %  Energy conventions:
 %   w = omega = Ei-Ef = energy lost by the neutron [meV]
