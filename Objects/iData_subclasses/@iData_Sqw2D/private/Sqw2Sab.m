@@ -76,7 +76,7 @@ function sab = Sqw2Sab(s, M, T)
   q = getaxis(s,1); 
   Z = getaxis(s,0);                 % S(q,w) value (axis rank 0)
   
-  if numel(q) ~= size(Z,2) || numel(E) ~= size(Z,1)
+  if numel(q) ~= size(Z,1) || numel(E) ~= size(Z,2)
     s = meshgrid(s, 'vector');
     E = getaxis(s,1); 
     q = getaxis(s,2); 
@@ -101,9 +101,9 @@ function sab = Sqw2Sab(s, M, T)
   % S(a,b) da db = S(q,w) dq dw
   % S(a,b)       = S(q,w) * J     with J=(dq.dw)/(dalpha.dbeta)=1/q*cte
   
-  for i=1:size(Z,1)   % E
+  for i=1:size(Z,2)   % E
     % Jacobian for S(q,w) -> S(a,b) is J=(dq.dw)/(dalpha.dbeta) = 1/(2*q*C^2*q2toE)
-    Z(i,:)     = Z(i,:)./q;
+    Z(:,i)     = Z(:,i)./q;
   end
   
   % and finally multiply by the constants
@@ -129,7 +129,7 @@ function sab = Sqw2Sab(s, M, T)
     setalias(sab,'classical',  classical(1), '[0=from measurement, with Bose factor included, 1=from MD, symmetric]');
   end
   
-  sab = transpose(sab);
+  % sab = transpose(sab);
   sab.Label='S(alpha,beta)';
   sab = commandhistory(sab, 'Sab', s, M, T);
   label(sab, 0, [  'Sab' '(' label(s, 0) ')' ]);
