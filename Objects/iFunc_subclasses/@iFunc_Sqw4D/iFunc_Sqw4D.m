@@ -60,6 +60,9 @@ classdef iFunc_Sqw4D < iFunc
       elseif nargin == 1 && isa(varargin{1}, mfilename)
         % already an iFunc_Sqw4D
         m = varargin{1};
+      elseif nargin >= 1 && isa(varargin{1}, 'iFunc_Sqw2D')
+        % convert from iFunc_Sqw2D with lattice parameters or B matrix
+        m = iFunc_Sqw2Dto4D(varargin{:});
       elseif nargin == 1 && isa(varargin{1}, 'iFunc')
         % convert from iFunc
         m = varargin{1};
@@ -116,8 +119,8 @@ classdef iFunc_Sqw4D < iFunc
       % check for QH QK QL W grid
       if isempty(varargin),  varargin{end+1} = []; end
       if numel(varargin) <2, varargin{end+1} = linspace(-0.5,0.5,20); end
-      if numel(varargin) <3, varargin{end+1} = linspace(-0.5,0.5,20); end
-      if numel(varargin) <4, varargin{end+1} = linspace(-0.5,0.5,20)'; end
+      if numel(varargin) <3, varargin{end+1} = linspace(-0.5,0.5,21); end
+      if numel(varargin) <4, varargin{end+1} = linspace(-0.5,0.5,22)'; end
       if numel(varargin) <5, varargin{end+1} = linspace(0.01,max(self)*1.2,31); end
       s = iFunc(self);
       try
@@ -147,8 +150,8 @@ classdef iFunc_Sqw4D < iFunc
       else
         % varargin{1} is not empty
         if numel(varargin) <2, varargin{end+1} = linspace(-0.5,0.5,20); end
-        if numel(varargin) <3, varargin{end+1} = linspace(-0.5,0.5,20); end
-        if numel(varargin) <4, varargin{end+1} = linspace(-0.5,0.5,20)'; end
+        if numel(varargin) <3, varargin{end+1} = linspace(-0.5,0.5,21); end
+        if numel(varargin) <4, varargin{end+1} = linspace(-0.5,0.5,22)'; end
         if numel(varargin) <5, varargin{end+1} = linspace(0.01,max(self)*1.2,31); end
         [signal, model, ax, name] = feval@iFunc(self, varargin{:});
       end
@@ -166,34 +169,64 @@ classdef iFunc_Sqw4D < iFunc
     end % plot
     
     function [h, f] = plot3(s, varargin)
-      % iFunc_Sqw4D: plot3: plot a 3D view of the dispersions in H=0 plane
+      % iFunc_Sqw4D: plot3: plot a 3D view of the dispersions
       %
       %   plot3(sqw4d, {'plot options'})
-      f = feval_fast(s);
+      %
+      %   by default, the view shows the QH=0 representation, i.e. [QK,QL,W] axes.
+      %   It is possible to specify the type of 3D projection:
+      %
+      %   projection          command
+      %   --------------------------------------------
+      %   [QK,QL,W] QH=0      plot3(sqw4d, ..., 'qh') [default]
+      %   [QH,QL,W] QK=0      plot3(sqw4d, ..., 'qk')
+      %   [QH,QK,W] QL=0      plot3(sqw4d, ..., 'ql')
+      %   [QH,QK,QL] sum(W)   plot3(sqw4d, ..., 'w')  [diffraction]
+      f = feval_fast(s, '', varargin{:});
       % plot in 3D
-      h = plot3(f, varargin{:}); % h=0
+      h = plot3(f, varargin{:});
       if ~isempty(inputname(1))
         assignin('caller',inputname(1),s); % update in original object
       end
     end % plot3
     
     function [h, f] = scatter3(s, varargin)
-      % iFunc_Sqw4D: scatter3: plot a 3D scatter view of the dispersions in H=0 plane
+      % iFunc_Sqw4D: scatter3: plot a 3D scatter view of the dispersions
       %
       %   scatter3(sqw4d, {'plot options'})
-      f = feval_fast(s);
+      %
+      %   by default, the view shows the QH=0 representation, i.e. [QK,QL,W] axes.
+      %   It is possible to specify the type of 3D projection:
+      %
+      %   projection          command
+      %   --------------------------------------------
+      %   [QK,QL,W] QH=0      scatter3(sqw4d, ..., 'qh') [default]
+      %   [QH,QL,W] QK=0      scatter3(sqw4d, ..., 'qk')
+      %   [QH,QK,W] QL=0      scatter3(sqw4d, ..., 'ql')
+      %   [QH,QK,QL] sum(W)   scatter3(sqw4d, ..., 'w')  [diffraction]
+      f = feval_fast(s, '', varargin{:});
       % plot in 3D
-      h = scatter3(f, varargin{:}); % h=0
+      h = scatter3(f, varargin{:});
       if ~isempty(inputname(1))
         assignin('caller',inputname(1),s); % update in original object
       end
     end % scatter3
     
     function [h, f] = slice(s, varargin)
-      % iFunc_Sqw4D: slice: plot an editable 3D view of the dispersions in H=0 plane
-      f = feval_fast(s);
+      % iFunc_Sqw4D: slice: plot an editable 3D view of the dispersions
+      %
+      %   by default, the view shows the QH=0 representation, i.e. [QK,QL,W] axes.
+      %   It is possible to specify the type of 3D projection:
+      %
+      %   projection          command
+      %   --------------------------------------------
+      %   [QK,QL,W] QH=0      slice(sqw4d, ..., 'qh') [default]
+      %   [QH,QL,W] QK=0      slice(sqw4d, ..., 'qk')
+      %   [QH,QK,W] QL=0      slice(sqw4d, ..., 'ql')
+      %   [QH,QK,QL] sum(W)   slice(sqw4d, ..., 'w')  [diffraction]
+      f = feval_fast(s, '', varargin{:});
       % plot in 3D
-      h = slice(f, varargin{:}); % h=0
+      h = slice(f, varargin{:});
       if ~isempty(inputname(1))
         assignin('caller',inputname(1),s); % update in original object
       end

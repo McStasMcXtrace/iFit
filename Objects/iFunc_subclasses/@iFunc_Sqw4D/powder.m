@@ -96,6 +96,7 @@ if isfield(a.UserData, 'properties')
   r.UserData.properties = a.UserData.properties; end
 r.UserData.Model4D = a;
 r.UserData.B       = B;
+r.UserData.reciprocal_cell = B;
 r.Guess            = a.Guess;
 r.Expression = { ...
   'if isempty(x), x=linspace(0.01, 4,  30); end  % default q', ...
