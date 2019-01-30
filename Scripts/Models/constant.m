@@ -34,7 +34,7 @@ y.Dimension  = 1;
 
 y = iFunc(y);
 
-if nargin == 1 && isnumeric(varargin{1})
+if length(varargin) && isnumeric(varargin{1})
   y.ParameterValues = varargin{1};
 end
 
