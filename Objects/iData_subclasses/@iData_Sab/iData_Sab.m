@@ -127,10 +127,14 @@ classdef iData_Sab < iData
     % parameters (search for parameters in iData)
     function parameters = parseparams(s)
       % iData_Sab: parseparams(sab): search for physical quantities in object.
-      %   The initial object is updated with a 'parameter' property.
+      %   The initial object is updated with a 'parameters' property.
       %
       % syntax:
       %   p = parseparams(sab)
+      %
+      % To compute the Temperature from the Bose factor (detailed balance), use
+      %   parseparams(sab, 'Bose')
+      % The data set should extend on both positive and negative beta sides.
       %
       % input:  sab: S(alpha,beta) [iData_Sab]
       % output: physical parameters [struct]
@@ -139,6 +143,12 @@ classdef iData_Sab < iData
       %
       % See also: iData_Sqw2D/parseparams
       [s,parameters,fields] = Sqw_parameters(s);
+      if nargin > 1 && strcmpi(option, 'bose')
+        T = Sqw_getT(s, 'T', 'Bose');
+        if ~isempty(T)
+          parameters.Temperature = T;
+        end
+      end
       if nargout == 0 && length(inputname(1))
         assignin('caller',inputname(1),s);
       end

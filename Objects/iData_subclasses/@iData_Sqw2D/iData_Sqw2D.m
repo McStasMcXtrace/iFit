@@ -134,12 +134,22 @@ classdef iData_Sqw2D < iData
     end % iData_Sqw2D constructor
     
     % parameters (search for parameters in iData)
-    function parameters = parseparams(s)
+    function parameters = parseparams(s, option)
       % iData_Sqw2D: parseparams: search for physical quantities in object.
       % This search is also done when creating iData_Sqw2D objects.
       %
+      % To compute the Temperature from the Bose factor (detailed balance), use
+      %   parseparams(s, 'Bose')
+      % The data set should extend on both positive and negative energy transfer sides.
+      %
       %   iData_Sqw2D -> physical parameters
       [s,parameters,fields] = Sqw_parameters(s);
+      if nargin > 1 && strcmpi(option, 'bose')
+        T = Sqw_getT(s, 'T', 'Bose');
+        if ~isempty(T)
+          parameters.Temperature = T;
+        end
+      end
       if length(inputname(1))
         assignin('caller',inputname(1),s);
       end
