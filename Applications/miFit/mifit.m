@@ -408,14 +408,14 @@ function mifit_Help_Main(varargin)
   
 function mifit_Help_Search(varargin)
 % Help/Search: look for an item
-  prompt = {'Enter a ketword to search for in the Help (string, printed in console window):'};
+  prompt = {'Enter a ketword to search for in the Help (string):'};
   name   = 'miFit: Search help item';
   numlines=1;
   answer =inputdlg(prompt,name,numlines);
   if isempty(answer),    return; end  % cancel
   if isempty(answer{1}), return; end  % empty pattern
   mifit_disp([ '[Help_Search] Lookging for "' answer{1} '"' ]);
-  lookfor(answer{1});
+  doc(iData, answer{1});
   
 function mifit_Help_Loaders(varargin)
 % Help/Loaders: open web page Loaders
