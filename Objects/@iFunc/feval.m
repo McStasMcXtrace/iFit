@@ -461,9 +461,9 @@ function p = iFunc_feval_set(this, p, varargin)
   if ~isempty(i)
 
     ax = 'x y z t u v w';
-    this.Dimension = abs(this.Dimension);
+    this.Dimension = abs(this.Dimension)
     
-    if this.Dimension
+    if this.Dimension && length(varargin) > this.Dimension
       eval([ '[' ax(1:(2*this.Dimension)) ']=deal(varargin{' mat2str(1:this.Dimension) '});' ]);
     end
     if length(varargin) > this.Dimension && ~isempty(varargin{this.Dimension+1}) && isnumeric(varargin{this.Dimension+1})
