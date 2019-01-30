@@ -25,15 +25,38 @@ page = [ f e ];
 url      = fullfile(ifitpath,'Docs',page);
 url_path = strtok(url, '#?');
 
-if isempty(dir(url_path)) % page dos not exist ?
+if isempty(dir(url_path)) % page does not exist ?
   % search for token in whole documentation
-  [a,b]=grep('-i','-n','-r', token, fullfile(ifitpath,'Docs'));
+  [a,b]=grep('-i','-n','-r', token, ...
+    { fullfile(ifitpath,'Docs'),   fullfile(ifitpath,'Scripts') ...
+      fullfile(ifitpath,'Objects') fullfile(ifitpath,'Libraries') ...
+      fullfile(ifitpath,'Applications')});
+  
   % a contains the file names
   % b.findex lists occurrences per file = b.lcount
   % we sort the matching file entries (a) as a function of the match occurrences
   [~,index] = sort(b.lcount,1,'descend');
   url = a(index);         % files sorted by decreasing occurrences
   occ = b.lcount(index);  % occurrences, decreasing
+  
+  % now sort results in: html, txt, m, then the rest
+  i_html=[]; i_txt=[]; i_m=[]; i_other=[];
+  for index=1:numel(url)
+    [p,f,e] = fileparts(url{index});
+    switch lower(e)
+    case {'.html','.htm'}
+      i_html(end+1) = index;
+    case {'.txt'}
+      i_txt(end+1) = index;
+    case {'.m'}
+      i_m(end+1) = index;
+    otherwise
+      i_other(end+1) = index;
+    end
+  end
+  index= [ i_html i_txt i_m i_other ];
+  url = url(index);
+  occ = occ(index);
   
   if isempty(a)
       disp([ mfilename ': token ' token ' not found in Help.' ]);
@@ -45,8 +68,8 @@ if isempty(dir(url_path)) % page dos not exist ?
     selection = listdlg('ListString', matches, 'ListSize', [ 300 160 ], ...
       'Name', [ mfilename ': iFit Help pages mentioning ' token ], ...
       'SelectionMode', 'single', ...
-      'PromptString', { [ 'Here are the iFit entries for '  token ]; ...
-      'Showing occurrences and help resource.'; ...
+      'PromptString', { [ 'Here are the iFit entries for "'  token '".']; ...
+      'Showing occurrences and help resource, sorted as HTML,text,m and other files.'; ...
       'Please choose one of them to display.' });
     if isempty(selection),    return; end % cancel
   else selection = 1;
@@ -61,5 +84,11 @@ if length(url) && ~isdeployed && usejava('jvm')
 else
   disp([ '  ' url ]);
 end
-web(url);
+[p,f,e] = fileparts(url);
+switch lower(e);
+case {'.txt','.m'}
+  TextEdit(url);
+otherwise
+  web(url);
+end
 
