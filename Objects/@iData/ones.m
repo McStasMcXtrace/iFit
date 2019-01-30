@@ -13,7 +13,7 @@ function s = ones(iData_in,varargin)
 % See also iData
 
 % EF 27/07/00 creation
-% EF 23/09/07 iData impementation
+% EF 23/09/07 iData implementation
 
 if nargin == 1
     s = zeros(iData_in, size(iData_in));

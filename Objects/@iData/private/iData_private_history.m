@@ -4,7 +4,7 @@ function a = iData_private_history(a, meth, varargin)
 %   meth may be given as a method name plus additional arguments which
 %   are transformed into chars to build a command line meth(varargin)
 
-% EF 23/09/07 iData impementation
+% EF 23/09/07 iData implementation
 
 if ~ischar(meth)
   disp('iData/private/iData_private_history: command to add in the history should be a char/cellstr');

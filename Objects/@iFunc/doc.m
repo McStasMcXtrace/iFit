@@ -15,7 +15,7 @@ function d = doc(a, page)
 %
 % Version: $Date$
 
-% EF 23/10/10 iFunc impementation
+% EF 23/10/10 iFunc implementation
 if nargin ==1, page=''; end
 if isempty(page), page='iFunc.html'; end
 doc(iData, page);

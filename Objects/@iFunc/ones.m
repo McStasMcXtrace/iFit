@@ -13,7 +13,7 @@ function s = ones(iFunc_in,varargin)
 % See also iFunc
 
 % EF 27/07/00 creation
-% EF 23/09/07 iFunc impementation
+% EF 23/09/07 iFunc implementation
 
 if nargin == 1
     s = zeros(iFunc_in, size(iFunc_in));

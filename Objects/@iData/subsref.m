@@ -310,7 +310,7 @@ function val = iData_getAliasValue(this,fieldname)
 %   evaluates s.name to be first s.link, then 'link' (with 'this' defined).
 %   NOTE: for standard Aliases (Error, Monitor), makes a dimension check on Signal
 
-% EF 23/09/07 iData impementation
+% EF 23/09/07 iData implementation
   val = [];
   if iscell(fieldname), fieldname = fieldname{1}; end
   if ~ischar(fieldname), return; end

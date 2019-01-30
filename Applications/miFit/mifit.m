@@ -408,7 +408,7 @@ function mifit_Help_Main(varargin)
   
 function mifit_Help_Search(varargin)
 % Help/Search: look for an item
-  prompt = {'Enter a ketword to search for in the Help (string):'};
+  prompt = {'Enter a token to search for in the Help (string, case insensitive):'};
   name   = 'miFit: Search help item';
   numlines=1;
   answer =inputdlg(prompt,name,numlines);
