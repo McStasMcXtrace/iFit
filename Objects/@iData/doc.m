@@ -4,7 +4,10 @@ function url = doc(a, token)
 %   @iData/doc: web page documentation
 %
 %     Open the iData documentation.
-%     doc(iData,page) opens a specific documentation page
+%     doc(iData, page) opens a specific documentation page
+%
+%   You may as well search for a token with:
+%     doc(iData, token)
 %
 %     doc(iData,'Load')
 %     doc(iData,'Save')
@@ -12,6 +15,7 @@ function url = doc(a, token)
 %     doc(iData,'Fit')
 %     doc(iData,'Plot')
 %     doc(iData,'Methods')
+%     doc(iData,'Sqw2D')
 %
 % Version: $Date$
 
@@ -87,7 +91,11 @@ end
 [p,f,e] = fileparts(url);
 switch lower(e);
 case {'.txt','.m'}
-  TextEdit(url);
+  if isdeployed
+    TextEdit(url);
+  else
+    edit(url);
+  end
 otherwise
   web(url);
 end
