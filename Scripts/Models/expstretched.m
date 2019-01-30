@@ -8,6 +8,11 @@ function y=expstretched(varargin)
 % expstretched(decay)          creates a model with specified decay constant
 % expstretched([ parameters ]) creates a model with specified model parameters
 %
+%   This model can be used as a Debye-Waller factor, e.g. exp(-u.^2 q.^2/3)
+%   <https://en.wikipedia.org/wiki/Debye%E2%80%93Waller_factor>
+%   then fix p(1)=1; p(3)=2; p(4)=0; 
+%   and  use p(2)=sqrt(3/<u^2>) where <u^2> is the mean squared displacement.
+%
 % input:  p: Stretched exponential decay model parameters (double)
 %            p = [ Amplitude Tau Exponent BackGround ]
 %          or 'guess'
