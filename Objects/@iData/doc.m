@@ -22,7 +22,7 @@ if isempty(page), page='index.html'; end
 if isempty(e), e='.html'; end
 page = [ f e ];
 
-url = [ ifitpath filesep 'Docs' filesep page ];
+url = fullfile(ifitpath,'Docs',page);
 url_path = strtok(url, '#?');
 if ~isempty(dir(url_path)) % page exists ?
   disp(version(iData))
@@ -32,6 +32,31 @@ if ~isempty(dir(url_path)) % page exists ?
   else
     disp([ '  ' url ]);
   end
+  web(url);
+else
+  % search for token in whole documentation
+  [a,b]=grep('-i','-n','-r', page, fullfile(ifitpath,'Docs'));
+  % a contains the file names
+  % b.findex lists occurencies per file = b.lcount
+  
+  % we sort the matching file entries (a) as a function of the match occurencies
+  [~,index] = sort(b.lcount,1,'descend');
+  url = a(index);         % files sorted by decreasing occurencies
+  occ = b.lcount(index);  % occurencies, decreasing
+  
+  if numel(url) > 1
+    % display a listdlg([ url occ ]) to select which file to open
+    matches = strcat(url, '(',cellstr(num2str(occ)),')');
+    selection = listdlg('ListString', matches, 'ListSize', [ 300 160 ], ...
+      'Name', [ mfilename ': Help pages mentioning ' page ], ...
+      'SelectionMode', 'single', ...
+      'PromptString', { [ 'Here are the entries for ' page ]; ...
+      'Showing documenntation and number of matches'; ...
+      'Please choose one of them to display.' });
+    if isempty(selection),    return; end % cancel
+  else selection = 1;
+  end
+  if iscell(url), url = url{selection}; end
   web(url);
 end
 
