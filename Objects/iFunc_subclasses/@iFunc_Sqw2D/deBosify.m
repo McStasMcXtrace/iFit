@@ -1,11 +1,11 @@
-function self=Bosify(self, type)
-% iFunc_Sqw2D: Bosify: apply the 'Bose' factor (detailed balance) to a classical S(q,w) model.
-%   The initial model should obey S*=S(q,w) = S(q,-w), i.e. be 'classical'.
-%   The resulting model is 'quantum/experimental' and satisfies the detailed
-%   balance. It contains the temperature effect (population).
+function self=deBosify(self, type)
+% iFunc_Sqw2D: deBosify: remove the 'Bose' factor (detailed balance) to a classical S(q,w) model.
+%   The initial model should be 'quantum/experimental' and satisfy the detailed balance.
+%   The resulting model obeys S*=S(q,w) = S(q,-w), i.e. is 'classical'.
+%   It suppresses most of the temperature effect (population).
 %
 % conventions:
-% omega = Ei-Ef = energy lost by the neutron, given in [meV]
+% omega = w = Ei-Ef = energy lost by the neutron, given in [meV]
 %    omega > 0, neutron looses energy, can not be higher than Ei (Stokes)
 %    omega < 0, neutron gains energy, anti-Stokes
 %
@@ -38,16 +38,16 @@ function self=Bosify(self, type)
 %    Cambridge Univ. Press: London (1993).
 %
 % syntax:
-%   sqw_T = Bosify(sqw)
-%   sqw_T = Bosify(sqw, type)
+%   sqw = deBosify(sqw_T)
+%   sqw = deBosify(sqw_T, type)
 %
 % input:
-%   sqw:  Sqw model (quantum, non classical, including T Bose factor)
+%   sqw_T:  Sqw model (quantum, non classical, including T Bose factor)
 %           e.g. 2D model with q as 1st axis (rows, Angs), w as 2nd axis (meV).
 %   type: 'Schofield' or 'harmonic' or 'standard' (default)
 %
 % output:
-%   sqw_T: classical/symmetric Sqw model (iFunc_Sqw2D).
+%   sqw: classical/symmetric Sqw model (iFunc_Sqw2D).
 %
 % Example: s=sqw_difusion; sb=Bosify(s); sbb=deBosify(sb);
 %
