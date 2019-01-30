@@ -271,7 +271,7 @@ function y = rietveld_cif2hkl(CFL, instr)
   %                                 Spin Charge in [-10 10]
   xlim(y, regexp(y.Parameters, '_x\>|_y\>|_z\>|_Occ\>'), [0 1]); % \> = end of Parameter names
   xlim(y, {'Sample_alpha','Sample_beta','Sample_gamma'}, [0 180]);
-  xlim(y, regexp(y.Parameters, '_Biso\>'), [0 10]);
+  xlim(y, regexp(y.Parameters, '_Biso\>'), [0 80]);
   xlim(y, regexp(y.Parameters, '_Spin\>|_Charge\>'), [-10 10]);
 
 end % rietveld_cif2hkl
