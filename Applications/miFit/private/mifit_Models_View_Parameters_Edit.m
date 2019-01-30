@@ -13,7 +13,11 @@ if event.NewData == event.PreviousData, return; end
 
 % we get the table content, and update the value
 Data = get(source, 'Data');
-Data{event.Indices(1),event.Indices(2)} = event.NewData;
+if event.Indices(2) == 7  % Constraint is a string
+  Data{event.Indices(1),event.Indices(2)} = event.EditData;
+else
+  Data{event.Indices(1),event.Indices(2)} = event.NewData;
+end
 
 % now store the new content into the Model. 
 
@@ -50,10 +54,13 @@ val = Data(:,event.Indices(2)); % a cell with the column where change took place
 switch event.Indices(2)
 case 4 % Fixed must be logical
   val(cellfun(@isempty, val)) = { false };
+  val = [ val{:} ];
+case 7
+  % keep as strings
 otherwise
   val(cellfun(@isempty, val)) = { NaN };
+  val = [ val{:} ];
 end
-val = [ val{:} ];
 
 % Event/update Signification depends on the Column index = event.Indices
 switch event.Indices(2)
@@ -69,6 +76,9 @@ case 5
 case 6
   % 6: Max   -> store in Model.constraint.max
   model.Constraint.max = val;
+case 7
+  % 7: Set   -> store in Model.constraint.max
+  model.Constraint.set = val;
 otherwise
   disp([ mfilename ': ERROR: unsupported modified column ' num2str(event.Indices(2)) ]);
   return
@@ -103,7 +113,7 @@ if ~isempty(d)
     D{getappdata(mifit_fig, 'CurrentDataSetIndex')} = d;
     
     val = val(event.Indices(1));  % only the modified value is forwarded
-    pars=model.Parameters;
+    pars= model.Parameters;
     name= pars{event.Indices(1)};
     
     % now also set other selected data sets, when this is the same model
@@ -113,7 +123,6 @@ if ~isempty(d)
       % not the current data set (already updated)
       if getappdata(mifit_fig, 'CurrentDataSetIndex') == index, continue; end
       this_d = D{index};
-      this_ = [];
       if isfield(this_d, 'Model')
         this_model = get(this_d, 'Model');
       elseif ~isempty(findfield(this_d, 'Model'))
@@ -141,6 +150,9 @@ if ~isempty(d)
         case 6
           % 6: Max   -> store in Model.constraint.max
           this_model.Constraint.max(event.Indices(1)) = val;
+        case 7
+          % 7: Set   -> store in Model.constraint.set
+          this_model.Constraint.set{event.Indices(1)} = val;
         end
       end
       set(this_d, 'Model', this_model);

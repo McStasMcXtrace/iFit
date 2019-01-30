@@ -104,9 +104,9 @@ function stop=mifit_Models_View_Parameters(varargin)
   % the window does not exist, we create it...
   
   if isempty(f)
-    options.ColumnName    = {'Parameter','Value',  'Uncertainty','Fixed',  'Min',    'Max'    };
-    options.ColumnFormat  = {'char',     'numeric','numeric',    'logical','numeric','numeric'};
-    options.ColumnEditable= [ false       true      false         true      true      true    ];
+    options.ColumnName    = {'Parameter','Value',  'Uncertainty','Fixed',  'Min',    'Max',    'Constraint'};
+    options.ColumnFormat  = {'char',     'numeric','numeric',    'logical','numeric','numeric','char'      };
+    options.ColumnEditable= [ false       true      false         true      true      true      true       ];
 
     f = figure('Name',options.Name, 'MenuBar','none', ...
       'Tag','mifit_View_Parameters', ...
@@ -157,7 +157,7 @@ function stop=mifit_Models_View_Parameters(varargin)
   % the window must be resized as number of Parameters has changed
   if resize 
     % determine the new window size to show
-    numCol    = 6;
+    numCol    = 7;
     TextWidth = config.FontSize;
     TextHeight= config.FontSize*1.7;
     % height is given by the number of fields. Add 1 for the header line.
@@ -208,35 +208,38 @@ function stop=mifit_Models_View_Parameters(varargin)
     if ~isempty(modelValue) && isfield(modelValue,'FitOutput')
       dat.sig = modelValue.FitOutput.parsHistoryUncertainty;
       if ~isempty(modelValue.FitOutput.parsHessianUncertainty)
-        if ~isfield(modelValue.FitOutput.constraints, 'index_variable')
-          modelValue.FitOutput.constraints.index_variable = 1:numel(dat.sig);
+        if ~isfield(modelValue.FitOutput.Constraints, 'index_variable')
+          modelValue.FitOutput.Constraints.index_variable = 1:numel(dat.sig);
         end
-        dat.sig(modelValue.FitOutput.constraints.index_variable) = ...
-            max(dat.sig(modelValue.FitOutput.constraints.index_variable), ...
+        dat.sig(modelValue.FitOutput.Constraints.index_variable) = ...
+            max(dat.sig(modelValue.FitOutput.Constraints.index_variable), ...
             modelValue.FitOutput.parsHessianUncertainty);
       end
       dat.sig = mat2cell(dat.sig(:), ones(n,1),1);
     else
       dat.sig = cell(n, 1);
     end
-    dat.min = mat2cell(model.constraint.min,   ones(n,1),1);
-    dat.max = mat2cell(model.constraint.max,   ones(n,1),1);
-    dat.fix = mat2cell(logical(model.constraint.fixed), ones(n,1),1);
+    dat.min = mat2cell(model.Constraint.min,   ones(n,1),1);
+    dat.max = mat2cell(model.Constraint.max,   ones(n,1),1);
+    dat.fix = mat2cell(logical(model.Constraint.fixed), ones(n,1),1);
+    dat.set = model.Constraint.set;
     
     % change all NaN (might appear strange for dummy user) into empty
     for index=1:n
       if isnan(dat.min{index}),  dat.min{index}=[]; end
       if isnan(dat.max{index}),  dat.max{index}=[]; end
       if isnan(dat.vals{index}), dat.vals{index}=[]; end
+      if isnan(dat.set{index}),  dat.set{index}=[]; end
     end
     % transfer it to the cell for uitable
-    Data = cell(n,6);
+    Data = cell(n,7);
     Data(:,1)= dat.pars;  % Parameter names:          model.Parameters
     Data(:,2)= dat.vals;  % Parameter values:         model.ParameterValues
     Data(:,3)= dat.sig;   % Parameter uncertainties:  output.parsHistoryUncertainty ...
-    Data(:,4)= dat.fix;   % Parameter fixed/free:     model.constraint.fixed
-    Data(:,5)= dat.min;   % Parameter min:            model.constraint.min
-    Data(:,6)= dat.max;   % Parameter max:            model.constraint.max
+    Data(:,4)= dat.fix;   % Parameter fixed/free:     model.Constraint.fixed
+    Data(:,5)= dat.min;   % Parameter min:            model.Constraint.min
+    Data(:,6)= dat.max;   % Parameter max:            model.Constraint.max
+    Data(:,7)= dat.set;   % Parameter set:            model.Constraint.set
     set(t, 'Data',          Data);
   end
  

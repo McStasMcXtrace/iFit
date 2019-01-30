@@ -113,7 +113,7 @@ function varargout = mifit(varargin)
             mifit_List_Data_push(varargin(2:end), 'replace');
             return
           elseif any(strcmpi(action,{'exit','quit'}))
-            mifit_File_Exit;
+            mifit_File_Exit([],[],config);
             return
           elseif any(strcmpi(action,{'reset','factory'}))
             mifit_File_Reset_Factory(action);
@@ -414,7 +414,7 @@ function mifit_Help_Search(varargin)
   answer =inputdlg(prompt,name,numlines);
   if isempty(answer),    return; end  % cancel
   if isempty(answer{1}), return; end  % empty pattern
-  mifit_disp([ '[Help_Search] Lookging for "' answer{1} '"' ]);
+  mifit_disp([ '[Help_Search] Looking for "' answer{1} '"' ]);
   doc(iData, answer{1});
   
 function mifit_Help_Loaders(varargin)

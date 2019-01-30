@@ -1,4 +1,4 @@
-function mifit_File_Preferences(varargin)
+function config = mifit_File_Preferences(varargin)
 % File/Preferences: open Preferences dialogue
 % set directories to search for Models
 % set FontSize (and update all Fonts in figure)

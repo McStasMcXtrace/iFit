@@ -14,7 +14,7 @@ contrib = 'Eric Ludlam, Felix Morsdorf, Joe Conti, Douglas M. Schwarz, Alexandro
 
 b = [ vers ' iFit/iData (' date ') by ' auth '. $Date$' ];
 if nargin > 1
-  b = [ b '** Licensed under the EUPL V.1.1 ** Contributions from ' contrib '. Send email to <ifit-users@mccode.org> to report bugs and requests. More on <ifit.mccode.org>.' ];
+  b = [ b '** Licensed under the EUPL V.1.1 ** Contributions from ' contrib '. Send email to <mailto:ifit-users@mccode.org> to report bugs and requests. More on <http://ifit.mccode.org>.' ];
 else
   
 end
