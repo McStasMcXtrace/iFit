@@ -18,6 +18,7 @@ if event.Indices(2) == 7  % Constraint is a string
 else
   Data{event.Indices(1),event.Indices(2)} = event.NewData;
 end
+set(source, 'Data', Data);
 
 % now store the new content into the Model. 
 
@@ -86,8 +87,8 @@ end
 
 if ~isempty(d)
   d = setalias(d, 'Model', model);
-  % update the modelValue when the evaluation time is small (< .5 sec)
-  if model.Duration >= 0 && model.Duration < 0.5
+  % update the modelValue when the evaluation time is small (< 5 sec)
+  if model.Duration >= 0 && model.Duration < 5
     try
       % evaluate model with its parameters (Edit) and Data set axes
       if ndims(d) == ndims(model)
@@ -170,7 +171,7 @@ else
   update_model = 1;
 end
 
-if update_model && model.Duration >= 0 && model.Duration < 0.5
+if update_model && model.Duration >= 0 && model.Duration < 5
   % update the model alone
   h = mifit_fig([ 'plot_' model.Tag ]);
   if isempty(h)
