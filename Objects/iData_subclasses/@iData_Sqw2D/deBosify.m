@@ -2,7 +2,7 @@ function s = deBosify(s, varargin)
 % iData_Sqw2D: deBosify: remove Bose factor (detailed balance) from an 'experimental/quantum' data set.
 %   The initial data set should be 'quantum/experimental' and satisfy the detailed balance.
 %   The resulting data set obeys S*=S(q,w) = S(q,-w), i.e. is 'classical'.
-%   It suppresses the temperature effect (population).
+%   It suppresses most of the temperature effect (population).
 %
 % conventions:
 % omega = Ei-Ef = energy lost by the neutron, given in [meV]
