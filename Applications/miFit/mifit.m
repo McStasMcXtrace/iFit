@@ -185,6 +185,7 @@ function varargout = mifit(varargin)
             mifit_List_Data_push(d);
           end
         end
+    else figure(fig); % raise figure
     end
     if nargout >= 1
         varargout{end+1} = out;
