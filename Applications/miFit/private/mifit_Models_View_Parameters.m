@@ -181,7 +181,8 @@ function stop=mifit_Models_View_Parameters(varargin)
   % determine if the Model/Data set is the same, in which case we only update the table Data
   if data_or_model_changed
     options.TooltipString = { model.Name, model.Description, char(d), ...
-    'The Model will be updated when changing values.' };
+    'The Model will be updated when changing values and evaluation time is shorter than Pref Models_Replot.', ...
+    'Use the Contextual menu for more (mouse right-click).' };
     options.TooltipString = textwrap(options.TooltipString,80);
     options.TooltipString = sprintf('%s\n', options.TooltipString{:});
     set(t, 'TooltipString', options.TooltipString);
