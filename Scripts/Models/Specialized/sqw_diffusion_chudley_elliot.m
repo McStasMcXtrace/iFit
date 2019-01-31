@@ -6,6 +6,8 @@ function signal=sqw_diffusion_chudley_elliot(varargin)
 %   The liquid is assumed to have appreciable short range order in a quasi-
 %     crystalline form. Diffusive motion takes place in large discrete jumps, 
 %     between which the atoms oscillate as in a solid. 
+%   It is suited for quasi-elastic neutron scattering data (QENS).
+%   This is a classical pure incoherent Lorentzian scattering law (no structure).
 %
 %  Model and parameters:
 %  ---------------------
@@ -25,7 +27,7 @@ function signal=sqw_diffusion_chudley_elliot(varargin)
 %
 %   You can build a jump diffusion model for a given translational weight and 
 %   diffusion coefficient:
-%      sqw = sqw_diffusion_chudley_elliot([ D t0 ])
+%      sqw = sqw_diffusion_chudley_elliot([ l0 t0 ])
 %
 %   You can of course tune other parameters once the model object has been created.
 %
@@ -59,7 +61,7 @@ function signal=sqw_diffusion_chudley_elliot(varargin)
 %
 % input:  p: sqw_diffusion_chudley_elliot model parameters (double)
 %             p(1)= Amplitude 
-%             p(2)= D         Diffusion coefficient e.g. few 1E-9 [m^2/s]
+%             p(2)= l0        Jump distance, e.g. 0.1-5 Angs [Angs]
 %             p(3)= t0        Residence time step between jumps, e.g. 1-4 ps [s]
 %         q:  axis along wavevector/momentum (row,double) [Angs-1]
 %         w:  axis along energy (column,double) [meV]
@@ -77,27 +79,26 @@ function signal=sqw_diffusion_chudley_elliot(varargin)
 %   <a href="matlab:doc(iFunc,'Models')">iFunc:Models</a>
 % (c) E.Farhi, ILL. License: EUPL.
 
-signal.Name           = [ 'sqw_diffusion_chudley_elliot jump/Fick-law diffusion dispersion [' mfilename ']' ];
-signal.Description    = 'A 2D S(q,w) jump diffusion dispersion.';
+signal.Name           = [ 'sqw_diffusion_chudley_elliot jump diffusion in a crystal [' mfilename ']' ];
+signal.Description    = 'A 2D S(q,w) Chudley-Elliot jump diffusion in a semi-ordered material.';
 
 signal.Parameters     = {  ...
   'Amplitude' ...
-  'D              Diffusion coefficient e.g. few 1E-9 [m^2/s]' ...
+  'l0             Jump distance, e.g. 0.1-5 Angs [Angs]' ...
   't0             Residence time step between jumps, e.g. 1-4 ps [s]' ...
    };
   
 signal.Dimension      = 2;         % dimensionality of input space (axes) and result
-signal.Guess          = [ 1 1e-9 1e-12 ];
+signal.Guess          = [ 1 3 1e-12 ];
 signal.UserData.classical     = true;
 signal.UserData.DebyeWaller   = false;
 
 % Expression of S(q,w) is found in Egelstaff, Intro to Liquids, Eq (11.13)+(11.16), p 227.
 signal.Expression     = { ...
- 'q = x; w = y; D = p(2); t0 = p(3)*241.8E9; % in meV-1' ...
- 'dq2= D*q.^2*1E20/241.8E9; % in meV, with q in Angs-1' ...
- '% half width of Lorentzian ~ DQ^2 in [meV]' ...
- 'fq=dq2;' ...
- 'if t0>0, fq = fq./(1+t0*dq2); end' ...
+ 'q = x; w = y; l0 = p(2); t0 = p(3)*241.8E9; % in meV-1' ...
+ 'fq=0;' ...
+ 'sq=sin(q*l0)/(q*l0); sq(q==0) = 1;
+ 'if t0>0, fq = (1-sq)/t0; end' ...
  'signal = p(1)/pi*fq./(w.^2+fq.^2);' ...
  };
 

@@ -4,6 +4,7 @@ function signal=sqw_diffusion_rotational(varargin)
 %   iFunc/sqw_diffusion_rotational: a 2D S(q,w) with a molecule rotational diffusion 
 %     dispersion based on the Egelstaff model. It corresponds with a particle  
 %     undergoing continuous and isotropic rotational diffusion.
+%     It is suited for quasi-elastic neutron scattering data (QENS).
 %     This is a classical pure incoherent Lorentzian scattering law (no structure).
 %
 %  Model and parameters:

@@ -3,6 +3,7 @@ function signal=sqw_diffusion_jump(varargin)
 %
 %   iFunc/sqw_diffusion_jump: a 2D S(q,w) with a jump diffusion dispersion
 %     based on the Egelstaff model. It can also model a simple Fick's law.
+%     It is suited for quasi-elastic neutron scattering data (QENS).
 %     This is a classical pure incoherent Lorentzian scattering law (no structure).
 %
 %  Model and parameters:

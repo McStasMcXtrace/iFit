@@ -3,6 +3,7 @@ function signal=sqw_diffusion(varargin)
 %
 %   iFunc/sqw_diffusion: a 2D S(q,w) with a diffusion dispersion
 %     based on the Egelstaff-Schofield Langevin equation for Brownian motion model.
+%     It is suited for quasi-elastic neutron scattering data (QENS).
 %     This is a classical pure incoherent Gaussian scattering law (no structure).
 %
 %  Model and parameters:
