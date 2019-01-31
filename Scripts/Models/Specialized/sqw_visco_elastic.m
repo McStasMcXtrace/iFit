@@ -17,9 +17,9 @@ function signal=sqw_visco_elastic(varargin)
 %
 %  where:
 %    CpCv=gamma is the Laplace coefficient usually in 1.1-1.67
-%    c*q        is the longitudinal acoustic linear dispersion. To suppress the acoustic mode
-%                 fix c=0 or Dl=0
-%    Dt         is the entropy fluctuation (thermal) diffusion coefficient
+%    c*q        is the longitudinal acoustic linear dispersion. To suppress the 
+%                 acoustic mode, fix c=0 or Dl=0
+%    Dt         is the entropy fluctuation (thermal) self-diffusion coefficient
 %                 the central line half width is then Dt*q^2. To suppress it fix Dt=0
 %    Dl         is the longitudinal acoustic diffusion coefficient
 %                 the acoustic mode half width is then Dl*q^2. To suppress it fix Dl=0
@@ -29,8 +29,11 @@ function signal=sqw_visco_elastic(varargin)
 %  where Chi is the isothermal compressibility [1/Pa].
 %
 %  The diffusion constant D is usually around D=1-10 E-9 [m^2/s] in liquids. Its 
-%  value in [meV.Angs^2] is D*4.1356e+08.The sound velocity is usually around 
+%  value in [meV.Angs^2] is D*4.1356e+08. The sound velocity is usually around 
 %  1000 [m/s]. Its value in [meV.Angs] is c/142.1622.
+%
+%  The central elastic line corresponds with a random walk translation (Brownian 
+%  motion). Liquid particles collide randomly (directional memory loss).
 %
 %  Structure factor:
 %  -----------------
@@ -50,7 +53,10 @@ function signal=sqw_visco_elastic(varargin)
 %    and does NOT satisfy the detailed balance.
 %
 %  To get the 'true' quantum S(q,w) definition, use e.g.
-%    sqw = Bposify(sqw_visco_elastic);
+%    sqw = Bosify(sqw_visco_elastic);
+%
+%  To add a Debye-Waller factor (thermal motions around the equilibrium), use e.g.
+%    sqw = DebyeWaller(sqw);
 %
 %  To add a 'background' use e.g.
 %    sqw = sqw_visco_elastic + constant('Background');

@@ -2,7 +2,8 @@ function signal=sqw_rotationaldiffusion(varargin)
 % model = sqw_rotationaldiffusion(p, q ,w, {signal}) : molecule rotational diffusion dispersion(Q) Sqw2D
 %
 %   iFunc/sqw_rotationaldiffusion: a 2D S(q,w) with a molecule rotational diffusion 
-%     dispersion based on the Egelstaff model.
+%     dispersion based on the Egelstaff model. It corresponds with a particle  
+%     undergoing continuous and isotropic rotational diffusion.
 %     This is a classical pure incoherent Lorentzian scattering law (no structure).
 %
 %  Model and parameters:
@@ -17,8 +18,8 @@ function signal=sqw_rotationaldiffusion(varargin)
 %   where:
 %
 %   Fl(w)  = exp(l(l+1)Dr/w0)/pi/w0
-%            * l(l+1)Dr/sqrt(w^2+(l(l+1)Dr)^2)
-%            * K1(sqrt((w^2+(l(l+1)Dr)^2)/w0))
+%            * l(l+1)Dr/sqrt( w^2+(l(l+1)Dr)^2)
+%            * K1(      sqrt((w^2+(l(l+1)Dr)^2)/w0))
 %
 %   where we commonly define:
 %     j_l is the spherical Bessel function of the 1st kind
@@ -31,7 +32,9 @@ function signal=sqw_rotationaldiffusion(varargin)
 %   few meV in liquids, which inverse time t0 characterises the angular residence  
 %   time step between jumps, t0 ~ 1-4 ps. 
 %
-%   When w0 >> Dr, the model is a simple, continuous rotational diffusion (Brownian)
+%   When w0 >> Dr, the model is a simple, continuous rotational diffusion (Brownian).
+%   This approximation is obtained when fixing w0 to a negative value, which is 
+%   equivalent to setting t0=0.
 %
 %   You can build a jump diffusion model for a given translational weight and 
 %   diffusion coefficient:
@@ -45,13 +48,21 @@ function signal=sqw_rotationaldiffusion(varargin)
 %  Additional remarks:
 %  -------------------
 %
+%  The sum on rotation levels 'l' is done up to:
+%    model.UserData.lmax      = 100;
+%  and the additional term is higher than:
+%    model.UserData.threshold = 1e-4;
+%  You may modify these settings any time after model creation. Setting lmax to 0
+%  only computes the pure elastic contribution.
+%
 %  The model is classical, e.g. symmetric in energy, and does NOT satisfy the
 %  detailed balance.
 %
 %  To get the 'true' quantum S(q,w) definition, use e.g.
 %    sqw = Bosify(sqw_rotationaldiffusion);
-%  where the Temperature is then given in [x units]. If 'x' is an energy in [meV]
-%  then the Temperature parameter is T[K]/11.6045
+%
+%  To add a Debye-Waller factor (thermal motions around the equilibrium), use e.g.
+%    sqw = DebyeWaller(sqw);
 %
 %  Energy conventions:
 %   w = omega = Ei-Ef = energy lost by the neutron [meV]

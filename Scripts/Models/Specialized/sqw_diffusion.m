@@ -40,7 +40,8 @@ function signal=sqw_diffusion(varargin)
 %  -------------------
 %
 %  The model is classical, e.g. symmetric in energy, and does NOT satisfy the
-%  detailed balance. It includes a Debye Waller factor.
+%  detailed balance. It includes a Debye Waller factor with an equivalent
+%  mean squared displacement <u^2>=3*D/w0
 %
 %  To get the 'true' quantum S(q,w) definition, use e.g.
 %    sqw = Bosify(sqw_diffusion);
@@ -49,6 +50,8 @@ function signal=sqw_diffusion(varargin)
 %   w = omega = Ei-Ef = energy lost by the neutron [meV]
 %       omega > 0, neutron looses energy, can not be higher than Ei (Stokes)
 %       omega < 0, neutron gains energy, anti-Stokes
+%
+%  This model is equivalent to the NJOY/LEAPR "diffusion effective width model".
 %
 % Usage:
 % ------
