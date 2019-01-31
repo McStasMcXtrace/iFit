@@ -142,12 +142,11 @@ function structure = uitable(structure,options)
   end
 
   % determine the window size to show
-  TextWidth = 18;
-  TextHeight= 30;
   % height is given by the number of fields
-  height = (numel(options.ListString)+3)*TextHeight;
-  % width is given by the length of the longest RowName
-  width = max(cellfun(@numel,options.ListString))*TextWidth + numel(structure)*options.FontSize*5;
+  height = (numel(options.ListString)+3)*options.FontSize*2;
+  % width is given by the length of the longest RowName + nb of elements in array (columns)
+  sz = cellfun(@numel,options.ListString);
+  width  = (max(median(sz),mean(sz))+numel(structure)*5)*options.FontSize;
   % compare to current window size
   p = get(f, 'Position');
   p(3) = width;
@@ -177,7 +176,7 @@ function structure = uitable(structure,options)
     'ColumnEditable',ColumnEditable, ...
     'Tag', [ options.Tag '_Table' ], ...
     'FontSize',options.FontSize, ...
-    'Units','normalized', 'Position', [0.05 0.2 .9 .7 ], ...
+    'Units','normalized', 'Position', [0.02 0.02 0.98 0.98 ], ...
     'ColumnWidth',ColumnWidth,'TooltipString',options.TooltipString, ...
     'ColumnName',ColumnName, ...
     'ColumnFormat', ColumnFormat);
