@@ -120,6 +120,13 @@ classdef iFunc_Sqw2D < iFunc
         assignin('caller',inputname(1),self); % update in original object
       end
     end
+    
+    function h = plot(self, varargin)
+      % iFunc_Sqw2D: plot: plot the S(q,w) model
+      h = plot@iFunc(self, varargin{:});
+      ylabel('Q [Angs-1]');
+      xlabel('Energy [meV]');
+    end
   
     % methods for iFunc Sqw 2D, similar to the iData Sqw2D ones
     
@@ -127,15 +134,12 @@ classdef iFunc_Sqw2D < iFunc
     %   convert it to an iData_Sqw2D and apply one of the following method:
     
     % methods that retain the type (q,w)
-    %   Bosify(T, method)
-    %   deBosify(T, method)
     %   dynamic_range(Ei, angle_min, angle_max)
     %   incoherent(q, T, m, n, DW, vDOS )
     %   coherent (iData sq or d-spacing value)
     %   symmetrize
     %   Sqw2ddcs(Ei)
     %   ddcs2Sqw(Ei)
-    %   DebyeWaller(u2)
     
     % when changing type, the new object must compute back the (q,w) axes, then 
     % evaluate the original iFunc_Sqw2D model, and apply the final conversion with

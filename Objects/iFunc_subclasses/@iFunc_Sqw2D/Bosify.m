@@ -63,7 +63,7 @@ function self=Bosify(self, type)
   else do_bosify=1; end
   
   % check if Temperature is already a parameter.
-  T = findfield(self, 'Temperature','first');
+  T = findfield(self, 'Temperature','exact first');
   if isempty(T), T = findfield(self, 'T','exact first');
   % check that it is in the Parameters
   if ~isempty(T)  % re-use existing Temperature
@@ -75,14 +75,17 @@ function self=Bosify(self, type)
   
   % check if the model is labelled as 'classical' or 'quantum'. get alias.
   classical = findfield(self, 'classical','first');
+  wrn = false;
   if ~isempty(classical)
     classical = get(self, classical);
     if ~classical(1) && do_bosify
       warning([ mfilename ': WARNING: Not "classical/symmetric": The model ' self.Tag ' ' self.Name ' does not seem to be classical (classical=0).' NL ...
-  '   It may ALREADY contain the Bose factor in which case the detailed balance will be wrong.' ]);
+      '   It may ALREADY contain the Bose factor in which case the detailed balance will be wrong.' ]);
+      wrn = true;
     elseif classical(1) && ~do_bosify
       warning([ 'de' mfilename ': WARNING: Not "quantum": The model ' self.Tag ' ' self.Name ' seems to be classical/symmetric (classical=1).' NL ...
       '   The Bose factor may NOT NEED to be removed in which case the detailed balance will be wrong.' ]);
+      wrn = true;
     end
   end
   
@@ -106,14 +109,16 @@ function self=Bosify(self, type)
   % append the quantum correction to the Expression
   % apply sqrt(Bose) factor to get experimental-like
   % semi-classical corrections, aka quantum correction factor
+  self.Expression{end+1} = 'if kT'; % only when T is non 0 (divide)
   self.Expression{end+1} = [ 'kT = p(' num2str(T_index) ')/11.6045; % Kelvin to meV = 1000*K_B/e' ];               
-  self.Expression{end+1} = 'hw_kT = y/kT; % hbar omega / kT';
+  self.Expression{end+1} =   'hw_kT = y/kT; % hbar omega / kT';
   self.Expression{end+1} = [ 'Q=' Q ';' ];
-  self.Expression{end+1} = 'Q(find(hw_kT==0)) = 1;';
+  self.Expression{end+1} =   'Q(find(hw_kT==0)) = 1;';
   if ~do_bosify
     self.Expression{end+1} = 'Q = 1./Q;';
   end
-  self.Expression{end+1} = 'signal = signal .* Q;  % apply detailed balance with the selected correction';
+  self.Expression{end+1} =   'signal = signal .* Q;  % apply detailed balance with the selected correction';
+  self.Expression{end+1} = 'end'; % if T
   
   if isvector(self.Guess) && isnumeric(self.Guess)
     self.Guess(T_index) = 300;
@@ -125,7 +130,7 @@ function self=Bosify(self, type)
     self.UserData.classical     = true;  % result is classical
   end
   
-  if nargout == 0 && ~isempty(inputname(1)) && isa(self,'iFunc')
+  if nargout == 0 && ~isempty(inputname(1)) && isa(self,'iFunc') && ~wrn
     assignin('caller',inputname(1),self);
   end
 

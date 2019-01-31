@@ -34,22 +34,24 @@ function self=DebyeWaller(self)
 
   % check if msd is already a parameter.
   u2_index = [];
-  u2 = findfield(self, 'msd','first');
+  u2 = findfield(self, 'msd','exact first');
   if isempty(u2), u2 = findfield(self, 'u2','exact first');
   % check that it is in the Parameters
   if ~isempty(u2)  % re-use existing u2
     u2_index = find(~cellfun(@isempty, strfind(self.Parameters, u2)));
   else  % add new Temperature parameter
-    self.Parameters{end+1} = 'u2 [Angs^2]'; 
+    self.Parameters{end+1} = 'u2 Mean squared displacement [Angs^2]'; 
     u2_index=numel(self.Parameters);
   end
   
   % check if the model has already a Debye-Waller factor ?
   hasDW = findfield(self, 'DebyeWaller','first');
+  wrn = false;
   if ~isempty(hasDW)
     hasDW = get(self, hasDW);
     if hasDW(1)
       warning([ mfilename ': WARNING: The model ' self.Tag ' ' self.Name ' seems to already contain a Debye-Waller factor.' ]);
+      wrn = true;
     end
   end
   
@@ -61,12 +63,12 @@ function self=DebyeWaller(self)
   self.Expression{end+1} = 'signal = signal .* DW;';
   
   if isvector(self.Guess) && isnumeric(self.Guess)
-    self.Guess(u2_index) = 1;
+    self.Guess(u2_index) = 0.05;  % typical
   end
   
   self.UserData.DebyeWaller     = true; 
   
-  if nargout == 0 && ~isempty(inputname(1)) && isa(self,'iFunc')
+  if nargout == 0 && ~isempty(inputname(1)) && isa(self,'iFunc') && ~wrn
     assignin('caller',inputname(1),self);
   end
 
