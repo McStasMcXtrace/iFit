@@ -10,26 +10,23 @@ function signal=sqw_jumpdiffusion(varargin)
 %
 %   The dispersion has the form: (Egelstaff book Eq 11.13 and 11.16, p 222)
 %      S(q,w) = f(q)/(w^2+f(q)^2)
-%      f(q)   = w0 q^2 l0^2/(1+q^2 l0^2)
+%   where
+%      f(q)   = Dq^2 /(1+t0.Dq^2)     width of the Lorentzian
 %
 %   where we commonly define:
-%     w0   = Jump diffusion characteristic energy width, MD/2kT e.g. few [meV]
-%     l0   = Jump diffusion length e.g. few [Angs].
+%     D    = Diffusion coefficient e.g. few 1E-9 [m^2/s]
+%     t0   = Residence time step between jumps, e.g. 1-4 ps [s]
 %
-%   The characteristic energy for a jump step is w0, usually around 
-%   few meV in liquids, which inverse time t0 characterises the residence time 
-%   step between jumps, t0 ~ 1-4 ps. The half width of the Lorentizian
-%   follows a law similar to Dq^2.
+%   The diffusion constant D is usually around D=1-10 E-9 [m^2/s] in liquids. Its 
+%   value in [meV.Angs^2] is D*4.1356e+08. The residence time t0 is usually in 0-4 ps.
 %
-%   The mean free path is l0 is around 0.1-5 Angs. 
-%
-%   When q l0 is small, f(q) -> w0 q^2 l0^2 which behaves as a free-diffusion
-%   Fick's law with an equivalent diffusion constant D=w0.l0^2 usally around 
-%   D=1-10 E-9 m^2/s in liquids.
+%   Fixing t0=0 corresponds with a pure random walk translation (Brownian/Ficks-law
+%   self-diffusion). Liquid particles then collide randomly (directional memory loss).
+%   The Brownian mean free path l0=sqrt(6*t0*D) is usually around 0.1-5 Angs.
 %
 %   You can build a jump diffusion model for a given translational weight and 
 %   diffusion coefficient:
-%      sqw = sqw_jumpdiffusion([ w0 l0 ])
+%      sqw = sqw_jumpdiffusion([ D t0 ])
 %
 %   You can of course tune other parameters once the model object has been created.
 %
@@ -45,10 +42,16 @@ function signal=sqw_jumpdiffusion(varargin)
 %  To get the 'true' quantum S(q,w) definition, use e.g.
 %    sqw = Bosify(sqw_jumpdiffusion);
 %
+%  To add a Debye-Waller factor (thermal motions around the equilibrium), use e.g.
+%    sqw = DebyeWaller(sqw);
+%
 %  Energy conventions:
 %   w = omega = Ei-Ef = energy lost by the neutron [meV]
 %       omega > 0, neutron looses energy, can not be higher than Ei (Stokes)
 %       omega < 0, neutron gains energy, anti-Stokes
+%
+%  This model is equivalent to the QENS_JumpDiffusionTranslation model in LAMP.
+%  and QENS_RandomWalkTranslation when t0=0 [http://lamp.mccode.org].
 %
 % Usage:
 % ------
@@ -57,8 +60,8 @@ function signal=sqw_jumpdiffusion(varargin)
 %
 % input:  p: sqw_jumpdiffusion model parameters (double)
 %             p(1)= Amplitude 
-%             p(2)= w0             Jump diffusion characteristic energy width, e.g. few [meV]
-%             p(2)= l0             Jump diffusion length [Angs]
+%             p(2)= D         Diffusion coefficient e.g. few 1E-9 [m^2/s]
+%             p(3)= t0        Residence time step between jumps, e.g. 1-4 ps [s]
 %         q:  axis along wavevector/momentum (row,double) [Angs-1]
 %         w:  axis along energy (column,double) [meV]
 % output: signal: model value [iFunc_Sqw2D]
@@ -71,6 +74,8 @@ function signal=sqw_jumpdiffusion(varargin)
 %  P.A.Egelstaff, An introduction to the liquid state, 2nd ed., Oxford (2002)
 %  Egelstaff and Schofield, Nuc. Sci. Eng. 12 (1962) 260 <https://doi.org/10.13182/NSE62-A26066>
 %  J.I. Marquez-Damian et al, Ann. Nuc. En. 92 (2016) 107 <http://dx.doi.org/10.1016/j.anucene.2016.01.036>
+%  M. Bée: Quasielastic Neutron Scattering: Principles and Applications in Solid State Chemistry, Biology and Materials Science, Adam-Hilger, Bristol, 1988; chapter 5.1.
+%  R. Hempelman: Quasielastic Neutron Scattering and Solid State Diffusion, Clarendon Press, Oxford, 2000; chapter 5.2
 %
 % Version: $Date$
 % See also iData, iFunc, sqw_recoil, sqw_diffusion
@@ -82,19 +87,22 @@ signal.Description    = 'A 2D S(q,w) jump diffusion dispersion.';
 
 signal.Parameters     = {  ...
   'Amplitude' ...
-  'w0             Jump diffusion characteristic energy width [meV]' ...
-  'l0             Jump diffusion length [Angs]' ...
+  'D              Diffusion coefficient e.g. few 1E-9 [m^2/s]' ...
+  't0             Residence time step between jumps, e.g. 1-4 ps [s]' ...
    };
   
 signal.Dimension      = 2;         % dimensionality of input space (axes) and result
-signal.Guess          = [ 1 1 1 ];
+signal.Guess          = [ 1 1e-9 1e-12 ];
 signal.UserData.classical     = true;
 signal.UserData.DebyeWaller   = false;
 
 % Expression of S(q,w) is found in Egelstaff, Intro to Liquids, Eq (11.13)+(11.16), p 227.
 signal.Expression     = { ...
- 'q = x; w = y; w0 = p(2); l0 = p(3);' ...
- 'fq = w0*l0^2*q.^2./(1+l0^2*q.^2); % half width of Lorentzian ~ DQ^2 in [meV]' ...
+ 'q = x; w = y; D = p(2); t0 = p(3)*241.8E9; % in meV-1' ...
+ 'dq2= D*q.^2*1E20/241.8E9; % in meV, with q in Angs-1' ...
+ '% half width of Lorentzian ~ DQ^2 in [meV]' ...
+ 'fq=dq2;' ...
+ 'if t0>0, fq = fq./(1+t0*dq2); end' ...
  'signal = p(1)/pi*fq./(w.^2+fq.^2);' ...
  };
 
