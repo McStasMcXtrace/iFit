@@ -85,10 +85,12 @@ otherwise
   return
 end
 
+config = getappdata(mifit_fig, 'Preferences');
+
 if ~isempty(d)
   d = setalias(d, 'Model', model);
-  % update the modelValue when the evaluation time is small (< 5 sec)
-  if model.Duration >= 0 && model.Duration < 5
+  % update the modelValue when the evaluation time is small (< ~5 sec)
+  if model.Duration >= 0 && model.Duration < config.Models_Replot
     try
       % evaluate model with its parameters (Edit) and Data set axes
       if ndims(d) == ndims(model)
@@ -171,7 +173,7 @@ else
   update_model = 1;
 end
 
-if update_model && model.Duration >= 0 && model.Duration < 5
+if update_model && model.Duration >= 0 && model.Duration < config.Models_Replot
   % update the model alone
   h = mifit_fig([ 'plot_' model.Tag ]);
   if isempty(h)
