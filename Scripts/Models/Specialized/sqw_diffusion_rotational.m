@@ -1,7 +1,7 @@
-function signal=sqw_rotationaldiffusion(varargin)
-% model = sqw_rotationaldiffusion(p, q ,w, {signal}) : molecule rotational diffusion dispersion(Q) Sqw2D
+function signal=sqw_diffusion_rotational(varargin)
+% model = sqw_diffusion_rotational(p, q ,w, {signal}) : molecule rotational diffusion dispersion(Q) Sqw2D
 %
-%   iFunc/sqw_rotationaldiffusion: a 2D S(q,w) with a molecule rotational diffusion 
+%   iFunc/sqw_diffusion_rotational: a 2D S(q,w) with a molecule rotational diffusion 
 %     dispersion based on the Egelstaff model. It corresponds with a particle  
 %     undergoing continuous and isotropic rotational diffusion.
 %     This is a classical pure incoherent Lorentzian scattering law (no structure).
@@ -38,7 +38,7 @@ function signal=sqw_rotationaldiffusion(varargin)
 %
 %   You can build a jump diffusion model for a given translational weight and 
 %   diffusion coefficient:
-%      sqw = sqw_rotationaldiffusion([ w0 l0 ])
+%      sqw = sqw_diffusion_rotational([ w0 l0 ])
 %
 %   You can of course tune other parameters once the model object has been created.
 %
@@ -59,7 +59,7 @@ function signal=sqw_rotationaldiffusion(varargin)
 %  detailed balance.
 %
 %  To get the 'true' quantum S(q,w) definition, use e.g.
-%    sqw = Bosify(sqw_rotationaldiffusion);
+%    sqw = Bosify(sqw_diffusion_rotational);
 %
 %  To add a Debye-Waller factor (thermal motions around the equilibrium), use e.g.
 %    sqw = DebyeWaller(sqw);
@@ -71,10 +71,10 @@ function signal=sqw_rotationaldiffusion(varargin)
 %
 % Usage:
 % ------
-% s = sqw_rotationaldiffusion; 
+% s = sqw_diffusion_rotational; 
 % value = s(p,q,w); or value = iData(s,p,q,w)
 %
-% input:  p: sqw_rotationaldiffusion model parameters (double)
+% input:  p: sqw_diffusion_rotational model parameters (double)
 %             p(1)= Amplitude 
 %             p(2)= Dr             Rotational diffusion constant [meV]
 %             p(3)= d              Rotator length [Angs]
@@ -84,7 +84,7 @@ function signal=sqw_rotationaldiffusion(varargin)
 % output: signal: model value [iFunc_Sqw2D]
 %
 % Example:
-%   s=sqw_rotationaldiffusion;
+%   s=sqw_diffusion_rotational;
 %   plot(log10(iData(s, [], 0:.1:20, -50:50)))  % q=0:20 Angs-1, w=-50:50 meV
 %
 % Reference: 
@@ -96,7 +96,7 @@ function signal=sqw_rotationaldiffusion(varargin)
 %   <a href="matlab:doc(iFunc,'Models')">iFunc:Models</a>
 % (c) E.Farhi, ILL. License: EUPL.
 
-signal.Name           = [ 'sqw_rotationaldiffusion molecule rotational diffusion dispersion [' mfilename ']' ];
+signal.Name           = [ 'sqw_diffusion_rotational molecule rotational diffusion dispersion [' mfilename ']' ];
 signal.Description    = 'A 2D S(q,w) rotational diffusion dispersion.';
 
 signal.Parameters     = {  ...
