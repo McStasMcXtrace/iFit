@@ -17,7 +17,7 @@ function [m, DOS, f, ax] = max(s)
   m = []; DOS = []; f=[]; ax = [];
   if  ~isfield(s.UserData,'maxFreq') || isempty(s.UserData.maxFreq) ...
     || all(s.UserData.maxFreq <= 0) ...
-    || (nargout > 1 && s.UserData.maxFreq<=0 && isfield(s.UserData, 'FREQ') && isempty(s.UserData.FREQ))
+    || (nargout > 1 && all(s.UserData.maxFreq<=0) && isfield(s.UserData, 'FREQ') && isempty(s.UserData.FREQ))
     qh=linspace(-.5,.5,10);qk=qh; ql=qh; w=linspace(0.01,50,11);
     ax = { qh,qk,ql',w };
     f=iData(s,[],ax{:});
