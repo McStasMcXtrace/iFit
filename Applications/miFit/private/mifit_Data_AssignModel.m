@@ -14,7 +14,7 @@ function mifit_Data_AssignModel(varargin)
       modelF   = eval(model);
       telapsed = toc(tstart);
       if ~isempty(modelF) 
-        if telapsed > config.Store_Models
+        if telapsed > config.Models_Store
           % push Model into the Models menu (to the Deck/Library/Stack)
           % all models are saved when exiting (when set in Preferences)
           handle = mifit_Models_Add_Entry(modelF);

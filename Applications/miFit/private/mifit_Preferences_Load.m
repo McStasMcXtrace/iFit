@@ -20,9 +20,9 @@ function config = mifit_Preferences_Load(file)
   end
   if isstruct(config)
     % make sure we have defined all defaults
-    if ~isfield(config, 'FontSize'),          config.FontSize         = max(12, get(0,'defaultUicontrolFontSize')); end
-    if ~isfield(config, 'Save_Data_On_Exit'), config.Save_Data_On_Exit= 'yes'; end
-    if ~isfield(config, 'Store_Models'),      config.Store_Models     = 3; end
+    if ~isfield(config, 'FontSize'),          config.FontSize         = max(12, get(0,'defaultUicontrolFontSize')); end 
+    if ~isfield(config, 'Models_Store'),      config.Models_Store     = 3; end
+    if ~isfield(config, 'Models_Replot'),     config.Models_Replot    = 5; end
     if ~isfield(config, 'History_Level'),     config.History_Level    = 10; end
     if ~isfield(config, 'Fit_Verbose'),       config.Fit_Verbose      = 'no'; end
     if ~isfield(config, 'ProxyHost'),         config.ProxyHost        = ''; end
@@ -33,8 +33,8 @@ function config = mifit_Preferences_Load(file)
     end
   end
   
-  % TODO: resize main panel. Is this really needed ?
-  if ~isempty(mifit_fig)
+  % resize main panel.
+  if 0 && ~isempty(mifit_fig)
     handle = findobj(mifit_fig, 'Tag','Panel_DataSets');
     set(handle, 'Units','normalized', 'Position',[0.002 0 0.99 0.99]);
   end
