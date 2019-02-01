@@ -106,7 +106,7 @@ function stop=mifit_Models_View_Parameters(varargin)
   if isempty(f)
     options.ColumnName    = {'Parameter','Value',  'Uncertainty','Fixed',  'Min',    'Max',    'Constraint'};
     options.ColumnFormat  = {'char',     'numeric','numeric',    'logical','numeric','numeric','char'      };
-    options.ColumnEditable= [ false       true      false         true      true      true      true       ];
+    options.ColumnEditable= [ true       true      false         true      true      true      true       ];
 
     f = figure('Name',options.Name, 'MenuBar','none', ...
       'Tag','mifit_View_Parameters', ...
@@ -180,8 +180,10 @@ function stop=mifit_Models_View_Parameters(varargin)
   % things to update -------------------------------------------------------------
   % determine if the Model/Data set is the same, in which case we only update the table Data
   if data_or_model_changed
+    names = model.Parameters;
     options.TooltipString = { model.Name, model.Description, char(d), ...
     'The Model will be updated when changing values and evaluation time is shorter than Pref Models_Replot.', ...
+   ['You may rename Model parameters, and set Constraints using e.g. expressions with p(n) or "' names{1} '".' ] ... 
     'Use the Contextual menu for more (mouse right-click).' };
     options.TooltipString = textwrap(options.TooltipString,80);
     options.TooltipString = sprintf('%s\n', options.TooltipString{:});

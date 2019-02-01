@@ -9,11 +9,11 @@ if ~ishandle(source) || (~isstruct(event) && ~isobject(event))
 if ~strcmpi(get(source,'Type'),'uitable'), return; end
 
 % test if data changed, else return
-if event.NewData == event.PreviousData, return; end
+if isequal(event.NewData, event.PreviousData), return; end
 
 % we get the table content, and update the value
 Data = get(source, 'Data');
-if event.Indices(2) == 7  % Constraint is a string
+if any(event.Indices(2) == [ 1 7 ])  % ParName/Constraint is a string
   Data{event.Indices(1),event.Indices(2)} = event.EditData;
 else
   Data{event.Indices(1),event.Indices(2)} = event.NewData;
@@ -56,7 +56,7 @@ switch event.Indices(2)
 case 4 % Fixed must be logical
   val(cellfun(@isempty, val)) = { false };
   val = [ val{:} ];
-case 7
+case { 1,7 }
   % keep as strings
 otherwise
   val(cellfun(@isempty, val)) = { NaN };
@@ -65,6 +65,9 @@ end
 
 % Event/update Signification depends on the Column index = event.Indices
 switch event.Indices(2)
+case 1
+  % 2: Value -> store in Model.Parameters name
+  model.Parameters = val;
 case 2
   % 2: Value -> store in Model.ParameterValues
   model.ParameterValues = val;
@@ -135,6 +138,9 @@ if ~isempty(d)
       % the model must have similar parameters
       try
         switch event.Indices(2)
+        case 1
+          % 1: Value -> Par Name
+          this_model.Parameters(event.Indices(1)) = val;
         case 2
           % 2: Value -> store in Model.ParameterValues
           this_model.(name) = val;
@@ -172,6 +178,7 @@ elseif ~isempty(handle),
 else
   update_model = 1;
 end
+setappdata(mifit_fig, 'CurrentModel', model);
 
 if update_model && model.Duration >= 0 && model.Duration < config.Models_Replot
   % update the model alone
