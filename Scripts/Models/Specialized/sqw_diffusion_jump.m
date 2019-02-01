@@ -25,8 +25,8 @@ function signal=sqw_diffusion_jump(varargin)
 %   self-diffusion). Liquid particles then collide randomly (directional memory loss).
 %   The Brownian mean free path l0=sqrt(6*t0*D) is usually around 0.1-5 Angs.
 %
-%   You can build a jump diffusion model for a given translational weight and 
-%   diffusion coefficient:
+%   You can build a jump diffusion model for a given diffusion coefficient and
+%   time step with:
 %      sqw = sqw_diffusion_jump([ D t0 ])
 %
 %   You can of course tune other parameters once the model object has been created.

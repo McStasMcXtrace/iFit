@@ -1,7 +1,7 @@
-function signal=sqw_diffusion_chudley_elliot(varargin)
-% model = sqw_diffusion_chudley_elliot(p, q ,w, {signal}) : jump/Fick-law diffusion dispersion(Q) Sqw2D
+function signal=sqw_diffusion_crystal(varargin)
+% model = sqw_diffusion_crystal(p, q ,w, {signal}) : Chudley-Elliot Jump Diffusion on a crystal lattice Sqw2D
 %
-%   iFunc/sqw_diffusion_chudley_elliot: a 2D S(q,w) with a jump diffusion dispersion
+%   iFunc/sqw_diffusion_crystal: a 2D S(q,w) with a jump diffusion dispersion
 %     based on the Chudley-Elliot model. 
 %   The liquid is assumed to have appreciable short range order in a quasi-
 %     crystalline form. Diffusive motion takes place in large discrete jumps, 
@@ -12,10 +12,10 @@ function signal=sqw_diffusion_chudley_elliot(varargin)
 %  Model and parameters:
 %  ---------------------
 %
-%   The dispersion has the form: (Egelstaff book Eq 11.13 and 11.16, p 222)
+%   The dispersion has the form: 
 %      S(q,w) = f(q)/(w^2+f(q)^2)
 %   where
-%      f(q)   = 1/t0*(1-sin(Q l0)/(q l0))     width of the Lorentzian
+%      f(q)   = 1/t0*(1-sinc(q l0))     width of the Lorentzian
 %
 %   where we commonly define:
 %     l0   = Jump distance, e.g. 0.1-5 Angs [Angs]
@@ -25,9 +25,9 @@ function signal=sqw_diffusion_chudley_elliot(varargin)
 %   l0^2 = 6*D*t0, where D is usually around D=1-10 E-9 [m^2/s] in liquids. Its 
 %   value in [meV.Angs^2] is D*4.1356e+08. The residence time t0 is usually in 0-4 ps.
 %
-%   You can build a jump diffusion model for a given translational weight and 
-%   diffusion coefficient:
-%      sqw = sqw_diffusion_chudley_elliot([ l0 t0 ])
+%   You can build a crystal diffusion model for a given distance and residence
+%   time with:
+%      sqw = sqw_diffusion_crystal([ l0 t0 ])
 %
 %   You can of course tune other parameters once the model object has been created.
 %
@@ -41,7 +41,7 @@ function signal=sqw_diffusion_chudley_elliot(varargin)
 %  detailed balance.
 %
 %  To get the 'true' quantum S(q,w) definition, use e.g.
-%    sqw = Bosify(sqw_diffusion_chudley_elliot);
+%    sqw = Bosify(sqw_diffusion_crystal);
 %
 %  To add a Debye-Waller factor (thermal motions around the equilibrium), use e.g.
 %    sqw = DebyeWaller(sqw);
@@ -56,10 +56,10 @@ function signal=sqw_diffusion_chudley_elliot(varargin)
 %
 % Usage:
 % ------
-% s = sqw_diffusion_chudley_elliot; 
+% s = sqw_diffusion_crystal; 
 % value = s(p,q,w); or value = iData(s,p,q,w)
 %
-% input:  p: sqw_diffusion_chudley_elliot model parameters (double)
+% input:  p: sqw_diffusion_crystal model parameters (double)
 %             p(1)= Amplitude 
 %             p(2)= l0        Jump distance, e.g. 0.1-5 Angs [Angs]
 %             p(3)= t0        Residence time step between jumps, e.g. 1-4 ps [s]
@@ -68,7 +68,7 @@ function signal=sqw_diffusion_chudley_elliot(varargin)
 % output: signal: model value [iFunc_Sqw2D]
 %
 % Example:
-%   s=sqw_diffusion_chudley_elliot;
+%   s=sqw_diffusion_crystal;
 %   plot(log10(iData(s, [], 0:.1:20, -50:50)))  % q=0:20 Angs-1, w=-50:50 meV
 %
 % Reference: 
@@ -79,7 +79,7 @@ function signal=sqw_diffusion_chudley_elliot(varargin)
 %   <a href="matlab:doc(iFunc,'Models')">iFunc:Models</a>
 % (c) E.Farhi, ILL. License: EUPL.
 
-signal.Name           = [ 'sqw_diffusion_chudley_elliot jump diffusion in a crystal [' mfilename ']' ];
+signal.Name           = [ 'sqw_diffusion_crystal jump diffusion in a crystal [' mfilename ']' ];
 signal.Description    = 'A 2D S(q,w) Chudley-Elliot jump diffusion in a semi-ordered material.';
 
 signal.Parameters     = {  ...
@@ -98,7 +98,7 @@ signal.Expression     = { ...
  'q = x; w = y; l0 = p(2); t0 = p(3)*241.8E9; % in meV-1' ...
  'fq=0;' ...
  'sq=sin(q*l0)/(q*l0); sq(q==0) = 1;
- 'if t0>0, fq = (1-sq)/t0; end' ...
+ 'if t0>0, fq = abs(1-sq)/t0; end' ...
  'signal = p(1)/pi*fq./(w.^2+fq.^2);' ...
  };
 

@@ -37,9 +37,8 @@ function signal=sqw_diffusion_rotational(varargin)
 %   This approximation is obtained when fixing w0 to a negative value, which is 
 %   equivalent to setting t0=0.
 %
-%   You can build a jump diffusion model for a given translational weight and 
-%   diffusion coefficient:
-%      sqw = sqw_diffusion_rotational([ w0 l0 ])
+%   You can build a rotational diffusion model for given initial parameters with:
+%      sqw = sqw_diffusion_rotational([ Amp Dr d w0 ])
 %
 %   You can of course tune other parameters once the model object has been created.
 %
@@ -49,12 +48,13 @@ function signal=sqw_diffusion_rotational(varargin)
 %  Additional remarks:
 %  -------------------
 %
-%  The sum on rotation levels 'l' is done up to:
+%  The sum on rotational levels 'l' is done up to:
 %    model.UserData.lmax      = 100;
 %  and the additional term is higher than:
 %    model.UserData.threshold = 1e-4;
 %  You may modify these settings any time after model creation. Setting lmax to 0
-%  only computes the pure elastic contribution.
+%  only computes the pure elastic contribution. Decreasing threshold (1e-6) will
+%  sum more terms.
 %
 %  The model is classical, e.g. symmetric in energy, and does NOT satisfy the
 %  detailed balance.
@@ -149,7 +149,8 @@ signal= iFunc_Sqw2D(signal); % overload Sqw flavour
 
 if nargin == 1 && isnumeric(varargin{1})
   p = varargin{1};
-  if numel(p) >= 1, signal.ParameterValues(2) = p(1); end
-  if numel(p) >= 2, signal.ParameterValues(3) = p(2); end
+  for index=1:4
+    if numel(p) >= index, signal.ParameterValues(index) = p(index); end
+  end
 end
 
