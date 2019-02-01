@@ -148,8 +148,7 @@ function FREQ = sqw_phonon_dos_4D(s, nQ)
   qh = linspace(-0.5,0.5,nQ);qk=qh; ql=qh; 
   w  = linspace(0.01,100,5);
   try
-    f=feval(s,[],qh,qk,ql',w);  % this updates the object with mode frequencies
-    clear f
+    feval(s,[],qh,qk,ql',w);  % this updates the object with mode frequencies
   end
   
   % get bare frequencies

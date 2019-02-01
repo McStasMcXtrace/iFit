@@ -155,6 +155,10 @@ classdef iFunc_Sqw4D < iFunc
         if numel(varargin) <5, varargin{end+1} = linspace(0.01,max(self)*1.2,31); end
         [signal, model, ax, name] = feval@iFunc(self, varargin{:});
       end
+      
+      if ~isempty(inputname(1))
+        assignin('caller',inputname(1),model); % update in original object
+      end
     end
     
     function [fig, s, k] = plot(self, varargin)
