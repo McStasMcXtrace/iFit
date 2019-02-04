@@ -1,7 +1,13 @@
-function [b, vers] = version(a,long_request)
+function [b, vers, info] = version(a,long_request)
 % v = version(iData): iData class version
 %
 %   @iData/version: version of the iData class library
+%
+%   version(iData, 'long')
+%     returns the full iData version with all contributors.
+%   [str, ver, info] = version(iData)
+%     returns as well the short version name, and additional infotmation:
+%       memory (total, free, used by Matlab) and number of available CPU's
 %
 % Version: $Date$
 
@@ -15,7 +21,16 @@ contrib = 'Eric Ludlam, Felix Morsdorf, Joe Conti, Douglas M. Schwarz, Alexandro
 b = [ vers ' iFit/iData (' date ') by ' auth '. $Date$' ];
 if nargin > 1
   b = [ b '** Licensed under the EUPL V.1.1 ** Contributions from ' contrib '. Send email to <mailto:ifit-users@mccode.org> to report bugs and requests. More on <http://ifit.mccode.org>.' ];
-else
-  
+end
+
+if nargout > 2
+  % grab additional information
+  info = memoryInfo;
+  if usejava('jvm')
+    r=java.lang.Runtime.getRuntime;
+    % mem_avail   = r.freeMemory;
+    info.availableProcessors = r.availableProcessors;
+  else try; info.availableProcessors = feature('NumCores'); end;
+  end
 end
 
