@@ -1,38 +1,56 @@
-function s = cat(varargin)
+function Res = cat(A,varargin)
 % struct/cat: concatenate structures
+%
+% Recursively merges fields and subfields of structures A and B to result structure Res
+% Simple recursive algorithm merges fields and subfields of two structures
+%   Example:
+%   A.field1=1;
+%   A.field2.subfield1=1;
+%   A.field2.subfield2=2;
+% 
+%   B.field1=1;
+%   B.field2.subfield1=10;
+%   B.field2.subfield3=30;
+%   B.field3.subfield1=1;
+% 
+%   C=cat(A,B);
+%
+%  by Igor Kaufman, 02 Dec 2011, BSD
+% <http://www.mathworks.com/matlabcentral/fileexchange/34054-merge-structures>
 
-% first build up a cell array of structures
-s_cell = {};
+Res=[];
+if nargin>0
+    Res=A;
+end
 
-% handle input arguments
-for index=1:numel(varargin)
-  this = varargin{index};
-  if isstruct(this) && numel(this) == 1, 
-    % add a single structure
-    s_cell{end+1} = this;
-  elseif isstruct(this) && numel(this) > 1
-    % add all items from a structure array
-    for jj = 1:numel(this)
-      s_cell{end+1} = this(jj);
-    end
+if nargin > 2
+  for index = 1:numel(varargin)
+    Res = cat(A, varargin{index});
   end
+  return
+else B = varargin{1};
 end
 
-% build up the field names and values
-names = []; vals = {};
-for index=1:numel(s_cell)
-  names = [ names ; fieldnames(s_cell{index}) ];
-  vals  = [ vals ; struct2cell(s_cell{index}) ];
+if nargin==1 || isstruct(B)==0
+    return;
 end
 
-vals  = vals(:);  % a column of values
+fnb=fieldnames(B);
 
-% assemble the result
+for i=1:length(fnb)
+   s=char(fnb(i));
+   oldfield=[];
+   if (isfield(A,s))
+       oldfield=getfield(A,s);
+   end    
+   newfield=getfield(B,s);
+   if isempty(oldfield) || isstruct(newfield)==0
+     Res=setfield(Res,s,newfield);     
+   else
+     Res=setfield(Res,s,cat(oldfield, newfield));  
+   end    
+end    
 
-s = cell2struct(vals, names, 1);
 
-%names = [fieldnames(struct1); fieldnames(struct2)];
 
-% build up the structure values
-%struct3 = cell2struct([struct2cell(struct1); struct2cell(struct2)], names, 1);
 
