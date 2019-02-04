@@ -173,7 +173,7 @@ methods
       out = iData_cell2iData(varargin{1});   % convert cell/cellstr to cell(iData)
       return
     elseif isa(varargin{1}, 'iFunc')
-      % iData(iFunc)
+      % iData(iFunc, p, axes...)
       in = varargin{1};
       axes_in = varargin(3:end);
       out = [];
@@ -183,7 +183,15 @@ methods
         else               this_in = in(n_in); end
         
         [this_out, this_in] = iData_iFunc2iData(this_in, axes_in, varargin{2:end});
-        
+        % assign axes names
+        if nargin > 2 % iData(iFunc,p,axes...)
+          for index=1:numel(axes_in)
+            if index+2 <= nargin && ~isempty(inputname(index+2))
+              this_out=label(this_out,index,inputname(index+2)); 
+            end
+          end
+        end
+
         if numel(in) == 1 || numel(in) == numel(this_in), in = this_in; 
         elseif numel(this_in) == 1
             in(n_in) = this_in; 
@@ -293,7 +301,7 @@ function [out, this_in]=iData_iFunc2iData(this_in, axes_in, varargin)
     if isempty(axes_in) && ~isempty(ax), axes_in = ax; end
     for index=1:numel(axes_in)
       ax1 = axes_in{index};
-      if index<numel(ax), ax2 = ax{index}; else ax2=[]; end
+      if index<=numel(ax), ax2 = ax{index}; else ax2=[]; end
       if ~isempty(ax2)
         if iscell(ax1) && numel(ax1) == 1, ax1=ax1{1}; end
         if iscell(ax2) && numel(ax2) == 1, ax2=ax2{1}; end
@@ -310,20 +318,6 @@ function [out, this_in]=iData_iFunc2iData(this_in, axes_in, varargin)
       this_out = iData(signal);
     end
 
-    % assign axes names
-    if nargin > 2 % iData(iFunc,p,axes...)
-      for index=1:numel(ax)
-        if index+2 <= nargin && ~isempty(inputname(index+2))
-          if numel(ax)>= 2 && index==1 && 0
-            this_out=label(this_out,2,inputname(index+2)); 
-          elseif numel(ax)>= 2 && index==2 && 0
-            this_out=label(this_out,1,inputname(index+2));
-          else
-            this_out=label(this_out,index,inputname(index+2)); 
-          end
-        end
-      end
-    end
     this_out.Title = name;
     this_out.Label = name;
     this_out.DisplayName = name;
