@@ -27,6 +27,11 @@ if nargin < 2
 end
 
 % compute B matrix if needed
+if ischar(B)
+  cif = read_cif(B);  % read CIF/CFL/ShelX or COD entry
+  if isfield(cif, 'reciprocal_cell') B = cif.reciprocal_cell;
+  elseif isfield(cif, 'cell'),       B = cif.cell; end
+end
 if isvector(B) && numel(B) == 6
   % compute B matrix from [a b c alpha beta gamma]
   s.UserData.cell = B;

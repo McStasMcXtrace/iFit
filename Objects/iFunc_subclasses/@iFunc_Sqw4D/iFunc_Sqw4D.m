@@ -17,6 +17,8 @@ classdef iFunc_Sqw4D < iFunc
   % iFunc_Sqw4D(a)
   %   convert a 4D model [a=iFunc class] into an iFunc_Sqw4D to give access to
   %   the methods below.
+  % iFunc_Sqw4D(sqw2d, B_matrix or CIF or COD)
+  %   convert a Sqw2D model into a 4D model, taking into account the reciprocal space.
   % plot(a)
   %   plot the band structure and density of states
   % plot3(a)
@@ -52,7 +54,18 @@ classdef iFunc_Sqw4D < iFunc
   methods
   
     function obj = iFunc_Sqw4D(varargin)
-      
+      % iFunc_Sqw4D: create a Sqw4D model
+      %
+      %  iFunc_Sqw4D(Sqw2D, B or [abc alpha beta gamma] or 'cif' or 'cod: entry')
+      %     convert a Sqw2D model into a Sqw4D. The reciprocal space B matrix can
+      %     be specified as a 3x3 matrix, a [a b c alpha beta gamma] vector,
+      %     a 'CIF/CFL/ShelX' file, or a COD search (as in read_cif). When absent, 
+      %     such information is searched in the original model.
+      %  iFunc_Sqw4D(4D iFunc)
+      %  iFunc(struct)
+      %     convert initial 4D model information into Sqw4D. 
+      %
+      % See also: read_cif
       obj = obj@iFunc;
       
       if nargin == 0
