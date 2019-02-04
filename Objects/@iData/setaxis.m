@@ -239,7 +239,8 @@ for index=1:ndims(this)
     % search for the dimension index it matches in size(signal)
     [~, order] = ismember(length(x), size(this));  % WARN: duplicate sizes give same index
     % swap axes index and order
-    if ~isempty(order) && order>0 && order <= ndims(this) && index ~= order
+    if ~isempty(order) ...
+            && order>0 && order <= ndims(this) && index ~= order
       this.Alias.Axis([ index order ]) = this.Alias.Axis([ order index ]);
     end
   elseif numel(x) == prod(size(this)) && any(size(x) ~= size(this))

@@ -399,7 +399,7 @@ end
 
 % special case for vector type input that should be made a grid
 if numel(varargin) == 2 
-  if isvector(x) && isvector(y) && numel(x) ~= numel(y)
+  if exist('x') && exist('y') && isvector(x) && isvector(y) && numel(x) ~= numel(y)
     [x,y] = meshgrid(x,y); 
   end
 end
