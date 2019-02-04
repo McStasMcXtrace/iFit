@@ -89,8 +89,13 @@ function [EXP, fig] = ResLibCal_fig2EXP(fig)
   
   %-------------------------   Soller and neutron guide collimation    ---------
   table = get(ResLibCal_fig('EXP_collimators'),'Data');
-  EXP.hcol=table(1,:);         % Horizontal collimation: FWHM minutes of arc
-  EXP.vcol=table(2,:);         % Vertical collimation: FWHM minutes of arc
+  if ~isempty(table)
+    EXP.hcol=table(1,:);         % Horizontal collimation: FWHM minutes of arc
+    EXP.vcol=table(2,:);         % Vertical collimation: FWHM minutes of arc
+  else
+    EXP.hcol=60*ones(1,4);         % Horizontal collimation: FWHM minutes of arc
+    EXP.vcol=600*ones(1,4);
+  end
   % handle negative values in HCOL/VCOL for guide coating divergence
   % handle case of negative collimations : guide limited
   index = find(EXP.hcol<0);
@@ -157,7 +162,11 @@ function [EXP, fig] = ResLibCal_fig2EXP(fig)
   EXP.sample.shape =diag([ EXP.sample.depth EXP.sample.width EXP.sample.height ].^2/12);
 
   % Spectrometer arms
-  EXP.arms=[ table(3,:) table(3,1)*0.7 ];
+  if ~isempty(table)
+    EXP.arms=[ table(3,:) table(3,1)*0.7 ];
+  else
+    EXP.arms=ones(1,4);
+  end
   
   % limit  collimation/divergences from distances and size of elements (in minutes)
   EXP.hcol(1) = min(EXP.hcol(1), atan2(EXP.mono.width +EXP.beam.width,    EXP.arms(1))*180/pi*60);

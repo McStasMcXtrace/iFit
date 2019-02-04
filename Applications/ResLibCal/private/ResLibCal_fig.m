@@ -21,7 +21,7 @@ function f=ResLibCal_fig(tag)
   if nargin == 0
     f=fig;
   else
-    if ~isfield(handles, tag) || ~ishandle(handles.(tag))
+    if all(~isfield(handles, tag)) || all(~ishandle(handles.(tag)))
       handles.(tag) = findobj(fig, 'Tag', tag);
     end
     f = handles.(tag);

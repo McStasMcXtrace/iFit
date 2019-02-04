@@ -7,7 +7,9 @@ function result=test_ResLibCal_compute
 
   ResLibCal('quit');
 
-  if abs(out.resolution.rlu.Bragg(5) - 0.89) < 1e-2
+  if isjava('jvm') && abs(out.resolution.rlu.Bragg(5) - 0.89) < 1e-2
+    result = [ 'OK     ' mfilename ];
+  elseif ~isjava('jvm') && abs(out.resolution.rlu.Bragg(5) - 3.04) < 1e-2
     result = [ 'OK     ' mfilename ];
   else
     result = [ 'FAILED ' mfilename ];
