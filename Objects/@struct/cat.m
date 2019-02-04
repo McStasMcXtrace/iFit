@@ -27,7 +27,7 @@ function Res = cat(A,varargin)
 %  by Igor Kaufman, 02 Dec 2011, BSD
 % <http://www.mathworks.com/matlabcentral/fileexchange/34054-merge-structures>
 
-op=@or; % default operator
+op='or'; % default operator
 
 for index=1:numel(varargin)
   if ischar(varargin{index}) || isa(varargin{index}, 'function_handle')
@@ -83,10 +83,18 @@ for i=1:length(fn) % loop on B fields
       elseif isempty(fieldA) 
         Res=setfield(Res,s,fieldA);
       else % in A and B: catenate
-        Res=setfield(Res,s,{ fieldA, fieldB });
+        if isnumeric(fieldA) && isnumeric(fieldB) && isvector(fieldA) && isvector(fieldB)
+          Res=setfield(Res,s,[ fieldA(:); fieldB(:) ]);
+        else
+          Res=setfield(Res,s,{ fieldA, fieldB });
+        end
       end
     elseif ~isempty(fieldB) % already in Res (from A)
-      Res=setfield(Res,s,{ fieldR, fieldB });
+      if isnumeric(fieldR) && isnumeric(fieldB) && isvector(fieldR) && isvector(fieldB)
+        Res=setfield(Res,s,[ fieldR(:); fieldB(:) ]);
+      else
+        Res=setfield(Res,s,{ fieldR, fieldB });
+      end
     end
   elseif isfield(Res,s)
     Res=rmfield(Res,s);
