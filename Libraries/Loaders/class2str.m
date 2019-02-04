@@ -207,8 +207,8 @@ NL  = sprintf('\n');
 
 if ischar(data)
   str = [ '''' class2str_validstr(data) '''' ];
-elseif numel(data) == 1 && ishandle(data)
-    % ignore
+elseif numel(data) == 1 && ishandle(data) && ~isnumeric(data)
+    % ignore, except for numeric (scalar)
 elseif isobject(data) && numel(data) == 1
     str = [ str class(data) '(' class2str_eval(struct(data)) ')' ];
 elseif isnumeric(data)
