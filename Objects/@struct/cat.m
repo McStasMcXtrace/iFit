@@ -1,9 +1,18 @@
 function Res = cat(A,varargin)
 % struct/cat: concatenate structures
 %
-% Recursively merges fields and subfields of structures A and B to result structure Res
-% Simple recursive algorithm merges fields and subfields of two structures
-%   Example:
+% Res=cat(A,B)
+%   Recursively merges fields and subfields of structures A and B to result structure Res
+%   Simple recursive algorithm merges fields and subfields of two structures
+%
+% Res=cat(A,B,'or')
+%   The result has fields which are either in A and B (union). This is the default.
+% Res=cat(A,B,'and')
+%   The result has fields which are both in A and B (intersection)
+% Res=cat(A,B,'xor')
+%   The result has fields which are either in A and B but not both (difference)
+%
+% Example:
 %   A.field1=1;
 %   A.field2.subfield1=1;
 %   A.field2.subfield2=2;
@@ -18,14 +27,23 @@ function Res = cat(A,varargin)
 %  by Igor Kaufman, 02 Dec 2011, BSD
 % <http://www.mathworks.com/matlabcentral/fileexchange/34054-merge-structures>
 
-Res=[];
-if nargin>0
-    Res=A;
+op=@or; % default operator
+
+for index=1:numel(varargin)
+  if ischar(varargin{index}) || isa(varargin{index}, 'function_handle')
+    op=varargin{index}; 
+    varargin(index)=[]; break;
+  end
 end
 
-if nargin > 2
+Res=[]; 
+if nargin>0
+    Res=A;  % we start with initial structure
+end
+
+if numel(varargin) > 1
   for index = 1:numel(varargin)
-    Res = cat(A, varargin{index});
+    Res = cat(A, varargin{index}, op);
   end
   return
 else B = varargin{1};
@@ -35,22 +53,48 @@ if nargin==1 || isstruct(B)==0
     return;
 end
 
-fnb=fieldnames(B);
+fna= fieldnames(A);
+fnb= fieldnames(B);
+fn = unique([fna ; fnb ]);
 
-for i=1:length(fnb)
-   s=char(fnb(i));
-   oldfield=[];
-   if (isfield(A,s))
-       oldfield=getfield(A,s);
-   end    
-   newfield=getfield(B,s);
-   if isempty(oldfield) || isstruct(newfield)==0
-     Res=setfield(Res,s,newfield);     
-   else
-     Res=setfield(Res,s,cat(oldfield, newfield));  
-   end    
-end    
+for i=1:length(fn) % loop on B fields
+  s=char(fn(i));
+  isfieldA = isfield(A,s);
+  isfieldB = isfield(B,s);
+  isfieldR = isfield(Res,s);
+  fieldA=[]; fieldB=[]; fieldR=[];
+  if isfieldA
+   fieldA=getfield(A,s);
+  end
+  if isfieldB
+    fieldB=getfield(B,s);
+  end
+  if isfieldR
+    fieldR=getfield(Res,s);
+  end
+
+  addme = feval(op, isfieldA, isfieldB);
+  if addme
+    if isstruct(fieldA) && isstruct(fieldB)
+      Res=setfield(Res,s,cat(fieldA, fieldB, op));  % recursive inside structures
+    elseif ~isfieldR
+      if isempty(fieldA) 
+        Res=setfield(Res,s,fieldB);
+      elseif isempty(fieldA) 
+        Res=setfield(Res,s,fieldA);
+      else % in A and B: catenate
+        Res=setfield(Res,s,{ fieldA, fieldB });
+      end
+    elseif ~isempty(fieldB) % already in Res (from A)
+      Res=setfield(Res,s,{ fieldR, fieldB });
+    end
+  elseif isfield(Res,s)
+    Res=rmfield(Res,s);
+  end
+
+end
 
 
-
-
+% union:     OR:  isfield(A,s) || isfield(B,s)
+% intersect: AND: isfield(A,s) && isfield(B,s)
+% diff:      XOR: (isfield(A,s) && ~isfield(B,s)) || (~isfield(A,s) && isfield(B,s))
