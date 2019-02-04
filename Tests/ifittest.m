@@ -60,7 +60,9 @@ for index=1:length(tests_list)
     p = p((length(pwd_test)+2):end);
   end
   tests_list{index} = fullfile(p,f);
-  disp([ mfilename ': executing test ' tests_list{index} ' -------------------' ]);
+  line = [ mfilename ': ' tests_list{index} ' [' num2str(index) '/' num2str(length(tests_list)) '] ' ];
+  remaining = max(5, 120-length(line));
+  disp([ line repmat('-', 1, remaining) ]);
   result = 'IGNORE';
   
   % display the waitbar

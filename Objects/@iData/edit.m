@@ -39,7 +39,7 @@ function h = edit(a, option)
     return
   end
 
-  if exist('uitable')
+  if exist('uitable') && isjava('jvm')
     if prod(size(a)) > 1e5
       iData_private_warning(mfilename, [ 'Object ' a.Tag ' is too large (numel=' num2str(prod(size(a))) ...
     '.\n\tYou should rebin with e.g. a=a(1:2:end, 1:2:end, ...).' ]);
