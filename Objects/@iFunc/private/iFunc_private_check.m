@@ -189,14 +189,6 @@ function a = iFunc_private_check(a)
     warning('iFunc:emptyModel', [ 'model ' a.Tag ' Expression does not contain any parameter (p). Constant model ?' ]); 
     return
   end
-  
-  % build the list of replacement strings
-  replace = strcat('p(', cellstr(num2str(transpose(1:length(a.Parameters)))), ')');
-  % replace Parameter names by their p(n) representation
-  expr = regexprep(expr, strcat('\<"', a.Parameters, '"\>' ), replace);
-  if ~isempty(a.Constraint.eval)
-    a.Constraint.eval = regexprep(a.Constraint.eval, strcat('\<"', a.Parameters, '"\>' ), replace);
-  end
 
   % dim:     holds model dimensionality
   % nb_pars: holds number of parameter used in expression
@@ -218,52 +210,8 @@ function a = iFunc_private_check(a)
 
   if a.Dimension <= 0 && dim > 0, a.Dimension  = dim; end
 
-  % default parameter names
-  % try to be clever by an analysis of the expression...
-  amp=0; cen=0; bkg=0; wid=0;
-  if isempty(pars)
-    pars = {};
-    for index=1:nb_pars
-      namp = [ 'p(' num2str(index) ')' ];
-      if ~isempty(findstr(expr, [ '*' namp ])) || ~isempty(findstr(expr, [ namp '*' ]))
-        if ~amp
-          name = 'Amplitude'; amp=1;
-        else
-          name = [ 'Amplitude_' num2str(index) ];
-        end
-      elseif ~isempty(findstr(expr, [ '-' namp ]))
-        if ~cen
-          name = 'Centre'; cen=0;
-        else
-          name = [ 'Centre_' num2str(index) ];
-        end
-      elseif ~isempty(findstr(expr, [ '+' namp ])) || ~isempty(findstr(expr, [ namp '+' ]))
-        if ~bkg
-          name = 'Constant'; bkg=1;
-        else
-          name = [ 'Constant_' num2str(index) ];
-        end
-      elseif ~isempty(findstr(expr, [ '/' namp ])) || ~isempty(findstr(expr, [ namp '^2' ]))  
-        if ~wid
-          name = 'Width'; wid=1;
-        else
-          name = [ 'Width_' num2str(index) ];
-        end
-      else
-        name = [ a.Tag '_p' num2str(index) ];
-      end
-      pars{index} = name;
-    end
-  else
-    % re-arrange the parameter names as a string representing a cellstr
-    for index=1:length(pars)
-      if ~isempty(pars{index})
-        u = pars{index};
-        u(~isstrprop(u,'print'))=' ';
-        pars{index} = u;
-      end
-    end
-  end
+  a.Parameters      = pars;
+  a = iFunc_private_check_parnames(a);
   
   % check parameter values (if any defined yet): should be as many as parameter names
   val = [];
@@ -272,7 +220,7 @@ function a = iFunc_private_check(a)
   elseif ~isempty(a.ParameterValues)
     val = a.ParameterValues;
   end
-  a.Parameters      = pars;
+  
   if ~isempty(val)
     if numel(pars) ~= numel(val)
       fprintf(1,'%s: model %s "%s": the number of model parameter values %d does not match the number of parameter names %d.\n', mfilename, a.Tag, a.Name, numel(val), length(pars));

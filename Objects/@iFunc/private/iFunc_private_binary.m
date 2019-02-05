@@ -127,27 +127,8 @@ if isFa && isFb
   % append Parameter names
   Parameters(i1a:i2a)=a.Parameters;
   Parameters(i1b:i2b)=b.Parameters;
-  % check for unicity of names and possibly rename similar ones
-  [Pars_uniq, i,j] = unique(strtok(Parameters)); % length(j)=Pars_uniq, length(i)=Parameters
-  for index=1:length(Pars_uniq)
-    index_same=find(strcmp(Pars_uniq(index), strtok(Parameters)));
-    if length(index_same) > 1 % more than one parameter with same name
-      for k=2:length(index_same)
-        [tok,rem] = strtok(Parameters{index_same(k)});
-        % check if parameter name is already a renamed one with '_<number>'
-        j = regexp(tok, '_[0-9]+$', 'match');
-        if ~isempty(j)
-          j = j{1};                       % the new incremented parameter duplicate
-          j = str2num(j(2:end))+length(index_same)-1; 
-          tok((end-length(j)):end) = '';  % the root of the name
-        else
-          j = k;
-        end
-        Parameters{index_same(k)} = [ tok '_' num2str(j) ' ' rem ];
-      end
-    end
-  end
   c.Parameters=Parameters; clear Parameters
+  c = iFunc_private_check_parnames(c);  
 
   % append parameter Guess
   if ischar(a.Guess) && isnumeric(b.Guess)

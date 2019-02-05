@@ -60,6 +60,7 @@
       <li><a href="iFunc_Sqw4D.html">iFunc_Sqw4D</a>: a Model holding a
         <a href="https://en.wikipedia.org/wiki/Dynamic_structure_factor">dynamic
 
+
           structure factor</a> 4D <i>S(</i><i><b>q</b></i><i>,w)</i>
         from e.g. <a href="Models_Phonons.html">phonons</a>, <a
           href="Models.html#mozTocId908192">spinwaves</a>, etc.</li>
@@ -129,6 +130,7 @@
 
 
 
+
     <br>
     The name of the parameters can be changed by accessing the <span
       style="font-weight: bold;">Parameters</span> property (this is a
@@ -141,6 +143,7 @@
     return a vector of parameter values<span style="font-style: italic;">
       'p' </span>as a function of the axes <span style="font-style:
       italic;">x,y,z...</span> and a <span style="font-style: italic;">signal.
+
 
 
 
@@ -227,10 +230,10 @@
     <h4><a name="mozTocId721898" class="mozTocH4"></a>Model from a
       tabulated data set</h4>
     It is also possible to create a model out of an <a
-      href="iData.html">iData</a> (data
-    set) object. Then, the model parameters are the total intensity
-    scaling, as well as an offset and a scaling factor per axis. In
-    order to create a model from a data file, use:<br>
+      href="iData.html">iData</a> (data set) object. Then, the model
+    parameters are the total intensity scaling, as well as an offset and
+    a scaling factor per axis. In order to create a model from a data
+    file, use:<br>
     <pre>	&gt;&gt; <font color="#3366ff">iFunc</font>(<font color="#3366ff">iData</font>(<font color="#cc33cc">'filename'</font>))</pre>
     will create a data set object and derive a model out of it.
     <pre style="margin-left: 40px;"><span style="font-style: italic;"></span></pre>
@@ -242,6 +245,7 @@
     <div style="margin-left: 40px;"><br>
       <span style="font-weight: bold; font-style: italic;"><span
           style="font-weight: bold; font-style: italic;">model(parameters)&nbsp;&nbsp;&nbsp;
+
 
 
 
@@ -325,6 +329,7 @@
 
 
 
+
       and removing constraints on models</h3>
     Models are often used for fitting purposes (refer to the <a
       href="Fit.html">Fit</a> help page).<br>
@@ -342,6 +347,7 @@
     (cross-constraints). For instance<br>
     <pre style="margin-left: 40px;">&gt;&gt; f=<span style="color: rgb(51, 102, 255);">gauss</span>;			<span style="font-style: italic;">% create a Gaussian model</span><br>&gt;&gt; f.Amplitude = <span style="color: rgb(204, 51, 204);">'fix'</span>;		<span style="font-style: italic;">% fix its Amplitude</span><br>&gt;&gt; f.Background = [0 1e-4];	<span style="font-style: italic;">% bound its background</span><br>&gt;&gt; f.Width = <span style="color: rgb(204, 51, 204);">'p(1)/1000'</span>;	<span style="font-style: italic;">% use an expression referring to </span>p(1)=Amplitude<span style="font-style: italic;"> value</span><br>&gt;&gt; f.Width = <span style="color: rgb(204, 51, 204);">'"Amplitude"/1000'</span>;	<span style="font-style: italic;">% same as above with direct naming of parameters using ""</span><br></pre>
     Alternatively, you can use the <span style="font-weight: bold;">mlock,
+
 
 
 
@@ -417,8 +423,8 @@
     achieved simply with <span style="font-weight: bold;">unary</span>
     and <span style="font-weight: bold;">binary</span> operators:<br>
     <br>
-    <table style=" text-align: left; width: 100%;" cellspacing="2"
-      cellpadding="2" border="1">
+    <table style=" text-align: left; width: 100%;" border="1"
+      cellpadding="2" cellspacing="2">
       <tbody>
         <tr>
           <td style="vertical-align: top; font-weight: bold;">Unary
@@ -429,7 +435,7 @@
             real&nbsp; asin exp ndims round xcorr&nbsp; asinh imag
             norm&nbsp; atan cos isempty not sign tan&nbsp; atanh cosh
             fliplr log sin tanh&nbsp; ceil ctranspose flipud log10
-            plus(+) sinh minus(-)<br>
+            plus(+) sinh minus(-) shiftdim<br>
           </td>
         </tr>
         <tr>
@@ -465,6 +471,17 @@
         style="font-weight: bold;">orthogonal</span> axes multiplication</span>,
     with extension of the model dimensionality. <br>
     <br>
+    To shift the model axes, you may use the 'shiftdim' operator which
+    applies e.g.:<br>
+    <ul>
+      <li>x=x+Offset</li>
+    </ul>
+    If you rather wish to centre the axes before evaluation, you should
+    specify a '-' sign before the parameter name:<br>
+    <ul>
+      <li><font color="#3366ff">shiftdim</font>(model, rank, <font
+          color="#cc33cc">'-'</font>) <i>% does: </i><i>x=x-Centre</i></li>
+    </ul>
     Examples are easier to understand, so let's see a few operations :<br>
     <pre style="margin-left: 40px;">&gt;&gt; a = gauss  + lorz;		<span style="font-style: italic;">% addition</span><br>&gt;&gt; b = gauss  * lorz; 		<span style="font-style: italic;">% <span style="font-weight: bold;">orthogonal</span> axes multiplication 2x 1D -&gt; 2D</span><br>&gt;&gt; c = gauss .* lorz; 		<span style="font-style: italic;">% parallel axes multiplication</span><br>&gt;&gt; c.Constraint = <span style="color: rgb(204, 51, 204);">'p(8) = 0;'</span>;	% avoid having two Background parameters<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">subplot</span>([a b c])<br></pre>
     In binary operations, passing one of the arguments as a <span
@@ -483,6 +500,7 @@
       bold; color: rgb(255, 0, 0);">'='</span> or<span style="color:
       rgb(255, 0, 0);"> </span><span style="font-weight: bold; color:
       rgb(255, 0, 0);">';'</span><span style="color: rgb(255, 0, 0);"> </span>character
+
 
 
 
@@ -532,6 +550,7 @@
       arguments</a>' help.<br>
     <br>
     <h3 align="center"><a class="mozTocH3" name="mozTocId604963"></a>Optimising
+
 
 
 
@@ -606,10 +625,12 @@
 
 
 
+
         .... ]</span><br>
     </div>
     a structure with members <br>
     <div style="margin-left: 40px;"><span style="font-style: italic;">data.Signal
+
 
 
 
@@ -634,6 +655,7 @@
     </div>
     or a cell <br>
     <div style="margin-left: 40px;"><span style="font-style: italic;">data={
+
 
 
 
@@ -678,6 +700,7 @@
       ...)</span> is equivalent to <span style="font-style: italic;">fits(iData,
 
 
+
       iFunc, ...)</span>, and you can directly plot the result on top of
     the initial data with:<br>
     <pre style="margin-left: 40px;">&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(data, <span style="color: rgb(255, 0, 0);">output</span>.modelValue)</pre>
@@ -691,6 +714,7 @@
     <hr style="width: 100%; height: 2px;">
     <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
+
 
 
 
