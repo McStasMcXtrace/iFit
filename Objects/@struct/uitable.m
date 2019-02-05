@@ -145,13 +145,20 @@ function structure = uitable(structure,options)
   % height is given by the number of fields
   height = (numel(options.ListString)+3)*options.FontSize*2;
   % width is given by the length of the longest RowName + nb of elements in array (columns)
-  sz = cellfun(@numel,options.ListString);
+  sz = cellfun(@numel,options.ListString)
+  (max(median(sz),mean(sz))+numel(structure)*5)
   width  = (max(median(sz),mean(sz))+numel(structure)*5)*options.FontSize;
   % compare to current window size
   p = get(f, 'Position');
   p(3) = width;
   if p(4) > height, p(4) = height; end
   set(f, 'Position',p);
+  % now we check that the width is not too small. 10 cm minimum.
+  set(f, 'Units', 'centimeters');
+  p = get(f, 'Position');
+  if p(3) < 10, p(3) = 10; end
+  set(f, 'Position',p);
+  set(f, 'Units', 'pixels');
   
   % set ColumnName
   ColumnName = 'Description';
