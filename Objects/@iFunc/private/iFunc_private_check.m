@@ -211,7 +211,7 @@ function a = iFunc_private_check(a)
   if a.Dimension <= 0 && dim > 0, a.Dimension  = dim; end
 
   a.Parameters      = pars;
-  a = iFunc_private_check_parnames(a);
+  a = iFunc_private_check_parnames(a, nb_pars);
   
   % check parameter values (if any defined yet): should be as many as parameter names
   val = [];
