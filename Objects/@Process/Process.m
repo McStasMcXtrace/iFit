@@ -39,23 +39,25 @@ classdef Process < timer
     %   to stop a Process when a file disappears, use:
     %     Process(..., 'TimerFcn', @(p,e)isempty(dir('/path/file')) )
     %
-    % methods:
-    %   refresh(pid)  force the pid to be refreshed, i.e check if it is running
-    %                 and get its stdout/stderr.
-    %   silent(pid)   set the process to silent mode (do not print stdout/stderr).
-    %   verbose(pid)  set the process to verbose mode (print stdout/stderr).
+    % methods to monitor Processes
     %   disp(pid)     display full Process information.
     %   pid           display short Process information. Same as display(pid).
     %   stdout(pid)   get the stdout stream from the Process (normal output).
     %   stderr(pid)   get the stderr stream from the Process (errors).
+    %   isreal(pid)   check if a process is valid/running.
+    %   refresh(pid)  force the pid to be refreshed, i.e check if it is running
+    %                 and get its stdout/stderr.
+    %   silent(pid)   set the process to silent mode (do not print stdout/stderr).
+    %   verbose(pid)  set the process to verbose mode (print stdout/stderr).
+    %   etime(pid)    return the process duration since start.
+    %   findall(pid)  get all running Process objects.
+    %
+    % methods to control execution
+    %   waitfor(pid)  wait for the Process to end normally or on TimeOut.
     %   exit(pid)     kill the Process (stop it). Same as stop(pid)
     %   delete(pid)   kill the Process and delete it from memory.
-    %   waitfor(pid)  wait for the Process to end normally or on TimeOut.
-    %   isreal(pid)   check if the process is valid/running.
-    %   killall(Process) kill all running Process objects
-    %
-    % To get all running Process objects, use:
-    %   findall(Process)
+    %   killall(pid)  kill all running Process objects.
+    %   atexit(pid, fcn) set a callback to execute at end/stop/kill.
     %
     % WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING
     % This class derives from 'timer'. As such, it remains in memory after the 
@@ -90,6 +92,10 @@ classdef Process < timer
     % the Process creator (initializer)
     function pid = Process(command, varargin)
       % Process(command): instantiate a process object and start the command
+      %
+      %  p=Process('command')
+      %  p=Process(PID)
+      %  p=connect(Process, 'name')
       
       % should add: Display = 1 => show stdout while it comes
       if nargin == 0, command = ''; end
@@ -214,7 +220,6 @@ classdef Process < timer
     % --------------------------------------------------------------------------
     function ex = exit(pid)
       % Process/exit(pid): end/kill a running Process and/or return its exit value.
-      % stop@timer(pid);
       ex = [];
       for index=1:prod(size(pid))
         this = get_index(pid, index);
@@ -307,9 +312,23 @@ classdef Process < timer
       end
     end
     
+    function t=etime(pid)
+      % Process/etime(pid): return the process duration since start.
+      t = [];
+      for index=1:prod(size(pid))
+        this = get_index(pid, index);
+        UserData = getUserData(this);
+        if isreal(this)
+          t(index)=etime(clock, datevec(UserData.creationDate));
+        else
+          t(index)=etime(datevec(UserData.terminationDate), datevec(UserData.creationDate));
+        end
+      end
+    end % etime
+    
     function waitfor(pid)
       % Process/waitfor(pid): wait for the Process to end normally or on TimeOut.
-      % pressing Ctrl-C during the wait loop stops waiting, but does not kill the Process.
+      %   Pressing Ctrl-C during the wait loop stops waiting, but does not kill the Process.
       for index=1:prod(size(pid))
         this = get_index(pid, index);
         if ~isvalid(this), return; end
@@ -321,12 +340,12 @@ classdef Process < timer
     end
     
     function kill(obj)
-      % Process: kill : stop a running process
+      % Process: kill(pid) : stop a running process
       stop(obj);
     end
     
     function stop(pid, action)
-      % Process: kill : stop a running process
+      % Process: stop(pid) : stop a running process
       if nargin < 2, action='kill'; end
       for index=1:prod(size(pid))
         this = get_index(pid, index);
@@ -336,16 +355,20 @@ classdef Process < timer
     end
     
     function ud = getUserData(obj)
-      % get the UserData of the Process
+      % Process: getUserData(pid): get the UserData of the Process
       ud = obj.jobject.UserData;
     end
     
     function setUserData(obj, ud)
-      % set the UserData of the Process
+      % Process: setUserData(pid, ud): set the UserData of the Process
       obj.jobject.UserData=ud;
     end
     
     function obj1 = connect(obj0, pid)
+      % Process: connect(pid): connect to an existing process.
+      %
+      %  p=connect(Process, PID)
+      %  p=connect(Process, 'name')
       obj1 = [];  % always use a new object for the connection
       if isnumeric(pid) || ischar(pid)
         [PID, command] = get_command(pid);  % can be a vector
@@ -380,6 +403,7 @@ classdef Process < timer
     end % connect
     
     function pid = findall(obj)
+      % Process: findall(Process): find all Process objects
       if ~isreal(obj), obj = timerfindall; end
       pid = [];
       for index=1:prod(size(obj))
@@ -392,16 +416,23 @@ classdef Process < timer
     end % findall
     
     function killall(obj)
-      if ~isreal(obj), obj = timerfindall; end
-      for index=1:prod(size(obj))
-        this = obj(index);
-        UserData = get(this, 'UserData');
-        if isfield(UserData, 'process') % this is a Process Timer
-          exit_Process(this, 'kill');  % kill
-        end
-      end
+      % Process: findall(Process): find all Process objects
+      pid = findall(obj);
+      stop(pid);
     end % killall
     
+    function atexit(obj, fcn)
+      % process: atexit(pid, fcn): sets the Exit callback (executed at stop/kill)
+      if ischar(fcn) || iscell(fcn) || isa(fcn, 'function_handle')
+        for index=1:prod(size(obj))
+          this = get_index(obj, index);
+          UserData = getUserData(this);
+          UserData.StopFcn = fcn; % when killed
+          UserData.EndFcn  = fcn; % when ends normally
+          setUserData(this, UserData);
+        end
+      end
+    end %atexit
   end
 
 end

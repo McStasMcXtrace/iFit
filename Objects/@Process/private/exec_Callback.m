@@ -1,7 +1,14 @@
 function istop = exec_Callback(pid, Callback, action)
   % ececutes a Callback in a reduced environment.
   istop = 0; % failed ExternalFcns ignored
-  if ~isempty(Callback) && (ischar(Callback) || isa(Callback, 'function_handle'))
+  if ~isempty(Callback) && (ischar(Callback) || iscell(Callback) || isa(Callback, 'function_handle'))
+    if iscell(Callback)
+      for index=1:numel(Callback)
+        istop = istop+exec_Callback(pid, Callback{index}, action);
+      end
+      return
+    end
+    
     if isa(Callback, 'function_handle')
       nin = nargin(Callback);
       nout= nargout(Callback);
