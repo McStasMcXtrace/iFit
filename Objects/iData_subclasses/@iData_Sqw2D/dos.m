@@ -133,14 +133,14 @@ function [g, fig] = dos(s, method, varargin)
     end
 
     % check if DOS is on both energy axes. If so, symmetrize.
-    w = getaxis(g,1);
+    w = getaxis(g,2);
     if any(w(:) < 0) && any(w(:) > 0)
       % fold DOS on positive energy side
-      g = combine(g, setaxis(g, 1, -getaxis(g,1)));
+      g = combine(g, setaxis(g, 2, -getaxis(g,2)));
       g = xlim(g, [0 inf]);
     elseif any(w(:) < 0)
       % set energy axis positive
-      g = setaxis(g, 1, -getaxis(g,1));
+      g = setaxis(g, 2, -getaxis(g,2));
     end
     
     
@@ -193,8 +193,8 @@ function [g, method] = sqw_phonon_dos_Carpenter(s, T, nc, DW)
   else classical = [];
   end
   
-  hw= getaxis(s,1); 
-  q = getaxis(s,2);
+  hw= getaxis(s,2); 
+  q = getaxis(s,1);
   if ~isempty(DW)
     DW= exp(2*DW*q.^2);
   else DW = 1;
@@ -286,8 +286,8 @@ function [g, w] = sqw_phonon_dos_Bredov(s, T, DW)
   end
   
   % axes
-  w = getaxis(s,1);
-  q = getaxis(s,2);
+  w = getaxis(s,2);
+  q = getaxis(s,1);
 
   if ~isempty(DW)
     DW= exp(2*DW*q.^2);
@@ -295,19 +295,18 @@ function [g, w] = sqw_phonon_dos_Bredov(s, T, DW)
   end
   
   qSq = s.*q.*DW;
-  
-  
-  % compute delta(Q)
+
+  % compute delta(Q) per energy value
   q4 = zeros(size(w));
   sd = double(s);
   qmax = []; qmin = [];
-  for index=1:size(s, 1)
-    sw = sd(index,:); % slab for a given energy. length is 'q'
+  for index=1:size(s, 2)
+    sw = sd(:,index); % slab for a given energy. length is 'q'
     valid = find(isfinite(sw) & sw > 0);
     if isvector(q)
       qw = q;
     else
-      qw = q(index,:);
+      qw = q(:,index);
     end
     q_min = min(qw(valid)); q_max = max(qw(valid));
     if isempty(q_max) || isempty(q_min)
@@ -319,18 +318,17 @@ function [g, w] = sqw_phonon_dos_Bredov(s, T, DW)
   qmax = qmax(:); qmin = qmin(:);
   index = find(abs(qmax - qmin) < .1);
   qmax(index) = qmin(index) + 0.1;
-
   % compute the dos
   g = [];
   if (~isempty(classical) && classical(1)) || isempty(T) || T==0 % do not use Temperature
     % g(w) = [\int q S(q,w) dq] exp(2W(q)) m / (q^4max-q^4min) * w.^2
-    g = trapz(qSq,2).*abs(w.^2./(qmax.^4 - qmin.^4));
+    g = trapz(qSq,1).*abs(w.^2./(qmax'.^4 - qmin'.^4));
   else    % use Bose/Temperature (in quantum case)
     beta    = 11.605*w/T;
     p.n = 1./(exp(beta) - 1);
     p.n(~isfinite(p.n)) = 0;
     % g(w) = [\int q S(q,w) dq] exp(2W(q)) m / (q^4max-q^4min) * w/(1+n)
-    g = trapz(qSq,2).*abs(w./(p.n+1)./(qmax.^4 - qmin.^4));
+    g = trapz(qSq,1).*abs(w./(p.n+1)./(qmax.^4 - qmin.^4));
   end
   
   % set back aliases

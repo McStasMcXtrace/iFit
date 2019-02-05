@@ -1,11 +1,11 @@
 function result=test_iData_vDOS
 
   s=sqw_cubic_monoatomic;
-  gw  = dos(s, 100);
+  gw  = dos(s, 100); 
   inc = incoherent(gw, 'T', 300, 'm', 27);
   sinc=deBosify(plus(inc));
-  g2 = dos(sinc); g2=g2/trapz(g2);
-  
+  g2 = dos(sinc); g2=xlim(g2, [0 inf]); g2=g2/trapz(g2);
+  gw=gw/trapz(gw);
   [~,c1] = std(gw,1);
   [~,c2] = std(g2,1);
 
