@@ -26,11 +26,16 @@ end
 if nargout > 2
   % grab additional information
   info = memoryInfo;
-  if usejava('jvm')
+  try; info.NumCores    = feature('NumCores'); end
+  try; info.GetOS       = feature('GetOS'); end
+  try; info.MatlabPid   = feature('GetPid'); end
+  try; info.NumThreads  = feature('NumThreads'); end
+  if usejava('jvm') && ~isfield(info,'NumCores')
     r=java.lang.Runtime.getRuntime;
     % mem_avail   = r.freeMemory;
-    info.availableProcessors = r.availableProcessors;
-  else try; info.availableProcessors = feature('NumCores'); end;
+    info.NumCores = r.availableProcessors;
+  end
+  
   end
 end
 
