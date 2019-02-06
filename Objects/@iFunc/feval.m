@@ -321,7 +321,7 @@ varargin = iFunc_feval_guess_axes(model, p, varargin{:});
 
 % Eval contains both the Constraint and the Expression
 % in case the evaluation is empty, we compute it (this should better have been done before)
-if isempty(model.Eval) 
+if isempty(model.Eval) || (iscellstr(model.Eval) && iscellstr(model.Expression) && numel(model.Eval) ~= numel(model.Expression))
   model.Eval=cellstr(model);
   if ~isempty(inputname1)
     assignin('caller',inputname1,model); % update in original object
