@@ -341,21 +341,27 @@ if isFa && isFb
     c.Expression{end+1} = sprintf('signal=feval(@%s, %s_s, signal%s); %% operation: %s\n', op, tmp_a, v, op); % with additional parameters
   end
 
-elseif isFa && ischar(b)  % syntax: iFunc+'string'
+elseif isFa && (iscellstr(b) || ischar(b))  % syntax: iFunc+'string'
   c.Expression = cellstr(c.Expression);
-  if strcmp(op, 'plus') && ~isempty(find(b == '=' | b == ';'))
-    c.Expression{end+1} = sprintf('\n%s%s;', b, v) ;
-  else
-    c.Expression{end+1} = sprintf('\nsignal=%s(signal,%s%s);', op, b, v);
+  if ischar(b), b=cellstr(b); end
+  for index=1:numel(b)
+    b1=b{index};
+    if strcmp(op, 'plus') && ~isempty(find(b1 == '=' | b1 == ';'))
+      c.Expression{end+1} = sprintf('\n%s%s;', b1, v) ;
+    else
+      c.Expression{end+1} = sprintf('\nsignal=%s(signal,%s%s);', op, b1, v);
+    end
   end
+  b=char(b);
   c.Name       = sprintf('%s(%s,%s)', op, c.Name, b(1:min(10,length(b))));
-elseif isFb && ischar(a)  % syntax: 'string'+iFunc
+elseif isFb && (iscellstr(a) || ischar(a))  % syntax: 'string'+iFunc (cannot use signal in prepended as not defined yet)
   c.Expression = cellstr(c.Expression);
-  if strcmp(op, 'plus') && ~isempty(find(a == '=' | a == ';'))
-    c.Expression = { sprintf('%s%s;\n', a, v), c.Expression{:} } ;
-  else
-    c.Expression{end+1} = sprintf('\nsignal=%s(%s,signal%s);', op, a, v);
+  if ischar(a), b=cellstr(a); end
+  for index=numel(a):-1:1
+    a1=a{index};
+    c.Expression = { sprintf('%s%s;\n', a1, v), c.Expression{:} } ;
   end
+  a=char(a);
   c.Name       = sprintf('%s(%s,%s)', op, a(1:min(10,length(a))), c.Name);
 elseif isFa && ~isa(b, 'iData') && isnumeric(b) % syntax: iFunc+array
   c.Expression = cellstr(c.Expression);
