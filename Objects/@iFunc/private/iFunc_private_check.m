@@ -48,7 +48,7 @@ function a = iFunc_private_check(a)
         if isnumeric(v_old) && l <= length(a.Parameters)  % this is a numeric field
           v_old(1:l) = v_new;
           const.(f{index}) = v_old; % update the values
-        else
+        elseif ~isempty(v_new)
           if numel(v_new) < numel(v_old)
             v_new(numel(v_new)+1:numel(v_old)) = v_old(numel(v_new)+1:numel(v_old));
           end
@@ -150,7 +150,7 @@ function a = iFunc_private_check(a)
     
     if ~isempty(a.Guess) && ~isa(a.Guess, 'function_handle')
       % check if the number of parameters used in the expression matches the parameter default values
-      if ~ischar(a.Guess) && numel(a.Guess) ~= nb_pars
+      if ~ischar(a.Guess) && isnumeric(a.Guess) && numel(a.Guess) ~= nb_pars
         fprintf(1, [ '%s: Warning: iFit model ''%s''' NL ...
                      '    ''%s''' NL ...
                      '  The number of parameters %d used in the expression' NL ...

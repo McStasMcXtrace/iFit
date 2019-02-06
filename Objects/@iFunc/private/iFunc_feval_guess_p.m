@@ -116,55 +116,60 @@ if model.Dimension && ...
   end
   % specific guessed values (if any) -> p2 override p1
   if ~isempty(model.Guess) && ~all(cellfun('isempty',ax))
-    if ischar(model.Guess)
-      % request char eval guess in sandbox
-      p2 = iFunc_feval_guess(model, ax{:});
-      if isa(p2, 'function_handle')
-        model.Guess = p2;
-      end
-    end
-    if isa(model.Guess, 'function_handle')
-      try
-        n = nargin(model.Guess);                % number of required arguments
-        % moments of distributions
-        m1 = @(x,s) sum(s(:).*x(:))/sum(s(:));
-        m2 = @(x,s) sqrt(abs( sum(x(:).*x(:).*s(:))/sum(s(:)) - m1(x,s).^2 ));
-        if n == ndims(model)+2
-            % syntax Guess: @(p,x,y,... signal)
-            if n > 0 && length(ax) >= n
-              p2 = feval(model.Guess, p, ax{1:n+1}); % returns model vector
-            else
-              p2 = feval(model.Guess, p, ax{:}); % returns model vector
-            end
-        else
-            % syntax Guess: @(x,y,... signal)
-          if n > 0 && length(ax) >= n
-            p2 = feval(model.Guess, ax{1:n}); % returns model vector
-          else
-            p2 = feval(model.Guess, ax{:}); % returns model vector
-          end
+    if ~iscell(model.Guess), model.Guess = { model.Guess }; end
+    pg = [];
+    for index=1:numel(model.Guess)
+      g = model.Guess{index};
+      if ischar(g)
+        % request char eval guess in sandbox
+        p2 = iFunc_feval_guess(model, ax{:});
+        if isa(p2, 'function_handle')
+          g = p2;
         end
-      catch ME
-        warning([ mfilename ': Guess: ' ME.message ])
-        p2 = [];
       end
-      clear n
-    elseif isnumeric(model.Guess)
-      p2 = model.Guess;
-    else
-      p  = p0;             % restore initial value
-    end
-    if isempty(p2)
+      if isa(g, 'function_handle')
+        try
+          n = nargin(g);                % number of required arguments
+          % moments of distributions
+          m1 = @(x,s) sum(s(:).*x(:))/sum(s(:));
+          m2 = @(x,s) sqrt(abs( sum(x(:).*x(:).*s(:))/sum(s(:)) - m1(x,s).^2 ));
+          if n == ndims(model)+2
+              % syntax Guess: @(p,x,y,... signal)
+              if n > 0 && length(ax) >= n
+                p2 = feval(g, p, ax{1:n+1}); % returns model vector
+              else
+                p2 = feval(g, p, ax{:}); % returns model vector
+              end
+          else
+              % syntax Guess: @(x,y,... signal)
+            if n > 0 && length(ax) >= n
+              p2 = feval(g, ax{1:n}); % returns model vector
+            else
+              p2 = feval(g, ax{:}); % returns model vector
+            end
+          end
+        catch ME
+          warning([ mfilename ': Guess: ' ME.message ])
+          p2 = [];
+        end
+        clear n
+      elseif isnumeric(g)
+        p2 = g;
+      end
+      pg = [ pg p2 ];
+    end % for Guess items
+    if isempty(pg)
       disp([ mfilename ': Warning: Could not evaluate Guess in model ' model.Name ' ' model.Tag ]);
       disp(model.Guess);
       disp('Axes and signal:');
       disp(ax);
       warning('Using auto-guess values.');
+      p = p0;
     else
       % merge auto and possibly manually set values
-      index     = ~isnan(p2);
-      p1(index) = p2(index);
-      clear p2
+      index     = ~isnan(pg);
+      p1(index) = pg(index);
+      clear pg
     end
   end
   if all(p1 == 0) && ~isempty(model.ParameterValues) ...

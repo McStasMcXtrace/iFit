@@ -70,11 +70,7 @@ if isFa
   if isa(a.Constraint.eval, 'function_handle')
     a.Constraint.eval = sprintf('p = feval(%s, p, %s);', func2str(a.Constraint.eval), ax(1:(end-1)));
   end
-  if isa(a.Guess, 'function_handle')
-    a.Guess = sprintf('[ feval(%s, %s, signal) ]', func2str(a.Guess), ax(1:(end-1)));
-  elseif isnumeric(a.Guess)
-    a.Guess = num2str(a.Guess(:)');
-  elseif isempty(a.Guess)
+  if isempty(a.Guess)
     a.Guess = NaN*ones(length(a.Parameters),1);
   end
 end
@@ -95,11 +91,7 @@ if isFb
   if isa(b.Constraint.eval, 'function_handle')
     b.Constraint.eval = { sprintf('p = feval(%s, p, %s);', func2str(b.Constraint.eval), ax(1:(end-1))) };
   end
-  if isa(b.Guess, 'function_handle')
-    b.Guess = sprintf('[ feval(%s, %s, signal) ]', func2str(b.Guess), ax(1:(end-1)));
-  elseif isnumeric(b.Guess)
-    b.Guess = num2str(b.Guess(:)');
-  elseif isempty(b.Guess)
+  if isempty(b.Guess)
     b.Guess = NaN*ones(length(b.Parameters),1);
   end
 end
@@ -145,7 +137,9 @@ if isFa && isFb
     if length(a.Guess)==length(i1a:i2a), Guess(i1a:i2a)=a.Guess(:); end
     if length(b.Guess)==length(i1b:i2b), Guess(i1b:i2b)=b.Guess(:); end
   else
-    Guess=[];
+    if ~iscell(a.Guess), a.Guess = { a.Guess }; end
+    if ~iscell(b.Guess), b.Guess = { b.Guess }; end
+    Guess=[ a.Guess(:) ; b.Guess(:) ];
   end
 
   c.Guess=Guess; clear Guess
@@ -356,11 +350,8 @@ elseif isFa && (iscellstr(b) || ischar(b))  % syntax: iFunc+'string'
   c.Name       = sprintf('%s(%s,%s)', op, c.Name, b(1:min(10,length(b))));
 elseif isFb && (iscellstr(a) || ischar(a))  % syntax: 'string'+iFunc (cannot use signal in prepended as not defined yet)
   c.Expression = cellstr(c.Expression);
-  if ischar(a), b=cellstr(a); end
-  for index=numel(a):-1:1
-    a1=a{index};
-    c.Expression = { sprintf('%s%s;\n', a1, v), c.Expression{:} } ;
-  end
+  if ischar(a), a=cellstr(a); end
+  c.Expression = { a{:}, c.Expression{:} } ;
   a=char(a);
   c.Name       = sprintf('%s(%s,%s)', op, a(1:min(10,length(a))), c.Name);
 elseif isFa && ~isa(b, 'iData') && isnumeric(b) % syntax: iFunc+array
