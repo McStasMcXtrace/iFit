@@ -49,6 +49,9 @@ function a = iFunc_private_check(a)
           v_old(1:l) = v_new;
           const.(f{index}) = v_old; % update the values
         else
+          if numel(v_new) < numel(v_old)
+            v_new(numel(v_new)+1:numel(v_old)) = v_old(numel(v_new)+1:numel(v_old));
+          end
           const.(f{index}) = v_new;
         end
       end
