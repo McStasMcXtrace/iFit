@@ -32,17 +32,9 @@ function self=DebyeWaller(self)
 
   % search for 'msd','u2' parameters
 
-  % check if msd is already a parameter.
-  u2_index = [];
-  u2 = findfield(self, 'msd','exact first');
-  if isempty(u2), u2 = findfield(self, 'u2','exact first');
-  % check that it is in the Parameters
-  if ~isempty(u2)  % re-use existing u2
-    u2_index = find(~cellfun(@isempty, strfind(self.Parameters, u2)));
-  else  % add new Temperature parameter
-    self.Parameters{end+1} = 'u2 Mean squared displacement [Angs^2]'; 
-    u2_index=numel(self.Parameters);
-  end
+  % add new <u2> parameter
+  self.Parameters{end+1} = 'u2 Mean squared displacement [Angs^2]'; 
+  u2_index=numel(self.Parameters);
   
   % check if the model has already a Debye-Waller factor ?
   hasDW = findfield(self, 'DebyeWaller','first');
@@ -62,6 +54,9 @@ function self=DebyeWaller(self)
   self.Expression{end+1} = 'DW = exp(-u2.*x.^2/3);';
   self.Expression{end+1} = 'signal = signal .* DW;';
   
+  % update eval string from expression
+  self.Eval = cellstr(self);
+  
   if isvector(self.Guess) && isnumeric(self.Guess)
     self.Guess(u2_index) = 0.05;  % typical
   end
@@ -72,4 +67,4 @@ function self=DebyeWaller(self)
     assignin('caller',inputname(1),self);
   end
 
-end % Bosify
+end % DebyeWaller

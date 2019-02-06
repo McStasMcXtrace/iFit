@@ -98,7 +98,7 @@ classdef iFunc_Sqw2D < iFunc
       % check for Q W grid
       if isempty(varargin),  varargin{end+1} = []; end % parameters
       if numel(varargin) <2, varargin{end+1} = linspace(0,3,31); end
-      if numel(varargin) <3, varargin{end+1} = linspace(0.01,20,21); end
+      if numel(varargin) <3, varargin{end+1} = linspace(-20,20,41); end
       s = iFunc(self);
       f = transpose(iData(s,varargin{:}));
       xlabel(f, 'Q [Angs]');
@@ -114,7 +114,7 @@ classdef iFunc_Sqw2D < iFunc
       % iFunc_Sqw2D: feval: evaluate the Model on QW grid
       if isempty(varargin),  varargin{end+1} = []; end % parameters
       if numel(varargin) <2, varargin{end+1} = linspace(0,3,31); end
-      if numel(varargin) <3, varargin{end+1} = linspace(0.01,20,21); end
+      if numel(varargin) <3, varargin{end+1} = linspace(-20,20,41); end
       [signal, self, ax, name] = feval@iFunc(self, varargin{:});
       if ~isempty(inputname(1))
         assignin('caller',inputname(1),self); % update in original object
