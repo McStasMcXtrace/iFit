@@ -27,7 +27,7 @@ classdef iData_Sqw2D < iData
   %   convert input [e.g. a 2D iData object] into an iData_Sqw2D to give access to
   %   the methods below.
   % Sqw = ddcs2Sqw(s)
-  %   convert a double differential neutron scattering cross section to a S(q,w) [Kf/Ki]
+  %   convert a double differential neutron scattering cross section [Kf/Ki] to a S(q,w) 
   % ddcs = Sqw2ddcs(s)
   %   convert a S(q,w) to a double differential neutron scattering cross section [Kf/Ki]
   % spw = qw2phiw(s, lambda)
@@ -464,7 +464,8 @@ classdef iData_Sqw2D < iData
     
     function ddcs = Sqw2ddcs(s, lambda, inverse)
       % iData_Sqw2D: Sqw2ddcs: convert a S(q,w) into a double differential cross-section (q,w)
-      %   i.e. multiply by Kf/Ki
+      %   i.e. multiply by Kf/Ki. In addition, if the initial S(q,w) is classical, 
+      %   it is converted to a Quantum one by applying the Bosify method.
       %
       % convert: iData_Sqw2D S(q,w) -> d2(sigma)/dOmega/dE = N.sigma Kf/Ki S(q,w)
       %
@@ -503,9 +504,9 @@ classdef iData_Sqw2D < iData
       % compute final energy
       hw   = getaxis(s, 2);
       Ef   = Ei - hw;
-      kikf = sqrt(Ei./Ef);
+      kfki = sqrt(Ef./Ei);
       if inverse
-        kikf = 1./kikf; % DDCS -> Sqw
+        kfki = 1./kfki; % DDCS -> Sqw=ki/kf DDCS
       end
       
       if ~inverse
@@ -519,7 +520,7 @@ classdef iData_Sqw2D < iData
         end
       end
       
-      ddcs = copyobj(s) .* kikf;
+      ddcs = copyobj(s) .* kfki;
       setalias(ddcs, 'IncidentWavelength', lambda);
       
       if inverse
