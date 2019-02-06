@@ -7,6 +7,6 @@ function mifit_File_Save(varargin)
   
   % save Preferences with window size and location
   config = getappdata(mifit_fig, 'Preferences');
-  set(fig,'Units','pixels');
-  config.Position = get(fig,'Position');
+  set(mifit_fig,'Units','pixels');
+  config.Position = get(mifit_fig,'Position');
   mifit_Preferences_Save(config);
