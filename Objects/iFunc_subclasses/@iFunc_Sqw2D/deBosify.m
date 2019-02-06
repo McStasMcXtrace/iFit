@@ -4,6 +4,9 @@ function self=deBosify(self, type)
 %   The resulting model obeys S*=S(q,w) = S(q,-w), i.e. is 'classical'.
 %   It suppresses most of the temperature effect (population).
 %
+% New model parameters:
+%       Temperature     [K]
+%
 % conventions:
 % omega = w = Ei-Ef = energy lost by the neutron, given in [meV]
 %    omega > 0, neutron looses energy, can not be higher than Ei (Stokes)

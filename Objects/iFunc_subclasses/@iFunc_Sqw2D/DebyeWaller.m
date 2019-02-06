@@ -10,6 +10,9 @@ function self=DebyeWaller(self)
 %    B = 8 pi^2 <u2>
 %  which is common in diffraction/Rietveld refinement.
 %
+% New model parameters:
+%       u2     Mean squared displacement [Angs^2]
+%
 % References:
 %  H. Schober, J. Neut. Res. 17 (2014) 109-357
 %  G.L. Squires, Introduction to the Theory of Thermal Neutron Scattering, Dover Publications Inc.(1997)

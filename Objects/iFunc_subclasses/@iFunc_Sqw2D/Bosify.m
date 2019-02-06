@@ -4,6 +4,9 @@ function self=Bosify(self, type)
 %   The resulting model is 'quantum/experimental' and satisfies the detailed
 %   balance. It contains the temperature effect (population).
 %
+% New model parameters:
+%       Temperature     [K]
+%
 % conventions:
 % omega = w = Ei-Ef = energy lost by the neutron, given in [meV]
 %    omega > 0, neutron looses energy, can not be higher than Ei (Stokes)
@@ -126,6 +129,7 @@ function self=Bosify(self, type)
   else
     self.UserData.classical     = true;  % result is classical
   end
+  self.UserData.QuantumCorrection = type;
   
   self = iFunc_Sqw2D(self); % check
   

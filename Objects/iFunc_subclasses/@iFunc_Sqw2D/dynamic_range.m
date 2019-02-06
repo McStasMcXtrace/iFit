@@ -5,6 +5,9 @@ function self=dynamic_range(self)
 %  The dynamic range is defined from the momentum and energy conservation laws:
 %   Ef         = Ei - w                                is positive
 %   cos(theta) = (Ki.^2 + Kf.^2 - q.^2) ./ (2*Ki.*Kf)  is within [-1:1]
+%
+% New model parameters:
+%       Ei     Incident neutron energy [meV]
 % 
 %  The incident neutron energy can be computed using:
 %   Ei = 2.0721*Ki^2 = 81.8042/lambda^2 with Ki in [Angs-1] and lambda in [Angs]
@@ -14,36 +17,13 @@ function self=dynamic_range(self)
 %     omega > 0, neutron looses energy, can not be higher than p.ei (Stokes)
 %     omega < 0, neutron gains energy, anti-Stokes
 % 
-%  The scattering angle phi can be restricted to match a detection area
-%  with the syntax:
-%    sqw_Ei=dynamic_range(s, Ei, [angles])
-% 
-%  The syntax:
-%    [sqw_Ei, sphiw] = dynamic_range(s,...)
-%  also returns the S(phi,w) data set, which shows the detected signal vs scattering 
-%    angle and energy transfer.
-% 
-%   Input arguments can be given in order, or with name-value pairs, or as a 
-%     structure with named fields. In addition to Ei, one can specify 'lambda' or 'Ki'
-%   e.g.:
-%    sqw_Ei=dynamic_range(s, 'lambda', 2.36);
-%    sqw_Ei=dynamic_range(s, 'Ki', 2.665);
-% 
 %  syntax:
-%    sqw_Ei        =dynamic_range(s, Ei)
-%    [sqw_Ei,sphiw]=dynamic_range(s, Ei)
-%    [sqw_Ei,sphiw]=dynamic_range(s, Ei, [min_angle max_angle])
-%    [sqw_Ei,sphiw]=dynamic_range(s, 'Ei', Ei, 'angles', [min_angle max_angle])
-%    [sqw_Ei,sphiw]=dynamic_range(s, 'lambda', lambda)
+%    sqw_Ei        =dynamic_range(s)
 % 
 %  input:
-%    s:      Sqw 2D data set with q as 1st axis (Angs-1), w as 2nd axis (meV).
-%    Ei:     incoming neutron energy [meV]
-%    angles: scattering detection range in [deg] as a vector. Min and Max values are used.
-%    'lambda','Ki': additional named arguments to specify the incident energy
+%    s:      Sqw 2D model with q as 1st axis (Angs-1), w as 2nd axis (meV).
 %  output:
 %    sqw_Ei: S(q,w)   cropped to dynamic range for incident energy Ei.
-%    sphiw:  S(phi,w) angular dynamic structure factor for incident energy Ei.
 % 
 %  Example: s=sqw_visco_elastic; dynamic_range(s)
 % 
@@ -57,6 +37,9 @@ function self=dynamic_range(self)
   
   if isvector(self.Guess) && isnumeric(self.Guess)
     self.Guess = [ self.Guess(:)' 14.8 5 135 ];  % typical
+  else
+    if ~iscell(self.Guess), self.Guess = { self.Guess }; end
+    self.Guess{end+1} = [ 14.8 5 135 ];
   end
 
   self.Expression{end+1} = [ 'q = x; w = y; Ei = p(' num2str(index) ');' ];
