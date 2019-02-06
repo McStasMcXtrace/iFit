@@ -116,6 +116,9 @@ function self=Bosify(self, type)
   
   if isvector(self.Guess) && isnumeric(self.Guess)
     self.Guess(T_index) = 300;
+  else
+    if ~iscell(self.Guess), self.Guess = { self.Guess }; end
+    self.Guess{end+1} = 300;
   end
   
   if do_bosify

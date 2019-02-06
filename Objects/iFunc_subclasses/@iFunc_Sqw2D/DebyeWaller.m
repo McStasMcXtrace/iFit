@@ -56,6 +56,9 @@ function self=DebyeWaller(self)
   
   if isvector(self.Guess) && isnumeric(self.Guess)
     self.Guess(u2_index) = 0.05;  % typical
+  else
+    if ~iscell(self.Guess), self.Guess = { self.Guess }; end
+    self.Guess{end+1} = 0.05;
   end
   
   self.UserData.DebyeWaller     = true; 
