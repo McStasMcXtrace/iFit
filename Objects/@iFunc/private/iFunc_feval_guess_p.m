@@ -135,7 +135,7 @@ if model.Dimension && ...
           m2 = @(x,s) sqrt(abs( sum(x(:).*x(:).*s(:))/sum(s(:)) - m1(x,s).^2 ));
           if n == ndims(model)+2
               % syntax Guess: @(p,x,y,... signal)
-              if n > 0 && length(ax) >= n
+              if n > 0 && length(ax) > n
                 p2 = feval(g, p, ax{1:n+1}); % returns model vector
               else
                 p2 = feval(g, p, ax{:}); % returns model vector
@@ -150,7 +150,8 @@ if model.Dimension && ...
           end
         catch ME
           warning([ mfilename ': Guess: ' ME.message ])
-          p2 = [];
+          p2 = nan*ones(1,numel(model.Parameters));
+          rethrow(ME)
         end
         clear n
       elseif isnumeric(g)
