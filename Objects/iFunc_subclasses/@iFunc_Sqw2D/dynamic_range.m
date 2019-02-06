@@ -72,8 +72,7 @@ function self=dynamic_range(self)
   self.Expression{end+1} = 'index= find(costheta < min(cost(:)) | costheta > max(cost(:)) | Ef <= 0);';
   self.Expression{end+1} = 'signal(index) = 0; % actually set the dynamic range';
   
-  % update eval string from expression
-  self.Eval = cellstr(self);
+  self = iFunc_Sqw2D(self); % check
 
   if nargout == 0 && ~isempty(inputname(1))
     assignin('caller',inputname(1),self);

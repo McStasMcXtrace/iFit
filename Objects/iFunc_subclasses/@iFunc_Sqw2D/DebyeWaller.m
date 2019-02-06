@@ -54,14 +54,13 @@ function self=DebyeWaller(self)
   self.Expression{end+1} = 'DW = exp(-u2.*x.^2/3);';
   self.Expression{end+1} = 'signal = signal .* DW;';
   
-  % update eval string from expression
-  self.Eval = cellstr(self);
-  
   if isvector(self.Guess) && isnumeric(self.Guess)
     self.Guess(u2_index) = 0.05;  % typical
   end
   
   self.UserData.DebyeWaller     = true; 
+  
+  self = iFunc_Sqw2D(self); % check
   
   if nargout == 0 && ~isempty(inputname(1)) && isa(self,'iFunc') && ~wrn
     assignin('caller',inputname(1),self);

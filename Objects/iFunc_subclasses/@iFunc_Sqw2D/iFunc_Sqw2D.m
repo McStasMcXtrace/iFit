@@ -44,7 +44,7 @@ classdef iFunc_Sqw2D < iFunc
         return
       elseif nargin == 1 && isa(varargin{1}, mfilename)
         % already an iFunc_Sqw2D
-        m = varargin{1};
+        m = iFunc(varargin{1}); % check
       elseif nargin == 1 && isa(varargin{1}, 'iFunc')
         % convert from iFunc
         m = varargin{1};

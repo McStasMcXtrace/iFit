@@ -114,9 +114,6 @@ function self=Bosify(self, type)
   self.Expression{end+1} =   'signal = signal .* Q;  % apply detailed balance with the selected correction';
   self.Expression{end+1} = 'end'; % if T
   
-  % update eval string from expression
-  self.Eval = cellstr(self);
-  
   if isvector(self.Guess) && isnumeric(self.Guess)
     self.Guess(T_index) = 300;
   end
@@ -126,6 +123,8 @@ function self=Bosify(self, type)
   else
     self.UserData.classical     = true;  % result is classical
   end
+  
+  self = iFunc_Sqw2D(self); % check
   
   if nargout == 0 && ~isempty(inputname(1)) && ~wrn
     assignin('caller',inputname(1),self);
