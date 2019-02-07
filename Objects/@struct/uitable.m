@@ -145,8 +145,7 @@ function structure = uitable(structure,options)
   % height is given by the number of fields
   height = (numel(options.ListString)+3)*options.FontSize*2;
   % width is given by the length of the longest RowName + nb of elements in array (columns)
-  sz = cellfun(@numel,options.ListString)
-  (max(median(sz),mean(sz))+numel(structure)*5)
+  sz = cellfun(@numel,options.ListString);
   width  = (max(median(sz),mean(sz))+numel(structure)*5)*options.FontSize;
   % compare to current window size
   p = get(f, 'Position');

@@ -347,6 +347,7 @@ function [data, format] = iLoad(filename, loader, varargin)
           % write to temporary file
           tmpfile = urlwrite(filename, tmpfile);
         catch ME
+          disp(ME.message);
           use_wget = true;
         end
       end
