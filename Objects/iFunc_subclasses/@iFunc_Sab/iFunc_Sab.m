@@ -29,22 +29,9 @@ classdef iFunc_Sab < iFunc
   % iFunc_Sab(a)
   %   convert a 2D model [a=iFunc class] into an iFunc_Sab to give access to
   %   the methods below.
-  % plot(a)
-  %   plot the band structure and density of states
-  % b = band_structure(a)
-  %   Compute the band structure
-  % d = dos(a)
-  %   Compute the density of states
-  % m = max(a)
-  %   Evaluate the maximum S(q,w) dispersion energy
-  % publish(a)
-  %   Generate a readable document with all results
-  % t = thermochemistry(a)
-  %   Compute and display thermochemistry quantities
   %
   % input:
-  %   can be an iFunc or struct or any set of parameters to generate a Sqw2D object.
-  %   when not given an iFunc, the parameters to sqw_phonons are expected.
+  %   can be an iFunc or struct or any set of parameters to generate a Sab object.
   %
   % output: an iFunc_Sab object
   %
@@ -64,6 +51,8 @@ classdef iFunc_Sab < iFunc
       elseif nargin == 1 && isa(varargin{1}, mfilename)
         % already an iFunc_Sab
         m = varargin{1};
+      elseif nargin == 1 && isa(varargin{1}, 'iFunc_Sqw2D')
+        m = Sqw2Sab(varargin{1});
       elseif nargin == 1 && isa(varargin{1}, 'iFunc')
         % convert from iFunc
         m = varargin{1};
@@ -79,13 +68,13 @@ classdef iFunc_Sab < iFunc
         error([ mfilename ': the given input ' class(m) ' does not seem to be convertible to iFunc_Sab.' ])
       end
       
-      % check if the Sqw2D subclass is appropriate
+      % check if the Sab subclass is appropriate
       flag = false;
-      if ndims(m) == 2 % must be S(hkl,w)
+      if ndims(m) == 2 % must be S(q,w) or S(a,b)
         flag = true;
       end
       if ~flag
-        error([ mfilename ': the given iFunc model does not seem to be an Sqw2D flavour object.' ])
+        error([ mfilename ': the given iFunc model does not seem to be an Sab flavour object.' ])
       end
       
       % transfer properties
@@ -110,14 +99,14 @@ classdef iFunc_Sab < iFunc
     end
     
     function f = iData(self, varargin)
-      % iFunc_Sab: iData: evaluate a 2D Sqw into an iData object
+      % iFunc_Sab: iData: evaluate a 2D Sab into an iData object
       %
       %   iData(self, p, q, w)
       
-      % check for Q W grid
+      % check for alpha beta grid
       if isempty(varargin),  varargin{end+1} = []; end % parameters
-      if numel(varargin) <2, varargin{end+1} = linspace(0,3,31); end
-      if numel(varargin) <3, varargin{end+1} = linspace(-20,20,21); end
+      if numel(varargin) <2, varargin{end+1} = linspace(0,150,31); end
+      if numel(varargin) <3, varargin{end+1} = linspace(0.1,400,41); end
       s = iFunc(self);
       f = transpose(iData(s,varargin{:}));
       xlabel(f, 'Alpha [h^2q^2/2MkT]');
@@ -128,61 +117,23 @@ classdef iFunc_Sab < iFunc
         assignin('caller',inputname(1),self); % update in original object
       end
     end
-  
-    % methods for Sqw 2D
     
-    % we evaluate the model, extend its Expression.
-    %   convert it to an iData_Sqw2D and apply one of the following method:
+    function [signal, self, ax, name] = feval(self, varargin)
+      % iFunc_Sab: feval: evaluate the Model on alpha/beta grid
+      if isempty(varargin),  varargin{end+1} = []; end % parameters
+      if numel(varargin) <2, varargin{end+1} = linspace(0,150,31); end
+      if numel(varargin) <3, varargin{end+1} = linspace(0.1,400,41); end
+      [signal, self, ax, name] = feval@iFunc(self, varargin{:});
+      if ~isempty(inputname(1))
+        assignin('caller',inputname(1),self); % update in original object
+      end
+    end
     
-    % methods that retain the type (q,w)
-    %   Bosify(T, method)
-    %   deBosify(T, method)
-    %   dynamic_range(Ei, angle_min, angle_max)
-    %   incoherent(q, T, m, n, DW)
-    %   coherent (iData sq or d-spacing value)
-    %   symmetrize
-    %   Sqw2ddcs(Ei)
-    %   ddcs2Sqw(Ei)
-    
-    % when changing type, the new object must compute back the (q,w) axes, then 
-    % evaluate the original iFunc_Sab model, and apply the final conversion with
-    % 'new' axes.
-    
-    % methods that change the type (q,w) -> something else (iFunc 1D)
-    %   dos/gdos(T, DW, method) -> 1D iFunc(w)
-    %   multi_phonons -> 1D(w)
-    %   scattering_cross_section(Ei_min, Ei_max, Ei_n, Mass) -> 1D iFunc(Ei) -> new axis !!
-    %   moments(M,T, classical) -> 1D iFunc array ?
-    %   structure_factor/sq -> 1D iFunc
-    %   thermochemistry(T) -> 1D iFunc array ?
-    %   muphocor(T, amasi, sigi, conci) -> 1D array
-    %   Models: sqw_incoherent(vdos), sqw_recoil, sqw_sct, sqw_freegas, sqw_eisf, 
-    
-    % methods that change the type (q,w) -> something else (iFunc 2D)
-    %   Sab(M,T)
-    %   qw2phiw(lambda)
-    %   qw2qt(lambda, chwidth, dist)
-    %   qw2phi(lambda)
-    
-    function f1 = addtoexpr(f0, method, varargin)
-      % addtoexpr: catenate a given iData_Sqw2D method to the iFunc object Expression
-      
-      % all parameters must be given explicitly, NOT from internal physical parameter search
-      % varargin = {'pars,value, ...}
-      %   add new parameters when value is scalar
-      %   add to UserData when not scalar (and get it back for eval of iData_Sqw2D method)
-      
-      % varargin must be stored in the UserData ? or added as parameters for single values ?
-      % this depends on the iData_Sqw2D method
-      % what about parseparams and Sqw_check for parameters ? -> iFunc parameters OK
-      
-      % we use the '+' with a char string to catenate the expression
-      f1            = f0 + [ ...
-        'q=x; w=y; signal = iData_Sqw2D(iData(q,w,signal));' ...
-        'signal = ' method '(signal, varargin);' ...
-        'signal = getaxis(signal, 0);' ...
-        ];
-
+    function h = plot(self, varargin)
+      % iFunc_Sab: plot: plot the S(alpha,beta) model
+      h = plot@iFunc(self, varargin{:});
+      ylabel('Alpha=h2q2/2MkT [1]');
+      xlabel('Beta=-hw/kT [1]');
     end
     
     
