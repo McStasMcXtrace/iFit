@@ -9,6 +9,9 @@ function self = Sqw2ddcs(s)
   % New model parameters:
   %       Ei     Incident neutron energy [meV]
   %
+  %  The incident neutron energy can be computed using:
+  %   Ei = 2.0721*Ki^2 = 81.8042/lambda^2 with Ki in [Angs-1] and lambda in [Angs]
+  %
   % input:
   %   s:      Sqw 2D model with q as 1st axis (Angs-1), w as 2nd axis (meV).
   %

@@ -25,7 +25,7 @@ function self=dynamic_range(self)
 %  output:
 %    sqw_Ei: S(q,w)   cropped to dynamic range for incident energy Ei.
 % 
-%  Example: s=sqw_visco_elastic; dynamic_range(s)
+%  Example: s=sqw_visco_elastic; dynamic_range(s); plot(s);
 % 
 %  See also: iFunc_Sqw2D
 %  (c) E.Farhi, ILL. license: EUPL.

@@ -25,6 +25,8 @@ function [coh] = coherent(self, sq)
       %
       % Reference: K. Skold, Phys. Rev. Lett. 19, 1023 (1967).
       %
+      % Example: s=sqw_diffusion; coh = coherent(s); plot(coh);
+      %
       % input:
       %   inc: incoherent Sqw 2D model [iFunc_Sqw2D, q 1st axis (Angs-1), w 2nd axis (meV)].
       %   sq:  S(q)              [ommitted or 1D iFunc]
