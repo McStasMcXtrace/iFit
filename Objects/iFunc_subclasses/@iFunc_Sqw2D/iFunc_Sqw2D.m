@@ -127,6 +127,27 @@ classdef iFunc_Sqw2D < iFunc
       ylabel('Q [Angs-1]');
       xlabel('Energy [meV]');
     end
+    
+    function spw = angle(self)
+      % iFunc_Sqw2D: angle: convert a S(q,w) into a S(phi,w) Model (scattering angle)
+      %
+      % convert: iFunc_Sqw2D S(q,w) -> S(phi,w)
+      %
+      % New model parameters:
+      %       Ei     Incident neutron energy [meV]
+      %
+      %  The incident neutron energy can be computed using:
+      %   Ei = 2.0721*Ki^2 = 81.8042/lambda^2 with Ki in [Angs-1] and lambda in [Angs]
+      %
+      % spw = angle(s)
+      %
+      % input:
+      %   s:      Sqw 2D model with q as 1st axis (Angs-1), w as 2nd axis (meV).
+      %
+      % output:
+      %   spw:    S(phi,w) 2D model [iFunc, phi in deg]
+      spw = qw2phiw(self);
+    end
   
     % methods for iFunc Sqw 2D, similar to the iData Sqw2D ones
     
@@ -134,11 +155,12 @@ classdef iFunc_Sqw2D < iFunc
     %   convert it to an iData_Sqw2D and apply one of the following method:
     
     % methods that retain the type (q,w)
-    %   dynamic_range(Ei, angle_min, angle_max)
+    %   Bosify/deBosify DONE
+    %   DebyeWaller DONE
+    %   dynamic_range(Ei, angle_min, angle_max) DONE
     %   incoherent(q, T, m, n, DW, vDOS )
-    %   coherent (iData sq or d-spacing value)
-    %   symmetrize
-    %   Sqw2ddcs(Ei)
+    %   coherent (iData sq or d-spacing value) DONE
+    %   Sqw2ddcs(Ei) DONE
     %   ddcs2Sqw(Ei)
     
     % when changing type, the new object must compute back the (q,w) axes, then 
@@ -160,28 +182,6 @@ classdef iFunc_Sqw2D < iFunc
     %   qw2phiw(lambda)
     %   qw2qt(lambda, chwidth, dist)
     %   qw2phi(lambda)
-    
-    function f1 = addtoexpr(f0, method, varargin)
-      % addtoexpr: catenate a given iData_Sqw2D method to the iFunc object Expression
-      
-      % all parameters must be given explicitly, NOT from internal physical parameter search
-      % varargin = {'pars,value, ...}
-      %   add new parameters when value is scalar
-      %   add to UserData when not scalar (and get it back for eval of iData_Sqw2D method)
-      
-      % varargin must be stored in the UserData ? or added as parameters for single values ?
-      % this depends on the iData_Sqw2D method
-      % what about parseparams and Sqw_check for parameters ? -> iFunc parameters OK
-      
-      % we use the '+' with a char string to catenate the expression
-      f1            = f0 + [ ...
-        'q=x; w=y; signal = iData_Sqw2D(iData(q,w,signal));' ...
-        'signal = ' method '(signal, varargin);' ...
-        'signal = getaxis(signal, 0);' ...
-        ];
-
-    end
-    
     
   end % methods
   
