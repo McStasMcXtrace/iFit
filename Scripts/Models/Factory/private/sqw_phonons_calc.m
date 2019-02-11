@@ -390,14 +390,14 @@ case 'QUANTUMESPRESSO'
     decl = 'from ase.calculators.espresso import Espresso as QuantumEspresso';  
     % use_symmetry=False mendatory because small displacement breaks symmetry
     calc = [ 'calc = QuantumEspresso(use_symmetry=False, tstress=True, ' ...
-             'tprnfor=True, nspin=2,  label=atoms.get_chemical_formula(), wdir="' options.target '", ' ...
+             'tprnfor=True, label=atoms.get_chemical_formula(), wdir="' options.target '", ' ...
              'pseudo_dir="' options.target '", pseudopotentials=' dict ]; 
   elseif ~isempty(status.qeutil)
     % using QEutil which finds pseudopotentials by itself
     decl = 'from qeutil import QuantumEspresso';
     % use_symmetry=False mendatory because small displacement breaks symmetry
     calc = [ 'calc = QuantumEspresso(use_symmetry=False, tstress=True, lda_plus_u=True, ' ...
-             'tprnfor=True, nspin=2,  label=atoms.get_chemical_formula(), wdir="' options.target '"' ]; 
+             'tprnfor=True, label=atoms.get_chemical_formula(), wdir="' options.target '"' ]; 
   else
     error([ mfilename ': no ASE interface to control QuantumEspresso.' ])
   end
