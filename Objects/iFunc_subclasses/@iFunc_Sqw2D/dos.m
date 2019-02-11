@@ -1,0 +1,133 @@
+function g = dos(self, method)
+% iFunc_Sqw2D: dos: compute the generalised density of states (gDOS) from a S(q,w)
+%
+%   g = dos(s)
+%
+% compute: iFunc_Sqw2D -> generalised Density of States gDOS [p=1]
+%
+%  The returned generalised density of states corresponds with the 1-phonon term in the
+%  the incoherent Gaussian approximation. This density of states is normalised to 1.
+%
+%       gDOS(q,w) = S(q,w) w^2/q^2                   Bellissent
+%       gDOS(q,w) = S(q,w) w  /q^2/[1 + n(hw)]       Carpenter/Price
+%  and:
+%       gDOS(w)   = lim(q->0) [ gDOS(q,w) ]
+%
+%       gDOS(q,w) = w*q*S(q,w)*exp(2W(q))/[Qmax^4 - Qmin^4]/(1+n(w)) Bredov/Oskotskii
+%       gDOS(w)   = trapz(g, 2)
+%
+%  The Bredov/Oskotskii methodology provides the best gDOS estimate, using the
+%    whole data set.
+%  When the temperature is fixed at 0, the data set is assumed to be 'classical', 
+%  and no detailed balance correction is applied.
+%
+%  LIMITATIONS/WARNINGS:
+%  The incoherent approximation states that the gDOS from an incoherent S(q,w) is 
+%    roughly equal to that obtained from a coherent S(q,w). However, the 
+%    applicability to a coherent dynamic structure factor S(q,w) should be
+%    taken with great care, as this formalism then does not fully hold.
+%  This implementation is in principle exact for an isotropic monoatomic material,
+%    e.g. a liquid, powder, or cubic crystal. 
+%  This routine should better be applied on an incoherent dynamic S(q,w) data set.
+%
+%  The method to use in the gDOS computation can be given as 2nd argument
+%       gDOS = dos(Sqw, 'Bredov')         more accurate as it uses 100% of data
+%       gDOS = dos(Sqw, 'Carpenter')      Temperature must be a property
+%       gDOS = dos(Sqw, 'Bellissent')     simple yet efficient, when T=0
+%
+% References: Price J. et al, Non Cryst Sol 92 (1987) 153
+%         Bellissent-Funel et al, J. Mol. Struct. 250 (1991) 213
+%         Carpenter and Pelizarri, Phys. Rev. B 12, 2391 (1975)
+%         Suck et al, Journal of Alloys and Compounds 342 (2002) 314
+%         Bredov et al., Sov. Phys. Solid State 9, 214 (1967)
+%         V.S. Oskotskii, Sov. Phys. Solid State 9 (1967), 420.
+%         H. Schober, Journal of Neutron Research 17 (2014) 109–357. (esp. p307-315)
+%
+% New model parameters:
+%    Temperature            [K]
+%    DW Debye-Waller factor [1]
+%
+% syntax:
+%   g = dos(s)
+%
+% input:
+%   s:      Sqw 2D model with q as 1st axis (Angs-1), w as 2nd axis (meV).
+%
+% output:
+%   g:    gDOS 1D model [iFunc, axis is energy]
+%
+% (c) E.Farhi, ILL. License: EUPL.
+
+  if nargin < 2, method=[]; end
+  if isempty(method), method = 'Bredov'; end
+  
+  g = copyobj(self);
+
+  index=numel(g.Parameters)+1;
+  g.Parameters{end+1} = 'Temperature [K]'; 
+  g.Parameters{end+1} = 'DW Debye-Waller factor [1]';
+  
+  if isvector(g.Guess) && isnumeric(g.Guess)
+    g.Guess = [ g.Guess(:)' 300 1 ];  % typical
+  else
+    if ~iscell(g.Guess), g.Guess = { g.Guess }; end
+    g.Guess{end+1} = [ 300 1 ];
+  end
+  
+  g.Dimension = 1;
+  g.UserData.DOS_method = method;
+  
+  % we need a q axis. x axis is given as energy when evaluatoing the DOS.
+  g = {[ 'w = x; w0_sav=w; T = p(' num2str(index) '); DW=p(' num2str(index+1) ');' ];
+    'Ei=max(abs(w)); qmax=sqrt(Ei/2.0721);';
+    'q=linspace(min(qmax/1000,1e-3), qmax, 100);';
+    '[q,w] = meshgrid(q,unique(w)); x=q; y=w;' } + g;
+  % then evaluate the initial 2D model
+
+  % and append the DOS computation
+  switch lower(method)
+  case {'bredov','oskotskii','default'}
+    
+    g.Expression{end+1} = 'x=w0_sav(:)''; qSq = signal.*q.*DW; q4 = zeros(size(w)); qmax = []; qmin = [];';
+    g.Expression{end+1} = 'for index=1:size(signal, 1)';
+      g.Expression{end+1} = 'sw = signal(index,:); % slab for a given energy. length is q';
+      g.Expression{end+1} = 'valid = find(isfinite(sw) & sw > 0);';
+      g.Expression{end+1} = 'if isvector(q) qw = q; else qw = q(index, :); end';
+      g.Expression{end+1} = 'q_min = min(qw(valid)); q_max = max(qw(valid));';
+      g.Expression{end+1} = 'if isempty(q_max) || isempty(q_min), q_max = inf; q_min = 0; end';
+      g.Expression{end+1} = 'qmax(end+1) = q_max; qmin(end+1) = q_min;';
+    g.Expression{end+1} = 'end';
+    g.Expression{end+1} = 'index = find(abs(qmax - qmin) < .1); qmax(index) = qmin(index) + 0.1;';
+    g.Expression{end+1} = '% compute the dos';
+    g.Expression{end+1} = 'g = [];';
+    g.Expression{end+1} = 'if T<=0 % do not use Temperature';
+      g.Expression{end+1} = '% g(w) = [\int q S(q,w) dq] exp(2W(q)) m / (q^4max-q^4min) * w.^2';
+      g.Expression{end+1} = 'g = sum(qSq,2)''.*abs(w0_sav.^2./(qmax.^4 - qmin.^4));';
+    g.Expression{end+1} = 'else    % use Bose/Temperature (in quantum case)';
+      g.Expression{end+1} = 'n = 1./(exp(11.605*w0_sav/T) - 1); n(~isfinite(n)) = 0;';
+      g.Expression{end+1} = '% g(w) = [\int q S(q,w) dq] exp(2W(q)) m / (q^4max-q^4min) * w/(1+n)';
+      g.Expression{end+1} = 'g = sum(qSq,2)''.*abs(w0_sav./(n+1)./(qmax.^4 - qmin.^4));';
+    g.Expression{end+1} = 'end';
+    g.Expression{end+1} = 'signal=g;';
+  case {'carpenter','price','bellissent'}
+    g.Expression{end+1} = 'x=w0_sav(:)''; if T <=0, g = signal.*w.^2./(q.^2); % Bellissent';
+    g.Expression{end+1} = 'else ';
+    g.Expression{end+1} =   'n = 1./(exp(11.605*w/T) - 1); n(~isfinite(n)) = 0;';
+    g.Expression{end+1} =   'g = abs(w./(n+1)).*signal./(q.^2);  % Carpenter';
+    g.Expression{end+1} = 'end';
+    g.Expression{end+1} = 'if DW > 0, DW= exp(2*DW*q.^2); g = g.*DW; end';
+    g.Expression{end+1} = '% get the low monentum limit';
+    g.Expression{end+1} = 'nc  = max(10, size(g, 2)/10);';
+    g.Expression{end+1} = 'nc  = ceil(min(nc,size(g,2)));    % get the first nc values for each energy transfer';
+    g.Expression{end+1} = 'DOS = zeros(size(w,1),1);  % column of g(w) DOS for q->0';
+    g.Expression{end+1} = 'for i=1:size(g,1)';
+    g.Expression{end+1} =   'nz = find(isfinite(g(i,:)) & g(i,:) > 0, nc, ''first'');';
+    g.Expression{end+1} =   'if ~isempty(nz), DOS(i) = sum(g(i,nz)); end';
+    g.Expression{end+1} = 'end';
+    g.Expression{end+1} = 'signal=DOS;';
+  end
+  g.Expression{end+1} = 'signal=signal/sum(signal(:));';
+
+  g.Eval = cellstr(g); % check
+  
+end
