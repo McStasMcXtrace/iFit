@@ -203,7 +203,7 @@ function [g, method] = sqw_phonon_dos_Carpenter(s, T, nc, DW)
   % compute g(q,w) aka P(alpha,beta) 
   if (~isempty(classical) && classical(1)) || isempty(T) || T==0 % do not use Temperature
     % Bellissent
-    % uses Carpenter with approx: exp(2W)=1 and 1/(p.n(w)+1) ~ hw
+    % uses Carpenter with approx: exp(2W)=1 and 1/(n(w)+1) ~ hw
     method = 'Bellissent';
     
     g = s.*hw.^2./(q.^2);
@@ -220,20 +220,20 @@ function [g, method] = sqw_phonon_dos_Carpenter(s, T, nc, DW)
 
   % determine the low-momentum limit -------------------------------------------
   s0  = subsref(g,struct('type','.','subs','Signal'));
-  DOS = zeros(size(s0,1),1);  % column of g(w) DOS for q->0
+  DOS = zeros(size(s0,2),1);  % column of g(w) DOS for q->0
   
   nc  = ceil(min(nc,size(s0,2)));    % get the first nc values for each energy transfer
-  for i=1:size(s0,1)
-    nz = find(isfinite(s0(i,:)) & s0(i,:) > 0, nc, 'first');
+  for i=1:size(s0,2)
+    nz = find(isfinite(s0(:,i)) & s0(:,i) > 0, nc, 'first');
     if ~isempty(nz)
-      DOS(i) = sum(s0(i,nz));
+      DOS(i) = sum(s0(nz,i));
     end
   end
 
   % set new gDOS value
   rmaxis( g, 2);
   g = subsasgn(g, struct('type','.','subs','Signal'), DOS);
-  setaxis(g, 1, unique(hw));
+  setaxis(g, 1, unique(hw)); xlabel(g, xlabel(s));
 
 % ------------------------------------------------------------------------------
 function [g, w] = sqw_phonon_dos_Bredov(s, T, DW)
@@ -254,7 +254,7 @@ function [g, w] = sqw_phonon_dos_Bredov(s, T, DW)
 %   \int q/ki/kf kf/ki sigma S(q,w) dq = sigma ki^2/m exp(-2W(q)) (q^4max-q^4min) g(w) (n+1)/w
 %   \int q/ki^2 S(q,w) dq              =       ki^2/m exp(-2W(q)) (q^4max-q^4min) g(w) (n+1)/w
 % with fixed Ki:
-%   \int q S(q,w) dq                   = [ exp(-2W(q))/m (q^4max-q^4min)  (p.n+1)/w ] g(w)
+%   \int q S(q,w) dq                   = [ exp(-2W(q))/m (q^4max-q^4min)  (n+1)/w ] g(w)
 %
 % g(w) =  \int q S(q,w) dq / [ exp(-2W(q))/m (q^4max-q^4min)  (n+1)/w ]
 %      = [\int q S(q,w) dq] exp(2W(q)) m / (q^4max-q^4min) * w/(1+n)
@@ -325,10 +325,10 @@ function [g, w] = sqw_phonon_dos_Bredov(s, T, DW)
     g = trapz(qSq,1).*abs(w.^2./(qmax'.^4 - qmin'.^4));
   else    % use Bose/Temperature (in quantum case)
     beta    = 11.605*w/T;
-    p.n = 1./(exp(beta) - 1);
-    p.n(~isfinite(p.n)) = 0;
+    n = 1./(exp(beta) - 1);
+    n(~isfinite(n)) = 0;
     % g(w) = [\int q S(q,w) dq] exp(2W(q)) m / (q^4max-q^4min) * w/(1+n)
-    g = trapz(qSq,1).*abs(w./(p.n+1)./(qmax.^4 - qmin.^4));
+    g = trapz(qSq,1).*abs(w./(n+1)./(qmax'.^4 - qmin'.^4));
   end
   
   % set back aliases
