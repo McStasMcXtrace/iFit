@@ -126,7 +126,10 @@ function [g, fig] = dos(s, method, varargin)
     switch lower(p.method)
     case {'bredov','oskotskii','default'}
       [g,w] = sqw_phonon_dos_Bredov(s, p.t, p.dw); 
-      method = 'Bredov';
+      p.method = 'Bredov';
+    case {'bellissent'}
+      if isempty(p.n), p.n=max(10, size(s, 2)/10); end
+      [g, p.method] = sqw_phonon_dos_Carpenter(s, 0, p.n, p.dw); % also incl. Bellissent
     otherwise % {'carpenter','price','bellissent'}
       if isempty(p.n), p.n=max(10, size(s, 2)/10); end
       [g, p.method] = sqw_phonon_dos_Carpenter(s, p.t, p.n, p.dw); % also incl. Bellissent
@@ -272,6 +275,8 @@ function [g, w] = sqw_phonon_dos_Bredov(s, T, DW)
   parameters = get(s, 'parameters');
   
   % restrict s to a dynamic range (so that q4 corresponds with a 'simulated' experiment)
+  %w = getaxis(s,2);
+  %Ei=max(abs(w(:)));
   s = dynamic_range(s, Ei);
   
   % re-sample histogram when axes are not vectors

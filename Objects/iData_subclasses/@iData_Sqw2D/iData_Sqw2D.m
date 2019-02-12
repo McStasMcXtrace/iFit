@@ -529,8 +529,8 @@ classdef iData_Sqw2D < iData
         label(ddcs, 0, [  'ddcs2Sqw' '(' label(s, 0) ')' ]);
       else
         ddcs = commandhistory(ddcs, 'Sqw2ddcs', s, lambda, inverse);
-        ddcs.Label = 'DDCS(q, w)';
-        label(ddcs, 0, [  'DDCS' '(' label(s, 0) ')' ]);
+        ddcs.Label = 'Kf/Ki*S(q, w)';
+        label(ddcs, 0, [  'Kf/Ki*(' label(s, 0) ')' ]);
       end
     
     end % Sqw2ddcs

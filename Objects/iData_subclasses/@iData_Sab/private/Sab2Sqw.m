@@ -65,14 +65,14 @@ function sqw = Sab2Sqw(s, M, T)
     return
   end
   
-  beta       = getaxis(s,1); 
-  alpha      = getaxis(s,2); 
+  beta       = getaxis(s,2); 
+  alpha      = getaxis(s,1); 
   Z=getaxis(s,0);                 % S(a,b) value (axis rank 0)
   
-  if numel(alpha) ~= size(Z,2) || numel(beta) ~= size(Z,1)
+  if numel(alpha) ~= size(Z,1) || numel(beta) ~= size(Z,2)
     s = meshgrid(s, 'vector');
-    beta       = getaxis(s,1); 
-    alpha      = getaxis(s,2); 
+    beta       = getaxis(s,2); 
+    alpha      = getaxis(s,1); 
   end
   
   % we must have s.classical = 1
@@ -105,10 +105,8 @@ function sqw = Sab2Sqw(s, M, T)
   
   % fprintf(1, '%s: %s: q=[%g:%g] w=[%g:%g]\n', mfilename, s.Title, min(q(:)), max(q(:)), min(E(:)), max(E(:)));
   
-  for i=1:size(Z,1)   % E
-    % Jacobian for S(q,w) -> S(a,b) is J=(dq.dw)/(dalpha.dbeta) = 1/(2*q*C^2*q2toE)
-    Z(i,:)     = Z(i,:).*q;
-  end
+  % Jacobian for S(q,w) -> S(a,b) is J=(dq.dw)/(dalpha.dbeta) = 1/(2*q*C^2*q2toE)
+  Z = Z .* repmat(q, 1, size(Z,2));
   
   % and finally multiply by the constants
   
@@ -120,8 +118,8 @@ function sqw = Sab2Sqw(s, M, T)
   setalias(sqw, 'w', E, 'energy [meV]');
   setalias(sqw, 'Sqw',   Z,     'S(q,w)');  % Z(q,w)
   setaxis(sqw, 0, 'Sqw');
-  setaxis(sqw, 2, 'q');
-  setaxis(sqw, 1, 'w');
+  setaxis(sqw, 1, 'q');
+  setaxis(sqw, 2, 'w');
   sqw.Title = s.Title;
   setalias(sqw,'Temperature', T, '[K] Temperature');
   setalias(sqw,'weight',      M, '[g/mol] Material molar weight');

@@ -55,11 +55,11 @@ function sab = Sqw2Sab(s, M, T)
   
   % check input parameters
   if isempty(M) || M<=0
-    error([ mfilename ': ERROR: Mass undefined: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' does not provide information about the material molar weight. Use Sab(Sqw, M).' ]);
+    error([ mfilename ': ERROR: Mass undefined: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' does not provide information about the material molar weight. Use iData_Sab(Sqw, M).' ]);
     return
   end
   if isempty(T) || T<=0
-    warning([ mfilename ': WARNING: Temperature undefined: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' does not have any temperature defined. Using T=300K. Use Sab(Sqw, M, T) for other setting.' ]);
+    warning([ mfilename ': WARNING: Temperature undefined: The data set ' s.Tag ' ' s.Title ' from ' s.Source ' does not have any temperature defined. Using T=300K. Use iData_Sab(Sqw, M, T) for other setting.' ]);
     T = 300;
   end
   
@@ -78,8 +78,8 @@ function sab = Sqw2Sab(s, M, T)
   
   if numel(q) ~= size(Z,1) || numel(E) ~= size(Z,2)
     s = meshgrid(s, 'vector');
-    E = getaxis(s,1); 
-    q = getaxis(s,2); 
+    E = getaxis(s,2); 
+    q = getaxis(s,1); 
   end
 
   % some constants 
@@ -101,10 +101,8 @@ function sab = Sqw2Sab(s, M, T)
   % S(a,b) da db = S(q,w) dq dw
   % S(a,b)       = S(q,w) * J     with J=(dq.dw)/(dalpha.dbeta)=1/q*cte
   
-  for i=1:size(Z,2)   % E
-    % Jacobian for S(q,w) -> S(a,b) is J=(dq.dw)/(dalpha.dbeta) = 1/(2*q*C^2*q2toE)
-    Z(:,i)     = Z(:,i)./q;
-  end
+  % Jacobian for S(q,w) -> S(a,b) is J=(dq.dw)/(dalpha.dbeta) = 1/(2*q*C^2*q2toE)
+  Z = Z ./ repmat(q, 1, size(Z,2));
   
   % and finally multiply by the constants
   alpha = q.*q*C*q2toE;

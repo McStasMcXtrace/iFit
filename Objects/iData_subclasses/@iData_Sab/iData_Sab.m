@@ -3,7 +3,7 @@ classdef iData_Sab < iData
   %
   % The iData_Sab class is a 2D data set holding a S(alpha,beta) dynamic 
   %   structure factor aka scattering function/law.
-  %   The data set axes are beta as 1st axis (rows), alpha as 2nd axis (Angs-1).
+  %   The data set axes are alpha as 1st axis (rows), beta as 2nd axis (columns).
   %
   % The S(alpha,beta) is a representation of the dynamic structure factor 
   % using unitless momentum and energy variables defined as:
@@ -108,7 +108,7 @@ classdef iData_Sab < iData
       
       % convert/test
       if     isa(s, mfilename)   m = s; 
-      elseif isa(s, 'iData_Sqw') m = Sqw2Sab(s, varargin{:});
+      elseif isa(s, 'iData_Sqw2D') m = Sqw2Sab(s, varargin{:});
       elseif ischar(s)
         m = iData_Sqw2D(s);
         m = Sqw2Sab(m, varargin{:});
@@ -155,7 +155,7 @@ classdef iData_Sab < iData
     end % parseparams
     
     function s = Sqw(self)
-      % sqw = Sqw(Sab, M, T)
+      % sqw = Sqw(Sab)
       %  iData_Sab: Sqw: convert a 2D S(alpha,beta) into an S(q,w).
       %
       %  The S(alpha,beta) is a representation of the dynamic structure factor 
@@ -166,11 +166,7 @@ classdef iData_Sab < iData
       %     mu   = cos(theta) = (Ki.^2 + Kf.^2 - q.^2) ./ (2*Ki.*Kf)
       %  
       % input:
-      %   s:  S(alpha,beta) data set e.g. 2D data set with beta as 1st axis (rows), alpha as 2nd axis (columns).
-      %   M:  molar weight of the atom/molecule in [g/mol].
-      %     when omitted or empty, it is searched as 'weight' or 'mass' is the object.
-      %   T: when given, Temperature to use. When not given or empty, the Temperature
-      %      is searched in the object. The temperature is in [K]. 1 meV=11.605 K.
+      %   s:  S(alpha,beta) data set e.g. 2D data set with alpha as 1st axis (rows), beta as 2nd axis (columns).
       % output:
       %   sqw: S(q,w) 2D data set (iData_Sqw2D)
       %
@@ -182,13 +178,13 @@ classdef iData_Sab < iData
       % references: M. Mattes and J. Keinert, IAEA INDC(NDS)-0470, 2005.
       %             R. E. MacFarlane, LA-12639-MS (ENDF-356), 1994.
       %
-      % Example: sab = iData_Sab('SQW_coh_lGe.nc');
-      %          sqw = Sqw(sab,72.6,1235);
+      % Example: sab = iData_Sab('SQW_coh_lGe.nc',72.6,1235);
+      %          sqw = Sqw(sab);
       %          sab2= Sab(sqw);
-      %          subplot(log([Sqw Sab Sqw2))
+      %          subplot(log([sab sab2]))
       %
       % (c) E.Farhi, ILL. License: EUPL.
-      s = Sab2Sqw(self);  % private
+      s = iData_Sqw2D(Sab2Sqw(self));  % private
     end % Sqw
     
     function f = iData(self)
@@ -641,7 +637,7 @@ classdef iData_Sab < iData
       %
       % input:
       %   sab: S(alpha,beta) data set (non classical, with T Bose factor e.g from experiment)
-      %        e.g. 2D data set with w as 1st axis (rows, meV), q as 2nd axis (Angs-1).
+      %        e.g. 2D data set with alpha as 1st axis (rows), beta as 2nd axis (cols).
       %   Ei: incoming neutron energy [meV]
       %   M: molar weight of the atom/molecule in [g/mol].
       %     when given empty, it is searched 'weight' or 'mass' is the object.

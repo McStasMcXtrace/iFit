@@ -22,7 +22,7 @@ function  T = Sqw_getT(s, prop, raw)
   else raw = true; end
   
   T = [];
-  if strcmp(raw, 'Bose')
+  if strcmp(raw, 'Bose') && numel(s) == 1 && ndims(s) == 2
     prop= {'Temperature','T'};
     T   = Sqw_getT_Bose(s);
     if ~isempty(T), return; end
