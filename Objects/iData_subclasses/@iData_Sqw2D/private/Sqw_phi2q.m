@@ -18,9 +18,9 @@ function sqw = Sqw_phi2q(s, lambda, a_present, w_present)
   hw    = getaxis(s,  w_present);
   
   if isvector(hw) && isvector(phi)
-    s = meshgrid(s);
-    phi   = getaxis(s,a_present); % angle
-    hw    = getaxis(s,w_present);
+    [phi, hw] = meshgrid(phi,hw);
+    %phi   = getaxis(s,a_present); % angle
+    %hw    = getaxis(s,w_present);
   end
   % we use: cos(phi) = (Ki.^2 + Kf.^2 - q.^2) ./ (2*Ki.*Kf);
   Ei = 81.805/lambda^2; Ki = 2*pi./lambda; 

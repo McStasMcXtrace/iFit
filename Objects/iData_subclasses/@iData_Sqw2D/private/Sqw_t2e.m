@@ -90,7 +90,7 @@ function sxw=Sqw_t2e(s, t_present)
   % kikf    = sqrt(Ei./Ef);   % The Kf/Ki correction is applied in Sqw2ddcs method
   hw = Ei - Ef;
   % Average energy scale:
-  hw0 = mean(hw,2);
+  hw0 = mean(hw,1);
 
   sxw    = copyobj(s).*dtdE;
   setalias(sxw, 'energy', hw0,  'Energy transfer hw [meV]');

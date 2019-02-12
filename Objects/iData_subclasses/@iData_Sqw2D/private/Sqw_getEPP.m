@@ -14,11 +14,11 @@ function t_elast = Sqw_getEPP(s, t_present)
   
   % compute the EPP
   if ndims(s) > 1
-    s_time = trapz(s, 2);       % compute time distribution, integrating angle
+    s_time = trapz(s, 1);       % compute time distribution, integrating angle
   else
     s_time = s;
   end
-  [~,s_time_max]            = max(s_time, [],t_present);
+  [~,s_time_max]            = max(s_time);
   t_elast                   = t(s_time_max);  % EPP estimate from maximum
   dt = (max(t(:)) - min(t(:)))/10;  % select 10% around the maximum
 

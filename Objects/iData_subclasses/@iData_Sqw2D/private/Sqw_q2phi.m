@@ -21,9 +21,11 @@ function spw = Sqw_q2phi(s, lambda)
   q     = s{1}; % wavevector
   hw    = s{2};
   if isvector(hw) && isvector(q)
-    s = meshgrid(s);
-    q     = s{1}; % angle
-    hw    = s{2};
+    [q,hw]=meshgrid(q,hw);
+  elseif isvector(hw)
+      hw = repmat(hw, size(q,1), 1);
+  elseif isvector(q)
+      q = repmat(q, 1, size(hw,2));
   end
   % we use: cos(phi) = (Ki.^2 + Kf.^2 - q.^2) ./ (2*Ki.*Kf);
   Ki = 2*pi./lambda; % direct geometry (monochromatic input)
