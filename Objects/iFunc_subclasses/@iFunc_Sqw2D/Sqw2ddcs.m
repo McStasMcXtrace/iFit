@@ -21,7 +21,7 @@ function self = Sqw2ddcs(s)
   self = copyobj(s);
   index=numel(self.Parameters)+1;
   self.Parameters{end+1} = 'Ei Incident neutron energy [meV]';
-  
+  t = self.Name;
   if isvector(self.Guess) && isnumeric(self.Guess)
     self.Guess = [ self.Guess(:)' 14.8 ];  % typical
   else
@@ -33,7 +33,7 @@ function self = Sqw2ddcs(s)
   self.Expression{end+1} = 'Ef = Ei-w;';
   self.Expression{end+1} = 'kfki = sqrt(Ef./Ei); kfki(Ef<0)=0;';
   self.Expression{end+1} = 'signal = signal .* kfki; % actually set the dynamic range';
-  
+  self.Name = [ mfilename ' Kf/Ki*(' t ')' ];
   self = iFunc_Sqw2D(self); % check
 
   if nargout == 0 && ~isempty(inputname(1))

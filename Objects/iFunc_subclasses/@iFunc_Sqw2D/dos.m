@@ -46,6 +46,8 @@ function g = dos(self, method)
 % New model parameters:
 %    Temperature            [K]
 %    DW Debye-Waller factor [1]
+%           The Debye-Waller function is      2W(q)=gamma*q^2
+%           The Debye-Waller factor   is exp(-2W(q))
 %
 % syntax:
 %   g = dos(s)
@@ -77,8 +79,14 @@ function g = dos(self, method)
   g.Dimension = 1;
   g.UserData.DOS_method = method;
   
+  % check for classical model
+  classical = findfield(g, 'classical','first');
+  if ~isempty(classical)
+    classical = get(self, classical);
+    if classical(1)
+  
   % we need a q axis. x axis is given as energy when evaluatoing the DOS.
-  g = {[ 'w = x; w0_sav=w; T = p(' num2str(index) '); DW=p(' num2str(index+1) ');' ];
+  g = {[ 'w = x; w_sav=w; T = p(' num2str(index) '); DW=p(' num2str(index+1) ');' ];
     'Ei=max(abs(w)); qmax=sqrt(Ei/2.0721);';
     'q=linspace(min(qmax/1000,1e-3), qmax, 100);';
     '[q,w] = meshgrid(q,unique(w)); x=q; y=w;' } + g;
@@ -88,7 +96,7 @@ function g = dos(self, method)
   switch lower(method)
   case {'bredov','oskotskii','default'}
     
-    g.Expression{end+1} = 'x=w0_sav(:)''; qSq = signal.*q.*DW; q4 = zeros(size(w)); qmax = []; qmin = [];';
+    g.Expression{end+1} = 'x=w_sav(:)''; qSq = signal.*q.*DW; q4 = zeros(size(w)); qmax = []; qmin = [];';
     g.Expression{end+1} = 'for index=1:size(signal, 1)';
       g.Expression{end+1} = 'sw = signal(index,:); % slab for a given energy. length is q';
       g.Expression{end+1} = 'valid = find(isfinite(sw) & sw > 0);';
@@ -102,15 +110,17 @@ function g = dos(self, method)
     g.Expression{end+1} = 'g = [];';
     g.Expression{end+1} = 'if T<=0 % do not use Temperature';
       g.Expression{end+1} = '% g(w) = [\int q S(q,w) dq] exp(2W(q)) m / (q^4max-q^4min) * w.^2';
-      g.Expression{end+1} = 'g = sum(qSq,2)''.*abs(w0_sav.^2./(qmax.^4 - qmin.^4));';
+      g.Expression{end+1} = 'g = sum(qSq,2)''.*abs(w_sav.^2./(qmax.^4 - qmin.^4));';
     g.Expression{end+1} = 'else    % use Bose/Temperature (in quantum case)';
-      g.Expression{end+1} = 'n = 1./(exp(11.605*w0_sav/T) - 1); n(~isfinite(n)) = 0;';
+      g.Expression{end+1} = 'n = 1./(exp(11.605*w_sav/T) - 1); n(~isfinite(n)) = 0;';
       g.Expression{end+1} = '% g(w) = [\int q S(q,w) dq] exp(2W(q)) m / (q^4max-q^4min) * w/(1+n)';
-      g.Expression{end+1} = 'g = sum(qSq,2)''.*abs(w0_sav./(n+1)./(qmax.^4 - qmin.^4));';
+      g.Expression{end+1} = 'g = sum(qSq,2)''.*abs(w_sav./(n+1)./(qmax.^4 - qmin.^4));';
     g.Expression{end+1} = 'end';
     g.Expression{end+1} = 'signal=g;';
+    
   case {'carpenter','price','bellissent'}
-    g.Expression{end+1} = 'x=w0_sav(:)''; if T <=0, g = signal.*w.^2./(q.^2); % Bellissent';
+  
+    g.Expression{end+1} = 'x=w_sav(:)''; if T <=0, g = signal.*w.^2./(q.^2); % Bellissent';
     g.Expression{end+1} = 'else ';
     g.Expression{end+1} =   'n = 1./(exp(11.605*w/T) - 1); n(~isfinite(n)) = 0;';
     g.Expression{end+1} =   'g = abs(w./(n+1)).*signal./(q.^2);  % Carpenter';
@@ -125,8 +135,10 @@ function g = dos(self, method)
     g.Expression{end+1} =   'if ~isempty(nz), DOS(i) = sum(g(i,nz)); end';
     g.Expression{end+1} = 'end';
     g.Expression{end+1} = 'signal=DOS;';
+    
   end
   g.Expression{end+1} = 'signal=signal/sum(signal(:));';
+  g.Name = [ mfilename '(' self.Name ',''' method ''')' ];
 
   g.Eval = cellstr(g); % check
   

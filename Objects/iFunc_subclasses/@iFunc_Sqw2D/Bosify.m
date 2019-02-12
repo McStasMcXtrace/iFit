@@ -65,6 +65,8 @@ function self=Bosify(self, type)
     type = strtrim(strrep(lower(type), 'debosify','')); % remove debosify occurence
   else do_bosify=1; end
   
+  t = self.Name;
+  
   % add new Temperature parameter
   self.Parameters{end+1} = 'Temperature [K]'; 
   T_index=numel(self.Parameters);
@@ -124,13 +126,15 @@ function self=Bosify(self, type)
     self.Guess{end+1} = 300;
   end
   
+  self.UserData.QuantumCorrection = type;
   if do_bosify
     self.UserData.classical     = false; % result is quantum
+    self.Name = [ mfilename '(' t ') ' type ];
   else
     self.UserData.classical     = true;  % result is classical
+    self.Name = [ 'de' mfilename '(' t ') ' type ];
   end
-  self.UserData.QuantumCorrection = type;
-  
+
   self = iFunc_Sqw2D(self); % check
   
   if nargout == 0 && ~isempty(inputname(1)) && ~wrn

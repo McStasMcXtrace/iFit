@@ -40,7 +40,7 @@ function spw = qw2phiw(self, varargin)
   spw = spw + ...
     { 'signal(~isreal(signal) | ~isreal(q) | signal < 0)=0;'; ...
       'signal=real(signal); x=phi;' };
-  
+  spw.Name = [ mfilename '(' self.Name ')' ];
   spw = iFunc(spw); % check
   
 end

@@ -41,6 +41,7 @@ function self=dynamic_range(self)
     if ~iscell(self.Guess), self.Guess = { self.Guess }; end
     self.Guess{end+1} = [ 14.8 5 135 ];
   end
+  t = self.Name;
 
   self.Expression{end+1} = [ 'q = x; w = y; Ei = p(' num2str(index) ');' ];
   self.Expression{end+1} = [ 'angles = p([' num2str(index+1:index+2) ']);' ];  
@@ -54,7 +55,7 @@ function self=dynamic_range(self)
   self.Expression{end+1} = 'cost = cosd(angles);';
   self.Expression{end+1} = 'index= find(costheta < min(cost(:)) | costheta > max(cost(:)) | Ef <= 0);';
   self.Expression{end+1} = 'signal(index) = 0; % actually set the dynamic range';
-  
+  self.Name = [ mfilename '(' t ')' ];
   self = iFunc_Sqw2D(self); % check
 
   if nargout == 0 && ~isempty(inputname(1))

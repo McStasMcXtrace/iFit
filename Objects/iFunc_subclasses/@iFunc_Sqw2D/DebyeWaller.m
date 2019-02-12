@@ -50,6 +50,8 @@ function self=DebyeWaller(self)
     end
   end
   
+  t = self.Name;
+  
   % append the quantum correction to the Expression
   % apply sqrt(Bose) factor to get experimental-like
   % semi-classical corrections, aka quantum correction factor
@@ -65,6 +67,7 @@ function self=DebyeWaller(self)
   end
   
   self.UserData.DebyeWaller     = true; 
+  self.Name = [ mfilename '(' t ')' ];
   
   self = iFunc_Sqw2D(self); % check
   
