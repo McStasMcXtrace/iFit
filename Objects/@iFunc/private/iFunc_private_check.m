@@ -233,10 +233,8 @@ function a = iFunc_private_check(a)
     a.ParameterValues = val;
   end
   
-  if isempty(a.Eval) || (iscellstr(a.Eval) && iscellstr(a.Expression) && numel(a.Eval) ~= numel(a.Expression))
-    a.Eval = cellstr(a);
-    a.Eval = a.Eval(:);
-  end
+  a.Eval = cellstr(a);
+  a.Eval = a.Eval(:);
   
   % create a default Name for Labels
   if isempty(a.Name)
