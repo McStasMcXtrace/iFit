@@ -1,7 +1,7 @@
 function spt = qw2phit(self, varargin)
   % iFunc_Sqw2D: qw2phit: convert a S(q,w) into a S(phi,tof) Model (scattering angle)
   %
-  % convert: iFunc_Sqw2D S(q,w) -> S(phi,t)
+  % convert: iFunc_Sqw2D S(q,w) -> S(phi,tof)
   %
   % An initial S(q,w) 2D Model is converted into a 2D (angle,tof) data set.
   %   The incident neutron energy is assumed to be monochromatic.
@@ -23,17 +23,18 @@ function spt = qw2phit(self, varargin)
   %   s:      Sqw 2D model with q as 1st axis (Angs-1), w as 2nd axis (meV).
   %
   % output:
-  %   spt:    S(phi,w) 2D model [iFunc, phi in deg]
+  %   spt:    S(phi,tof) 2D model [iFunc, phi in deg, tof in s]
   
-  index=numel(self.Parameters)+1;
-  self.Parameters{end+1} = 'Ei Incident neutron energy [meV]';
-  self.Parameters{end+1} = 'Distance Sample-Detector radius [m]';
+  spt = copyobj(self);
+  index=numel(spt.Parameters)+1;
+  spt.Parameters{end+1} = 'Ei Incident neutron energy [meV]';
+  spt.Parameters{end+1} = 'Distance Sample-Detector radius [m]';
   
-  if isvector(self.Guess) && isnumeric(self.Guess)
-    self.Guess = [ self.Guess(:)' 14.8 2.5 ];  % typical
+  if isvector(spt.Guess) && isnumeric(spt.Guess)
+    spt.Guess = [ spt.Guess(:)' 14.8 2.5 ];  % typical
   else
-    if ~iscell(self.Guess), self.Guess = { self.Guess }; end
-    self.Guess{end+1} = [ 14.8 2.5 ];
+    if ~iscell(spt.Guess), spt.Guess = { spt.Guess }; end
+    spt.Guess{end+1} = [ 14.8 2.5 ];
   end
   
   % the resulting 2D model will use phi[deg] and t[s]
@@ -50,7 +51,7 @@ function spt = qw2phit(self, varargin)
     'x  = q; y=w;'; ...
     
      };
-  spt = prepend + self;
+  spt = prepend + spt;
   % check for signal, and assign x axis as the initial angles.
   spt = spt + ...
     { 'signal(imag(signal) | imag(q))=0;'; ...

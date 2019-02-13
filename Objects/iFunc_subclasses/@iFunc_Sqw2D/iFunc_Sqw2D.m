@@ -148,40 +148,33 @@ classdef iFunc_Sqw2D < iFunc
       %   spw:    S(phi,w) 2D model [iFunc, phi in deg]
       spw = qw2phiw(self);
     end
+    
+    function sab = Sab(self)
+      % iFunc_Sqw2D: Sab: convert a S(q,w) into a S(alpha,beta) Model
+      %
+      % convert: iFunc_Sqw2D S(q,w) -> S(alpha,beta)
+      %
+      % New model parameters:
+      %       Temperature                      [K]
+      %       Mass       Material molar weight [g/mol]
+      
+      sab = iFunc_Sab(self);
+    end % Sab
   
     % methods for iFunc Sqw 2D, similar to the iData Sqw2D ones
     
-    % we evaluate the model, extend its Expression.
-    %   convert it to an iData_Sqw2D and apply one of the following method:
-    
     % methods that retain the type (q,w)
-    %   Bosify/deBosify DONE
-    %   DebyeWaller DONE
-    %   dynamic_range(Ei, angle_min, angle_max) DONE
-    %   incoherent(q, T, m, n, DW, vDOS )
-    %   coherent (iData sq or d-spacing value) DONE
-    %   Sqw2ddcs(Ei) DONE
-    %   ddcs2Sqw(Ei)
-    
-    % when changing type, the new object must compute back the (q,w) axes, then 
-    % evaluate the original iFunc_Sqw2D model, and apply the final conversion with
-    % 'new' axes.
+    %   incoherent(q, T, m, n, DW, vDOS ) using dos.incoherent, hard work. Use iData_vDOS ?
     
     % methods that change the type (q,w) -> something else (iFunc 1D)
-    %   dos/gdos(T, DW, method) -> 1D iFunc(w)
     %   multi_phonons -> 1D(w)
     %   scattering_cross_section(Ei_min, Ei_max, Ei_n, Mass) -> 1D iFunc(Ei) -> new axis !!
-    %   moments(M,T, classical) -> 1D iFunc array ?
+    %   moments(M,T, classical) -> 1D iFunc array ? from dos
     %   structure_factor/sq -> 1D iFunc
-    %   thermochemistry(T) -> 1D iFunc array ?
-    %   muphocor(T, amasi, sigi, conci) -> 1D array
-    %   Models: sqw_incoherent(vdos), sqw_recoil, sqw_sct, sqw_freegas, sqw_eisf, 
+    %   thermochemistry(T) -> 1D iFunc array ? from dos
     
     % methods that change the type (q,w) -> something else (iFunc 2D)
     %   Sab(M,T)
-    %   qw2phiw(lambda)
-    %   qw2qt(lambda, chwidth, dist)
-    %   qw2phi(lambda)
     
   end % methods
   

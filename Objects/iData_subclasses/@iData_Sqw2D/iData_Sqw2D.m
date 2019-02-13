@@ -435,14 +435,14 @@ classdef iData_Sqw2D < iData
       end
     end
     
-    function [spt, spc, spw] = qw2phi(self, varargin)
+    function [spt, spc, spw] = qw2phit(self, varargin)
       % iData_Sqw2D: qw2phi: convert a S(q,w) into S(phi,tof) iData (scattering angle,ToF)
       %   This method returns S(phi,tof), S(phi,tof channels) and S(phi,w)
       %
       % convert: iData_Sqw2D S(q,w) -> [S(phi,tof) S(phi,tof channels) S(phi,w)]
       %
-      %   [spt, spc, spw] = qw2phi(sqw);
-      %   [spt, spc, spw] = qw2phi(sqw, lambda);
+      %   [spt, spc, spw] = qw2phit(sqw);
+      %   [spt, spc, spw] = qw2phit(sqw, lambda);
       %
       % input:
       %   sqw:    S(q,w) as an iData_Sqw2D object

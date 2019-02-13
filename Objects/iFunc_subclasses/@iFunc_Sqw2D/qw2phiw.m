@@ -23,14 +23,15 @@ function spw = qw2phiw(self, varargin)
   % output:
   %   spw:    S(phi,w) 2D model [iFunc, phi in deg]
   
-  index=numel(self.Parameters)+1;
-  self.Parameters{end+1} = 'Ei Incident neutron energy [meV]';
+  spw = copyobj(self);
+  index=numel(spw.Parameters)+1;
+  spw.Parameters{end+1} = 'Ei Incident neutron energy [meV]';
   
-  if isvector(self.Guess) && isnumeric(self.Guess)
-    self.Guess = [ self.Guess(:)' 14.8 ];  % typical
+  if isvector(spw.Guess) && isnumeric(spw.Guess)
+    spw.Guess = [ spw.Guess(:)' 14.8 ];  % typical
   else
-    if ~iscell(self.Guess), self.Guess = { self.Guess }; end
-    self.Guess{end+1} = [ 14.8 ];
+    if ~iscell(spw.Guess), spw.Guess = { spw.Guess }; end
+    spw.Guess{end+1} = [ 14.8 ];
   end
   
   % the resulting 2D model will use phi[deg] and w[meV]
