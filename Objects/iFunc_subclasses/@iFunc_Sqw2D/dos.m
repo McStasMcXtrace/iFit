@@ -72,14 +72,14 @@ function g = dos(self, method)
   end
   if is_classical, gT = [ 'T = 0; ' ];
   else
-    g.Parameters{end+1} = 'Temperature [K]'; 
-    gT = [ 'T = p(' num2str(numel(g.Parameters)) '); ' ];
+    gT = [ 'T = p(' num2str(numel(g.Parameters+1)) '); ' ];
     if isvector(g.Guess) && isnumeric(g.Guess)
       g.Guess = [ g.Guess(:)' 300 ];  % typical
     else
       if ~iscell(g.Guess), g.Guess = { g.Guess }; end
       g.Guess{end+1} = [ 300 ];
     end
+    g.Parameters{end+1} = 'Temperature [K]'; 
   end
   
   % check for DW
@@ -94,19 +94,16 @@ function g = dos(self, method)
   if is_dw
     gDW = [ 'DW = 0; ' ];
   else
-    g.Parameters{end+1} = 'DW Debye-Waller factor [Angs^2]';
-    gDW = [ 'DW=p(' num2str(numel(g.Parameters)) '); ' ];
+    gDW = [ 'DW=p(' num2str(numel(g.Parameters+1)) '); ' ];
     if isvector(g.Guess) && isnumeric(g.Guess)
       g.Guess = [ g.Guess(:)' 0.005 ];  % typical
     else
       if ~iscell(g.Guess), g.Guess = { g.Guess }; end
       g.Guess{end+1} = [ 0.005 ];
     end
+    g.Parameters{end+1} = 'DW Debye-Waller factor [Angs^2]';
   end
 
-  
-  
-  
   if isvector(g.Guess) && isnumeric(g.Guess)
     g.Guess = [ g.Guess(:)' 300 1 ];  % typical
   else
@@ -118,7 +115,7 @@ function g = dos(self, method)
   g.UserData.DOS_method = method;
   
   % we need a q axis. x axis is given as energy when evaluatoing the DOS.
-  g = {[ 'w = x; w_sav=w; ' gT gDW ];
+  g = {[ 'w = x; w_sav_dos=w; ' gT gDW ];
     'Ei=max(abs(w)); qmax=sqrt(Ei/2.0721);';
     'q=linspace(min(qmax/1000,1e-3), qmax, 100);';
     '[q,w] = meshgrid(q,unique(w)); x=q; y=w;';
@@ -129,7 +126,7 @@ function g = dos(self, method)
   switch lower(method)
   case {'bredov','oskotskii','default'}
     
-    g.Expression{end+1} = 'x=w_sav(:)''; qSq = signal.*q.*DW; q4 = zeros(size(w)); qmax = []; qmin = [];';
+    g.Expression{end+1} = 'qSq = signal.*q.*DW; q4 = zeros(size(w)); qmax = []; qmin = [];';
     g.Expression{end+1} = 'for index=1:size(signal, 1)';
       g.Expression{end+1} = 'sw = signal(index,:); % slab for a given energy. length is q';
       g.Expression{end+1} = 'valid = find(isfinite(sw) & sw > 0);';
@@ -143,17 +140,17 @@ function g = dos(self, method)
     g.Expression{end+1} = 'g = [];';
     g.Expression{end+1} = 'if T<=0 % do not use Temperature';
       g.Expression{end+1} = '% g(w) = [\int q S(q,w) dq] exp(2W(q)) m / (q^4max-q^4min) * w.^2';
-      g.Expression{end+1} = 'g = sum(qSq,2)''.*abs(w_sav.^2./(qmax.^4 - qmin.^4));';
+      g.Expression{end+1} = 'g = sum(qSq,2)''.*abs(w_sav_dos.^2./(qmax.^4 - qmin.^4));';
     g.Expression{end+1} = 'else    % use Bose/Temperature (in quantum case)';
-      g.Expression{end+1} = 'n = 1./(exp(11.605*w_sav/T) - 1); n(~isfinite(n)) = 0;';
+      g.Expression{end+1} = 'n = 1./(exp(11.605*w_sav_dos/T) - 1); n(~isfinite(n)) = 0;';
       g.Expression{end+1} = '% g(w) = [\int q S(q,w) dq] exp(2W(q)) m / (q^4max-q^4min) * w/(1+n)';
-      g.Expression{end+1} = 'g = sum(qSq,2)''.*abs(w_sav./(n+1)./(qmax.^4 - qmin.^4));';
+      g.Expression{end+1} = 'g = sum(qSq,2)''.*abs(w_sav_dos./(n+1)./(qmax.^4 - qmin.^4));';
     g.Expression{end+1} = 'end';
     g.Expression{end+1} = 'signal=g;';
     
   case {'carpenter','price','bellissent'}
   
-    g.Expression{end+1} = 'x=w_sav(:)''; if T <=0, g = signal.*w.^2./(q.^2); % Bellissent';
+    g.Expression{end+1} = 'if T <=0, g = signal.*w.^2./(q.^2); % Bellissent';
     g.Expression{end+1} = 'else ';
     g.Expression{end+1} =   'n = 1./(exp(11.605*w/T) - 1); n(~isfinite(n)) = 0;';
     g.Expression{end+1} =   'g = abs(w./(n+1)).*signal./(q.^2);  % Carpenter';
@@ -170,7 +167,7 @@ function g = dos(self, method)
     g.Expression{end+1} = 'signal=DOS;';
     
   end
-  g.Expression{end+1} = 'signal=signal/sum(signal(:));';
+  g.Expression{end+1} = 'signal=signal/sum(signal(:)); x=w_sav_dos(:)''; ';
   g.Name = [ mfilename '(' self.Name ',''' method ''')' ];
 
   g.Eval = cellstr(g); % check

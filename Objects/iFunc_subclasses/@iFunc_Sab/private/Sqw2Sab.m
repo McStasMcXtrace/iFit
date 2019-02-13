@@ -11,17 +11,19 @@ function sab=Sqw2Sab(self)
 
   sab=copyobj(self);
   index=numel(sab.Parameters)+1;
-  sab.Parameters{end+1} = 'Temperature [K]'; 
-  sab.Parameters{end+1} = 'Mass Material molar weight [g/mol]';
-  sab.Expression{end+1} = [ 'T = p(' num2str(index) '); M=p(' num2str(index+1) ');' ];
   
-  if isvector(sab.Guess) && isnumeric(sab.Guess)
+   if isvector(sab.Guess) && isnumeric(sab.Guess)
     sab.Guess(index)   = 300;
     sab.Guess(index+1) = 12;
   else
     if ~iscell(sab.Guess), sab.Guess = { sab.Guess }; end
     sab.Guess{end+1} = [ 300 12 ];
   end
+  
+  sab.Parameters{end+1} = 'Temperature [K]'; 
+  sab.Parameters{end+1} = 'Mass Material molar weight [g/mol]';
+  sab.Expression{end+1} = [ 'T = p(' num2str(index) '); M=p(' num2str(index+1) ');' ];
+  
   sab=iFunc(sab);
   
   % build the expression

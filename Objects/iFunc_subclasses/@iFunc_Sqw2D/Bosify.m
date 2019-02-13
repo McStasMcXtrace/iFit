@@ -68,8 +68,13 @@ function self=Bosify(self, type)
   t = self.Name;
   
   % add new Temperature parameter
+  if isvector(self.Guess) && isnumeric(self.Guess)
+    self.Guess(end+1) = 300;
+  else
+    if ~iscell(self.Guess), self.Guess = { self.Guess }; end
+    self.Guess{end+1} = 300;
+  end
   self.Parameters{end+1} = 'Temperature [K]'; 
-  T_index=numel(self.Parameters);
 
   
   % check if the model is labelled as 'classical' or 'quantum'. get alias.
@@ -108,7 +113,7 @@ function self=Bosify(self, type)
   % append the quantum correction to the Expression
   % apply sqrt(Bose) factor to get experimental-like
   % semi-classical corrections, aka quantum correction factor
-  self.Expression{end+1} = [ 'kT = p(' num2str(T_index) ')/11.6045; % Kelvin to meV = 1000*K_B/e' ];
+  self.Expression{end+1} = [ 'kT = p(' num2str(numel(sel.Parameters)) ')/11.6045; % Kelvin to meV = 1000*K_B/e' ];
   self.Expression{end+1} = 'if kT'; % only when T is non 0 (divide)
   self.Expression{end+1} =   'hw_kT = y/kT; % hbar omega / kT';
   self.Expression{end+1} = [ 'Q=' Q ';' ];
@@ -118,13 +123,6 @@ function self=Bosify(self, type)
   end
   self.Expression{end+1} =   'signal = signal .* Q;  % apply detailed balance with the selected correction';
   self.Expression{end+1} = 'end'; % if T
-  
-  if isvector(self.Guess) && isnumeric(self.Guess)
-    self.Guess(T_index) = 300;
-  else
-    if ~iscell(self.Guess), self.Guess = { self.Guess }; end
-    self.Guess{end+1} = 300;
-  end
   
   self.UserData.QuantumCorrection = type;
   if do_bosify

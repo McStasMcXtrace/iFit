@@ -36,8 +36,14 @@ function self=DebyeWaller(self)
   % search for 'msd','u2' parameters
 
   % add new <u2> parameter
+  if isvector(self.Guess) && isnumeric(self.Guess)
+    self.Guess(end+1) = 0.05;  % typical
+  else
+    if ~iscell(self.Guess), self.Guess = { self.Guess }; end
+    self.Guess{end+1} = 0.05;
+  end
+  
   self.Parameters{end+1} = 'u2 Mean squared displacement [Angs^2]'; 
-  u2_index=numel(self.Parameters);
   
   % check if the model has already a Debye-Waller factor ?
   hasDW = findfield(self, 'DebyeWaller','first');
@@ -55,16 +61,9 @@ function self=DebyeWaller(self)
   % append the quantum correction to the Expression
   % apply sqrt(Bose) factor to get experimental-like
   % semi-classical corrections, aka quantum correction factor
-  self.Expression{end+1} = [ 'u2 = p(' num2str(u2_index) ');' ];               
+  self.Expression{end+1} = [ 'u2 = p(' num2str(numel(self.Parameters)) ');' ];               
   self.Expression{end+1} = 'DW = exp(-u2.*x.^2/3);';
   self.Expression{end+1} = 'signal = signal .* DW;';
-  
-  if isvector(self.Guess) && isnumeric(self.Guess)
-    self.Guess(u2_index) = 0.05;  % typical
-  else
-    if ~iscell(self.Guess), self.Guess = { self.Guess }; end
-    self.Guess{end+1} = 0.05;
-  end
   
   self.UserData.DebyeWaller     = true; 
   self.Name = [ mfilename '(' t ')' ];

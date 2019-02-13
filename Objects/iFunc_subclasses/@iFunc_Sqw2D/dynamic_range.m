@@ -30,21 +30,22 @@ function self=dynamic_range(self)
 %  See also: iFunc_Sqw2D
 %  (c) E.Farhi, ILL. license: EUPL.
 
-  index=numel(self.Parameters)+1;
-  self.Parameters{end+1} = 'Ei Incident neutron energy [meV]';
-  self.Parameters{end+1} = 'Angle_min Minimum detector/scattering angle [deg]';
-  self.Parameters{end+1} = 'Angle_max Maximum detector/scattering angle [deg]';
-  
+  % add new Parameters
   if isvector(self.Guess) && isnumeric(self.Guess)
     self.Guess = [ self.Guess(:)' 14.8 5 135 ];  % typical
   else
     if ~iscell(self.Guess), self.Guess = { self.Guess }; end
     self.Guess{end+1} = [ 14.8 5 135 ];
   end
-  t = self.Name;
+  
+  self.Parameters{end+1} = 'Ei Incident neutron energy [meV]';
+  self.Parameters{end+1} = 'Angle_min Minimum detector/scattering angle [deg]';
+  self.Parameters{end+1} = 'Angle_max Maximum detector/scattering angle [deg]';
 
-  self.Expression{end+1} = [ 'q = x; w = y; Ei = p(' num2str(index) ');' ];
-  self.Expression{end+1} = [ 'angles = p([' num2str(index+1:index+2) ']);' ];  
+  t = self.Name;
+  index=numel(self.Parameters);
+  self.Expression{end+1} = [ 'q = x; w = y; Ei = p(' num2str(index-2) ');' ];
+  self.Expression{end+1} = [ 'angles = p([' num2str(index-1:index) ']);' ];  
   self.Expression{end+1} = 'if prod(angles) < 0, angles = [ 0 max(abs(angles)) ]; end';
   self.Expression{end+1} = 'SE2V = 437.393377;        % Convert sqrt(E)[meV] to v[m/s]';
   self.Expression{end+1} = 'V2K  = 1.58825361e-3;     % Convert v[m/s] to k[1/AA]';
