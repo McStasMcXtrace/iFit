@@ -1,7 +1,11 @@
 function spt = qw2phit(self, varargin)
-  % iFunc_Sqw2D: qw2phit: convert a S(q,w) into a S(phi,w) Model (scattering angle)
+  % iFunc_Sqw2D: qw2phit: convert a S(q,w) into a S(phi,tof) Model (scattering angle)
   %
-  % convert: iFunc_Sqw2D S(q,w) -> S(phi,w)
+  % convert: iFunc_Sqw2D S(q,w) -> S(phi,t)
+  %
+  % An initial S(q,w) 2D Model is converted into a 2D (angle,tof) data set.
+  %   The incident neutron energy is assumed to be monochromatic.
+  %   The detector is assumed to be radially arranged (constant radius).
   %
   % New model parameters:
   %       Ei     Incident neutron energy [meV]
@@ -9,6 +13,9 @@ function spt = qw2phit(self, varargin)
   %
   %  The incident neutron energy can be computed using:
   %   Ei = 2.0721*Ki^2 = 81.8042/lambda^2 with Ki in [Angs-1] and lambda in [Angs]
+  %
+  % Example: s=sqw_visco_elastic_simple; spt=s.qw2phit; 
+  %          plot(log(spt), [], 0:180, linspace(0, 0.003, 1000))
   %
   % spt = qw2phit(s)
   %
@@ -46,8 +53,8 @@ function spt = qw2phit(self, varargin)
   spt = prepend + self;
   % check for signal, and assign x axis as the initial angles.
   spt = spt + ...
-    { 'signal(~isreal(signal) | ~isreal(q) | signal < 0)=0;'; ...
-      'signal=real(signal).*dtdE; x=phi;y=t;' };
+    { 'signal(imag(signal) | imag(q))=0;'; ...
+      'signal=signal.*dtdE; x=phi;y=t;' };
   spt.Name = [ mfilename '(' self.Name ')' ];
   spt = iFunc(spt); % check
   

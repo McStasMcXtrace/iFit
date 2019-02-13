@@ -3,11 +3,17 @@ function spw = qw2phiw(self, varargin)
   %
   % convert: iFunc_Sqw2D S(q,w) -> S(phi,w)
   %
+  % An initial S(q,w) 2D Model is converted into a 2D (angle,w) data set.
+  %   The incident neutron energy is assumed to be monochromatic.
+  %
   % New model parameters:
   %       Ei     Incident neutron energy [meV]
   %
   %  The incident neutron energy can be computed using:
   %   Ei = 2.0721*Ki^2 = 81.8042/lambda^2 with Ki in [Angs-1] and lambda in [Angs]
+  %
+  % Example: s=sqw_visco_elastic_simple; spw=s.qw2phiw; 
+  %          plot(log(spw), [], 0:180, -30:30)
   %
   % spw = qw2phiw(s)
   %
@@ -38,8 +44,8 @@ function spw = qw2phiw(self, varargin)
   spw = prepend + self;
   % check for signal, and assign x axis as the initial angles.
   spw = spw + ...
-    { 'signal(~isreal(signal) | ~isreal(q) | signal < 0)=0;'; ...
-      'signal=real(signal); x=phi;' };
+    { 'signal(imag(q) | imag(signal))=0;'; ...
+      'x=phi;' };
   spw.Name = [ mfilename '(' self.Name ')' ];
   spw = iFunc(spw); % check
   
