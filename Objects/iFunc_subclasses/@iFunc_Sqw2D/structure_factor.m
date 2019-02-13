@@ -27,8 +27,4 @@ function sq = structure_factor(s)
   sq.Dimension = 1;
   sq = iFunc(sq);
 
-  if nargout == 0 && ~isempty(inputname(1))
-    assignin('caller',inputname(1),sq);
-  end
-
 end % structure_factor

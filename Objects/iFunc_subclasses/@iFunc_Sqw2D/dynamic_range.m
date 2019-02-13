@@ -38,9 +38,9 @@ function self=dynamic_range(self)
     self.Guess{end+1} = [ 14.8 5 135 ];
   end
   
-  self.Parameters{end+1} = 'Ei Incident neutron energy [meV]';
-  self.Parameters{end+1} = 'Angle_min Minimum detector/scattering angle [deg]';
-  self.Parameters{end+1} = 'Angle_max Maximum detector/scattering angle [deg]';
+  self.Parameters{end+1} = [ 'Ei Incident neutron energy [meV] ' mfilename ];
+  self.Parameters{end+1} = [ 'Angle_min Minimum detector/scattering angle [deg] ' mfilename ];
+  self.Parameters{end+1} = [ 'Angle_max Maximum detector/scattering angle [deg] ' mfilename ];
 
   t = self.Name;
   index=numel(self.Parameters);

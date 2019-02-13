@@ -52,7 +52,7 @@ function self=Bosify(self, type)
 % output:
 %   sqw_T: quantum Sqw model (iFunc_Sqw2D).
 %
-% Example: s=sqw_diffusion; sb=Bosify(s);
+% Example: s=sqw_diffusion; sb=Bosify(s); plot(log(sb));
 %
 % See also: iFunc_Sqw2D, iData_Sqw2D
 % (c) E.Farhi, ILL. License: EUPL.
@@ -74,7 +74,7 @@ function self=Bosify(self, type)
     if ~iscell(self.Guess), self.Guess = { self.Guess }; end
     self.Guess{end+1} = 300;
   end
-  self.Parameters{end+1} = 'Temperature [K]'; 
+  self.Parameters{end+1} = [ 'Temperature [K] ' mfilename ]; 
 
   
   % check if the model is labelled as 'classical' or 'quantum'. get alias.

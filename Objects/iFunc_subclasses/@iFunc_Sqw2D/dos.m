@@ -46,6 +46,7 @@ function g = dos(self, method)
 % New model parameters:
 %    Temperature            [K]
 %    DW Debye-Waller <u^2>  [Angs^2] typically 0.005, used as exp(2*DW*q^2)
+%                           DW = 6*<u2> mean squared displacement
 %
 % syntax:
 %   g = dos(s)
@@ -59,7 +60,7 @@ function g = dos(self, method)
 % (c) E.Farhi, ILL. License: EUPL.
 
   if nargin < 2, method=[]; end
-  if isempty(method), method = 'Bredov'; end
+  if isempty(method), method = 'Carpenter'; end
   
   g = copyobj(self);
   
@@ -72,14 +73,14 @@ function g = dos(self, method)
   end
   if is_classical, gT = [ 'T = 0; ' ];
   else
-    gT = [ 'T = p(' num2str(numel(g.Parameters+1)) '); ' ];
+    gT = [ 'T = p(' num2str(numel(g.Parameters)+1) '); ' ];
     if isvector(g.Guess) && isnumeric(g.Guess)
       g.Guess = [ g.Guess(:)' 300 ];  % typical
     else
       if ~iscell(g.Guess), g.Guess = { g.Guess }; end
       g.Guess{end+1} = [ 300 ];
     end
-    g.Parameters{end+1} = 'Temperature [K]'; 
+    g.Parameters{end+1} = [ 'Temperature [K] ' mfilename ]; 
   end
   
   % check for DW
@@ -94,21 +95,14 @@ function g = dos(self, method)
   if is_dw
     gDW = [ 'DW = 0; ' ];
   else
-    gDW = [ 'DW=p(' num2str(numel(g.Parameters+1)) '); ' ];
+    gDW = [ 'DW=p(' num2str(numel(g.Parameters)+1) '); ' ];
     if isvector(g.Guess) && isnumeric(g.Guess)
       g.Guess = [ g.Guess(:)' 0.005 ];  % typical
     else
       if ~iscell(g.Guess), g.Guess = { g.Guess }; end
       g.Guess{end+1} = [ 0.005 ];
     end
-    g.Parameters{end+1} = 'DW Debye-Waller factor [Angs^2]';
-  end
-
-  if isvector(g.Guess) && isnumeric(g.Guess)
-    g.Guess = [ g.Guess(:)' 300 1 ];  % typical
-  else
-    if ~iscell(g.Guess), g.Guess = { g.Guess }; end
-    g.Guess{end+1} = [ 300 1 ];
+    g.Parameters{end+1} = [ 'DW Debye-Waller factor 6*u2 [Angs^2] ' mfilename ];
   end
   
   g.Dimension = 1;
@@ -117,7 +111,7 @@ function g = dos(self, method)
   % we need a q axis. x axis is given as energy when evaluatoing the DOS.
   g = {[ 'w = x; w_sav_dos=w; ' gT gDW ];
     'Ei=max(abs(w)); qmax=sqrt(Ei/2.0721);';
-    'q=linspace(min(qmax/1000,1e-3), qmax, 100);';
+    'q=linspace(min(qmax/1000,1e-3), qmax, 100); this.UserData.DOS_qmax = qmax;';
     '[q,w] = meshgrid(q,unique(w)); x=q; y=w;';
     'if DW > 0, DW= exp(2*DW*q.^2); else DW=1; end' } + g;
   % then evaluate the initial 2D model
@@ -169,7 +163,6 @@ function g = dos(self, method)
   end
   g.Expression{end+1} = 'signal=signal/sum(signal(:)); x=w_sav_dos(:)''; ';
   g.Name = [ mfilename '(' self.Name ',''' method ''')' ];
-
-  g.Eval = cellstr(g); % check
+  g = iFunc(g);
   
 end

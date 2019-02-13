@@ -43,7 +43,7 @@ function self=DebyeWaller(self)
     self.Guess{end+1} = 0.05;
   end
   
-  self.Parameters{end+1} = 'u2 Mean squared displacement [Angs^2]'; 
+  self.Parameters{end+1} = [ 'u2 Mean squared displacement [Angs^2] ' mfilename ]; 
   
   % check if the model has already a Debye-Waller factor ?
   hasDW = findfield(self, 'DebyeWaller','first');

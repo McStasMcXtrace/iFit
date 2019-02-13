@@ -35,8 +35,8 @@ function spt = qw2phit(self, varargin)
     spt.Guess{end+1} = [ 14.8 2.5 ];
   end
   
-  spt.Parameters{end+1} = 'Ei Incident neutron energy [meV]';
-  spt.Parameters{end+1} = 'Distance Sample-Detector radius [m]';
+  spt.Parameters{end+1} = [ 'Ei Incident neutron energy [meV] ' mfilename ];
+  spt.Parameters{end+1} = [ 'Distance Sample-Detector radius [m] ' mfilename ];
 
   % the resulting 2D model will use phi[deg] and tof[s]
   % prepend: from phi, we compute the q[Angs-1] axis

@@ -25,7 +25,7 @@ function spw = qw2phiw(self, varargin)
   
   spw = copyobj(self);
   index=numel(spw.Parameters)+1;
-  spw.Parameters{end+1} = 'Ei Incident neutron energy [meV]';
+  spw.Parameters{end+1} = [ 'Ei Incident neutron energy [meV] ' mfilename ];
   
   if isvector(spw.Guess) && isnumeric(spw.Guess)
     spw.Guess = [ spw.Guess(:)' 14.8 ];  % typical

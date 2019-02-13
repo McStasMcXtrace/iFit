@@ -122,7 +122,7 @@ classdef iData_Sqw2D < iData
       else
         m = Sqw_check(s, 'qw'); % check and possibly convert to Sqw
         if ~isa(m, 'iData') || any(isempty(m)) || any(ndims(m) ~= 2)
-          error([ mfilename ': the given input ' class(s) ' does not seem to be convertible to iData_Sqw2D.' ])
+          error([ mfilename ': the given input ' class(s) ' ndims=' num2str(ndims(s)) ' does not seem to be convertible to iData_Sqw2D.' ])
         end
       end
       

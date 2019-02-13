@@ -104,6 +104,7 @@ function [Sqw, Iqt, Wq, Tall] = incoherent(gw, varargin)
   if isempty(pars.m) || pars.m<=0
     pars.m = sum(Sqw_getT(gw, {'Molar_mass','Masses','Mass','Weight'}));
   end
+  pars.q = pars.q(:)';  % needed as a row
  
   % fail when missing information
   if isempty(pars.m) || pars.m<=0    error([ mfilename ': Unspecified molar mass (m). Use incoherent(g, q, T, m)' ]); end

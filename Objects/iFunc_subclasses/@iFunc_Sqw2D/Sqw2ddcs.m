@@ -20,7 +20,7 @@ function self = Sqw2ddcs(s)
   
   self = copyobj(s);
   index=numel(self.Parameters)+1;
-  self.Parameters{end+1} = 'Ei Incident neutron energy [meV]';
+  self.Parameters{end+1} = [ 'Ei Incident neutron energy [meV] ' mfilename ];
   t = self.Name;
   if isvector(self.Guess) && isnumeric(self.Guess)
     self.Guess = [ self.Guess(:)' 14.8 ];  % typical

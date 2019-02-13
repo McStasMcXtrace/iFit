@@ -160,7 +160,7 @@ classdef iFunc_Sqw2D < iFunc
       
       sab = iFunc_Sab(self);
     end % Sab
-  
+    
     % methods for iFunc Sqw 2D, similar to the iData Sqw2D ones
     
     % methods that retain the type (q,w)

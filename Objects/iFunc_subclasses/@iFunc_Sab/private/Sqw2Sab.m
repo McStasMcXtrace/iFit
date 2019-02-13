@@ -20,8 +20,8 @@ function sab=Sqw2Sab(self)
     sab.Guess{end+1} = [ 300 12 ];
   end
   
-  sab.Parameters{end+1} = 'Temperature [K]'; 
-  sab.Parameters{end+1} = 'Mass Material molar weight [g/mol]';
+  sab.Parameters{end+1} = [ 'Temperature [K] Sab'; 
+  sab.Parameters{end+1} = 'Mass Material molar weight [g/mol] Sab';
   sab.Expression{end+1} = [ 'T = p(' num2str(index) '); M=p(' num2str(index+1) ');' ];
   
   sab=iFunc(sab);
