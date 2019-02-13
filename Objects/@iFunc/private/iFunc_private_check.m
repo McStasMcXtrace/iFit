@@ -134,6 +134,9 @@ function a = iFunc_private_check(a)
       nb_pars = max(nb_pars);
     else nb_pars=0; end
     NL = sprintf('\n');
+    e = textwrap(cellstr(char(a.Expression)),80);
+    if length(e) > 6, e=[ e(1:3); '...'; e((end-2):end) ]; end
+    e = sprintf('%s\n', e{:});
     if ~isempty(pars)
       % check if the number of parameters used in the expression matches the parameter names
       if nb_pars && length(pars) ~= nb_pars
@@ -141,7 +144,7 @@ function a = iFunc_private_check(a)
                      '    ''%s''' NL ...
                      '  The apparent number of parameters %d used in the expression p(1:%d) is not' NL ...
                      '  the same as the number of parameter names %d. Using the parameter names as valid input.\n' ], ...
-                     mfilename, a.Tag, expr, nb_pars, nb_pars, length(pars));
+                     mfilename, a.Tag, e, nb_pars, nb_pars, length(pars));
 
         % pars = []; % will guess parameter names
       end
@@ -155,7 +158,7 @@ function a = iFunc_private_check(a)
                      '    ''%s''' NL ...
                      '  The number of parameters %d used in the expression' NL ...
                      '  may not be the same as the number of default parameter values %d\n' ], ...
-                     mfilename, a.Tag, expr, nb_pars, numel(a.Guess));
+                     mfilename, a.Tag, e, nb_pars, numel(a.Guess));
       end
     end
     
