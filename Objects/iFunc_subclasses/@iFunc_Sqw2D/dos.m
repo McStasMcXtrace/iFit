@@ -45,9 +45,7 @@ function g = dos(self, method)
 %
 % New model parameters:
 %    Temperature            [K]
-%    DW Debye-Waller factor [1]
-%           The Debye-Waller function is      2W(q)=gamma*q^2
-%           The Debye-Waller factor   is exp(-2W(q))
+%    DW Debye-Waller <u^2>  [Angs^2] typically 0.005, used as exp(2*DW*q^2)
 %
 % syntax:
 %   g = dos(s)
@@ -64,10 +62,50 @@ function g = dos(self, method)
   if isempty(method), method = 'Bredov'; end
   
   g = copyobj(self);
+  
+  % check for classical model
+  classical    = findfield(g, 'classical','first');
+  is_classical = false;
+  if ~isempty(classical)
+    classical = get(self, classical);
+    if classical(1), is_classical = true; end
+  end
+  if is_classical, gT = [ 'T = 0; ' ];
+  else
+    g.Parameters{end+1} = 'Temperature [K]'; 
+    gT = [ 'T = p(' num2str(numel(g.Parameters)) '); ' ];
+    if isvector(g.Guess) && isnumeric(g.Guess)
+      g.Guess = [ g.Guess(:)' 300 ];  % typical
+    else
+      if ~iscell(g.Guess), g.Guess = { g.Guess }; end
+      g.Guess{end+1} = [ 300 ];
+    end
+  end
+  
+  % check for DW
+  dw = findfield(g, 'DebyeWaller','first');
+  is_dw = false;
+  if ~isempty(dw)
+    dw = get(self, dw);
+    if dw(1)
+      is_dw = true;
+    end
+  end
+  if is_dw
+    gDW = [ 'DW = 0; ' ];
+  else
+    g.Parameters{end+1} = 'DW Debye-Waller factor [Angs^2]';
+    gDW = [ 'DW=p(' num2str(numel(g.Parameters)) '); ' ];
+    if isvector(g.Guess) && isnumeric(g.Guess)
+      g.Guess = [ g.Guess(:)' 0.005 ];  % typical
+    else
+      if ~iscell(g.Guess), g.Guess = { g.Guess }; end
+      g.Guess{end+1} = [ 0.005 ];
+    end
+  end
 
-  index=numel(g.Parameters)+1;
-  g.Parameters{end+1} = 'Temperature [K]'; 
-  g.Parameters{end+1} = 'DW Debye-Waller factor [1]';
+  
+  
   
   if isvector(g.Guess) && isnumeric(g.Guess)
     g.Guess = [ g.Guess(:)' 300 1 ];  % typical
@@ -79,17 +117,12 @@ function g = dos(self, method)
   g.Dimension = 1;
   g.UserData.DOS_method = method;
   
-  % check for classical model
-  classical = findfield(g, 'classical','first');
-  if ~isempty(classical)
-    classical = get(self, classical);
-    if classical(1)
-  
   % we need a q axis. x axis is given as energy when evaluatoing the DOS.
-  g = {[ 'w = x; w_sav=w; T = p(' num2str(index) '); DW=p(' num2str(index+1) ');' ];
+  g = {[ 'w = x; w_sav=w; ' gT gDW ];
     'Ei=max(abs(w)); qmax=sqrt(Ei/2.0721);';
     'q=linspace(min(qmax/1000,1e-3), qmax, 100);';
-    '[q,w] = meshgrid(q,unique(w)); x=q; y=w;' } + g;
+    '[q,w] = meshgrid(q,unique(w)); x=q; y=w;';
+    'if DW > 0, DW= exp(2*DW*q.^2); else DW=1; end' } + g;
   % then evaluate the initial 2D model
 
   % and append the DOS computation
@@ -125,7 +158,7 @@ function g = dos(self, method)
     g.Expression{end+1} =   'n = 1./(exp(11.605*w/T) - 1); n(~isfinite(n)) = 0;';
     g.Expression{end+1} =   'g = abs(w./(n+1)).*signal./(q.^2);  % Carpenter';
     g.Expression{end+1} = 'end';
-    g.Expression{end+1} = 'if DW > 0, DW= exp(2*DW*q.^2); g = g.*DW; end';
+    g.Expression{end+1} = 'g = g.*DW;';
     g.Expression{end+1} = '% get the low monentum limit';
     g.Expression{end+1} = 'nc  = max(10, size(g, 2)/10);';
     g.Expression{end+1} = 'nc  = ceil(min(nc,size(g,2)));    % get the first nc values for each energy transfer';
