@@ -8,11 +8,10 @@ function [f, ax] = feval_fast(s, flag_lin, proj)
   % perhaps 'max' will do the job when evaluating maxFreq ?
   % can be lenghty as 10x10x10x11 HKLW grid...
   [maxFreq, ~, f, ax] = max(s); 
-  
   if isempty(f) % if no evaluation yet, do it...
   
     % evaluate the 4D model onto a coarse mesh filling the Brillouin zone [0:0.5 ]
-    qk=linspace(0,0.95,14); qh=linspace(0,0.95,15); ql=linspace(0,0.95,16); w =linspace(0.01,maxFreq*1.2,51);
+    qk=linspace(0,0.95,14); qh=linspace(0,0.95,15); ql=linspace(0,0.95,16); w =linspace(0.01,maxFreq*1.2,21);
     switch proj
     case {'k','qk','k=0','qk=0','hlw','hl','xz','xzw','y'}
       qk=0; 
@@ -43,7 +42,7 @@ function [f, ax] = feval_fast(s, flag_lin, proj)
     xlabel(f, 'QH [rlu]');
     ylabel(f, 'QK [rlu]');
     ylabel(f, 'QL [rlu]');
-  otherwise % {'h','qh','h=0','qh=0'}
+  case {'h','qh','h=0','qh=0'}
     f =squeeze(f(1,:, :,:));
     xlabel(f, 'QK [rlu]');
     ylabel(f, 'QL [rlu]');
@@ -54,4 +53,8 @@ function [f, ax] = feval_fast(s, flag_lin, proj)
     f = log(f);
   end
   title(f, s.Name);
+  
+  if ~isempty(inputname(1))
+    assignin('caller',inputname(1),s); % update in original object
+  end
 
