@@ -104,7 +104,8 @@ if isa(p, 'iData')
   p = pars;
 end
 
-% some usual commands 
+% some usual commands
+p_in = p; % save initial request
 if strcmp(p, 'current'), p=model.ParameterValues; end
 if ~isempty(p) && ischar(p)
   ax=[]; name=model.Name;
@@ -114,7 +115,7 @@ if ~isempty(p) && ischar(p)
   elseif strcmp(p, 'identify')
     signal=evalc('disp(model)');
     return
-  elseif strcmp(p, 'guess')
+  elseif strncmp(p, 'guess', 5)
     p = [];
   elseif numel(strtok(p,' =:')) < numel(p)
     p=str2struct(p);
@@ -341,12 +342,18 @@ if ~isempty(signal_in_varargin) && length(varargin) >= signal_in_varargin
   varargin(signal_in_varargin) = []; % remove Signal from arguments for evaluation (used in Guess)
   signal_in_varargin = [];
 end
-% EVALUATION HERE
-% **************************************************************
-[signal,ax,p,model,duration] = iFunc_feval_expr(model, varargin{:});
-if duration>0, model.Duration = duration; end
 
-%model.ParameterValues = p; % store current set of parameters (updated)
+
+if ~(ischar(p_in) && strcmp(p_in, 'guess_only'))
+  
+  % EVALUATION HERE
+  % **************************************************************
+  [signal,ax,p,model,duration] = iFunc_feval_expr(model, varargin{:});
+  if duration>0, model.Duration = duration; end
+  
+else  % pure Guess
+  signal = p;
+end
 
 p    = sprintf('%g ', p(:)'); if length(p) > 20, p=[ p(1:20) '...' ]; end
 name = [ model.Name '(' p ') ' ];
