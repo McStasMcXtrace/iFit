@@ -12,6 +12,8 @@ function inc = incoherent(self, method)
   %       Fix DW=0 to compute it automatically. DW = 6*<u2> mean squared displacement.
   %    Mass Material molar weight [g/mol]
   %
+  % Example: s=sqw_visco_elastic_simple; inc=incoherent(s)
+  %
   % input:
   %   s:      Sqw 2D model with q as 1st axis (Angs-1), w as 2nd axis (meV).
   %
@@ -44,7 +46,9 @@ function inc = incoherent(self, method)
   inc = inc + { 'gDOS = iData(unique(w_sav_inc), signal); % 1D dos into iData';
     'gDOS = iData_vDOS(gDOS);';
     'signal = incoherent(gDOS, ''q'', unique(q_sav_inc), ''T'', T, ''m'', M, ''DW'', DW, ''n'',2); % just the incoherent, no multi-phonons';
-    'signal = double(plus(signal));';
+    'signal = plus(signal);';
+    'signal = interp(signal, q_sav_inc, w_sav_inc);';
+    'signal = double(signal);';
     'x = q_sav_inc; y = w_sav_inc;' };
   inc.Dimension = 2;
   inc.Name = [ mfilename '(' self.Name ')' ];
