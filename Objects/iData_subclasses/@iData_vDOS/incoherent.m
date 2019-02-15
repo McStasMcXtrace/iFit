@@ -137,7 +137,7 @@ function [Sqw, Iqt, Wq, Tall] = incoherent(gw, varargin)
   kT = pars.t/meVtoK;                        % T [K] -> [meV] = 11.6045
   
   % f(0) is an inverse energy. integrate -inf:inf
-  % f(0)=\int(dw g(w)/w [pars.n(w)+1]) Eq (10.58)
+  % f(0)=\int(dw g(w)/w [n(w)+1]) Eq (10.58)
   nw = 1./(exp(hw./kT) -1);             % Bose population factor
   % compute the T1 term
   T1 = gw./hw.*(nw+1);                  % Eq. (10.68) p 329

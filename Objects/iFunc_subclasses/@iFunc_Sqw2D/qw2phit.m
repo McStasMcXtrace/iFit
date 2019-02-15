@@ -1,4 +1,4 @@
-function spt = qw2phit(self, varargin)
+function spt = qw2phit(self)
   % iFunc_Sqw2D: qw2phit: convert a S(q,w) into a S(phi,tof) Model (scattering angle)
   %
   % convert: iFunc_Sqw2D S(q,w) -> S(phi,tof)
@@ -14,16 +14,20 @@ function spt = qw2phit(self, varargin)
   %  The incident neutron energy can be computed using:
   %   Ei = 2.0721*Ki^2 = 81.8042/lambda^2 with Ki in [Angs-1] and lambda in [Angs]
   %
-  % Example: s=sqw_visco_elastic_simple; spt=s.qw2phit; 
-  %          plot(log(spt), [], 0:180, linspace(0, 0.003, 1000))
-  %
-  % spt = qw2phit(s)
+  % syntax:
+  %   spt = qw2phit(s)
   %
   % input:
   %   s:      Sqw 2D model with q as 1st axis (Angs-1), w as 2nd axis (meV).
   %
   % output:
   %   spt:    S(phi,tof) 2D model [iFunc, phi in deg, tof in s]
+  %
+  % Example: s=sqw_visco_elastic_simple; spt=s.qw2phit; 
+  %          plot(log(spt), [], 0:180, linspace(0, 0.003, 1000))
+  %
+  % See also: iFunc_Sqw2D, iFunc_Sqw2D.qw2phiw
+  % (c) E.Farhi, ILL. License: EUPL.
   
   spt = copyobj(self);
   index=numel(spt.Parameters)+1;
