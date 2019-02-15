@@ -223,15 +223,12 @@ function [g, method] = sqw_phonon_dos_Carpenter(s, T, nc, DW)
 
   % determine the low-momentum limit -------------------------------------------
   s0  = subsref(g,struct('type','.','subs','Signal'));
-  DOS = zeros(size(s0,2),1);  % column of g(w) DOS for q->0
-  
-  nc  = ceil(min(nc,size(s0,2)));    % get the first nc values for each energy transfer
-  for i=1:size(s0,2)
-    nz = find(isfinite(s0(:,i)) & s0(:,i) > 0, nc, 'first');
-    if ~isempty(nz)
-      DOS(i) = sum(s0(nz,i));
-    end
-  end
+  nc  = ceil(min(nc,size(s0,1)));    % get the first nc values for each energy transfer
+  q_nc= q(nc,1); q_nc= exp(-q.^2/q_nc.^2); % use Gaussian weighting
+  DOS = double(g.*q_nc);  % column of g(w) DOS for q->0
+  DOS(~isfinite(DOS) | DOS < 0) = 0;
+  DOS_count=sum(DOS > 0, 1); DOS_count(DOS_count<1) = 1;
+  DOS=sum(DOS,1)./DOS_count;
 
   % set new gDOS value
   rmaxis( g, 2);
@@ -320,7 +317,6 @@ function [g, w] = sqw_phonon_dos_Bredov(s, T, DW)
     qmax(end+1) = q_max;
     qmin(end+1) = q_min;
   end
-  qmax = qmax(:); qmin = qmin(:);
   index = find(abs(qmax - qmin) < .1);
   qmax(index) = qmin(index) + 0.1;
   % compute the dos
@@ -333,7 +329,7 @@ function [g, w] = sqw_phonon_dos_Bredov(s, T, DW)
     n = 1./(exp(beta) - 1);
     n(~isfinite(n)) = 0;
     % g(w) = [\int q S(q,w) dq] exp(2W(q)) m / (q^4max-q^4min) * w/(1+n)
-    g = trapz(qSq,1).*abs(w./(n+1)./(qmax'.^4 - qmin'.^4));
+    g = trapz(qSq,1).*abs(w./(n+1)./(qmax.^4 - qmin.^4));
   end
   
   % set back aliases
