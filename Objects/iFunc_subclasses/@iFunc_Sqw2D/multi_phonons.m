@@ -1,10 +1,14 @@
-function inc = incoherent(self, method)
-  % iFunc_Sqw2D: incoherent: compute the incoherent S(q,w) from the vDOS
+function multi = multi_phonons(self, method)
+  % iFunc_Sqw2D: multi_phonons: compute the multi-phonon expansion incoherent S(q,w) from the vDOS
   %
-  % convert: iFunc_Sqw2D S(q,w) -> vDOS -> S_inc(q,w)
+  % convert: iFunc_Sqw2D S(q,w) -> vDOS -> multi-phonons S_inc(q,w)
       
-  %   inc = incoherent(s)
-  %     returns the incoherent S(q,w) approximation
+  %   multi = multi_phonons(s)
+  %     returns the multi-phonon expansion in the incoherent S(q,w) approximation.
+  %
+  %     Only the multi-phonon contribution is returned, not the single phonon one.
+  %     The single phonon term is obtained with the 'incoherent' method.
+  %       inc = incoherent(s)
   %
   % New parameters
   %    Temperature            [K]
@@ -13,17 +17,17 @@ function inc = incoherent(self, method)
   %    Mass Material molar weight [g/mol]
   %
   % syntax:
-  %   inc=incoherent(s)
+  %   multi = multi_phonons(s)
   %
   % input:
   %   s:      Sqw 2D model with q as 1st axis (Angs-1), w as 2nd axis (meV).
   %
   % output:
-  %   inc:    incoherent S(q,w)
+  %   multi:  incoherent S(q,w)
   %
-  % Example: s=sqw_visco_elastic_simple; inc=incoherent(s)
+  % Example: s=sqw_visco_elastic_simple; inc=incoherent(s); multi = multi_phonons(s);
   %
-  % See also: iFunc_Sqw2D, iFunc_Sqw2D.multi_phonons, iData_vDOS.incoherent
+  % See also: iFunc_Sqw2D, iFunc_Sqw2D.incoherent, iData_vDOS.incoherent
   % (c) E.Farhi, ILL. License: EUPL.
   
   if nargin < 2, method=[]; end
@@ -43,7 +47,7 @@ function inc = incoherent(self, method)
     inc.Guess{end+1} = [ 300 12 0.005 ];
   end
   
-  inc.Parameters{end+1} = [ 'Temperature [K] ' mfilename ];
+  inc.Parameters{end+1} = [ 'Temperature [K] ' mfilename ]; 
   inc.Parameters{end+1} = [ 'Mass Material molar weight [g/mol] ' mfilename ];
   inc.Parameters{end+1} = [ 'DW Debye-Waller factor 6*u2 [Angs^2] ' mfilename ];
   
@@ -51,13 +55,13 @@ function inc = incoherent(self, method)
 
   inc = inc + { 'gDOS = iData(unique(w_sav_inc), signal); % 1D dos into iData';
     'gDOS = iData_vDOS(gDOS);';
-    'signal = incoherent(gDOS, ''q'', unique(q_sav_inc), ''T'', T, ''m'', M, ''DW'', DW, ''n'',2); % just the incoherent, no multi-phonons';
-    'signal = plus(signal);';
+    'signal = incoherent(gDOS, ''q'', unique(q_sav_inc), ''T'', T, ''m'', M, ''DW'', DW); % just the incoherent, no multi-phonons';
+    'signal = plus(signal(3:end));';
     'signal = interp(signal, q_sav_inc, w_sav_inc);';
     'signal = double(signal);';
     'x = q_sav_inc; y = w_sav_inc;' };
   inc.Dimension = 2;
   inc.Name = [ mfilename '(' self.Name ')' ];
-  inc = iFunc_Sqw2D(inc);
+  multi = iFunc_Sqw2D(inc);
 
-end % incoherent
+end % multi_phonons
