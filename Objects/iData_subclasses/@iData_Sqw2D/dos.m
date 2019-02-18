@@ -17,7 +17,8 @@ function [g, fig] = dos(s, method, varargin)
 %       gDOS(w)   = trapz(g, 2)
 %
 %  The Bredov/Oskotskii methodology provides the best gDOS estimate, using the
-%    whole data set.
+%    whole data set, but is only relevant when the data set is given on a
+%    restricted dynamic range.
 %
 %  LIMITATIONS/WARNINGS:
 %  The incoherent approximation states that the gDOS from an incoherent S(q,w) is 
@@ -271,11 +272,6 @@ function [g, w] = sqw_phonon_dos_Bredov(s, T, DW)
   [s,lambda,distance,chwidth,Ei,Ki] = Sqw_search_lambda(s);
   parameters = get(s, 'parameters');
   
-  % restrict s to a dynamic range (so that q4 corresponds with a 'simulated' experiment)
-  %w = getaxis(s,2);
-  %Ei=max(abs(w(:)));
-  s = dynamic_range(s, Ei);
-  
   % re-sample histogram when axes are not vectors
   hist_me = false;
   for index=1:ndims(s)
@@ -290,6 +286,17 @@ function [g, w] = sqw_phonon_dos_Bredov(s, T, DW)
   % axes
   w = getaxis(s,2);
   q = getaxis(s,1);
+  
+  % check if data is already on a dynamic range
+  % compute delta(Q) per energy value
+  [qmin,qmax] = sqw_phonon_dos_Bredov_dynamic_range(double(s), q, w);
+  if all(qmin == qmin(1) & qmax == qmax(1)) % squared grid ?
+    % no dynamic range: use Carpenter
+    warning([ mfilename ': INFO: Data set is not on a dynamic range. Using Carpenter/Bellissent. ' s.Tag ' ' s.Title '. ' ]);
+    nc=max(10, size(s, 2)/10);
+    g = sqw_phonon_dos_Carpenter(s, T, nc, DW);
+    return
+  end
 
   if ~isempty(DW)
     DW= exp(2*DW*q.^2);
@@ -298,40 +305,43 @@ function [g, w] = sqw_phonon_dos_Bredov(s, T, DW)
   
   qSq = s.*q.*DW;
 
-  % compute delta(Q) per energy value
-  q4 = zeros(size(w));
-  sd = double(s);
-  qmax = []; qmin = [];
-  for index=1:size(s, 2)
-    sw = sd(:,index); % slab for a given energy. length is 'q'
-    valid = find(isfinite(sw) & sw > 0);
-    if isvector(q)
-      qw = q;
-    else
-      qw = q(:,index);
-    end
-    q_min = min(qw(valid)); q_max = max(qw(valid));
-    if isempty(q_max) || isempty(q_min)
-      q_max = inf; q_min = 0;
-    end
-    qmax(end+1) = q_max;
-    qmin(end+1) = q_min;
-  end
-  index = find(abs(qmax - qmin) < .1);
-  qmax(index) = qmin(index) + 0.1;
   % compute the dos
   g = [];
   if (~isempty(classical) && classical(1)) || isempty(T) || T==0 % do not use Temperature
     % g(w) = [\int q S(q,w) dq] exp(2W(q)) m / (q^4max-q^4min) * w.^2
-    g = trapz(qSq,1).*abs(w.^2./(qmax'.^4 - qmin'.^4));
+    g = trapz(qSq.*w.^2,1)./(qmax.^4 - qmin.^4);
   else    % use Bose/Temperature (in quantum case)
     beta    = 11.605*w/T;
     n = 1./(exp(beta) - 1);
     n(~isfinite(n)) = 0;
     % g(w) = [\int q S(q,w) dq] exp(2W(q)) m / (q^4max-q^4min) * w/(1+n)
-    g = trapz(qSq,1).*abs(w./(n+1)./(qmax.^4 - qmin.^4));
+    g = trapz(qSq.*abs(w./(n+1)),1)./(qmax.^4 - qmin.^4);
   end
   
   % set back aliases
   setalias(g, 'parameters', parameters, 'Material parameters'); 
+  
+  % ----------------------------------------------------------------------------
+  function [qmin,qmax] = sqw_phonon_dos_Bredov_dynamic_range(sd, q, w)
+  % sqw_phonon_dos_Bredov_dynamic_range: compute delta(Q) per energy value
+  
+    qmax = []; qmin = [];
+    for index=1:size(sd, 2)
+      sw = sd(:,index); % slab for a given energy. length is 'q'
+      valid = find(isfinite(sw) & sw > 0);
+      if isvector(q)
+        qw = q;
+      else
+        qw = q(:,index);
+      end
+      q_min = min(qw(valid)); q_max = max(qw(valid));
+      if isempty(q_max) || isempty(q_min)
+        q_max = inf; q_min = 0;
+      end
+      qmax(end+1) = q_max;
+      qmin(end+1) = q_min;
+    end
+    index = find(abs(qmax - qmin) < .1);
+    qmax(index) = qmin(index) + 0.1;
+      
 
