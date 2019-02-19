@@ -1,18 +1,78 @@
 function varargout = mifit(varargin)
 % miFit: a user interface to iFit
 %
-% data  = mifit('data')     retrieves all data sets from the interface
-% models= mifit('models')   retrieves user models from the interface
-% data  = mifit('pull')     retrieves only selected data sets
-% mifit('push', datasets)   replace existing data sets and append new ones
-% mifit('push', models)     replace existing models and append new ones
-% mifit('filename')         imports the file into a new Data set/Model
-% mifit(iData_object)       add the iData object into the interface Data stack
-% mifit(iFunc_object)       add the iFunc Model into the interface Models menu
-% config = mifit('config')  retrieves the miFit configuration
-% mifit('exit')             closes miFit
-% mifit('reset')            reset miFit to its Factory settings
-% mifit('handles')          retrieves the miFit GUI handles
+%  The miFit application is a simple user interface to iFit. 
+%  It consists in a main panel with menus. 
+%
+% Data Sets:
+% ----------
+%   The Data Sets files can be drag-n-dropped to be appended to the list. You
+%     may as well use the File/Open menu item to select files, or alternatively
+%     use: mifit('filename') at prompt, which supports wildcards.
+%   You may select one or more data set entries to apply operators (e.g. from
+%   the Data menu). Data Sets can be displayed, re-ordered, merged, exported ...
+%
+% Models:
+% -------
+%   The Models can be selected from the Models menu, and are sorted by 
+%   dimensionnality (1D, 2D, ...). When Data Set are selected, the Models are
+%   attached to them so that further fitting of model parameters can be achieved.
+%   A parameter window os shown, allowing to set constraints (min, max, fix,
+%   expression). The model view, when showed, is automatically updated upon
+%   parameter value changes (when evaluation is 'fast').
+%
+% Handling Data Set operations:
+% -----------------------------
+%   The Data/Tranform menu items allow to select operators to apply on selected 
+%   Data Sets. It is also possible to evaluate a simple expression from the
+%   File/Enter Expression menu item. A more versatile way to handle Data Sets
+%   is to write a set of commands (as a script) using the File/Evaluate menu item.
+%   To get the miFit Data Sets, start your script with:
+%     data  = mifit('data')     retrieves all data sets from the interface
+%     data  = mifit('pull')     retrieves only selected data sets
+%   then use e.g. Matlab and iFit commands. 
+%   Execute parts or whole, and once done, transfer back the result to miFit with:
+%     mifit('push', datasets)   replace existing data sets and append new ones
+%
+% Handling Model operations:
+% --------------------------
+%   Just as with Data Sets, you may use the File/Enter Expression menu item to e.g.
+%   assemble more complex models. These are appended to the Models list (1D, ...).
+%   You may as well use the File/Evaluate menu item t enter Matlab/iFit commands.
+%   To get the miFit Models, start your script with:
+%     models= mifit('models')   retrieves user models from the interface
+%   Default (predefined) models are used with their name (e.g. sqw_phonons).
+%   Execute parts or whole, and once done, transfer back the result to miFit with:
+%     mifit('push', models)     replace existing models and append new ones
+%
+% Fitting:
+% --------
+%   When Data Sets are selected, as well as Models, you can start a fit procedure
+%   with the Data/Fit menu item. The Fit configuration (optimizer, parameters) 
+%   can be changed from the Optimizers menu, prior to fitting.
+%
+% Customizing miFit:
+% ------------------
+%   The File/Preferences allows to customize the miFit bahvaiour (what to display, 
+%   store, etc). You can also Save the current state (Data Sets and Models), which
+%   are re-imported when re-starting. To get a fresh new miFit, use: mifit reset
+%   at prompt.
+%
+% syntax:
+%   data  = mifit('data')     retrieves all data sets from the interface
+%   models= mifit('models')   retrieves user models from the interface
+%   data  = mifit('pull')     retrieves only selected data sets
+%   mifit('push', datasets)   replace existing data sets and append new ones
+%   mifit('push', models)     replace existing models and append new ones
+%   mifit('filename')         imports the file into a new Data set/Model
+%   mifit(iData_object)       add the iData object into the interface Data stack
+%   mifit(iFunc_object)       add the iFunc Model into the interface Models menu
+%   config = mifit('config')  retrieves the miFit configuration
+%   mifit('exit')             closes miFit
+%   mifit('reset')            reset miFit to its Factory settings
+%   mifit('handles')          retrieves the miFit GUI handles
+%
+% Example: h=mifit('handles'); mifit('push', iData(peaks)); mifit('exit'); 1
 %
 % Version: $Date$
 % (c) E.Farhi, ILL. License: EUPL.

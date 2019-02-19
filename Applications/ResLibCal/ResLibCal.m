@@ -80,6 +80,9 @@ function out = ResLibCal(varargin)
 %   figure; surf(log(f(:,:,1,:)),'half'); hold on;  % plot dispersion, and scan
 %   scatter3(log(signal1(:,:,1,:)),'filled');
 %
+% syntax:
+%   ResLibCal('command', arguments...)
+%
 % input: any combination of:
 %   command: string among those listed above, which can be followed by any other
 %            allowed parameter.
@@ -89,6 +92,8 @@ function out = ResLibCal(varargin)
 %   EXP:     a structure holding a ResLibCal, ResCal or ResLib configuration.
 % output:
 %   a ResLibCal configuration with e.g. 'resolution' field, or a 4D convoluted model.
+%
+% Example: ResLibCal('Bragg'); isnumeric(r) && numel(r) == 4
 %
 % Version: $Date$
 % (c) E.Farhi, ILL. License: EUPL.
