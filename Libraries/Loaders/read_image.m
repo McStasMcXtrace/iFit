@@ -5,6 +5,10 @@ function s = read_image(filename)
 % This function can read (imformats): 
 %   fits gif hdf jpeg pbm png tiff ...
 %
+% Input:  filename: image file (string)
+% output: structure
+% Example: y=read_image(fullfile(ifitpath, 'Data','Ag_3_a.hdf4')); isstruct(y)
+%
 % (c) E.Farhi, ILL. License: EUPL.
 % See also: read_fits, imformats
 

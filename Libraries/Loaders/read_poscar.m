@@ -7,6 +7,10 @@
 %   http://cms.mpi.univie.ac.at/vasp/guide/node59.html
 %   http://www.mathworks.com/matlabcentral/fileexchange/36836-vasplab
 %
+% Input:  filename: VASP POSCAR file (string)
+% output: structure
+% Example: y=read_poscar(fullfile(ifitpath, 'Data','POSCAR_Al')); isstruct(y)
+%
 %   See also: read_xyz, read_pdb, read_mrc
 
 

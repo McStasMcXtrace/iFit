@@ -1,6 +1,7 @@
 function str=class2str(this, data, options)
 %   This function creates a string containing Matlab code describing a variable.
 %
+% syntax:
 %   class2str(this,data) 
 %     Create a string [ 'this = data;' ]
 %   class2str(this, data, 'no comments') 
@@ -21,7 +22,8 @@ function str=class2str(this, data, options)
 % output variables:
 %   str: string which contains a function code to generate the data.
 %
-% example: 
+% Example: y=class2str(struct('a',1,'b','a string comment','c',{'cell'})); ischar(y)
+%
 %  data=struct('a',1,'b','a string comment','c',{'cell'});
 %  str=class2str(data)          % produces a string/script that regenerates data
 %  str=class2str('this', data)  % idem, but creates 'this' instead of 'data'.

@@ -2,7 +2,9 @@ function data = read_nii(filename)
 % read a NifTi Neuroimaging Informatics Technology Initiative volume
 %  data = read_nii(filename)
 %
-% <http://nifti.nimh.nih.gov/>
+% Format definition and consortium <http://nifti.nimh.nih.gov/>
+%
+% NifTi example data NII files at <https://nifti.nimh.nih.gov/nifti-1/data>
 %
 % references:
 %   http://www.mathworks.com/matlabcentral/fileexchange/8797-tools-for-nifti-and-analyze-image
@@ -10,6 +12,10 @@ function data = read_nii(filename)
 % and
 %   <http://www.mathworks.com/matlabcentral/fileexchange/29344-read-medical-data-3d>
 %   by Dirk-Jan Kroon 10 Nov 2010 (Updated 23 Feb 2011)
+%
+% Input:  filename: NifTi file (string)
+% output: structure
+% Example: y=read_nii(fullfile(ifitpath, 'Data','zstat1.nii')); isstruct(y)
 %
 % See also: read_poscar, read_pdb, read_xyz, read_mrc, read_analyze
 

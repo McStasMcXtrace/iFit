@@ -2,6 +2,8 @@ function data=read_stl(file, option)
 % mstlread Wrapper to read ascii and binary STL files
 %  data=read_stl(file)
 %
+% Grab plenty of STL files at: https://www.thingiverse.com/
+%
 % References: 
 % [f,v,c]=rndread from cad2matdemo Don Riley Jun 2003 : read ASCII STL with color
 %   <http://www.mathworks.com/matlabcentral/fileexchange/3642-cad2matdemo-m>
@@ -12,6 +14,10 @@ function data=read_stl(file, option)
 % stlread(file) Francis Esmonde-White, May 2010 : read STL binary 
 %  <http://www.mathworks.com/matlabcentral/fileexchange/29906-binary-stl-file-reader>
 %  [v, f, n, c, stltitle] = stlread('MyModel.stl');
+%
+% Input:  filename: STL file (string)
+% output: structure
+% Example: y=read_stl(fullfile(ifitpath, 'Data','Bunny-LowPoly2.stl')); isstruct(y)
 %
 % See also: read_obj
 
@@ -29,21 +35,25 @@ if isempty(option)
   if isempty(data), 
     data = read_stl(file, 'binary');
   end
+  return
 end
-
+method=[];
 v=[]; f=[]; n=[]; c=[]; stltitle='';
 % binary format
 if strncmp(option, 'bin',3)
   [v, f, n, c, stltitle] = stlread(file);
+  method = 'binary';
 else  % ascii, text
   % first tries the fast method
   try
     [v,f,n]=import_stl_fast(file, 1);
+    method = 'ascii fast';
   end
 
   % then the slower one
   if isempty(n) || isempty(v)
     [f,v,c]=rndread(file);
+    method = 'ascii';
   end
 end
 
@@ -55,7 +65,7 @@ if ~isempty(c)
   data.FaceVertexCData=c;
 end
 if ~isempty(strtrim(stltitle))
-  data.Title=[ file ' ' strtrim(stltitle) ];
+  data.Title=[ file ' ' strtrim(stltitle) ' ' method ];
 end
 if ~isempty(n)
   data.Normals=n;
@@ -355,6 +365,7 @@ end
 ftitle=fread(fid,80,'uchar=>schar'); % Read file title
 numFaces=fread(fid,1,'int32'); % Read number of Faces
 if ~all(isstrprop(ftitle,'print'))
+  if verbose, warning('Invalid title'); end
   v=[]; f=[]; n=[]; c=[]; stltitle=[];
   fclose(fid);  % invalid 'title'
   return

@@ -2,12 +2,16 @@ function M=read_json(J)
 % read_json Read a JSON file
 %   s = read_json(filename)
 %
+% Input:  filename: JSON file (string)
+% output: structure
+% Example: y=read_json(fullfile(ifitpath, 'Data','iFit_iD115470.json')); isstruct(y)
+%
 % References:
 % json4mat by Jonas Almeida, April 2010
 %  used for I/O with JSON format, BSD license
 %  <http://www.mathworks.com/matlabcentral/fileexchange/27169-json4mat>
 %
-% See also: read_yaml, read_mccode
+% See also: read_yaml, read_xml, read_mccode
 M=[];
 if nargin == 0, return; end
 

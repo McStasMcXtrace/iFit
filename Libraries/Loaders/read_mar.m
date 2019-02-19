@@ -6,6 +6,11 @@
 % References:
 %   July 17th 2008, Oliver Bunk: 1st version
 %   <http://www.psi.ch/sls/csaxs/software>
+%
+% Input:  filename: Mar CCD file (string)
+% output: structure
+% Example: y=read_mar(fullfile(ifitpath, 'Data','111107AgBH.0001.mccd')); isstruct(y)
+%
 % See also: read_edf, read_adsc, read_edf, read_sif, read_cbf, read_spe, read_fits, read_hbin, read_image
 
 % Note:

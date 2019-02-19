@@ -22,6 +22,8 @@ function config = iLoad_ini
 % using [config, configfile] = iLoad(config,'save config').
 % A list of all supported formats is shown with iLoad('formats');
 %
+% Example: config = iLoad_ini; isstruct(config)
+%
 % See also: iLoad, save, iData/saveas
 % (c) E.Farhi, ILL. License: EUPL.
 
@@ -175,7 +177,7 @@ function config = iLoad_ini
     CFL.extension={'cfl'};
     CFL.postprocess='opencfl';
     
-    CIF.name     = 'CFL/PCR FullProf, CIF, INS/RES/SHX ShellX file (CrysFML)';
+    CIF.name     = 'CFL/PCR FullProf, CIF, INS/RES/SHX ShelX file (CrysFML)';
     CIF.method   ='read_cif';
     CIF.extension={'cif','pcr','pcr','cfl','ins','res','shx'};
     CIF.postprocess='opencif';

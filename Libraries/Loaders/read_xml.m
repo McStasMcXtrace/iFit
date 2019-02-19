@@ -1,4 +1,15 @@
 function s = read_xml( file )
+% data=read_xml(filename)
+%
+% read_yaml Wrapper to directly read XML files
+%
+% Input:  filename: xml file (string)
+% output: structure
+% Example: y=read_xml(fullfile(ifitpath, 'Data','iFit_iD80908.xml')); isstruct(y)
+%
+% (c) E.Farhi, ILL. License: EUPL.
+% See also: read_json, read_yaml
+  
   try
     s = xml2struct(file);
   catch

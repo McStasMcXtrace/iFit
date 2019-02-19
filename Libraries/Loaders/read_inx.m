@@ -14,6 +14,10 @@
 %                 s.Par        = Double real matrix of Param: Angle, Ei, etc.
 %                 s.Mat        = Double real matrix of results (3D).
 %
+% Input:  filename: INX file (string)
+% output: structure
+% Example: y=read_inx(fullfile(ifitpath, 'Data','YIG_4A_corr_vana_spectre.inx')); isstruct(y)
+%
 % (c) J. Ollivier, ILL, EUPL 1.1
 % See also: read_endf, read_mccode, read_llb_tas, read_anytext
 

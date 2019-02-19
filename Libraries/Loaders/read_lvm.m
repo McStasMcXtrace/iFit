@@ -1,6 +1,7 @@
 function data = read_lvm(filename,verbose)
-%LVM_IMPORT Imports data from a LabView LVM file
-% DATA = LVM_IMPORT(FILENAME,VERBOSE) returns the data from a LVM (.lvm)
+%read_lvm: Imports data from a LabView LVM file
+%
+% DATA = read_lvm(FILENAME,VERBOSE) returns the data from a LVM (.lvm)
 %  ASCII text file created by LabView.
 %
 % FILENAME    The name of the .lvm file, with or without ".lvm" extension
@@ -53,7 +54,7 @@ function data = read_lvm(filename,verbose)
 %  Use the following command to read in the data from a file containing two
 %   Segments:
 %
-% >> d=lvm_import('testfile.lvm');
+% >> d=read_lvm('testfile.lvm');
 %
 % Importing testfile.lvm:
 %

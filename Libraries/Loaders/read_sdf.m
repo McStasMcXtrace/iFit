@@ -6,6 +6,11 @@
 % References:
 %   27 May 2018 Justin Dinale
 %   <https://fr.mathworks.com/matlabcentral/fileexchange/67513-sdf-importer>
+%
+% Input:  filename: SDF file (string)
+% output: structure
+% Example: y=read_sdf(fullfile(ifitpath, 'Data','example.sdf')); isstruct(y)
+%
 % See also: read_edf, read_adsc, read_edf, read_sif, read_cbf, read_spe, read_fits, read_hbin, read_image
 
 function data = read_sdf(filename)

@@ -29,6 +29,9 @@ function s = read_anytext(varargin)
 % * import the MAT file as a structure
 %
 % read_anytext('compile') check looktxt and recompiles if needed
+%
+% Example: y=read_anytext(fullfile(ifitpath, 'Data','MCA.dat')); isstruct(y)
+%
 % (c) E.Farhi, ILL. License: EUPL.
 
 % we choose NOT to use the looktxt mex file due to SEGV under Matlab.

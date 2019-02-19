@@ -12,8 +12,9 @@ function data = read_hdf5(filename)
 % data.<group>.Attributes.<data>  the sub-structure holding all attributes with  
 %                 similar structure as the main branch
 %
-%   Example
-%       data=read_hdf5('input.h5');
+% Input:  filename: HDF5 file (string)
+% output: structure
+% Example: y=read_hdf5(fullfile(ifitpath, 'Data','peaks.hdf5')); isstruct(y)
 %
 % (c) E.Farhi, ILL. License: EUPL.
 % See also: read_hdf4, read_nc, read_cdf

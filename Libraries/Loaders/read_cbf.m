@@ -11,6 +11,10 @@
 % example CBF at files at <http://www.bernstein-plus-sons.com/software/CBF/>
 % original Matlab source code from SLS/cSAXS <http://www.psi.ch/sls/csaxs/software>
 %
+% Input:  filename: CBF filename (string)
+% output: structure
+% Example: y=read_cbf(fullfile(ifitpath, 'Data','insulin_pilatus6mconverted_orig.cbf')); isstruct(y)
+%
 % See also: read_edf, read_adsc, read_edf, read_sif, read_mar, read_spe, read_fits, read_hbin, read_image
 
 %

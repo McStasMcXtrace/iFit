@@ -1,13 +1,20 @@
 function [Data] = read_mrc(file)
-% read_mrc: read a MCR/CCP4 electronic density map file
+% read_mrc: read a MRC/CCP4/MAP electronic density map file
 %  [Data] = read_mrc(file)
 %
+% Format definition:
 % <http://en.wikipedia.org/wiki/MRC_%28file_format%29>
+%
+% Get EM data files at EMDB Data base <https://www.emdataresource.org/index.html>
 %
 % References:
 % tom_mrcread from Wolfgang Baumeister (TOM Matlab toolbox), 2008
 %  used to read MRC electron density map files
 %  <http://www.biochem.mpg.de/en/rd/baumeister/tom_e/>
+%
+% Input:  filename: MRC/CCP4/MAP EM file (string)
+% output: structure
+% Example: y=read_mrc(fullfile(ifitpath, 'Data','emd_0409.map')); isstruct(y)
 %
 % See also: read_poscar, read_pdb, read_xyz, read_nii, read_analyze
 Data = [];

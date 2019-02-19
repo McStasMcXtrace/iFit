@@ -6,7 +6,11 @@ function data=read_tdms(filename)
 %   http://www.mathworks.com/matlabcentral/fileexchange/30023-tdms-reader
 %   Jim Hokanson (2011) BSD
 %
-% See also: read_lvm, read_igor, read_idl, read_fig
+% Input:  filename: LabView TDMS file (string)
+% output: structure
+% Example: y=read_tdms(fullfile(ifitpath, 'Data','simple_test.tdms')); isstruct(y)
+%
+% See also: read_lvm, read_igor, read_idl, read_fig, read_npy
 
 %Copyright (c) 2011, Jim Hokanson
 %All rights reserved.

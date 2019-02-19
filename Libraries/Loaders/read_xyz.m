@@ -6,7 +6,7 @@
 %   https://en.wikipedia.org/wiki/XYZ_file_format
 %   http://www.mathworks.com/matlabcentral/fileexchange/18233-nanovis--molecular-visualizer
 %
-% See also: read_poscar, read_pdb, read_mrc
+% See also: read_poscar, read_pdb, read_mrc, read_cif
 
 function s = read_xyz(filename)
 

@@ -1,5 +1,5 @@
 function s = read_npy(filename)
-% data = read_npy(filename)
+% data = read_npy(filename) Reads a single NumPy array (binary format).
 %
 % Read a Python Numpy array '.npy' file.
 %   can handle: 'uint8','uint16','uint32','uint64

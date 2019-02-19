@@ -1,12 +1,16 @@
 function s = read_edf(filename)
-% medfread Wrapper to pmedf_read which reconstructs the EDF structure
+% read_edf Read an ESRF Data Fornmat file (EDF)
 %  s = read_edf(filename)
 %
-% only reads the first block/image
+% Only reads the first block/image
 %
-% pmedf_read and pmedfwrite by Petr Mikulik, Masaryk University, Brno, 11.8.2010
+% Using: pmedf_read and pmedfwrite by Petr Mikulik, Masaryk University, Brno, 11.8.2010
 %  used in iLoad and iData/saveas, GPL
 %  <http://www.sci.muni.cz/~mikulik/Soft4Synchro.html>
+%
+% Input:  filename: EDF filename (string)
+% output: structure
+% Example: y=read_edf(fullfile(ifitpath, 'Data','Ag_3_a.edf')); isstruct(y)
 %
 % See also: read_edf, read_adsc, read_cbf, read_sif, read_mar, read_spe, read_fits, read_image, read_hbin
 

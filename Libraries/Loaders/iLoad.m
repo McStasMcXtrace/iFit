@@ -1,8 +1,34 @@
 function [data, format] = iLoad(filename, loader, varargin)
-% [data, loader] = iLoad(file, loader, ...)
+% [data, loader] = iLoad(file, loader, ...) imports any data into Matlab. 
 %
-% imports any data into Matlab. 
+% DESCRIPTION:
+% ------------
+% Imports any data into Matlab, returned as a structure or cell.
 %
+%   Default supported formats include: any text based including CSV, Lotus1-2-3, SUN sound, 
+%     WAV sound, AVI movie, NetCDF, FITS, XLS, BMP GIF JPEG TIFF PNG ICO images,
+%     HDF4, HDF5, MAT workspace, XML, CDF, JSON, YAML, IDL, Python Numpy
+%   Other specialized formats include: McStas, ILL, SPEC, ISIS/SPE, INX, EDF, Mantid.
+%     SIF, MCCD/TIFF, ADSC, CBF, Analyze, NifTI, STL,PLY,OFF, CIF/CFL,
+%     EZD/CCP4, Bruker Varian and JEOL NMR formats, Bruker OPUS, LabView LVM and TDMS,
+%     Agilent and Thermo Finnigan MS, Quantum Design VMS, ENDF/ACE, Agilent SDF
+%   Compressed files are also supported, with on-the-fly extraction (zip, gz, tar, Z).
+%
+%   To get a full list of supported formats, use at prompt: iLoad formats
+%
+%   Distant files are supported through e.g. URLs such as 
+%     file://, ftp:// http:// and https://
+%   File names may end with an internal anchor reference '#token", as usual in HTML 
+%     links, in which case the members matching the token are returned.
+%
+% Typical usage:
+%   iLoad('file'); 
+%   iLoad('file.zip')
+%   iLoad('file#token');
+%   iLoad('http://path/name'); 
+%
+% Additional remarks:
+% --------------------
 % The file formats cache and MeX files can be rebuilt/checked with
 %   iLoad force         update loaders cache and check importers
 %   iLoad compile       force compilation of external importers (MeX)
@@ -15,26 +41,16 @@ function [data, format] = iLoad(filename, loader, varargin)
 %   [config, configfile] = iLoad('load config').
 %   [config, configfile] = iLoad(config,'save config')
 %
-%   Default supported formats include: any text based including CSV, Lotus1-2-3, SUN sound, 
-%     WAV sound, AVI movie, NetCDF, FITS, XLS, BMP GIF JPEG TIFF PNG ICO images,
-%     HDF4, HDF5, MAT workspace, XML, CDF, JSON, YAML, IDL
-%   Other specialized formats include: McStas, ILL, SPEC, ISIS/SPE, INX, EDF, Mantid.
-%     SIF, MCCD/TIFF, ADSC, CBF, Analyze, NifTI, STL,PLY,OFF, CIF/CFL,
-%     EZD/CCP4, Bruker Varian and JEOL NMR formats, Bruker OPUS, LabView LVM and TDMS,
-%     Agilent and Thermo Finnigan MS, Quantum Design VMS, ENDF
-%   Compressed files are also supported, with on-the-fly extraction (zip, gz, tar, Z).
-%
-%   Distant files are supported through e.g. URLs such as 
-%     file://, ftp:// http:// and https://
-%   File names may end with an internal anchor reference '#anchor", as used in HTML 
-%     links, in which case the members matching the anchor are returned.
+% ------------------------------------------------------------------------------
+% syntax:
+%   [data, loader] = iLoad(file, 'loader', ...)
 %
 % input arguments:
 %   file:   file name, or cell of file names, or any Matlab variable, or a URL
 %             or an empty string (then pops'up a file selector)
 %   loader: a function name to use as import routine, OR a structure with:
 %             loader = 'auto' (default) 
-%             loader = 'gui' (asks for the format to use)
+%             loader = 'gui'  (asks for the format to use)
 %             loader.method = 'function name'
 %             loader.options= string of options to catenate after file name
 %                          OR cell of options to use as additional arguments
@@ -46,8 +62,7 @@ function [data, format] = iLoad(filename, loader, varargin)
 %   data:   a single structure containing file data, or a cell of structures
 %   loader: the loader that was used for importation, or a cell of loaders.
 %
-% example: iLoad; iLoad('file'); iLoad('http://path/name'); iLoad('file.zip')
-%          iLoad('file#anchor');
+% Example: a=iLoad(fullfile(ifitpath, 'Data')); iscell(a)
 %
 % See also: importdata, load, iLoad_ini, Loaders
 %

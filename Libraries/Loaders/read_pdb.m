@@ -1,4 +1,6 @@
-% result = PDB_Geometry(fname) read a PDB file
+% result = read_pdb(fname) read a PDB file
+%
+% Import a PDB file, available at e.g. https://www.rcsb.org/
 %
 %       Compute SAXS characteristics of molecule described in file fname.
 %       Input -     fname --> valid PDB file.
@@ -24,7 +26,12 @@
 %
 %       result.Ivq = Intensity versus q for protein I(q)
 %                       q = Ivq(:,1); I = Ivq(:,2)
-% See also: read_xyz, read_poscar, read_mrc
+%
+% Input:  filename: PDB file (string)
+% output: structure
+% Example: y=read_pdb(fullfile(ifitpath, 'Data','PDBSilk.pdb')); isstruct(y)
+%
+% See also: read_xyz, read_poscar, read_mrc, read_cif
     
 % **********************  Number of Electrons ***********************************
 % From a PDB file, we can calculate the number of electrons by adding up the amino 

@@ -2,11 +2,13 @@ function s = read_yaml(filename)
 % data=read_yaml(filename)
 %
 % read_yaml Wrapper to directly read YAML files using the YAML class
+%
 % Input:  filename: yaml/json file (string)
 % output: structure
+% Example: y=read_yaml(fullfile(ifitpath, 'Data','iFit_iD80908.yaml')); isstruct(y)
 %
 % (c) E.Farhi, ILL. License: EUPL.
-% See also: read_json
+% See also: read_json, read_xml
 
 s=[];
 if nargin == 0, return; end

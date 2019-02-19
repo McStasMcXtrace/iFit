@@ -7,6 +7,11 @@ function data = read_opus(filename)
 % References:
 %   https://sites.google.com/site/silakovalexey/kazan-viewer/
 %   A. Silakov Kazan viewer 2009
+%
+% Input:  filename: Brucker OPUS file (string)
+% output: structure
+% Example: y=read_opus(fullfile(ifitpath, 'Data','gluco_toluene.0001')); numel(y)==3 & isstruct(y{1})
+%
 % See also: read_jeol, read_varian, read_bruker
   
   data = {};

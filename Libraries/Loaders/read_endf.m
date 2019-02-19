@@ -25,6 +25,11 @@ function endf = read_endf(filename)
 %   SB    Bound cross section (barns) [incoherent elastic LTHR=2]
 %
 % Format is defined at https://www.oecd-nea.org/dbdata/data/manual-endf/endf102.pdf
+%
+% Input:  filename: ENDF/ACE filename (string)
+% output: structure
+% Example: y=read_endf(fullfile(ifitpath, 'Data','tsl_0012_para-d.endf')); isstruct(y)
+% 
 % (c) E.Farhi, ILL. License: EUPL.
 
 %

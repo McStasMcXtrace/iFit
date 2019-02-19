@@ -12,7 +12,7 @@ function s=str2struct(string)
 % output variables:
 %   s: structure which contains the named values
 %
-% example: str=str2struct('Temperature: 200; RV=3; comment something nice; a="blah"');
+% Example: str=str2struct('Temperature: 200; RV=3; comment something nice; a="blah"'); isstruct(str)
 %          
 % See also: mat2str, num2str, eval, sprintf, class2str
 %

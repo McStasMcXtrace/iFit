@@ -8,6 +8,10 @@
 %   May 9th 2008, Oliver Bunk: 1st version
 %   <http://www.psi.ch/sls/csaxs/software>
 %
+% Input:  filename: Roper SPE file (string)
+% output: structure
+% Example: y=read_spe(fullfile(ifitpath, 'Data','008545.spe')); isstruct(y)
+%
 % See also: read_cbf, read_edf, read_adsc, read_mar, read_sif, read_fits, read_hbin, read_image
 
 %

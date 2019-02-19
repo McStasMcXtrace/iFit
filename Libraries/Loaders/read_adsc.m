@@ -34,6 +34,10 @@
 %   <http://bigbro.biophys.cornell.edu/~toombes/Software/ADSC_Detectors_Using_Spec/>
 %   <http://www.adsc-xray.com/products.html>
 %
+% Input:  filename: ADSC SMV/IMG filename (string)
+% output: structure
+% Example: y=read_adsc(fullfile(ifitpath, 'Data','Q1_Test_Protein.img')); isstruct(y)
+%
 % See also: read_cbf, read_edf, read_sif, read_mar, read_spe, read_fits, read_hbin, read_image
 
 function frame = read_adsc(fname)

@@ -2,8 +2,11 @@ function data = read_mccode(filename)
 % read_mccode: load a McCode (McStas/McXtrace) simulation result
 %   data = read_mccode(filename)
 %
-% This function imports a McCode simulation result
-% It returns the McStas simulation structures. 
+% McCode gathers McStas (neutron scattering ray-tracing) http://www.mcstas.org
+%                McXtrace (x-ray scattering ray-tracing) http://www.mcxtrace.org
+%
+% This function imports a McCode simulation result.
+% It returns the McStas/McXtrace simulation structures. 
 % It may import both McCode and Matlab format data sets.
 %
 % input:
@@ -12,10 +15,9 @@ function data = read_mccode(filename)
 %          if filename does not exist, a file selector is called.
 % 
 % output:
-%  data: a cell of detector structures
+%  data: a structure or cell of detector structures
 %
-% examples:
-%   read_mccode mcstas.sim
+% Example: y=read_mccode(fullfile(ifitpath, 'Data','Monitor_GV_1330447143_list.L.x.y.z')); isstruct(y)
 %
 % (c) E.Farhi, ILL. License: EUPL.
 % See also: read_anytext, read_inx

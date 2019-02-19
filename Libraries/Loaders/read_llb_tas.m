@@ -3,6 +3,10 @@ function data = read_llb_tas( filename )
 %   Opens an LLB/TAS data file and returns a data set structure
 %   data = read_llb_tas( filename )
 %
+% Input:  filename: LLB TAS file 4F1/4F2 (string)
+% output: structure
+% Example: y=read_llb_tas(fullfile(ifitpath, 'Data','R014')); isstruct(y)
+%
 % (c) E.Farhi, ILL. License: EUPL.
 % See also: read_anytext, read_inx
 

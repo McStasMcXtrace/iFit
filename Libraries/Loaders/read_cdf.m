@@ -1,5 +1,5 @@
 function s = read_cdf(filename)
-% mcdfread Wrapper to cdfread which reconstructs the CDF structure
+% read_cdf Read a CDF file
 % s = read_cdf(filename)
 %
 % http://en.wikipedia.org/wiki/Common_Data_Format

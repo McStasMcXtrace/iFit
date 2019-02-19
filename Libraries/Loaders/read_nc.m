@@ -2,11 +2,17 @@ function S = read_nc(File,varargin)
 % read a NetCDF file, version 1 and 2
 %   S = read_nc(File)
 %
+% Fornat definition <https://en.wikipedia.org/wiki/NetCDF>
+%
 % references:
 % tom_mrcread from Wolfgang Baumeister (TOM Matlab toolbox), 2008
 %  used to read MRC electron density map files
 %  <http://www.biochem.mpg.de/en/rd/baumeister/tom_e/>
 % netcdfobj contribution on Matlab Central
+%
+% Input:  filename: NetCDF file (string)
+% output: structure
+% Example: y=read_nc(fullfile(ifitpath, 'Data','SQW_coh_lGe.nc')); isstruct(y)
 %
 % See also: read_hdf4, read_hdf5, read_cdf
   S=[];

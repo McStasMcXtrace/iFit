@@ -7,6 +7,10 @@ function data = read_hdf4(filename)
 % data.Attributes.<path>  the sub-structure holding all attributes with similar 
 %                           structure as the main branch
 %
+% Input:  filename: HDF4 file (string)
+% output: structure
+% Example: y=read_hdf4(fullfile(ifitpath, 'Data','nano_50K_4.8a_03_h4.hdf')); isstruct(y)
+%
 % (c) E.Farhi, ILL. License: EUPL.
 % See also: read_hdf5, read_nc, read_cdf
 

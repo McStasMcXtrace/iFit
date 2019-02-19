@@ -1,12 +1,18 @@
 function Analyze = read_analyze(filename)
-% Load Analyze hdr/img dataset.
+% Load Analyze hdr/img dataset from Mayo Clinic.
 %   Analyze = read_analyze(filename)
 %
 %   Analyze is a struct with members:
 %     hdr - header information
 %     img - volume information
 %
+% Format definition from: https://en.wikipedia.org/wiki/Analyze_(imaging_software)
+%
 % Adapted from ReadAnalyzeHdr and ReadAnalyzeImg by Claus Svarer <csvarer@nru.dk>
+%
+% Input:  filename: Analyze Mayo Clinic file (string)
+% output: structure
+% Example: y=read_analyze(fullfile(ifitpath, 'Data','cyno_atlas.4dint.hdr')); isstruct(y)
 %
 % See also: read_nii, read_hdr
 
