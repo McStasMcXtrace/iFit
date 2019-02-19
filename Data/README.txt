@@ -8,21 +8,28 @@
 30dor.fits: 30Dor Spitzer IRAC 8um image from SAGE [binary, FITS format]
 Ag_3_a.edf: an image of an algae cell [binary, ESRF EDF format]
 Ag_3_a.hdf4: an image of an algae cell [binary, HDF4 image]
+Al.cif: Aluminium CIF file [text]
 AL20_017.DAT: example data files from the D3 reflectometer at Chalk River CNBC NRU [text]
+Bunny-LowPoly2.stl: an STL of the Stanford Bunny
 C004 and R014: LLB/TAS data files [LLB, binary]
 cyno_atlas.4dint.hdr and cyno_atlas.4dint.img: Tomographic monkey brain data - Volume dataset in Analyze format. Open the 'hdr' file. See ReadAnalyze  [binary]
 D2O_liq_290_coh/inc.sqw: Dynamic structure factor S(q,w) of heavy water from GROMACS/TIP4p [McStas Sqw]
 Diff_BananaTheta_1314088587.th and Diff_BananaPSD_1314088587.th_y: example McStas simulation result files, 1D and 2D [text, McStas]
+emd_0409.map: a MRC/CCP4 EM density map [binary]
 example.sdf: an HP/Agilent SDF file from e.g. an oscilloscope [binary, SDF]
 Example.spe: an ISIS SPE file from a TOF spectrometer (from the Mantid Project) [SPE]
 gluco_toluene.0001: an OPUS FTIR data file [Opus]
 Horace_sqw_1d.sqw: an Horace Sqw file [binary]
+iFit_iD115470.json: a JSON 2D data set [text]
+iFit_iD80908.xml: a XML 2D data set [text]
+iFit_iD80908.yaml: a YAML 2D data set [text]
 ILL_D10.dat: some D10 neutron diffractometer measurement at the ILL [text]
 ILL_IN20.dat: some IN20 neutron triple-axis diffractometer at the ILL (GL goniometer scan) [text]
 ILL_IN6_2.dat: some IN6 neutron time of flight spectrometer at the ILL (liquid 3He) [text]
 ILL_IN6.dat: some IN6 neutron time of flight spectrometer at the ILL (liquid water) [text]
 insulin_pilatus6mconverted_orig.cbf: a CBF insulin small angle scattering pattern, e.g. from cSAXS@SLS [binary, CBF]
 IRS21360_graphite002_ipg.nxs: an ISIS/IRIS high resolution TOF spectrometer (NeXus file from the Mantid Project) [binary, HDF5/NeXus with compression]
+LaMnO3.cif: CIF file for LaMnO3
 LaMnO3.txt: SPINWAVE input file to create a sqw_spinwave model [text]
 LuMnO3.cif: an example structure file for e.g. SpinW [text]
 MCA.dat: some Canberra multichannel analyzer data (from a Sandercock Brillouin light scattering spectrometer) [text]
@@ -51,6 +58,8 @@ SQW_coh_lGe.nc: the coherent dynamic structure factor obtained from ab-initio mo
 sv1850.scn: some IN14 neutron triple-axis spectrometer at the ILL (UPt3, QH scan) [text]
 sv1884.scn: some IN14 neutron triple-axis spectrometer at the ILL (UPt3, sample rotation scan) [text]
 sv4700.scn: some IN12 neutron triple-axis spectrometer at the ILL (bcc 4He, Energy scan) [text]
+TbMnO3.m: a SpinW example of TbMnO3 
 tsl_0012_para-d.endf: a para-D2 thermal scattering cross section ENDF [text, ENDF]
 YIG_4A_corr_vana_spectre.inx: an INX example file obtained from IN5 tof at the ILL [text, INX].
+zstat1.nii: a NifTi MRI volume
 
