@@ -174,7 +174,7 @@ function g = dos(self, method)
     
   end
   g.Expression{end+1} = 'signal=signal/sum(signal(:)); x=w_sav_dos(:)''; ';
-  g.Name = [ mfilename '(' self.Name ',''' method ''')' ];
+  g.Name = [ mfilename '(' self.Name ',' method ')' ];
   g = iFunc(g);
   
 end

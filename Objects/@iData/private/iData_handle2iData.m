@@ -12,7 +12,7 @@ function out=iData_handle2iData(in)
   if strcmp(get(in,'type'),'hggroup')
     t = [ 'figure ' t ];
     h = get(in,'Children');
-    out = iData(h(1)); % first item
+    out = iData_handle2iData(h(1)); % first item
     out.Title=t;
     out.Label=t;
   elseif strcmp(get(in,'type'),'line')
@@ -25,11 +25,13 @@ function out=iData_handle2iData(in)
     l = get(in,'linestyle');
     out=iData(x,y);
     try xl = get(get(in,'parent'),'XLabel'); xl=get(xl,'String'); catch 
-        xl='x'; end; xlabel(out, xl);
+        xl='x'; end;
     try yl = get(get(in,'parent'),'YLabel'); yl=[ get(yl,'String') ' ' ]; catch 
         yl=''; end;
     try tl = get(get(in,'parent'),'Title');  tl=[ get(tl,'String') ' ' ]; catch 
         tl=''; end;
+    xlabel(out, yl);
+    ylabel(out, xl);
     label(out,0,yl);
     t = [ 'line ' t ];
     out.Title = [ tl yl t ];
@@ -49,7 +51,7 @@ function out=iData_handle2iData(in)
         zl=''; end 
     try tl = get(get(in,'parent'),'Title');  tl=[ get(tl,'String') ' ' ]; catch 
         tl=''; end
-    xlabel(out, yl); ylabel(out, xl); label(out, tl);
+    xlabel(out, yl); ylabel(out, xl); zlabel(out, zl); label(out, tl);
     out.Title = t;
     out.DisplayName = t;
     out.Label=t;
@@ -99,7 +101,7 @@ function out=iData_handle2iData(in)
     h = [ findobj(in, 'type','line') ; findobj(in, 'type','surface') ; findobj(in, 'type','image')  ];
     out = [];
     for index=1:length(h)
-      this_out = iData(h(index));
+      this_out = iData_handle2iData(h(index));
       if isempty(this_out.Title) && ~isempty(t)
         this_out.Title = t;
         this_out.Label = t;
