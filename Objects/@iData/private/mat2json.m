@@ -37,30 +37,39 @@ function J=mat2json(M,F)
 %  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 %  POSSIBILITY OF SUCH DAMAGE.
 
+if isempty(M), J='[]'; return; end
 switch class(M)
     case 'struct'
         J='{';
         f=fieldnames(M);
         for i=1:length(f)
             try
+              if i<length(f)
               J=[J,'"',f{i},'":',mat2json(M.(f{i})),','];
+              else
+              J=[J,'"',f{i},'":',mat2json(M.(f{i}))];
+              end
             catch ME
               warning(ME.message)
               warning([ mfilename ': Ignoring field "' f{i} '" which is not a base Matlab class, but is ' class(M.(f{i})) ]);
             end
         end
-        J(end)='}';
+        J(end+1)='}';
         
     case 'cell'
         J='[';
         for i=1:length(M)
             try
+              if i<length(M)
               J=[J,mat2json(M{i}),','];
+              else
+              J=[J,mat2json(M{i})];
+              end
             catch
               warning([ mfilename ': Ignoring cell index "' num2str(i) '" which is not a base Matlab class, but is ' class(M{i}) ]);
             end
         end
-        J(end)=']';
+        J(end+1)=']';
     otherwise
         if isnumeric(M) % notice looseness in not converting single numbers into arrays
             if length(M(:))==1
@@ -73,14 +82,20 @@ switch class(M)
                 elseif length(s)==2 %2D solution
                     J='[';
                     for i=1:s(1)
+                        if i<s(1)
                         J=[J,mat2json(M(i,:)),','];
+                        else
+                        J=[J,mat2json(M(i,:))];
+                        end
                     end
-                    J(end)=']';
+                    J(end+1)=']';
                 elseif length(s)>2 % for now treat higher dimensions as linear vectors
                     J=['[', val2str(M(:)') ,']']; % and of destroying dimensionality
                     J=regexprep(J,'\s+',',');
                 end
             end
+        elseif ischar(M)
+          J=['"',char(M),'"'];
         else
           try
             J=mat2json(struct(M));  % OK for objects
@@ -106,5 +121,6 @@ function val = val2str(val)
   else
     val = num2str(val);
   end
+  if val(end) == ' ', val(end)=[]; end
   
           
