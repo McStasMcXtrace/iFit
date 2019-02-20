@@ -273,6 +273,15 @@ classdef iData_Sqw2D < iData
       % The result should be e.g. multiplied by the neutron scattering bound cross 
       % section 'sigma_coh' [barns].
       %
+      % The structure factor can be obtained from the 'structure_factor' method 
+      % for iFunc_Sqw2D and iData_Sqw2D classes. A crude estimate can be obtained
+      % from the S(q,w) moments as:
+      %   M2   = \int w^2 S(q,w) dw
+      %   wl   = characteristic harmonic/longitudinal excitation dispersion
+      %   S(q) = M2./(wl-min(wl))^2/sqrt(q)
+      % This estimate does NOT require the elastic line, and is thus not sensitive to
+      % experimental data reduction (container contribution, etc) around w=0.
+      %
       % Reference: K. Skold, Phys. Rev. Lett. 19, 1023 (1967).
       %
       % input:

@@ -19,16 +19,18 @@ function [match, types, dims] = findfield(s, field, option)
 %   The cache mechanism allows to do iterative searches on the same object, e.g.
 %     findfield(s,'Title') and then findfield(s,'Signal','cache numeric')
 %
+%   The value of the fields can be obtained with: get(s, match);
+%
 % input:  s: object or array (iFunc)
 %         field: field name to search, or '' (char).
 %         option: empty or 'exact' 'case' 'char' or 'numeric' (char)
 % output: match:  names of iFunc fields (cellstr)
 %         types:  types of iFunc fields (cellstr), e.g. 'double', 'char', 'struct'...
 %         nelements: total number of elements in iFunc fields (double)
-% ex:     findfield(iFunc) or findfield(iFunc,'Name') or findfield(s,'Name','exact case')
+% ex:     findfield(gauss); findfield(gauss,'amp'); findfield(gauss,'Amplitude','exact case')
 %
 % Version: $Date$
-% See also iFunc, iFunc/set, iFunc/get
+% See also iFunc, iFunc/set, iFunc/get, iFunc/isfield
 
 % EF 23/09/07 iData implementation
 % private function iFunc_getfields

@@ -131,7 +131,7 @@ function sigma=moments(data, varargin)
     % all odd moments are 0, even are to be multiplied by 2 when using S(q,w>0)
     % M2 = q.^2.*kT/M
     wc      = sqrt(M2./M0); % sqrt(<w2S>/s(q)) == q sqrt(kT/M/s(q)) collective/isothermal
-    m3      = abs(trapz(abs(w).^3.*data));
+    m3      = abs(trapz(abs(w).^3.*data,2));
     wl      = m3./M2; % maxima wL(q) of the longitudinal current correlation function ~ wl
   else
     wc      = sqrt(2*kT.*M1./M0); 
@@ -139,7 +139,9 @@ function sigma=moments(data, varargin)
   end
   
   % a very crude estimate of S(q) may be obtained from (phenomenological):
-  %   M2./wl.^2./q
+  %   M2./(wl-min(wl)).^2 assuming wl == wc
+  % or better
+  %   M2./(wl-min(wl)).^2./sqrt(q) which works remarkably !
   % and normalize it.
   
   sq.Label='S(q) structure factor';                 ylabel(sq, sq.Label );
