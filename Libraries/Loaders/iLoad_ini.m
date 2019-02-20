@@ -147,7 +147,6 @@ function config = iLoad_ini
     ISIS_spe.extension  ='spe';
     
     ILL_inx.name       ='ILL INX tof data';
-    ILL_inx.options    ='';
     ILL_inx.method     ='read_inx';
     ILL_inx.postprocess='openinx';
     ILL_inx.extension  ={'inx','ino'};
@@ -245,6 +244,10 @@ function config = iLoad_ini
     json.method         = 'read_json';
     json.extension      = 'json';
     
+    gcode.name          = 'GCODE numerical control programming language';
+    gcode.method        = 'read_gcode';
+    gcode.extension     = {'g','gco','gcode','mpt','mpf'};
+    
 % binary formats ===============================================================
 
     NPY.name            = 'Numpy NPY array';
@@ -252,7 +255,6 @@ function config = iLoad_ini
     NPY.extension       = 'npy';
     
     ESRF_edf.name       ='EDF ESRF Data Format';
-    ESRF_edf.options    ='';
     ESRF_edf.method     ='read_edf';
     ESRF_edf.extension  ='edf';
     
@@ -353,7 +355,7 @@ function config = iLoad_ini
     config.loaders =  { ILL_normal, ILL_integers, ILL_float, ILL_general, HZB_FELXX_Flat, ILL_TAS_pol, ILL_TAS, ...
       mcstas_scan, mcstas_list, mcstas_sqw, mcstas_powder, mcstas_2D, mcstas_1D, mcstas_0D, mcstas_sim, ...
       spec, chalkriver, ISIS_spe, ILL_inx, STL_ascii, OBJ, PDB, OFF_ascii, PLY_ascii, CFL, EZD, CIF, ...
-      labview, qd_vms, endf, ace, yaml, json, ...
+      labview, qd_vms, endf, ace, yaml, json, gcode, ...
       NPY, ESRF_edf, ISIS_SQW, ILL_HBIN, Mar_CCD, Roper_SPE, Andor_SIF, ADSC_CCD, Matlab_FIG, ...
       Analyze, CBF, STL_binary, MRC, NifTI, Igor, lv_tdms, nmr_jeol, idl_sav, ...
       agilent_ms, thermo_ms, agilent_sdf, ...
