@@ -187,13 +187,11 @@ function a = iFunc_private_check(a)
   end % if ‪~empty(expr)
 
   % return when model can not be defined
-  if isempty(expr)
+  if isempty(expr) && ~dim
     warning('iFunc:emptyModel', [ 'model ' a.Tag ' Expression does not contain any axes (x,y,z...). Constant model ?' ]); 
-    return
   end
-  if nb_pars == 0
+  if nb_pars == 0 && ~dim
     warning('iFunc:emptyModel', [ 'model ' a.Tag ' Expression does not contain any parameter (p). Constant model ?' ]); 
-    return
   end
 
   % dim:     holds model dimensionality

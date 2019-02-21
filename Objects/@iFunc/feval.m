@@ -421,7 +421,11 @@ end
 
 p       = reshape(this.ParameterValues,1,numel(this.ParameterValues));
 % if we wish to have parameters usable as a structure
-struct_p= cell2struct(num2cell(p),strtok(this.Parameters),2);
+if numel(p) == numel(this.Parameters)
+  struct_p= cell2struct(num2cell(p),strtok(this.Parameters),2);
+else
+  struct_p=struct();
+end
 
 try
   this.Eval = cellstr(this.Eval);
