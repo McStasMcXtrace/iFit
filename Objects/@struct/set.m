@@ -47,6 +47,10 @@ function s = set(s, varargin)
   % cut the field into pieces with '.' as separator
   [tok, rem] = strtok(field, '.');
   
+  if ~isfield(s, tok)
+    s.(tok) = [];
+  end
+  
   % when rem is empty, we are were to set the value
   if isempty(rem)
     s = setfield(s, tok, value);
@@ -54,18 +58,13 @@ function s = set(s, varargin)
   end
   
   % else get the sub-struct
-  if ~isfield(s, tok)
-    s.(tok) = [];
-  end
   s2 = getfield(s, tok);
   
   % access deeper content recursively
   if ~isstruct(s2)
     s2 = []; % overwrite existing value
-    s2.(rem(2:end)) = value;
-  else
-    s2 = set(s2, rem(2:end), value);
   end
+  s2 = set(s2, rem(2:end), value);
   
   s = setfield(s, tok, s2); % update in parent struct
   

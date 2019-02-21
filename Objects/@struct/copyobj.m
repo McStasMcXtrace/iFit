@@ -15,7 +15,6 @@ function new = copyobj(self, org)
     new = self; % this may not be a deep copy
     return
   end
-  wrn_flag = true;
   
   % handle array input
   if numel(self) > 1
@@ -34,20 +33,24 @@ function new = copyobj(self, org)
   end
 
   % single deep copy
-  new = feval(class(self)); % new empty object of same class
-  % transfer properties: this is a safe way to instantiate a subclass
-  if isstruct(self)
-    new = cell2struct(struct2cell(org),fieldnames(org),2);
-  else
+  if isstruct(self) && ~isa(self, 'handle')
+    % assigment is OK for non handle objects
+    new = org;  
+  else 
+    % handle object: transfer properties: this is a safe way to instantiate a subclass
+    new = feval(class(self)); % new empty object of same class
+    wrn_flag = true;
     for p = properties(org)'
       try
         new.(p{1}) = org.(p{1});  % may fail when copying from enriched object
       catch ME
         if wrn_flag
           disp(getReport(ME))
-          warning([ mfilename ': can not copy property ' p{1} ...
+          disp([ mfilename ': can not copy property ' p{1} ...
                     ' from class ' class(org) ' into ' class(self) ]);
+          wrn_flag = false;
         end
       end
     end
   end
+  
