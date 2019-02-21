@@ -18,6 +18,7 @@ function sigma=moments(data, varargin)
 %   M2   = <w2S(q,w)>                                                 [moment 2]
 %   M3   = <w3S(q,w)>                                                 [moment 3]
 %   M4   = <w4S(q,w)>                                                 [moment 4]
+%   S(q) ~ M2/Wl^2^2/sqrt(q)       structure factor estimate from pure inelastic
 %
 % Reference: 
 %   Helmut Schober, Journal of Neutron Research 17 (2014) pp. 109
@@ -121,6 +122,7 @@ function sigma=moments(data, varargin)
   % Theory of simple liquids Academic Press New York 2006.
   if ~isempty(p.m) && isnumeric(p.m)
     wq      = 2*q.*sqrt(kT./M0/p.m);  % Lovesey p180 eq. 5.38 = w0
+    if ndims(wq) == 2, wq=trapz(wq,2); end
     wq.Label='w_q=q \surd kB T/M S(q) mean energy transfer';
     title(wq, wq.Label );
   else
@@ -144,6 +146,11 @@ function sigma=moments(data, varargin)
   %   M2./(wl-min(wl)).^2./sqrt(q) which works remarkably !
   % and normalize it.
   
+  % structure factor estimate from pure inelastic
+  sq_approx = M2./(wl-min(wl)).^2./sqrt(q); 
+  if ndims(sq_approx) == 2, sq_approx=trapz(sq_approx,2); end
+  sq_approx=sq_approx/mean(sq_approx);
+  
   sq.Label='S(q) structure factor';                 ylabel(sq, sq.Label );
   M1.Label='recoil E_r=h^2q^2/2M <wS> 1st moment';  ylabel(M1, M1.Label );
   wc.Label='w_c collective/isothermal dispersion';  ylabel(wc, wc.Label );
@@ -151,8 +158,10 @@ function sigma=moments(data, varargin)
   M2.Label='<w2S> 2nd moment';                      ylabel(M2, M2.Label );
   M3.Label='<w3S> 3rd moment';                      ylabel(M3, M3.Label );
   M4.Label='<w4S> 4th moment';                      ylabel(M4, M4.Label );
+  sq_approx.Label = 'S(q) structure factor estimate from pure inelastic';
+  ylabel(sq_approx, sq_approx.Label );
 
-  sigma =iData([ sq M1 wc wl wq M2 M3 M4 ]);
+  sigma =iData([ sq M1 wc wl wq M2 M3 M4 sq_approx ]);
   
   if nargout == 0
     fig=figure; 
@@ -160,14 +169,3 @@ function sigma=moments(data, varargin)
     set(fig, 'NextPlot','new');
   end
 
-  return
-  
-  
-  % now fit gaussians for each q value... inactive code
-  for index=1:length(q)
-    this  = data(index,:);
-    w.dwG(index) = std(this);
-    p = [ max(this) 0 dwG(index) 0 ];
-    p = fits(this, 'gauss',p,'',[ 0 1 0 0]);
-    w.dwF(index) = p(3);
-  end

@@ -1,19 +1,12 @@
 function M=moments(self, select)
-  %   M2   = \int w^2 S(q,w) dw
-  %   M3   = \int |w|^3 S(q,w) dw classical
-  %   wl   = M3./M2;              classical
-  %   M3   = \int |w|^3 S(q,w) dw quantum
-  %   wl   = sqrt(M3./M1);        quantum
-  %   S(q) = M2./(wl-min(wl)).^2./sqrt(q)
-  
-% iFunc_Sqw2D: moments=moments(sqw): compute Sqw moments/sum rules (harmonic frequencies)
+% iFunc_Sqw2D: m=moments(sqw): compute Sqw moments/sum rules (harmonic frequencies)
 %
 %   m = moments(sqw)
 %
 %  Compute the structure factor (moment 0), recoil energy (moment 1) and the
 %    collective, harmonic and mean energy transfer dispersions.
 %
-%  The result is given as an iFunc array with models sets (see below).
+%  The result is given as an iFunc array with models sets (see below) vs momentum.
 %
 % Reference: 
 %   Helmut Schober, Journal of Neutron Research 17 (2014) pp. 109
@@ -36,6 +29,7 @@ function M=moments(self, select)
 %     'm2'     M2   = <w2S(q,w)>                                                 [moment 2]
 %     'm3'     M3   = <w3S(q,w)>                                                 [moment 3]
 %     'm4'     M4   = <w4S(q,w)>                                                 [moment 4]
+%     'sq_approx' S(q) ~ M2/Wl^2^2/sqrt(q)    structure factor estimate from pure inelastic
 %
 % output:
 %   moments=[ sq M1 wc wl wq M2 M3 M4 ] as an iFunc model or array
@@ -60,7 +54,7 @@ function M=moments(self, select)
   M.UserData.moment_type = select;
   select = lower(select);
   
-  % check for classical model
+  % check for classical model and temperature
   classical    = findfield(M, 'classical','first');
   is_classical = false;
   if ~isempty(classical)
