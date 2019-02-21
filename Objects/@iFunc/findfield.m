@@ -21,6 +21,9 @@ function [match, types, dims] = findfield(s, field, option)
 %
 %   The value of the fields can be obtained with: get(s, match);
 %
+%   When the field is found as a model parameter, its type is 'numeric parameter'
+%   and its number of elements (nelements) is the parameter index.
+%
 % input:  s: object or array (iFunc)
 %         field: field name to search, or '' (char).
 %         option: empty or 'exact' 'case' 'char' or 'numeric' (char)
@@ -69,11 +72,11 @@ if isempty(cache) || isempty(strfind(option, 'cache'))
   [match, types, dims] = iFunc_getfields(struct_s, '');
 
   % add fields from Parameters content
-  for index=s.Parameters(:)'
-    this = get(s,index{1}); % value
-    match{end+1} = strtok(index{1});
-    types{end+1} = class(this);
-    dims(end+1)  = numel(this);
+  for index=1:numel(s.Parameters)
+    this = get(s,s.Parameters{index}); % value
+    match{end+1} = strtok(s.Parameters{index});
+    types{end+1} = 'numeric parameter';
+    dims(end+1)  = index;
   end
   [match, index] = unique(match);
   types=types(index);
@@ -103,6 +106,7 @@ if ~isempty(strfind(option, 'numeric')) || ~isempty(strfind(option, 'char'))
     index=[ index ; find(strcmp( 'logical',types)) ];
     index=[ index ; find(strncmp('uint',   types, 4)) ];
     index=[ index ; find(strncmp('int',    types, 3)) ];
+    index=[ index ; find(strncmp('num',    types, 3)) ];
   else % 'char' option
     index=          find(strcmp( 'char', types));
   end
