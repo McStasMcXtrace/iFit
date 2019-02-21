@@ -40,6 +40,7 @@ Res=[];
 if nargin>0
     Res=A;  % we start with initial structure
 end
+if nargin ==1, return; end
 
 if numel(varargin) > 1
   for index = 1:numel(varargin)
