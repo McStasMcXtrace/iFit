@@ -12,6 +12,8 @@ function s = set(s, varargin)
 %    travelled through before asiigment.
 % 
 %    SET(S) displays all structure field names.
+%
+% See also: fieldnames, findfield, isfield, get
 
   if ~isa(s, 'estruct')
     builtin('set', s, varargin{:});
