@@ -11,7 +11,8 @@ function new = copyobj(self, org)
   % handle arrays by copying the new0
   if nargin == 1,  org=''; end
   if isempty(org), org=self; end
-  if ~isstruct(org) || ~isobject(org)
+  
+  if ~isstruct(org) && ~isobject(org)
     new = self; % this may not be a deep copy
     return
   end
@@ -33,15 +34,18 @@ function new = copyobj(self, org)
   end
 
   % single deep copy
-  if isstruct(self) && ~isa(self, 'handle')
+  if isempty(self) && ~isa(self, 'handle') && isa(org, class(self))
     % assigment is OK for non handle objects
     new = org;  
   else 
     % handle object: transfer properties: this is a safe way to instantiate a subclass
     new = feval(class(self)); % new empty object of same class
     wrn_flag = true;
-    for p = properties(org)'
+    for p = fieldnames(org)'
       try
+        if ~isfield(new, p{1})
+          new.addprop(p{1});
+        end
         new.(p{1}) = org.(p{1});  % may fail when copying from enriched object
       catch ME
         if wrn_flag

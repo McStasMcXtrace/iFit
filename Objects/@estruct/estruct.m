@@ -71,24 +71,38 @@ classdef estruct < dynamicprops & hgsetget
       while index<=numel(varargin)
         this = varargin{index};
         if isobject(this), this = struct(this); end
-        if ischar(this) && index<numel(varargin) % name/value pair
-          new.addprop(this);
+        if ischar(this) && index<numel(varargin) && isvarname(this)  % name/value pair
+          if ~isfield(new, this), new.addprop(this); end
           setfield(new, this, varargin{index+1});
           index=index+1;
-        elseif ischar(this)
+        elseif ischar(this) && isvarname(this) && ~isfield(new, this)
           new.addprop(this);
         elseif isstruct(this)
-          if index == 1
-            new = copyobj(estruct, in);
+          % pass and treat below
+        elseif ischar(this)
+          s = str2struct(this); % convert to struct ?
+          if isstruct(s)
+            this = s; % will be used below
           else
-            new = cat(new, this);
+            name=sprintf('prop_%i', index);
+            if ~isfield(new, name), new.addprop(name); end
+            setfield(new, name, this);
           end
         else
           name = inputname(index); 
           if isempty(name), name=sprintf('prop_%i', index); end
-          new.addprop(name); 
+          if ~isfield(new, name), new.addprop(name); end
           setfield(new, name, this);
         end
+        
+        if isstruct(this)
+          if index == 1
+            new = copyobj(new, this);
+          else
+            new = cat(new, this);
+          end
+        end
+        
         index=index+1;
       end
     end

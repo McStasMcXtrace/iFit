@@ -79,6 +79,7 @@ for i=1:length(fn) % loop on B fields
     if isstruct(fieldA) && isstruct(fieldB)
       Res=setfield(Res,s,cat(fieldA, fieldB, op));  % recursive inside structures
     elseif ~isfieldR
+      Res.addprop(s);
       if isempty(fieldA) 
         Res=setfield(Res,s,fieldB);
       elseif isempty(fieldA) 
