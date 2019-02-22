@@ -8,7 +8,8 @@ classdef estruct < dynamicprops & hgsetget
 %  The size of the resulting structure is the same size as the value
 %  cell arrays or 1-by-1 if none of the values is a cell.
 %
-%  ESTRUCT is similar to STRUCT, but brings extended functionalities.
+%  ESTRUCT is similar to STRUCT, but brings extended functionalities and can be
+%  used to build sub-classes (inherit).
 %
 %  ESTRUCT(OBJ) converts the object OBJ into its equivalent
 %  structure.  The class information is lost.
@@ -64,25 +65,31 @@ classdef estruct < dynamicprops & hgsetget
     %  See also isstruct, setfield, getfield, fieldnames, orderfields, 
     %  isfield, rmfield, deal, substruct, struct2cell, cell2struct.
       warning('off','MATLAB:structOnObject');
-      if nargin == 1
-        % convert single object to structure
-        in = varargin{1};
-        if isobject(in), in = struct(in); end
-        switch class(in)
-        case 'char'
-          new.addprop(in);
-        case 'struct'
-          new = copyobj(estruct, in);
-        otherwise
-          error([ mfilename ': can not build from single ' class(in) ])
+      
+      % append arguments
+      index=1;
+      while index<=numel(varargin)
+        this = varargin{index};
+        if isobject(this), this = struct(this); end
+        if ischar(this) && index<numel(varargin) % name/value pair
+          new.addprop(this);
+          setfield(new, this, varargin{index+1});
+          index=index+1;
+        elseif ischar(this)
+          new.addprop(this);
+        elseif isstruct(this)
+          if index == 1
+            new = copyobj(estruct, in);
+          else
+            new = cat(new, this);
+          end
+        else
+          name = inputname(index); 
+          if isempty(name), name=sprintf('prop_%i', index); end
+          new.addprop(name); 
+          setfield(new, name, this);
         end
-      elseif nargin > 1
-        try
-          % build a struct and then convert
-          new = copyobj(estruct, struct(varargin{:}));
-        catch ME
-          rethrow(ME);
-        end
+        index=index+1;
       end
     end
     

@@ -35,7 +35,5 @@ if nargout > 2
     % mem_avail   = r.freeMemory;
     info.NumCores = r.availableProcessors;
   end
-  
-  end
 end
 
