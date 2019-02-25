@@ -12,7 +12,15 @@ function data = read_jeol(file)
 %
 % See also: read_bruker, read_varian, read_opus
 data = [];
-if nargin == 0, return; end
+
+
+if nargin == 0 || any(strcmp(file, {'identify','query','defaults'}))
+    nmr_jeol.name       = 'JEOL NMR data set';
+    nmr_jeol.method     = mfilename;
+    nmr_jeol.extension  = {'hdr','bin','asc','jdf'};
+    data=nmr_jeol;
+    return
+end
 
   if ~isdir(file)
     [p,f,ext] = fileparts(file);

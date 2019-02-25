@@ -37,7 +37,14 @@ function data=read_tdms(filename)
 %ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 %POSSIBILITY OF SUCH DAMAGE.
   data = [];
-  if nargin == 0, return; end
+  
+  if nargin == 0 || any(strcmp(filename, {'identify','query','defaults'}))
+    lv_tdms.name        = 'LabView TDMS';
+    lv_tdms.extension   = 'tdms';
+    lv_tdms.method      = mfilename;
+    data = lv_tdms;
+    return
+end
   
   data = convertTDMS(0,filename);
 end

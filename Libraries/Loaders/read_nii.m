@@ -20,7 +20,14 @@ function data = read_nii(filename)
 % See also: read_poscar, read_pdb, read_xyz, read_mrc, read_analyze
 
 data = [];
-if nargin == 0, return; end
+
+if nargin == 0 || any(strcmp(filename, {'identify','query','defaults'}))
+    NifTI.name          = 'NifTI-1 MRI volume data';
+    NifTI.extension     = 'nii';
+    NifTI.method        = mfilename;
+    data = NifTI;
+    return
+end
 
 try
   % a good, reliable loader by Jimmy Shen

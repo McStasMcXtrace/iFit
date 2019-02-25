@@ -13,7 +13,15 @@ function M=read_json(J)
 %
 % See also: read_yaml, read_xml, read_mccode
 M=[];
-if nargin == 0, return; end
+
+if nargin == 0 || any(strcmp(J, {'identify','query','defaults'}))
+    json.name           = 'JSON';
+    json.method         = mfilename;
+    json.extension      = {'json','jsn'};
+    json.patterns       ='';
+    M=json;
+    return
+end
 
   M = json2mat(J);
   if ~isstruct(M) && ~isnumeric(M)

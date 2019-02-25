@@ -36,7 +36,15 @@ function [frame,vararg_remain] = read_spe(filename,varargin)
 debug_level = 0;
 
 % initialize return argument
-frame = struct('header',[], 'data',[]);
+frame = struct('header',[], 'data',[]); vararg_remain=[];
+
+if nargin == 0 || any(strcmp(filename, {'identify','query','defaults'}))
+    Roper_SPE.name      ='SPE CCD by WinView from Roper Scientific / PI Acton';
+    Roper_SPE.method    =mfilename;
+    Roper_SPE.extension ='spe';
+    frame = Roper_SPE;
+    return
+end
 
 % check minimum number of input arguments
 if (nargin < 1)

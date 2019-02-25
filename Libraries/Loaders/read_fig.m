@@ -10,7 +10,15 @@ function s = read_fig(filename)
 % See also: read_idl, read_lvm, read_tdms, read_igor
 
 s=[];
-if nargin == 0, return; end
+
+if nargin == 0 || any(strcmp(filename, {'identify','query','defaults'}))
+    Matlab_FIG.name     ='Matlab Figure';
+    Matlab_FIG.method   =mfilename;
+    Matlab_FIG.extension='fig';
+    Matlab_FIG.postprocess='load_fig';
+    s=Matlab_FIG;
+    return
+end
 
 if ishandle(filename)
   s = handle2iData(filename);

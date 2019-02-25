@@ -6,6 +6,14 @@ function [xyz, L, C, LUT] = read_gcode(file, k)
   % (c) E.Farhi, ILL. License: EUPL.
   % See also: read_stl, read_obj
   
+  if nargin == 0 || any(strcmp(file, {'identify','query','defaults'}))
+    gcode.name          = 'GCODE numerical control programming language';
+    gcode.method        = mfilename;
+    gcode.extension     = {'g','gco','gcode','mpt','mpf'};
+    xyz = gcode; L=[]; C=[]; LUT=[];
+    return
+end
+  
   if nargin < 2, k=[]; end
   if isempty(k), k=3;  end
   

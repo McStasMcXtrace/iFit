@@ -16,6 +16,13 @@ function data = read_opus(filename)
   
   data = {};
   
+  if nargin == 0 || any(strcmp(filename, {'identify','query','defaults'}))
+    ftir_bruker.name    = 'Bruker FTIR OPUS';
+    ftir_bruker.method  = mfilename;
+    data = ftir_bruker;
+    return
+  end
+  
   index = 1;
   while index > 0 && index < 6
       try

@@ -22,7 +22,25 @@ function data=read_stl(file, option)
 % See also: read_obj
 
 data=[];
-if nargin == 0, return; end
+
+if nargin == 0 || any(strcmp(file, {'identify','query','defaults'}))
+    STL_ascii.name     ='STL/SLP 3D ascii';
+    STL_ascii.method   =mfilename;
+    STL_ascii.options  ='ascii';
+    STL_ascii.patterns ={'facet','vertex','endfacet'};
+    STL_ascii.extension={'stl','stla','slp'};
+    STL_ascii.postprocess='openstl';
+    
+    STL_binary.name     ='STL 3D binary';
+    STL_binary.method   =mfilename;
+    STL_binary.options  ='binary';
+    STL_binary.extension={'stl','stlb'};
+    STL_binary.postprocess='openstl';
+    
+    data = {STL_ascii, STL_binary};
+    return
+end
+
 
 if isempty(file), return; end
 [file, remain] = strtok(file);

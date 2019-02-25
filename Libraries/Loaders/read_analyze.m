@@ -18,6 +18,14 @@ function Analyze = read_analyze(filename)
 
 Analyze = [];
 
+if nargin == 0 || any(strcmp(filename, {'identify','query','defaults'}))
+    Analyze.name        ='Analyze volume data';
+    Analyze.method      =mfilename;
+    Analyze.postprocess ='openhdr';
+    Analyze.extension   ={'hdr','img'};
+    return
+end
+
 try
   hdr = ReadAnalyzeHdr(filename);
 catch

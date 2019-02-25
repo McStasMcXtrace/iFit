@@ -17,7 +17,26 @@
 function s = read_poscar(filename)
 
   s=[];
-  if nargin == 0, return; end
+  
+  if nargin == 0 || any(strcmp(filename, {'identify','query','defaults'}))
+  
+    poscar_direct.name            ='VASP initial position POSCAR';
+    poscar_direct.patterns        ='Direct';
+    poscar_direct.method          = mfilename;
+    
+    poscar_cartesian.name         ='VASP initial position POSCAR';
+    poscar_cartesian.patterns     ='Cartesian';
+    poscar_cartesian.method       = mfilename;
+    s = { poscar_direct, poscar_cartesian };
+    
+    return
+  end
+  
+  if nargin == 0 || any(strcmp(filename, {'identify','query','defaults'}))
+    
+    data = poscar;
+    return
+end
   
   s = import_poscar(filename);
 
@@ -62,6 +81,10 @@ function [ geometry ] = import_poscar( filename )
  
     geometry.comment = fgetl(fid); % comment
     scale = fscanf(fid, '%f',1); % scale factor for coordinates
+
+    if isempty(scale) || ~isfinite(scale) || scale <= 0
+      error([ mfilename ': Not a POSCAR file: ' filename ]);
+    end
     
     geometry.lattice = fscanf(fid, '%f %f %f', [3 3])'; 
     geometry.lattice = geometry.lattice*scale;
@@ -78,6 +101,9 @@ function [ geometry ] = import_poscar( filename )
     end
     geometry.atomcount = sscanf(line,'%d');
     natoms = sum(geometry.atomcount);
+    if natoms <= 0
+      error([ mfilename ': Not a POSCAR file: ' filename ]);
+    end
         
     line = fgetl(fid); % Direct/cart or selective
     geometry.selective = 0;

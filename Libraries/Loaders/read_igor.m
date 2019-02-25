@@ -9,7 +9,14 @@ function data = read_igor(filename)
 %
 % See also: read_tdms, read_lvm, read_idl, read_fig
 data = [];
-if nargin == 0, return; end
+
+if nargin == 0 || any(strcmp(filename, {'identify','query','defaults'}))
+    data.name           = 'Igor WaveMetrics Wave data';
+    data.extension      = 'ibw';
+    data.method         = mfilename;
+    return
+end
+
 data = IBWread(filename);
 
 

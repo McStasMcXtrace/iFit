@@ -16,7 +16,13 @@ function data = read_bruker(file)
 %
 % See also: read_jeol, read_varian, read_opus
   data = [];
-  if nargin == 0, return; end
+  
+  if nargin == 0 || any(strcmp(file, {'identify','query','defaults'}))
+    data.name    = 'Bruker NMR data set';
+    data.method  = mfilename;
+    return
+end
+  
   if ~isdir(file)
     file = fileparts(file);
   end

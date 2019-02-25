@@ -81,7 +81,16 @@
 function result = read_pdb(name)
 
 result = [];
-if nargin == 0, return; end
+
+if nargin == 0 || any(strcmp(name, {'identify','query','defaults'}))
+    PDB.name            ='Protein Data Bank';
+    PDB.extension       ='pdb';
+    PDB.method          =mfilename;
+    PDB.patterns        ={'HEADER','COMPND','SOURCE','EXPDTA','AUTHOR','REVDAT'};
+    PDB.postprocess     = 'load_xyen';
+    data = PDB;
+    return
+end
 
 rho_water = 0.334611 ; % Density of electrons per cubic Angstrom in solvent.
 

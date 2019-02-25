@@ -42,12 +42,19 @@ function endf = read_endf(filename)
 
 persistent status
 
+if nargin == 0 || any(strcmp(filename, {'identify','query','defaults'}))
+    endf.name           = 'ENDF';
+    endf.method         = mfilename;
+    endf.extension      = {'dat','tsl','endf'};
+    endf.patterns       = {'EVAL-','DIST-','ENDF'};
+    endf.postprocess    = 'openendf';
+    return
+end
+
 % ============================ Use PyNE ? ======================================
 if ~exist('status') || isempty(status) || ~isstruct(status)
   status = read_endf_pyne_present;  % private function inline below
 end
-
-if nargin == 0, return; end
 
 if status
   endf = read_endf_pyne(filename);  % private function inline below

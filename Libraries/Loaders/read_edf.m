@@ -16,7 +16,13 @@ function s = read_edf(filename)
 
 s = [];
 
-if nargin == 0, return; end
+if nargin == 0 || any(strcmp(file, {'identify','query','defaults'}))
+    ESRF_edf.name       ='EDF ESRF Data Format';
+    ESRF_edf.method     =mfilename;
+    ESRF_edf.extension  ='edf';
+    s = EDF;
+    return
+end
 
 % read the file
 [header, data] = pmedf_read(filename);

@@ -52,6 +52,16 @@ function outargs=read_idl(varargin)
 % Sept 2015 - update will corrections made to restore_idl_gui in response
 % to user feedback, repackage as callable function vs GUI application.
 
+
+if nargin == 0 || any(strcmp(filename, {'identify','query','defaults'}))
+    idl_sav.name        = 'IDL SAV';
+    idl_sav.method      = mfilename;
+    idl_sav.extension   = 'sav';
+    outargs = idl_sav;
+    return
+end
+    
+
 global frestore_verbose
 frestore_verbose=0;
 verbose=0;

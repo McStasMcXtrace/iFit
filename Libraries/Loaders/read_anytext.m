@@ -77,6 +77,15 @@ elseif strcmp(varargin{1}, 'compile') || strcmp(varargin{1}, 'check')
   return
 end
 
+if any(strcmp(varargin{1}, {'identify','query','defaults'}))
+    s.name        ='Data (text format with fast import method)';
+    s.options     ='--headers --binary --comment=NULL --silent --catenate --fortran';
+    s.method      =mfilename;
+    s.postprocess ='load_xyen';
+    s.patterns    ='';
+    return
+end
+
 argv={};
 
 user.outfile = '';

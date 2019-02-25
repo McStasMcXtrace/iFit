@@ -10,6 +10,15 @@ function s = read_xml( file )
 % (c) E.Farhi, ILL. License: EUPL.
 % See also: read_json, read_yaml
   
+  if nargin == 0 || any(strcmp(file, {'identify','query','defaults'}))
+    s.name       ='XML Extensible Markup Language';
+    s.patterns   ='<?xml';
+    s.method     =mfilename;
+    s.postprocess='opennxs';
+    s.extension  ='xml';
+    return
+  end
+  
   try
     s = xml2struct(file);
   catch

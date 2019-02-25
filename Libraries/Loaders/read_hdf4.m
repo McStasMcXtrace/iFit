@@ -14,6 +14,14 @@ function data = read_hdf4(filename)
 % (c) E.Farhi, ILL. License: EUPL.
 % See also: read_hdf5, read_nc, read_cdf
 
+if nargin == 0 || any(strcmp(filename, {'identify','query','defaults'}))
+    data.name       ='HDF4/NeXus Hierarchical Data Format';
+    data.method     =mfilename;
+    data.extension  ={'hdf4','h4','hdf','nx','nxs','n4'};
+    data.postprocess= 'openhdf';
+    return
+end
+
 % read file structure
 try
   s = hdfinfo(filename);

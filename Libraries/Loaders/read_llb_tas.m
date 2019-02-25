@@ -12,7 +12,13 @@ function data = read_llb_tas( filename )
 
 % built from B. Nennion wfal/read_fich.f
 data = [];
-if nargin == 0, return; end
+
+if nargin == 0 || any(strcmp(filename, {'identify','query','defaults'}))
+    llb_tas.name        = 'LLB/TAS binary';
+    llb_tas.method      = mfilename;
+    data = llb_tas;
+    return
+end
 
 [p,f,e]= fileparts(filename);
 if isempty(f)

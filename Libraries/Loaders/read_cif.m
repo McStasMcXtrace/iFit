@@ -41,6 +41,15 @@ function [data, this] = read_cif(file)
 % See also: read_pdb, read_cbf, read_poscar
 
   data = []; this = [];
+  
+  if nargin == 0 || any(strcmp(file, {'identify','query','defaults'}))
+    CIF.name        = 'CFL/PCR FullProf, CIF, INS/RES/SHX ShelX file (CrysFML)';
+    CIF.method      = mfilename;
+    CIF.extension   ={'cif','pcr','pcr','cfl','ins','res','shx'};
+    CIF.postprocess ='opencif';
+    s = CIF;
+    return
+  end
 
   % test if the given file is a chemical formula, in which case we make a query to COD
   if (iscellstr(file) || ischar(file)) && isempty(dir(file))

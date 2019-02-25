@@ -29,6 +29,14 @@ if isempty(h5_present)
   end
 end
 
+if nargin == 0 || any(strcmp(filename, {'identify','query','defaults'}))
+    data.name        ='HDF4/NeXus Hierarchical Data Format';
+    data.method      =mfilename;
+    data.postprocess ='openhdf';
+    data.extension   ={'hdf','hdf5','h5','nx','nxs','n5','nxspe'};
+    return
+end
+
 % read file structure
 try
   if h5_present

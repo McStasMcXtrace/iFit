@@ -51,7 +51,55 @@ function data = read_mccode(filename)
 % check for input argument: filename ?
   data = {};
   
-  if nargin == 0
+  if nargin == 0 || any(strcmp(filename, {'identify','query','defaults'}))
+    mcstas_scan.name       ='McCode Scan DAT output';
+    mcstas_scan.patterns   ={'# type: multiarray_1d','# variables:','# title: Scan of'};
+    mcstas_scan.postprocess='opensim';
+    
+    mcstas_list.name       ='McCode list monitor';
+    mcstas_list.patterns   ={'Format: ','# type: array_2d','# xlabel: List of neutron events'};
+    mcstas_list.options    = ['--fast --binary --headers --comment=NULL --metadata=variables --silent --catenate ' ...
+		    '--metadata=xlabel --metadata=Creator ' ...
+		    '--metadata=ylabel --metadata=xylimits --metadata=component --metadata=Param ' ];
+    mcstas_list.method     ='read_anytext';
+    mcstas_list.postprocess='opensim';
+    
+    mcstas_2D.name       ='McCode 2D monitor';
+    mcstas_2D.patterns   ={'Format: ','# type: array_2d'};
+    mcstas_2D.postprocess='opensim';
+    
+    mcstas_1D.name       ='McCode 1D monitor';
+    mcstas_1D.patterns   ={'Format: ','# type: array_1d'};
+    mcstas_1D.postprocess={'load_xyen','opensim'};
+    
+    mcstas_0D.name       ='McCode 0D monitor';
+    mcstas_0D.patterns   ={'Format: ','# type: array_0d'};
+    mcstas_0D.postprocess={'opensim'};
+    
+    mcstas_sim.name       ='McCode sim file';
+    mcstas_sim.extension  ='sim';
+    mcstas_sim.patterns   ={'begin simulation','begin instrument','begin data'};
+    mcstas_sim.postprocess='opensim';
+    
+    mcstas_sqw.name       ='McCode Sqw table';
+    mcstas_sqw.patterns   ={'Sqw data file'};
+    mcstas_sqw.options    ='--fast --binary  --headers --comment=NULL --silent --metadata=title ';
+    mcstas_sqw.method     ='read_anytext';
+    mcstas_sqw.postprocess='opensqw';
+    mcstas_sqw.extension  ={'sqw','sqw4'};
+    
+    mcstas_powder.name       ='McCode powder table (LAZ/LAU)';
+    mcstas_powder.patterns   ={'lattice_a','column_'};
+    mcstas_powder.options    ='--fast --binary  --headers --comment=NULL --silent ';
+    mcstas_powder.method     ='read_anytext';
+    mcstas_powder.postprocess='openlaz';
+    mcstas_powder.extension  ={'laz','lau'};
+    
+    data = { mcstas_scan, mcstas_list, mcstas_sqw, mcstas_powder, mcstas_2D, mcstas_1D, mcstas_0D, mcstas_sim };
+    for index=1:numel(data)
+      if ~isfield(data{index},'method'), data{index}.method = mfilename; end
+    end
+    
     return
   end
 

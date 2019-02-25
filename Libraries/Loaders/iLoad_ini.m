@@ -233,7 +233,7 @@ function config = iLoad_ini
     
     ace.name            = 'ACE';
     ace.method          = 'read_ace';
-    ace.extension       = {'ace',};
+    ace.extension       = {'ace'};
     ace.postprocess     = 'openendf';
     
     yaml.name           = 'YAML';

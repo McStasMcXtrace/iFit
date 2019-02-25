@@ -18,7 +18,14 @@ function [Data] = read_mrc(file)
 %
 % See also: read_poscar, read_pdb, read_xyz, read_nii, read_analyze
 Data = [];
-if nargin == 0, return; end
+
+if nargin == 0 || any(strcmp(file, {'identify','query','defaults'}))
+    MRC.name            ='MRC/CCP4 electron density map';
+    MRC.extension       ={'mrc','ccp4','map','res'};
+    MRC.method          =mfilename;
+    Data = MRC;
+    return
+end
 
 % first try as a legacy MRC file
 Data = tom_mrcread(file);       % inline below

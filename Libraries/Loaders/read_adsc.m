@@ -43,7 +43,16 @@
 function frame = read_adsc(fname)
 
 frame = [];
-if nargin == 0, return; end
+
+if nargin == 0 || any(strcmp(filename, {'identify','query','defaults'}))
+    ADSC_CCD.name       ='ADSC CCD Camera';
+    ADSC_CCD.method     =mfilename;
+    ADSC_CCD.extension  ='img';
+    ADSC_CCD.patterns   ={'HEADER_BYTES','CCD_IMAGE_SATURATION'};
+    frame = ADSC_CCD;
+    return
+end
+
 % Open the image file
 fid = fopen(fname,'r'); 
 if (fid<0)

@@ -13,7 +13,21 @@ function s = read_image(filename)
 % See also: read_fits, imformats
 
 s=[];
-if nargin == 0, return; end
+
+
+if nargin == 0 || any(strcmp(filename, {'identify','query','defaults'}))
+    % we get the imformats extensions
+    imf = imformats;
+    imfext = {};
+    for index=1:numel(imf)
+      imfext = [ imfext imf(index).ext{:} ];
+    end
+    
+    s.name           = 'Image/Picture';
+    s.extension      = imfext;
+    s.method         = mfilename;
+    return
+end
 
 try
   s       = imfinfo(filename);

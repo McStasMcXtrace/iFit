@@ -151,6 +151,17 @@
 
 
 function data =sifreadnk(file)
+
+if nargin == 0 || any(strcmp(file, {'identify','query','defaults'}))
+    Andor_SIF.name      ='Andor SIF CCD Camera';
+    Andor_SIF.method    =mfilename;
+    Andor_SIF.extension ='sif';
+    Andor_SIF.patterns  = 'Andor Technology Multi-Channel File';
+    data = Andor_SIF;
+    return
+end
+  
+  
 f=fopen(file,'r');
 if f < 0
    error('Could not open the file.');

@@ -23,6 +23,14 @@ function s = read_npy(filename)
 %
 s = [];
 
+if nargin == 0 || any(strcmp(filename, {'identify','query','defaults'}))
+    NPY.name            = 'Numpy NPY array';
+    NPY.method          = mfilename;
+    NPY.extension       = 'npy';
+    data = NPY;
+    return
+end
+
 % in private dir.
 [s.shape, s.dataType, s.fortranOrder, s.littleEndian, s.totalHeaderLength, s.npyVersion] = readNPYheader(filename);
 if isempty(s.shape), s=[]; return; end

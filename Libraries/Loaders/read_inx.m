@@ -37,12 +37,19 @@
 %--------------------------------------------------------------------------
 function s = read_inx(filename,varargin)
 
+if nargin == 0 || any(strcmp(filename, {'identify','query','defaults'}))
+    ILL_inx.name       ='ILL INX tof data';
+    ILL_inx.method     =mfilename;
+    ILL_inx.postprocess='openinx';
+    ILL_inx.extension  ={'inx','ino'};
+    s=ILL_inx;
+    return
+end
 
 s.header = '';
 s.Par    = [];
 s.Mat    = [];
 %--------------find-path-and-load---------------------------------
-if nargin == 0, return; end
 
 FID = fopen(filename);
 

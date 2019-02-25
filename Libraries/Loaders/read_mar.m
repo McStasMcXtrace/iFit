@@ -36,8 +36,15 @@ function [frame,vararg_remain] = read_mar(filename,varargin)
 debug_level = 0;
 
 % initialize return argument
-frame = struct('header',[], 'data',[]);
-if nargin == 0, return; end
+frame = struct('header',[], 'data',[]); vararg_remain=[];
+
+if nargin == 0 || any(strcmp(filename, {'identify','query','defaults'}))
+    Mar_CCD.name        ='MarResearch CCD Camera';
+    Mar_CCD.method      =mfilename;
+    Mar_CCD.extension   ={'mar','mccd'};
+    frame = Mar_CCD;
+    return
+end
 
 % check minimum number of input arguments
 if (nargin < 1)

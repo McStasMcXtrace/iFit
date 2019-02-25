@@ -16,7 +16,14 @@ function S = read_nc(File,varargin)
 %
 % See also: read_hdf4, read_hdf5, read_cdf
   S=[];
-  if nargin == 0, return; end
+
+  if nargin == 0 || any(strcmp(File, {'identify','query','defaults'}))
+    S.name            ='NetCDF (.nc)';
+    S.extension       ={'nc','cdf'};
+    S.method          =mfilename;
+    S.postprocess     ={'opencdf','load_nmoldyn'};
+    return
+  end
   
   try
     % a NetCDF reader using netcdf lib (faster)

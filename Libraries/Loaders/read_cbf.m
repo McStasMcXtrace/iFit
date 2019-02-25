@@ -41,12 +41,24 @@ persistent compiled
 % 0: no debug information
 % 1: some feedback
 % 2: a lot of information
-debug_level = 0;
+debug_level = 0; vararg_remain=[];
 
 % initialize return argument
 frame = struct('header',[], 'data',[]);
 
-if nargin == 0, return; end
+if nargin == 0 || any(strcmp(filename, {'identify','query','defaults'}))
+    CBF.name            ='Crystallographic Binary File';
+    CBF.extension       ='cbf';
+    CBF.method          =mfilename;
+    CBF.postprocess     ='opencbf';
+    CBF.patterns        ={'###CBF: VERSION'};
+    frame = CBF;
+    return
+end
+
+    
+
+
 % check minimum number of input arguments
 if (nargin < 1)
     error('At least the filename has to be specified as input parameter.');

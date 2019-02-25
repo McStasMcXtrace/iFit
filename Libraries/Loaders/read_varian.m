@@ -10,7 +10,13 @@ function data = read_varian(file)
 %
 % See also: read_jeol, read_bruker, read_opus
   data = [];
-  if nargin == 0, return; end
+  
+if nargin == 0 || any(strcmp(file, {'identify','query','defaults'}))
+    nmr_varian.name     = 'Varian NMR data set';
+    nmr_varian.method   = mfilename;
+    data = nmr_varian;
+    return
+end
   
   if ~isdir(file)
     file = fileparts(file);

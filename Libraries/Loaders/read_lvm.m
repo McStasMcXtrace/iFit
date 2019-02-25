@@ -171,6 +171,16 @@ function data = read_lvm(filename,verbose)
 if nargin < 2, verbose = 0; end
 if verbose >= 1, fprintf(1,'\nlvm_import v2.2\n'); end
 
+if nargin == 0 || any(strcmp(filename, {'identify','query','defaults'}))
+    labview.name        = 'LabView Measurement File';
+    labview.extension   = 'lvm';
+    labview.method      = mfilename;
+    labview.patterns    = {'LabVIEWMeasurement'};
+    data = labview;
+    return
+end
+
+
 % ask for filename if not provided already
 if nargin < 1
     filename=input(' Enter the name of the .lvm file: ','s');

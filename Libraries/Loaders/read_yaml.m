@@ -11,7 +11,14 @@ function s = read_yaml(filename)
 % See also: read_json, read_xml
 
 s=[];
-if nargin == 0, return; end
+
+if nargin == 0 || any(strcmp(filename, {'identify','query','defaults'}))
+    s.name           = 'YAML';
+    s.patterns       ='';
+    s.method         = mfilename;
+    s.extension      = {'yaml','yml'};
+    return
+end
 
 s       = YAML.read(filename);
 

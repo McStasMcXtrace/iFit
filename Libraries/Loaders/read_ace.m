@@ -17,6 +17,14 @@ function ace = read_ace(filename)
 
 persistent status
 
+if nargin == 0 || any(strcmp(filename, {'identify','query','defaults'}))
+    ace.name            = 'ACE (A compact ENDF) nuclear data';
+    ace.method          = mfilename;
+    ace.extension       = {'ace'};
+    ace.postprocess     = 'openendf';
+    return
+end
+
 % ============================ Use PyNE ? ======================================
 if ~exist('status') || isempty(status) || ~isstruct(status)
   status = read_ace_pyne_present;  % private function inline below
@@ -43,9 +51,9 @@ function status = read_ace_pyne_present
   [status, result] = system([ precmd 'python -c "import pyne"' ]);
   if status ~= 0  % not present
     status = 0;
-    disp([ mfilename ': warning: would make good use of PyNE.' ])
-    disp('  Get it at <http://pyne.io/>.');
+    disp('  Get Python-PYNE at <http://pyne.io/>.');
     disp('  Package exists for Debian/Mint/Ubuntu at <http://packages.mccode.org>.');
+    error([ mfilename ': warning: would make good use of PyNE.' ])
   else
     status = 1;
   end

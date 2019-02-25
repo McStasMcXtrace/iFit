@@ -8,7 +8,14 @@ function s = read_cdf(filename)
 
 s=[];
 
-if nargin == 0, return; end
+if nargin == 0 || any(strcmp(filename, {'identify','query','defaults'}))
+    CDF.name            ='Common Data Format CDF (.cdf)';
+    CDF.extension       ='cdf';
+    CDF.method          =mfilename;
+    CDF.postprocess     ={'opencdf','load_nmoldyn'};
+    s = CDF;
+    return
+end
 
 % turn OFF file validation to improve performance
 cdflib.setValidate('VALIDATEFILEoff');

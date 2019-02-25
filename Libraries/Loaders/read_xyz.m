@@ -11,7 +11,13 @@
 function s = read_xyz(filename)
 
   s = [];
-  if nargin == 0, return; end
+  if nargin == 0 || any(strcmp(filename, {'identify','query','defaults'}))
+    s.name       ='XYZ chemical format';
+    s.patterns   ='';
+    s.method     =mfilename;
+    s.extension  ='xyz';
+    return
+  end
   
   fid = fopen(filename,'r');
 

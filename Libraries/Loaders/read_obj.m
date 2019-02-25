@@ -11,7 +11,15 @@ function data = read_obj(filename)
 
   
   data = [];
-  if nargin == 0, return; end
+
+  if nargin == 0 || any(strcmp(filename, {'identify','query','defaults'}))
+    OBJ.name            ='OBJ Wavefront 3D';
+    OBJ.method          =mfilename;
+    OBJ.extension       ='obj';
+    OBJ.patterns        ={'v '};
+    data = OBJ;
+    return
+  end
   
   [p,f,e] = fileparts(filename);
   if ~strcmpi(e, '.obj'), return; end

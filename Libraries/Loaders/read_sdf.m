@@ -15,6 +15,14 @@
 
 function data = read_sdf(filename)
 
+  if nargin == 0 || any(strcmp(filename, {'identify','query','defaults'}))
+    agilent_sdf.name    = 'HP/Agilent/Keysight Standard Data Format';
+    agilent_sdf.method  = mfilename;
+    agilent_sdf.extension = { 'sdf', 'tim' };
+    data = agilent_sdf;
+    return
+  end
+
   data = SDF_import(filename);
   
 end
