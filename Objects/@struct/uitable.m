@@ -163,8 +163,8 @@ function structure = uitable(structure,options)
   ColumnName = 'Description';
   ColumnName = [ ColumnName 'Field' num2cell(1:numel(structure)) ];
   ColumnEditable = [ false true ];
-  ColumnWidth = {max(cellfun(@numel,options.ListString))*options.FontSize/2, ...
-    max(cellfun(@numel,fields))*options.FontSize/2};
+  ColumnWidth = {max(cellfun(@numel,options.ListString)+4)*options.FontSize/2, ...
+    max(cellfun(@numel,fields)+4)*options.FontSize/2};
   ColumnFormat = { 'char' 'char' }; % Description and field names
   for index_s = 1:numel(structure)
     ColumnEditable(end+1) = true;

@@ -3,11 +3,11 @@ function s = set(s, varargin)
 %    V = SET(S,'PropertyName','Value') set the value of the specified
 %    property/field in the structure.  
 %
-%    V = SET(S,'PropertyName1.PropertyName2', Value')
+%    V = SET(S,'PropertyName1.PropertyName2', 'Value')
 %    The 'PropertyName' can be a full structure path, such as 'field1.field2' in
 %    in which case the value assigment is made recursive.
 %
-%    V = SET(S,'PropertyName1.PropertyName2', Value','link')
+%    V = SET(S,'PropertyName1.PropertyName2', 'Value','link')
 %    When the target property is itself a valid structure path (char), it is also 
 %    travelled through before asiigment.
 % 
@@ -52,6 +52,9 @@ function s = set(s, varargin)
   
   s = set_single(s, field, value, follow, s);
   
+  % reset cache (as we have changed the object: fields, values, ...)
+  s.Private.cache.findfield = [];
+  
 % ----------------------------------------------------------------------------
 function [s, rec] = set_single(s, field, value, follow, s0)
   % set_single set a single field to given value
@@ -67,7 +70,7 @@ function [s, rec] = set_single(s, field, value, follow, s0)
   
   if ~isfield(s, tok) % new field ?
     if isa(s, 'estruct')
-      s.addprop(tok);
+      s.addprop(genvarname(tok));
     else
       s.(tok) = [];
     end

@@ -30,7 +30,8 @@ classdef estruct < dynamicprops & hgsetget
 %  See also isstruct, setfield, getfield, fieldnames, orderfields, 
 %  isfield, rmfield, deal, substruct, struct2cell, cell2struct.
 
-  properties
+  properties (Access=protected)
+    Private
   end
   
   methods
@@ -65,6 +66,7 @@ classdef estruct < dynamicprops & hgsetget
     %  See also isstruct, setfield, getfield, fieldnames, orderfields, 
     %  isfield, rmfield, deal, substruct, struct2cell, cell2struct.
       warning('off','MATLAB:structOnObject');
+      new.Private.cache = []; % init cache
       
       % append arguments
       index=1;

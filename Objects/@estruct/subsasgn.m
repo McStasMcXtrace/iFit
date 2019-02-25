@@ -29,4 +29,5 @@ end
 % special syntax not handled: use builtin
 a = builtin('subsasgn', a, S, val);
 
-
+% reset cache (as we have changed the object: fields, values, ...)
+a.Private.cache.findfield = [];

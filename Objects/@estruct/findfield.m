@@ -45,12 +45,27 @@ end
 
 struct_s=struct(s);
 
-% find all fields in object structure
-[match, types, dims] = struct_getfields(struct_s, '');
-
-[match, index] = unique(match);
-types=types(index);
-dims =dims(index);
+if isfield(s.Private, 'cache') && isfield(s.Private.cache, mfilename) ...
+  && ~isempty(s.Private.cache.(mfilename))
+  % get content from cache
+  cache = s.Private.cache.(mfilename);
+  match = cache.match;
+  types = cache.types;
+  dims  = cache.dims;
+else
+  % find all fields in object structure
+  [match, types, dims] = struct_getfields(struct_s, '');
+  
+  [match, index] = unique(match);
+  types=types(index);
+  dims =dims(index);
+  
+  % set content into cache
+  cache.match = match;
+  cache.types = types;
+  cache.dims  = dims;
+  s.Private.cache.(mfilename) = cache;
+end
 
 % filter fields: numeric and char types
 if ~isempty(strfind(option, 'numeric')) || ~isempty(strfind(option, 'char'))

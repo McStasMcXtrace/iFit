@@ -116,6 +116,7 @@ function structure = uitable(structure,options)
     end
   end
   options.ListString = ListString;
+  structure = rmfield(struct(structure), 'Private');
   
   % create the Table content to display, handle array of structures
   % check if the structure values are numeric, logical, or char
@@ -238,7 +239,7 @@ function structure = uitable(structure,options)
     end
 
     % assemble new options...
-    structure = cell2struct(Data, fields, 1);
+    structure = estruct(cell2struct(Data, fields, 1));
     rmappdata(0, tmp_storage);
   else
     structure = ad;
