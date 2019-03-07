@@ -74,7 +74,7 @@ function [data, format] = iLoad(filename, loader, varargin)
 % calls:    urlread
 % optional: uigetfiles, looktxt, unzip, untar, gunzip (can do without)
 % private:  iLoad_loader_auto, iLoad_config_load, iLoad_config_save, 
-%           iLoad_import, iLoad_loader_check, findfields
+%           iLoad_import, iLoad_loader_check, iLoad_findfield
 
   persistent config
 
@@ -88,7 +88,7 @@ function [data, format] = iLoad(filename, loader, varargin)
   if nargin < 2,  loader = ''; end
   if nargin ==1 && (ischar(filename) || isstruct(filename))
     if any(strcmp(filename, {'load config','config','force','force load config','formats','display config','load','save','compile','check'}))
-      [data, format] = iLoad('', filename);
+      [data, format] = iLoad('', filename, varargin{:});
       return
     elseif  isstruct(filename)
       config = filename;
@@ -163,7 +163,7 @@ function [data, format] = iLoad(filename, loader, varargin)
     end
     
     if ~isempty(filename)
-      data    = iLoad(filename, 'load config');
+      data    = iLoad(filename, 'load config', varargin{:});
     else
       data    = config;
     end
@@ -172,14 +172,20 @@ function [data, format] = iLoad(filename, loader, varargin)
   elseif strcmp(loader, 'formats') || strcmp(loader, 'display config')  || strcmp(loader, 'list')
 
     if ~isempty(filename)
-      data    = iLoad(filename, 'load config');
+      data    = iLoad(filename, 'load config', varargin{:});
     else
-      data = iLoad('','load config');
+      data = iLoad('','load config', varargin{:});
     end
     fprintf(1, ' EXT                    READER  DESCRIPTION [%s]\n', mfilename);
-    fprintf(1, '-----------------------------------------------------------------\n');  
-    for index=1:length(data.loaders)
-      this=data.loaders{index};
+    fprintf(1, '-----------------------------------------------------------------\n');
+    % use optinal format filter
+    if ~isempty(varargin) && ischar(varargin{1}), token=varargin{1}; else token=''; end
+    % display loaders
+    if isstruct(data) && isfield(data,'loaders'), data=data.loaders; end
+    for index=1:length(data)
+      if iscell(data) this=data{index}; 
+      elseif isstruct(data) this=data(index); 
+      else continue; end
       if isfield(this,'postprocess'), 
         if ~isempty(this.postprocess)
           if iscell(this.postprocess)
@@ -194,11 +200,15 @@ function [data, format] = iLoad(filename, loader, varargin)
       if length(this.method)>25, this.method = [ this.method(1:22) '...' ]; end
       if ~isfield(this,'extension'), this.extension = '*';
       elseif isempty(this.extension), this.extension='*'; end
-      if iscellstr(this.extension)
-        fprintf(1,'%4s %25s  %s\n', upper(this.extension{1}), this.method,this.name);
-        for j=2:length(this.extension),fprintf(1,'  |.%s\n', upper(this.extension{j})); end
-      else
-        fprintf(1,'%4s %25s  %s\n', upper(this.extension), this.method,this.name);
+      
+      % use filter ?
+      if isempty(token) || (any(strfind(this.extension, token)) || any(strfind(this.name, token)))
+        if iscellstr(this.extension)
+          fprintf(1,'%4s %25s  %s\n', upper(this.extension{1}), this.method,this.name);
+          for j=2:length(this.extension),fprintf(1,'  |.%s\n', upper(this.extension{j})); end
+        else
+          fprintf(1,'%4s %25s  %s\n', upper(this.extension), this.method,this.name);
+        end
       end
     end
     disp([ '% iLoad configuration file: ' config.FileName ]);
@@ -280,7 +290,7 @@ function [data, format] = iLoad(filename, loader, varargin)
         format = this_format;
         return
       else
-        f = findfield(data, filesub(2:end)); % calls private function
+        f = iLoad_findfield(data, filesub(2:end)); % calls private function
         if iscell(f) && all(cellfun(@isempty, f)), f=[]; end
         if ~isempty(f)
           this_data = {}; this_format = {};
@@ -591,10 +601,6 @@ function [data, format] = iLoad(filename, loader, varargin)
     % special test to avoid reading binary file with read_anytext
     data = iLoad_loader_check(filename, data, loader);
     
-    % in case this import returns an array of struct, make it a cell array
-    
-    return
-    
   end % iLoad_import
   
   % -----------------------------------------------------------
@@ -636,635 +642,64 @@ function [data, format] = iLoad(filename, loader, varargin)
     % identify by patterns
     for index=1:length(formats)
       loader = formats{index};
-      if ~isstruct(loader), break; end
+      if ~isstruct(loader), continue; end
 
-      if (isfield(loader, 'exist') && loader.exist == 1) ...
-        || exist(loader.method, 'file')
-        if ~isfield(loader,'patterns'), loader.patterns=''; end
-        
-        patterns_found = 0;
-        if verbose, fprintf(1,'iLoad: method %s: file %s: analyzing\n', loader.name, file); end
-        
-        % the loader is selected if: 
-        %   loader has extension and extension matches, no patterns to search
-        if ~patterns_found && isempty(loader.patterns)
-          if ~isfield(loader,'extension'), ext=''; 
-          else ext=loader.extension; end
-          if ischar(ext) && ~isempty(ext), ext={ ext }; end
-          if ~isempty(ext) && ~isempty(fext) 
-            if any(strcmpi(fext, ext))
-              patterns_found  = 1;  % extension does match
-              if verbose, disp([ 'iLoad: method ' loader.name ': ' file ': extension ' ext{1} ' matches' ]); end
-            end
+      if ~isfield(loader,'patterns'), loader.patterns=nan; end
+      
+      patterns_found = 0;
+      if verbose, fprintf(1,'iLoad: method %s: file %s: analyzing\n', loader.name, file); end
+      
+      % the loader is selected if: 
+      %   loader has extension and extension matches, no patterns to search
+      if ~patterns_found && (isempty(loader.patterns) || isnan(loader.patterns))
+        if ~isfield(loader,'extension'), ext=''; 
+        else ext=loader.extension; end
+        if ischar(ext) && ~isempty(ext), ext={ ext }; end
+        if ~isempty(ext) && ~isempty(fext) 
+          if any(strcmpi(fext, ext))
+            patterns_found  = 1;  % extension does match
+            if verbose, disp([ 'iLoad: method ' loader.name ': ' file ': extension ' ext{1} ' matches' ]); end
           end
         end
+      end
         
-        %   loader has patterns and not binary and patterns match file_start, 
-        %   whatever be the extension
-        % ~isbinary may be removed in case it suppresses e.g. text/binary formats such as EDF, ADSC, ...
-        if ~patterns_found && ~isempty(loader.patterns) && ~isbinary 
-        
-          % check all patterns in text file
-          if ischar(loader.patterns), loader.patterns=cellstr(loader.patterns); end
-          all_match = 1;
-          for index_pat=1:numel(loader.patterns) % all patterns must match
-            if isempty(regexpi(file_start, loader.patterns{index_pat}, 'once'))
-              all_match=0;     % at least one pattern does not match
-              if verbose, fprintf(1,'iLoad: method %s: file %s: at least one pattern does not match (%s)\n', loader.name, file, loader.patterns{index_pat}); end
-              break;
-            end
-          end % for patterns
-          if all_match, patterns_found=1; 
-            if verbose, disp([ 'iLoad: method ' loader.name ': ' file ': patterns match' ]); end
+      %   loader has patterns and not binary and patterns match file_start, 
+      %   whatever be the extension
+      % ~isbinary may be removed in case it suppresses e.g. text/binary formats such as EDF, ADSC, ...
+      if ~isempty(loader.patterns) && ischar(loader.patterns)
+        loader.patterns=cellstr(loader.patterns); 
+      end
+      
+      if ~patterns_found && ~isempty(loader.patterns) && iscellstr(loader.patterns) && ~isbinary 
+      
+        % check all patterns in text file
+        all_match = 1;
+        for index_pat=1:numel(loader.patterns) % all patterns must match
+          if isempty(regexpi(file_start, loader.patterns{index_pat}, 'once'))
+            all_match=0;     % at least one pattern does not match
+            if verbose, fprintf(1,'iLoad: method %s: file %s: at least one pattern does not match (%s)\n', loader.name, file, loader.patterns{index_pat}); end
+            break;
           end
+        end % for patterns
+        if all_match, patterns_found=1; 
+          if verbose, disp([ 'iLoad: method ' loader.name ': ' file ': patterns match' ]); end
         end
+      end
         
-        %   loader has no extension and no patterns
-        if ~patterns_found && isempty(ext) && isempty(loader.patterns)
-          patterns_found = 1; % we will try all non selective loaders
-          if verbose, disp([ 'iLoad: method ' loader.name ': ' file ': no patterns nor extension: select by default' ]); end
-        end
+      %   loader has no extension and no patterns
+      if ~patterns_found && isempty(ext) && isempty(loader.patterns)
+        patterns_found = 1; % we will try all non selective loaders
+        if verbose, disp([ 'iLoad: method ' loader.name ': ' file ': no patterns nor extension: select by default' ]); end
+      end
         
-        if patterns_found
-          loaders_count = loaders_count+1;
-          loaders{loaders_count} = loader;
-        end
-      else
-        fprintf(1,'iLoad: WARNING: method %s "%s": method not found ? Check the iLoad_ini configuration file (%s).\n', loader.name, loader.method, config.FileName);
-      end % if exist(method)
+      if patterns_found
+        loaders_count = loaders_count+1;
+        loaders{loaders_count} = loader;
+      end
+
     end % for index
-
-    return;
 
   end % iLoad_loader_auto
 
 end % iLoad (main)
 
-% -----------------------------------------------------------
-% private function to make the data pretty looking
-function data = iLoad_loader_check(file, data, loader)
-
-  if isempty(data), return; end
-  % handle case when a single file generates a data set
-  newdata = {};
-  if isstruct(data) & length(data)>1
-    for index=1:numel(data)
-      newdata = { newdata{:} iLoad_loader_check(file, data(index), loader) };
-    end
-    data = newdata;
-    return
-  elseif iscellstr(data)
-    fprintf(1, 'iLoad: Failed to import file %s with method %s (%s). Got a cell of strings. Ignoring\n', file, loader.name, char(loader.method));
-  elseif iscell(data) & numel(data)>1
-    for index=1:length(data)
-      if ~isempty(data{index})
-        this = iLoad_loader_check(file, data{index}, loader);
-        newdata = { newdata{:} this };
-      end
-    end
-    data = newdata; % now an array of struct
-    return
-  elseif iscell(data) && numel(find(~cellfun('isempty', data))) == 1
-    disp 'iLoad_loader_check input cell single'
-    data = data{find(~cellfun('isempty', data))};
-  end
-
-  name='';
-  if isstruct(loader),
-    method = loader.method;
-    options= loader.options;
-    if isfield(loader, 'name'), name=loader.name; end
-  else
-    method = loader; options=''; 
-  end
-
-  if isempty(method), method='iData/load'; end
-  if strcmp(loader, 'variable')
-    method='iData/load';
-  end
-  if isempty(name), name=method; end
-  if iscell(options), options= cellstr(options{1}); options= [ options{1} ' ...' ]; end
-  if ~isfield(data, 'Source')  & ~isfield(data, 'Date') ...
-   & ~isfield(data, 'Command') & ~isfield(data,' Data')
-    new_data.Data = data;
-    % transfer some standard fields as possible
-    if isfield(data, 'Source'), new_data.Source= data.Source; end
-    if isfield(data, 'Title'),  new_data.Title = data.Title; end
-    if isfield(data, 'Date'),   new_data.Date  = data.Date; end
-    if isfield(data, 'Label'),  new_data.Label = data.Label; end
-    
-    data = new_data;
-    
-  end
-
-  if ~isfield(data, 'Source') && ~isfield(data, 'Filename'),  data.Source = file;
-  elseif ( ~isfield(data, 'Source') || ( isfield(data, 'Source') && isempty(data.Source) )) ...
-     && isfield(data, 'Filename'), data.Source = data.Filename; end
-
-  if ~isfield(data, 'Title'),   
-    [pathname, filename, ext] = fileparts(file);
-    if ~strcmp(loader, 'variable'), data.Title  = [ filename ext ' ' name  ];
-    else data.Title  = [ filename ext ]; end
-  end
-  data.Title(data.Title == '%') = '';
-  
-  if ~isfield(data, 'Date')
-    if strcmp(loader, 'variable') data.Date   = clock; 
-    else
-        try
-            d=dir(file); data.Date=d.date; 
-        end
-    end
-  end
-
-  if ~isfield(data, 'Format'),
-    if ~strcmp(loader, 'variable'), data.Format  = [ name ' import with Matlab ' method ];  
-    else data.Format  = [ 'Matlab ' method ]; end
-  end
-
-  if strcmp(loader, 'variable')
-    data.Command = [ 'iLoad(' file ', ''' method ''', '''  options '''); % ' method ' method ' ];
-  else
-    data.Command = [ 'iLoad(''' file ''', ''' method ''', ''' options '''); % ' method ' method' ];
-  end
-
-  if ~isfield(data, 'Creator'), data.Creator = [ name ' iData/load/' method ]; 
-  else data.Creator = [ name ' iData/load/' method ' - ' data.Creator ]; end
-  if ~isfield(data, 'User'),
-    if isunix
-      data.User    = [ getenv('USER') ' running on ' computer ' from ' pwd ];
-    else
-      data.User    = [ 'User running on ' computer ' from ' pwd ];
-    end
-  end
-  if ~isfield(data, 'Label'), data.Label = ''; end
-  if     isfield(loader,'name')   data.Format = loader.name; 
-  elseif isfield(loader,'method') data.Format=[ char(loader.method) ' import' ]; 
-  elseif ischar(loader)           data.Format=[ char(loader) ' import' ]; end
-  data.Loader = loader;
-  
-end % Load_loader_check
-
-% -----------------------------------------------------------
-% private function to save the configuration and format customization
-function config = iLoad_config_save(config)
-  data = config.loaders;
-  format_names  ={};
-  format_methods={};
-  format_unique =ones(1,length(data));
-  % remove duplicated format definitions
-  for index=1:length(data)
-    if ~isempty(data{index}.name) ...
-      && any(strncmpi(data{index}.name,   format_names,   length(data{index}.name))) ... 
-      && any(strncmpi(data{index}.method, format_methods, length(data{index}.method)))
-      format_unique(index) = 0; % already exists. Skip it.
-      format_names{index}  = '';
-      format_methods{index}= '';
-    else
-      format_names{index} = data{index}.name;
-      format_methods{index} = data{index}.method;
-    end
-  end
-  data = data(find(format_unique));
-  config.loaders = data;
-  % save iLoad.ini configuration file
-  % make header for iLoad.ini
-  config.FileName=fullfile(prefdir, 'iLoad.ini'); % store preferences in PrefDir (Matlab)
-  str = [ '% iLoad configuration script file ' sprintf('\n') ...
-          '%' sprintf('\n') ...
-          '% Matlab ' version ' m-file ' config.FileName sprintf('\n') ...
-          '% generated automatically on ' datestr(now) ' with iLoad('''',''save config'');' sprintf('\n') ...
-          '%' sprintf('\n') ...
-          '% The configuration may be specified as:' sprintf('\n') ...
-          '%     config = { format1 .. formatN }; (a single cell of format definitions, see below).' sprintf('\n') ...
-          '%   OR a structure' sprintf('\n') ...
-          '%     config.loaders = { format1 .. formatN }; (see below)' sprintf('\n') ...
-          '%     config.UseSystemDialogs=''yes'' to use built-in Matlab file selector (uigetfile)' sprintf('\n') ...
-          '%                             ''no''  to use iLoad file selector           (uigetfiles)' sprintf('\n') ...
-          '%' sprintf('\n') ...
-          '% User definitions of specific import formats to be used by iLoad' sprintf('\n') ...
-          '% Each format is specified as a structure with the following fields' sprintf('\n') ...
-          '%   method:   function name to use, called as method(filename, options...)' sprintf('\n') ...
-          '%   extension:a single or a cellstr of extensions associated with the method' sprintf('\n') ...
-          '%   patterns: list of strings to search in data file. If all found, then method' sprintf('\n') ...
-          '%             is qualified. The patterns can be regular expressions.' sprintf('\n') ...
-          '%   name:     name of the method/format' sprintf('\n') ...
-          '%   options:  additional options to pass to the method.' sprintf('\n') ...
-          '%             If given as a string they are catenated with file name' sprintf('\n') ...
-          '%             If given as a cell, they are given to the method as additional arguments' sprintf('\n') ...
-          '%   postprocess: function called from iData/load after file import, to assign aliases, ...' sprintf('\n') ...
-          '%             called as iData=postprocess(iData)' sprintf('\n') ...
-          '%' sprintf('\n') ...
-          '% all formats must be arranged in a cell, sorted from the most specific to the most general.' sprintf('\n') ...
-          '% Formats will be tried one after the other, in the given order.' sprintf('\n') ...
-          '% System wide loaders are tested after user definitions.' sprintf('\n') ...
-          '%' sprintf('\n') ...
-          '% NOTE: The resulting configuration must be named "config"' sprintf('\n') ...
-          '%' sprintf('\n') ...
-          class2str('config', config) ];
-  [fid, message]=fopen(config.FileName,'w+');
-  if fid == -1
-    warning(['Error opening file ' config.FileName ' to save iLoad configuration.' ]);
-    config.FileName = [];
-  else
-    fprintf(fid, '%s', str);
-    fclose(fid);
-    disp([ '% Saved iLoad configuration into ' config.FileName ]);
-  end
-  
-end % iLoad_config_save
-  
-% -----------------------------------------------------------
-% private function to load the configuration and format customization
-function config = iLoad_config_load
-
-  loaders      = {};
-  % read user list of loaders which is a cell of format descriptions
-  if exist(fullfile(prefdir, 'iLoad.ini'), 'file')
-    % there is an iLoad_ini in the Matlab preferences directory: read it
-    configfile = fullfile(prefdir, 'iLoad.ini');
-    content = fileread(configfile);
-    % evaluate content of file
-    config=[]; eval(content(:)'); % this makes a 'config' variable
-    if iscell(config)
-      loaders = config; config=[];
-      config.loaders = loaders;
-      config.FileName= configfile;
-    end
-    disp([ '% Loaded iLoad format descriptions from ' config.FileName ]);
-  elseif exist('iLoad_ini', 'file')
-    config = iLoad_ini;
-  end
-  
-  % check if other configuration fields are present, else defaults
-  if ~isfield(config, 'UseSystemDialogs'), config.UseSystemDialogs = 'no'; end
-  if ~isfield(config, 'FileName'),         config.FileName = ''; end
-  if ~isfield(config, 'MeX'), config.MeX = []; end
-  if ~ischar(config.MeX) && ~isempty(config.MeX)
-    if ~isfield(config.MeX, 'looktxt')
-      if ispc || ismac, config.MeX.looktxt = 'yes'; 
-      else              config.MeX.looktxt = 'no'; end % Linux: avoid MeX which may be unstable (SEGV)
-    end
-    if ~isfield(config.MeX, 'cif2hkl'),      config.MeX.cif2hkl = 'yes'; end
-  end
-  
-  loaders = config.loaders;
-  
-  % we get the imformats extensions
-  imf = imformats;
-  imfext = {};
-  for index=1:numel(imf)
-    imfext = [ imfext imf(index).ext{:} ];
-  end
-  
-  % ADD default loaders: method, ext, name, options
-  % default importers, when no user specification is given. 
-  % format = { method, extension, name, {options, patterns, postprocess} }
-  formats = {...
-    { 'read_fits',{'fits','fts'},'FITS','','FITS'}, ...
-    { 'csvread', 'csv', 'Comma Separated Values (.csv)',''}, ...
-    { 'dlmread', 'dlm', 'Numerical single block',''}, ...
-    { 'read_xml', 'xml', 'XML','','','opennxs'}, ...
-    { 'read_cdf', {'cdf'}, 'CDF (.cdf)','','',{'opencdf','load_nmoldyn'}}, ...
-    { 'read_nc', {'nc','cdf'}, 'NetCDF (.nc)','','',{'opencdf','load_nmoldyn'}}, ...
-    { 'xlsread', 'xls', 'Microsoft Excel (first spreadsheet, .xls)',''}, ...
-    { 'read_image',  imfext, 'Image/Picture',''}, ...
-    { 'read_hdf5',{'hdf','hdf5','h5'}, 'HDF5','','','openhdf'}, ...
-    { 'read_hdf5',{'nx','nxs','n5','nxspe'}, 'NeXus/HDF5','','','openhdf'}, ...
-    { 'read_hdf4',{'hdf4','h4','hdf'},  'HDF4','','','openhdf'}, ...
-    { 'read_hdf4',{'nx','nxs','n4'},  'NeXus/HDF4','','','openhdf'}, ...
-    { 'load',    'mat', 'Matlab workspace (.mat)','','','openhdf'}, ...
-    { 'read_anytext', '',    'Data (text format with fastest import method)',    ...
-        '--headers --binary --fast --catenate --comment=NULL --silent --metadata=xlabel --metadata=ylabel --metadata=x_label --metadata=y_label  --catenate --fortran', ...
-          '',{'load_xyen','load_vitess_2d'}}, ...
-    { 'read_anytext', '',    'Data (text format with fast import method)',       ...
-        '--headers --binary --comment=NULL --silent --catenate --fortran','','load_xyen'}, ...
-    { 'read_anytext', '',    'Data (text format)',                               ...
-        '--headers --comment=NULL --silent','','load_xyen'}, ...
-    { 'importdata','',  'Matlab importer',''}, ...
-  };
-  
-  % add default loaders
-  for index=1:length(formats) % the default loaders are addded after the INI file
-    format = formats{index};
-    if isempty(format), break; end
-    if length(format) < 2, continue; end
-    if length(format) < 3, format{3}=format{2}; end
-    if length(format) < 4, format{4}=''; end
-    if length(format) < 5, format{5}=''; end
-    if length(format) < 6, format{6}=''; end
-    % check if format already exists in list
-    skip_format=0;
-    for j=1:length(loaders)
-      this=loaders{j};
-      if strcmp(format{3}, this.name)
-        skip_format=1;
-        break;
-      end
-    end
-    if ~skip_format
-      loader.method     = format{1};
-      loader.extension  = format{2};
-      loader.name       = format{3};
-      loader.options    = format{4};
-      loader.patterns   = format{5};
-      loader.postprocess= format{6};
-      loaders = { loaders{:} , loader };
-    end
-  end
-  
-  % check loaders, and its availability (exist)
-  for index=1:length(loaders)
-    loader = loaders{index};
-    loader.exist=nan;
-    if ~isfield(loader,'method'),     loader.method = ''; end
-    if ~isfield(loader,'extension'),  loader.extension=''; end
-    if ~isfield(loader,'name'),       loader.name=''; end
-    if ~isfield(loader,'options'),    loader.options=''; end
-    if ~isfield(loader,'patterns'),   loader.patterns=''; end
-    if ~isfield(loader,'postprocess'),loader.postprocess=''; end
-    if ~isempty(loader.method)
-      if exist(loader.method, 'file') || ~isempty(which(loader.method))
-        loader.exist = 1;
-      else
-        loader.exist = 0;
-      end
-    end
-    loaders{index} = loader;
-  end
-  config.loaders = loaders; % updated list of loaders
-  
-end % iLoad_config_load
-
-% ------------------------------------------------------------------------------
-% private function findfield, returns all field name and values, that match 'name'
-function match = findfield(s, field)
-% match=findfield(s, field, option) : look for numerical fields in a structure
-%
-% input:  s: structure
-%         field: field name to search, or '' (char).
-%         option: 'exact' 'case' or '' (char)
-% output: match: names of structure fields (cellstr)
-% ex:     findfield(s) or findfield(s,'Title')
-
-  if numel(s) > 1
-    match = cell(1, numel(s));
-    for index=1:length(s)
-      match{index}=findfield(s(index), field);
-    end
-    return
-  end
-
-  if iscell(s), s=s{1}; end
-  match = struct_getfields(struct(s), ''); % return the numerical fields
-
-  if ~isempty(field)
-    field = lower(field);
-    matchs= lower(match);
-
-    if iscellstr(field)
-      index = [];
-      for findex=1:length(field)
-        tmp = strfind(matchs, field{findex});
-        if iscell(tmp), tmp = find(cellfun('isempty', tmp) == 0); end
-        index= [ index ; tmp ];
-      end
-      index = unique(index);
-    else
-      index = strfind(matchs, field);
-    end
-
-    if ~isempty(index) && iscell(index), index = find(cellfun('isempty', index) == 0); end
-    if isempty(index)
-      match=[];
-    else
-      match = match(index);
-    end
-  end
-
-end % findfield
-
-% ============================================================================
-% private function struct_getfields, returns field, class, numel 
-function f = struct_getfields(structure, parent)
-
-  f=[];
-  if ~isstruct(structure), return; end
-  if numel(structure) > 1
-    structure=structure(:);
-    for index=1:length(structure)
-      sf = struct_getfields(structure(index), [ parent '(' num2str(index) ')' ]);
-      f = [f(:) ; sf(:)];
-    end
-    return
-  end
-
-  % get content and type of structure fields
-  c = struct2cell(structure);
-  f = fieldnames(structure);
-  try
-    t = cellfun(@class, c, 'UniformOutput', 0);
-  catch
-    t=cell(1,length(c));
-    index = cellfun('isclass', c, 'double'); t(find(index)) = {'double'};
-    index = cellfun('isclass', c, 'single'); t(find(index)) = {'single'};
-    index = cellfun('isclass', c, 'logical');t(find(index)) = {'logical'};
-    index = cellfun('isclass', c, 'struct'); t(find(index)) = {'struct'};
-    index = cellfun('isclass', c, 'uint8');  t(find(index)) = {'uint8'};
-    index = cellfun('isclass', c, 'uint16'); t(find(index)) = {'uint16'};
-    index = cellfun('isclass', c, 'uint32'); t(find(index)) = {'uint32'};
-    index = cellfun('isclass', c, 'uint64'); t(find(index)) = {'uint64'};
-    index = cellfun('isclass', c, 'int8');   t(find(index)) = {'int8'};
-    index = cellfun('isclass', c, 'int16');  t(find(index)) = {'int16'};
-    index = cellfun('isclass', c, 'int32');  t(find(index)) = {'int32'};
-    index = cellfun('isclass', c, 'int64');  t(find(index)) = {'int64'};
-  end
-
-  toremove=[];
-  % only retain numerics
-  for index=1:length(c)
-    if ~any(strncmp(t{index},{'dou','sin','int','uin','str','log'}, 3))
-      toremove(end+1)=index;
-    end
-  end
-  c(toremove)=[];
-  f(toremove)=[];
-
-  if ~isempty(parent), f = strcat([ parent '.' ], f); end
-
-  % find sub-structures and make a recursive call for each of them
-  for index=transpose(find(cellfun('isclass', c, 'struct')))
-    try
-    sf = struct_getfields(c{index}, f{index});
-    f = [f(:) ; sf(:)];
-    end
-  end
-
-end % struct_getfields
-
-% ------------------------------------------------------------------------------
-function fileList = getAllFiles(dirName)
-
-  dirData = dir(dirName);      % Get the data for the current directory
-  dirIndex = [dirData.isdir];  % Find the index for directories
-  fileList = {dirData(~dirIndex).name}';  %'# Get a list of the files
-  if ~isempty(fileList)
-    fileList = cellfun(@(x) fullfile(dirName,x),...  % Prepend path to files
-                       fileList,'UniformOutput',false);
-  end
-  subDirs = {dirData(dirIndex).name};  % Get a list of the subdirectories
-  validIndex = ~ismember(subDirs,{'.','..'});  % Find index of subdirectories
-                                               %   that are not '.' or '..'
-  if length(find(dirName == '*')),
-    if length(find(dirName == filesep))
-      dirName = fileparts(dirName);
-    else
-      dirName = '.';
-    end
-  end
-  for iDir = find(validIndex)                  % Loop over valid subdirectories
-    nextDir = fullfile(dirName,subDirs{iDir});    % Get the subdirectory path
-    fileList = [fileList; getAllFiles(nextDir)];  % Recursively call getAllFiles
-  end
-  
-  % sort directory file names
-  fileList = sort_nat(fileList);
-  
-end % getAllFiles
-
-% ------------------------------------------------------------------------------
-function loader = iLoad_config_find(loader)
-% searches in the config for given names
-
-  if iscellstr(loader)
-    loaders = {};
-    for index=1:numel(loader)
-      this    = iLoad_config_find(loader{index});
-      loaders = [ loaders ; this(:) ];
-    end
-    loader = loaders;
-  elseif ischar(loader)
-    % test if loader is the user name of a function
-    config  = iLoad('','load config');
-    formats = config.loaders;
-    loaders ={};
-    loaders_count=0;
-    for index=1:length(formats)
-      this_loader = formats{index};
-      i1 = strfind(lower(this_loader.name), lower(loader));   if isempty(i1), i1=0; end
-      i2 = strfind(lower(this_loader.method), lower(loader)); if isempty(i2), i2=0; end
-      i3 = strfind(lower(this_loader.extension), lower(loader)); if iscell(i3), i3 = ~cellfun('isempty', i3); end
-      i4 = strfind(lower(this_loader.postprocess), lower(loader)); if iscell(i4), i4 = ~cellfun('isempty', i4); end
-      if all(isempty(i3)), i3=0; end
-      if all(isempty(i4)), i4=0; end
-      if any([ i1 i2 i3 i4 ])
-        loaders_count          = loaders_count+1;
-        loaders{loaders_count} = this_loader;
-      end
-    end
-    if ~isempty(loaders) loader = loaders; end
-  end
-  
-end % iLoad_config_find
-
-% ------------------------------------------------------------------------------
-% contrib http://fr.mathworks.com/matlabcentral/fileexchange/10959-sort-nat--natural-order-sort
-% Copyright (c) 2008, Douglas M. Schwarz (BSD)
-
-function [cs,index] = sort_nat(c,mode)
-%sort_nat: Natural order sort of cell array of strings.
-% usage:  [S,INDEX] = sort_nat(C)
-%
-% where,
-%    C is a cell array (vector) of strings to be sorted.
-%    S is C, sorted in natural order.
-%    INDEX is the sort order such that S = C(INDEX);
-%
-% Natural order sorting sorts strings containing digits in a way such that
-% the numerical value of the digits is taken into account.  It is
-% especially useful for sorting file names containing index numbers with
-% different numbers of digits.  Often, people will use leading zeros to get
-% the right sort order, but with this function you don't have to do that.
-% For example, if C = {'file1.txt','file2.txt','file10.txt'}, a normal sort
-% will give you
-%
-%       {'file1.txt'  'file10.txt'  'file2.txt'}
-%
-% whereas, sort_nat will give you
-%
-%       {'file1.txt'  'file2.txt'  'file10.txt'}
-%
-% See also: sort
-
-% Version: 1.4, 22 January 2011
-% Author:  Douglas M. Schwarz
-% Email:   dmschwarz=ieee*org, dmschwarz=urgrad*rochester*edu
-% Real_email = regexprep(Email,{'=','*'},{'@','.'})
-
-
-% Set default value for mode if necessary.
-if nargin < 2
-	mode = 'ascend';
-end
-
-% Make sure mode is either 'ascend' or 'descend'.
-modes = strcmpi(mode,{'ascend','descend'});
-is_descend = modes(2);
-if ~any(modes)
-	error('sort_nat:sortDirection',...
-		'sorting direction must be ''ascend'' or ''descend''.')
-end
-
-% Replace runs of digits with '0'.
-c2 = regexprep(c,'\d+','0');
-
-% Compute char version of c2 and locations of zeros.
-s1 = char(c2);
-z = s1 == '0';
-
-% Extract the runs of digits and their start and end indices.
-[digruns,first,last] = regexp(c,'\d+','match','start','end');
-
-% Create matrix of numerical values of runs of digits and a matrix of the
-% number of digits in each run.
-num_str = length(c);
-max_len = size(s1,2);
-num_val = NaN(num_str,max_len);
-num_dig = NaN(num_str,max_len);
-for i = 1:num_str
-	num_val(i,z(i,:)) = sscanf(sprintf('%s ',digruns{i}{:}),'%f');
-	num_dig(i,z(i,:)) = last{i} - first{i} + 1;
-end
-
-% Find columns that have at least one non-NaN.  Make sure activecols is a
-% 1-by-n vector even if n = 0.
-activecols = reshape(find(~all(isnan(num_val))),1,[]);
-n = length(activecols);
-
-% Compute which columns in the composite matrix get the numbers.
-numcols = activecols + (1:2:2*n);
-
-% Compute which columns in the composite matrix get the number of digits.
-ndigcols = numcols + 1;
-
-% Compute which columns in the composite matrix get chars.
-charcols = true(1,max_len + 2*n);
-charcols(numcols) = false;
-charcols(ndigcols) = false;
-
-% Create and fill composite matrix, comp.
-comp = zeros(num_str,max_len + 2*n);
-comp(:,charcols) = double(s1);
-comp(:,numcols) = num_val(:,activecols);
-comp(:,ndigcols) = num_dig(:,activecols);
-
-% Sort rows of composite matrix and use index to sort c in ascending or
-% descending order, depending on mode.
-[unused,index] = sortrows(comp);
-if is_descend
-	index = index(end:-1:1);
-end
-index = reshape(index,size(c));
-cs = c(index);
-
-end % sort_nat
