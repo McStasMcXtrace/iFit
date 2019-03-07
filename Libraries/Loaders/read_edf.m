@@ -16,11 +16,11 @@ function s = read_edf(filename)
 
 s = [];
 
-if nargin == 0 || any(strcmp(file, {'identify','query','defaults'}))
+if nargin == 0 || any(strcmp(filename, {'identify','query','defaults'}))
     ESRF_edf.name       ='EDF ESRF Data Format';
     ESRF_edf.method     =mfilename;
     ESRF_edf.extension  ='edf';
-    s = EDF;
+    s = ESRF_edf;
     return
 end
 

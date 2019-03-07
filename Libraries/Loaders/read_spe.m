@@ -42,7 +42,14 @@ if nargin == 0 || any(strcmp(filename, {'identify','query','defaults'}))
     Roper_SPE.name      ='SPE CCD by WinView from Roper Scientific / PI Acton';
     Roper_SPE.method    =mfilename;
     Roper_SPE.extension ='spe';
-    frame = Roper_SPE;
+    
+    ISIS_spe.name       ='ISIS/SPE tof data';
+    ISIS_spe.options    ='--headers --fortran  --catenate --fast --binary --comment=NULL --silent ';
+    ISIS_spe.method     ='read_anytext';
+    ISIS_spe.patterns   ={'Phi Grid'};
+    ISIS_spe.extension  ='spe';
+    
+    frame = { Roper_SPE ISIS_spe };
     return
 end
 

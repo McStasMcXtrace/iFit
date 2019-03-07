@@ -44,7 +44,7 @@ function frame = read_adsc(fname)
 
 frame = [];
 
-if nargin == 0 || any(strcmp(filename, {'identify','query','defaults'}))
+if nargin == 0 || any(strcmp(fname, {'identify','query','defaults'}))
     ADSC_CCD.name       ='ADSC CCD Camera';
     ADSC_CCD.method     =mfilename;
     ADSC_CCD.extension  ='img';

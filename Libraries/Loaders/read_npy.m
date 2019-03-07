@@ -27,7 +27,7 @@ if nargin == 0 || any(strcmp(filename, {'identify','query','defaults'}))
     NPY.name            = 'Numpy NPY array';
     NPY.method          = mfilename;
     NPY.extension       = 'npy';
-    data = NPY;
+    s = NPY;
     return
 end
 

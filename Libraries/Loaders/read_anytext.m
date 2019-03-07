@@ -78,11 +78,27 @@ elseif strcmp(varargin{1}, 'compile') || strcmp(varargin{1}, 'check')
 end
 
 if any(strcmp(varargin{1}, {'identify','query','defaults'}))
-    s.name        ='Data (text format with fast import method)';
-    s.options     ='--headers --binary --comment=NULL --silent --catenate --fortran';
-    s.method      =mfilename;
-    s.postprocess ='load_xyen';
-    s.patterns    ='';
+
+    s1.name        ='Data (text format with fast import method)';
+    s1.options     ='--headers --binary --comment=NULL --silent --catenate --fortran';
+    s1.method      =mfilename;
+    s1.postprocess ={'load_xyen','load_vitess_2d'};
+    s1.patterns    ='';
+    
+    s2.name        ='Data (text format with fastest import method)';
+    s2.options     ='--headers --binary --fast --catenate --comment=NULL --silent --metadata=xlabel --metadata=ylabel --metad2ata=x_label --metadata=y_label  --catenate --fortran';
+    s2.method      =mfilename;
+    s2.postprocess ={'load_xyen','load_vitess_2d'};
+    s2.patterns    ='';
+    
+    s3.name        ='Data (text format with fastest import method)';
+    s3.options     ='--headers --binary --fast --catenate --comment=NULL --silent --metadata=xlabel --metadata=ylabel --metad3ata=x_label --metadata=y_label  --catenate --fortran';
+    s3.method      =mfilename;
+    s3.postprocess ={'load_xyen','load_vitess_2d'};
+    s3.patterns    ='';
+    
+    s = { s1, s2, s3 };
+
     return
 end
 

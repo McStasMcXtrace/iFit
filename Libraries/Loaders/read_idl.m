@@ -53,7 +53,7 @@ function outargs=read_idl(varargin)
 % to user feedback, repackage as callable function vs GUI application.
 
 
-if nargin == 0 || any(strcmp(filename, {'identify','query','defaults'}))
+if nargin == 0 || any(strcmp(varargin{1}, {'identify','query','defaults'}))
     idl_sav.name        = 'IDL SAV';
     idl_sav.method      = mfilename;
     idl_sav.extension   = 'sav';

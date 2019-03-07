@@ -16,6 +16,7 @@ function ace = read_ace(filename)
 %
 
 persistent status
+ace = [];
 
 if nargin == 0 || any(strcmp(filename, {'identify','query','defaults'}))
     ace.name            = 'ACE (A compact ENDF) nuclear data';
@@ -32,8 +33,6 @@ end
 
 if status
   ace = read_ace_pyne(filename);  % private function inline below
-else
-  ace = []; % failed
 end
 
 % ------------------------------------------------------------------------------

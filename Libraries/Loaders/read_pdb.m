@@ -88,7 +88,7 @@ if nargin == 0 || any(strcmp(name, {'identify','query','defaults'}))
     PDB.method          =mfilename;
     PDB.patterns        ={'HEADER','COMPND','SOURCE','EXPDTA','AUTHOR','REVDAT'};
     PDB.postprocess     = 'load_xyen';
-    data = PDB;
+    result = PDB;
     return
 end
 

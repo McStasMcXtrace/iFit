@@ -47,7 +47,7 @@ function [data, this] = read_cif(file)
     CIF.method      = mfilename;
     CIF.extension   ={'cif','pcr','pcr','cfl','ins','res','shx'};
     CIF.postprocess ='opencif';
-    s = CIF;
+    data = CIF;
     return
   end
 
