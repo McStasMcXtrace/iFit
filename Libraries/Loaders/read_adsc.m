@@ -1,4 +1,4 @@
-% data = read_adsc(filename)
+% data = read_adsc(filename) read an ADSC X-ray detector image
 %
 %  Read an image file written by an ADSC detector.
 %  ADSC detectors write images in the "SMV" file format which consists of a text header and uncompressed image.

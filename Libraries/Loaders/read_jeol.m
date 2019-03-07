@@ -1,5 +1,5 @@
 function data = read_jeol(file)
-% READ_JEOL: read a Jeol NMR file
+% READ_JEOL read a Jeol NMR file
 
 %   the argument can be any file from the NMR data set directory
 %   which should contain 

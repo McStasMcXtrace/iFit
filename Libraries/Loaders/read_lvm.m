@@ -1,5 +1,5 @@
 function data = read_lvm(filename,verbose)
-%read_lvm: Imports data from a LabView LVM file
+% read_lvm Imports data from a LabView LVM file
 %
 % DATA = read_lvm(FILENAME,VERBOSE) returns the data from a LVM (.lvm)
 %  ASCII text file created by LabView.

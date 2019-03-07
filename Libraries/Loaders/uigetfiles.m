@@ -1,5 +1,5 @@
 function [filename, pathname] = uigetfiles(filterspec, title, varargin)
-% uigetfiles: Multiple open file dialog box
+% uigetfiles Multiple open file dialog box
 %    [filename, pathname] = uigetfiles(filterspec, title, 'option',value, ...)
 %    displays a dialog box for the user to fill in, and returns the
 %    filename and path strings. Multiple choices are possible, as well as

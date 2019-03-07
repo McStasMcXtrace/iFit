@@ -1,4 +1,4 @@
-% READ_POSCAR (read a VASP POSCAR file)
+% READ_POSCAR read a VASP POSCAR file
 %
 %   Usage: s = read_poscar(filename)
 %                    

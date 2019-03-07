@@ -1,5 +1,5 @@
 function data = read_mccode(filename)
-% read_mccode: load a McCode (McStas/McXtrace) simulation result
+% read_mccode load a McCode (McStas/McXtrace) simulation result
 %   data = read_mccode(filename)
 %
 % McCode gathers McStas (neutron scattering ray-tracing) http://www.mcstas.org

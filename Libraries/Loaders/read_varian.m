@@ -1,5 +1,5 @@
 function data = read_varian(file)
-% READ_VARIAN: read a Varian NMR directory
+% READ_VARIAN read a Varian NMR directory
 %  data = read_varian(file)
 %
 %   the argument can be any file from the NMR data set directory

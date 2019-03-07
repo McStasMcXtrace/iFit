@@ -1,5 +1,5 @@
 function data=read_stl(file, option)
-% mstlread Wrapper to read ascii and binary STL files
+% read_stl read ascii and binary STL files
 %  data=read_stl(file)
 %
 % Grab plenty of STL files at: https://www.thingiverse.com/

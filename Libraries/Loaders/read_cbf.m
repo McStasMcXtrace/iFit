@@ -1,4 +1,4 @@
-% Read CBF/imgCIF x-ray file format
+% read_cbf Read CBF/imgCIF x-ray file format
 %   data = read_cbf(filename)
 %
 % Description:

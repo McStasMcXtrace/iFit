@@ -1,5 +1,5 @@
 function [xyz, L, C, LUT] = read_gcode(file, k)
-  % read_gcode: get cpoordinates of points in a GCode/CNC file
+  % read_gcode get cpoordinates of points in a GCode/CNC file
   %
   % Fornat definition <https://en.wikipedia.org/wiki/G-code>
   %

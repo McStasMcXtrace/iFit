@@ -1,4 +1,4 @@
-%   READ_INX (read the INX files -ILL standards)
+%   READ_INX read the INX files -ILL standards
 %
 %   Usage: s = read_inx(filename,{instrument})
 %                    

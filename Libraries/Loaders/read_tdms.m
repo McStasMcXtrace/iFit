@@ -1,5 +1,5 @@
 function data=read_tdms(filename)
-% read a LabView TDMS file
+% read_tdms read a LabView TDMS file
 %   data=read_tdms(filename)
 %
 % References:

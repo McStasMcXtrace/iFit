@@ -1,5 +1,5 @@
 function data = read_bruker(file)
-% READ_JEOL: read a Bruker NMR data set
+% read_bruker read a Bruker NMR data set
 %   the argument can be any file from the NMR data set directory
 %   which should contain 
 %      a 'acqus', 'pdata/1' directory, 'fid' or 'ser'

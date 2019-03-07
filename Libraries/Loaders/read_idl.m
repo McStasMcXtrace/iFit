@@ -1,5 +1,5 @@
 function outargs=read_idl(varargin)
-% READ_IDL:  restores variable from an IDL save file into Matlab
+% READ_IDL restores variable from an IDL save file into Matlab
 % variables.
 %
 %   s=read_idl(filename)

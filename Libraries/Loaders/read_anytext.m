@@ -1,5 +1,5 @@
 function s = read_anytext(varargin)
-% import any text using 'looktxt'.
+% read_anytext import any text using 'looktxt'.
 %   data = read_anytext(filename, options...)
 %
 % The possible options are:
@@ -91,8 +91,8 @@ if any(strcmp(varargin{1}, {'identify','query','defaults'}))
     s2.postprocess ={'load_xyen','load_vitess_2d'};
     s2.patterns    ='';
     
-    s3.name        ='Data (text format with fastest import method)';
-    s3.options     ='--headers --binary --fast --catenate --comment=NULL --silent --metadata=xlabel --metadata=ylabel --metad3ata=x_label --metadata=y_label  --catenate --fortran';
+    s3.name        ='Data (text format)';
+    s3.options     ='--headers --comment=NULL --silent';
     s3.method      =mfilename;
     s3.postprocess ={'load_xyen','load_vitess_2d'};
     s3.patterns    ='';

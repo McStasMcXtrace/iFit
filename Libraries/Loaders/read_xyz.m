@@ -1,4 +1,4 @@
-% READ_XYZ (read a Molecule XYZ file)
+% READ_XYZ read a Molecule XYZ file
 %
 %   Usage: s = read_xyz(filename)
 %                    

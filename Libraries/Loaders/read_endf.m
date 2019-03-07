@@ -1,5 +1,5 @@
 function endf = read_endf(filename)
-% data = read_endf(filename)
+% data = read_endf(filename) import ENDF files
 %
 %   import ENDF files, either using PyNE or slower/partial Matlab reader.
 %

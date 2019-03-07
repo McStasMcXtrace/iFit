@@ -1,4 +1,4 @@
-% read_sif(filename) read a SIF x-ray CCD image
+% data=read_sif(filename) read a SIF x-ray CCD image
 %
 % imports Andor CCD data (iXon kinetic, Shamrock spectrograph, Newton).
 %

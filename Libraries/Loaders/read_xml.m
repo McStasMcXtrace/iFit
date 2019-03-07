@@ -1,7 +1,7 @@
 function s = read_xml( file )
-% data=read_xml(filename)
+% data=read_xml(filename) read XML file
 %
-% read_yaml Wrapper to directly read XML files
+% read_xml Wrapper to directly read XML files
 %
 % Input:  filename: xml file (string)
 % output: structure

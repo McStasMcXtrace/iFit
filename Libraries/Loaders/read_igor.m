@@ -1,5 +1,5 @@
 function data = read_igor(filename)
-% Load an Igor Wave dataset (IBW).
+% read_igor Load an Igor Wave dataset (IBW).
 %   data = read_igor(filename)
 %
 % References:

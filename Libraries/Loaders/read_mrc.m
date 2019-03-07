@@ -1,5 +1,5 @@
 function [Data] = read_mrc(file)
-% read_mrc: read a MRC/CCP4/MAP electronic density map file
+% read_mrc read a MRC/CCP4/MAP electronic density map file
 %  [Data] = read_mrc(file)
 %
 % Format definition:

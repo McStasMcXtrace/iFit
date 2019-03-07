@@ -35,6 +35,7 @@ function [data, format] = iLoad(filename, loader, varargin)
 %   iLoad save          save the cache to the user Preferences
 %   iLoad config        get the loaders list as a configuration structure
 %   iLoad formats       list of all supported file formats
+%   iLoad FMT formats   list of file formats matching FMT
 %
 % The iLoad_ini configuration file can be loaded and saved in the Preference 
 % directory using 
@@ -178,14 +179,13 @@ function [data, format] = iLoad(filename, loader, varargin)
     end
     fprintf(1, ' EXT                    READER  DESCRIPTION [%s]\n', mfilename);
     fprintf(1, '-----------------------------------------------------------------\n');
-    % use optinal format filter
-    if ~isempty(varargin) && ischar(varargin{1}), token=varargin{1}; else token=''; end
-    % display loaders
+    % scan loaders
     if isstruct(data) && isfield(data,'loaders'), data=data.loaders; end
     for index=1:length(data)
       if iscell(data) this=data{index}; 
       elseif isstruct(data) this=data(index); 
       else continue; end
+      % build output strings
       if isfield(this,'postprocess'), 
         if ~isempty(this.postprocess)
           if iscell(this.postprocess)
@@ -200,18 +200,17 @@ function [data, format] = iLoad(filename, loader, varargin)
       if length(this.method)>25, this.method = [ this.method(1:22) '...' ]; end
       if ~isfield(this,'extension'), this.extension = '*';
       elseif isempty(this.extension), this.extension='*'; end
-      
-      % use filter ?
-      if isempty(token) || (any(strfind(this.extension, token)) || any(strfind(this.name, token)))
-        if iscellstr(this.extension)
-          fprintf(1,'%4s %25s  %s\n', upper(this.extension{1}), this.method,this.name);
-          for j=2:length(this.extension),fprintf(1,'  |.%s\n', upper(this.extension{j})); end
-        else
-          fprintf(1,'%4s %25s  %s\n', upper(this.extension), this.method,this.name);
-        end
+      % display
+      if iscellstr(this.extension)
+        fprintf(1,'%4s %25s  %s\n', upper(this.extension{1}), this.method,this.name);
+        for j=2:length(this.extension),fprintf(1,'  |.%s\n', upper(this.extension{j})); end
+      else
+        fprintf(1,'%4s %25s  %s\n', upper(this.extension), this.method,this.name);
       end
+
     end
     disp([ '% iLoad configuration file: ' config.FileName ]);
+    data = data(:)';
     return
   elseif any(strcmp(loader, {'save config','save'}))
     if isempty(filename) || nargin == 1

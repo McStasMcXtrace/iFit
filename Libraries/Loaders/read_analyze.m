@@ -1,5 +1,5 @@
 function Analyze = read_analyze(filename)
-% Load Analyze hdr/img dataset from Mayo Clinic.
+% read_analyze Load Analyze hdr/img dataset from Mayo Clinic.
 %   Analyze = read_analyze(filename)
 %
 %   Analyze is a struct with members:

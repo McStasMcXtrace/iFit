@@ -1,4 +1,4 @@
-% read_spe(filename) read a Roper/SPE x-ray CCD image
+% read_spe read a Roper/SPE x-ray CCD image
 %
 % Description:
 % Macro for reading SPE CCD data files written by WinView from 

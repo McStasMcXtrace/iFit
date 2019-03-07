@@ -1,5 +1,5 @@
 function ace = read_ace(filename)
-% data = read_ace(filename)
+% data = read_ace(filename) Read MCNP/ACE file
 %
 %   import MCNP/ACE files using PyNE
 %
