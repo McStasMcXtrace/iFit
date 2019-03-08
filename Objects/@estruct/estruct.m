@@ -230,6 +230,30 @@ classdef estruct < dynamicprops & hgsetget
       s = estruct(repmat(struct(self), varargin{:}));
     end
     
+    function o = ones(self, varargin)
+      % ONES   Ones array.
+      %    ONES(S,N) is an N-by-N matrix of 'S' structure.
+      % 
+      %    ONES(S, M,N) or ONES(S, [M,N]) is an M-by-N matrix of 'S' structure.
+      % 
+      %    ONES(S,M,N,P,...) or ONES(S,[M N P ...]) is an M-by-N-by-P-by-... array of
+      %    'S' structure.
+      if nargin == 1, o=self; return; end
+      o = repmat(self, varargin{:});
+    end
+    
+    function z = zeros(self, varargin)
+      % ZEROS  Zeros array.
+      %    ZEROS(S,N) is an N-by-N matrix of empty structures.
+      % 
+      %    ZEROS(S,M,N) or ZEROS(S,[M,N]) is an M-by-N matrix of empty structures.
+      % 
+      %    ZEROS(S,M,N,P,...) or ZEROS(S,[M N P ...]) is an M-by-N-by-P-by-... array of
+      %    empty structures.
+      if nargin == 1, z=estruct; return; end
+      z = ones(estruct, varargin{:});
+    end
+    
     % pack, full, event (add listener ?), load, save, ones, zeros
     % setalias = set (does not resolve links)
     % getalias = get (does not resolve links)
