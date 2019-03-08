@@ -2,12 +2,13 @@ function [data, this] = read_cif(file)
 % read_cif Wrapper to read CIF/CFL/ShelX files
 %   data = read_cif(file)
 % the data is a simplified representation of the crystal structure, generated using cif2hkl.
+% An alternate import method for CFL files is read_cfl.
 %
 % You may as well plot the CIF structure using SpinW with e.g.:
 %  plot(sw(data.file)); % plot the structure using SpinW
 %
 % When the argument is a chemical formula (elements separated with spaces), or 
-% a COD ID, a search in the Crystallography Open Database is made.
+% a COD ID, a search in the Crystallography Open Database is made with syntax:
 %
 %  data = read_cif('cod: Mg O');
 %  data = read_cif('cod: O3 Sr Ti');
@@ -38,7 +39,7 @@ function [data, this] = read_cif(file)
 % Example: y=read_cif(fullfile(ifitpath, 'Data','LaMnO3.cif')); isstruct(y)
 %
 % (c) E.Farhi, ILL. License: EUPL.
-% See also: read_pdb, read_cbf, read_poscar
+% See also: read_cfl, read_pdb, read_cbf, read_poscar
 
   data = []; this = [];
   

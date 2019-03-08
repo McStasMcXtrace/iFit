@@ -1,8 +1,12 @@
-function [xyz, L, C, LUT] = read_gcode(file, k)
+function data = read_gcode(file, k)
   % read_gcode get cpoordinates of points in a GCode/CNC file
+  %
+  % The returned output contains the XYZ coordinates, as well as an index per
+  %   closed shape, and the centroid of each shape.
   %
   % Fornat definition <https://en.wikipedia.org/wiki/G-code>
   %
+  % Example: s=read_gcode(fullfile(ifitpath, 'Data','cylinders.gcode')); isstruct(s)
   % (c) E.Farhi, ILL. License: EUPL.
   % See also: read_stl, read_obj
   
@@ -10,9 +14,9 @@ function [xyz, L, C, LUT] = read_gcode(file, k)
     gcode.name          = 'GCODE numerical control programming language';
     gcode.method        = mfilename;
     gcode.extension     = {'g','gco','gcode','mpt','mpf'};
-    xyz = gcode; L=[]; C=[]; LUT=[];
+    data = gcode;
     return
-end
+  end
   
   if nargin < 2, k=[]; end
   if isempty(k), k=3;  end
@@ -63,6 +67,13 @@ end
   end
 
   [L,C]=kmeans(g', k);
+  
+  % build output
+  data.x = xyz(:,1);
+  data.y = xyz(:,2);
+  data.z = xyz(:,3);
+  data.Signal = L;
+  data.Centers= C;
   
   if nargout == 0
     % plot when no output arguments

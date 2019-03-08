@@ -1,10 +1,12 @@
 function s = read_cfl(filename, varargin)
-% data=read_cfl(filename, options, ...) Read CFL CrysFML/FullProf crystallography file
+% data=read_cfl(filename) Read CFL CrysFML/FullProf crystallography file
 %
 % read_cfl Read CFL CrysFML/FullProf crystallography file
+% An alternate import method for CFL files is read_cif.
 %
 % Input:  filename: CFL CrysFML/FullProf text file (string)
 % output: structure
+% Example: y=read_cfl(fullfile(ifitpath, 'Data','Na2Ca3Al2F14.cfl')); isstruct(y)
 %
 % (c) E.Farhi, ILL. License: EUPL.
 % See also: read_cif, read_pdb

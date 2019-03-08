@@ -9,6 +9,9 @@ function data = read_mccode(filename)
 % It returns the McStas/McXtrace simulation structures. 
 % It may import both McCode and Matlab format data sets.
 %
+% Note:
+% The McStas SQW and Powder (LAZ/LAU) files can also be read by read_sqw and read_laz.
+%
 % input:
 %  filename: one or more simulation name(s) or directory
 %          or a single detector file name
@@ -108,6 +111,13 @@ function data = read_mccode(filename)
   
   % check data structures
   data = mcplot_check_data(data);
+  
+  if isempty(data.errors) && isempty(data.events) && all(data.size == 0)
+    [~,~,e] = fileparts(filename);
+    if any(strcmpi(e, {'lau','laz'}))
+      data = read_laz(filename);
+    end
+  end
 
 end % read_mccode (main)
 
@@ -344,6 +354,7 @@ function structure=mcplot_load_mccode(filename)
       paramstr = [ paramstr var '=' value '; ' ];
       num          = str2num(value);
       if ~isempty(num), value = num; end
+      if isempty(deblank(param)), continue; end
       param        = setfield(param, var, value);
       structure    = setfield(structure, 'Param', param);     % store updated sub-structure
     end

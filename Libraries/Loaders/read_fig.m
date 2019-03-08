@@ -4,7 +4,7 @@ function s = read_fig(filename)
 %
 % Input:  filename: FIG filename or graphic handle
 % output: structure
-% Example: h=surf(peaks); s=read_fig(h); close(gcf); isstruct(s)
+% Example: f=figure; h=surf(peaks); s=read_fig(h); close(f); isstruct(s)
 %
 % (c) E.Farhi, ILL. License: EUPL.
 % See also: read_idl, read_lvm, read_tdms, read_igor

@@ -650,7 +650,7 @@ function [data, format] = iLoad(filename, loader, varargin)
       
       % the loader is selected if: 
       %   loader has extension and extension matches, no patterns to search
-      if ~patterns_found && (isempty(loader.patterns) || isnan(loader.patterns))
+      if ~patterns_found && (isempty(loader.patterns) || isnumeric(loader.patterns))
         if ~isfield(loader,'extension'), ext=''; 
         else ext=loader.extension; end
         if ischar(ext) && ~isempty(ext), ext={ ext }; end

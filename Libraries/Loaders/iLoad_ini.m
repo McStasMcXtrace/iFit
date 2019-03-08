@@ -48,11 +48,6 @@ function config = iLoad_ini
     
 % binary formats ===============================================================
     
-    ISIS_SQW.name       = 'ISIS Horace SQW';
-    ISIS_SQW.method     = 'sqw';
-    ISIS_SQW.extension  = 'sqw';
-    ISIS_SQW.postprocess= 'this.Data = struct(this.Data); this = setaxis(this,0);';
-    
     agilent_ms.name     = 'Agilent Mass Spectrometry/Chromatography LC/MS GC/MS GC/FID';
     agilent_ms.method   = 'ImportAgilent';  % private
     agilent_ms.extension= {'ch','ms','d'};
@@ -64,7 +59,7 @@ function config = iLoad_ini
 % definition of configuration ==================================================
     config.loaders =  { ...
        chalkriver, ...
-       qd_vms, ISIS_SQW, agilent_ms, thermo_ms, ...
+       qd_vms, agilent_ms, thermo_ms, ...
     };
 	       
 	  config.UseSystemDialogs = 'yes'; % no: use uigetfiles, else defaults to 'uigetfile'

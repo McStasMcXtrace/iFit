@@ -1,18 +1,76 @@
-% read_spe read a Roper/SPE x-ray CCD image
+function s = read_spe(filename, varargin)
+% data=read_spe(filename, options, ...) read a SPE (Roper x-ray CCD image or ISIS)
 %
-% Description:
-% Macro for reading SPE CCD data files written by WinView from 
-% Roper Scientific / PI Acton
+% read_spe read a SPE either from
+%   Roper Scientific / PI Acton CCD data files written by WinView 
+% or
+%   ISIS/SPE tof data
 %
 % References:
 %   May 9th 2008, Oliver Bunk: 1st version
 %   <http://www.psi.ch/sls/csaxs/software>
 %
-% Input:  filename: Roper SPE file (string)
+% Input:  filename: Roper or ISIS SPE file (string)
 % output: structure
 % Example: y=read_spe(fullfile(ifitpath, 'Data','008545.spe')); isstruct(y)
+% Example: y=read_spe(fullfile(ifitpath, 'Data','Example.spe')); isstruct(y);
 %
-% See also: read_cbf, read_edf, read_adsc, read_mar, read_sif, read_fits, read_hbin, read_image
+% See also: read_cbf, read_edf, read_adsc, read_mar, read_sif, read_fits, read_hbin, read_image, read_sqw
+%
+% (c) E.Farhi, ILL. License: EUPL.
+% See also: read_mccode, read_anytext
+
+s=[];
+
+if nargin == 0 || any(strcmp(filename, {'identify','query','defaults'}))
+    Roper_SPE.name      ='SPE CCD by WinView from Roper Scientific / PI Acton';
+    Roper_SPE.method    =mfilename;
+    Roper_SPE.extension ='spe';
+    
+    ISIS_spe.name       ='ISIS/SPE tof data';
+    ISIS_spe.options    ='--headers --fortran  --catenate --fast --binary --comment=NULL --silent ';
+    ISIS_spe.method     ='read_anytext';
+    ISIS_spe.patterns   ={'Phi Grid'};
+    ISIS_spe.extension  ='spe';
+    
+    s = { Roper_SPE ISIS_spe };
+    return
+end
+
+% is the file binary ?
+isbinary= 0;
+% read start of file
+[fid,message] = fopen(filename, 'r');
+if fid == -1, return; end
+file_start    = fread(fid, 1000, 'uint8=>char')';
+
+% check if this is a text file
+if length(find(file_start >= 32 & file_start < 127))/length(file_start) < 0.4
+  isbinary = 1; % less than 90% of printable characters
+end
+fclose(fid);
+
+% try the Roper SPE format (binary)
+if isbinary
+  try
+    s = read_spe_roper(filename, varargin{:});
+    return
+  end
+end
+
+% else call read_anytext with given options
+if isempty(varargin)
+  varargin = { '--headers --fortran  --catenate --fast --binary --comment=NULL --silent ' };
+end
+s       = read_anytext(filename, varargin{:});
+
+% ------------------------------------------------------------------------------
+
+% read_spe read a Roper/SPE x-ray CCD image
+%
+% Description:
+% Macro for reading SPE CCD data files written by WinView from 
+% Roper Scientific / PI Acton
 
 %
 % Note:
@@ -28,7 +86,7 @@
 %
 
 
-function [frame,vararg_remain] = read_spe(filename,varargin)
+function [frame,vararg_remain] = read_spe_roper(filename,varargin)
 
 % 0: no debug information
 % 1: some feedback
@@ -37,21 +95,6 @@ debug_level = 0;
 
 % initialize return argument
 frame = struct('header',[], 'data',[]); vararg_remain=[];
-
-if nargin == 0 || any(strcmp(filename, {'identify','query','defaults'}))
-    Roper_SPE.name      ='SPE CCD by WinView from Roper Scientific / PI Acton';
-    Roper_SPE.method    =mfilename;
-    Roper_SPE.extension ='spe';
-    
-    ISIS_spe.name       ='ISIS/SPE tof data';
-    ISIS_spe.options    ='--headers --fortran  --catenate --fast --binary --comment=NULL --silent ';
-    ISIS_spe.method     ='read_anytext';
-    ISIS_spe.patterns   ={'Phi Grid'};
-    ISIS_spe.extension  ='spe';
-    
-    frame = { Roper_SPE ISIS_spe };
-    return
-end
 
 % check minimum number of input arguments
 if (nargin < 1)
@@ -119,7 +162,7 @@ end
 
 % some sanity checks
 if (fdat(4099:4100) ~= [ 85; 85 ])
-    fprintf(1, '%s:%s: WARNING: no header end signature found.\n', mfilename,filename);
+    fprintf(1, '%s:%s: WARNING: no Roper SPE header end signature found.\n', mfilename,filename);
     % return;
 end
 
@@ -160,7 +203,7 @@ switch (data_type)
         bytes_per_pixel = 2;
         cast_type = 'uint16';
     otherwise
-        error('unknown data type %d',data_type);
+        error('%s: unknown data type %d. Probably not a Roper SPE.', mfilename, data_type);
 end
 
 frame.header{end+1} = sprintf('BackGrndApplied %d',typecast(fdat(151:152),'uint16'));
