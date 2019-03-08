@@ -1,5 +1,5 @@
 function [match, field] = findstr(s, str, option)
-% [match, field]=findstr(s, str, option) : look for strings stored in struct
+% [match, field]=findstr(s, str, option) look for strings stored in struct
 %
 %   @struct/findstr function to look for strings stored in struct
 %

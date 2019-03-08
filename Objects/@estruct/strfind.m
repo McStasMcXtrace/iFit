@@ -1,5 +1,5 @@
 function [match, field] = strfind(s, varargin)
-% [match, field]=strfind(s, str, option) : look for strings stored in struct
+% [match, field]=strfind(s, str, option) look for strings stored in struct
 %
 %   @struct/strfind function to look for strings stored in struct
 %
@@ -19,4 +19,4 @@ function [match, field] = strfind(s, varargin)
 % Version: $Date$
 % See also struct, struct/set, struct/get, struct/findobj, struct/findfield
 
-[match, field] = strfind(s, varargin{:});
+[match, field] = findstr(s, varargin{:});

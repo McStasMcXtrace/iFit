@@ -1,5 +1,5 @@
 function v = subsref(a,S)
-% a = subsref(a,index) : indexed reference
+% a = subsref(a,index) indexed reference
 %
 %   @estruct/subsref: function defines indexed assignement 
 %   such as a(1:2,3)    get indexed elements in array
@@ -12,18 +12,22 @@ function v = subsref(a,S)
 % Version: $Date$
 v = [];
 if numel(a) > 1
-  v = {};
-  for index=1:numel(a)
-    v{end+1} = subsref(a(index),S);
+  if strcmp(S(1).type,'()') && iscellstr(S(1).subs) && ~strcmp(S(1).subs{1},':')
+    v = {};
+    for index=1:numel(a)
+      v{index} = subsref(a(index),S);
+    end
+    v = reshape(v, size(a));
+  else
+    v = builtin('subsref', a, S);
   end
-  if numel(v) == 1, v=v{1}; end
   return
 end
 
 % we use the default subsasgn except for single level assigment
 %   S.type = '()';
 %   ischar(S.subs) -> set(a, S.subs, val, link)
-if numel(S) == 1 && strcmp(S.type,'()') && iscellstr(S.subs)
+if numel(S) == 1 && strcmp(S(1).type,'()') && iscellstr(S(1).subs) && ~strcmp(S(1).subs{1},':')
   v = get(a, S.subs{1},'link'); % new syntax a('fields')
   return
 end

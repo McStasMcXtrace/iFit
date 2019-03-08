@@ -1,5 +1,5 @@
 function [b, vers, info] = version(a,long_request)
-% v = version(estruct): class version
+% v = version(estruct) class version
 %
 %   @estruct/version: version of the estruct class
 %

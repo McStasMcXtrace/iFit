@@ -107,7 +107,7 @@ classdef estruct < dynamicprops & hgsetget
         
         index=index+1;
       end
-    end
+    end % estruct instantiate
     
     function tf = isstruct(self)
     %  ISSTRUCT True for structures.
@@ -189,5 +189,49 @@ classdef estruct < dynamicprops & hgsetget
       new = copyobj(self, cell2struct(varargin{:}));
     end
     
+    function [f,v] = max(self, option)
+      % MAX    Largest component.
+      %  MAX(X) is the biggest/largest element in X, searched recursively.
+      %  [F,V] = MAX(X) returns the field name and value of the largest field.
+      %
+      %  [..] = MAX(X, 'numeric') returns the largest numeric field.
+      %  [..] = MAX(X, 'char')    returns the largest character field.
+      if nargin < 2, option = ''; end
+      
+      f = findfield(self, '', [ option ' biggest' ]);
+      if nargout > 1
+        v = get(self, f, 'link');
+      end
+    end
+    
+    function s = char(self)
+      %  CHAR Create character array (string).
+      %      S = CHAR(X) converts the structure X into a character representation
+      s = class2str(self, 'eval');
+    end
+    
+    function v = double(self)
+      %   DOUBLE Convert to double precision.
+      %      DOUBLE(X) returns the double precision value of the biggest numeric value in X.
+      [~,v] = double(max(self, 'numeric'));
+    end
+    
+    function s = repmat(self, varargin)
+      % REPMAT Replicate and tile an array.
+      %    B = repmat(A,M,N) creates a large matrix B consisting of an M-by-N
+      %    tiling of copies of A. The size of B is [size(A,1)*M, size(A,2)*N].
+      %    The statement repmat(A,N) creates an N-by-N tiling.
+      %    
+      %    B = REPMAT(A,[M N]) accomplishes the same result as repmat(A,M,N).
+      % 
+      %    B = REPMAT(A,[M N P ...]) tiles the array A to produce a 
+      %    multidimensional array B composed of copies of A. The size of B is 
+      %    [size(A,1)*M, size(A,2)*N, size(A,3)*P, ...].
+      s = estruct(repmat(struct(self), varargin{:}));
+    end
+    
+    % pack, full, event (add listener ?), load, save, ones, zeros
+    % setalias = set (does not resolve links)
+    % getalias = get (does not resolve links)
   end
 end

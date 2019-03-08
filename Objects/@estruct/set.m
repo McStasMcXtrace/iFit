@@ -89,12 +89,12 @@ function [s, rec] = set_single(s, field, value, follow, s0)
         end
       end
     end
-    s = setfield(s, tok, value);  % change value
+    s = setfield(s, tok, value);  % change value. Calls "s.(tok)=value" i.e. subsasgn
     return
   end
   
   % else get the sub-struct
-  s2 = getfield(s, tok);
+  s2 = getfield(s, tok);  % Calls "s.(tok)" i.e. subsref
   
   % access deeper content recursively
   if ~isstruct(s2)
@@ -103,7 +103,7 @@ function [s, rec] = set_single(s, field, value, follow, s0)
   
   [s2, rec] = set_single(s2, rem(2:end), value, follow, s0); % recursive
   if rec
-    s = setfield(s, tok, s2); % update in parent struct
+    s = setfield(s, tok, s2); % update in parent struct. Calls "s.(tok)" i.e. subsref
   else
     s = s2; % we handled a link, and directly return the root object
   end

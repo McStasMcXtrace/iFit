@@ -75,7 +75,7 @@ function v = get_single(s, field, follow)
   [tok, rem] = strtok(field, '.');
   
   % get the highest level
-  v = getfield(s, tok);
+  v = getfield(s, tok); % Calls "s.(tok)" i.e. subsref
   if ~isempty(rem) && isstruct(v)
     % access deeper content recursively
     v = get_single(v, rem(2:end), follow);

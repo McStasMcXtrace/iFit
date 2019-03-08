@@ -1,5 +1,5 @@
 function [match, types, dims] = findfield(s, field, option)
-% [match, types, nelements]=findfield(struct, field, option) : look for structure fields
+% [match, types, nelements]=findfield(struct, field, option) look for structure fields
 %
 %   @struct/findfield function to look for struct fields, type and number of elements
 %
@@ -132,20 +132,22 @@ if ~isempty(field)
   end
 
   if isempty(match), return; end
-  if strfind(option, 'first')
-    % we select the 'shortest' match
-    [m, index] = min(cellfun(@length, match));
-    match = match{index};
-    types = types{index};
-    dims  = dims(index);
-  elseif strfind(option, 'biggest')
-    % we select the 'biggest' match
-    [m, index] = max(dims);
-    match = match{index};
-    types = types{index};
-    dims  = dims(index);
-  end
 end
+
+if strfind(option, 'first')
+  % we select the 'shortest' match
+  [m, index] = min(cellfun(@length, match));
+  match = match{index};
+  types = types{index};
+  dims  = dims(index);
+elseif strfind(option, 'biggest')
+  % we select the 'biggest' match
+  [m, index] = max(dims);
+  match = match{index};
+  types = types{index};
+  dims  = dims(index);
+end
+
 
 % ============================================================================
 % private function struct_getfields, returns field, class, numel 

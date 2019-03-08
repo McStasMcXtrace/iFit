@@ -1,5 +1,5 @@
 function structure = uitable(structure,options)
-% struct/uitable: a dialogue which allows to modify structure(s) in a table
+% struct/uitable a dialogue which allows to modify structure(s) in a table
 %
 % In modal (default) creation mode, the updated structure is returned upon
 %   closing the window. A modal dialog box prevents a user from interacting 

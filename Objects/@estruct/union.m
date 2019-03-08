@@ -1,5 +1,5 @@
 function structure = union(A, varargin)
-% struct/union: concatenate/merge structures
+% struct/union concatenate/merge structures
 %
 % Recursively merges fields and subfields of structures A and B to result structure Res
 % Simple recursive algorithm merges fields and subfields of two structures

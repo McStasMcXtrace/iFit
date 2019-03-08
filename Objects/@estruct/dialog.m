@@ -1,5 +1,5 @@
 function structure = dialog(structure,varargin)
-  % a wrapper to uitable(struct)
+  % dialog edit a structure, a wrapper to uitable(estruct)
   
   structure = uitable(structure,varargin{:});
   
