@@ -28,7 +28,7 @@ end
 %   S.type = '()';
 %   ischar(S.subs) -> set(a, S.subs, val, link)
 if numel(S) == 1 && strcmp(S(1).type,'()') && iscellstr(S(1).subs) && ~strcmp(S(1).subs{1},':')
-  v = get(a, S.subs{1},'link'); % new syntax a('fields')
+  v = get(a, S.subs{1}); % new syntax a('fields'). Follow links, and calls back subsref.
   return
 end
 

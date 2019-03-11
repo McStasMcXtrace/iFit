@@ -21,10 +21,11 @@ end
 %   S.type = '()';
 %   ischar(S.subs) -> set(a, S.subs, val)
 if numel(S) == 1 && strcmp(S.type,'()') && iscellstr(S.subs) && ~strcmp(S.subs{1},':')
-  set(a, S.subs{1}, val, 'link'); % new syntax a('fields') = value supports links
+  set(a, S.subs{1}, val); % new syntax a('fields') = value supports links
   return
 elseif numel(S) == 1 && strcmp(S.type,'.') && ischar(S.subs) && ~isfield(a, S.subs)
-  set(a, S.subs, val);            % new field: a.('field') = value
+  set(a, S.subs, val, 'nolink');            % new field: a.('field') = value. does not follow links.
+  return
 end
 
 % special syntax not handled: use builtin

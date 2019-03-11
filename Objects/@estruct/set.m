@@ -6,12 +6,16 @@ function s = set(s, varargin)
 %    V = SET(S,'PropertyName1.PropertyName2', 'Value')
 %    The 'PropertyName' can be a full structure path, such as 'field1.field2' in
 %    in which case the value assigment is made recursive.
-%
-%    V = SET(S,'PropertyName1.PropertyName2', 'Value','link')
 %    When the target property is itself a valid structure path (char), it is also 
-%    travelled through before asiigment.
+%    travelled through before assigment.
+%
+%    V = SET(S,'PropertyName1.PropertyName2', 'Value','nolink')
+%    When the PropertyName points to a string value, it is assigned without 
+%    travelling through it.
 % 
 %    SET(S) displays all structure field names.
+%
+% Example: s=estruct; set(s, 'a', 1); set(s, 'b.c','a'); get(s, 'b.c') == 1 && strcmp(get(s, 'b.c','nolink'),'a')
 %
 % See also: fieldnames, findfield, isfield, get
 
@@ -63,7 +67,7 @@ function [s, rec] = set_single(s, field, value, follow, s0)
   %
   % when the returned argument rec is true, recursivity is short-cut.
   if nargin < 5, s0=s; end
-  if nargin < 4, follow=false; end
+  if nargin < 4, follow=true; end
   rec=true;
   % cut the field into pieces with '.' as separator
   [tok, rem] = strtok(field, '.');
@@ -79,7 +83,7 @@ function [s, rec] = set_single(s, field, value, follow, s0)
   % when rem is empty, we are were to set the value
   if isempty(rem)
     if follow % check if the existing value is a char and valid link
-      v = getfield(s, tok);  % do not follow, get possible alias
+      v = subsref(s, struct('type','.','subs', tok)); % do not follow, get possible alias
       target = strtok(v, ' .()[]{};:=+-!@#$%^&*''"\|<>,?`~');
       if isfield(s0, target)
         try
@@ -89,12 +93,14 @@ function [s, rec] = set_single(s, field, value, follow, s0)
         end
       end
     end
-    s = setfield(s, tok, value);  % change value. Calls "s.(tok)=value" i.e. subsasgn
+    % change value. Calls "s.(tok)=value" i.e. subsasgn
+    s = subsasgn(s, struct('type','.','subs', tok), value);
     return
   end
   
   % else get the sub-struct
-  s2 = getfield(s, tok);  % Calls "s.(tok)" i.e. subsref
+  % subsref is faster than getfield which itself calls subsref
+  s2 = subsref(s, struct('type','.','subs', tok));
   
   % access deeper content recursively
   if ~isstruct(s2)
@@ -103,7 +109,8 @@ function [s, rec] = set_single(s, field, value, follow, s0)
   
   [s2, rec] = set_single(s2, rem(2:end), value, follow, s0); % recursive
   if rec
-    s = setfield(s, tok, s2); % update in parent struct. Calls "s.(tok)" i.e. subsref
+    % update in parent struct. Calls "s.(tok)" i.e. subsref
+    s = subsasgn(s, struct('type','.','subs', tok), s2);
   else
     s = s2; % we handled a link, and directly return the root object
   end

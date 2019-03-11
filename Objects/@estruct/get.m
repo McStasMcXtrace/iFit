@@ -8,20 +8,26 @@ function v = get(s, varargin)
 %    values.
 %    This is equivalent to S.('PropertyName') which does not follow links and
 %    PropertyName must be a single property name.
+%    The PropertyName can be given as a cellstr, in which case all given properties
+%    are returned.
 %
 %    V = GET(S,'PropertyName1.PropertyName2')
 %    The 'PropertyName' can be a full structure path, such as 'field1.field2' in
 %    in which case the value retrieval is made recursive.
-%
-%    V = GET(S,'PropertyName','link') follows internal links
 %    When the retrieved value is itself a valid structure path (char), it is also 
 %    travelled through, allowing 'aliases' such as in the following example:
 %      s=estruct; set(s, 'a', 1); set(s, 'b.c','a'); 
-%      get(s, 'b.c','link')  % returns s.a=1
+%      get(s, 'b.c')  % returns s.a=1
 %    This is equivalent to S('PropertyName') which follows links and PropertyName
 %    can be a compound/complex property name.
+%      get(s, 'b.c','nolink')  % returns s.b.c='a'
+%
+%    V = GET(S,'PropertyName','nolink') does not follows internal links
+%    When the PropertyName points to a string value, it is returned as is.
 % 
 %    GET(S) displays all structure field names.
+%
+% Example: s=estruct; set(s, 'a', 1); set(s, 'b.c','a'); get(s, 'b.c') == 1 && strcmp(get(s, 'b.c','nolink'),'a')
 %
 % See also: fieldnames, findfield, isfield, set
 
@@ -32,7 +38,7 @@ function v = get(s, varargin)
 
   if nargin == 1, field=''; else field = varargin{1}; end
   if isempty(field), v = fieldnames(s); return; end
-  if nargin <= 2, follow=false; else follow=true; end
+  if nargin <= 2, follow=true; else follow=false; end
   v = [];
   
   if ischar(field) && size(field, 1) > 1
@@ -70,12 +76,13 @@ function v = get(s, varargin)
 % ------------------------------------------------------------------------------
 function v = get_single(s, field, follow)
 
-  if nargin < 3, follow=false; end
+  if nargin < 3, follow=true; end
   % cut the field into pieces with '.' as separator
   [tok, rem] = strtok(field, '.');
   
   % get the highest level
-  v = getfield(s, tok); % Calls "s.(tok)" i.e. subsref
+  % subsref is faster than getfield which itself calls subsref
+  v = subsref(s, struct('type','.','subs', tok)); 
   if ~isempty(rem) && isstruct(v)
     % access deeper content recursively
     v = get_single(v, rem(2:end), follow);
