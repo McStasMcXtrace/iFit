@@ -75,6 +75,7 @@ function v = get(s, varargin)
   
 % ------------------------------------------------------------------------------
 function v = get_single(s, field, follow)
+  % get_single get a single field, recursively, and can follow char links
 
   if nargin < 3, follow=true; end
   % cut the field into pieces with '.' as separator
@@ -96,6 +97,21 @@ function v = get_single(s, field, follow)
       try
         v = get_single(s, v, follow);
       end
+    elseif strcmp(tok, 'matlab') && numel(v) > 8 % URL matlab:
+      v = get_single_eval(s, v);
+    elseif any(strcmp(tok, {'http' 'https' 'ftp' 'file'})) % URL http https ftp file: 
+      try
+        v = iLoad(v);
+      end
     end
   end
+  
+  % ----------------------------------------------------------------------------
+  function value = get_single_eval(this, value)
+   % get_single_eval a sandbox to valuate a matlab expression
+    try
+      value = eval(value(8:end));
+    catch ME
+      disp(getReport(ME))
+    end
   

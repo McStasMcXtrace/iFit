@@ -91,6 +91,10 @@ for i=1:length(fn) % loop on B fields
           Res=setfield(Res,s,{ fieldA, fieldB });
         end
       end
+    elseif isempty(fieldA)
+      Res=setfield(Res,s,fieldB);
+    elseif isempty(fieldB)
+      Res=setfield(Res,s,fieldA);
     elseif ~isempty(fieldB) % already in Res (from A)
       if isnumeric(fieldR) && isnumeric(fieldB) && isvector(fieldR) && isvector(fieldB)
         Res=setfield(Res,s,[ fieldR(:); fieldB(:) ]);

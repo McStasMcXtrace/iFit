@@ -1,4 +1,4 @@
-classdef estruct < dynamicprops & hgsetget
+classdef estruct < dynamicprops
 %ESTRUCT Create or convert to extended structure array.
 %  S = ESTRUCT('field1',VALUES1,'field2',VALUES2,...) creates a
 %  structure array with the specified fields and values.  The value
@@ -16,6 +16,8 @@ classdef estruct < dynamicprops & hgsetget
 %
 %  ESTRUCT([]) creates an empty structure.
 %
+%  ESTRUCT('filename') imports the file name and store its content into a Data property.
+%
 %  To create fields that contain cell arrays, place the cell arrays
 %  within a VALUE cell array.  For instance,
 %    s = estruct('strings',{{'hello','yes'}},'lengths',[5 3])
@@ -30,8 +32,41 @@ classdef estruct < dynamicprops & hgsetget
 %  See also isstruct, setfield, getfield, fieldnames, orderfields, 
 %  isfield, rmfield, deal, substruct, struct2cell, cell2struct.
 
-  properties (Access=protected)
+properties
+
+    % MetaData properties
+    Title
+    Source = pwd;
+    Creator= mfilename;
+    User   = getenv('USER')
+    Date   = clock;
+    ModificationDate
+    Command
+    UserData
+    Label
+    DisplayName
+    
+    % Data properties
+    Data   =[];
+    Signal          % e.g. an alias
+    Error           % e.g. an alias or empty
+    Monitor         % e.g. an alias or empty
+  end % properties
+  
+  properties (Access=private, Hidden=true)     % internal use
+    
     Private
+    % Data handling: Signal, Axes, ...
+    Labels  % Labels.Signal, ... Labels.Axes{1:ndims}
+    Axes    % {1:ndims} e.g. aliases
+  end
+  
+  properties (SetAccess=private)  % can be shown, but not changed
+    Tag
+  end
+  
+  properties (Access=protected, Constant=true)  % shared by all instances
+    Protected={'Labels','Axes','Tag','Private'} % can not be changed
   end
   
   methods
@@ -65,36 +100,43 @@ classdef estruct < dynamicprops & hgsetget
     %
     %  See also isstruct, setfield, getfield, fieldnames, orderfields, 
     %  isfield, rmfield, deal, substruct, struct2cell, cell2struct.
+    
+      persistent id
+      
       warning('off','MATLAB:structOnObject');
-      new.Private.cache = []; % init cache
+      new.Private.cache = []; % init cache to empty
+      % handle Tag number
+      if isempty(id) id=0; end
+      if id > 1e6,   id=0; end % use clock
+      if id <=0, 
+        id = new.Date;
+        id = fix(id(6)*1e4); 
+      else 
+        id=id+1;
+      end
+      new.Tag = [ 'iD' sprintf('%0.f', id) ]; % unique ID
       
       % append arguments
       index=1;
       while index<=numel(varargin)
         this = varargin{index};
         if isobject(this), this = struct(this); end
-        if ischar(this) && index<numel(varargin) && isvarname(this)  % name/value pair
-          if ~isfield(new, this), new.addprop(this); end
-          setfield(new, this, varargin{index+1});
-          index=index+1;
-        elseif ischar(this) && isvarname(this) && ~isfield(new, this)
-          new.addprop(this);
-        elseif isstruct(this)
-          % pass and treat below
-        elseif ischar(this)
-          s = str2struct(this); % convert to struct ?
-          if isstruct(s)
-            this = s; % will be used below
+        if ischar(this)
+          if index<numel(varargin) && isvarname(this)   % input: name/value pair, e.g. 'par',value, ...
+            if ~isfield(new, this), new.addprop(this); end
+            set(new, this, varargin{index+1});
+            index=index+1;  % increment name/value pair
+            this = [];
+          elseif exist(this, 'file') || any(strcmp(strtok(this, ':'), {'http' 'https' 'ftp' 'file'}))
+            try
+              this1 = iLoad(this); this=[]; this.Data=this1; clear this1; % imported data from file goes in Data
+            end
           else
-            name=sprintf('prop_%i', index);
-            if ~isfield(new, name), new.addprop(name); end
-            setfield(new, name, this);
+            s = str2struct(this); % convert to struct ?
+            if isstruct(s)
+              this = []; this.Data = s; % will be used below, stored into Data
+            end
           end
-        else
-          name = inputname(index); 
-          if isempty(name), name=sprintf('prop_%i', index); end
-          if ~isfield(new, name), new.addprop(name); end
-          setfield(new, name, this);
         end
         
         if isstruct(this)
@@ -103,10 +145,18 @@ classdef estruct < dynamicprops & hgsetget
           else
             new = cat(new, this);
           end
+        elseif ~isempty(this)
+          name = inputname(index);
+          if isempty(name), name=sprintf('prop_%i', index); end
+          if ~isfield(new, name), new.addprop(name); end
+          set(new, name, this);
         end
         
         index=index+1;
       end
+      
+      new.ModificationDate = new.Date;
+      
     end % estruct instantiate
     
     function tf = isstruct(self)

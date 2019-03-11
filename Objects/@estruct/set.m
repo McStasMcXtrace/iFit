@@ -73,8 +73,9 @@ function [s, rec] = set_single(s, field, value, follow, s0)
   [tok, rem] = strtok(field, '.');
   
   if ~isfield(s, tok) % new field ?
+    tok = genvarname(tok);
     if isa(s, 'estruct')
-      s.addprop(genvarname(tok));
+      s.addprop(tok);
     else
       s.(tok) = [];
     end

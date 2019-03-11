@@ -17,6 +17,13 @@ if numel(a) > 1
   return
 end
 
+% check for protected properties
+if iscell(S(1).subs) && any(strcmp(S(1).subs{1}, a.Protected))
+  error([ mfilename ': can not set Protected property ' S(1).subs{1} ' in object ' a.Tag ]);
+elseif ischar(S(1).subs(1)) && any(strcmp(S(1).subs, a.Protected))
+  error([ mfilename ': can not set Protected property ' S(1).subs ' in object ' a.Tag ]);
+end
+
 % we use the default subsasgn except for single level assigment
 %   S.type = '()';
 %   ischar(S.subs) -> set(a, S.subs, val)

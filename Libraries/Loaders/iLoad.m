@@ -317,7 +317,7 @@ function [data, format] = iLoad(filename, loader, varargin)
     end
     
     if strncmp(filename, 'file://', length('file://'))
-      filename = filename(8:end); % remove 'file://' from local name
+      filename = filename(7:end); % remove 'file://' from local name
     end
     
     % handle / to \ substitution for Windows systems, not in URLs
