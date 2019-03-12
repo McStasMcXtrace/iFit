@@ -38,13 +38,14 @@ properties
     Title
     Source = pwd;
     Creator= mfilename;
-    User   = getenv('USER')
+    User   = getenv('USER');
     Date   = clock;
     ModificationDate
     Command
     UserData
     Label
     DisplayName
+    Tag
     
     % Data properties
     Data   =[];
@@ -61,12 +62,8 @@ properties
     Axes    % {1:ndims} e.g. aliases
   end
   
-  properties (SetAccess=private)  % can be shown, but not changed
-    Tag
-  end
-  
   properties (Access=protected, Constant=true)  % shared by all instances
-    Protected={'Labels','Axes','Tag','Private'} % can not be changed
+    Protected={'Protected','Labels','Axes','Tag','Private'} % can not be changed
   end
   
   methods
@@ -115,47 +112,84 @@ properties
         id=id+1;
       end
       new.Tag = [ 'iD' sprintf('%0.f', id) ]; % unique ID
+      new.ModificationDate = new.Date;
+      if ~nargin, return; end
       
-      % append arguments
+      % collect items to store: as structures, as data files, and others
+      structs = {}; % cell: will contain struct('name','value')
+      
+      % append arguments (not from files)
       index=1;
-      while index<=numel(varargin)
-        this = varargin{index};
+      while index<=nargin
+        this = varargin{index}; s = [];
         if isobject(this), this = struct(this); end
         if ischar(this)
           if index<numel(varargin) && isvarname(this)   % input: name/value pair, e.g. 'par',value, ...
-            if ~isfield(new, this), new.addprop(this); end
-            set(new, this, varargin{index+1});
+            s.name = this;
+            s.value= varargin{index+1};
+            structs{end+1} = s; this = [];
+            varargin{index} = []; varargin{index+1} = []; % clear memory
             index=index+1;  % increment name/value pair
-            this = [];
           elseif exist(this, 'file') || any(strcmp(strtok(this, ':'), {'http' 'https' 'ftp' 'file'}))
-            try
-              this1 = iLoad(this); this=[]; this.Data=this1; clear this1; % imported data from file goes in Data
-            end
+            % pass: we handle this below when assembling the object(s)
+            this = [];
           else
-            s = str2struct(this); % convert to struct ?
-            if isstruct(s)
-              this = []; this.Data = s; % will be used below, stored into Data
-            end
+            s.value = str2struct(this); % convert to struct ?
+            s.name  = inputname(index);
+            structs{end+1} = s; this = [];
+            varargin{index} = [];
           end
-        end
+        end % ischar
         
-        if isstruct(this)
-          if index == 1
-            new = copyobj(new, this);
-          else
-            new = cat(new, this);
-          end
-        elseif ~isempty(this)
-          name = inputname(index);
-          if isempty(name), name=sprintf('prop_%i', index); end
-          if ~isfield(new, name), new.addprop(name); end
-          set(new, name, this);
+        if ~isempty(this)
+          s.value = this;
+          s.name  = inputname(index);
+          structs{end+1} = s;
         end
         
         index=index+1;
-      end
+      end % varargin
       
-      new.ModificationDate = new.Date;
+      structs{:}
+      
+      % fill in direct name/value pairs
+      for index=1:numel(structs)
+        s = structs{index};
+        if isempty(s.name), s.name=sprintf('%s_%i', class(s.value), index); end
+        if ~isfield(new, s.name), new.addprop(s.name); end
+        new.(s.name)=s.value; 
+        structs{index} = []; % clear memory
+      end
+      numel_new = 1; 
+      new0 = copyobj(new);
+      
+      % now build the final 'master' object
+      for index_varg=1:numel(varargin) % loop on initial input arguments for iLoad
+        arg = varargin{index_varg};
+        if isempty(arg) || (~ischar(arg) && ~iscellstr(arg)), continue; end
+        if ischar(arg), arg = cellstr(arg); end
+        for index_arg=1:numel(arg)  % loop on input argument content when e.g. cellstr array
+          this = arg{index_arg}; % must be a char or single cellstr
+          if isempty(this), continue; end
+          if exist(this, 'file') || any(strcmp(strtok(this, ':'), {'http' 'https' 'ftp' 'file'}))
+            try
+              this = iLoad(this); % imported data from file goes in Data
+            catch ME
+              disp([ mfilename ': WARNING: failed importing ' char(this) ]);
+            end
+          end
+          % this can now be initial char/cellstr, a struct from iLoad, or a cell of structs from iLoad
+          if ~iscell(this), this = { this }; end
+          for index_data=1:numel(this)
+            if numel_new == 1, new.Data = this{index_data};
+            else
+              new1 = copyobj(new0); new1.Data = this{index_data}; this{index_data} = [];
+              new = [ new new1 ]; % build array
+            end % index_data 
+            numel_new = numel_new+1;
+          end
+        end % index_arg
+      end % index_varg
       
     end % estruct instantiate
     

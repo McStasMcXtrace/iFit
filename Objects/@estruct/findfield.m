@@ -43,7 +43,7 @@ if numel(s) > 1
   return
 end
 
-struct_s=rmfield(struct(s),'Private');  % private must remain so.
+struct_s=rmfield(struct(s),s.Protected);  % private/protected stuff must remain so.
 
 if isfield(s.Private, 'cache') && isfield(s.Private.cache, mfilename) ...
   && ~isempty(s.Private.cache.(mfilename))

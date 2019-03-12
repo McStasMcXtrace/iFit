@@ -34,7 +34,7 @@ function new = copyobj(self, org)
   end
 
   % single deep copy
-  if isempty(self) && ~isa(self, 'handle') && isa(org, class(self))
+  if isempty(self) && ~isa(self, 'handle') && isa(org, 'estruct')
     % assigment is OK for non handle objects
     new = org;  
   else 
@@ -42,6 +42,8 @@ function new = copyobj(self, org)
     new = feval(class(self)); % new empty object of same class
     wrn_flag = true;
     for p = fieldnames(org)'
+      % skip Tag that must be unique
+      if strcmp(p{1}, 'Tag'), continue; end
       try
         if ~isfield(new, p{1})
           new.addprop(p{1});
