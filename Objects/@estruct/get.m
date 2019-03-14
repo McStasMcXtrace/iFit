@@ -1,117 +1,89 @@
 function v = get(s, varargin)
-% GET    Get structure properties.
-%    V = GET(S,'PropertyName') returns the value of the specified
-%    property/field in the structure.  If S is an array, then get will 
-%    return a cell array of values.  
-%    If 'PropertyName' is replaced by a 1-by-N or N-by-1 cell array of strings 
-%    containing property names, then GET will return an M-by-N cell array of
-%    values.
-%    This is equivalent to S.('PropertyName') which does not follow links and
-%    PropertyName must be a single property name.
-%    The PropertyName can be given as a cellstr, in which case all given properties
-%    are returned.
+% GET    Get estruct properties.
 %
-%    V = GET(S,'PropertyName1.PropertyName2')
+%  V = GET(S,'PropertyName') 
+%    Get the value of the specified property/field in the structure.
+%    The object S can be an array.
+%
 %    The 'PropertyName' can be a full structure path, such as 'field1.field2' in
-%    in which case the value retrieval is made recursive.
-%    When the retrieved value is itself a valid structure path (char), it is also 
-%    travelled through, allowing 'aliases' such as in the following example:
-%      s=estruct; set(s, 'a', 1); set(s, 'b.c','a'); 
-%      get(s, 'b.c')  % returns s.a=1
-%    This is equivalent to S('PropertyName') which follows links and PropertyName
-%    can be a compound/complex property name.
-%      get(s, 'b.c','nolink')  % returns s.b.c='a'
+%    in which case the returned value travelled through.
 %
-%    V = GET(S,'PropertyName','nolink') does not follows internal links
-%    When the PropertyName points to a string value, it is returned as is.
+%    When the target property is itself a valid structure path (char), it is also 
+%    travelled through before getting the value (see below).
+%
+%  V = GET(S,'PropertyName1','PropertyName2',...)
+%    Get multiple properties.
+%
+%  V = GET(S, ...,'alias')
+%    When the PropertyName points to a string value, it is fetched without 
+%    travelling through it (get an alias/link). 
+%    This syntax is equivalent to GETALIAS(S, 'PropertyName1',...)
+%    In this case, the retrieval allows to access internal or external links, 
+%    as well as evaluated expression, with the syntax cases for the 'Value':
+%     'field'                           a simple link to an other property 'field'
+%     'field1.field2...'                a nested link to an other property
+%     'file://some_file_path'           a local file URL
+%     'http://some_distant_resource'    an HTTP URL (proxy settings may have to be set)
+%     'https://some_distant_resource'   an HTTPS URL (proxy settings may have to be set)
+%     'ftp://some_distant_resource'     an FTP URL (proxy settings may have to be set)
+%     'matlab: some_expression'         some code to evaluate. 'this' refers to the 
+%                                       object itself e.g. 'matlab: this.Signal*2'
+%
+%    File and URL can refer to compressed resources (zip, gz, tar, Z) which are 
+%    extracted on-the-fly. In case the URL/file resource contains 'sections' a search token
+%    can be specified with syntax such as 'file://filename#token'.
 % 
-%    GET(S) displays all structure field names.
+%    GET(S) displays all object properties.
 %
-% Example: s=estruct; set(s, 'a', 1); set(s, 'b.c','a'); get(s, 'b.c') == 1 && strcmp(get(s, 'b.c','nolink'),'a')
+% Example: s=estruct; set(s, 'a', 1); set(s, 'b.c','a','alias'); get(s, 'b.c') == 1 && strcmp(get(s, 'b.c','alias'),'a')
 %
-% See also: fieldnames, findfield, isfield, set
+% See also: fieldnames, findfield, isfield, set, estruct/getalias, estruct/setalias
+
+% NOTE: the rationale here is to implement all the logic in subsref and just call it.
 
   if ~isa(s, 'estruct')
     v = builtin('get', s, varargin{:});
     return
   end
 
-  if nargin == 1, field=''; else field = varargin{1}; end
-  if isempty(field), v = fieldnames(s); return; end
-  if nargin <= 2, follow=true; else follow=false; end
-  v = [];
-  
-  if ischar(field) && size(field, 1) > 1
-    field = cellstr(field);
+  if nargin == 1, v = fieldnames(s); return; end
+  % check last argument as 'alias' ? will not follow links, but get aliases directly.
+  if ischar(varargin{end}) && any(strcmp(varargin{end}, {'link','alias'}))
+       follow = false;  % we get aliases and do not link for get/subsref.
+  else follow = true;   % we travel through links
   end
+  v = {};
   
   % handle array of struct
   if numel(s) > 1
-    sout = {};
     for index=1:numel(s)
-      sout{end+1} = get(s(index), field, follow);
+      v{end+1} = get(s(index), varargin{:});
     end
-    sout = reshape(sout, size(s));
-    v = sout; 
+    v = reshape(v, size(s));
     return
+  end
+  
+  % check last argument as 'alias' ? will not follow links, but get aliases directly.
+  if ischar(varargin{end}) && any(strcmp(varargin{end}, {'link','alias'}))
+       follow = false;  % we get aliases and do not link for get/subsref.
+       varargin(end) = [];
+  else follow = true;   % we travel through links
   end
   
   % handle array/cell of fields
-  if iscellstr(field)
-    sout = {};
-    for index=1:numel(field)
-      sout{end+1} = get(s, field{index}, follow);
+  for index=1:numel(varargin) % loop on requested properties
+    name = varargin{index};
+    if ~ischar(name) && ~iscellstr(name)
+      error([ mfilename ': GET works with property name argument. The ' num2str(index) '-th argument is of type ' class(name) ]);
     end
-    sout = reshape(sout, size(field));
-    v = sout; 
-    return
-  end
-  
-  if ~ischar(field)
-    error([ mfilename ': field to search in struct must be a char or cellstr, nor ' class(field) ]);
-  end
-  
-  v = get_single(s, field, follow);
-  
-% ------------------------------------------------------------------------------
-function v = get_single(s, field, follow)
-  % get_single get a single field, recursively, and can follow char links
-
-  if nargin < 3, follow=true; end
-  % cut the field into pieces with '.' as separator
-  [tok, rem] = strtok(field, '.');
-  
-  % get the highest level
-  % subsref is faster than getfield which itself calls subsref
-  v = subsref(s, struct('type','.','subs', tok)); 
-  if ~isempty(rem) && isstruct(v)
-    % access deeper content recursively
-    v = get_single(v, rem(2:end), follow);
-  end
-  
-  % check if content is an alias, e.g. refers to a field/path
-  if ischar(v) && follow
-    % valid characters are A-Za-z_0-9
-    tok = strtok(v, ' .()[]{};:=+-!@#$%^&*''"\|<>,?`~');
-    if isfield(s, tok)
-      try
-        v = get_single(s, v, follow);
-      end
-    elseif strcmp(tok, 'matlab') && numel(v) > 8 % URL matlab:
-      v = get_single_eval(s, v);
-    elseif any(strcmp(tok, {'http' 'https' 'ftp' 'file'})) % URL http https ftp file: 
-      try
-        v = iLoad(v);
+    name = cellstr(name);
+    for n_index=1:numel(name)
+      if follow
+        v{end+1} = subsref(s, struct('type','.','subs',name{n_index}));
+      else
+        v{end+1} = subsref(s, struct('type','()','subs',name{n_index}));
       end
     end
   end
-  
-  % ----------------------------------------------------------------------------
-  function value = get_single_eval(this, value)
-   % get_single_eval a sandbox to valuate a matlab expression
-    try
-      value = eval(value(8:end));
-    catch ME
-      disp(getReport(ME))
-    end
+  if numel(v) == 1, v = v{1}; end
   
