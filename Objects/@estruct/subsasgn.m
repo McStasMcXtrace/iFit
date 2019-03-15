@@ -1,14 +1,41 @@
 function a = subsasgn(a,S,val)
 % a = subsasgn(a,index,b) indexed assignement
 %
-%   @estruct/subsasgn: function defines indexed assignement 
-%   such as a(1:2,3)    set indexed elements in array
-%           a.('b')     set single field in structure, same as a.b
-%           a('b')      set complex field in structure and follow links
+%   @estruct/subsasgn: indexed property assignement 
+%   such as:
+%     a(1:2,3) =val
+%       Set indexed elements in array
 %
-%   The special syntax a('field') allows recursive field assigment and follows
-%   links, e.g. a=estruct('f1',1,'f2','f1'); a('f2')=3; will set a.f1=3
-%   and you may as well use: a('f3.a')=2 will set a.f3.a=1 directly.
+%     a.field     =val
+%     a.('field') =val
+%       Set field in structure, same as a.b. Follow links.
+%       This syntax sets final values (travel through aliases/links).
+%       Equivalent to set(s, 'field', val)
+%
+%     a{axis_rank}=val
+%       Set an axis of given rank to a value or alias/link (when given as string/char).
+%       The rank 0 corresponds with Sinal/Monitor
+%       Equivalent to setaxis(s, axis_rank, value)
+%
+%     a('field')  =val
+%       Set complex field in structure and does NOT follow links.
+%       This syntax sets 'aliases' (does not travel through links) when the 
+%         value is a string/char.
+%       Equivalent to set(s, 'field', val, 'alias') and setalias(s, 'field', val)
+
+%   In the alias case above, a string/char value allows to link to internal or 
+%   external links, as well as evaluated expression, with the following syntax cases:
+%     'field'                           a simple link to an other property 'field'
+%     'field1.field2...'                a nested link to an other property
+%     'file://some_file_path'           a local file URL
+%     'http://some_distant_resource'    an HTTP URL (proxy settings may have to be set)
+%     'https://some_distant_resource'   an HTTPS URL (proxy settings may have to be set)
+%     'ftp://some_distant_resource'     an FTP URL (proxy settings may have to be set)
+%     'matlab: some_expression'         some code to evaluate. 'this' refers to the object itself
+%
+%   File and URL can refer to compressed resources (zip, gz, tar, Z) which are 
+%   extracted on-the-fly. In case the URL/file resource contains 'sections', a 
+%   search token can be specified with syntax such as 'file://filename#token'.
 %
 % Version: $Date$
 
@@ -24,19 +51,11 @@ elseif ischar(S(1).subs(1)) && any(strcmp(S(1).subs, a.Protected))
   error([ mfilename ': can not set Protected property ' S(1).subs ' in object ' a.Tag ]);
 end
 
-% we use the default subsasgn except for single level assigment
-%   S.type = '()';
-%   ischar(S.subs) -> set(a, S.subs, val)
-if numel(S) == 1 && strcmp(S.type,'()') && iscellstr(S.subs) && ~strcmp(S.subs{1},':')
-  set(a, S.subs{1}, val); % new syntax a('fields') = value supports links
-  return
-elseif numel(S) == 1 && strcmp(S.type,'.') && ischar(S.subs) && ~isfield(a, S.subs)
-  set(a, S.subs, val, 'nolink');            % new field: a.('field') = value. does not follow links.
-  return
-end
-
-% special syntax not handled: use builtin
-a = builtin('subsasgn', a, S, val);
+% we use a recursive approach until we reach the last level for assigment
+% then propagate back the update to the upper levels
+a = subsasgn_recursive(a, S, val);
 
 % reset cache (as we have changed the object: fields, values, ...)
 a.Private.cache.findfield = [];
+
+

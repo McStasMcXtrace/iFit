@@ -47,14 +47,9 @@ function v = get(s, varargin)
   end
 
   if nargin == 1, v = fieldnames(s); return; end
-  % check last argument as 'alias' ? will not follow links, but get aliases directly.
-  if ischar(varargin{end}) && any(strcmp(varargin{end}, {'link','alias'}))
-       follow = false;  % we get aliases and do not link for get/subsref.
-  else follow = true;   % we travel through links
-  end
-  v = {};
   
   % handle array of struct
+  v = {};
   if numel(s) > 1
     for index=1:numel(s)
       v{end+1} = get(s(index), varargin{:});
@@ -79,7 +74,7 @@ function v = get(s, varargin)
     name = cellstr(name);
     for n_index=1:numel(name)
       if follow
-        v{end+1} = subsref(s, struct('type','.','subs',name{n_index}));
+        v{end+1} = subsref(s, struct('type','.', 'subs',name{n_index}));
       else
         v{end+1} = subsref(s, struct('type','()','subs',name{n_index}));
       end
