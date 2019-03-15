@@ -73,12 +73,16 @@ function v = get_single_alias(s, v)
 function value = get_single_eval(this, value)
  % get_single_eval a sandbox to valuate a matlab expression
  % 'this' refers to the initial object/structure
+  value = value(8:end);
   try
-    if iscellstr(value), value = sprintf('%s\n', value{:}); end
-    value = eval(value(8:end));
+    value = eval(value);
   catch ME
-    disp([ mfilename ': WARNING: evaluating: ' value ])
-    disp(getReport(ME))
+    try % try again without return value
+      value = evalc(value);
+    catch ME
+      disp([ mfilename ': WARNING: evaluating matlab: ' value ])
+      value = getReport(ME);
+    end
   end
   
 
