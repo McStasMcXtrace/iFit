@@ -14,7 +14,7 @@ function a = subsasgn(a,S,val)
 %
 %     a{axis_rank}=val
 %       Set an axis of given rank to a value or alias/link (when given as string/char).
-%       The rank 0 corresponds with Sinal/Monitor
+%       The rank 0 corresponds with Signal/Monitor
 %       Equivalent to setaxis(s, axis_rank, value)
 %
 %     a('field')  =val

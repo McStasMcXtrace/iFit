@@ -49,17 +49,14 @@ properties
     
     % Data properties
     Data   =[];
-    Signal          % e.g. an alias
-    Error           % e.g. an alias or empty
-    Monitor         % e.g. an alias or empty
   end % properties
   
   properties (Access=private, Hidden=true)     % internal use
     
     Private
     % Data handling: Signal, Axes, ...
-    Labels  % Labels.Signal, ... Labels.Axes{1:ndims}
-    Axes    % {1:ndims} e.g. aliases
+    Labels= struct(); % struct: Labels.Signal, ... Labels.Axes{1:ndims}
+    Axes  = {};       % cell{1:ndims} e.g. aliases
   end
   
   properties (Access=protected, Constant=true)  % shared by all instances
@@ -113,6 +110,12 @@ properties
       end
       new.Tag = [ 'iD' sprintf('%0.f', id) ]; % unique ID
       new.ModificationDate = new.Date;
+      % add our 'static' properties so that they are equially handled by
+      % subsref/subsasgn
+      new.addprop('Signal');          % e.g. an alias
+      new.addprop('Error');           % e.g. an alias or empty
+      new.addprop('Monitor');         % e.g. an alias or empty
+      new.Error = 'matlab: sqrt(this.Signal)';
       if ~nargin, return; end
       
       % collect items to store: as structures, as data files, and others
@@ -149,8 +152,6 @@ properties
         
         index=index+1;
       end % varargin
-      
-      structs{:}
       
       % fill in direct name/value pairs
       for index=1:numel(structs)

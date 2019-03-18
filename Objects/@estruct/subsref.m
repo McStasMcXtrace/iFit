@@ -14,7 +14,7 @@ function v = subsref(a,S)
 %
 %     a{axis_rank}
 %       Get an axis of given rank.
-%       The rank 0 corresponds with Sinal/Monitor
+%       The rank 0 corresponds with Signal/Monitor
 %       Equivalent to getaxis(s, axis_rank)
 %
 %     a('field')

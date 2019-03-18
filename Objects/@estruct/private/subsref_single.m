@@ -1,5 +1,6 @@
 function v = subsref_single(v, S, a)
 % subsref_single single level subsref
+  if nargin<3, a=v; end
   if numel(S) ~= 1, error([ mfilename ': only works with a single level reference' ]); end
   default = true;
   switch S.type
@@ -13,7 +14,7 @@ function v = subsref_single(v, S, a)
     end
   case '{}' % syntax: a{axis_rank} get axis value/alias (getaxis)
     if isa(v, 'estruct') && numel(S.subs{1}) == 1 % scalar numeric or char
-      v = getaxis(v, S.subs{1});        
+      v = getaxis(v, S.subs{1});
       default = false;
     end
   end
@@ -61,6 +62,8 @@ function v = get_single(s, field, follow, s0)
 function v = get_single_alias(s, v)
   if isfield(s, v) % a link to a valid field in root object
     v = builtin('subsref',s, struct('type','.','subs', v)); % get true value/alias (no follow)
+  elseif strcmp(v, 'matlab: sqrt(this.Signal)') % for defaukt Error (no eval)
+    v = sqrt(s.Signal);
   elseif strncmp(v, 'matlab',6) && numel(v) > 8 % URL matlab:
     v = get_single_eval(s, v);
   elseif ~isempty(dir(v)) || any(strcmp(strtok(v, ':'), {'http' 'https' 'ftp' 'file'})) % URL http https ftp file: 

@@ -14,7 +14,7 @@ function a = subsasgn_single(a, S, val, a0)
     end
   case '{}' % syntax: a{axis_rank} set axis value/alias (setaxis)
     if isa(a, 'estruct') && numel(S.subs{1}) == 1 % scalar numeric or char
-      a = setaxis(a, S.subs{1});        
+      a = setaxis(a, S.subs{1}, val); % also set cache.check_requested to true
       default = false;
     end
   end
@@ -30,6 +30,10 @@ function s = set_single(s, field, value, follow, s0)
   
   if nargin <= 3, follow=true; end
   if nargin <= 4, s0=s; end
+  
+  if any(strcmp(field, {'Signal','Monitor','Error','Axes'})) && isa(s0, 'estruct')
+    s0.Private.cache.check_requested = true;
+  end
 
   % cut the field into pieces with '.' as separator
   if any(field == '.')
@@ -65,9 +69,6 @@ function s = set_single(s, field, value, follow, s0)
         if ischar(v) && isfield(s0, strtok(v, '.')) % link exists in original objet ?
           try
             s0 = set_single(s0, v, value, follow); % set link in root object
-            if any(strcmp(v, {'Signal'})) && isa(s0, 'estruct')
-              s0.Private.cache.check_requested = true;
-            end
             % must exit recursive levels
             return
           end
