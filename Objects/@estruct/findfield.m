@@ -1,18 +1,24 @@
-function [match, types, dims] = findfield(s, field, option)
-% [match, types, nelements]=findfield(struct, field, option) look for structure fields
+function [match, types, dims, sz] = findfield(s, field, option)
+% [match, types, nelements,sz]=findfield(struct, field, option) look for structure fields
 %
 %   @struct/findfield function to look for struct fields, type and number of elements
 %
-%   [match,type,n] = findfield(struct) returns the names of all struct fields
-%   [match,type,n] = findfield(struct, field) returns the names of all struct fields 
-%     that match 'field'
-%   The optional 'option' argument can contain one or more keywords:
+%   match = findfield(struct)
+%     returns the names of all fields
+%   match = findfield(struct, field) 
+%     returns the names of all fields that match 'field'
+%   [match,type,n,sz] = findfield(...)
+%     also return the type, number of elements and size of fields
+%   [match,type,n] = findfield(struct, field, option)
+%     The optional 'option' argument can contain one or more keywords:
 %     The 'exact'   option will search for the exact occurences.
 %     The 'case'    option specifies a case sensitive search. 
 %     The 'numeric' option will return only numerical fields.
 %     The 'char'    option will return only character fields.
 %     The 'first'   option returns the first match (with shortest name/link).
 %     The 'biggest' option returns the biggest match (has max nb of elements).
+%  For instance, to identify the largest numeric element in object, use:
+%    f=findfield(s,'','numeric biggest')
 %
 % input:  s: object or array (struct)
 %         field: field name to search, or '' (char).
@@ -20,7 +26,8 @@ function [match, types, dims] = findfield(s, field, option)
 % output: match:  names of struct fields (cellstr)
 %         types:  types of struct fields (cellstr), e.g. 'double', 'char', 'struct'...
 %         nelements: total number of elements in struct fields (double)
-% ex:     findfield(struct) or findfield(struct,'Title') or findfield(s,'Title','exact case')
+%         sz:     size of struct fields (cellstr)
+% Example: s=estruct(1:10, rand(6)); f=findfield(s,'','biggest'); numel(get(s,f)) == 36)
 %
 % Version: $Date$
 % See also struct, struct/set, struct/get, struct/findstr
@@ -35,10 +42,11 @@ end
 if numel(s) > 1
   match = cell(1, numel(s)); types=match; dims=match;
   for index=1:numel(s)
-    [m,t,n] = findfield(s(index), field, option);
+    [m,t,n,z] = findfield(s(index), field, option);
     match{index}=m;
     types{index}=t;
-    dims{index}=n;
+    dims{index} =n;
+    sz{index}   =z;
   end
   return
 end
@@ -52,18 +60,21 @@ if isfield(s.Private, 'cache') && isfield(s.Private.cache, mfilename) ...
   match = cache.match;
   types = cache.types;
   dims  = cache.dims;
+  sz    = cache.sizes;
 else
   % find all fields in object structure
-  [match, types, dims] = struct_getfields(struct_s, '');
+  [match, types, dims, sz] = struct_getfields(struct_s, '');
   
   [match, index] = unique(match);
   types=types(index);
   dims =dims(index);
+  sz   =sz(index);
   
   % set content into cache
   cache.match = match;
   cache.types = types;
   cache.dims  = dims;
+  cache.sizes = sz;
   s.Private.cache.(mfilename) = cache;
 end
 
@@ -71,24 +82,29 @@ end
 if ~isempty(strfind(option, 'numeric')) || ~isempty(strfind(option, 'char'))
 
   % now get the numeric ones
-  if ~isempty(strfind(option, 'numeric'))
+  if ~isempty(strfind(option, 'numeric'))   % e.g. double, int, ...
     index=          find(strcmp( 'double', types));
     index=[ index ; find(strcmp( 'single', types)) ];
     index=[ index ; find(strcmp( 'logical',types)) ];
     index=[ index ; find(strncmp('uint',   types, 4)) ];
     index=[ index ; find(strncmp('int',    types, 3)) ];
-  else % 'char' option
+  elseif ~isempty(strfind(option, 'char'))  % 'char' option
     index=          find(strcmp( 'char', types));
+  else index=[];                            % all / other
   end
   
-  match  = match(index); % get all field names containing double data
-  dims   = dims(index);
-  types  = types(index);
+  if ~isempty(index)
+    match  = match(index); % restrict search to numeric/char data
+    dims   = dims(index);
+    types  = types(index);
+    sz     = sz(index);
+  end
   
   % sort fields in descending size order
   [dims, index]  = sort(dims, 'descend');
   match  = match(index);
   types  = types(index);
+  sz     = sz(index);
 end
 
 % restrict search to a given token 
@@ -122,95 +138,106 @@ if ~isempty(field)
       index = strfind(matchs, field);   % faster
     end
   end
-  if ~isempty(index) && iscell(index), index = find(cellfun('isempty', index) == 0); end
+  % get only the non-empty fields
+  if ~isempty(index) && iscell(index), index = find(cellfun(@isempty, index) == 0); end
   if isempty(index)
-    match={}; types={}; dims=[];
+    match={}; types={}; dims=[]; sz={};
   else
     match = match(index);
     types = types(index);
     dims  = dims(index);
+    sz    = sz(index);
   end
 
   if isempty(match), return; end
-end
+end % field search on token
 
-if strfind(option, 'first')
+if ~isempty([ strfind(option, 'first') strfind(option, 'shortest')  ])
   % we select the 'shortest' match
   [m, index] = min(cellfun(@length, match));
   match = match{index};
   types = types{index};
   dims  = dims(index);
-elseif strfind(option, 'biggest')
+  sz    = sz{index};
+elseif ~isempty([ strfind(option, 'biggest') strfind(option, 'largest') ])
   % we select the 'biggest' match
   [m, index] = max(dims);
   match = match{index};
   types = types{index};
   dims  = dims(index);
+  sz    = sz{index};
 end
 
 
 % ============================================================================
 % private function struct_getfields, returns field, class, numel 
-function [f, t, n] = struct_getfields(structure, parent)
+function [f, t, n, z] = struct_getfields(structure, parent)
 
-f={}; t={}; n=[];
+f={}; t={}; n=[]; z={};
 if ~isstruct(structure), return; end
 
+% handle array of structures
 if numel(structure) > 1
   structure=structure(:);
   for index=1:length(structure)
-    [sf, st, sn] = struct_getfields(structure(index), [ parent '(' num2str(index) ')' ]);
-    % sf = strcat(sf, [ '(' num2str(index) ')' ])
+    [sf, st, sn, sz] = struct_getfields(structure(index), [ parent '(' num2str(index) ')' ]);
     f = [f(:) ; sf(:)];
     t = [t(:) ; st(:)];
     n = [n(:) ; sn(:)];
+    z = [z(:) ; sz(:)];
   end
   return
 end
 
-c = struct2cell(structure);
-f = fieldnames(structure);
-try
-  t = cellfun(@class, c, 'UniformOutput', 0);
-  n = cellfun(@numel, c);
-catch
-  t=cell(1,length(c));
-  index = cellfun('isclass', c, 'double'); t(find(index)) = {'double'};
-  index = cellfun('isclass', c, 'single'); t(find(index)) = {'single'};
-  index = cellfun('isclass', c, 'logical');t(find(index)) = {'logical'};
-  index = cellfun('isclass', c, 'char');   t(find(index)) = {'char'};
-  index = cellfun('isclass', c, 'struct'); t(find(index)) = {'struct'};
-  index = cellfun('isclass', c, 'cell');   t(find(index)) = {'cell'};
-  index = cellfun('isclass', c, 'uint8');  t(find(index)) = {'uint8'};
-  index = cellfun('isclass', c, 'uint16'); t(find(index)) = {'uint16'};
-  index = cellfun('isclass', c, 'uint32'); t(find(index)) = {'uint32'};
-  index = cellfun('isclass', c, 'uint64'); t(find(index)) = {'uint64'};
-  index = cellfun('isclass', c, 'int8');   t(find(index)) = {'int8'};
-  index = cellfun('isclass', c, 'int16');  t(find(index)) = {'int16'};
-  index = cellfun('isclass', c, 'int32');  t(find(index)) = {'int32'};
-  index = cellfun('isclass', c, 'int64');  t(find(index)) = {'int64'};
-  n = cellfun('prodofsize', c);
-end
 
-if ~isempty(parent) && ~isempty(f), 
+f = fieldnames(structure);
+if ~isempty(parent) && ~isempty(f), % assemble compound field path
   % f = strcat([ parent '.' ], f); % this is time consuming
   for ii=1:length(f)
     f{ii} = [ parent '.' f{ii} ]; % slightly faster
   end
 end
 
-% find sub-structures and make a recursive call for each of them
-for index=transpose(find(cellfun('isclass', c, 'struct')))
+% get info by reading the whole content (when smaller than 1Gb, but fast)
+failed=true;
+if getfield(whos('structure'), 'bytes') < 1e9
   try
-  [sf, st, sn] = struct_getfields(c{index}, f{index});
-  f = [f(:) ; sf(:)];
-  t = [t(:) ; st(:)];
-  n = [n(:) ; sn(:)];
+    c = struct2cell(structure); 
+    t = cellfun(@class, c, 'UniformOutput', 0);
+    n = cellfun(@numel, c);
+    z = cellfun(@size,  c, 'UniformOutput', 0);
+    failed = false; % get there: all is fine
+  end
+  clear c
+end
+% when storage is too large or failed, go through all fields sequentially (slower)
+if failed
+  t = cell(1, numel(f)); n=zeros(1,numel(f)); z=t;
+  for ii=1:length(f)
+    t{ii} = class(builtin('subsref',structure, struct('type','.','subs',f{ii})));
+    z{ii} = size( builtin('subsref',structure, struct('type','.','subs',f{ii})));
+    n(ii) = prod(z{ii});
+  end
+end
+
+% find sub-structures and make a recursive call for each of them
+for ii=1:length(f)
+  if any(strcmp(t{ii},{'struct','estruct'}))  % structure -> recursive
+    try
+      [sf, st, sn,sz] = struct_getfields(...
+        builtin('subsref',structure, struct('type','.','subs',f{ii})), f{index});
+      f = [f(:) ; sf(:)];
+      t = [t(:) ; st(:)];
+      n = [n(:) ; sn(:)];
+      z = [z(:) ; sz(:)];
+    end
   end
 end
 
 % ------------------------------------------------------------------------------
 function m = find_last_word(matchs)
+% find_last_word get the last word in a cellstr
+
 % m=strtrim(cellstr(fliplr(char(strtok(cellstr(fliplr(char(matchs))),'. ')))));
   m = cellfun(@(s)s((find(s == '.', 1, 'last')+1):end), matchs, 'UniformOutput', false);
   index = cellfun(@isempty, m); m(index) = matchs(index);
