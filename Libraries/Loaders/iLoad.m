@@ -499,6 +499,10 @@ function [data, format] = iLoad(filename, loader, varargin)
     data = []; isbinary=0;
     verbose = 0; % set this to 1 to get more output for debugging
     
+    if isempty(dir(filename))
+      loader = 'Failed to load file (does not exist)';
+      return
+    end
     if isempty(loader), loader='auto'; end
     if strcmp(loader, 'auto')
       [loader, isbinary] = iLoad_loader_auto(filename);
@@ -524,7 +528,7 @@ function [data, format] = iLoad(filename, loader, varargin)
     end
     
     % handle multiple loaders (cell or struct array)
-    if (iscell(loader) | isstruct(loader)) & length(loader) > 1
+    if (iscell(loader) || isstruct(loader)) && length(loader) > 1
       loader=loader(:);
       recompile = 0;
       for index=1:length(loader)
@@ -565,6 +569,9 @@ function [data, format] = iLoad(filename, loader, varargin)
     end
     if ~isfield(loader,'method'), return; end
     if ~isfield(loader,'name'), loader.name = loader.method; end
+    if ~isfield(loader,'extension'), loader.extension = ''; end
+    if ~isfield(loader,'options'), loader.options = ''; end
+    if ~isfield(loader,'postprocess'), loader.postprocess = ''; end
     if isempty(loader.method), return; end
     % skip SVN/GIT/CVS files
     f = lower(filename);
