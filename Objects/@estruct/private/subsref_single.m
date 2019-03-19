@@ -62,7 +62,7 @@ function v = get_single(s, field, follow, s0)
 function v = get_single_alias(s, v)
   if isfield(s, v) % a link to a valid field in root object
     v = builtin('subsref',s, struct('type','.','subs', v)); % get true value/alias (no follow)
-  elseif strcmp(v, 'matlab: sqrt(this.Signal)') % for defaukt Error (no eval)
+  elseif strcmp(v, 'matlab: sqrt(this.Signal)') % for default Error (no eval)
     v = sqrt(s.Signal);
   elseif strncmp(v, 'matlab',6) && numel(v) > 8 % URL matlab:
     v = get_single_eval(s, v);

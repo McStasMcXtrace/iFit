@@ -57,5 +57,5 @@ a = subsasgn_recursive(a, S, val);
 
 % reset cache (as we have changed the object: fields, values, ...)
 a.Private.cache.findfield = [];
-
+a.ModificationDate = clock;
 

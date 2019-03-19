@@ -6,8 +6,11 @@ function s = setaxis(s,varargin)
 %     setaxis(a, rank, value)
 %       Set axis value (and follow links).
 %
-%     getaxis(a, 'rank', value)
-%       Set axis alias.
+%     setaxis(a, 'rank', value)
+%       Set axis alias/link/definition.
+%
+%     setaxis(a)
+%       Check signal and axes.
 
 %   An alias is a string/char which allows to link to internal or 
 %   external links, as well as evaluated expression, with the following syntax cases:
@@ -25,7 +28,7 @@ function s = setaxis(s,varargin)
 %
 % Version: $Date$
 
-  if nargin == 1, v = getaxis(s, 1:numel(s.Axes)); return; end
+  if nargin == 1, s = axescheck(s); return; end
   
   % handle array of struct
   v = {};
@@ -42,7 +45,7 @@ function s = setaxis(s,varargin)
     name = varargin{index}; % axis rank as numeric or string
     value= varargin{index+1};
     if ~ischar(name) && ~iscellstr(name) && ~isscalar(name)
-      error([ mfilename ': GETAXIS works with axis rank given as char/cellstr/scalar. The ' num2str(index) '-th argument is of type ' class(name) ]);
+      error([ mfilename ': SETAXIS works with axis rank given as char/cellstr/scalar. The ' num2str(index) '-th argument is of type ' class(name) ]);
     end
     if ischar(name), name = cellstr(name);
     elseif isnumeric(name), name = num2cell(name);
@@ -50,8 +53,12 @@ function s = setaxis(s,varargin)
     for n_index=1:numel(name)
       
       % set the alias definition
-      if ischar(name{n_index}) && isscalar(name{n_index})
-        s.Axes{str2num(name{n_index})} = value; % set definition in Axes (cell)
+      if ischar(name{n_index}) && (strcmpi(name{n_index}, 'Signal') || isscalar(name{n_index}))
+        if str2num(name{n_index}) > 0       % Axes
+          s.Axes{str2num(name{n_index})} = value; % set definition in Axes (cell)
+        elseif strcmpi(name{n_index}, 'Signal') || str2num(name{n_index}) == 0  % Signal
+          s = builtin('subsasgn',s, struct('type','.','subs','Signal'), value);
+        end
       elseif isnumeric(name{n_index}) && isscalar(name{n_index})
         % set the alias value: interpret result using our subsasgn (follow links)
         if name{n_index} == 0 % {0}=Signal/Monitor
@@ -61,7 +68,7 @@ function s = setaxis(s,varargin)
           else
             s.Signal = value;
           end
-        else % Axis
+        elseif name{n_index}>0 % Axis
           % set the axis value
           s.Axes{name{n_index}} = value;
         end
