@@ -34,21 +34,20 @@ classdef estruct < dynamicprops
 
 properties
 
-    % MetaData properties
-    Title
-    Source = pwd;
-    Creator= mfilename;
-    User   = getenv('USER');
-    Date   = clock;
-    ModificationDate
-    Command
-    UserData
-    Label
-    DisplayName
-    Tag
-    
-    % Data properties
-    Data   =[];
+    % MetaData properties (sorted in alpha order)
+    Creator         = mfilename;
+    Command         ={};
+    Date            = clock;
+    Data            =[]; % where we store most of the Data
+    DisplayName     ='';
+    Label           ='';
+    ModificationDate=[];
+    Source          = pwd;
+    Tag             ='';
+    Title           ='';
+    User            = getenv('USER');
+    UserData        =[];
+ 
   end % properties
   
   properties (Access=private, Hidden=true)     % internal use
@@ -112,9 +111,9 @@ properties
       new.ModificationDate = new.Date;
       % add our 'static' properties so that they are equially handled by
       % subsref/subsasgn
-      new.addprop('Signal');          % e.g. an alias
       new.addprop('Error');           % e.g. an alias or empty
       new.addprop('Monitor');         % e.g. an alias or empty
+      new.addprop('Signal');          % e.g. an alias
       new.Error = 'matlab: sqrt(this.Signal)';
       if ~nargin, return; end
       
@@ -200,7 +199,7 @@ properties
     %      and logical false (0) otherwise.
     %
     % See also estruct, isfield, iscell, isnumeric, isobject.
-      tf = isa(self, mfilename);
+      tf = true; % isa(self, mfilename); always true
     end
     
     function tf = isfield(self, f)
@@ -339,8 +338,6 @@ properties
       z = ones(estruct, varargin{:});
     end
     
-    % pack, full, event (add listener ?), load, save, ones, zeros
-    % setalias = set (does not resolve links)
-    % getalias = get (does not resolve links)
+    % pack, full, event (add listener ?), load, save
   end
 end

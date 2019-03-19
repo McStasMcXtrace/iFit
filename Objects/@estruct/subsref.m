@@ -55,6 +55,12 @@ if numel(a) > 1
   return
 end
 
+% check object when we evaluate/get some data out of it, and changes were marked.
+if isfield(a.Private,'cache') && isfield(a.Private.cache,'check_requested') ...
+  && a.Private.cache.check_requested
+  axescheck(a);
+end
+
 v = a;
 for index=1:numel(S)
   % travel through indexed references
