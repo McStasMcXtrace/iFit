@@ -62,6 +62,8 @@ properties
     Protected={'Protected','Labels','Axes','Tag','Private'} % can not be changed
   end
   
+% ------------------------------------------------------------------------------
+  
   methods
     function new = estruct(varargin)
     %ESTRUCT Create or convert to extended structure array.
@@ -191,7 +193,9 @@ properties
         end % index_arg
       end % index_varg
       
-    end % estruct instantiate
+    end % estruct (instantiate)
+    
+% ------------------------------------------------------------------------------
     
     function tf = isstruct(self)
     %  ISSTRUCT True for structures.
@@ -220,7 +224,13 @@ properties
     %   
     %      See also getfield, setfield, fieldnames, orderfields, rmfield,
     %      isstruct, estruct. 
-      tf = isfield(struct(self), f);
+      if nargin ~= 2, return; end
+      if numel(self) == 1
+        tf = isfield(struct(self), f);
+      else
+        tf = zeros(size(self));
+        for index=1:numel(self); tf(index) = isfield(self(index), f); end
+      end
     end
     
     function self=rmfield(self, f)
@@ -233,12 +243,17 @@ properties
     %      changed structure is returned. The size of input S is preserved.
     %   
     %      See also setfield, getfield, isfield, fieldnames.
-      if nargin == 2 && isfield(self, f)
-        delete(findprop(self, f));
+      if nargin ~= 2, return; end
+      if numel(self) == 1
+        if isfield(self, f)
+          delete(findprop(self, f));
+        end
+      else
+        for index=1:numel(self); rmfield(self(index), f); end
       end
     end
     
-    function [c,f] = struct2cell(self)
+    function c = struct2cell(self)
     %   STRUCT2CELL Convert structure array to cell array.
     %      C = STRUCT2CELL(S) converts the M-by-N structure S (with P fields)
     %      into a P-by-M-by-N cell array C.
@@ -250,9 +265,13 @@ properties
     %        c = struct2cell(s); f = fieldnames(s);
     %   
     %      See also cell2struct, fieldnames.
-      c = struct(self);
-      c = struct2cell(c);
-      if nargout > 1, f = fieldnames(self); end
+    
+      if numel(self) == 1
+        c = struct2cell(struct(self));
+      else
+        c = arrayfun('struct2cell', self);
+      end
+      
     end
     
     function new = cell2struct(self, varargin)
@@ -270,22 +289,10 @@ properties
     %      See also struct2cell, fieldnames.
       if nargin < 3, d=2; end
       if nargin < 2, error([ mfilename ': cell2struct: requires at least 2 arguments' ]); end
-      new = copyobj(self, cell2struct(varargin{:}));
-    end
-    
-    function [f,v] = max(self, option)
-      % MAX    Largest component.
-      %  MAX(X) is the biggest/largest element in X, searched recursively.
-      %  [F,V] = MAX(X) returns the field name and value of the largest field.
-      %
-      %  [..] = MAX(X, 'numeric') returns the largest numeric field.
-      %  [..] = MAX(X, 'char')    returns the largest character field.
-      if nargin < 2, option = ''; end
-      
-      f = findfield(self, '', [ option ' biggest' ]);
-      if nargout > 1
-        v = get(self, f, 'link');
+      if numel(self) > 1
+        error([ mfilename ': cell2struct(estruct, ...) only works with a single estruct.' ])
       end
+      new = copyobj(self, cell2struct(varargin{:}));
     end
     
     function s = char(self)
@@ -297,7 +304,11 @@ properties
     function v = double(self)
       %   DOUBLE Convert to double precision.
       %      DOUBLE(X) returns the double precision value of the biggest numeric value in X.
-      [~,v] = double(max(self, 'numeric'));
+      if numel(self) == 1
+        v = double(subsref(self,struct('type','.','subs','Signal')));
+      else
+        v = arrayfun('double', self);
+      end
     end
     
     function s = repmat(self, varargin)
@@ -311,6 +322,9 @@ properties
       %    B = REPMAT(A,[M N P ...]) tiles the array A to produce a 
       %    multidimensional array B composed of copies of A. The size of B is 
       %    [size(A,1)*M, size(A,2)*N, size(A,3)*P, ...].
+      if numel(self) > 1
+        error([ mfilename ': repmat(estruct, M,N,...) only works with a single estruct.' ])
+      end
       s = estruct(repmat(struct(self), varargin{:}));
     end
     
@@ -322,7 +336,7 @@ properties
       % 
       %    ONES(S,M,N,P,...) or ONES(S,[M N P ...]) is an M-by-N-by-P-by-... array of
       %    'S' structure.
-      if nargin == 1, o=self; return; end
+      if nargin == 1, o=self(1); return; end
       o = repmat(self, varargin{:});
     end
     
@@ -337,7 +351,19 @@ properties
       if nargin == 1, z=estruct; return; end
       z = ones(estruct, varargin{:});
     end
+
+    function s = struct(self)
+      % STRUCT Create or convert to structure array.
+      %   STRUCT(OBJ) converts the object OBJ into its equivalent
+      %   structure.  The class information is lost.
+      if numel(self) == 1
+        s = builtin('struct',self);
+      else
+        s = arrayfun('struct', self);
+      end
+    end
     
-    % pack, full, event (add listener ?), load, save
-  end
-end
+  end % methods
+  
+% ------------------------------------------------------------------------------
+end % classdef
