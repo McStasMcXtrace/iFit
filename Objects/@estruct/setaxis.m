@@ -31,12 +31,10 @@ function s = setaxis(s,varargin)
   if nargin == 1, s = axescheck(s); return; end
   
   % handle array of struct
-  v = {};
   if numel(s) > 1
     for index=1:numel(s)
       s(index) = setaxis(s(index), varargin{:});
     end
-    v = reshape(v, size(s));
     return
   end
   
@@ -58,6 +56,7 @@ function s = setaxis(s,varargin)
           s.Axes{str2num(name{n_index})} = value; % set definition in Axes (cell)
         elseif strcmpi(name{n_index}, 'Signal') || str2num(name{n_index}) == 0  % Signal
           s = builtin('subsasgn',s, struct('type','.','subs','Signal'), value);
+          s.Private.cache.size = [];
         end
       elseif isnumeric(name{n_index}) && isscalar(name{n_index})
         % set the alias value: interpret result using our subsasgn (follow links)
@@ -68,6 +67,7 @@ function s = setaxis(s,varargin)
           else
             s.Signal = value;
           end
+          s.Private.cache.size = [];
         elseif name{n_index}>0 % Axis
           % set the axis value
           s.Axes{name{n_index}} = value;

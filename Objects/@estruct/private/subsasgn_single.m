@@ -7,10 +7,13 @@ function a = subsasgn_single(a, S, val, a0)
   case {'()','.'} % syntax: a('fields') does not follow links (setalias).
                   % syntax: a.('field') follows links (set), can be a compound field.
     if ischar(S.subs) S.subs = cellstr(S.subs); end
-    if iscellstr(S.subs)
-      % follow links for '.' subsref, not for '()'
-      a = set_single(a, S.subs{1}, val, S.type(1)=='.', a0);  % which handles aliases
-      default = false;
+    if iscellstr(S.subs) && isscalar(S.subs) 
+      if ~ismethod(a, S.subs{1})
+        % follow links for '.' subsref, not for '()'
+        a = set_single(a, S.subs{1}, val, S.type(1)=='.', a0);  % which handles aliases
+        default = false;
+      else  error([ mfilename ': ' class(a) '.' S.subs{1} ' is a reserved method name. Can not set new property.' ]);
+      end
     end
   case '{}' % syntax: a{axis_rank} set axis value/alias (setaxis)
     if isa(a, 'estruct') && numel(S.subs{1}) == 1 % scalar numeric or char
@@ -33,6 +36,7 @@ function s = set_single(s, field, value, follow, s0)
   
   if any(strcmp(field, {'Signal','Monitor','Error','Axes'})) && isa(s0, 'estruct')
     s0.Private.cache.check_requested = true;
+    s0.Private.cache.size=[];
   end
 
   % cut the field into pieces with '.' as separator

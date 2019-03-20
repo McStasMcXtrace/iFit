@@ -7,10 +7,11 @@ function v = subsref_single(v, S, a)
   case {'()','.'} % syntax: a('fields') does not follow links (getalias).
                   % syntax: a.('field') follows links (get), can be a compound field.
     if ischar(S.subs) S.subs = cellstr(S.subs); end
-    if iscellstr(S.subs)
+    if iscellstr(S.subs) && isscalar(S.subs) && ~ismethod(v, S.subs{1})
       % follow links for '.' subsref, not for '()'
       v = get_single(v, S.subs{1}, S.type(1)=='.', a);  % which handles aliases in 'a'
       default = false;
+      end
     end
   case '{}' % syntax: a{axis_rank} get axis value/alias (getaxis)
     if isa(v, 'estruct') && numel(S.subs{1}) == 1 % scalar numeric or char
@@ -63,7 +64,7 @@ function v = get_single_alias(s, v)
   if isfield(s, v) % a link to a valid field in root object
     v = builtin('subsref',s, struct('type','.','subs', v)); % get true value/alias (no follow)
   elseif strcmp(v, 'matlab: sqrt(this.Signal)') % for default Error (no eval)
-    v = sqrt(s.Signal);
+    v = sqrt(get(s,'Signal'));
   elseif strncmp(v, 'matlab',6) && numel(v) > 8 % URL matlab:
     v = get_single_eval(s, v);
   elseif ~isempty(dir(v)) || any(strcmp(strtok(v, ':'), {'http' 'https' 'ftp' 'file'})) % URL http https ftp file: 
