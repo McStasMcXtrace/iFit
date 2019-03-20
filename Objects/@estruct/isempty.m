@@ -11,5 +11,5 @@ if numel(s) > 1
   end
   y=reshape(y, size(s));
 else 
-  y=isempty(fieldnames(s));
+  y=any(size(s)==0);
 end

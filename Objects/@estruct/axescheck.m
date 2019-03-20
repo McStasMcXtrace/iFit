@@ -6,7 +6,17 @@ function s = axescheck(s)
 %     as the Signal, and missing Axes are searched accordingly.
 %     Monitor and Error are also checked to match Signal dimension.
 
+% handle array of struct
+  if numel(s) > 1
+    for index=1:numel(s)
+      s(index) = axescheck(s(index));
+    end
+    return
+  end
+
 s.Private.cache.check_requested = 0; % ok, we are working on this
+
+%% Check Signal, Monitor, Error ================================================
 
 % get the size of the Signal, Monitor, Error (follow links)
 signal_sz = size(subsref_single(s, struct('type','.','subs','Signal'))); 
@@ -49,11 +59,12 @@ if all(monitor_sz) && prod(signal_sz) ~= prod(monitor_sz) && ~all(monitor_sz ==1
     ' does not match Signal ' mat2str(signal_sz) ') in object ' s.Tag ])
   s = builtin('subsasgn', s, struct('type','.','subs','Monitor'), []);
 end
+s.Private.cache.size = signal_sz; % for faster size execution
 
-% check Axes: must be size(Signal) or expression or size(rank)
+%% check Axes: must be size(Signal) or expression or size(rank)
 % first search amongst axes_id, then blind search.
-
-
+axescheck_find_axes(s, fields(axes_id), dims(axes_id), sz(axes_id));
+axescheck_find_axes(s, fields,          dims,          sz);
 
 % ------------------------------------------------------------------------------
 function [signal_id, error_id, monitor_id, axes_id] = axescheck_find_signal(self, fields, dims, sz)
@@ -113,3 +124,14 @@ function [signal_id, error_id, monitor_id, axes_id] = axescheck_find_signal(self
     monitor_id = [];  % found monitor does not match signal nor scalar
   end
 
+% ------------------------------------------------------------------------------
+function axescheck_find_axes(self, fields, dims, sz)
+
+  % scan Axes
+  for index=1:numel(self.Axes)
+    % when not empty, we check that it is:
+    %   size(Signal) or expression or size(rank) or transpose
+  
+    % when empty we search for one amongst fields that is:
+    %   size(Signal) or expression or size(rank) or transpose
+  end
