@@ -34,7 +34,7 @@ function new = copyobj(self, org)
   end
 
   % single deep copy
-  if isempty(self) && ~isa(self, 'handle') && isa(org, 'estruct')
+  if ~isa(self, 'handle') && isa(org, 'estruct') && isempty(self)
     % assigment is OK for non handle objects
     new = org;  
   else 
