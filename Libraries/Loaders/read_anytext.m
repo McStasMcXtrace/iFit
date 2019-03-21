@@ -245,7 +245,7 @@ if isstruct(s)
   if isfield(s, 'Data') && isstruct(s.Data)
     s.Data = orderfields(s.Data);
   end
-  if isstruct(s.Data) && ~isfield(s.Data,'read_anytext')
+  if isfield(s, 'Data') && isstruct(s.Data) && ~isfield(s.Data,'read_anytext')
     s.Data.read_anytext = { compiled; user.format; [ 'looktxt ' sprintf('%s ', argv{:}) ] };
   end
 end

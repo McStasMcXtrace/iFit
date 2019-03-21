@@ -1,0 +1,40 @@
+TODO:
+
+cif import: seems problematic !
+estruct(fullfile(ifitpath','Data')) fails
+Signal not properly set for e.g. estruct('/home/farhi/dev/iFit/Data/ILL_IN6.dat')
+
+revamp cat to work on Signal when given dim, else catenate structures ? Data ?
+rework on union/intersection/diff/cat
+arrayfun ? only work without varargin
+end
+char and cellstr->class2str
+commandhistory and command management
+disp/display ?
+dog
+event
+fileattrib and Attributes
+find
+findobj
+all unary calls -> unaryfun(method, object/array)
+object(index) -> call object{0}(index) now
+isequal
+label
+load and postprocess
+max
+meshgrid, interp, intersect, union, etc.
+permute
+reshape
+resize
+rmaxis
+save
+sort
+sparse
+squeeze
+no subsindex, better use find for indexing
+title
+transpose
+fix uitable
+
+ndims: make it work for event data
+
