@@ -1,5 +1,8 @@
 function structure = dialog(structure,varargin)
-  % dialog edit a structure, a wrapper to uitable(estruct)
+  % DIALOG edit a structure (uitable)
+  %
+  % Version: $Date$ (c) E.Farhi. License: EUPL.
+  % see also estruct.uitable
   
   structure = uitable(structure,varargin{:});
   

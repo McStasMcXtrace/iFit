@@ -1,36 +1,26 @@
 classdef estruct < dynamicprops
-%ESTRUCT Create or convert to extended structure array.
-%  S = ESTRUCT('field1',VALUES1,'field2',VALUES2,...) creates a
-%  structure array with the specified fields and values.  The value
-%  arrays VALUES1, VALUES2, etc. must be cell arrays of the same
-%  size, scalar cells or single values.  Corresponding elements of the
-%  value arrays are placed into corresponding structure array elements.
-%  The size of the resulting structure is the same size as the value
-%  cell arrays or 1-by-1 if none of the values is a cell.
+%ESTRUCT Create or convert to estruct.
+%  S = ESTRUCT('field1',VALUES1,'field2',VALUES2,...) creates
+%  an object with the specified fields and values (as properties).
 %
-%  ESTRUCT is similar to STRUCT, but brings extended functionalities and can be
-%  used to build sub-classes (inherit).
+%  ESTRUCT(a,b,c,...) imports input arguments into an estruct object.
+%
+%  ESTRUCT('filename') imports the file name and store its content into a Data property. 
+%  Multiple files can be given, each producing a distinct object arranged
+%  into an array. File names can also be given as URL (file: http: https: ftp:)
+%  and/or be compressed (zip, gz, tar, Z).
 %
 %  ESTRUCT(OBJ) converts the object OBJ into its equivalent
-%  structure.  The class information is lost.
+%  estruct.  The initial class information is lost.
 %
-%  ESTRUCT([]) creates an empty structure.
+%  ESTRUCT([]) creates an empty object.
 %
-%  ESTRUCT('filename') imports the file name and store its content into a Data property.
+%  ESTRUCT is similar to STRUCT, but is designed to hold scientifi data.
 %
-%  To create fields that contain cell arrays, place the cell arrays
-%  within a VALUE cell array.  For instance,
-%    s = estruct('strings',{{'hello','yes'}},'lengths',[5 3])
-%  creates the 1-by-1 structure
-%     s = 
-%        strings: {'hello'  'yes'}
-%        lengths: [5 3]
-%
-%  Example
-%     s = estruct('type',{'big','little'},'color','red','x',{3 4})
-%
-%  See also isstruct, setfield, getfield, fieldnames, orderfields, 
-%  isfield, rmfield, deal, substruct, struct2cell, cell2struct.
+% Example: s = estruct('type',{'big','little'},'color','red','x',{3 4}); isstruct(s)
+% Version: $Date$ (c) E.Farhi. License: EUPL.
+% See also isstruct, setfield, getfield, fieldnames, orderfields, 
+%   isfield, rmfield, deal, substruct, struct2cell, cell2struct.
 
 properties
 
@@ -90,8 +80,7 @@ properties
     %        strings: {'hello'  'yes'}
     %        lengths: [5 3]
     %
-    %  Example
-    %     s = estruct('type',{'big','little'},'color','red','x',{3 4})
+    %  Example: s = estruct('type',{'big','little'},'color','red','x',{3 4})
     %
     %  See also isstruct, setfield, getfield, fieldnames, orderfields, 
     %  isfield, rmfield, deal, substruct, struct2cell, cell2struct.
@@ -162,7 +151,8 @@ properties
         new.(s.name)=s.value; 
         structs{index} = []; % clear memory
       end
-      numel_new = 1; 
+      numel_new = 1;
+      new.Private.cache.check_requested = true; % request a check at first 'get'
       new0 = copyobj(new);
       
       % now build the final 'master' object
@@ -173,7 +163,7 @@ properties
         for index_arg=1:numel(arg)  % loop on input argument content when e.g. cellstr array
           this = arg{index_arg}; % must be a char or single cellstr
           if isempty(this), continue; end
-          if exist(this, 'file') || any(strcmp(strtok(this, ':'), {'http' 'https' 'ftp' 'file'}))
+          if ~isempty(dir(this)) || any(strcmp(strtok(this, ':'), {'http' 'https' 'ftp' 'file'}))
             try
               this = iLoad(this); % imported data from file goes in Data
             catch ME
@@ -191,6 +181,7 @@ properties
             numel_new = numel_new+1;
           end
         end % index_arg
+        
       end % index_varg
       
     end % estruct (instantiate)
@@ -251,7 +242,22 @@ properties
       else
         for index=1:numel(self); rmfield(self(index), f); end
       end
-    end
+    end % rmfield
+    
+    function self=rmalias(self, varargin)
+    %   RMALIAS Remove fields from a structure array.
+    %      S = RMALIAS(S,'field') removes the specified field from the
+    %      m x n structure array S. The size of input S is preserved.
+    %   
+    %      S = RMALIAS(S,FIELDS) removes more than one field at a time
+    %      when FIELDS is a character array or cell array of strings.  The
+    %      changed structure is returned. The size of input S is preserved.
+    %   
+    %      See also setalias, getalias, isfield, fieldnames.
+    
+    % compatibility with original iData (2007-2019)
+      self = rmfield(self, varargin{:});
+    end 
     
     function c = struct2cell(self)
     %   STRUCT2CELL Convert structure array to cell array.
@@ -301,14 +307,36 @@ properties
       s = class2str(self, 'eval');
     end
     
+    function v = cast(self, typ)
+      %   CAST  Cast object to a different data type or class.
+      %     B = CAST(A,NEWCLASS) casts A to class NEWCLASS. A must be convertible to
+      %     class NEWCLASS. NEWCLASS must be the name of one of the builtin data types.
+      if nargin < 2, typ=''; end
+      if isempty(typ), typ='double'; end
+      if numel(self) == 1
+        v = cast(subsref(self,struct('type','.','subs','Signal')), typ);
+      else
+        v = cell(size(self));
+        for index=1:numel(self); v{index} = cast(self(index), typ); end
+      end
+    end
+    
     function v = double(self)
       %   DOUBLE Convert to double precision.
-      %      DOUBLE(X) returns the double precision value of the biggest numeric value in X.
-      if numel(self) == 1
-        v = double(subsref(self,struct('type','.','subs','Signal')));
-      else
-        v = arrayfun('double', self);
-      end
+      %      DOUBLE(X) returns the double precision value of the object.
+      v = cast(self, 'double');
+    end
+    
+    function v = single(self)
+      %   SINGLE Convert to SINGLE precision.
+      %      SINGLE(X) returns the SINGLE precision value of the object.
+      v = cast(self, 'single');
+    end
+    
+    function v = logical(self)
+      %   LOGICAL Convert to logical (0=false, any other=true).
+      %      LOGICAL(X) returns the SINGLE precision value of the object.
+      v = cast(self, 'logical');
     end
     
     function s = repmat(self, varargin)

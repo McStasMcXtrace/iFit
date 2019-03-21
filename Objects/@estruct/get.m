@@ -1,6 +1,5 @@
 function v = get(s, varargin)
-% GET    Get estruct properties.
-%
+% GET    Get object properties.
 %  V = GET(S,'PropertyName') 
 %    Get the value of the specified property/field in the structure.
 %    The object S can be an array.
@@ -23,9 +22,9 @@ function v = get(s, varargin)
 %     'field'                           a simple link to an other property 'field'
 %     'field1.field2...'                a nested link to an other property
 %     'file://some_file_path'           a local file URL
-%     'http://some_distant_resource'    an HTTP URL (proxy settings may have to be set)
-%     'https://some_distant_resource'   an HTTPS URL (proxy settings may have to be set)
-%     'ftp://some_distant_resource'     an FTP URL (proxy settings may have to be set)
+%     'http://some_distant_resource'    an HTTP URL (proxy settings may need to be set)
+%     'https://some_distant_resource'   an HTTPS URL (proxy settings may need to be set)
+%     'ftp://some_distant_resource'     an FTP URL (proxy settings may need to be set)
 %     'matlab: some_expression'         some code to evaluate. 'this' refers to the 
 %                                       object itself e.g. 'matlab: this.Signal*2'
 %
@@ -33,11 +32,12 @@ function v = get(s, varargin)
 %    extracted on-the-fly. In case the URL/file resource contains 'sections' a search token
 %    can be specified with syntax such as 'file://filename#token'.
 % 
-%    GET(S) displays all object properties.
+%  GET(S) displays all object properties.
 %
 % Example: s=estruct; set(s, 'a', 1); set(s, 'b.c','a','alias'); get(s, 'b.c') == 1 && strcmp(get(s, 'b.c','alias'),'a')
-%
-% See also: fieldnames, findfield, isfield, set, estruct/getalias, estruct/setalias
+% Version: $Date$ (c) E.Farhi. License: EUPL.
+% See also estruct, fieldnames, findfield, isfield, set, get, getalias, setalias, 
+%   getaxis, setaxis
 
 % NOTE: the rationale here is to implement all the logic in subsref and just call it.
 
@@ -69,7 +69,7 @@ function v = get(s, varargin)
   for index=1:numel(varargin) % loop on requested properties
     name = varargin{index};
     if ~ischar(name) && ~iscellstr(name)
-      error([ mfilename ': GET works with property name argument. The ' num2str(index) '-th argument is of type ' class(name) ]);
+      error([ mfilename ': GET works with property name argument (char/cellstr). The ' num2str(index) '-th argument is of type ' class(name) ]);
     end
     name = cellstr(name);
     for n_index=1:numel(name)

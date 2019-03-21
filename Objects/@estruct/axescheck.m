@@ -1,10 +1,13 @@
 function s = axescheck(s)
 % AXESCHECK check the Signal and Axes of an object
-%
-%   axescheck(s)
+%   AXESCHECK(s)
 %     Check Signal and Axes. When not set, the largest numeric field is assigned
 %     as the Signal, and missing Axes are searched accordingly.
 %     Monitor and Error are also checked to match Signal dimension.
+%
+% Example: s = estruct(1:10); numel(s.Signal) == 10
+% Version: $Date$ (c) E.Farhi. License: EUPL.
+% see also estruct, getaxis, setaxis
 
 % handle array of struct
   if numel(s) > 1
@@ -19,9 +22,9 @@ s.Private.cache.check_requested = 0; % ok, we are working on this
 %% Check Signal, Monitor, Error ================================================
 
 % get the size of the Signal, Monitor, Error (follow links)
-signal_sz = size(subsref_single(s, struct('type','.','subs','Signal'))); 
-monitor_sz= size(subsref_single(s, struct('type','.','subs','Monitor')));
-error_sz  = size(subsref_single(s, struct('type','.','subs','Error')));
+signal_sz = size(subsref_single(s, 'Signal')); 
+monitor_sz= size(subsref_single(s, 'Monitor'));
+error_sz  = size(subsref_single(s, 'Error'));
 axes_id   = [];
 
 % get all numeric fields (e.g. from findfield cache), sorted by decreasing size
@@ -108,7 +111,7 @@ function [signal_id, error_id, monitor_id, axes_id] = axescheck_find_signal(self
   if isempty(signal_id)
     maxdim = dims;
     maxdim([ error_id monitor_id axes_id ]) = []; % remove found named fields
-    signal_id = find(maxdim == max(dims),1);  % the first biggest
+    signal_id = find(maxdim == max(dims) & maxdim > 0,1);  % the first biggest
   end
   % no Signal found: then nothing can be defined, return
   if isempty(signal_id)

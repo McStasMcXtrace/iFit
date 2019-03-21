@@ -1,5 +1,5 @@
 function structure = uitable(structure,options)
-% struct/uitable a dialogue which allows to modify structure(s) in a table
+% UITABLE a dialogue which allows to modify structure(s) in a table
 %
 % In modal (default) creation mode, the updated structure is returned upon
 %   closing the window. A modal dialog box prevents a user from interacting 
@@ -39,7 +39,8 @@ function structure = uitable(structure,options)
 %   structure: the modified structure in 'modal' mode (default),
 %     or the dialogue information structure in 'non-modal' mode.
 %     In non-modal mode, the dialogue information can be obtained from
-%       Data = getappdata(0,structure.tmp_storage);
+%       out  = uitable(structure,struct('CreateMode','non-modal')) 
+%       Data = getappdata(0,out.tmp_storage);
 %
 % Example: 
 %   a.Test=1; a.Second='blah'; uitable(a)

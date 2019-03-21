@@ -1,6 +1,5 @@
 function s = set(s, varargin)
-% SET    Set estruct properties.
-%
+% SET    Set object properties.
 %  V = SET(S,'PropertyName','Value') 
 %    Set the value of the specified property/field in the structure.
 %    The object S can be an array.
@@ -23,9 +22,9 @@ function s = set(s, varargin)
 %     'field'                           a simple link to an other property 'field'
 %     'field1.field2...'                a nested link to an other property
 %     'file://some_file_path'           a local file URL
-%     'http://some_distant_resource'    an HTTP URL (proxy settings may have to be set)
-%     'https://some_distant_resource'   an HTTPS URL (proxy settings may have to be set)
-%     'ftp://some_distant_resource'     an FTP URL (proxy settings may have to be set)
+%     'http://some_distant_resource'    an HTTP URL (proxy settings may need to be set)
+%     'https://some_distant_resource'   an HTTPS URL (proxy settings may need to be set)
+%     'ftp://some_distant_resource'     an FTP URL (proxy settings may need to be set)
 %     'matlab: some_expression'         some code to evaluate. 'this' refers to the 
 %                                       object itself e.g. 'matlab: this.Signal*2'
 %
@@ -33,13 +32,14 @@ function s = set(s, varargin)
 %    extracted on-the-fly. In case the URL/file resource contains 'sections' a search token
 %    can be specified with syntax such as 'file://filename#token'.
 % 
-%    SET(S) displays all object properties.
+%  SET(S) displays all object properties.
 %
 % Example: s=estruct; set(s, 'a', 1); set(s, 'b.c','a','alias'); get(s, 'b.c') == 1 && strcmp(get(s, 'b.c','alias'),'a')
-%
-% See also: fieldnames, findfield, isfield, get, estruct/getalias, estruct/get
+% Version: $Date$ (c) E.Farhi. License: EUPL.
+% See also estruct, fieldnames, findfield, isfield, set, get, getalias, setalias, 
+%   getaxis, setaxis
 
-% NOTE: the rationale here is to implement all the logic in subsref and just call it.
+% NOTE: the rationale here is to implement all the logic in subasgn and just call it.
 
   if ~isa(s, 'estruct')
     builtin('set', s, varargin{:});

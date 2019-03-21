@@ -1,7 +1,9 @@
 function y = isempty(s)
 %  ISEMPTY True for empty object.
 %    ISEMPTY(X) returns 1 if X is empty and 0 otherwise. An
-%    empty object has no elements.
+%    empty object has no Signal defined.
+%
+% Example: s=estruct; isempty(s)
 
 
 if numel(s) > 1

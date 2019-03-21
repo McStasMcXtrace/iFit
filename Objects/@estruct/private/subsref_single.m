@@ -1,7 +1,10 @@
 function v = subsref_single(v, S, a)
 % subsref_single single level subsref
   if nargin<3, a=v; end
+  if ischar(S), S=struct('type','.','subs', S); end
+  if ~isstruct(S),  error([ mfilename ': invalid reference (2nd arg) expect struct, is ' class(S) ]); end
   if numel(S) ~= 1, error([ mfilename ': only works with a single level reference' ]); end
+  
   default = true;
   switch S.type
   case {'()','.'} % syntax: a('fields') does not follow links (getalias).
@@ -11,7 +14,6 @@ function v = subsref_single(v, S, a)
       % follow links for '.' subsref, not for '()'
       v = get_single(v, S.subs{1}, S.type(1)=='.', a);  % which handles aliases in 'a'
       default = false;
-      end
     end
   case '{}' % syntax: a{axis_rank} get axis value/alias (getaxis)
     if isa(v, 'estruct') && numel(S.subs{1}) == 1 % scalar numeric or char
@@ -53,7 +55,7 @@ function v = get_single(s, field, follow, s0)
       % subsref is faster than getfield which itself calls subsref
       v = builtin('subsref',v, S(index)); % get true value/alias (no follow)
       % when 'follow', we need to access values iteratively and check for possible 'alias' (char)
-      if follow && ischar(v)
+      if follow && ischar(v) && ~strcmp(S(index).subs,'Source')
         v = get_single_alias(s0, v); % access a link/alias in initial object/structure
       end
     end

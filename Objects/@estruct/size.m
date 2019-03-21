@@ -1,15 +1,15 @@
 function y=size(s, varargin)
-% size(s) : get estruct object size (number of elements)
+% SIZE get object size
+%   D = SIZE(X) for a single object returns the size of its Signal. For an array
+%   of objects, the size of the array is returned.
 %
-%   @estruct/size function to get estruct object size
+%   M = SIZE(X,DIM) returns the length of the dimension specified
+%   by the scalar DIM.  For example, SIZE(X,1) returns the number
+%   of rows. If DIM > NDIMS(X), M will be 1.
 %
-% input:  s: object or array (estruct)
-%         dim: optional dimension/rank to inquire
-% output: v: size of the estruct Signal (double)
-% ex:     size(estruct), size(estruct,1)
-%
-% Version: $Date$
-% See also estruct, estruct/get, length
+% Example: s=estruct(rand(5)); all(size(s.Signal) == size(s))
+% Version: $Date$ (c) E.Farhi. License: EUPL.
+% See also estruct, get, length, ndims
 
 if numel(s) > 1  % this is an array of estruct
   y = builtin('size', s, varargin{:});
@@ -24,9 +24,8 @@ else
     y = s.Private.cache.size;
   else
     y = size(subsref(s,struct('type','.','subs','Signal')));
+    s.Private.cache.size = y;
   end
-  if nargin > 1 && all(cellfun(@isnumeric, varargin))
-    y = y(varargin{:}); 
-  end
+  y = y(varargin{:});
 end
 

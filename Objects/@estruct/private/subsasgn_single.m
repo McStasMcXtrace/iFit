@@ -1,5 +1,8 @@
 function a = subsasgn_single(a, S, val, a0)
 % subsasgn_single single level assignment
+  if nargin<4, a0=a; end
+  if ischar(S), S=struct('type','.','subs', S); end
+  if ~isstruct(S),  error([ mfilename ': invalid reference (2nd arg) expect struct, is ' class(S) ]); end
   if numel(S) ~= 1, error([ mfilename ': only works with a single level reference' ]); end
 
   default = true;

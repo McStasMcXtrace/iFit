@@ -1,36 +1,37 @@
 function [match, types, dims, sz] = findfield(s, field, option)
-% [match, types, nelements,sz]=findfield(struct, field, option) look for structure fields
+% FINDFIELD find fields, type and number of elements in object
+%   match = FINDFIELD(s) returns the name of all fields
 %
-%   @struct/findfield function to look for struct fields, type and number of elements
+%   match = FINDFIELD(s, field)  returns the name of all fields that match 'field'
 %
-%   match = findfield(struct)
-%     returns the names of all fields
-%   match = findfield(struct, field) 
-%     returns the names of all fields that match 'field'
-%   [match,type,n,sz] = findfield(...)
-%     also return the type, number of elements and size of fields
-%   [match,type,n] = findfield(struct, field, option)
+%   [match,type,n] = FINDFIELD(s, field, option)
 %     The optional 'option' argument can contain one or more keywords:
-%     The 'exact'   option will search for the exact occurences.
+%     The 'exact'   option will search for the exact occurrences.
 %     The 'case'    option specifies a case sensitive search. 
 %     The 'numeric' option will return only numerical fields.
 %     The 'char'    option will return only character fields.
 %     The 'first'   option returns the first match (with shortest name/link).
 %     The 'biggest' option returns the biggest match (has max nb of elements).
-%  For instance, to identify the largest numeric element in object, use:
-%    f=findfield(s,'','numeric biggest')
+%     For instance, to identify the largest numeric element in object, use:
+%       f=findfield(s,'','numeric biggest')
 %
-% input:  s: object or array (struct)
+%   [match,type,n,sz] = FINDFIELD(...) also return the type, number of elements 
+%   and size of fields
+%
+% syntax:
+%   [match, types, nelements,sz]=findfield(s, field, option)
+%
+% input:  s: object or array (s)
 %         field: field name to search, or '' (char).
 %         option: empty or 'exact' 'case' 'char' or 'numeric' (char)
-% output: match:  names of struct fields (cellstr)
-%         types:  types of struct fields (cellstr), e.g. 'double', 'char', 'struct'...
-%         nelements: total number of elements in struct fields (double)
-%         sz:     size of struct fields (cellstr)
-% Example: s=estruct(1:10, rand(6)); f=findfield(s,'','biggest'); numel(get(s,f)) == 36)
+% output: match:  names of matching fields (cellstr)
+%         types:  types of matching fields (cellstr), e.g. 'double', 'char', 'struct'...
+%         nelements: total number of elements of matching fields (double)
+%         sz:     size of matching fields (cellstr)
 %
-% Version: $Date$
-% See also struct, struct/set, struct/get, struct/findstr
+% Example: s=estruct('x', rand(6)); f=findfield(s,'','biggest'); numel(get(s,f)) == 36
+% Version: $Date$ (c) E.Farhi. License: EUPL.
+% See also estruct, estruct/set, estruct/get, estruct/findstr
 
 if nargin == 1
   field = '';

@@ -1,25 +1,26 @@
 function [match, field] = findstr(s, str, option)
-% [match, field]=findstr(s, str, option) look for strings stored in struct
+% FINDSTR look for strings stored in object
+%   match = FINDSTR(s)      returns all strings in object
 %
-%   @struct/findstr function to look for strings stored in struct
+%   match = FINDSTR(s, str) returns the strings in object containg 'str'
 %
-%   [match,field] = findstr(struct, str) returns the string containg 'str' 
-%     and the field name it appears in. If 'str' is set to '', the content of all
-%     character fields is returned.
-%   The 'option' may contain 'exact' to search for the exact occurence, and 'case'
-%   to specifiy a case sensitive search.
+%   match = FINDSTR(s, str, option) the 'option' may contain 'exact' to search 
+%   for the exact occurence, and 'case' to specifiy a case sensitive search.
 %
-% input:  s: object or array (struct)
-%         str: string to search in object, or '' (char or cellstr).
+%   [match,field] = FINDSTR(..) also returns field name it appears in. 
+%
+% syntax:
+%   [match, field]=findstr(s, str, option)
+%
+% input:  s:      object or array (struct)
+%         str:    string to search in object, or '' (char or cellstr).
 %         option: 'exact' 'case' or '' (char)
-% output: match: content of struct fields that contain 'str' (cellstr)
-%         field: name of struct fields that contain 'str' (cellstr)
-% ex:     findstr(struct,'ILL') or findstr(s,'TITLE','exact case')
+% output: match:  content of struct fields that contain 'str' (cellstr)
+%         field:  name of struct fields that contain 'str' (cellstr)
 %
-% Version: $Date$
-% See also struct, struct/set, struct/get, struct/findobj, struct/findfield
-
-% EF 23/09/07 struct implementation
+% Example: s=estruct('x',1:10,'y','blah'); ischar(findstr(s, 'blah'))
+% Version: $Date$ (c) E.Farhi. License: EUPL.
+% See also estruct, set, get, findobj, findfield
 
 if nargin == 1
   str='';
@@ -51,15 +52,16 @@ matchs = get(s, fields);
 % convert to char using private inline function handle
 matchs = cellfun(@cell2char, matchs, 'UniformOutput', false);
 
-
+% all fields (no pattern given)
 if isempty(str)
   match = matchs;
   field = fields;
   return
 end
 
-if iscell(str) && ischar(str{1})
-  match = cell(1, numel(str)); field=match;
+% multiple search
+if iscellstr(str)
+  match = cell(size(str)); field=match;
   for index=1:numel(str)
     [m,f] = struct_findstr_single(str{index}, option, fields, matchs);
     match{index}=m;
@@ -68,7 +70,8 @@ if iscell(str) && ischar(str{1})
   return
 end
 
-[match, field] = struct_findstr_single(str, option, fields, matchs);
+% single search
+[match, field] = struct_findstr_single(char(str), option, fields, matchs);
 
 % -------------------------------------------------------------------------
 function [match, field] = struct_findstr_single(str, option, field, match)

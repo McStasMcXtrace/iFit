@@ -1,12 +1,15 @@
 function new = copyobj(self, org)
   % COPYOBJ makes a deep copy of initial object
+  %   copy the properties from 'self' into the instantiated object 'new'.
   %
-  %   new = copyobj(self)
+  %   new = COPYOBJ(self)
   %     creates a deep copy of the initial object 'self'
-  %   new = copyobj(self, content)
+  %   new = COPYOBJ(self, content)
   %     creates an empty object and fill it with 'content' (struct/object)
   %
-  % copy the properties from 'self' into the instantiated object 'new'.
+  % Example: s = estruct(1:10); s1=copyobj(s); axescheck(s1); isequal(s.Signal, s1.Signal)
+  % Version: $Date$ (c) E.Farhi. License: EUPL.
+  % see also estruct
   
   % handle arrays by copying the new0
   if nargin == 1,  org=''; end

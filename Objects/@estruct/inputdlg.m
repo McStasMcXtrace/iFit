@@ -1,5 +1,8 @@
 function structure = inputdlg(structure,varargin)
-  % inputdlg a dialogue which allows to modify structure(s) in a table
+  % INPUTDLG edit a structure (uitable)
+  %
+  % Version: $Date$ (c) E.Farhi. License: EUPL.
+  % see also estruct.uitable
   
   structure = uitable(structure,varargin{:});
   
