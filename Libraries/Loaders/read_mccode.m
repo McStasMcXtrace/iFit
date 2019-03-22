@@ -112,7 +112,7 @@ function data = read_mccode(filename)
   % check data structures
   data = mcplot_check_data(data);
   
-  if isempty(data.errors) && isempty(data.events) && all(data.size == 0)
+  if numel(data) == 1 && (~isstruct(data) || (isempty(data.errors) && isempty(data.events) && all(data.size == 0)))
     [~,~,e] = fileparts(filename);
     if any(strcmpi(e, {'lau','laz'}))
       data = read_laz(filename);
