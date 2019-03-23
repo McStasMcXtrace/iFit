@@ -131,86 +131,16 @@ function [data, format] = iLoad(filename, loader, varargin)
     return
   elseif any(strcmp(loader, {'force','force load config','compile','check'}))
   
-    config  = iLoad_config_load;
-
-    if strcmp(loader, 'compile')
-      % force compile
-      read_anytext('compile');
-      read_cbf('compile');
-      cif2hkl('compile');
-    else
-      % make a check of installed MeX/binaries
-      try
-        config.external.cbf = read_cbf('check');
-        disp([ mfilename ': CBF     importer  is functional as ' config.external.cbf ]);
-      catch ME
-        disp([ mfilename ': CBF     importer  is functional as read_cbf.m (failed mex)' ]);
-      end
-      try
-        config.external.looktxt = read_anytext('check');
-        disp([ mfilename ': Text    importer  is functional as ' config.external.looktxt ])
-      catch ME
-        warning([ mfilename ': Text    importer  is NOT functional' ]);
-        disp(getReport(ME))
-      end
-      try
-        config.external.cif2hkl = cif2hkl('check');
-        disp([ mfilename ': CIF2HKL converter is functional as ' config.external.cif2hkl ])
-      catch ME
-        warning([ mfilename ': CIF2HKL converter is NOT functional' ]);
-        disp(getReport(ME))
-      end
-        
-    end
-    
-    if ~isempty(filename)
-      data    = iLoad(filename, 'load config', varargin{:});
-    else
-      data    = config;
-    end
-    disp([ '% Loaded iLoad format descriptions from ' config.FileName ]);
+    config  = iLoad_config_load;                          % force omport
+    data = iLoad_check_compile(filename, loader, config); % check executables
     return
   elseif strcmp(loader, 'formats') || strcmp(loader, 'display config')  || strcmp(loader, 'list')
-
     if ~isempty(filename)
       data    = iLoad(filename, 'load config', varargin{:});
     else
       data = iLoad('','load config', varargin{:});
     end
-    fprintf(1, ' EXT                    READER  DESCRIPTION [%s]\n', mfilename);
-    fprintf(1, '-----------------------------------------------------------------\n');
-    % scan loaders
-    if isstruct(data) && isfield(data,'loaders'), data=data.loaders; end
-    for index=1:length(data)
-      if iscell(data) this=data{index}; 
-      elseif isstruct(data) this=data(index); 
-      else continue; end
-      % build output strings
-      if isfield(this,'postprocess'), 
-        if ~isempty(this.postprocess)
-          if iscell(this.postprocess)
-            for i=1:length(this.postprocess)
-              this.method = [ this.method '/' this.postprocess{i} ]; 
-            end
-          else
-            this.method = [ this.method '/' this.postprocess ]; 
-          end
-        end
-      end
-      if length(this.method)>25, this.method = [ this.method(1:22) '...' ]; end
-      if ~isfield(this,'extension'), this.extension = '*';
-      elseif isempty(this.extension), this.extension='*'; end
-      % display
-      if iscellstr(this.extension)
-        fprintf(1,'%4s %25s  %s\n', upper(this.extension{1}), this.method,this.name);
-        for j=2:length(this.extension),fprintf(1,'  |.%s\n', upper(this.extension{j})); end
-      else
-        fprintf(1,'%4s %25s  %s\n', upper(this.extension), this.method,this.name);
-      end
-
-    end
-    disp([ '% iLoad configuration file: ' config.FileName ]);
-    data = data(:)';
+    data = iLoad_display_formats(data, config);
     return
   elseif any(strcmp(loader, {'save config','save'}))
     if isempty(filename) || nargin == 1
@@ -497,7 +427,7 @@ function [data, format] = iLoad(filename, loader, varargin)
   % private/nested function to import single data with given method(s)
   function [data, loader] = iLoad_import(filename, loader, varargin)
     data = []; isbinary=0;
-    verbose = 0; % set this to 1 to get more output for debugging
+    verbose = 1; % set this to 1 to get more output for debugging
     
     if isempty(dir(filename))
       loader = 'Failed to load file (does not exist)';
@@ -586,6 +516,7 @@ function [data, format] = iLoad(filename, loader, varargin)
       fprintf(1, 'iLoad: Importing file %s with method %s (%s)\n', filename, loader.name, loader.method);
     end
     % we select the calling syntax which matches the number of input arguments
+    varg = {};
     if iscell(loader.options)
       varg = { filename, loader.options{:}, varargin{:} };
     elseif ischar(loader.options)

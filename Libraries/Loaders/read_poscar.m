@@ -20,11 +20,11 @@ function s = read_poscar(filename)
   
   if nargin == 0 || any(strcmp(filename, {'identify','query','defaults'}))
   
-    poscar_direct.name            ='VASP initial position POSCAR';
+    poscar_direct.name            ='VASP initial position POSCAR (Direct)';
     poscar_direct.patterns        ='Direct';
     poscar_direct.method          = mfilename;
     
-    poscar_cartesian.name         ='VASP initial position POSCAR';
+    poscar_cartesian.name         ='VASP initial position POSCAR (Cartesian)';
     poscar_cartesian.patterns     ='Cartesian';
     poscar_cartesian.method       = mfilename;
     s = { poscar_direct, poscar_cartesian };

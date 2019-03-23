@@ -15,7 +15,7 @@ if nargin == 0 || any(strcmp(filename, {'identify','query','defaults'}))
     xye.name            ='Simple x/y/e column file';
     xye.extension       ={'xye', 'xy'};
     xye.method          =mfilename;
-    xye.patterns        ={};
+    xye.patterns        ='';
     xye.postprocess     = 'load_xyen';
     
     s = xye;

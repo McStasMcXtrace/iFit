@@ -20,6 +20,7 @@ if nargin == 0 || any(strcmp(filename, {'identify','query','defaults'}))
     ESRF_edf.name       ='EDF ESRF Data Format';
     ESRF_edf.method     =mfilename;
     ESRF_edf.extension  ='edf';
+    ESRF_edf.patterns   ={'DataType','ByteOrder','Size','Dim_1'};
     s = ESRF_edf;
     return
 end
