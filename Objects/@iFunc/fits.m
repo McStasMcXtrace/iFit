@@ -494,7 +494,7 @@ end
 % reshape output arguments and compute some diagnosis
 try
   pars2 = pars_out;
-  [output.modelValue, model] = feval(model, pars2, a.Axes{:});    % this also changed pars_out into iFunc
+  [output.modelValue, model] = feval(model, pars2, a.Axes{:}, varargin{:});    % this also changed pars_out into iFunc
   index=find(~isnan(a.Signal) & ~isnan(output.modelValue));
   if ~isscalar(a.Error), e = a.Error(index); else e=a.Error; end
   output.corrcoef   = eval_corrcoef(a.Signal(index), e, output.modelValue(index));
