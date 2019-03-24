@@ -42,6 +42,7 @@ if nargin == 0 || any(strcmp(filename, {'identify','query','defaults'}))
     ILL_inx.method     =mfilename;
     ILL_inx.postprocess='openinx';
     ILL_inx.extension  ={'inx','ino'};
+    ILL_inx.patterns   = '';
     s=ILL_inx;
     return
 end

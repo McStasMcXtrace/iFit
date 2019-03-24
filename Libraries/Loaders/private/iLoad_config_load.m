@@ -64,11 +64,11 @@ function config = iLoad_config_load
   % default importers, when no user specification is given. 
   % format = { method, extension, name, {options, patterns, postprocess} }
   formats = {...
-    { 'csvread', 'csv', 'Comma Separated Values (.csv)','',''}, ...
-    { 'dlmread', 'dlm', 'Numerical single block','',''}, ...
-    { 'xlsread', 'xls', 'Microsoft Excel (first spreadsheet, .xls)','',nan}, ...
-    { 'load',    'mat', 'Matlab workspace (.mat)',nan,'','openhdf'}, ...
-    { 'importdata','',  'Matlab importer','',nan}, ...
+    { 'csvread', 'csv', 'Comma Separated Values (.csv)',            '',''}, ...
+    { 'dlmread', 'dlm', 'Numerical single block',                   '',''}, ...
+    { 'xlsread', 'xls', 'Microsoft Excel (first spreadsheet, .xls)','',[]}, ...
+    { 'load',    'mat', 'Matlab workspace (.mat)',                  '',[],'openhdf'}, ...
+    { 'importdata','',  'Matlab importer',                          '',[]}, ...
   };
   for index=1:length(formats) % the default loaders are addded after the INI file
     format = cell(1,6);
@@ -83,43 +83,23 @@ function config = iLoad_config_load
     loaders{end+1} = loader;
   end
   
-  % sort loaders. Only get the first entry for each (remove duplicates).
-  % the loaders sort must preserve the initial order. Collect patterns for sorting.
-  names = {}; patterns={}; loaders=loaders(:);
+  % make sure loaders contain the proper fields and asemble an array of structures
+  s = {};
   for index=1:numel(loaders)
-    loader = loaders{index};
-    % remove invalid loaders, only add when not already registered in 'names'
-    if isfield(loader, 'method') && isfield(loader, 'name') && ...
-      (isa(loader.method, 'function_handle') || exist(loader.method,'file')) && ...
-      ~any(strcmp(loader.name, names))
-        names{end+1}    = loader.name;
-        patterns{end+1} = nan; % default is no pattern, assumed binary
-        jj = numel(names);
-        if isfield(loader, 'patterns')
-          if ischar(loader.patterns)
-            patterns{jj} = { loader.patterns };
-          elseif iscellstr(loader.patterns)
-            patterns{jj} = loader.patterns;
-          end
-        end
-    else names{end+1} = ''; patterns{end+1} = nan; end
+    this = iLoad_check_loader(loaders{index});
+    if ~isempty(this), s{end+1} = this; end
   end
-  index   = find(~cellfun(@isempty, names));
-  loaders = loaders(index); % first valid and unique
-  patterns= patterns(index);
-  names   = names(index);
- 
-  % then put first 'text' formats with patterns (longest first), then 'text' without patterns
-  % then 'binary' ones (patterns=nan)
-  elem    = cellfun(@numel, patterns) + cellfun(@iscellstr, patterns);
-  index1  = find(elem > 1);
-  loaders1 = loaders(index1); % get formats with patterns
-  patterns1= patterns(index1);
-  loaders(index1) = [];       % remove these form formats, keep others in original order
-  % sort loaders with patterns, decreasing specificity
-  [elem1,index1]   = sort(cellfun(@numel, patterns1),2,'descend');
-  loaders1 = loaders1(index1);
-  loaders  = [ loaders1 ; loaders ];  % patterns up-front
+  loaders = s;
+  % get unique entries
+  [~, index] = unique(cellfun(@(c)getfield(c, 'name'), loaders,'UniformOutput',false));
+  loaders = loaders(index);
+  % we sort loaders with highest pattern counts and text on top
+  patterns   = cellfun(@(c)getfield(c, 'patterns'), loaders,'UniformOutput',false);
+  istext     = cellfun(@(c)getfield(c, 'istext'), loaders);
+  ext        = cellfun(@(c)getfield(c, 'extension'), loaders,'UniformOutput',false);
+  count      = cellfun(@(c)numel(char(c)), patterns)+istext+cellfun(@numel, patterns)+(~cellfun(@isempty,ext));
+  [~,index]  = sort(count, 2, 'descend');
+  loaders    = loaders(index);
   
   % check if other configuration fields are present, else defaults
   if ~isfield(config, 'UseSystemDialogs'), config.UseSystemDialogs = 'no'; end
@@ -136,3 +116,36 @@ function config = iLoad_config_load
   config.loaders = loaders; % updated list of loaders
   
 end % iLoad_config_load
+
+function loader=iLoad_check_loader(loader)
+% check that a given loader (struct) is standadised
+  
+  if ~isstruct(loader) || ~isfield(loader, 'method') || ~isfield(loader, 'name')
+    loader=[]; return; 
+  end
+  if isempty(loader.method) || isempty(loader.name)
+    loader=[]; return; 
+  end
+  if ~isa(loader.method, 'function_handle') && ~exist(loader.method,'file')
+    loader=[]; return; 
+  end
+  
+  if ~isfield(loader,'patterns'),  loader.patterns =[]; end
+  if ~isfield(loader,'extension'), loader.extension=[]; end
+  if ~isfield(loader,'options'),   loader.options  =[]; end
+  if ~isfield(loader,'postprocess'),loader.postprocess  =[]; end
+  
+  if ischar(loader.extension)
+    loader.extension = cellstr(loader.extension);
+  end
+  
+  % check if 'text'
+  loader.istext = false;
+  if ischar(loader.patterns) || (~isempty(loader.patterns) && iscellstr(loader.patterns))
+    loader.patterns = cellstr(loader.patterns);
+    loader.istext = true;
+  end
+  if ~isempty(strfind(lower(loader.name),'text'))
+    loader.istext = true;
+  end
+end

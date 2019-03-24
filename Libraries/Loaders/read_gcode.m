@@ -14,6 +14,7 @@ function data = read_gcode(file, k)
     gcode.name          = 'GCODE numerical control programming language';
     gcode.method        = mfilename;
     gcode.extension     = {'g','gco','gcode','mpt','mpf'};
+    gcode.patterns      = '';
     data = gcode;
     return
   end
