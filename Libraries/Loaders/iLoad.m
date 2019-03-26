@@ -516,12 +516,13 @@ function [data, format] = iLoad(filename, loader, varargin)
       fprintf(1, 'iLoad: Importing file %s with method %s (%s)\n', filename, loader.name, loader.method);
     end
     % we select the calling syntax which matches the number of input arguments
-    varg = {};
     if iscell(loader.options)
       varg = { filename, loader.options{:}, varargin{:} };
     elseif ischar(loader.options)
       if ~isempty(loader.options), loader.options = [ ' ' loader.options ]; end
       varg = { [ filename loader.options ], varargin{:} };
+    else
+      varg = { filename, varargin{:} };
     end
     % reduce the number of input arguments to the one expected
     if ~any(strcmp(loader.method, {'text','read_anytext','looktxt'})) && nargin(loader.method) > 0
