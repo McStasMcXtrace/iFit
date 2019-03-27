@@ -45,9 +45,9 @@ function [pars, pars_isstruct, ax] = iFunc_private_get_pars(model, pars, varargi
       f_model=model.Parameters;
       for index=1:length(f_model)  
         match = strcmp(strtok(f_model{index}), f_given);
-        if ~isempty(match) && match
+        if ~isempty(match) && any(match);
           pars_isstruct = [ pars_isstruct index ];
-          p0(index) = pars.(f_given{match});
+          p0(index) = pars.(f_given{find(match,1)});
         end
       end
       pars = p0;
