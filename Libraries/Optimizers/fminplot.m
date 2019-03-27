@@ -72,8 +72,6 @@ function stop = fminplot(pars, optimValues, state)
     best= best(1);
     flag_input_is_struct = 1;
     
-    fminplot_View_Parameters_Histograms(output);
-    
   else              % normal execution during optimization =====================
     
     if ~isempty(optimValues) && ~isfield(optimValues, 'funcount')
@@ -115,18 +113,12 @@ function stop = fminplot(pars, optimValues, state)
     [dummy, best] = sort(fvalHistory); % sort in ascending order
     best= best(1);
     
-    % store userData in case we need to access the optimization history from the plot
-    if ~isempty(h) 
-      set(h(1),'UserData', struct('parsHistory',parsHistory,...
-        'fvalHistory',fvalHistory,'best',best, 'bestPars',parsHistory(best,:))); 
-    end
-    
     if length(fvalHistory) > 10
       if ~isempty(updatePlot)
         if etime(clock, updatePlot) < 2, return; end % plot every 2 secs
       end
     end
-  end
+  end % isstruct(pars) or normal iteration
     
   % handle figure
   % only retain one instance of fminplot
@@ -139,7 +131,13 @@ function stop = fminplot(pars, optimValues, state)
     % add a 'STOP' button: push-button
     d = uicontrol(h, 'String','START','Callback','fminplot([],[],''abort'');', ...
       'Tag','fminplot:stop','ToolTip','Click here to abort optimization');
-    set(h, 'ToolBar','figure','menubar','figure');
+    % add context menu to plot histograms, dialogue with parameters
+    uicm = uicontextmenu;
+    uimenu(uicm,'Label','Plot parameter histograms...', ...
+      'Callback','fminplot(get(gcf,''UserData''));');
+    uimenu(uicm,'Label','Show best parameters...',...
+      'Callback','helpdlg(num2str(getfield(get(gcf,''UserData''),''parsBest'')),''Best parameters'')');
+    set(h, 'uicontextmenu', uicm);
   end
 
   try
@@ -151,7 +149,6 @@ function stop = fminplot(pars, optimValues, state)
   end
   
   % update button label and color
-  set(h,'MenuBar','figure', 'ToolBar', 'figure');
   d = findall(h, 'Tag', 'fminplot:stop');
   set(d, 'String','STOP','BackgroundColor','red');
   
@@ -237,13 +234,48 @@ function stop = fminplot(pars, optimValues, state)
   try
     set(0, 'CurrentFigure', old_gcf);
   end % figure may have been closed in the mean time, so be tolerant...
+  
+  if flag_input_is_struct
+    
+    set(h(1),'UserData', struct('parsHistory',parsHistory,...
+        'fvalHistory',fvalHistory,'best',best, 'parsBest',parsHistory(best,:),...
+        'criteriaHistory',fvalHistory,'optimizer',optimValues.procedure, ...
+        'funcCount',optimValues.funcount)); 
+    
+    fminplot_View_Parameters_Histograms(output);
+  end
 
 end
 
 function fminplot_View_Parameters_Histograms(o)
   % display the Parameter distribution histograms
+  
+  % requires a structure with fields:
+  %   optimizer
+  %   parsBest
+  %   criteriaHistory
+  %   parsHistoryUncertainty
   if isempty(o), return; end
   if iscell(o), o=o{1}; end
+  
+  if ~isfield(o, 'parsHistoryUncertainty')
+    % compute the uncertainty if missing (from History)
+    index      = find(o.criteriaHistory < min(o.criteriaHistory)*4);   % identify tolerance region around optimum 
+    if length(index) < 3 % retain 1/4 lower criteria part
+      delta_criteria = o.criteriaHistory - min(o.criteriaHistory);
+      index      = find(abs(delta_criteria/min(o.criteriaHistory)) < 0.25);
+    end
+    if length(index) < 3
+      index = 1:length(o.criteriaHistory);
+    end
+    try
+      delta_pars = (o.parsHistory(index,:)-repmat(o.parsBest,[length(index) 1])); % get the corresponding parameter set
+      weight_pars= exp(-((o.criteriaHistory(index)-min(o.criteriaHistory))).^2 / 8); % Gaussian weighting for the parameter set
+      weight_pars= repmat(weight_pars,[1 length(o.parsBest)]);
+      o.parsHistoryUncertainty = sqrt(sum(delta_pars.*delta_pars.*weight_pars)./sum(weight_pars));
+    end
+  end
+  
   titl = [ 'Parameter distributions: ' datestr(now) ' ' o.optimizer ];
   if isfield(o, 'model') && isfield(o.model, 'Name')
     titl = [ titl ' ' o.model.Name ];
@@ -254,8 +286,9 @@ function fminplot_View_Parameters_Histograms(o)
   index      = find(o.criteriaHistory < min(o.criteriaHistory)*10); % select a portion close to the optimum
   if numel(index)<20, index=1:numel(o.criteriaHistory); end
   
+  
+  
   % identify the parameters which are independent, from the Hessian Correlation matrix
-
   if ~isfield(o,'parsHessianCorrelation') || isempty(o.parsHessianCorrelation)
     corr = eye(M);
   else
