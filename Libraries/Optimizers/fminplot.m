@@ -45,8 +45,8 @@ function stop = fminplot(pars, optimValues, state)
     if ~isempty(h)
       stop = get(h,'UserData');
     else
-        stop.parsHistory = parsHistory;
-        stop.fvalHistory = fvalHistory;
+      stop.parsHistory = parsHistory;
+      stop.fvalHistory = fvalHistory;
     end
     return
   elseif nargin == 1 && (strcmp(pars, 'defaults') || strcmp(pars, 'identify'))
@@ -235,17 +235,19 @@ function stop = fminplot(pars, optimValues, state)
     set(0, 'CurrentFigure', old_gcf);
   end % figure may have been closed in the mean time, so be tolerant...
   
-  if flag_input_is_struct
-    
-    set(h(1),'UserData', struct('parsHistory',parsHistory,...
+  % store optimisation info in UserData for further use
+  set(h(1),'UserData', struct('parsHistory',parsHistory,...
         'fvalHistory',fvalHistory,'best',best, 'parsBest',parsHistory(best,:),...
         'criteriaHistory',fvalHistory,'optimizer',optimValues.procedure, ...
         'funcCount',optimValues.funcount)); 
-    
+  
+  if flag_input_is_struct
     fminplot_View_Parameters_Histograms(output);
   end
 
 end
+
+% ------------------------------------------------------------------------------
 
 function fminplot_View_Parameters_Histograms(o)
   % display the Parameter distribution histograms
@@ -258,21 +260,15 @@ function fminplot_View_Parameters_Histograms(o)
   if isempty(o), return; end
   if iscell(o), o=o{1}; end
   
-  if ~isfield(o, 'parsHistoryUncertainty')
+  if ~isfield(o, 'parsHistoryUncertainty') || ~any(o.parsHistoryUncertainty>0)
     % compute the uncertainty if missing (from History)
-    index      = find(o.criteriaHistory < min(o.criteriaHistory)*4);   % identify tolerance region around optimum 
-    if length(index) < 3 % retain 1/4 lower criteria part
-      delta_criteria = o.criteriaHistory - min(o.criteriaHistory);
-      index      = find(abs(delta_criteria/min(o.criteriaHistory)) < 0.25);
-    end
+    index      = find(o.criteriaHistory < min(o.criteriaHistory)+std(o.criteriaHistory)/2);   % identify tolerance region around optimum 
     if length(index) < 3
       index = 1:length(o.criteriaHistory);
     end
     try
       delta_pars = (o.parsHistory(index,:)-repmat(o.parsBest,[length(index) 1])); % get the corresponding parameter set
-      weight_pars= exp(-((o.criteriaHistory(index)-min(o.criteriaHistory))).^2 / 8); % Gaussian weighting for the parameter set
-      weight_pars= repmat(weight_pars,[1 length(o.parsBest)]);
-      o.parsHistoryUncertainty = sqrt(sum(delta_pars.*delta_pars.*weight_pars)./sum(weight_pars));
+      o.parsHistoryUncertainty = std(delta_pars);
     end
   end
   

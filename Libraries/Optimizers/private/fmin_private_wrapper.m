@@ -393,20 +393,13 @@ output.fevalDuration   = constraints.fevalDuration;
 output.parsStart       = constraints.parsStart;
 
 % estimate parameter uncertainty from the search trajectory ====================
-
-index      = find(output.criteriaHistory < min(output.criteriaHistory)*4);   % identify tolerance region around optimum 
-if length(index) < 3 % retain 1/4 lower criteria part
-  delta_criteria = output.criteriaHistory - min(output.criteriaHistory);
-  index      = find(abs(delta_criteria/min(output.criteriaHistory)) < 0.25);
-end
+index      = find(output.criteriaHistory < min(output.criteriaHistory)+std(output.criteriaHistory)/2);   % identify tolerance region around optimum 
 if length(index) < 3
   index = 1:length(output.criteriaHistory);
 end
 try
   delta_pars = (output.parsHistory(index,:)-repmat(output.parsBest,[length(index) 1])); % get the corresponding parameter set
-  weight_pars= exp(-((output.criteriaHistory(index)-min(output.criteriaHistory))).^2 / 8); % Gaussian weighting for the parameter set
-  weight_pars= repmat(weight_pars,[1 length(output.parsBest)]);
-  output.parsHistoryUncertainty = sqrt(sum(delta_pars.*delta_pars.*weight_pars)./sum(weight_pars));
+  output.parsHistoryUncertainty = std(delta_pars);
 end
 
 covp = [];
