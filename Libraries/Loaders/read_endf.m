@@ -79,23 +79,7 @@ if fid == -1
   error([ 'Could not open file ' file ' for reading. ' message '. Check existence/permissions.' ]);
 end
 
-% get header (file start) and 'isbinary'
-file_start = fread(fid, 1000, 'uint8=>char')';
-if length(find(file_start >= 32 & file_start < 127))/length(file_start) < 0.4
-  isbinary = 1; % less than 40% of printable characters
-else
-  % clean file start with spaces, remove EOL
-  file_start = [ file_start fread(fid, 9000, 'uint8=>char')' ];
-  file_start(isspace(file_start)) = ' ';
-  isbinary= 0;
-end
-fclose(fid);
-if isbinary, endf=[]; return; end % must be 100% ascii
 
-config = read_endf('identify');
-for pat=config.patterns
-  if isempty(strfind(file_start, pat{1})), endf = []; return; end
-end
 
 % open file and read it line by line
 disp([ mfilename ': Opening ' filename ]);

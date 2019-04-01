@@ -114,146 +114,147 @@ if verbose, disp(['SIGNATURE = ' signature]), end
 alldone=0;
  % convert all variable names to lowercase
 if ~strcmp(signature,'SR'),
-    warning(['unrecognized signature - terminating.']);
+    % warning(['unrecognized signature - terminating.']);
     alldone=1;
 end
 
 if ~alldone,
     
-recfmts={'COMMON_VARIABLE' 'VARIABLE' 'SYSTEM_VARIABLE' '' '' 'END_MARKER' ...
-'' '' '' 'TIMESTAMP' '' 'COMPILED' 'IDENTIFICATION' 'VERSION' ...
-'HEAP_HEADER' 'HEAP_DATA' 'PROMOTE64' '' 'NOTICE'};
+  recfmts={'COMMON_VARIABLE' 'VARIABLE' 'SYSTEM_VARIABLE' '' '' 'END_MARKER' ...
+  '' '' '' 'TIMESTAMP' '' 'COMPILED' 'IDENTIFICATION' 'VERSION' ...
+  'HEAP_HEADER' 'HEAP_DATA' 'PROMOTE64' '' 'NOTICE'};
 
-if verbose, 
-    disp('----- Analysis of file structure: -----');
-    %fseek(fid,4,'bof');
-    nextptr=4;
-    while(1)
-        fseek(fid,nextptr,'bof');
-        recfmt=fread(fid,1,'uint32',0,'b');
-        fprintf(1,'Offset %d: record type %s\n', nextptr,recfmts{recfmt});
-        if recfmt==6, break, end
-        nextptr=fread(fid,1,'uint32',0,'b');
-    end
-    disp('----------');
-end
-varnames={};
-nextptr=4;
-while (1)
- fseek(fid,nextptr,'bof');
-    thisptr=nextptr;
-    rhdr=fread(fid,1,'uint32',0,'b');
-    if feof(fid), break; end % bail out if hit EOF
-    nextptr=fread(fid,1,'uint32',0,'b');
-    nextptr1=fread(fid,1,'uint32',0,'b');
-    unknown=fread(fid,1,'uint32');
-    
-    % specific format of each type of record is documented in C. Markwardt's
-    % description of the file format   
-    switch rhdr
-        case 10    %timestamp
-            if (nextptr < 1024),
-                warning([ mfilename ': version offset < 1024... probably a compressed file. sorry, can''t deal with this. if possible, save without the "/COMPRESS" flag.' ])
-                return
-            end
-            unknown=fread(fid,256,'uint32');
-            strlen=fread(fid,1,'uint32',0,'b');
-            datestring=strtrim(char(fread(fid,4*ceil(strlen/4),'char')'));
-            strlen=fread(fid,1,'uint32',0,'b');
-            userstring=strtrim(char(fread(fid,4*ceil(strlen/4),'char')'));
-            strlen=fread(fid,1,'uint32',0,'b');
-            hoststring=strtrim(char(fread(fid,4*ceil(strlen/4),'char')'));
-            if verbose,
-            disp(['TIMESTAMP:  date, user, host =  ' datestring '  ' userstring '  ' hoststring])
-            end
-        case 14    % version       
-            fmt=fread(fid,1,'uint32',0,'b');
-            strlen=fread(fid,1,'uint32',0,'b');
-            archstring=strtrim(char(fread(fid,4*ceil(strlen/4),'char')'));
-            strlen=fread(fid,1,'uint32',0,'b');
-            osstring=strtrim(char(fread(fid,4*ceil(strlen/4),'char')'));
-            strlen=fread(fid,1,'uint32',0,'b');
-            releasestring=strtrim(char(fread(fid,4*ceil(strlen/4),'char')'));
-            if verbose,
-            disp(['VERSION: arch, os, release = ' archstring osstring releasestring])
-            end
-        case 19
-            if verbose, disp('NOTICE:'); end
-            strlen=fread(fid,1,'uint32',0,'b');
-            notestring=strtrim(char(fread(fid,4*ceil(strlen/4),'char')'));
-        case 2  % this is the most important one - actual data
-            varstring='';
-            % here's the name - length first, then the string
-            strlen=fread(fid,1,'uint32',0,'b');
-            varname=deblank(char(fread(fid,4*ceil(strlen/4),'char')'));
-            variables(end+1).name=varname;
-            variables(end).ptr=thisptr;
-            % typecode tells type of each element in variable
-            typecode=fread(fid,1,'uint32',0,'b');
-            % varflags tells if it's an array or scalar
-            varflags=fread(fid,1,'uint32',0,'b');
-            switch typecode
-                case 1
-                    mytype='uint8';
-                case 2
-                    mytype='int16';
-                case 3
-                    mytype='int32';
-                case 4
-                    mytype='single';
-                case 5
-                    mytype='double';
-                case 6
-                    mytype='complex';
-                case 7
-                    mytype='string';
-                case 8
-                    mytype='structure';
-                case 9
-                    mytype='double complex';
-                case 11
-                    mytype='object pointer';
-                case 12
-                    mytype='uint16';
-                case 13
-                    mytype='uint32';
-                case 14
-                    mytype='int64';
-                case 15
-                    mytype='uint64';
-            end
-            % varstring is our description for the selection listbox
-            varstring=[ varname ':  '  mytype];
-                   
-            if ~bitand(varflags,4),  % scalar
-                %disp('    SCALAR ');
-                varstring=[varstring ' SCALAR'];
-            elseif bitand(varflags, 4)  % array               
-                arrstart=fread(fid,1,'uint32',0,'b');
-                nbytes_el=fread(fid,1,'uint32',0,'b');
-                nbytes=fread(fid,1,'uint32',0,'b');
-                nelements=fread(fid,1,'uint32',0,'b');
-                ndims=fread(fid,1,'uint32',0,'b');
-                stuff=fread(fid,2,'uint32',0,'b');
-                nmax=fread(fid,1,'uint32',0,'b');
-                dims=fread(fid,nmax,'uint32',0,'b')';
-                varstring=[varstring '  ARRAY: ' num2str(dims(1:max([2 ndims])))];
+  if verbose, 
+      disp('----- Analysis of file structure: -----');
+      %fseek(fid,4,'bof');
+      nextptr=4;
+      while(1)
+          fseek(fid,nextptr,'bof');
+          recfmt=fread(fid,1,'uint32',0,'b');
+          fprintf(1,'Offset %d: record type %s\n', nextptr,recfmts{recfmt});
+          if recfmt==6, break, end
+          nextptr=fread(fid,1,'uint32',0,'b');
+      end
+      disp('----------');
+  end
+  varnames={};
+  nextptr=4;
+  while (1)
+      fseek(fid,nextptr,'bof');
+      thisptr=nextptr;
+      rhdr=fread(fid,1,'uint32',0,'b');
+      if feof(fid), break; end % bail out if hit EOF
+      nextptr=fread(fid,1,'uint32',0,'b');
+      nextptr1=fread(fid,1,'uint32',0,'b');
+      unknown=fread(fid,1,'uint32');
+      
+      % specific format of each type of record is documented in C. Markwardt's
+      % description of the file format   
+      switch rhdr
+          case 10    %timestamp
+              if (nextptr < 1024),
+                  warning([ mfilename ': version offset < 1024... probably a compressed file. sorry, can''t deal with this. if possible, save without the "/COMPRESS" flag.' ])
+                  return
+              end
+              unknown=fread(fid,256,'uint32');
+              strlen=fread(fid,1,'uint32',0,'b');
+              datestring=strtrim(char(fread(fid,4*ceil(strlen/4),'char')'));
+              strlen=fread(fid,1,'uint32',0,'b');
+              userstring=strtrim(char(fread(fid,4*ceil(strlen/4),'char')'));
+              strlen=fread(fid,1,'uint32',0,'b');
+              hoststring=strtrim(char(fread(fid,4*ceil(strlen/4),'char')'));
+              if verbose,
+              disp(['TIMESTAMP:  date, user, host =  ' datestring '  ' userstring '  ' hoststring])
+              end
+          case 14    % version       
+              fmt=fread(fid,1,'uint32',0,'b');
+              strlen=fread(fid,1,'uint32',0,'b');
+              archstring=strtrim(char(fread(fid,4*ceil(strlen/4),'char')'));
+              strlen=fread(fid,1,'uint32',0,'b');
+              osstring=strtrim(char(fread(fid,4*ceil(strlen/4),'char')'));
+              strlen=fread(fid,1,'uint32',0,'b');
+              releasestring=strtrim(char(fread(fid,4*ceil(strlen/4),'char')'));
+              if verbose,
+              disp(['VERSION: arch, os, release = ' archstring osstring releasestring])
+              end
+          case 19
+              if verbose, disp('NOTICE:'); end
+              strlen=fread(fid,1,'uint32',0,'b');
+              notestring=strtrim(char(fread(fid,4*ceil(strlen/4),'char')'));
+          case 2  % this is the most important one - actual data
+              varstring='';
+              % here's the name - length first, then the string
+              strlen=fread(fid,1,'uint32',0,'b');
+              varname=deblank(char(fread(fid,4*ceil(strlen/4),'char')'));
+              variables(end+1).name=varname;
+              variables(end).ptr=thisptr;
+              % typecode tells type of each element in variable
+              typecode=fread(fid,1,'uint32',0,'b');
+              % varflags tells if it's an array or scalar
+              varflags=fread(fid,1,'uint32',0,'b');
+              switch typecode
+                  case 1
+                      mytype='uint8';
+                  case 2
+                      mytype='int16';
+                  case 3
+                      mytype='int32';
+                  case 4
+                      mytype='single';
+                  case 5
+                      mytype='double';
+                  case 6
+                      mytype='complex';
+                  case 7
+                      mytype='string';
+                  case 8
+                      mytype='structure';
+                  case 9
+                      mytype='double complex';
+                  case 11
+                      mytype='object pointer';
+                  case 12
+                      mytype='uint16';
+                  case 13
+                      mytype='uint32';
+                  case 14
+                      mytype='int64';
+                  case 15
+                      mytype='uint64';
+              end
+              % varstring is our description for the selection listbox
+              varstring=[ varname ':  '  mytype];
+                     
+              if ~bitand(varflags,4),  % scalar
+                  %disp('    SCALAR ');
+                  varstring=[varstring ' SCALAR'];
+              elseif bitand(varflags, 4)  % array               
+                  arrstart=fread(fid,1,'uint32',0,'b');
+                  nbytes_el=fread(fid,1,'uint32',0,'b');
+                  nbytes=fread(fid,1,'uint32',0,'b');
+                  nelements=fread(fid,1,'uint32',0,'b');
+                  ndims=fread(fid,1,'uint32',0,'b');
+                  stuff=fread(fid,2,'uint32',0,'b');
+                  nmax=fread(fid,1,'uint32',0,'b');
+                  dims=fread(fid,nmax,'uint32',0,'b')';
+                  varstring=[varstring '  ARRAY: ' num2str(dims(1:max([2 ndims])))];
 
-            end
-            if verbose, disp(varstring), end
-            varnames{end+1}=varstring;
-        case 6
-            if verbose, disp('END'); end
-            break
+              end
+              if verbose, disp(varstring), end
+              varnames{end+1}=varstring;
+          case 6
+              if verbose, disp('END'); end
+              break
 
-        otherwise
-            break;
-    end
-end
+          otherwise
+              break;
+      end
+  end
 
 
-%fclose(fid);
+  %fclose(fid);
 end    %if not alldone
+
 choices=1:numel(variables);
 if split,
     outargs=struct('name','','value',{});
@@ -261,114 +262,117 @@ else
     outargs=struct;
 end
 for whichone=choices,
-    % point to proper place in file
-    nextptr=variables(whichone).ptr;
-    % go there
-    fseek(fid,nextptr,'bof');
-    thisptr=nextptr;
-    % read the record header
-    rhdr=fread(fid,1,'uint32',0,'b');
-    %if feof(fid), break; end
-    nextptr=fread(fid,1,'uint32',0,'b');
-    nextptr1=fread(fid,1,'uint32',0,'b');
-    unknown=fread(fid,1,'uint32');
-    switch rhdr
-       case 2 % variable record - read in some data and create a variable
-            varstring='';
-            strlen=fread(fid,1,'uint32',0,'b');
-            varname=deblank(char(fread(fid,4*ceil(strlen/4),'char')'));
-            
-            % convert to lowercase for Matlab variable naming if desired
-            if dolower, varname=lower(varname); end
-            
-            typecode=fread(fid,1,'uint32',0,'b');
-            varflags=fread(fid,1,'uint32',0,'b');
-            switch typecode
-                case 1
-                    mytype='uint8';
-                case 2
-                    mytype='int16';
-                case 3
-                    mytype='int32';
-                case 4
-                    mytype='single';
-                case 5
-                    mytype='double';
-                case 6
-                    mytype='complex';
-                case 7
-                    mytype='string';
-                case 8
-                    mytype='structure';
-                case 9
-                    mytype='double complex';
-                case 11
-                    mytype='object pointer';
-                case 12
-                    mytype='uint16';
-                case 13
-                    mytype='uint32';
-                case 14
-                    mytype='int64';
-                case 15
-                    mytype='uint64';
+  % point to proper place in file
+  nextptr=variables(whichone).ptr;
+  % go there
+  fseek(fid,nextptr,'bof');
+  thisptr=nextptr;
+  % read the record header
+  rhdr=fread(fid,1,'uint32',0,'b');
+  %if feof(fid), break; end
+  nextptr=fread(fid,1,'uint32',0,'b');
+  nextptr1=fread(fid,1,'uint32',0,'b');
+  unknown=fread(fid,1,'uint32');
+  switch rhdr
+   case 2 % variable record - read in some data and create a variable
+      varstring='';
+      strlen=fread(fid,1,'uint32',0,'b');
+      varname=deblank(char(fread(fid,4*ceil(strlen/4),'char')'));
+      
+      % convert to lowercase for Matlab variable naming if desired
+      if dolower, varname=lower(varname); end
+      
+      typecode=fread(fid,1,'uint32',0,'b');
+      varflags=fread(fid,1,'uint32',0,'b');
+      switch typecode
+        case 1
+            mytype='uint8';
+        case 2
+            mytype='int16';
+        case 3
+            mytype='int32';
+        case 4
+            mytype='single';
+        case 5
+            mytype='double';
+        case 6
+            mytype='complex';
+        case 7
+            mytype='string';
+        case 8
+            mytype='structure';
+        case 9
+            mytype='double complex';
+        case 11
+            mytype='object pointer';
+        case 12
+            mytype='uint16';
+        case 13
+            mytype='uint32';
+        case 14
+            mytype='int64';
+        case 15
+            mytype='uint64';
+      end
+      varstring=[ varname ':  '  mytype];
+      if frestore_verbose,disp(varstring),end
+      thevar = [];
+      if ~bitand(varflags,4),  % scalar
+        varstring=[varstring ' SCALAR'];
+        thevar=read_idl_scalar(fid,typecode);
+        
+        if ~isempty(thevar),
+            disp(['creating ' varstring]);
+            if split,
+                narg=numel(outargs)+1;
+                outargs(narg).name=varname;
+                outargs(narg).value=thevar;
+            else
+                outargs.(varname)=thevar;
             end
-            varstring=[ varname ':  '  mytype];
-            if frestore_verbose,disp(varstring),end
-            thevar = [];
-            if ~bitand(varflags,4),  % scalar
-                varstring=[varstring ' SCALAR'];
-                thevar=read_idl_scalar(fid,typecode);
-                
-                if ~isempty(thevar),
-                    disp(['creating ' varstring]);
-                    if split,
-                        narg=numel(outargs)+1;
-                        outargs(narg).name=varname;
-                        outargs(narg).value=thevar;
-                    else
-                        outargs.(varname)=thevar;
-                    end
-               %     thecommand= ['global thevar; ' varname ' = thevar;'];
-               %     evalin('base',thecommand);
-                end
-            elseif bitand(varflags, 4)  % array (also includes structures)
-                if frestore_verbose,disp('doing an array'),end
-                thevar=[];
-                arrdesc = parse_array_descriptor(fid);
-                dims=arrdesc.dims;
-                ndims=arrdesc.ndims;
+       %     thecommand= ['global thevar; ' varname ' = thevar;'];
+       %     evalin('base',thecommand);
+        end
+      elseif bitand(varflags, 4)  % array (also includes structures)
+        if frestore_verbose,disp('doing an array'),end
+        thevar=[];
+        arrdesc = parse_array_descriptor(fid);
+        dims=arrdesc.dims;
+        ndims=arrdesc.ndims;
 
-                varstring=[varstring '  ARRAY: ' num2str(dims(1:max([2 ndims])))];
-                thevar=read_idl_array(fid,arrdesc,typecode,dolower);
-                if ~isempty(thevar),
-                    disp(['creating ' varstring]);
-                    thevar= reshape(thevar,dims(1:max([2 ndims])));
-                    if split,
-                        narg=numel(outargs)+1;
-                        outargs(narg).name=varname;
-                        outargs(narg).value=thevar;  
-                    else
-                        outargs.(varname)=thevar;
-                    end
+        varstring=[varstring '  ARRAY: ' num2str(dims(1:max([2 ndims])))];
+        thevar=read_idl_array(fid,arrdesc,typecode,dolower);
+        if ~isempty(thevar),
+            disp(['creating ' varstring]);
+            thevar= reshape(thevar,dims(1:max([2 ndims])));
+            if split,
+                narg=numel(outargs)+1;
+                outargs(narg).name=varname;
+                outargs(narg).value=thevar;  
+            else
+                outargs.(varname)=thevar;
+            end
 %                     thecommand=['global thevar; ' varname ' = squeeze(thevar);'];
 %                     evalin('base', thecommand);
 
-                end
+        end
 
-            end
-            if frestore_verbose,
-                if numel(thevar) <= 20, thevar, end, 
-            end
-        otherwise
-            % not a variable record, nothing for us to do
+      end
+      if frestore_verbose,
+          if numel(thevar) <= 20, thevar, end, 
+      end
+    otherwise
+        % not a variable record, nothing for us to do
     end
-end
+end % for
 fclose(fid);
 if frestore_verbose && ~isempty(varnames), disp('created new variables '), disp(varnames'),end
-end
 
+if isempty(variables), outargs=[]; end
 
+end % function
+
+% ------------------------------------------------------------------------------
 function mytype = idl_element_type( typecode)
 %IDL_ELEMENT_TYPE
 %   returns the string descriptor ('float32','int16', etc) given an IDL

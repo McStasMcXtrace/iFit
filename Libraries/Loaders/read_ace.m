@@ -52,7 +52,7 @@ function status = read_ace_pyne_present
     status = 0;
     disp('  Get Python-PYNE at <http://pyne.io/>.');
     disp('  Package exists for Debian/Mint/Ubuntu at <http://packages.mccode.org>.');
-    error([ mfilename ': warning: would make good use of PyNE.' ])
+    disp([ mfilename ': warning: would make good use of PyNE.' ])
   else
     status = 1;
   end

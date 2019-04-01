@@ -26,60 +26,81 @@ function [loaders, isbinary] = iLoad_loader_auto(file, config)
   end
   fclose(fid);
 
-  loaders={};
-  
-  [loaders_ext, formats] = iLoad_loader_extension(formats, ext);
-  [loaders_pat, formats] = iLoad_loader_patterns(formats, file_start);
-  [loaders_txt, formats] = iLoad_loader_text(formats);
+  loaders=formats; % already sorted by decreasing specificity
+ 
+ 
+  % restrict loaders using format extensions, also retain formats without extension
+  loaders = iLoad_loader_extension(loaders, ext);
 
-  if isbinary
-  % binary header: loaders = [ extension, pattern matches, pattern char empty ]
-    loaders = [ loaders_ext loaders_pat formats ];
-  else
-  % text header:   loaders = [ pattern matches, extension, pattern char empty ]
-    loaders = [ loaders_pat loaders_ext loaders_txt formats ];
-  end
-  
+  % restrict loaders that match patterns (or no patterns)
+  loaders = iLoad_loader_patterns(loaders, file_start, isbinary);
+
 end % iLoad_loader_auto
 
 % ------------------------------------------------------------------------------
-function [loaders, others] = iLoad_loader_extension(formats, ext)
+function loaders = iLoad_loader_extension(formats, ext)
 % iLoad_loader_extension: identify loaders for which any registered extension match 'ext'
+%   or loader has no extension (all match), or '*'
   exts = cellfun(@(c)getfield(c, 'extension'), formats, 'UniformOutput',false);
-  loaders={}; others={};
+  done = zeros(size(exts));
+  loaders={};
+  % first we add formats that exactly match extensions
   for index=1:numel(exts)
-    if any(strcmp(ext, exts{index})) 
-        loaders{end+1} = formats{index}; 
-    else others{end+1} = formats{index}; end
+    found=any(strcmp(ext, exts{index}));
+    if ~isempty(exts{index}) && isempty(ext), found = false; end
+    if found, loaders{end+1} = formats{index}; done(index)=1; end
+  end
+  % then we add other ones
+  for index=1:numel(exts)
+    found=isempty(exts{index}) || (ischar(exts{index}) && strcmp(exts{index},'*'));
+    if ~isempty(exts{index}) && isempty(ext), found = false; end
+    if found && ~done(index), loaders{end+1} = formats{index}; end
   end
   
 end % iLoad_loader_extension
 
-function [loaders, others] = iLoad_loader_patterns(formats, file_start)
+function [loaders, others] = iLoad_loader_patterns(formats, file_start, isbinary)
 % iLoad_loader_patterns: identify loaders for which all patterns appear in file_start 
-  pats = cellfun(@(c)getfield(c, 'patterns'), formats, 'UniformOutput',false);
-  loaders={}; others={};
+
+  % keep when patterns found in file_start
+  % or format has patterns=='' and is text
+  % or no pattern at all
+  pats   = cellfun(@(c)getfield(c, 'patterns'), formats, 'UniformOutput',false);
+  istext = cellfun(@(c)getfield(c, 'istext'),   formats);
+  done   = zeros(size(istext));
+  loaders={};
+  % first put formats that match patterns
   for index=1:numel(pats)
-    if ~iscellstr(pats{index}) && ~ischar(pats{index}), continue; end
-    found=true;
-    for pat=cellstr(pats{index})
-      match = strfind(file_start, pat{1});
-      if isempty(match), found=false; break; end
+    found = false;
+    if (iscellstr(pats{index}) || ischar(pats{index})) && ~isbinary
+      found=true;
+      for pat=cellstr(pats{index})
+        match = regexp(file_start, pat{1});
+        if isempty(match), found=false; break; end % a pattern was not found
+      end
     end
-    if found
-        loaders{end+1} = formats{index};
-    else others{end+1} = formats{index}; end
+    if found, 
+      loaders{end+1} = formats{index};
+      done(index)=1;
+    end
+  end
+  % then put loaders without specific pattern
+  for index=1:numel(pats)
+    found = false;
+    if (iscellstr(pats{index}) || ischar(pats{index})) && ~isbinary && ~done(index)
+      if all(strcmp(pats{index},''))
+        found = istext(index);  % text format without specific pattern
+      end
+    end
+    if found, 
+      loaders{end+1} = formats{index};
+      done(index)=1;
+    end
+  end
+  % then put loaders without paterns at all (including binary ones)
+  for index=1:numel(pats)
+    if isempty(pats{index}) && ~done(index), loaders{end+1} = formats{index}; end
   end
   
 end % iLoad_loader_patterns
-
-function [loaders, others] = iLoad_loader_text(formats)
-% iLoad_loader_text: identify loaders for which have empty char patterns (text readers)
-  istext  = cellfun(@(c)getfield(c, 'istext'), formats);
-  pats    = cellfun(@(c)getfield(c, 'patterns'), formats, 'UniformOutput',false);
-  emptypat= cellfun(@(c)and(~isempty(c),isempty(char(c))), pats);
-  istext = istext & emptypat;
-  loaders = formats(find(istext));
-  others  = formats(find(~istext));
-end % iLoad_loader_text
 

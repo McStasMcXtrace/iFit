@@ -273,7 +273,8 @@ if strcmp(char(file_raw(1:2)),[ 'B'; char(0) ])
     % Import all XDATA if necessary
     data = SDF_XDATA_Process(data,file_raw);
 else %if strcmp(char(file_raw(1:2)),[ 'B'; char(0) ])
-    error(['The input file: ' filename 'is not an SDF file']);
+    disp(['The input file: ' filename 'is not an SDF file']);
+    data = [];
 end  %if strcmp(char(file_raw(1:2)),[ 'B'; char(0) ]), else
 end % function [ data file_raw] = SDF_import( filename )
 

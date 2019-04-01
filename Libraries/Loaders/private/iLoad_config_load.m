@@ -68,7 +68,6 @@ function config = iLoad_config_load
     { 'dlmread', 'dlm', 'Numerical single block',                   '',''}, ...
     { 'xlsread', 'xls', 'Microsoft Excel (first spreadsheet, .xls)','',[]}, ...
     { 'load',    'mat', 'Matlab workspace (.mat)',                  '',[],'openhdf'}, ...
-    { 'importdata','',  'Matlab importer',                          '',[]}, ...
   };
   for index=1:length(formats) % the default loaders are addded after the INI file
     format = cell(1,6);
@@ -83,7 +82,7 @@ function config = iLoad_config_load
     loaders{end+1} = loader;
   end
   
-  % make sure loaders contain the proper fields and asemble an array of structures
+  % make sure loaders contain the proper fields
   s = {};
   for index=1:numel(loaders)
     this = iLoad_check_loader(loaders{index});
@@ -91,9 +90,13 @@ function config = iLoad_config_load
   end
   loaders = s;
   
-  % get unique entries
+  % get unique entries (this also sorts in alpha)
   [~, index] = unique(cellfun(@(c)getfield(c, 'name'), loaders,'UniformOutput',false));
   loaders = loaders(index);
+  
+  % add the default Matlab importer, but must be last
+  loaders{end+1} = iLoad_check_loader( ...
+    struct('name','Matlab importer','method','importdata'));
   
   % we sort loaders with highest pattern counts and text on top
   patterns   = cellfun(@(c)getfield(c, 'patterns'), loaders,'UniformOutput',false);

@@ -23,7 +23,9 @@ if nargin == 0 || any(strcmp(filename, {'identify','query','defaults'}))
 end
 
 % now call read_anytext with given options
-
+if isempty(varargin)
+  varargin = { '--fast --binary --headers --comment=NULL --metadata=OFF --silent ' };
+end
 s       = read_anytext(filename, varargin{:});
 
 end

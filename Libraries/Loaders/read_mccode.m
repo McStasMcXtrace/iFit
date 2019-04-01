@@ -116,6 +116,7 @@ function data = read_mccode(filename)
     [~,~,e] = fileparts(filename);
     if any(strcmpi(e, {'lau','laz'}))
       data = read_laz(filename);
+     else data = [];
     end
   end
 
