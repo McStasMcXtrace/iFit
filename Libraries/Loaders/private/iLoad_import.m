@@ -8,6 +8,7 @@ function [data, loader] = iLoad_import(filename, loader, config, varargin)
     loader = 'Failed to load file (does not exist)';
     return
   end
+  
   % check loader
   if isempty(loader), loader='auto'; end
   if strcmp(loader, 'auto')
@@ -92,11 +93,13 @@ function [data, loader] = iLoad_import(filename, loader, config, varargin)
     fprintf(1, 'iLoad: Importing file %s with method %s (%s)\n', filename, loader.name, loader.method);
   end
   % we select the calling syntax which matches the number of input arguments
-  if iscell(loader.options)
+  if iscellstr(loader.options)
     varg = { filename, loader.options{:}, varargin{:} };
-  elseif ischar(loader.options)
+  elseif ischar(loader.options) && ~isempty(loader.options) && nargin(loader.method) == 1
     if ~isempty(loader.options), loader.options = [ ' ' loader.options ]; end
     varg = { [ filename loader.options ], varargin{:} };
+  elseif ischar(loader.options) && ~isempty(loader.options)
+    varg = { filename, loader.options, varargin{:} };
   else
     varg = { filename, varargin{:} };
   end

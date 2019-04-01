@@ -19,6 +19,7 @@ function data = read_opus(filename)
   if nargin == 0 || any(strcmp(filename, {'identify','query','defaults'}))
     ftir_bruker.name    = 'Bruker FTIR OPUS';
     ftir_bruker.method  = mfilename;
+    ftir_bruker.patterns='[Internal Pos';
     data = ftir_bruker;
     return
   end

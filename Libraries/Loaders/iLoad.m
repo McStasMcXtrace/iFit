@@ -188,11 +188,11 @@ function [data, format] = iLoad(filename, loader, varargin)
       end
     end
 
-    % local/distant file (general case)
+    % local/distant file (general case) #token 
     f=find(filename == '#');
     if length(f) == 1 && f > 1  % the filename contains an internal link (HTML anchor)
       [fileroot,filesub]=strtok(filename, '#');
-      if length(find(fileroot == '*')) || isdir(fileroot) % directory with token to search
+      if length(find(fileroot == '*')) || isdir(fileroot) % directory with #token to search
         % get full recursive listing
         filerec=getAllFiles(fileroot);
         % find items that match the token
@@ -204,13 +204,13 @@ function [data, format] = iLoad(filename, loader, varargin)
         [data, format]=iLoad(fileroot, loader, varargin{:});
       end
       
-      % now search pattern in the file names or fields
-      if iscell(data) && (length(find(fileroot == '*')) || isdir(fileroot))
+      % now search wildcard in the file names or fields
+      if iscell(data) && (~isempty(find(fileroot == '*')) || isdir(fileroot))
         this_data = {}; this_format = {};
         % name is a directory. We search for the pattern in file names
         f = [];
         for index=1:length(data)
-          if any(strfind(data{index}.Source, filesub(2:end)))
+          if any(strfind(data{index}.Source, filesub(2:end))) % #token
             this_data{end+1}   = data{index};
             this_format{end+1} = loader;
           end
@@ -219,6 +219,7 @@ function [data, format] = iLoad(filename, loader, varargin)
         format = this_format;
         return
       else
+        % search #token in imported data
         f = iLoad_findfield(data, filesub(2:end)); % calls private function
         if iscell(f) && all(cellfun(@isempty, f)), f=[]; end
         if ~isempty(f)
@@ -244,7 +245,7 @@ function [data, format] = iLoad(filename, loader, varargin)
           filename = fileroot;
         end
       end
-    end
+    end % filename with '#' anchor
     
     if strncmp(filename, 'file://', length('file://'))
       filename = filename(7:end); % remove 'file://' from local name

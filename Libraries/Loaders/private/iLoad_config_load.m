@@ -90,9 +90,11 @@ function config = iLoad_config_load
     if ~isempty(this), s{end+1} = this; end
   end
   loaders = s;
+  
   % get unique entries
   [~, index] = unique(cellfun(@(c)getfield(c, 'name'), loaders,'UniformOutput',false));
   loaders = loaders(index);
+  
   % we sort loaders with highest pattern counts and text on top
   patterns   = cellfun(@(c)getfield(c, 'patterns'), loaders,'UniformOutput',false);
   istext     = cellfun(@(c)getfield(c, 'istext'), loaders);

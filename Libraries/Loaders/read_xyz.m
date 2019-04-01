@@ -56,7 +56,6 @@ function s = read_xyz(filename)
   % assemble the 'geometry' structure in the style returned by vasplab/import_poscar
   % http://www.mathworks.com/matlabcentral/fileexchange/36836-vasplab/content/vasplab/import_poscar.m
   s.filename = filename;
-  s.comment  = comment;
   s.symbols  = species;
   s.coords   = data;
   s.selective = 0;

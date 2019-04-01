@@ -62,6 +62,8 @@ function data = read_gcode(file, k)
   % now identify items in the coordinates
   % normalize the coordinates
   g = xyz;
+  if isempty(g), data=[]; return; end % not a valid GCODE
+  
   for i=1:3
     g(:,i) = g(:,i) - min(g(:,i)); 
     g(:,i) = g(:,i)/max(g(:,i));

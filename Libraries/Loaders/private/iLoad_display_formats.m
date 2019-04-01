@@ -26,7 +26,7 @@ function data = iLoad_display_formats(data, config)
       elseif isempty(this.extension), this.extension='*'; end
       % display
       pat = this.patterns;
-      if iscellstr(pat) && numel(pat) > 0, pat = sprintf('"%s" [%i]', pat{1},numel(pat));
+      if iscellstr(pat) && numel(pat) > 0, pat = sprintf('"%s"', pat{1});
       elseif ~ischar(pat), pat='';
       elseif isempty(pat), pat='[text]';
       else pat = sprintf('"%s"', pat); end

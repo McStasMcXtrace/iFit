@@ -52,7 +52,7 @@ if nargin == 0 || any(strcmp(filename, {'identify','query','defaults'}))
 end
 
 % ============================ Use PyNE ? ======================================
-if ~exist('status') || isempty(status) || ~isstruct(status)
+if ~exist('status') || isempty(status)
   status = read_endf_pyne_present;  % private function inline below
 end
 
@@ -72,12 +72,38 @@ catch
   return;
 end
 
+% check if this is a ENDF: read start of file ==================================
+[fid,message] = fopen(filename, 'r');
+if fid == -1
+  fprintf(1, '%s: ERROR: %s: %s. Check existence/permissions.\n', mfilenqme, filename, message );
+  error([ 'Could not open file ' file ' for reading. ' message '. Check existence/permissions.' ]);
+end
+
+% get header (file start) and 'isbinary'
+file_start = fread(fid, 1000, 'uint8=>char')';
+if length(find(file_start >= 32 & file_start < 127))/length(file_start) < 0.4
+  isbinary = 1; % less than 40% of printable characters
+else
+  % clean file start with spaces, remove EOL
+  file_start = [ file_start fread(fid, 9000, 'uint8=>char')' ];
+  file_start(isspace(file_start)) = ' ';
+  isbinary= 0;
+end
+fclose(fid);
+if isbinary, endf=[]; return; end % must be 100% ascii
+
+config = read_endf('identify');
+for pat=config.patterns
+  if isempty(strfind(file_start, pat{1})), endf = []; return; end
+end
+
 % open file and read it line by line
 disp([ mfilename ': Opening ' filename ]);
 content  = regexp(content, '\n+', 'split');
 section  = [];  % current section. Starts unset.
 % global data read from MF1/MT451
 MF1      = [];
+warns    = {}; 
 
 % read lines one by one ========================================================
 for cline=content % each line is a cellstr
@@ -86,8 +112,9 @@ for cline=content % each line is a cellstr
   if isempty(tline), continue; end
   % all ENDF lines should be 80 chars.
   if length(tline) < 80
-    disp([ mfilename ': WARNING: skipping invalid ENDF line (less than 80 chars):' ])
-    disp(tline)
+    % disp([ mfilename ': WARNING: skipping invalid ENDF line (less than 80 chars):' ])
+    % disp(tline)
+    warns{end+1}=tline;
     continue
   end
   if isempty(tline), continue; end
@@ -153,6 +180,10 @@ for cline=content % each line is a cellstr
   end
   
 end % for cline
+
+if ~isempty(warns)
+  disp([ mfilename ': WARNING: skipped ' num2str(numel(warns)) ' invalid ENDF lines (less than 80 chars):' ])
+end
 
 % ------------------------------------------------------------------------------
 function h = read_endf_mf1(MF1)
