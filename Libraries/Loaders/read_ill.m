@@ -42,7 +42,6 @@ if nargin == 0 || any(strcmp(filename, {'identify','query','defaults'}))
                         '--metadata=INSTR --metadata=COMND --metadata=TITLE --metadata=MULTI --metadata=PNT'];
     ILL_TAS_pol.method     =mfilename;
     ILL_TAS_pol.postprocess='load_ill_tas'; % load_ill_tas
-    ILL_TAS_pol.extension  ='scn';
     
     ILL_TAS.name       ='ILL TAS Data';
     ILL_TAS.patterns   ={'POSQE:','PARAM:','DATA_:','USER_:'};
@@ -53,7 +52,6 @@ if nargin == 0 || any(strcmp(filename, {'identify','query','defaults'}))
                         '--metadata=INSTR --metadata=COMND --metadata=TITLE --metadata=MULTI --metadata=PNT '];
     ILL_TAS.method      =mfilename;
     ILL_TAS.postprocess ='load_ill_tas'; % load_ill_tas
-    ILL_TAS.extension   ='scn';
     
     s = { ILL_normal, ILL_integers, ILL_float, ILL_general, ILL_TAS_pol, ILL_TAS };
     return

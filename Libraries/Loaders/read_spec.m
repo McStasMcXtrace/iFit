@@ -19,7 +19,7 @@ if nargin == 0 || any(strcmp(filename, {'identify','query','defaults'}))
     spec.patterns       ={'#F','#D','#S'};
     spec.options        ='--fast --binary --headers --metadata=''#S '' --comment=NULL --silent ';
     spec.method         =mfilename;
-    spec.extension      ={'spc','spec'};
+    spec.extension      ={'spc','spec','dat'};
     
     s = spec;
     return

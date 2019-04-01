@@ -46,7 +46,7 @@ if nargin == 0 || any(strcmp(filename, {'identify','query','defaults'}))
     endf.name           = 'ENDF';
     endf.method         = mfilename;
     endf.extension      = {'dat','tsl','endf'};
-    endf.patterns       = {'EVAL-','DIST-','ENDF'};
+    endf.patterns       = {'EVAL','DIST','ENDF'};
     endf.postprocess    = 'openendf';
     return
 end

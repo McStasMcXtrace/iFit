@@ -13,6 +13,7 @@ if nargin == 0 || any(strcmp(filename, {'identify','query','defaults'}))
     s.name     ='FITS';
     s.method   =mfilename;
     s.extension={'fits','fts'};
+    s.patterns ={'SIMPLE','BITPIX','NAXIS','END'};
     return
 end
 
