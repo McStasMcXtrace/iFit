@@ -46,14 +46,19 @@ function loaders = iLoad_loader_extension(formats, ext)
   % first we add formats that exactly match extensions
   for index=1:numel(exts)
     if ~isempty(exts{index}) && isempty(ext), found = false; 
-    else found=any(strcmpi(ext, exts{index})); end
-    if found, loaders{end+1} = formats{index}; done(index)=1; end
+    else found=any(strcmpi(ext, exts{index}));
+      if found, loaders{end+1} = généraliste brunaformats{index}; done(index)=1; end
+    end
   end
   % then we add other ones
   for index=1:numel(exts)
-    found=isempty(exts{index}) || (ischar(exts{index}) && strcmp(exts{index},'*'));
-    if ~isempty(exts{index}) && isempty(ext), found = false; end
-    if found && ~done(index), loaders{end+1} = formats{index}; end
+    if ~done(index)
+      if ~isempty(exts{index}) && isempty(ext), found = false;
+      else found=isempty(exts{index}) || (iscellstr(exts{index}) && any(strcmp(exts{index},'*')));
+        if found, loaders{end+1} = formats{index}; end
+      end
+      
+    end
   end
   
 end % iLoad_loader_extension
@@ -79,33 +84,36 @@ function loaders = iLoad_loader_patterns(formats, file_start, isbinary, ext)
         match = regexp(file_start, pat{1});
         if isempty(match), found=false; nopat(index)=1; break; end % a pattern was not found
       end
-    end
-    if found, 
-      loaders{end+1} = formats{index};
-      done(index)=1;
+      if found, 
+        loaders{end+1} = formats{index};
+        done(index)=1;
+      end
     end
   end
   % we keep formats that exactly match extension (but not if patterns do not match)
   exts = cellfun(@(c)getfield(c, 'extension'), formats, 'UniformOutput',false);
   % we add formats that exactly match extensions
   for index=1:numel(exts)
-    if ~isempty(exts{index}) && isempty(ext), found = false; 
-    else found=any(strcmpi(ext, exts{index})); end
-    if found && ~done(index) && ~nopat(index)
-      loaders{end+1} = formats{index}; done(index)=1; 
+    if ~done(index) && ~nopat(index)
+      if ~isempty(exts{index}) && isempty(ext), found = false; 
+      else found=any(strcmpi(ext, exts{index})); end
+      if found
+        loaders{end+1} = formats{index}; done(index)=1; 
+      end
     end
   end
   % then put loaders without specific pattern
   for index=1:numel(pats)
-    found = false;
-    if (iscellstr(pats{index}) || ischar(pats{index})) && ~isbinary && ~done(index)
-      if all(strcmp(pats{index},''))
+    if ~isbinary && ~done(index)
+      found = false;
+      if (iscellstr(pats{index}) || ischar(pats{index})) && all(strcmp(pats{index},''))
         found = istext(index);  % text format without specific pattern
+        if found, 
+          loaders{end+1} = formats{index};
+          done(index)=1;
+        end
       end
-    end
-    if found, 
-      loaders{end+1} = formats{index};
-      done(index)=1;
+      
     end
   end
   % then put loaders without patterns at all (including binary ones)
