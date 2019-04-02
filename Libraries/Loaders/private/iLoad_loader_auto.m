@@ -47,7 +47,7 @@ function loaders = iLoad_loader_extension(formats, ext)
   for index=1:numel(exts)
     if ~isempty(exts{index}) && isempty(ext), found = false; 
     else found=any(strcmpi(ext, exts{index}));
-      if found, loaders{end+1} = généraliste brunaformats{index}; done(index)=1; end
+      if found, loaders{end+1} = formats{index}; done(index)=1; end
     end
   end
   % then we add other ones
