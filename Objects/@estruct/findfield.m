@@ -53,7 +53,7 @@ if numel(s) > 1
   return
 end
 
-struct_s=rmfield(struct(s),s.Protected);  % private/protected stuff must remain so.
+
 
 if ~isempty(strfind(option, 'force'))
   s.Private.cache.(mfilename) = [];
@@ -68,6 +68,8 @@ if isfield(s.Private, 'cache') && isfield(s.Private.cache, mfilename) ...
   dims  = cache.dims;
   sz    = cache.sizes;
 else
+  struct_s=rmfield(struct(s),s.Protected);  % private/protected stuff must remain so.
+  
   % find all fields in object structure
   [match, types, dims, sz] = struct_getfields(struct_s, '');
   
@@ -231,8 +233,6 @@ end
 % find sub-structures and make a recursive call for each of them
 for ii=1:length(f)
   if any(strcmp(t{ii},{'struct','estruct'}))  % structure -> recursive
-    disp([ mfilename ': struct_getfields(' class(structure) '): going further with ' parent '  ' f{ii} ]);
-    disp(structure)
     try
       [sf, st, sn,sz] = struct_getfields(...
         builtin('subsref',structure, struct('type','.','subs', f0{ii})), f{ii});

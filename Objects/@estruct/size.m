@@ -26,6 +26,11 @@ else
     y = size(subsref(s,struct('type','.','subs','Signal')));
     s.Private.cache.size = y;
   end
-  y = y(varargin{:});
+  try
+    y = y(varargin{:});
+  catch
+    warning([ mfilename ': ERROR: Invalid DIMension specification [ ' sprintf('%i ', varargin{:}) '] for object ' s.Tag ' of dimensionality ' num2str(ndims(s)) ])
+    y = [];
+  end
 end
 

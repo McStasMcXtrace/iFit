@@ -48,6 +48,9 @@ function s = setaxis(s,varargin)
   for index=1:2:numel(varargin) % loop on requested properties
     name = varargin{index}; % axis rank as numeric or string
     value= varargin{index+1};
+    if ischar(value) && any(strcmp(value, {'biggest','largest','first','shortest'})
+      value = findfield(s, '', [ value ' numeric' ]);
+    end
     if ~ischar(name) && ~iscellstr(name) && ~isnumeric(name)
       error([ mfilename ': SETAXIS works with axis rank given as char/cellstr/scalar. The ' num2str(index) '-th argument is of type ' class(name) ]);
     end
@@ -84,14 +87,18 @@ function s = setaxis(s,varargin)
       end
       % second test for 'Error/Monitor' (and now we have Monitor - shared with 'Signal' case)
       if ischar(name{n_index}) && strcmp(name{n_index}, 'Error')
-        if isscalar(m) || isequal(size(m),size(value)), value = value.*m; end
+        if isnumeric(value) && (isscalar(m) || isequal(size(m),size(value)))
+          value = value.*m; 
+        end
         s = subsasgn_single(s, 'Error', value); % follow links -> value
       end
       % setaxis(s, rank): set the axis value
       if isnumeric(name{n_index}) && isscalar(name{n_index}) && name{n_index} >= 0
         % set the alias value: interpret result using our subsasgn (follow links)
         if name{n_index} == 0 % {0}=Signal/Monitor
-          if isscalar(m) || isequal(size(m),size(sig)), value=value.*m; end
+          if isnumeric(value) && (isscalar(m) || isequal(size(m),size(sig)))
+            value=value.*m; 
+          end
           s = subsasgn_single(s, 'Signal', value);
           s.Private.cache.size = [];
         else % Axis

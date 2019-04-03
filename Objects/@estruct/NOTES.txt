@@ -1,8 +1,5 @@
 TODO:
 
-cif import: seems problematic !
-estruct(fullfile(ifitpath','Data')) fails
-Signal not properly set for e.g. estruct('/home/farhi/dev/iFit/Data/ILL_IN6.dat')
 
 revamp cat to work on Signal when given dim, else catenate structures ? Data ?
 rework on union/intersection/diff/cat
@@ -37,4 +34,4 @@ transpose
 fix uitable
 
 ndims: make it work for event data
-
+ 

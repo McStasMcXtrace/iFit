@@ -43,6 +43,12 @@ function v = getaxis(s,varargin)
     return
   end
   
+  % check object when we evaluate/get some data out of it, and changes were marked.
+  if isfield(s.Private,'cache') && isfield(s.Private.cache,'check_requested') ...
+    && s.Private.cache.check_requested
+    axescheck(s);
+  end
+  
   m = []; % will hold monitor value
   % handle array/cell of axes
   for index=1:numel(varargin) % loop on requested properties
@@ -104,7 +110,21 @@ function v = getaxis(s,varargin)
               v{end+1} = def;
             end
           else % invalid Axis (not assigned): use a vector matching Signal dimension
-            v{end+1} = 1:size(s.Signal, name{n_index});
+            v{end+1} = 1:size(s, name{n_index});
+          end
+          % check axis orientation
+          n = size(v{end});
+          if isscalar(find(n > 1))
+            if length(find(size(s) > 1)) ~= 1
+              z = ones(1, length(n));
+              z(name{n_index}) = max(n);
+              if prod(size(v{end})) == prod(z), v{end}   = reshape(v{end}, z); end
+            else
+              if prod(size(val)) == prod(size(s)), v{end} = reshape(v{end}, size(s)); end
+            end
+          end
+          if isnumeric(v{end}) && ~isfloat(v{end})
+            v{end} = double(v{end});
           end
         end
       end
