@@ -38,7 +38,7 @@ function v = get_single(s, field, follow, s0)
   if any(field == '.')
     field = textscan(field,'%s','Delimiter','.'); field=field{1};
     typs=cell(size(field)); [typs{:}] = deal('.');
-    S = struct('type',typs, 'subs', subs);
+    S = struct('type',typs, 'subs', field);
   else
     field = cellstr(field);
     S = struct('type','.','subs', field{1});
@@ -56,14 +56,19 @@ function v = get_single(s, field, follow, s0)
       v = builtin('subsref',v, S(index)); % get true value/alias (no follow)
       % when 'follow', we need to access values iteratively and check for possible 'alias' (char)
       if follow && ischar(v) && ~strcmp(S(index).subs,'Source')
-        v = get_single_alias(s0, v); % access a link/alias in initial object/structure
+        if any(v == '.') && all(isletter(v) | v == '_' | v == '.' | isstrprop(v, 'digit')) % a compound link
+          v = get_single(s, v, follow, s0);
+        else
+          v = get_single_alias(s0, v); % access a link/alias in initial object/structure
+        end
       end
     end
   end
   
 % ----------------------------------------------------------------------------
 function v = get_single_alias(s, v)
-  if isfield(s, v) % a link to a valid field in root object
+  if ~ischar(v), return; end
+  if isfield(s, v) % a link to a valid field in root object (single level)
     v = builtin('subsref',s, struct('type','.','subs', v)); % get true value/alias (no follow)
   elseif strcmp(v, 'matlab: sqrt(this.Signal)') % for default Error (no eval)
     v = sqrt(get(s,'Signal'));
@@ -79,6 +84,7 @@ function v = get_single_alias(s, v)
 function value = get_single_eval(this, value)
  % get_single_eval a sandbox to valuate a matlab expression
  % 'this' refers to the initial object/structure
+  self  = this; % in case we use a Pythonic syntax
   value = value(8:end);
   try
     value = eval(value);
