@@ -12,6 +12,7 @@ function [match, types, dims, sz] = findfield(s, field, option)
 %     The 'char'    option will return only character fields.
 %     The 'first'   option returns the first match (with shortest name/link).
 %     The 'biggest' option returns the biggest match (has max nb of elements).
+%     The 'force'   option explicitly request a full scan of the object.
 %     For instance, to identify the largest numeric element in object, use:
 %       f=findfield(s,'','numeric biggest')
 %
@@ -53,6 +54,10 @@ if numel(s) > 1
 end
 
 struct_s=rmfield(struct(s),s.Protected);  % private/protected stuff must remain so.
+
+if ~isempty(strfind(option, 'force'))
+  s.Private.cache.(mfilename) = [];
+end
 
 if isfield(s.Private, 'cache') && isfield(s.Private.cache, mfilename) ...
   && ~isempty(s.Private.cache.(mfilename))
@@ -192,6 +197,8 @@ end
 
 
 f = fieldnames(structure);
+f0= f;  % so that we keep initial single level fields
+
 if ~isempty(parent) && ~isempty(f), % assemble compound field path
   % f = strcat([ parent '.' ], f); % this is time consuming
   for ii=1:length(f)
@@ -208,8 +215,8 @@ if getfield(whos('structure'), 'bytes') < 1e9
     n = cellfun(@numel, c);
     z = cellfun(@size,  c, 'UniformOutput', 0);
     failed = false; % get there: all is fine
+    clear c
   end
-  clear c
 end
 % when storage is too large or failed, go through all fields sequentially (slower)
 if failed
@@ -224,9 +231,11 @@ end
 % find sub-structures and make a recursive call for each of them
 for ii=1:length(f)
   if any(strcmp(t{ii},{'struct','estruct'}))  % structure -> recursive
+    disp([ mfilename ': struct_getfields(' class(structure) '): going further with ' parent '  ' f{ii} ]);
+    disp(structure)
     try
       [sf, st, sn,sz] = struct_getfields(...
-        builtin('subsref',structure, struct('type','.','subs',f{ii})), f{index});
+        builtin('subsref',structure, struct('type','.','subs', f0{ii})), f{ii});
       f = [f(:) ; sf(:)];
       t = [t(:) ; st(:)];
       n = [n(:) ; sn(:)];
