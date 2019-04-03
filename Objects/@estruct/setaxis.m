@@ -4,13 +4,15 @@ function s = setaxis(s,varargin)
 %   the syntax a{rank}=value. The axis rank 0 corresponds with the Signal/Monitor value.
 %   The axis of rank 1 corresponds with rows, 2 with columns, 3 with pages, etc.
 %
-%   SETAXIS(a, 'Signal', value) Set the Signal/Monitor value, equivalent to 
+%   SETAXIS(a, 'Signal',value) Set the Signal/Monitor value, equivalent to 
 %   a{0}=value and setaxis(a, 0, value).
 %
-%   SETAXIS(a, 'Error',value) Set the Error/Monitor value.
+%   SETAXIS(a, 'Error', value) Set the Error/Monitor value.
 %
-%   SETAXIS(a, 'rank','alias') Set axis definition (alias). The axis of rank 0
-%   corresponds with the Signal definition.
+%   SETAXIS(a, 'rank', 'alias') Set axis definition (alias). The axis of rank 0
+%   corresponds with the Signal definition. The 'value' can be specified as 
+%  'biggest' or 'shortest' to ondicate the numeric biggest array, of shortest 
+%   link as in findfield.
 %
 %   An alias is a string/char which allows to link to internal or external links
 %   as well as evaluated expression, with the following syntax cases:
