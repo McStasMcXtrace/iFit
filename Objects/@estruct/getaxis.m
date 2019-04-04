@@ -109,8 +109,10 @@ function v = getaxis(s,varargin)
             else
               v{end+1} = def;
             end
-          else % invalid Axis (not assigned): use a vector matching Signal dimension
+          elseif name{n_index} <= ndims(s) % invalid Axis (not assigned): use a vector matching Signal dimension
             v{end+1} = 1:size(s, name{n_index});
+          else % axis rank beyond dimension of object Signal
+            v{end+1} = [];
           end
           % check axis orientation
           n = size(v{end});
@@ -120,7 +122,7 @@ function v = getaxis(s,varargin)
               z(name{n_index}) = max(n);
               if prod(size(v{end})) == prod(z), v{end}   = reshape(v{end}, z); end
             else
-              if prod(size(val)) == prod(size(s)), v{end} = reshape(v{end}, size(s)); end
+              if prod(size(v{end})) == prod(size(s)), v{end} = reshape(v{end}, size(s)); end
             end
           end
           if isnumeric(v{end}) && ~isfloat(v{end})

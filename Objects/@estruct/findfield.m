@@ -160,7 +160,7 @@ if ~isempty(field)
   if isempty(match), return; end
 end % field search on token
 
-if ~isempty([ strfind(option, 'first') strfind(option, 'shortest')  ])
+if ~isempty([ strfind(option, 'first') strfind(option, 'shortest') strfind(option, 'simplest') ])
   % we select the 'shortest' match
   [m, index] = min(cellfun(@length, match));
   match = match{index};

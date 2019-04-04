@@ -11,8 +11,7 @@ function s = setaxis(s,varargin)
 %
 %   SETAXIS(a, 'rank', 'alias') Set axis definition (alias). The axis of rank 0
 %   corresponds with the Signal definition. The 'value' can be specified as 
-%  'biggest' or 'shortest' to ondicate the numeric biggest array, of shortest 
-%   link as in findfield.
+%  'biggest' to indicate the numeric biggest array, as in findfield.
 %
 %   An alias is a string/char which allows to link to internal or external links
 %   as well as evaluated expression, with the following syntax cases:
@@ -50,7 +49,7 @@ function s = setaxis(s,varargin)
   for index=1:2:numel(varargin) % loop on requested properties
     name = varargin{index}; % axis rank as numeric or string
     value= varargin{index+1};
-    if ischar(value) && any(strcmp(value, {'biggest','largest','first','shortest'})
+    if ischar(value) && any(strcmp(value, {'biggest','largest','first','shortest','simplest'})
       value = findfield(s, '', [ value ' numeric' ]);
     end
     if ~ischar(name) && ~iscellstr(name) && ~isnumeric(name)

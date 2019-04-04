@@ -77,6 +77,7 @@ function v = get(s, varargin)
         v{end+1} = subsref(s, struct('type','.', 'subs',name{n_index}));
       else
         v{end+1} = subsref(s, struct('type','()','subs',name{n_index}));
+        if ~ischar(v{end}), v{end} = []; end % result must be an alias or []
       end
     end
   end
