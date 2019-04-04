@@ -130,11 +130,57 @@ function [signal_id, error_id, monitor_id, axes_id] = axescheck_find_signal(self
 % ------------------------------------------------------------------------------
 function axescheck_find_axes(self, fields, dims, sz)
 
-  % scan Axes
-  for index=1:numel(self.Axes)
+  % scan Axes/dimensions
+  for index=1:ndims(self)
+    % get current axis definition
+    if index <= numel(self.Axes)
+      def = self.Axes{index};
+    else def=[]; end
+    
     % when not empty, we check that it is:
-    %   size(Signal) or expression or size(rank) or transpose
-  
+    %   size(Signal) or size(rank)
+    if ~isempty(def)
+      try
+        ax_sz = size(get(self, def));
+      catch
+        ax_sz = [];
+      end
+
+      if axescheck_size_axes(self, index, ax_sz)
+        continue
+      end
+      
+      % if we reach here, axis is invalid
+      def=[]; self.Axes{index} = [];
+    end
+    
+    if isempty(def)
     % when empty we search for one amongst fields that is:
-    %   size(Signal) or expression or size(rank) or transpose
-  end
+    %   size(Signal) or size(rank)
+    
+      % get definition of Signal, Error and Monitor, so that we do not use these.
+      not_use = self.Axes; % will not use already defined axes
+      for findex={'Signal','Error','Monitor'}
+        not_use{end+1} = getalias(self, findex{1});
+      end
+      not_use = not_use(~cellfun(@isempty, not_use)); % clean empty elements
+
+      for findex = 1:numel(fields)
+        % check for field
+        if ~any(strcmp(fields{findex}, not_use)) && axescheck_size_axes(self, index, sz{findex})
+          % found a valid axis definition/value
+          self.Axes{index} = fields{findex};
+          break
+        end
+      end
+    end
+  end % for
+  
+  % ----------------------------------------------------------------------------
+  function tf = axescheck_size_axes(self, index, ax_sz)
+    tf = false;
+    %   size(Signal) or size(rank) as vector
+    if (numel(ax_sz) == ndims(self) && all(ax_sz == size(self))) ...
+    || (numel(ax_sz) >= index && isscalar(find(ax_sz>1)) && ax_sz(index) == size(self, index))
+      tf = true;  % valid axis definition/value
+    end
