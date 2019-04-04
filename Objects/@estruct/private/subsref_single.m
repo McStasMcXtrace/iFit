@@ -33,17 +33,18 @@ function v = get_single(s, field, follow, s0)
 
   if nargin < 3, follow=true; end
   if nargin < 4, s0=s; end
-  
+
   % cut the field into pieces with '.' as separator
   if any(field == '.')
     field = textscan(field,'%s','Delimiter','.'); field=field{1};
     typs=cell(size(field)); [typs{:}] = deal('.');
     S = struct('type',typs, 'subs', field);
-  else
+  elseif strcmp(field, ':') && ~follow % special case for (:)
+    S.type='()'; S.subs = {':'};
+  else % access a simple field name
     field = cellstr(field);
     S = struct('type','.','subs', field{1});
   end
-  
   % use builtin subsref for the whole path when 'not follow'
   if ~follow && numel(S) > 1
     v = builtin('subsref', s, S);
