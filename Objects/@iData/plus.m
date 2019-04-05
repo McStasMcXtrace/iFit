@@ -16,7 +16,7 @@ function c = plus(a,b)
 % output: c: object or array (iData)
 % ex:     c=a+1;
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, iData/minus, iData/plus, iData/times, iData/rdivide, iData/combine
 
 if nargin ==1

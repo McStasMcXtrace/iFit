@@ -9,7 +9,7 @@ function a=shiftdim(a, varargin)
 %         shift: value to shift the axis with (scalar)
 % output: b: object or array (iData)
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also  iData/getaxis, iData/setaxis
 
 a = circshift(a, varargin{:});

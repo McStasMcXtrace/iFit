@@ -23,7 +23,7 @@ function b = resize(a, varargin)
 % output: c: object or array (iData)
 % ex:     a=iData(peaks); b=resize(a, 10,90);
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, iData/squeeze, iData/size, iData/permute, iData/reshape,
 % iData/reducevolume, iData/fill, iData/resize
 

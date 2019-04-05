@@ -16,7 +16,7 @@ function [match, field] = findstr(s, str, option)
 %         field: name of struct fields that contain 'str' (cellstr)
 % ex:     findstr(struct,'ILL') or findstr(s,'TITLE','exact case')
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also struct, struct/set, struct/get, struct/findobj, struct/findfield
 
 % EF 23/09/07 struct implementation

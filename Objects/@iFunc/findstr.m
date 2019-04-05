@@ -16,7 +16,7 @@ function [match, field] = findstr(s, str, option)
 %         field: name of iFunc fields that contain 'str' (cellstr)
 % ex:     findstr(iFunc,'ILL') or findstr(s,'TITLE','exact case')
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iFunc, iFunc/set, iFunc/get, iFunc/findobj, iFunc/findfield
 
 % EF 23/09/07 iFunc implementation

@@ -4,9 +4,9 @@ function a=load_chalkriver(a0)
 % Returns an iData style dataset from a Chalk River CNBC data file
 % each initial data file may contain more than one record. Also handles multiwire detectors.
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also: iData/load, iLoad, save, iData/saveas
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
 if ~isa(a0,'iData')
   a0 = iData(iLoad(a0,'ChalkRiver'));  % no post-processing

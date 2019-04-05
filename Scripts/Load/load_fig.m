@@ -3,9 +3,9 @@ function a=load_fig(a0)
 %
 % Returns an iData style dataset from a Matlab figure
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also: iData/load, iLoad, save, iData/saveas
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
 if ~isa(a0,'iData')
   a =iData(iLoad(a0,'fig')); % no post-processing

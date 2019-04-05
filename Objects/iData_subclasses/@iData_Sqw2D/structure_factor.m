@@ -19,7 +19,7 @@ function s = structure_factor(s)
 % Example: sq = structure_factor(iData_Sqw2D('SQW_coh_lGe.nc'));
 %
 % See also: trapz, iData/trapz
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
   if nargin == 0, return; end
 

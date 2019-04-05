@@ -63,9 +63,9 @@ function [pars,fval,exitflag,output] = fminhooke(varargin)
 % R. Hooke and T. A. Jeeves, Journal of the ACM, Vol. 8, April 1961, pp. 212.
 % Contrib: C. T. Kelley, 1998, Iterative Methods for Optimization [hooke]
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also: fminsearch, optimset
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
 % default options for optimset
 if nargin == 0 || (nargin == 1 && strcmp(varargin{1},'defaults'))

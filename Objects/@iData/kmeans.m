@@ -36,7 +36,7 @@ function [s,c] = kmeans(a, k, method)
 %   [2] D. Arthur and S. Vassilvitskii, "k-means++: The Advantages of
 %       Careful Seeding", Technical Report 2006-13, Stanford InfoLab, 2006.
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, iData/uminus, iData/abs, iData/real, iData/imag, iData/uplus
 
 if nargin < 2

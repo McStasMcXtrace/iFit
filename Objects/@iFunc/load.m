@@ -14,7 +14,7 @@ function out = load(a, filename)
 % output: d: single object or array (iFunc)
 % ex:     save(gauss, 'gauss.yaml'); load(iFunc, 'gauss.yaml');
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also: iLoad, save, iFunc/save, iData/save, Loaders
   out = [];
   if nargin < 2

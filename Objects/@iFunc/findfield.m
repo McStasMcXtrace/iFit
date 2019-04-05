@@ -32,7 +32,7 @@ function [match, types, dims] = findfield(s, field, option)
 %         nelements: total number of elements in iFunc fields (double)
 % ex:     findfield(gauss); findfield(gauss,'amp'); findfield(gauss,'Amplitude','exact case')
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iFunc, iFunc/set, iFunc/get, iFunc/isfield
 
 % EF 23/09/07 iData implementation

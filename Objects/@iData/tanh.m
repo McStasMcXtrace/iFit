@@ -7,7 +7,7 @@ function a = tanh(a)
 % output: b: object or array (iData)
 % ex:     b=tanh(a);
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, iData/cos, iData/acos, iData/sin, iData/asin, iData/tan, iData/atan
 
 a = iData_private_unary(a, 'tanh');

@@ -14,9 +14,9 @@ function y=quadline(varargin)
 % output: y: model value
 % ex:     y=quadline([1 1 0], -10:10); or y=quadline('identify') or p=quadline('guess',x,y);
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iFunc, iFunc/fits, iFunc/plot, strline, quad2d
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
 y.Name      = [ 'Quadratic equation (1D) [' mfilename ']' ];
 y.Parameters={'Quadratic' 'Linear','Constant'};

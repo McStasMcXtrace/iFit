@@ -92,10 +92,10 @@ function signal=sqw_diffusion_rotational(varargin)
 %  P.A.Egelstaff, An introduction to the liquid state, 2nd ed., Oxford (2002)
 %  Egelstaff and Schofield, Nuc. Sci. Eng. 12 (1962) 260 <https://doi.org/10.13182/NSE62-A26066>
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, iFunc, sqw_recoil, sqw_diffusion
 %   <a href="matlab:doc(iFunc,'Models')">iFunc:Models</a>
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
 signal.Name           = [ 'sqw_diffusion_rotational molecule rotational diffusion dispersion [' mfilename ']' ];
 signal.Description    = 'A 2D S(q,w) rotational diffusion dispersion.';

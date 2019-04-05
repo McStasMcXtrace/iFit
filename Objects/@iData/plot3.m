@@ -15,7 +15,7 @@ function h = plot3(a, option)
 % output: h: graphics object handles (cell)
 % ex:     plot3(iData(peaks)); plot3(iData(flow));
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, iData/plot, iData/slice, iData/contour3, iData/contourf
 %          iData/contour, iData/surf, iData/slice, iData/surfl, iData/surfc, iData/mesh
 

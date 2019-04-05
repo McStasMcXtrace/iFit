@@ -24,9 +24,9 @@ function y=sf_square_well(varargin)
 % output: y: model value (intensity S(q))
 % ex:     y=sf_square_well([50 0.05 15 10 10], -10:10); or plot(sf_square_well,[10 0.02 15 10 10], 0:0.01:1)
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iFunc, iFunc/fits, iFunc/plot
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
 y.Name      = [ 'Square well S(q) (1D) [' mfilename ']' ];
 y.Description='Square well potential scattering structure factor [Sharma]';

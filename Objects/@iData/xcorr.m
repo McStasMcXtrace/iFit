@@ -28,7 +28,7 @@ function c = xcorr(a,b, shape)
 % output: c: object or array (iData)
 % ex:     c=xcorr(a,b); c=xcorr(a,b, 'same pad background center normalize');
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, iData/times, iData/convn, iData/fft, convn, fconv, fconvn
 if nargin ==1
 	b = a;

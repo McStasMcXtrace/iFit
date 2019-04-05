@@ -71,10 +71,10 @@ function signal=sqw_diffusion_bounded(varargin)
 % Reference: 
 %  P L Hall & D K Ross Mol Phys 36 1549 (1978)
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, iFunc, sqw_recoil, sqw_diffusion
 %   <a href="matlab:doc(iFunc,'Models')">iFunc:Models</a>
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
 signal.Name           = [ 'sqw_diffusion_bounded jump diffusion in a crystal [' mfilename ']' ];
 signal.Description    = 'A 2D S(q,w) Hall-Ross bounded jump diffusion.';

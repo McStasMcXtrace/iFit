@@ -72,7 +72,7 @@ function [g, fig] = dos(s, method, varargin)
 %
 % See also: iData_Sqw2D/multi_phonons, iData_Sqw2D/incoherent
 %           iData_vDOS/multi_phonons, iData_vDOS/multi_phonons
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
   g=[]; fig = [];
   if isempty(s), return; end

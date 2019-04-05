@@ -14,7 +14,7 @@ function [s,sigma] = sum(a,dim)
 % output: s: sum of elements (iData/scalar)
 % ex:     c=sum(a);
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, iData/plus, iData/prod, iData/cumsum, iData/mean,
 % iData/camproj, iData/trapz, iData/cart2sph
 

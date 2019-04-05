@@ -7,7 +7,7 @@ function a = sparse(a)
 % output: b: object or array (iFunc)
 % ex:     b=sparse(a);
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iFunc, iFunc/full, iFunc/sparse
 
 a = iFunc_private_unary(a, 'sparse');

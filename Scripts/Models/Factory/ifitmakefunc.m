@@ -30,9 +30,9 @@ function f = ifitmakefunc(varargin)
 %
 % output: f: new model object
 % 
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, gauss, iFunc
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
 f       = [];
 NL      = sprintf('\n');

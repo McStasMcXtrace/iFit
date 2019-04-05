@@ -25,7 +25,7 @@ function b = event(a, dim, signal, err, monitor)
 % output: c: object or array (iData)
 % ex:     a=iData(rand(50,4)); b=event(a);
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, iData/squeeze, iData/size, iData/permute, iData/resize, iData/meshgrid, iData/hist
 b = a;
 % first get dimensions from varargin

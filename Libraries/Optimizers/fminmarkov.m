@@ -82,9 +82,9 @@ function [pars,fval,exitflag,output] = fminmarkov(varargin)
 % Contrib:
 % By: Aslak Grinsted 2015 https://github.com/grinsted/gwmcmc
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also: fminsearch, optimset
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
 % default options for optimset
 if nargin == 0 || (nargin == 1 && strcmp(varargin{1},'defaults'))

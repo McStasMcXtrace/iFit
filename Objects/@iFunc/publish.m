@@ -28,7 +28,7 @@ function filename = publish(a, filename, section, message)
 % output: b: generated filename
 % ex:     publish(gauss)
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iFunc, iFunc/save
 
 if nargin < 2, filename = ''; end

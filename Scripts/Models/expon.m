@@ -16,9 +16,9 @@ function y=expon(varargin)
 % output: y: model value
 % ex:     y=expon([1 0.5 0], -0:10); or plot(expon)
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, iFunc/fits, iFunc/plot, twoexp, sinedamp
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
 y.Name           = [ 'Exponential decay (1D) [' mfilename ']' ];
 y.Description    = 'Exponential decay';

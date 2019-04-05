@@ -14,7 +14,7 @@ function errors=ifittest(varargin)
 % ex:     ifittest;
 %         ifittest('Unit/Objects/iData')
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, fminsearch, optimset, optimget, ifitmakefunc
 
 % when no location is given, use mfile location directories

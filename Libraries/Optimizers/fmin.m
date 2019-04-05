@@ -87,9 +87,9 @@ function [pars,fval,exitflag,output] = fmin(varargin)
 %          EXITFLAG return state of the optimizer
 %          OUTPUT additional information returned as a structure.
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also: fminsearch, optimset, 
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
 % default options for optimset
 if nargin == 0 || (nargin == 1 && strcmp(varargin{1},'defaults'))

@@ -74,8 +74,8 @@ function varargout = mifit(varargin)
 %
 % Example: h=mifit('handles'); mifit('push', iData(peaks)); mifit('exit'); 1
 %
-% Version: $Date$
-% (c) E.Farhi, ILL. License: EUPL.
+% Version: $Date$ $Version$ $Author$
+% 
 
 %  function config = mifit_Preferences_Load
 %  function mifit_Preferences_Save(config)

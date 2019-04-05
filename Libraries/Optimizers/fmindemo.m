@@ -17,7 +17,7 @@ function abstract=fmindemo(dim, option, repeat_num)
 %
 % Contrib:
 % Test functions from Nikolaus Hansen, 2001-2007. e-mail: hansen@bionik.tu-berlin.de
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
 if nargin == 0
   abstract{    1} = fmindemo(1, '',1); 

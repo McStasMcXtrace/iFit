@@ -38,7 +38,7 @@ function [data, this] = read_cif(file)
 % output: structure
 % Example: y=read_cif(fullfile(ifitpath, 'Data','LaMnO3.cif')); isstruct(y)
 %
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 % See also: read_cfl, read_pdb, read_cbf, read_poscar
 
   data = []; this = [];

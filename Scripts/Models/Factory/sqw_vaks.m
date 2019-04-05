@@ -65,10 +65,10 @@ function signal=sqw_vaks(varargin)
 %             A.K. Tagantsev et al, Nature Comm, 4 (2013) 2229. DOI: 10.1038/ncomms3229
 %             V.G. Vaks, Introduction to the Microscopic Theory of Ferroelectrics (Nauka, Moscow, 1973)
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, iFunc/fits, iFunc/plot, gauss, sqw_phonons, sqw_sine3d
 %   sqw_cubic_monoatomic, <a href="matlab:doc(iFunc,'Models')">iFunc:Models</a>
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
 signal.Name           = [ 'Sqw_Vaks phonon dispersion(HKL) for perovskites ABX3 [' mfilename ']' ];
 signal.Description    = 'A phonon dispersion(HKL) for perovskites ABX3 with DHO(energy) shape. Parameterisation by Vaks.';

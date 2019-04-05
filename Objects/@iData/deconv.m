@@ -32,7 +32,7 @@ function c = deconv(a,b, shape)
 % output: c: object or array (iData)
 % ex:     c=deconv(a,b); c=deconv(a,b, 'fft same pad background center normalize');
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, iData/times, iData/convn, iData/fft, iData/xcorr, fconv, fconvn, fxcorr, conv, deconv
 if nargin ==1
 	b = a;

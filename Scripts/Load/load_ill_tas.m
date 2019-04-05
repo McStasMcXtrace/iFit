@@ -4,9 +4,9 @@ function a=load_ill_tas(a)
 % Simple postprocessing for ILL/TAS files.
 % Supports ILL TAS files, including those with multidetectors.
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also: iData/load, iLoad, save, iData/saveas
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
 if ~isa(a,'iData')
   a = iData(iLoad(a,'ILL TAS'));  % no post-processing

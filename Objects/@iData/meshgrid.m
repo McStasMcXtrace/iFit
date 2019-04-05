@@ -21,7 +21,7 @@ function b = meshgrid(a, varargin)
 % ex:     c=meshgrid(a); c=meshgrid(a, 'vector linear')
 %         c=meshgrid(a, 100, 'fill')
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, iData/interp, iData/hist, iData/event, iData/fill
 
 % handle input iData arrays

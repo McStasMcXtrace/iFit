@@ -14,9 +14,9 @@ function y=maxwell(varargin)
 % output: y: model value
 % ex:     y=Maxwell([1 0 1 1], -10:10); or plot(Maxwell);
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iFunc, iFunc/fits, iFunc/plot
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
 y.Name      = [ 'Maxwell-Boltzmann *3 distribution function (1D) [' mfilename ']' ];
 y.Parameters= {'T1','I1','T2','I2','T3','I3'};

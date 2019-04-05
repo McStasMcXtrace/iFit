@@ -18,7 +18,7 @@ function s = reducevolume(a, R)
 % iData/resize to compress/expand its size, and iData/pack to compress its
 % storage.
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, iData/squeeze, iData/pack, iData/resize, iData/size
 
 % rebinning object so that its number of elements is smaller 

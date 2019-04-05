@@ -9,7 +9,7 @@ function d = display(s_in, name)
   % output: d: string to display (char)
   % ex:     'display(Process)' or 'Process'
   %
-  % Version: $Date$
+  % Version: $Date$ $Version$ $Author$
   % See also Process, Process/disp, Process/get
 
   if nargin == 2 && ~isempty(name)

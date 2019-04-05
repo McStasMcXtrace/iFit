@@ -16,7 +16,7 @@ function [match, field] = strfind(s, varargin)
 %         field: name of struct fields that contain 'str' (cellstr)
 % ex:     strfind(struct,'ILL') or strfind(s,'TITLE','exact case')
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also struct, struct/set, struct/get, struct/findobj, struct/findfield
 
 [match, field] = strfind(s, varargin{:});

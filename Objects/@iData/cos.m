@@ -7,7 +7,7 @@ function a = acos(a)
 % output: b: object or array (iData)
 % ex:     b=cos(a);
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, iData/cos, iData/acos, iData/sin, iData/asin, iData/tan, iData/atan
 
 a = iData_private_unary(a, 'cos');

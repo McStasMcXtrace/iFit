@@ -17,9 +17,9 @@ function y=heaviside(varargin)
 % output: y: model value
 % ex:     y=heaviside([1 0 1 0], -10:10); or plot(heaviside);
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iFunc, iFunc/fits, iFunc/plot
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
 y.Name      = [ 'Heaviside (1D) [' mfilename ']' ];
 y.Parameters={'Amplitude','Centre','FullWidth','Background'};

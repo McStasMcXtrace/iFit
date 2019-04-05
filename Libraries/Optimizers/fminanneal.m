@@ -69,9 +69,9 @@ function [pars,fval,exitflag,output] = fminanneal(varargin)
 % Contrib:
 %   joachim.vandekerckhove@psy.kuleuven.be 2006/04/26 12:54:04 [anneal]
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also: fminsearch, optimset
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
 % STANDARD part ================================================================
 

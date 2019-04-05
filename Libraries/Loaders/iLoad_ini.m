@@ -30,7 +30,7 @@ function config = iLoad_ini
 % Example: config = iLoad_ini; isstruct(config)
 %
 % See also: iLoad, save, iData/saveas
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
 % definition of formats ========================================================
     

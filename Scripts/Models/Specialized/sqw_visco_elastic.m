@@ -95,10 +95,10 @@ function signal=sqw_visco_elastic(varargin)
 %  s  = s1.*s2; 
 %  plot(log10(iData(s, [], 0:.01:4, -50:50)))
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, iFunc/fits, iFunc/plot, gauss, sqw_phonons, sqw_cubic_monoatomic, sqw_vaks
 %   <a href="matlab:doc(iFunc,'Models')">iFunc:Models</a>, sqw_gen_hydrodynamics, sqw_visco_elastic_simple
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
 
 % treat input argument at model creation

@@ -21,9 +21,9 @@ function y=ff_sphere(varargin)
 % output: y: model value (intensity)
 % ex:     y=ff_sphere([10 2e-6], 0:0.01:1); or plot(ff_sphere,[10 1e-6],0:0.01:1)
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iFunc, iFunc/fits, iFunc/plot, ff_core_shell
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
 y.Name      = [ 'Sphere P(q) (1D) [' mfilename ']' ];
 y.Description='Sphere form factor [Guinier]';

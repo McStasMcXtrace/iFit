@@ -8,7 +8,7 @@ function a = diff(a)
 % output: b: object or array (iData)
 % ex:     b=diff(a);
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, iData/gradient, iData/sum, iData/trapz, iData/jacobian
 
 a = gradient(a, 1);

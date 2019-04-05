@@ -48,7 +48,7 @@ function [s, sphi] = dynamic_range(s, varargin)
 % Example: s=iData_Sqw2D('SQW_coh_lGe.nc'); dynamic_range(s, 14.8, [-20 135])
 %
 % See also: iData_Sqw2D/Bosify, iData_Sqw2D/deBosify, iData_Sqw2D/symmetrize, iData_Sqw2D/scattering_cross_section
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
   % first look at the given arguments
   p = varargin2struct({'Ei' 'angles' 'lambda' 'Ki'}, varargin, true);

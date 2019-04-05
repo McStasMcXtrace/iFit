@@ -18,7 +18,7 @@ function [s, f] = std(a, dim)
 %         center:     center of distribution (scalar/array)
 % ex:     a=iData(peaks); c=std(a);
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, iData/median, iData/mean
 
 if nargin < 2, dim=1; end

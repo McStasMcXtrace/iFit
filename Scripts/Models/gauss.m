@@ -20,9 +20,9 @@ function y=gauss(varargin)
 % output: y: model value
 % ex:     y=gauss([1 0 1 1], -10:10); or plot(gauss)
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iFunc, iFunc/fits, iFunc/plot, gauss1, lorz, lorz1
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
 y.Name      = [ 'Gaussian (1D) [' mfilename ']' ];
 y.Description='1D Gaussian model';

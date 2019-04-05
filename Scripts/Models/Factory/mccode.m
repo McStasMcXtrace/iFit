@@ -125,10 +125,10 @@ function y = mccode(instr, options, parameters)
 %   model.RV=[0 1 2];        % bounds and starting value
 %   p = fmax( model , [], '', nan)  % return the optimal parameters using the raw monitors
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iFunc, iFunc/fits, iFunc/plot, iFunc/feval, mcstas
 %          <a href="http://www.mcstas.org">McStas</a>, <a href="http://www.mccode.org">McCode</a>
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
 % check for McCode executable
 persistent mccode_present

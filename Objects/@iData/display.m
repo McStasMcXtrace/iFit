@@ -9,7 +9,7 @@ function d = display(s_in, name)
 % output: d: string to display (char)
 % ex:     'display(iData)' or 'iData'
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, iData/disp, iData/get
 
 % EF 27/07/00 creation

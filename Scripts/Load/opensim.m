@@ -1,7 +1,7 @@
 function out = opensim(filename)
 %OPENSIM Open a McStas SIM file, display it
 %        and set the 'ans' variable to an iData object with its content
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
 if ~isa(filename,'iData')
   out = iData(iLoad(filename,mfilename)); % no post-processing
@@ -81,7 +81,7 @@ function a=load_mcstas_dat(a)
 % as well as simple XYE files
 % Some labels are also searched.
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also: iData/load, iLoad, save, iData/saveas
 
 % inline: load_mcstas_param

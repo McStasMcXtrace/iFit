@@ -83,7 +83,7 @@ function [Sqw, Iqt, Wq, Tall] = incoherent(gw, varargin)
 %   subplot(Sqw);
 %
 % See also: iData_Sqw2D/multi_phonons
-% (c) E.Farhi, ILL. License: EUPL.
+% 
   
   Sqw=[]; Iqt=[]; Wq=[]; Tall=[];
   if isempty(gw), return; end

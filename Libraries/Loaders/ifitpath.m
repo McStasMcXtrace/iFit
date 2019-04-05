@@ -5,8 +5,8 @@ function d = ifitpath
 %
 % Example: d=ifitpath;
 %
-% Version: $Date$
-% (c) E.Farhi, ILL. License: EUPL.
+% Version: $Date$ $Version$ $Author$
+% 
 
 d = [ fileparts(which('iData/version')) filesep '..' filesep '..' filesep ];
 

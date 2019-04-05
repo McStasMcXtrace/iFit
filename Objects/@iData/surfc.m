@@ -12,7 +12,7 @@ function h = surfc(a, option)
 % output: h: graphics object handles (cell)
 % ex:     surfc(iData(peaks)); surfc(iData(flow));
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, iData/plot
 %          iData/slice, iData/contour3, iData/contourf, iData/mesh
 %          iData/contour, iData/slice, iData/plot3, iData/surfl, iData/surf

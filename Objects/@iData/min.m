@@ -14,7 +14,7 @@ function [m,id] = min(a,b, dim)
 %         id: returns the indices of the maximum value (integer)
 % ex:     b=min(a);
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, min, iData/max
 
 if nargin == 1

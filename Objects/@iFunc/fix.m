@@ -21,7 +21,7 @@ function a = fix(a, varargin)
 % output: b: object or array (iFunc)
 % ex:     b=fix(a,'Intensity');
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iFunc, iFunc/fits, iFunc/munlock, iFunc/xlim, iFunc/free, iFunc/mlock
 
 % calls subsasgn with 'fix' for each parameter given

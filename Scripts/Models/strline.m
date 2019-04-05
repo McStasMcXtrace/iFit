@@ -16,9 +16,9 @@ function y=strline(varargin)
 % output: y: model value
 % ex:     y=strline([1 1], -10:10); or plot(strline);
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iFunc, iFunc/fits, iFunc/plot, quadline, plane2d
-% (c) E.Farhi, ILL. License: EUPL.
+% 
   
 y.Name      = [ 'Straight-line (1D) [' mfilename ']' ];
 y.Parameters={'Gradient slope','Constant'};

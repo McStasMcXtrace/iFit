@@ -27,9 +27,9 @@ function signal=gauss2d(varargin)
 % output: signal: model value
 % ex:     signal=gauss2d([1 2 .5 .2 .3 30 .2], -2:.1:2, -3:.1:3); or plot(gauss2d)
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, iFunc/fits, iFunc/plot, gauss, lorz2d
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
 signal.Name           = [ 'Gaussian-2D function with tilt angle (2D) [' mfilename ']' ];
 signal.Description    = '2D Gaussian function with tilt angle. http://en.wikipedia.org/wiki/Gaussian_function';

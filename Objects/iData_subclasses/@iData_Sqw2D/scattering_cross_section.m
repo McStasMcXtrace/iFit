@@ -75,7 +75,7 @@ function sigma = scattering_cross_section(s, varargin)
 %          sigma = scattering_cross_section(Bosify(symmetrize(s),1235), 14.6);
 %
 % See also: iData_Sqw2D/Bosify, iData_Sqw2D/deBosify, iData_Sqw2D/symmetrize, iData_Sqw2D/dynamic_range
-% (c) E.Farhi, ILL. License: EUPL.
+% 
   
   sigma = [];
   if isempty(s), return; end

@@ -36,7 +36,7 @@ function [b, j] = jacobian(a, varargin)
 % ex:     a=iData(peaks); x=linspace(1,2,size(a,1));
 %         g=jacobian(a, x, [],'half X');
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, iData/del2, diff, iData/gradient, iData/interp, iData/setaxis, gradient
 
 % TODO: this implementation computes the determinent assuming axes are quasi-perpendicular

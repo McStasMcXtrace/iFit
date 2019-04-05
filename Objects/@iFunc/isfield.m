@@ -15,7 +15,7 @@ function [tf, f, pindex] = isfield(a, field)
 % output: tf: 0 when not found, 1 when is a parameter, 2 when is a class property.
 % ex:     tf=isfield(bose, 'Temperature');
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iFunc, isfield, iFunc/findfield
 
 if nargin == 1, field=[]; end

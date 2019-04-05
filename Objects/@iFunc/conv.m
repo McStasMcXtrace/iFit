@@ -34,7 +34,7 @@ function c = conv(a,b, shape)
 % output: c: object or array (iFunc)
 % ex:     c=conv(a,b); c=conv(a,b, 'same pad background center normalize');
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iFunc, iFunc/convn, iFunc/xcorr, fconv, fconvn, fxcorr, ResLibCal
 if nargin ==1
 	b = a;

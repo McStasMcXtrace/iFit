@@ -71,9 +71,9 @@ function [pars,fval,exitflag,output] = fminkalman(varargin)
 % Contrib:
 %   By Yi Cao at Cranfield University, 08 January 2008 [ukfopt, ukf]
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also: fminsearch, optimset
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
 % default options for optimset
 if nargin == 0 || (nargin == 1 && strcmp(varargin{1},'defaults'))

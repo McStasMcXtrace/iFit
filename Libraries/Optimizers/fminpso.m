@@ -73,7 +73,7 @@ function [pars,fval,exitflag,output] = fminpso(varargin)
 % Kennedy J., Eberhart R.C. (1995): Particle swarm optimization. In: Proc.
 %   IEEE Conf. on Neural Networks, IV, Piscataway, NJ, pp. 1942-1948
 % Contrib: 2006 Brecht Donckels, BIOMATH, brecht.donckels@ugent.be [PSO]
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
 % default options for optimset
 if nargin == 0 || (nargin == 1 && strcmp(varargin{1},'defaults'))

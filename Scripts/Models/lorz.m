@@ -19,9 +19,9 @@ function y=lorz(varargin)
 % output: y: model value
 % ex:     y=lorz([1 0 1 0], -10:10); or plot(lorz)
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iFunc, iFunc/fits, iFunc/plot, lorz1, gauss
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
 y.Name       = [ 'Lorentzian (1D) [' mfilename ']' ];
 y.Parameters = {'Amplitude','Centre','HalfWidth','Background'};

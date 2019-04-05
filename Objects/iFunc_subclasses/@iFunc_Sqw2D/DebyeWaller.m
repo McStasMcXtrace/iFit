@@ -31,7 +31,7 @@ function self=DebyeWaller(self)
 % Example: s=sqw_difusion; DebyeWaller(s);
 %
 % See also: iFunc_Sqw2D, iData_Sqw2D
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
   % search for 'msd','u2' parameters
 

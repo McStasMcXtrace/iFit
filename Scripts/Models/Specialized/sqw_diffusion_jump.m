@@ -78,10 +78,10 @@ function signal=sqw_diffusion_jump(varargin)
 %  M. Bée: Quasielastic Neutron Scattering: Principles and Applications in Solid State Chemistry, Biology and Materials Science, Adam-Hilger, Bristol, 1988; chapter 5.1.
 %  R. Hempelman: Quasielastic Neutron Scattering and Solid State Diffusion, Clarendon Press, Oxford, 2000; chapter 5.2
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, iFunc, sqw_recoil, sqw_diffusion
 %   <a href="matlab:doc(iFunc,'Models')">iFunc:Models</a>
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
 signal.Name           = [ 'sqw_diffusion_jump jump/Fick-law diffusion dispersion [' mfilename ']' ];
 signal.Description    = 'A 2D S(q,w) jump diffusion dispersion.';

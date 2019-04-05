@@ -2,7 +2,7 @@ function out = opencif(filename)
 %OPENCIF Open a Crystallographic Information Format (CIF), display it
 %        and set the 'ans' variable to an iData object with its content
 %        (Required cif2hkl to have been compiled with gfortran, see Install page).
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
 out = openstl(filename, 'CIF');
 

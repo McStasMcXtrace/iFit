@@ -2,7 +2,7 @@ function out=openlaz(a, format)
 %OPENLAZ Open a McStas Lazy HKL Powder file
 %        display it and set the 'ans' variable to an iData object with its content
 %        such files can be obtained from Crystallographica and ICSD <icsd.ill.fr>
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
 if nargin < 2
   format = 'LAZ';

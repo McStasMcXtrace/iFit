@@ -24,9 +24,9 @@ function y=expstretched(varargin)
 %         I will not buy this exponential; it is stretched.
 %         <http://en.wikipedia.org/wiki/Dirty_Hungarian_Phrasebook>
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, iFunc/fits, iFunc/plot
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
 y.Name           = [ 'Stretched Exponential decay (1D) [' mfilename ']' ];
 y.Description    = 'Stretched Exponential decay';

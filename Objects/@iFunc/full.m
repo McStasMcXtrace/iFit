@@ -7,7 +7,7 @@ function a = full(a)
 % output: b: object or array (iFunc)
 % ex:     b=full(a);
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iFunc, iFunc/full, iFunc/sparse
 
 a = iFunc_private_unary(a, 'full');

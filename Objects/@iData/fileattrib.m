@@ -20,7 +20,7 @@ function [b, link] = fileattrib(a, field, allfields)
 % ex:     b=fileattrib(a, 'Signal'); 
 %         b=fileattrib(b, 'Signal',struct('long_name','hello world'))
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, isfield
 
 % handle array of iData input

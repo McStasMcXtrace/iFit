@@ -16,7 +16,7 @@ function b = subsasgn(a,S,val)
 %   a.p='free'                      free/unlock all parameter values
 
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iFunc, iFunc/subsref
 
 % This implementation is very general, except for a few lines

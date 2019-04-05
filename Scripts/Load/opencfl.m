@@ -2,7 +2,7 @@ function out = opencfl(filename)
 %OPENCFL Open a CFL FullProf crystallography file, display it
 %        and set the 'ans' variable to an iData object with its content
 %        (Required cif2hkl to have been compiled with gfortran, see Install page).
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
 out = openstl(filename, 'CFL');
 

@@ -19,9 +19,9 @@ function y=pseudovoigt(varargin)
 % output: y: model value
 % ex:     y=pseudovoigt([1 0 1 1 0.5], -10:10); or plot(pseudovoigt);
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iFunc, iFunc/fits, iFunc/plot, pseudovoigt2d, lorz, gauss, voigt
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
 y.Name      = [ 'Pseudo-Voigt (1D) [' mfilename ']' ];
 y.Parameters={'Amplitude','Centre','HalfWidth','Background','LorentzianRatio'};

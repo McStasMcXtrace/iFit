@@ -34,7 +34,7 @@ function c = conv(a,b, shape)
 % output: c: object or array (iData)
 % ex:     c=conv(a,b); c=conv(a,b, 'same pad background center normalize');
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, iData/times, iData/convn, iData/fft, iData/xcorr, fconv, fconvn, fxcorr, conv, deconv
 if nargin ==1
 	b = a;

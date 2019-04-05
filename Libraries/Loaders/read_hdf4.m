@@ -11,7 +11,7 @@ function data = read_hdf4(filename)
 % output: structure
 % Example: y=read_hdf4(fullfile(ifitpath, 'Data','nano_50K_4.8a_03_h4.hdf')); isstruct(y)
 %
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 % See also: read_hdf5, read_nc, read_cdf
 
 if nargin == 0 || any(strcmp(filename, {'identify','query','defaults'}))

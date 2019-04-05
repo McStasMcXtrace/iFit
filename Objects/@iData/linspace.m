@@ -10,7 +10,7 @@ function v = linspace(a,b,n)
 % output: v: vector (iData array)
 % ex:     b=linspace(a,b);
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, iData/max, iData/min, iData/colon, iData/logspace
 
 if nargin <= 2

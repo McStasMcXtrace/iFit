@@ -12,7 +12,7 @@ function a = ylim(a, lims, exclude)
 % output: b: object or array (iData)
 % ex:     b=ylim(a);
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, iData/plot, iData/ylabel
 
 % handle input iData arrays

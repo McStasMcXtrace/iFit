@@ -1,7 +1,7 @@
 function out = openhdf(filename, format)
 %OPENHDF Open an HDF file, display it
 %        and set the 'ans' variable to an iData object with its content
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
 if nargin < 2
   format = 'HDF';

@@ -3,9 +3,9 @@ function a = load_xyen(a)
 %
 % Simple postprocessing for X Y E N files.
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also: iData/load, iLoad, save, iData/saveas
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
 if ~isa(a,'iData')
   a = iData(iLoad(a)); % no post-processing

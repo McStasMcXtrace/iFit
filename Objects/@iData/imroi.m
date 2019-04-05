@@ -61,7 +61,7 @@ function [b, mask, f] = imroi(a, options)
 %     mask: the mask used for the selection, with 0 and 1 as Signal (iData)
 %     f:    figure used to define the selection
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, iData/plot, iData/edit
   
   if numel(a) > 1

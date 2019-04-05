@@ -12,7 +12,7 @@ function a = sort(a,dim,mode)
 % output: s: sorted data (iData)
 % ex:     c=sort(iData(peaks));
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, iData/plus, iData/sort, iData/unique
 if ~isa(a, 'iData')
   iData_private_error(mfilename,['syntax is sort(iData, dim, mode)']);

@@ -13,7 +13,7 @@ function d = doc(a, page)
 %     doc(iFunc,'Plot')
 %     doc(iFunc,'Methods')
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 
 % EF 23/10/10 iFunc implementation
 if nargin ==1, page=''; end

@@ -13,9 +13,9 @@ function y=constant(varargin)
 % output: y: model value
 % ex:     y=constant('Temperature');
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iFunc, iFunc/fits, iFunc/plot, quadline, plane2d
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
 if length(varargin)==1 && ischar(varargin{1}) ...
         && ~any(strcmp(varargin{1}, {'guess','identify'})) && ~isempty(varargin{1})

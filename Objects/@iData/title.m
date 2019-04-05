@@ -10,7 +10,7 @@ function a = title(a, lab)
 % output: b: object or array (iData)
 % ex:     b=title(a);
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, iData/plot
 
 if nargin ==1

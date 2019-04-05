@@ -67,10 +67,10 @@ function signal=sab_diffusion(varargin)
 %  M.Mattes and J.Keinert, IAEA INDC (NDS)-0470 (2005) https://www-nds.iaea.org/publications/indc/indc-nds-0470/
 %  R.E.McFarlane, LA-12639-MS (ENDF 356) (March 1994) https://t2.lanl.gov/nis/publications/thermal.pdf
 %  
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, iFunc, sqw_diffusion, sab_recoil, sqw_recoil
 %   <a href="matlab:doc(iFunc,'Models')">iFunc:Models</a>
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
 signal.Name           = [ 'sab_diffusion Brownian diffusion dispersion [' mfilename ']' ];
 signal.Description    = 'A 2D S(alpha,beta) Brownian diffusion dispersion.';

@@ -62,9 +62,9 @@ function [pars,fval,exitflag,output] = fminsimplex(varargin)
 % Reference: Nelder and Mead, Computer J., 7 (1965) 308
 % Contrib:   F. Sigworth, 15 March 2003 [Simplex]
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also: fminsearch, optimset
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
 % STANDARD part ================================================================
 

@@ -67,10 +67,10 @@ function signal=sqw_sine3d(varargin)
 %    signal: when values are given, a guess of the parameters is performed (double)
 % output: signal: model value [iFunc_Sqw4D]
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, iFunc/fits, iFunc/plot, gauss, sqw_phonons, sqw_cubic_monoatomic, sqw_vaks
 %   <a href="matlab:doc(iFunc,'Models')">iFunc:Models</a>
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
 signal.Name           = [ 'Sqw_sine3d sine dispersion(HKL) with DHO line shape [' mfilename ']' ];
 signal.Description    = 'A HKL sine wave dispersion with tunable energy gap at zone centre and boundary, and DHO line shape';

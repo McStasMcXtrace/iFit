@@ -11,7 +11,7 @@ function [s,fig] = commandhistory(a, fig, varargin)
 % output: b: command history (char/cell)
 % ex:     b=commandhistory(a);
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, iData/disp, iData/display
 
 % syntax for CloseRequest callback from the listdlg

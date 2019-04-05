@@ -33,9 +33,9 @@ classdef iData
 %   d=iData('filename'); a=iData('http://filename.zip#Data');
 %   d=iData(rand(10));
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also: iData, iData/load, methods, iData/setaxis, iData/setalias, iData/doc
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
 % object definition and converter
 % EF 23/09/07 iData implementation

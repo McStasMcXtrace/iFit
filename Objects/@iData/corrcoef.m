@@ -9,7 +9,7 @@ function c = corrcoef(a, b)
 % output: c: correlation coefficient between -1 and 1
 % ex:     b=corrcoef(a); c=corrcoef(a, gauss);
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also corrcoef, iData, iData/mean, iData/fits
 
 % either 'a' or 'b' is an iData

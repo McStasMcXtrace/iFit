@@ -13,7 +13,7 @@ function a = mesh(a, option)
 % output: h: graphics object handles (cell)
 % ex:     mesh(iData(peaks)); mesh(iData(flow));
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, iData/plot
 %          iData/slice, iData/contour3, iData/contourf
 %          iData/contour, iData/slice, iData/plot3, iData/surfl, iData/surfc

@@ -31,10 +31,10 @@ function signal=sqw_cubic_monoatomic(varargin)
 %    signal: when values are given, a guess of the parameters is performed (double)
 % output: signal: model value [iFunc_Sqw4D]
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, iFunc/fits, iFunc/plot, gauss, sqw_phonons, sqw_sine3d, sqw_vaks
 %   <a href="matlab:doc(iFunc,'Models')">iFunc:Models</a>
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
 signal.Name           = [ 'Sqw_cubic dispersion(HKL) for cubic monoatomic crystal [' mfilename ']' ];
 signal.Description    = 'A phonon dispersion(HKL) for a cubic monoatomic crystal with DHO(energy) shape. From the dynamical matrix (2 neighbors).';

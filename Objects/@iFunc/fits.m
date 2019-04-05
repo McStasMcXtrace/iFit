@@ -140,7 +140,7 @@ function [pars_out,criteria,message,output] = fits(model, a, pars, options, cons
 %         figure; plot(a); hold on; plot(o.modelAxes, o.modelValue,'r');
 %         fminplot(o);
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also fminsearch, optimset, optimget, iFunc, iData/fits, iData, ifitmakefunc
 
 % first get the axes and signal from 'data'

@@ -26,9 +26,9 @@ function y=sf_hard_spheres(varargin)
 % output: y: model value (intensity)
 % ex:     y=sf_hard_spheres([4 0.4], 0:0.01:1); or plot(sf_hard_spheres,[10 0.1],0:0.01:1)
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iFunc, iFunc/fits, iFunc/plot
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
 y.Name      = [ 'Hard_Sphere S(q) (1D) [' mfilename ']' ];
 y.Description='Hard Sphere scattering structure factor [Percus-Yevick]';

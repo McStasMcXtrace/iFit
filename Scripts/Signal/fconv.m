@@ -32,8 +32,8 @@ function y=fconv(x, h, shape)
 %
 %      See also FCONVN, FXCORR, CONV, CONV2, FILTER, FILTER2, FFT, IFFT
 %
-% Version: $Date$
-% (c) E.Farhi, ILL. License: EUPL.
+% Version: $Date$ $Version$ $Author$
+% 
 
 
 y=[];

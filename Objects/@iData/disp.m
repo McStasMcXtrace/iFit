@@ -6,7 +6,7 @@ function disp(s_in, name, flat)
 % input:  s: object or array (iData) 
 % ex:     'disp(iData)'
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, iData/display, iData/get
 
 % EF 27/07/00 creation

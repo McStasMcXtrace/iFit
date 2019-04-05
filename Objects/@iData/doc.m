@@ -17,7 +17,7 @@ function url = doc(a, token)
 %     doc(iData,'Methods')
 %     doc(iData,'Sqw2D')
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 
 % EF 23/10/10 iData implementation
 if nargin ==1, token=''; end

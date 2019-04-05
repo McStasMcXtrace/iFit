@@ -10,7 +10,7 @@ function a = sparse(a)
 % output: b: object or array (iData)
 % ex:     b=sparse(a);
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, iData/full, iData/pack
 
 a = iData_private_unary(a, 'sparse');

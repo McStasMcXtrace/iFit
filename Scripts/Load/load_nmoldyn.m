@@ -3,9 +3,9 @@ function a = load_nmoldyn(filename)
 %
 % Returns an iData style dataset from an nMoldyn file
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also: iData/load, iLoad, save, iData/saveas
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
 if ~isa(filename,'iData')
   a = iData(iLoad(filename)); % no post-processing

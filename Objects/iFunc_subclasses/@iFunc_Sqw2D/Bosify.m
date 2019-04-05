@@ -55,7 +55,7 @@ function self=Bosify(self, type)
 % Example: s=sqw_diffusion; sb=Bosify(s); plot(log(sb));
 %
 % See also: iFunc_Sqw2D, iData_Sqw2D
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
   if nargin < 2, type = 'standard'; end
   

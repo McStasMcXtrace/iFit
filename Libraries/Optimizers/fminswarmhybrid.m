@@ -79,9 +79,9 @@ function [pars,fval,exitflag,output] = fminswarmhybrid(varargin)
 % Alexandros Leontitsis leoaleq@yahoo.com Ioannina, Greece 2004 [hPSO]
 % and more informations on http://www.particleswarm.net, http://www.swarmintelligence.org
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also: fminsearch, optimset
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
 % default options for optimset
 if nargin == 0 || (nargin == 1 && strcmp(varargin{1},'defaults'))

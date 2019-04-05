@@ -10,7 +10,7 @@ function c = power(a,b)
 % output: c: object or array (iFunc)
 % ex:     c=lorz.^gauss;
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iFunc, iFunc/minus, iFunc/plus, iFunc/times, iFunc/rdivide
 
 if nargin ==1

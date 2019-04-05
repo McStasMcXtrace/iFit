@@ -17,9 +17,9 @@ function y=pareto(varargin)
 % output: y: model value
 % ex:     y=pareto([1 0.2 1 1], -10:10); or plot(pareto);
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iFunc, iFunc/fits, iFunc/plot
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
 y.Name      = [ 'Pareto distribution distribution function (1D) [' mfilename ']' ];
 y.Parameters={'Amplitude','Exponent','Width','Background'};

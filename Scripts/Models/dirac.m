@@ -15,9 +15,9 @@ function y=dirac(varargin)
 % output: y: model value
 % ex:     y=dirac([1 0], -10:10); or plot(dirac)
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, iFunc/fits, iFunc/plot
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
 y.Name       = [ 'Dirac (1D) [' mfilename ']' ];
 y.Description='Dirac peak fitting function';

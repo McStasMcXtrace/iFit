@@ -74,7 +74,7 @@ function [filename,format] = save(a, varargin)
 %         b=save(a, 'file', 'svg', 'axis tight');
 %         b=save(a, 'file', 'hdf data');
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, iData/saveas, iData/load, iData/getframe, save, saveas,
 % iData/plot
 

@@ -26,9 +26,9 @@ function y=nlorz(varargin)
 % output: y: model value
 % ex:     y=nlorz([1 0 1 0.5 2 0.5 0], -10:10); or plot(nlorz(3))
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iFunc, iFunc/fits, iFunc/plot, ngauss, lorz, gauss
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 y=[];
 if nargin > 0
   p = varargin{1};

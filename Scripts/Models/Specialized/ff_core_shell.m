@@ -20,9 +20,9 @@ function y=ff_core_shell(varargin)
 % output: y: model value (intensity)
 % ex:     y=ff_core_shell([14 11 0.1 0.1], 0:0.01:1); or plot(ff_core_shell,[14 11 0.1 0.],0:0.01:1)
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iFunc, iFunc/fits, iFunc/plot, ff_sphere
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
 y.Name      = [ 'Spherical/core shell P(q) (1D) [' mfilename ']' ];
 y.Description='Concentric spherical geometry, with 2 shells form factor [Guinier]';

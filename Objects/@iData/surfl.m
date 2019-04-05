@@ -15,7 +15,7 @@ function h = surfl(a, option)
 % output: h: graphics object handles (cell)
 % ex:     surfl(iData(peaks)); surfl(iData(flow));
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, iData/plot, 
 %          iData/slice, iData/contour3, iData/contourf, iData/mesh
 %          iData/contour, iData/slice, iData/plot3, iData/surf, iData/surfc

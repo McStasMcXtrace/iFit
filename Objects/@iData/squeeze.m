@@ -14,7 +14,7 @@ function a = squeeze(a)
 % output: c: object or array (iData)
 % ex:     c=squeeze(iData(rand(5,1,3)));
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, iData/pack, iData/fill, iData/resize, iData/size,
 % iData/reducevolume
 

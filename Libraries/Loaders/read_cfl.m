@@ -8,7 +8,7 @@ function s = read_cfl(filename, varargin)
 % output: structure
 % Example: y=read_cfl(fullfile(ifitpath, 'Data','Na2Ca3Al2F14.cfl')); isstruct(y)
 %
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 % See also: read_cif, read_pdb
 
 s=[];

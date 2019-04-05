@@ -9,7 +9,7 @@ function s = ones(iFunc_in,varargin)
 % ex: ones(iFunc,5,5) will create a 5-by-5 empty iFunc array
 %     ones(s,5,5) will return a 5-by-5 array filled with 's'
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iFunc
 
 % EF 27/07/00 creation

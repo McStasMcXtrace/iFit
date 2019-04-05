@@ -69,8 +69,8 @@ function [data, format] = iLoad(filename, loader, varargin)
 %
 % Part of: Loaders utilities (ILL library)
 % Author:  E. Farhi <farhi@ill.fr>. 
-% Version: $Date$
-% (c) E.Farhi, ILL. License: EUPL.
+% Version: $Date$ $Version$ $Author$
+% 
 
 % calls:    urlread
 % optional: uigetfiles, looktxt, unzip, untar, gunzip (can do without)

@@ -22,7 +22,7 @@ function a=shiftdim(a, dim, parname)
 %                is used to centre the axis.
 % output: b: object (iFunc)
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also  iFunc
 
 if nargin < 2, dim=[]; end

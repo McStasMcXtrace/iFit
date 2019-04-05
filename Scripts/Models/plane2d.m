@@ -16,9 +16,9 @@ function signal=plane2d(varargin)
 % output: signal: model value
 % ex:     signal=plane2d([1 2 0], -2:.1:2, -3:.1:3); or plot(plane2d);
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, iFunc/fits, iFunc/plot, gauss
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
 signal.Name           = [ 'Planar function (2D) [' mfilename ']' ];
 signal.Parameters     = { 'Slope_X' 'Slope_Y' 'Background' };

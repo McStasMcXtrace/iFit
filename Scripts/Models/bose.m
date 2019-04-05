@@ -27,9 +27,9 @@ function y=bose(varargin)
 % output: y: model value
 % ex:     y=bose(300/11.605, -10:10); or y=plot(bose);
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, iFunc/fits, iFunc/plot
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
 y.Name       = [ 'Bose (1D) [' mfilename ']' ];
 y.Description='Bose-Einstein distribution fitting function. Ref: http://en.wikipedia.org/wiki/Bose%E2%80%93Einstein_statistics';

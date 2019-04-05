@@ -22,7 +22,7 @@ function [match, types, dims] = findfield(s, field, option)
 %         nelements: total number of elements in struct fields (double)
 % ex:     findfield(struct) or findfield(struct,'Title') or findfield(s,'Title','exact case')
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also struct, struct/set, struct/get, struct/findstr
 
 if nargin == 1

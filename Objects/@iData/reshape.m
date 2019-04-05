@@ -18,7 +18,7 @@ function a = reshape(a, varargin)
 % output: c: object or array (iData)
 % ex:     a=iData(peaks(60)); b=reshape(a, 75, 48);
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, iData/squeeze, iData/size, iData/permute, iData/resize,
 % iData/reducevolume
 

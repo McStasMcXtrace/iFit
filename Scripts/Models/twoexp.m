@@ -15,9 +15,9 @@ function y=twoexp(varargin)
 % output: y: model value
 % ex:     signal=twoexp([2 0.1 1 0.5 0], -10:10); or plot(twoexp)
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, iFunc/fits, iFunc/plot, expon, sinedamp
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
 y.Name           = [ 'Bi-Exponential decay (1D) [' mfilename ']' ];
 y.Parameters     = {'Amplitude1' 'Tau1 decay in inverse "x" unit' 'Amplitude2' 'Tau2 decay in inverse "x" unit' 'Background'};

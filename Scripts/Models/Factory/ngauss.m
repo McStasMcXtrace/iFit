@@ -27,9 +27,9 @@ function y=ngauss(varargin)
 % output: y: model value
 % ex:     y=ngauss([1 0 1 0.5 2 0.5 0], -10:10); or plot(ngauss)
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iFunc, iFunc/fits, iFunc/plot, nlorz, lorz, gauss
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 y=[];
 if nargin > 0
   p = varargin{1};

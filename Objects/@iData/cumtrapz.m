@@ -12,7 +12,7 @@ function b = cumtrapz(a,dim)
 % output: s: accumulated integral of elements, i.e. primitive (iData)
 % ex:     c=cumtrapz(a);
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, iData/plus, iData/sum, iData/prod, iData/cumsum
 
 if ~isa(a, 'iData')

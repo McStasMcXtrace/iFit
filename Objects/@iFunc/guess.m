@@ -19,7 +19,7 @@ function [p, model, ax, name] = guess(s, varargin)
 % output: p: parameter values
 % ex:     p=guess(gauss);
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iFunc, iFunc/feval
 
 p = feval(s, 'guess_only', varargin{:});

@@ -7,7 +7,7 @@ function s = read_yaml(filename)
 % output: structure
 % Example: y=read_yaml(fullfile(ifitpath, 'Data','iFit_iD80908.yaml')); isstruct(y)
 %
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 % See also: read_json, read_xml
 
 s=[];

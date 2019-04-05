@@ -16,7 +16,7 @@ function [match, field] = strfind(s, varargin)
 %         field: name of iData fields that contain 'str' (cellstr)
 % ex:     a=iData('sv1850.scn'); strfind(a,'ILL') or strfind(a,'TITLE','case')
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, iData/set, iData/get, iData/findobj, iData/findfield
 
 % EF 23/09/07 iData implementation

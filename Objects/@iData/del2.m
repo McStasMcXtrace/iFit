@@ -7,7 +7,7 @@ function a = del2(a)
 % output: b: object or array (iData)
 % ex:     b=del2(a);
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, iData/gradient, del2, gradient, iData/jacobian
 
 % make sure axes are regularly binned

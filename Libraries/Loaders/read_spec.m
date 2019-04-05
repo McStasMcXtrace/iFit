@@ -9,7 +9,7 @@ function s = read_spec(filename, varargin)
 % output: structure
 % Example: y=read_spec(fullfile(ifitpath, 'Data','SPEC.dat')); isstruct(y)
 %
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 % See also: read_llb_tas, read_anytext, read_ill
 
 s=[];

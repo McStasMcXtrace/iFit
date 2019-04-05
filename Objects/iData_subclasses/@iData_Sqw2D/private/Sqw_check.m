@@ -16,7 +16,7 @@ function s = Sqw_check(s, mode)
 %   mode: requested type of data. default is 'qw', but can also be 'ab' for S(alpha,beta)
 %
 % Example: sqw=Sqw_check('SQW_coh_lGe.nc');
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
   if nargin == 0, return; end
   if ~isa(s, 'iData'), s = iData(s); end

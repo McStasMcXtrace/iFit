@@ -57,10 +57,10 @@ function [S, qLim, fig] = band_structure(f, qLim, E, options)
 %   k:    the k-path used to generate the dispersion curves (matrix, HKL list)
 %   fig:  figure handle generated when options contains 'plot' or no output.
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also sqw_cubic_monoatomic, sqw_sine3d, sqw_vaks, sqw_spinw
 %   iFunc_Sqw4D/powder, <a href="matlab:doc(iFunc,'Models')">iFunc:Models</a>
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
   S = []; fig = [];
   if nargin == 0, return; end

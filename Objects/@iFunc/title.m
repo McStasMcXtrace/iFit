@@ -12,7 +12,7 @@ function t = title(a, name)
 % output: t: model named (char)
 % ex:     b=title(gauss);
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iFunc
 
 if nargin == 1

@@ -55,10 +55,10 @@ function signal=sqw_spinw(varargin)
 %       <https://www.psi.ch/spinw/spinw>
 %       S. Toth and B. Lake, J. Phys.: Condens. Matter 27, 166002 (2015).
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, iFunc/fits, iFunc/plot, gauss, sqw_phonons, sqw_cubic_monoatomic, sqw_vaks, sqw_sine3d
 %   <a href="matlab:doc(iFunc,'Models')">iFunc:Models</a>
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
 if ~exist('sw') && ~exist('spinw')
   disp([ mfilename ': ERROR: requires SpinW to be installed.' ])

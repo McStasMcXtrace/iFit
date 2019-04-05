@@ -7,7 +7,7 @@ function s = read_xml( file )
 % output: structure
 % Example: y=read_xml(fullfile(ifitpath, 'Data','iFit_iD80908.xml')); isstruct(y)
 %
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 % See also: read_json, read_yaml
   
   if nargin == 0 || any(strcmp(file, {'identify','query','defaults'}))

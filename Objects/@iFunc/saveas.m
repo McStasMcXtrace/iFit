@@ -35,7 +35,7 @@ function [filename,format] = saveas(a, varargin)
 % ex:     b=saveas(a, 'file', 'yaml'); c=iFunc(b);
 %         b=saveas(a, 'file', 'gif', 'axis tight');
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iFunc, save
 
 % default options checks

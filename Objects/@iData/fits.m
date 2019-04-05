@@ -130,7 +130,7 @@ function [pars_out,criteria,message,output] = fits(a, model, pars, options, cons
 %         o=fminpowell('defaults'); o.OutputFcn='fminplot'; 
 %         [p,c,m,o]=fits(a,'gauss',p,o); b=o.modelValue; figure; plot(a,b)
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, fminsearch, optimset, optimget, ifitmakefunc, Models, iFunc/fits
 
 % handle input parameters

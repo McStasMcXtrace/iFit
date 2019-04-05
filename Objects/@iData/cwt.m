@@ -35,7 +35,7 @@ function s = cwt(a,dim,scales,wname,plotit)
 % http://noc.ac.uk/using-science/crosswavelet-wavelet-coherence
 % http://en.wikipedia.org/wiki/Continuous_wavelet_transform
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, iData/fft, iData/xcorr, iData/conv
 
 % handle input arguments

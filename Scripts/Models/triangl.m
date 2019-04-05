@@ -16,9 +16,9 @@ function y=triangl(varargin)
 % output: y: model value
 % ex:     y=triangl([1 0 1 1], -10:10); or plot(triangl);
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iFunc, iFunc/fits, iFunc/plot, heavisde, tophat
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
 y.Name      = [ 'Triangular function (1D) [' mfilename ']' ];
 y.Parameters={'Amplitude','Centre','HalfWidth','Background'};

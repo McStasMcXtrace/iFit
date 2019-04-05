@@ -34,9 +34,9 @@ function y=gaussnd(varargin)
 % output: y: model value
 % ex:     y=gaussnd([1 0 1 1], -10:10, -10:10); or plot(gaussnd)
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iFunc, iFunc/fits, iFunc/plot, gauss2d, gauss
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
 y=[];
 

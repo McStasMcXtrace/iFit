@@ -60,10 +60,10 @@ function signal=sqw_recoil(varargin)
 %  Schober, JNR 17 (2014) 109–357 - DOI 10.3233/JNR-140016
 %  P.A.Egelstaff, An introduction to the liquid state, 2nd ed., Oxford (2002)
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, iFunc
 %   <a href="matlab:doc(iFunc,'Models')">iFunc:Models</a>
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
 signal.Name           = [ 'sqw_recoil recoil for given mass and excitation energy [' mfilename ']' ];
 signal.Description    = 'A 2D S(q,w) with a recoil/free-gas dispersion.';

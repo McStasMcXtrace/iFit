@@ -21,7 +21,7 @@ function a = free(a, varargin)
 % output: b: object or array (iFunc)
 % ex:     b=free(a,'Intensity');
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iFunc, iFunc/fits, iFunc/mlock, iFunc/xlim, iFunc/fix, iFunc/unmlock
 
 % calls subsasgn with 'free' for each parameter given

@@ -12,7 +12,7 @@ function h = edit(a, option)
 % output: b: object or array (iData)
 % ex:     b=edit(a);
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, iData/uminus, iData/abs, iData/real, iData/imag, iData/uplus
 
 % the Selection is stored in the figure UserData

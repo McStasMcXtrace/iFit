@@ -1,7 +1,7 @@
 function out = opennxs(filename)
 %OPENNXS Open a NeXus/HDF file, display it
 %        and set the 'ans' variable to an iData object with its content
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
 out = openhdf(filename);
 

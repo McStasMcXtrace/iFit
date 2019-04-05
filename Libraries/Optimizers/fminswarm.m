@@ -73,9 +73,9 @@ function [pars,fval,exitflag,output] = fminswarm(varargin)
 % Contrib:
 % Alexandros Leontitsis leoaleq@yahoo.com Ioannina, Greece 2004 [hPSO]
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also: fminsearch, optimset
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
 % this is a wrapper to fminswarmhybrid, without hybrid optimizer
 

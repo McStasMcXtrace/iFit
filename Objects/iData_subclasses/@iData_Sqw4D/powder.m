@@ -21,10 +21,10 @@ function r=powder(a)
 %  pow=powder(s); % then plot [q=0:2 w=0:50]
 %  plot(log(iData(pow,[],linspace(0,2,30),linspace(0,50,51))))
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, iFunc/fits, iFunc/plot, gauss, sqw_phonons, sqw_cubic_monoatomic, sqw_vaks
 %   <a href="matlab:doc(iFunc,'Models')">iFunc:Models</a>
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 r=[];
 
 % handle input array

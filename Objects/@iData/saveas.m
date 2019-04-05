@@ -77,7 +77,7 @@ function [filename,format] = saveas(a, filename, format, options)
 %         b=saveas(a, 'file', 'svg', 'axis tight');
 %         b=saveas(a, 'file', 'hdf data');
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, iData/load, iData/getframe, save, iData/plot
 
 % Contributed code (Matlab Central): 

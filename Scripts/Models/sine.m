@@ -15,9 +15,9 @@ function y=sine(varargin)
 % output: y: model value
 % ex:     y=sine([1 0 1 1], -10:10); or plot(sine);
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, iFunc/fits, iFunc/plot
-% (c) E.Farhi, ILL. License: EUPL.
+% 
 
 y.Name           = [ 'Sine function (1D) [' mfilename ']' ];
 y.Parameters     = {'Amplitude','Phase_Shift','Period','Background'};

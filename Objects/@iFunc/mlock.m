@@ -23,7 +23,7 @@ function a = mlock(a, varargin)
 % output: b: object or array (iFunc)
 % ex:     b=mlock(a,'Intensity');
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iFunc, iFunc/fits, iFunc/munlock, iFunc/xlim, iFunc/fix, iFunc/free
 
 % calls subsasgn with 'fix' for each parameter given

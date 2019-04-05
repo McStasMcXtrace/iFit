@@ -9,7 +9,7 @@ function [b,sigma] = cumprod(a,dim)
 % output: s: accumulated product of elements (iData)
 % ex:     c=cumprod(a);
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, iData/plus, iData/sum, iData/prod, iData/cumprod
 if ~isa(a, 'iData')
   iData_private_error(mfilename,[ 'syntax is ' mfilename '(iData, dim)' ]);
