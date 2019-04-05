@@ -17,7 +17,7 @@ function y=dirac(varargin)
 %
 % Version: $Date$
 % See also iData, iFunc/fits, iFunc/plot
-% $
+% (c) E.Farhi, ILL. License: EUPL.
 
 y.Name       = [ 'Dirac (1D) [' mfilename ']' ];
 y.Description='Dirac peak fitting function';

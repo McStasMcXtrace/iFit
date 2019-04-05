@@ -30,7 +30,7 @@ function endf = read_endf(filename)
 % output: structure
 % Example: y=read_endf(fullfile(ifitpath, 'Data','tsl_0012_para-d.endf')); isstruct(y)
 % 
-% $
+% (c) E.Farhi, ILL. License: EUPL.
 
 %
 % for MF7 MT4 from ACE

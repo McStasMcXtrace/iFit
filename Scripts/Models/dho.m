@@ -19,7 +19,7 @@ function y=dho(varargin)
 %
 % Version: $Date$
 % See also iData, iFunc/fits, iFunc/plot
-% $
+% (c) E.Farhi, ILL. License: EUPL.
 
 y.Name       = [ 'Damped-harmonic-oscillator (1D) [' mfilename ']' ];
 y.Description='Damped harmonic oscillator S(q,w) fitting function. Ref: B. Fak, B. Dorner / Physica B 234-236 (1997) 1107-1108';

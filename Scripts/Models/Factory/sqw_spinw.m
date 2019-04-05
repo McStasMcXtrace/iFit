@@ -58,7 +58,7 @@ function signal=sqw_spinw(varargin)
 % Version: $Date$
 % See also iData, iFunc/fits, iFunc/plot, gauss, sqw_phonons, sqw_cubic_monoatomic, sqw_vaks, sqw_sine3d
 %   <a href="matlab:doc(iFunc,'Models')">iFunc:Models</a>
-% $
+% (c) E.Farhi, ILL. License: EUPL.
 
 if ~exist('sw') && ~exist('spinw')
   disp([ mfilename ': ERROR: requires SpinW to be installed.' ])

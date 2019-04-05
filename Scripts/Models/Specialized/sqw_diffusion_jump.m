@@ -81,7 +81,7 @@ function signal=sqw_diffusion_jump(varargin)
 % Version: $Date$
 % See also iData, iFunc, sqw_recoil, sqw_diffusion
 %   <a href="matlab:doc(iFunc,'Models')">iFunc:Models</a>
-% $
+% (c) E.Farhi, ILL. License: EUPL.
 
 signal.Name           = [ 'sqw_diffusion_jump jump/Fick-law diffusion dispersion [' mfilename ']' ];
 signal.Description    = 'A 2D S(q,w) jump diffusion dispersion.';

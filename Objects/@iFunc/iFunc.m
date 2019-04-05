@@ -111,7 +111,7 @@ classdef iFunc
 %
 % Version: $Date$
 % See also iFunc, iFunc/feval, iFunc/plot, iFunc/fits, iFunc/save, methods
-% $
+% (c) E.Farhi, ILL. License: EUPL.
 
 properties  % create the empty iFunc object structure
   Tag         = 0;      % Unique ID

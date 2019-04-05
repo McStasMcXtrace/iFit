@@ -1,7 +1,7 @@
 function out = openply(filename)
 %OPENPLY Open an PLY 3D ascii File, display it
 %        and set the 'ans' variable to an iData object with its content
-% $
+% (c) E.Farhi, ILL. License: EUPL.
 
 out = openstl(filename, 'PLY');
 

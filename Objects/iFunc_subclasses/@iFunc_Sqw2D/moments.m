@@ -35,7 +35,7 @@ function M=moments(self, select)
 %   moments=[ sq M1 wc wl wq M2 M3 M4 ] as an iFunc model or array
 %
 % Example: m = moments(sqw_visco_elastic_simple,'wc'); plot(m);
-% $
+% (c) E.Farhi, ILL. License: EUPL.
 
   if nargin < 2, select=[]; end
   if isempty(select), select = {'sq','recoil','wc','wl','wq','m2','m3','m4'}; end

@@ -68,7 +68,7 @@ function signal=sqw_vaks(varargin)
 % Version: $Date$
 % See also iData, iFunc/fits, iFunc/plot, gauss, sqw_phonons, sqw_sine3d
 %   sqw_cubic_monoatomic, <a href="matlab:doc(iFunc,'Models')">iFunc:Models</a>
-% $
+% (c) E.Farhi, ILL. License: EUPL.
 
 signal.Name           = [ 'Sqw_Vaks phonon dispersion(HKL) for perovskites ABX3 [' mfilename ']' ];
 signal.Description    = 'A phonon dispersion(HKL) for perovskites ABX3 with DHO(energy) shape. Parameterisation by Vaks.';

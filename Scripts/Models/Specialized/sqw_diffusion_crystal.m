@@ -77,7 +77,7 @@ function signal=sqw_diffusion_crystal(varargin)
 % Version: $Date$
 % See also iData, iFunc, sqw_recoil, sqw_diffusion
 %   <a href="matlab:doc(iFunc,'Models')">iFunc:Models</a>
-% $
+% (c) E.Farhi, ILL. License: EUPL.
 
 signal.Name           = [ 'sqw_diffusion_crystal jump diffusion in a crystal [' mfilename ']' ];
 signal.Description    = 'A 2D S(q,w) Chudley-Elliot jump diffusion in a semi-ordered material.';

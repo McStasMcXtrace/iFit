@@ -11,7 +11,7 @@ function data = read_ply(filename, varargin)
 %
 % Contribution: Pascal Getreuer 2004
 %    Gabriel Peyre 2013 https://github.com/gpeyre/matlab-toolboxes/blob/master/toolbox_graph/read_ply.m
-% $
+% (c) E.Farhi, ILL. License: EUPL.
 % See also: read_stl, read_off, read_anytext
 
 if nargin == 0 || any(strcmp(filename, {'identify','query','defaults'}))

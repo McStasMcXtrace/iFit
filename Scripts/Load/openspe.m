@@ -1,7 +1,7 @@
 function out = openspe(filename)
 %OPENSPE Open an ISIS/SPE tof data file, display it
 %        and set the 'ans' variable to an iData object with its content
-% $
+% (c) E.Farhi, ILL. License: EUPL.
 
 if ~isa(filename,'iData')
   out = iData(filename,'SPE');  % with post-processing

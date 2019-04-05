@@ -6,7 +6,7 @@ function s = read_hzb_tas(filename, varargin)
 % Input:  filename: HZB FLEXX FlafCone Data text file (string)
 % output: structure
 %
-% $
+% (c) E.Farhi, ILL. License: EUPL.
 % See also: read_llb_tas, read_anytext, read_spec
 
 s=[];

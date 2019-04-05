@@ -7,7 +7,7 @@ function data = read_gcode(file, k)
   % Fornat definition <https://en.wikipedia.org/wiki/G-code>
   %
   % Example: s=read_gcode(fullfile(ifitpath, 'Data','cylinders.gcode')); isstruct(s)
-  % $
+  % (c) E.Farhi, ILL. License: EUPL.
   % See also: read_stl, read_obj
   
   if nargin == 0 || any(strcmp(file, {'identify','query','defaults'}))

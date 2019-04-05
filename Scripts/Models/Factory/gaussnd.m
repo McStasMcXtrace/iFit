@@ -36,7 +36,7 @@ function y=gaussnd(varargin)
 %
 % Version: $Date$
 % See also iFunc, iFunc/fits, iFunc/plot, gauss2d, gauss
-% $
+% (c) E.Farhi, ILL. License: EUPL.
 
 y=[];
 

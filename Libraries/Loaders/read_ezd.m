@@ -9,7 +9,7 @@ function s = read_ezd(filename, varargin)
 % output: structure
 % Example: y=read_ezd(fullfile(ifitpath, 'Data','GroEl.ezd')); isstruct(y)
 %
-% $
+% (c) E.Farhi, ILL. License: EUPL.
 % See also: read_mrc, read_anytext
 
 s=[];

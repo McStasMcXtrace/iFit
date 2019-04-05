@@ -18,7 +18,7 @@ function y=poisson(varargin)
 %
 % Version: $Date$
 % See also iFunc, iFunc/fits, iFunc/plot
-% $
+% (c) E.Farhi, ILL. License: EUPL.
 
 y.Name      = [ 'Poisson distribution function (1D) [' mfilename ']' ];
 y.Parameters={'Amplitude','Center','Background'};

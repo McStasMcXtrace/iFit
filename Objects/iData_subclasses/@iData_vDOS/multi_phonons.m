@@ -76,7 +76,7 @@ function [Gw, Tsym] = multi_phonons(gw, varargin)
 % 
 %
 % See also: iData_Sqw2D/dos, iData_vDOS/incoherent
-% $
+% (c) E.Farhi, ILL. License: EUPL.
 
   Gw = []; Tsym=[];
   if isempty(gw), return; end

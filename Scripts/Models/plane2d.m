@@ -18,7 +18,7 @@ function signal=plane2d(varargin)
 %
 % Version: $Date$
 % See also iData, iFunc/fits, iFunc/plot, gauss
-% $
+% (c) E.Farhi, ILL. License: EUPL.
 
 signal.Name           = [ 'Planar function (2D) [' mfilename ']' ];
 signal.Parameters     = { 'Slope_X' 'Slope_Y' 'Background' };

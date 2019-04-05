@@ -6,7 +6,7 @@ function a=load_chalkriver(a0)
 %
 % Version: $Date$
 % See also: iData/load, iLoad, save, iData/saveas
-% $
+% (c) E.Farhi, ILL. License: EUPL.
 
 if ~isa(a0,'iData')
   a0 = iData(iLoad(a0,'ChalkRiver'));  % no post-processing

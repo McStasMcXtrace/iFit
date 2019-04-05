@@ -26,7 +26,7 @@ function spw = qw2phiw(self)
   %
   % See also: iFunc_Sqw2D, iFunc_Sqw2D.qw2phit
   %
-  % $
+  % (c) E.Farhi, ILL. License: EUPL.
   
   spw = copyobj(self);
   index=numel(spw.Parameters)+1;

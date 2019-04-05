@@ -96,7 +96,7 @@ function out = ResLibCal(varargin)
 % Example: ResLibCal('Bragg'); isnumeric(r) && numel(r) == 4
 %
 % Version: $Date$
-% $
+% (c) E.Farhi, ILL. License: EUPL.
 % See also iFunc/conv
 
 % Contributions:

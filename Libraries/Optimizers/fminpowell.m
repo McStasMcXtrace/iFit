@@ -68,7 +68,7 @@ function [pars,fval,exitflag,output] = fminpowell(varargin)
 %
 % Version: $Date$
 % See also: fminsearch, optimset
-% $
+% (c) E.Farhi, ILL. License: EUPL.
 
 % default options for optimset
 if nargin == 0 || (nargin == 1 && strcmp(varargin{1},'defaults'))

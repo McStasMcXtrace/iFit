@@ -6,7 +6,7 @@ function s = read_fits(filename)
 % output: structure
 % Example: y=read_fits(fullfile(ifitpath, 'Data','30dor.fits')); isstruct(y)
 %
-% $
+% (c) E.Farhi, ILL. License: EUPL.
 % See also: read_edf, read_adsc, read_edf, read_sif, read_mar, read_spe, read_cbf, read_image, read_hbin
 
 if nargin == 0 || any(strcmp(filename, {'identify','query','defaults'}))

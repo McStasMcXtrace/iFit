@@ -17,7 +17,7 @@ function s = read_spe(filename, varargin)
 %
 % See also: read_cbf, read_edf, read_adsc, read_mar, read_sif, read_fits, read_hbin, read_image, read_sqw
 %
-% $
+% (c) E.Farhi, ILL. License: EUPL.
 % See also: read_mccode, read_anytext
 
 s=[];

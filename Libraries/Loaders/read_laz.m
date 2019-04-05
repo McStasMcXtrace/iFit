@@ -8,7 +8,7 @@ function s = read_laz(filename, varargin)
 % output: structure
 % Example: y=read_laz(fullfile(ifitpath, 'Data','Al.lau')); isstruct(y)
 %
-% $
+% (c) E.Farhi, ILL. License: EUPL.
 % See also: read_mccode, read_anytext
 
 s=[];

@@ -27,7 +27,7 @@ function spt = qw2phit(self)
   %          plot(log(spt), [], 0:180, linspace(0, 0.003, 1000))
   %
   % See also: iFunc_Sqw2D, iFunc_Sqw2D.qw2phiw
-  % $
+  % (c) E.Farhi, ILL. License: EUPL.
   
   spt = copyobj(self);
   index=numel(spt.Parameters)+1;

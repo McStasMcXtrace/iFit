@@ -38,7 +38,7 @@ function [file_out, result] = cif2hkl(varargin)
 %   result:    command result (char)
 %
 % Revision: $date$
-% $
+% (c) E.Farhi, ILL. License: EUPL.
 
 % we choose NOT to use the cif2hkl mex file due to allocation errors under Matlab.
 

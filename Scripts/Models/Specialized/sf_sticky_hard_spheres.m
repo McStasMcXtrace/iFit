@@ -28,7 +28,7 @@ function y=sf_sticky_hard_spheres(varargin)
 %
 % Version: $Date$
 % See also iFunc, iFunc/fits, iFunc/plot
-% $
+% (c) E.Farhi, ILL. License: EUPL.
 
 y.Name      = [ 'Sticky Hard Sphere S(q) (1D) [' mfilename ']' ];
 y.Description='Sticky Hard Sphere scattering structure factor [Baxter/Menon]';

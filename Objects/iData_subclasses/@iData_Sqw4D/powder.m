@@ -24,7 +24,7 @@ function r=powder(a)
 % Version: $Date$
 % See also iData, iFunc/fits, iFunc/plot, gauss, sqw_phonons, sqw_cubic_monoatomic, sqw_vaks
 %   <a href="matlab:doc(iFunc,'Models')">iFunc:Models</a>
-% $
+% (c) E.Farhi, ILL. License: EUPL.
 r=[];
 
 % handle input array

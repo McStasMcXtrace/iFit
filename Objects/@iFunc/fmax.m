@@ -91,7 +91,7 @@ function [pars,fval,exitflag,output] = fmax(objective, pars, options,  varargin)
 %
 % Version: $Date$
 % See also: fminsearch, optimset, iFunc/fmin
-% $
+% (c) E.Farhi, ILL. License: EUPL.
 
 % we maximize the iFunc: (p)feval(iFunc, p). Must guess some axes to use.
 

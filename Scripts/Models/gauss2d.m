@@ -29,7 +29,7 @@ function signal=gauss2d(varargin)
 %
 % Version: $Date$
 % See also iData, iFunc/fits, iFunc/plot, gauss, lorz2d
-% $
+% (c) E.Farhi, ILL. License: EUPL.
 
 signal.Name           = [ 'Gaussian-2D function with tilt angle (2D) [' mfilename ']' ];
 signal.Description    = '2D Gaussian function with tilt angle. http://en.wikipedia.org/wiki/Gaussian_function';

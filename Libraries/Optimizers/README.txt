@@ -1,5 +1,5 @@
 Version: $Revision$
-% $
+% (c) E.Farhi, ILL. License: EUPL.
 
 All functions here are meant to minimize an objective scalar function (usually 
 down to zero). The general syntax is the same as the one of fminsearch, 

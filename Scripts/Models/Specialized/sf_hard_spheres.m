@@ -28,7 +28,7 @@ function y=sf_hard_spheres(varargin)
 %
 % Version: $Date$
 % See also iFunc, iFunc/fits, iFunc/plot
-% $
+% (c) E.Farhi, ILL. License: EUPL.
 
 y.Name      = [ 'Hard_Sphere S(q) (1D) [' mfilename ']' ];
 y.Description='Hard Sphere scattering structure factor [Percus-Yevick]';

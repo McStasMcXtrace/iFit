@@ -60,7 +60,7 @@ function [S, qLim, fig] = band_structure(f, qLim, E, options)
 % Version: $Date$
 % See also sqw_cubic_monoatomic, sqw_sine3d, sqw_vaks, sqw_spinw
 %   iFunc_Sqw4D/powder, <a href="matlab:doc(iFunc,'Models')">iFunc:Models</a>
-% $
+% (c) E.Farhi, ILL. License: EUPL.
 
   S = []; fig = [];
   if nargin == 0, return; end

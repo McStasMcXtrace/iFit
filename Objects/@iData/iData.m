@@ -35,7 +35,7 @@ classdef iData
 %
 % Version: $Date$
 % See also: iData, iData/load, methods, iData/setaxis, iData/setalias, iData/doc
-% $
+% (c) E.Farhi, ILL. License: EUPL.
 
 % object definition and converter
 % EF 23/09/07 iData implementation

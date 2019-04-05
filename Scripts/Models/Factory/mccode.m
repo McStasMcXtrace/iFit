@@ -128,7 +128,7 @@ function y = mccode(instr, options, parameters)
 % Version: $Date$
 % See also iFunc, iFunc/fits, iFunc/plot, iFunc/feval, mcstas
 %          <a href="http://www.mcstas.org">McStas</a>, <a href="http://www.mccode.org">McCode</a>
-% $
+% (c) E.Farhi, ILL. License: EUPL.
 
 % check for McCode executable
 persistent mccode_present

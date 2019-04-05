@@ -31,7 +31,7 @@ function sqw = Sab2Sqw(s, M, T)
 %          sab2= Sab(sqw);
 %          subplot(log([Sqw Sab Sqw2))
 %
-% $
+% (c) E.Farhi, ILL. License: EUPL.
 
   sqw = [];
   

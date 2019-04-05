@@ -33,7 +33,7 @@ function [DOS, DOS_partials] = dos(s, n, nQ, method)
 % See also: iFunc_Sqw4D/max
 %
 % Example: Sqw=sqw_cubic_monoatomic; D=dos(Sqw);
-% $
+% (c) E.Farhi, ILL. License: EUPL.
 
 % conventions:
 % omega = Ei-Ef = energy lost by the neutron
@@ -140,7 +140,7 @@ function FREQ = sqw_phonon_dos_4D(s, nQ)
   %   FREQ:         mode frequencies
   %
   % Example: DOS=sqw_phonon_dos(sqw_cubic_monoatomic('defaults'))
-  % $
+  % (c) E.Farhi, ILL. License: EUPL.
 
   FREQ = [];
   if isempty(nQ) || nQ <= 0, nQ=21; end

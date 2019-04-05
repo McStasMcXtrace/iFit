@@ -84,7 +84,7 @@ function [pars, fval, exitflag, output] = fmincmaes(varargin)
 %
 % Version: $Date$
 % See also: fminsearch, optimset
-% $
+% (c) E.Farhi, ILL. License: EUPL.
 
 % STANDARD part ================================================================
 

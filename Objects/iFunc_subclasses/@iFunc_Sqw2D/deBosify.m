@@ -55,7 +55,7 @@ function self=deBosify(self, type)
 % Example: s=sqw_difusion; sb=Bosify(s); sbb=deBosify(sb);
 %
 % See also: iFunc_Sqw2D, iData_Sqw2D
-% $
+% (c) E.Farhi, ILL. License: EUPL.
 
   if nargin < 2, type = 'standard'; end
   

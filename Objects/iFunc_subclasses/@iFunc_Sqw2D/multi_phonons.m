@@ -28,7 +28,7 @@ function multi = multi_phonons(self, method)
   % Example: s=sqw_visco_elastic_simple; inc=incoherent(s); multi = multi_phonons(s);
   %
   % See also: iFunc_Sqw2D, iFunc_Sqw2D.incoherent, iData_vDOS.incoherent
-  % $
+  % (c) E.Farhi, ILL. License: EUPL.
   
   if nargin < 2, method=[]; end
   if isempty(method), method = 'Carpenter'; end

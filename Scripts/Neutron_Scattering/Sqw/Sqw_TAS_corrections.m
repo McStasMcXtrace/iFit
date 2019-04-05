@@ -1,6 +1,6 @@
 function [data,V, eff] = Sqw_TAS_corrections(data)
   % extract the q,w axes and compute kf, lambda_f, theta_A for corrections
-  % $
+  % (c) E.Farhi, ILL. License: EUPL.
   
   if nargin == 0, return; end
   if ~isa(s, 'iData'), s=iData(s); end

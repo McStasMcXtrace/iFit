@@ -1,7 +1,7 @@
 function out = openpdb(filename)
 %OPENPDB Open a Protein Data Bank file, display its structure factor
 %        and set the 'ans' variable to an iData object with its content
-% $
+% (c) E.Farhi, ILL. License: EUPL.
 
 if ~isa(filename,'iData')
   out = iData(filename,'PDB');  % with post-processing

@@ -82,7 +82,7 @@ function signal=sqw_diffusion(varargin)
 % Version: $Date$
 % See also iData, iFunc, sqw_recoil, sab_diffusion, sab_recoil
 %   <a href="matlab:doc(iFunc,'Models')">iFunc:Models</a>
-% $
+% (c) E.Farhi, ILL. License: EUPL.
 
 signal.Name           = [ 'sqw_diffusion Brownian diffusion dispersion [' mfilename ']' ];
 signal.Description    = 'A 2D S(q,w) Brownian diffusion dispersion.';

@@ -27,7 +27,7 @@ classdef iData_Sqw4D < iData
   %   Save the S(q,w) as a McStas Sqw 4D, or other file format
   %
   % See also: iData, iData_Sqw2D, iData_vDOS, iFunc_Sqw4D
-  % $
+  % (c) E.Farhi, ILL. License: EUPL.
 
   properties
   end

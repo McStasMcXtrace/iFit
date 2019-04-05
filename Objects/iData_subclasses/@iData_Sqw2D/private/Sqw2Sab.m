@@ -29,7 +29,7 @@ function sab = Sqw2Sab(s, M, T)
 %          sab = Sab(sqw,72.6,1235);
 %          plot(log(sab)
 %
-% $
+% (c) E.Farhi, ILL. License: EUPL.
 
   sab = [];
   

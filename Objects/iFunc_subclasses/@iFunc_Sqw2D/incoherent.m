@@ -24,7 +24,7 @@ function inc = incoherent(self, method)
   % Example: s=sqw_visco_elastic_simple; inc=incoherent(s)
   %
   % See also: iFunc_Sqw2D, iFunc_Sqw2D.multi_phonons, iData_vDOS.incoherent
-  % $
+  % (c) E.Farhi, ILL. License: EUPL.
   
   if nargin < 2, method=[]; end
   if isempty(method), method = 'Carpenter'; end

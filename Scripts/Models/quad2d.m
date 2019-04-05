@@ -26,7 +26,7 @@ function signal=quad2d(varargin)
 %
 % Version: $Date$
 % See also iData, iFunc/fits, iFunc/plot, quadline
-% $
+% (c) E.Farhi, ILL. License: EUPL.
 
 signal.Name           = [ 'Quadratic-2D function with tilt angle (2D) [' mfilename ']' ];
 signal.Description    = '2D Quadratic function with tilt angle. http://en.wikipedia.org/wiki/Quadratic_function';

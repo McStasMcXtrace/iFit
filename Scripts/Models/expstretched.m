@@ -26,7 +26,7 @@ function y=expstretched(varargin)
 %
 % Version: $Date$
 % See also iData, iFunc/fits, iFunc/plot
-% $
+% (c) E.Farhi, ILL. License: EUPL.
 
 y.Name           = [ 'Stretched Exponential decay (1D) [' mfilename ']' ];
 y.Description    = 'Stretched Exponential decay';

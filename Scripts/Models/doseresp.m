@@ -18,7 +18,7 @@ function y=doseresp(varargin)
 %
 % Version: $Date$
 % See also iData, iFunc/fits, iFunc/plot, sigmoid
-% $
+% (c) E.Farhi, ILL. License: EUPL.
 
 y.Name           = [ 'Dose-response (sigmoid) (1D) [' mfilename ']' ];
 y.Description    = 'sigmoid S-shaped curve, aka logistic, aka dose response';

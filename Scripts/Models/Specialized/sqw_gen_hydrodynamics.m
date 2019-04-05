@@ -40,7 +40,7 @@ function signal=sqw_gen_hydrodynamics(varargin)
 % Version: $Date$
 % See also iData, iFunc/fits, iFunc/plot, gauss, sqw_phonons, sqw_cubic_monoatomic, sqw_vaks
 %   <a href="matlab:doc(iFunc,'Models')">iFunc:Models</a>
-% $
+% (c) E.Farhi, ILL. License: EUPL.
 
 signal.Name           = [ 'Sqw_gen_hydrodynamics Generalized Hydrodynamics - Rayleight-Brillouin triplet [' mfilename ']' ];
 signal.Description    = 'Generalized Hydrodynamics model with a central line, and two dispersive acoustic lines, suited for e.g. dense fluids';

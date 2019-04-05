@@ -6,7 +6,7 @@ function a=load_ill_tas(a)
 %
 % Version: $Date$
 % See also: iData/load, iLoad, save, iData/saveas
-% $
+% (c) E.Farhi, ILL. License: EUPL.
 
 if ~isa(a,'iData')
   a = iData(iLoad(a,'ILL TAS'));  % no post-processing
