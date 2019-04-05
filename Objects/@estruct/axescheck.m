@@ -130,6 +130,8 @@ function [signal_id, error_id, monitor_id, axes_id] = axescheck_find_signal(self
 % ------------------------------------------------------------------------------
 function axescheck_find_axes(self, fields, dims, sz)
 
+  if isempty(dims), return; end
+  
   % scan Axes/dimensions
   for index=1:ndims(self)
     % get current axis definition
