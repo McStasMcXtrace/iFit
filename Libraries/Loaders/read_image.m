@@ -9,7 +9,7 @@ function s = read_image(filename)
 % output: structure
 % Example: y=read_image(fullfile(ifitpath, 'Data','Ag_3_a.hdf4')); isstruct(y)
 %
-% (c) E.Farhi, ILL. License: EUPL.
+% $
 % See also: read_fits, imformats
 
 s=[];

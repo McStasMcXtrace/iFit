@@ -25,7 +25,7 @@ function s=symmetrize(s)
 %
 % See also: iData_Sqw2D/Bosify, iData_Sqw2D/deBosify, 
 %           iData_Sqw2D/dynamic_range, iData_Sqw2D/scattering_cross_section
-% (c) E.Farhi, ILL. License: EUPL.
+% $
 
   if nargin == 0, return; end
   if ~isa(s, 'iData'), s=iData(s); end

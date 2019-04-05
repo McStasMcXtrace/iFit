@@ -22,7 +22,7 @@ function y=gauss(varargin)
 %
 % Version: $Date$
 % See also iFunc, iFunc/fits, iFunc/plot, gauss1, lorz, lorz1
-% (c) E.Farhi, ILL. License: EUPL.
+% $
 
 y.Name      = [ 'Gaussian (1D) [' mfilename ']' ];
 y.Description='1D Gaussian model';

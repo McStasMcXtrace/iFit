@@ -54,7 +54,7 @@ function s = deBosify(s, varargin)
 %
 % See also: iData_Sqw2D/Bosify, iData_Sqw2D/symmetrize, 
 %           iData_Sqw2D/dynamic_range, iData_Sqw2D/scattering_cross_section
-% (c) E.Farhi, ILL. License: EUPL.
+% $
   
   p = varargin2struct({'T' 'type'}, varargin, true);
   if isempty(p.type), p.type='standard'; end

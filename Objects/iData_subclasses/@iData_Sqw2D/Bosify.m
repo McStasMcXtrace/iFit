@@ -56,7 +56,7 @@ function s = Bosify(s0, varargin)
 %
 % See also: iData_Sqw2D/deBosify, iData_Sqw2D/symmetrize, 
 %           iData_Sqw2D/dynamic_range, iData_Sqw2D/scattering_cross_section
-% (c) E.Farhi, ILL. License: EUPL.
+% $
 
 % classical   T     getT    can convert
 % --------------------------------------------------------------------

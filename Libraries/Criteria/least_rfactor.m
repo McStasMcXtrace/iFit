@@ -8,7 +8,7 @@ function c=least_rfactor(Signal, Error, Model)
 % A good fit corresponds with an R-factor lower than .2
 %
 % <http://en.wikipedia.org/wiki/R-factor_%28crystallography%29>
-% (c) E.Farhi, ILL. License: EUPL.
+% $
 
   if ~isnumeric(Signal) || ~isnumeric(Model), return; end
   if isempty(Error) || isscalar(Error) || all(Error == Error(end))

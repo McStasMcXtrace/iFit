@@ -21,7 +21,7 @@ function y=pseudovoigt(varargin)
 %
 % Version: $Date$
 % See also iFunc, iFunc/fits, iFunc/plot, pseudovoigt2d, lorz, gauss, voigt
-% (c) E.Farhi, ILL. License: EUPL.
+% $
 
 y.Name      = [ 'Pseudo-Voigt (1D) [' mfilename ']' ];
 y.Parameters={'Amplitude','Centre','HalfWidth','Background','LorentzianRatio'};

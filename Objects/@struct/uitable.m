@@ -46,8 +46,7 @@ function structure = uitable(structure,options)
 %   options.ListString={'Test This is the test field','Second 2nd'};
 %   uitable([a a], options);
 %
-% Version: $Date$
-% (c) E.Farhi, ILL. License: BSD. <ifit.mccode.org>
+% Version: $Date$ $Author$
 
   fields  = fieldnames(structure);    % members of the structure
   

@@ -1,7 +1,7 @@
 function out = openinx(filename)
 %OPENINX Open an INX tof data file, display it
 %        and set the 'ans' variable to an iData object with its content
-% (c) E.Farhi, ILL. License: EUPL.
+% $
 
 if ~isa(filename,'iData')
   out = iData(iLoad(filename,'ILL INX')); % no post-processing

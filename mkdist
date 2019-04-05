@@ -29,6 +29,7 @@ else
   IFIT_VERSION=$1
 fi
 IFIT_STRING="$IFIT_NAME $IFIT_VERSION - $MONTH. $DAY, $YEAR"
+IFIT_COPYING="(c) E. Farhi, Y. Debab and P. Willendrup 2007-2019. License: EUPL."
 
 MATLAB=/opt/MATLAB/R2010a/bin/matlab
 
@@ -73,8 +74,10 @@ then
   rpl -R -d -x'.m' -x'.html' -x'.md' -x'.txt' '@IFIT_NAME@'     "$IFIT_NAME" .
   rpl -R -d -x'.m' -x'.html' -x'.md' -x'.txt' '@IFIT_TARNAME@'  "$IFIT_TARNAME" .
   rpl -R -d -x'.m' -x'.html' -x'.md' -x'.txt' "@IFIT_DATE@"     "$IFIT_DATE" .
+  rpl -R -d -x'.m' -x'.html' -x'.md' -x'.txt' '@IFIT_COPYING@'  "$IFIT_COPYING" .
   rpl -R -i -d -x'.m' -x'.html' -x'.md' -x'.txt' '$Date$'     "$IFIT_DATE" .
   rpl -R -i -d -x'.m' -x'.html' -x'.md' -x'.txt' '$Revision$' "$IFIT_VERSION" .
+  rpl -R -i -d -x'.m' -x'.html' -x'.md' -x'.txt' '$Author$'   "$IFIT_COPYING" .
 fi
 echo "Update revision/date/authors with sed (partial) ..."
 for file in README.md Objects/@iData/version.m Docs/index.html Docs/Install.html Applications/standalone/deb/control Applications/standalone/deb/debcreate
@@ -82,7 +85,11 @@ do
   sed 's/@IFIT_VERSION@/'$IFIT_VERSION'/'  $file     > $file.tmp
   sed 's/@IFIT_NAME@/'$IFIT_NAME'/'        $file.tmp > $file
   sed 's/@IFIT_TARNAME@/'$IFIT_TARNAME'/'  $file     > $file.tmp
-  sed 's/@IFIT_DATE@/'$MONTH'. '$DAY', '$YEAR'/'  $file.tmp > $file
+  sed 's/@IFIT_DATE@/'$IFIT_DATE'/'        $file.tmp > $file
+  sed 's/@IFIT_COPYING@/'$IFIT_COPYING'/'  $file     > $file.tmp
+  sed 's/$Date$/'$IFIT_DATE'/'             $file.tmp > $file
+  sed 's/$Revision$/'$IFIT_VERSION'/'      $file     > $file.tmp
+  sed 's/$Author$/'$IFIT_COPYING'/'        $file.tmp > $file
   rm $file.tmp
 done
 # find . -name "*.txt" -print0 | xargs -0 sed -i '' -e 's/foo/bar/g'

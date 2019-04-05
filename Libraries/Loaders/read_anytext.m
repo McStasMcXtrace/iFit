@@ -32,7 +32,7 @@ function s = read_anytext(varargin)
 %
 % Example: y=read_anytext(fullfile(ifitpath, 'Data','MCA.dat')); isstruct(y)
 %
-% (c) E.Farhi, ILL. License: EUPL.
+% $
 
 % we choose NOT to use the looktxt mex file due to SEGV under Matlab.
 

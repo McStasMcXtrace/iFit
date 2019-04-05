@@ -7,7 +7,7 @@ function s = read_sqw(filename, varargin)
 % output: structure/object
 % Example: y=read_sqw(fullfile(ifitpath, 'Data','Horace_sqw_1d.sqw')); isa(y, 'sqw')
 %
-% (c) E.Farhi, ILL. License: EUPL.
+% $
 % See also: read_mccode, read_anytext
 
 s=[];

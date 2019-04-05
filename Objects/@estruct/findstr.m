@@ -19,7 +19,7 @@ function [match, field] = findstr(s, str, option)
 %         field:  name of struct fields that contain 'str' (cellstr)
 %
 % Example: s=estruct('x',1:10,'y','blah'); ischar(findstr(s, 'blah'))
-% Version: $Date$ (c) E.Farhi. License: EUPL.
+% Version: $Date$ $
 % See also estruct, set, get, findobj, findfield
 
 if nargin == 1

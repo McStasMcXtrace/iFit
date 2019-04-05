@@ -1,7 +1,7 @@
 function out = openhdr(filename)
 %OPENHDR Open a Analyze volume dataset (medical imaging), display it
 %        and set the 'ans' variable to an iData object with its content
-% (c) E.Farhi, ILL. License: EUPL.
+% $
 
 if ~isa(filename,'iData')
   out = iData(iLoad(filename,'Analyze')); % no post-processing

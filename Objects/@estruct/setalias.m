@@ -27,7 +27,7 @@ function s = setalias(self, varargin)
 %   SETALIAS(s, 'PropertyName','') remove PropertyName from object.
 %
 % Example: s=estruct; set(s, 'a', 1); setalias(s, 'b.c','a'); get(s, 'b.c') == 1 && strcmp(getalias(s, 'b.c'),'a')
-% Version: $Date$ (c) E.Farhi. License: EUPL.
+% Version: $Date$ $
 % See also estruct, fieldnames, findfield, isfield, set, get, getalias, setalias, 
 %   getaxis, setaxis
 

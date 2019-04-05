@@ -29,7 +29,7 @@ function r=powder(a)
 % Version: $Date$
 % See also iData, iFunc/fits, iFunc/plot, gauss, sqw_phonons, sqw_cubic_monoatomic, sqw_vaks
 %   <a href="matlab:doc(iFunc,'Models')">iFunc:Models</a>
-% (c) E.Farhi, ILL. License: EUPL.
+% $
 r=[];
 if nargin == 0
   doc(iData,'Neutron_Scattering.html#mozTocId260980');  % doc for powder

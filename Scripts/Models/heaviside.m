@@ -19,7 +19,7 @@ function y=heaviside(varargin)
 %
 % Version: $Date$
 % See also iFunc, iFunc/fits, iFunc/plot
-% (c) E.Farhi, ILL. License: EUPL.
+% $
 
 y.Name      = [ 'Heaviside (1D) [' mfilename ']' ];
 y.Parameters={'Amplitude','Centre','FullWidth','Background'};

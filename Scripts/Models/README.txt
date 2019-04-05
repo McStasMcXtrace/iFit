@@ -1,5 +1,5 @@
 Version: $Revision$
-(c) E.Farhi, ILL. License: EUPL.
+$
 
 These scripts require the iFunc class to be used. They create Models (for e.g. fitting)
 

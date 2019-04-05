@@ -36,7 +36,7 @@ function filename = write_endf(Sab, filename)
 %   SB    Bound cross section (barns) [incoherent elastic LTHR=2]
 %
 % Format is defined at https://www.oecd-nea.org/dbdata/data/manual-endf/endf102.pdf
-% (c) E.Farhi, ILL. License: EUPL.
+% $
 
 % should be used with an array of [S(alpha,beta) temperatures], or a single Sab(alpha,beta,T)
 

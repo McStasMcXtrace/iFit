@@ -9,7 +9,7 @@ function s = read_off(filename, varargin)
 % output: structure
 % Example: y=read_off(fullfile(ifitpath, 'Data','socket.off')); isstruct(y)
 %
-% (c) E.Farhi, ILL. License: EUPL.
+% $
 % See also: read_stl, read_ply, read_anytext
 
 s=[];

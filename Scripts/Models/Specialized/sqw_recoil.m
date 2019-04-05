@@ -63,7 +63,7 @@ function signal=sqw_recoil(varargin)
 % Version: $Date$
 % See also iData, iFunc
 %   <a href="matlab:doc(iFunc,'Models')">iFunc:Models</a>
-% (c) E.Farhi, ILL. License: EUPL.
+% $
 
 signal.Name           = [ 'sqw_recoil recoil for given mass and excitation energy [' mfilename ']' ];
 signal.Description    = 'A 2D S(q,w) with a recoil/free-gas dispersion.';

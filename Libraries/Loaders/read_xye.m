@@ -6,7 +6,7 @@ function s = read_xye(filename, varargin)
 % Input:  filename: Simple x/y/e column file (string)
 % output: structure
 %
-% (c) E.Farhi, ILL. License: EUPL.
+% $
 % See also: read_anytext
 
 s=[];

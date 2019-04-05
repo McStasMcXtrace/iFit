@@ -53,7 +53,7 @@ function b = smooth(a, varargin)
 % output: s: smoothed data set (iData)
 % ex:     c=smooth(a);
 %
-% Version: $Date$
+% Version: $Date$ $Author$
 % See also iData, iData/interp
 
 % smoothn is in private
@@ -126,10 +126,9 @@ function [ny,c] = smoothsg1d(yd,N,M)
 % Smoothes the y signal by M-th order Savitzky-Golay method with N points.
 % This algorithm assumes that corresponding x axis is evenly spaced.
 %
-% Author:  EF <farhi@ill.fr>
+% Author:  $Author$
 % Description:  data smoothing by Savitzky-Golay method
 
-% Part of 'Spectral tools'. E.Farhi. 07/96
 % From : Numerical recipes in C. p 650
 
 % Argument processing -----------------------------------------------

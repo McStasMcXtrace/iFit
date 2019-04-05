@@ -1,7 +1,7 @@
 function out = openstl(filename, format)
 %OPENSTL Open an STL/SLP 3D ascii stereolithography data file, display it
 %        and set the 'ans' variable to an iData object with its content
-% (c) E.Farhi, ILL. License: EUPL.
+% $
 
 if nargin < 2
   format = 'STL';

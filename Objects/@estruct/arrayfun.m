@@ -5,7 +5,7 @@ function vout = arrayfun(fun, s)
 %      FUN = @B.method or @B.method(arg1, ...) 
 %
 % Example: s = estruct(1:10); numel(arrayfun(@(s)size(s,2),[s s])) == 2
-% Version: $Date$ (c) E.Farhi. License: EUPL.
+% Version: $Date$ $
 % See also cellfun, structfun, function_handle, cell2mat
 
 % get the number of output arguments from 'fun'

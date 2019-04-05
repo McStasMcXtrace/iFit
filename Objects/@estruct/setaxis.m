@@ -30,7 +30,7 @@ function s = setaxis(s,varargin)
 %   SETAXIS(a) check axes, Signal, Monitor, Error.
 %
 % Example: s=estruct('x',1:10,'y',1:20, 'data',rand(10,20)); setaxis(s,1,'x'); isnumeric(getaxis(s,1))
-% Version: $Date$ (c) E.Farhi. License: EUPL.
+% Version: $Date$ $
 % See also estruct, fieldnames, findfield, isfield, set, get, getalias, setalias, 
 %   getaxis, setaxis
 

@@ -31,7 +31,7 @@ function [match, types, dims, sz] = findfield(s, field, option)
 %         sz:     size of matching fields (cellstr)
 %
 % Example: s=estruct('x', rand(6)); f=findfield(s,'','biggest'); numel(get(s,f)) == 36
-% Version: $Date$ (c) E.Farhi. License: EUPL.
+% Version: $Date$ $
 % See also estruct, estruct/set, estruct/get, estruct/findstr
 
 if nargin == 1

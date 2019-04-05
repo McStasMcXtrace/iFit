@@ -5,7 +5,7 @@ function a = load_xyen(a)
 %
 % Version: $Date$
 % See also: iData/load, iLoad, save, iData/saveas
-% (c) E.Farhi, ILL. License: EUPL.
+% $
 
 if ~isa(a,'iData')
   a = iData(iLoad(a)); % no post-processing

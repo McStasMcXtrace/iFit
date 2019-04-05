@@ -39,7 +39,7 @@ function v = subsref(a,S)
 %        subs -- Cell array or string containing the actual subscripts.
 %
 % Example: s=estruct('x',1:10,'y','blah'); isnumeric(s.x) & ischar(s('y'))
-% Version: $Date$ (c) E.Farhi. License: EUPL.
+% Version: $Date$ $
 % See also estruct, fieldnames, findfield, isfield, set, get, getalias, setalias, 
 %   getaxis, setaxis
 v = [];

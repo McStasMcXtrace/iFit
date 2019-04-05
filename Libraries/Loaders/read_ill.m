@@ -7,7 +7,7 @@ function s = read_ill(filename, varargin)
 % output: structure
 % Example: y=read_ill(fullfile(ifitpath, 'Data','ILL_IN6.dat')); isstruct(y)
 %
-% (c) E.Farhi, ILL. License: EUPL.
+% $
 % See also: read_llb_tas, read_anytext, read_spec
 
 s=[];

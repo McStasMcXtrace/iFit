@@ -22,7 +22,7 @@ function data = read_mccode(filename)
 %
 % Example: y=read_mccode(fullfile(ifitpath, 'Data','Monitor_GV_1330447143_list.L.x.y.z')); isstruct(y)
 %
-% (c) E.Farhi, ILL. License: EUPL.
+% $
 % See also: read_anytext, read_inx
 
 

@@ -13,12 +13,9 @@ function s=str2struct(string)
 %   s: structure which contains the named values
 %
 % Example: str=str2struct('Temperature: 200; RV=3; comment something nice; a="blah"'); isstruct(str)
-%          
-% See also: mat2str, num2str, eval, sprintf, class2str
 %
-% Part of: Loaders utilities (ILL library)
-% Author:  E. Farhi <farhi@ill.fr>. $Date$
-% (c) E.Farhi, ILL. License: BSD.
+% Version: $Date$ $Author$      
+% See also: mat2str, num2str, eval, sprintf, class2str
 
 s={};
 if nargin ==0, return; end

@@ -29,12 +29,9 @@ function str=class2str(this, data, options)
 %  str=class2str('this', data)  % idem, but creates 'this' instead of 'data'.
 %  str=class2str(data, 'flat')  % a kind of config file
 %  str=class2str(data, 'eval')  % a compact evaluable string
-%          
+%  
+% Version: $Date$ $Author$        
 % See also: mat2str, num2str, eval, sprintf
-%
-% Part of: Loaders utilities (ifit.mccode.org)
-% Author:  E. Farhi <farhi@ill.fr>. $Date$
-% (c) E.Farhi, ILL. License: BSD.
 
 if     nargin == 0
   str=[]; return

@@ -29,7 +29,7 @@ function y=ngauss(varargin)
 %
 % Version: $Date$
 % See also iFunc, iFunc/fits, iFunc/plot, nlorz, lorz, gauss
-% (c) E.Farhi, ILL. License: EUPL.
+% $
 y=[];
 if nargin > 0
   p = varargin{1};

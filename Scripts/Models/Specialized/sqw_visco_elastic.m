@@ -98,7 +98,7 @@ function signal=sqw_visco_elastic(varargin)
 % Version: $Date$
 % See also iData, iFunc/fits, iFunc/plot, gauss, sqw_phonons, sqw_cubic_monoatomic, sqw_vaks
 %   <a href="matlab:doc(iFunc,'Models')">iFunc:Models</a>, sqw_gen_hydrodynamics, sqw_visco_elastic_simple
-% (c) E.Farhi, ILL. License: EUPL.
+% $
 
 
 % treat input argument at model creation

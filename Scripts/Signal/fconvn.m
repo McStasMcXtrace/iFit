@@ -14,5 +14,5 @@ function y=fconvn(x, h)
 %      See also FCONV, FXCORR, CONV, CONV2, FILTER, FILTER2, FFT, IFFT
 %
 % Version: $Date$
-% (c) E.Farhi, ILL. License: EUPL.
+% $
 y=fconv(x,h, 'same pad background center normalize');

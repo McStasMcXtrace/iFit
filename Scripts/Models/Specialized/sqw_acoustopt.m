@@ -66,7 +66,7 @@ function signal=sqw_acoustopt(varargin)
 % Version: $Date$
 % See also iData, iFunc/fits, iFunc/plot, gauss, sqw_phonons, sqw_cubic_monoatomic, sqw_vaks
 %   <a href="matlab:doc(iFunc,'Models')">iFunc:Models</a>
-% (c) E.Farhi, ILL. License: EUPL.
+% $
 
 signal.Name           = [ 'Sqw_acoustopt acoustic/optic dispersion(HKL) with DHO line shape [' mfilename ']' ];
 signal.Description    = 'A 4D S(q,w) with a 3D HKL quadratic dispersion, and a DHO line shape. This dispersion corresponds with a local description of an excitation, centered around an (H0,K0,L0,E0) point.';

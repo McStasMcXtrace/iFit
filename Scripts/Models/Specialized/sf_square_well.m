@@ -26,7 +26,7 @@ function y=sf_square_well(varargin)
 %
 % Version: $Date$
 % See also iFunc, iFunc/fits, iFunc/plot
-% (c) E.Farhi, ILL. License: EUPL.
+% $
 
 y.Name      = [ 'Square well S(q) (1D) [' mfilename ']' ];
 y.Description='Square well potential scattering structure factor [Sharma]';

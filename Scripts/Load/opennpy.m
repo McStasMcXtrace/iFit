@@ -7,7 +7,7 @@ function out = opennpy(filename)
 % >>> x = np.arange(10)
 % >>> np.save('outfile.npy', x)
 %
-% (c) E.Farhi, ILL. License: EUPL.
+% $
 
 
 if ~isa(filename,'iData')

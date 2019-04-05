@@ -68,7 +68,7 @@ function g = dos(self, method)
 % Example: s=sqw_visco_elastic_simple; g=dos(s); plot(g, [], 0:0.2:30);
 %
 % See also: iData_vDOS, iData_Sqw2D.dos, iFunc_Sqw4D.dos
-% (c) E.Farhi, ILL. License: EUPL.
+% $
 
   if nargin < 2, method=[]; end
   if isempty(method), method = 'Carpenter'; end

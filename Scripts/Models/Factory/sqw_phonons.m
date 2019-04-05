@@ -289,7 +289,7 @@ function signal=sqw_phonons(configuration, varargin)
 % Version: $Date$
 % See also iData, iFunc/fits, iFunc/plot, gauss, sqw_cubic_monoatomic, sqw_sine3d, sqw_vaks
 %   iFunc_Sqw4D/powder, <a href="matlab:doc(iFunc,'Models')">iFunc:Models</a>
-% (c) E.Farhi, ILL. License: EUPL.
+% $
 
 % Units: 1 Ry        = 13.6 eV
 %        1 Ha = 2 Ry = 27.2 eV

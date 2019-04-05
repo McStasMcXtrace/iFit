@@ -1,5 +1,5 @@
 Version: $Revision$
-(c) E.Farhi, ILL. License: EUPL.
+$
 
 These scripts require the iData and iFunc classes to be used. 
 They provide:

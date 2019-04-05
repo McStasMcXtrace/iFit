@@ -21,7 +21,7 @@ function y=lorz1(varargin)
 %
 % Version: $Date$
 % See also iFunc, iFunc/fits, iFunc/plot, gauss, lorz
-% (c) E.Farhi, ILL. License: EUPL.
+% $
 
 y.Name       = [ 'Lorentzian1 (1D) [' mfilename ']' ];
 y.Parameters = {'Intensity','Centre','HalfWidth'};

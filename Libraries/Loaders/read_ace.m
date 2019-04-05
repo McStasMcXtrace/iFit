@@ -5,7 +5,7 @@ function ace = read_ace(filename)
 %
 % Get ACE files from: http://www.cab.cnea.gov.ar/nyr/tsl_eng.html
 %
-% (c) E.Farhi, ILL. License: EUPL.
+% $
 
 %
 % for MF7 MT4 from ACE

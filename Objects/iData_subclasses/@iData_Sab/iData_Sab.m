@@ -74,7 +74,7 @@ classdef iData_Sab < iData
   % output: an iData_Sab object
   %
   % See also: iData, iData_Sqw2D, iData_vDOS
-  % (c) E.Farhi, ILL. License: EUPL.
+  % $
   
   properties
   end
@@ -183,7 +183,7 @@ classdef iData_Sab < iData
       %          sab2= Sab(sqw);
       %          subplot(log([sab sab2]))
       %
-      % (c) E.Farhi, ILL. License: EUPL.
+      % $
       s = iData_Sqw2D(Sab2Sqw(self));  % private
     end % Sqw
     

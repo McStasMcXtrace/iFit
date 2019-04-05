@@ -19,7 +19,7 @@ function y=voigt(varargin)
 %
 % Version: $Date$
 % See also iFunc, iFunc/fits, iFunc/plot, pseudovoigt, gauss, lorz, pseudovoigt2d
-% (c) E.Farhi, ILL. License: EUPL.
+% $
 
 y.Name      = [ 'Voigt (1D) [' mfilename ']' ];
 y.Parameters={'Amplitude','Centre','Width_Gauss Half width',' Width_Lorz Half width', 'Background'};

@@ -32,7 +32,7 @@ function f = ifitmakefunc(varargin)
 % 
 % Version: $Date$
 % See also iData, gauss, iFunc
-% (c) E.Farhi, ILL. License: EUPL.
+% $
 
 f       = [];
 NL      = sprintf('\n');

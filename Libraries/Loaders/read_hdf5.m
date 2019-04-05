@@ -16,7 +16,7 @@ function data = read_hdf5(filename)
 % output: structure
 % Example: y=read_hdf5(fullfile(ifitpath, 'Data','peaks.hdf5')); isstruct(y)
 %
-% (c) E.Farhi, ILL. License: EUPL.
+% $
 % See also: read_hdf4, read_nc, read_cdf
 
 persistent h5_present

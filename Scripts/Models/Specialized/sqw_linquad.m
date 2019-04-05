@@ -62,7 +62,7 @@ function signal=sqw_linquad(varargin)
 % Version: $Date$
 % See also iData, iFunc/fits, iFunc/plot, gauss, sqw_phonons, sqw_cubic_monoatomic, sqw_vaks
 %   <a href="matlab:doc(iFunc,'Models')">iFunc:Models</a>
-% (c) E.Farhi, ILL. License: EUPL.
+% $
 
 signal.Name           = [ 'Sqw_linquad linear-quadratic dispersion(HKL) with DHO line shape [' mfilename ']' ];
 signal.Description    = 'A 4D S(q,w) with a 3D HKL dispersion linear in a given direction (e.g. principal axis) and quadratic in other directions, and a DHO line shape. This dispersion corresponds with a local description of an excitation, centered around an (H0,K0,L0,E0) point.';

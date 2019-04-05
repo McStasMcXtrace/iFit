@@ -43,7 +43,7 @@ function sigma=moments(data, varargin)
 %   moments=[ sq M1 wc wl wq M2 M3 M4 ] as an iData array
 %
 % Example: m = moments(iData_Sqw2D('SQW_coh_lGe.nc'), 72.6, 1235); subplot(m);
-% (c) E.Farhi, ILL. License: EUPL.
+% $
 
   sigma = []; NL = sprintf('\n');
   if isempty(data), return; end

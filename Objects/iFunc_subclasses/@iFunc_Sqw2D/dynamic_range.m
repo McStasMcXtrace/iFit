@@ -34,7 +34,7 @@ function self=dynamic_range(self, method)
 %  Example: s=sqw_visco_elastic; dynamic_range(s); plot(s);
 % 
 %  See also: iFunc_Sqw2D
-%  (c) E.Farhi, ILL. license: EUPL.
+%  $
 
   if nargin < 2, method = ''; end
   if isempty(method), method='direct'; end

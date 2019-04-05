@@ -6,7 +6,7 @@ function s = axescheck(s)
 %     Monitor and Error are also checked to match Signal dimension.
 %
 % Example: s = estruct(1:10); numel(s.Signal) == 10
-% Version: $Date$ (c) E.Farhi. License: EUPL.
+% Version: $Date$ $
 % see also estruct, getaxis, setaxis
 
 % handle array of struct

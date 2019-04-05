@@ -18,7 +18,7 @@ classdef estruct < dynamicprops
 %  ESTRUCT is similar to STRUCT, but is designed to hold scientifi data.
 %
 % Example: s = estruct('type',{'big','little'},'color','red','x',{3 4}); isstruct(s)
-% Version: $Date$ (c) E.Farhi. License: EUPL.
+% Version: $Date$ $
 % See also isstruct, setfield, getfield, fieldnames, orderfields, 
 %   isfield, rmfield, deal, substruct, struct2cell, cell2struct.
 

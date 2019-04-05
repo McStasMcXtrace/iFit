@@ -94,7 +94,7 @@ classdef iData_Sqw2D < iData
   % output: an iData_Sqw2D object
   %
   % See also: iData, iData_Sab, iData_vDOS, iFunc_Sqw2D
-  % (c) E.Farhi, ILL. License: EUPL.
+  % $
 
   properties
   end
@@ -239,7 +239,7 @@ classdef iData_Sqw2D < iData
       %   inc = incoherent(s); plot(log10(inc));
       %
       % See also: iData_Sqw2D/multi_phonons
-      % (c) E.Farhi, ILL. License: EUPL.
+      % $
       g   = dos(s, varargin{:});
       inc = incoherent(g, varargin{:});
       multi = plus(inc(3:end)); % multi-phonon
@@ -607,7 +607,7 @@ classdef iData_Sqw2D < iData
       %          sab = Sab(sqw,72.6,1235);
       %          plot(log(sab)
       %
-      % (c) E.Farhi, ILL. License: EUPL.
+      % $
       s = Sqw2Sab(self, varargin{:});  % private
     end
     

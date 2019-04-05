@@ -7,7 +7,7 @@ function data = read_llb_tas( filename )
 % output: structure
 % Example: y=read_llb_tas(fullfile(ifitpath, 'Data','R014')); isstruct(y)
 %
-% (c) E.Farhi, ILL. License: EUPL.
+% $
 % See also: read_anytext, read_inx
 
 % built from B. Nennion wfal/read_fich.f

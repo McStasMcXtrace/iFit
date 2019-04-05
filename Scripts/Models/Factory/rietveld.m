@@ -79,7 +79,7 @@ function y = rietveld(sample, instr, varargin)
 %    p = fits(measurement, f); % where measurement holds a measured powder diffractogram
 %
 % See also: mccode, iFunc, iData, iFunc/fits
-% (c) E.Farhi, ILL. License: EUPL.
+% $
 
 % To initiate the model, one enters parameters as a structure with members.
 % During evaluation, parameters are used as a vector matching initiated fields.

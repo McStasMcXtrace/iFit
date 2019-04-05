@@ -17,7 +17,7 @@ function y=twoexp(varargin)
 %
 % Version: $Date$
 % See also iData, iFunc/fits, iFunc/plot, expon, sinedamp
-% (c) E.Farhi, ILL. License: EUPL.
+% $
 
 y.Name           = [ 'Bi-Exponential decay (1D) [' mfilename ']' ];
 y.Parameters     = {'Amplitude1' 'Tau1 decay in inverse "x" unit' 'Amplitude2' 'Tau2 decay in inverse "x" unit' 'Background'};
