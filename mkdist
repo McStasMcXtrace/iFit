@@ -73,10 +73,11 @@ then
   rpl -R -d -x'.m' -x'.html' -x'.md' -x'.txt' '@IFIT_VERSION@'  "$IFIT_VERSION" .
   rpl -R -d -x'.m' -x'.html' -x'.md' -x'.txt' '@IFIT_NAME@'     "$IFIT_NAME" .
   rpl -R -d -x'.m' -x'.html' -x'.md' -x'.txt' '@IFIT_TARNAME@'  "$IFIT_TARNAME" .
-  rpl -R -d -x'.m' -x'.html' -x'.md' -x'.txt' "@IFIT_DATE@"     "$IFIT_DATE" .
+  rpl -R -d -x'.m' -x'.html' -x'.md' -x'.txt' '@IFIT_DATE@'     "$IFIT_DATE" .
   rpl -R -d -x'.m' -x'.html' -x'.md' -x'.txt' '@IFIT_COPYING@'  "$IFIT_COPYING" .
   rpl -R -i -d -x'.m' -x'.html' -x'.md' -x'.txt' '$Date$'     "$IFIT_DATE" .
   rpl -R -i -d -x'.m' -x'.html' -x'.md' -x'.txt' '$Revision$' "$IFIT_VERSION" .
+  rpl -R -i -d -x'.m' -x'.html' -x'.md' -x'.txt' '$Version$'  "$IFIT_VERSION" .
   rpl -R -i -d -x'.m' -x'.html' -x'.md' -x'.txt' '$Author$'   "$IFIT_COPYING" .
 fi
 echo "Update revision/date/authors with sed (partial) ..."
@@ -89,7 +90,9 @@ do
   sed 's/@IFIT_COPYING@/'$IFIT_COPYING'/'  $file     > $file.tmp
   sed 's/$Date$/'$IFIT_DATE'/'             $file.tmp > $file
   sed 's/$Revision$/'$IFIT_VERSION'/'      $file     > $file.tmp
-  sed 's/$Author$/'$IFIT_COPYING'/'        $file.tmp > $file
+  sed 's/$Version$/'$IFIT_VERSION'/'       $file.tmp > $file
+  sed 's/$Author$/'$IFIT_COPYING'/'        $file     > $file.tmp
+  cp $file.tmp $file
   rm $file.tmp
 done
 # find . -name "*.txt" -print0 | xargs -0 sed -i '' -e 's/foo/bar/g'
