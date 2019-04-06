@@ -5,7 +5,7 @@ function v=ndims(s)
 % For an input array of objects, ndims returns the number of dimensions of the array.
 %
 % Example: ndims(estruct(1:10)) == 1 & ndims(estruct(peaks)) == 2
-% Version: $Date$ $
+% Version: $Date$ $Version$ $Author$
 % See also size
 
 if numel(s) > 1

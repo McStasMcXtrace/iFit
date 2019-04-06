@@ -8,7 +8,7 @@ function new = copyobj(self, org)
   %     creates an empty object and fill it with 'content' (struct/object)
   %
   % Example: s = estruct(1:10); s1=copyobj(s); axescheck(s1); isequal(s.Signal, s1.Signal)
-  % Version: $Date$ $
+  % Version: $Date$ $Version$ $Author$
   % see also estruct
   
   % handle arrays by copying the new0

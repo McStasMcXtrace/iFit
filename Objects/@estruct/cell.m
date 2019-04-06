@@ -4,7 +4,7 @@ function c = cell(s)
 %    into a cell array C.
 % 
 % Example: s = estruct(1:12); iscell(cell(s))
-% Version: $Date$ $Author$
+% Version: $Date$ $Version$ $Author$
 % see also estruct, estruct.double, estruct.char
 
 c = struct2cell(s);

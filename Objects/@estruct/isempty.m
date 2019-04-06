@@ -4,6 +4,7 @@ function y = isempty(s)
 %    empty object has no Signal defined.
 %
 % Example: s=estruct; isempty(s)
+% Version: $Date$ $Version$ $Author$
 
 
 if numel(s) > 1

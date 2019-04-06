@@ -8,7 +8,7 @@ function y=size(s, varargin)
 %   of rows. If DIM > NDIMS(X), M will be 1.
 %
 % Example: s=estruct(rand(5)); all(size(s.Signal) == size(s))
-% Version: $Date$ $
+% Version: $Date$ $Version$ $Author$
 % See also estruct, get, length, ndims
 
 if numel(s) > 1  % this is an array of estruct

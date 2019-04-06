@@ -23,7 +23,7 @@ function s = getalias(self, varargin)
 %   GETALIAS(s, 'PropertyName1', 'PropertyName2', ...) return multiple aliases.
 %
 % Example: s=estruct; set(s, 'a', 1); setalias(s, 'b.c','a'); get(s, 'b.c') == 1 && strcmp(getalias(s, 'b.c'),'a')
-% Version: $Date$ $
+% Version: $Date$ $Version$ $Author$
 % See also estruct, fieldnames, findfield, isfield, set, get, getalias, setalias, 
 %   getaxis, setaxis
 

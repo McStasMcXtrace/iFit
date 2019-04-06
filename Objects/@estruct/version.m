@@ -10,7 +10,7 @@ function [b, vers, info] = version(a,long_request)
 %       memory (total, free, used by Matlab in kb) and number of available CPU's
 %
 % Example: v=version(estruct); ischar(v)
-% Version: $Date$ $Author$
+% Version: $Date$ $Version$ $Author$
 % Contribution: memInfo from Sviatoslav Danylenko (2014) BSD
 % See also computer
 
