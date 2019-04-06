@@ -2,6 +2,7 @@ Software: iFit <http://ifit.mccode.org>
 Author:   E. Farhi, ILL
 Cite:     E. Farhi, Y. Debab and P. Willendrup, J. Neut. Res., 17 (2013) 5.
 --------------------------------------------------------------------------------
+Version: $Date$ $Version$ $Author$
 
    NOTE! This copyright does *not* cover the package normal use nor
  derived data and papers - this is merely considered normal use of iFit, 
