@@ -111,11 +111,13 @@ properties
       % collect items to store: as structures, as data files, and others
       structs = {}; % cell: will contain struct('name','value')
       
-      % append arguments (not from files)
+      % append arguments as properties (not from files)
       index=1;
       while index<=nargin
         this = varargin{index}; s = [];
-        if isobject(this), this = struct(this); end
+        if isobject(this)
+          if numel(this) == 1, this = struct(this); else continue; end
+        end
         if ischar(this)
           if index<numel(varargin) && isvarname(this)   % input: name/value pair, e.g. 'par',value, ...
             s.name = this;
@@ -125,7 +127,7 @@ properties
             index=index+1;  % increment name/value pair
           elseif exist(this, 'file') || any(strcmp(strtok(this, ':'), {'http' 'https' 'ftp' 'file'}))
             % pass: we handle this below when assembling the object(s)
-            this = [];
+            continue;
           else
             s.value = str2struct(this); % convert to struct ?
             s.name  = inputname(index);
@@ -143,7 +145,7 @@ properties
         index=index+1;
       end % varargin
       
-      % fill in direct name/value pairs
+      % fill in direct name/value pairs stored into 'structs'
       for index=1:numel(structs)
         s = structs{index};
         if isempty(s.name), s.name=sprintf('%s_%i', class(s.value), index); end
@@ -158,12 +160,16 @@ properties
       % now build the final 'master' object
       for index_varg=1:numel(varargin) % loop on initial input arguments for iLoad
         arg = varargin{index_varg};
-        if isempty(arg) || (~ischar(arg) && ~iscellstr(arg)), continue; end
+        if isempty(arg) || (~ischar(arg) && ~iscellstr(arg) && ~isstruct(arg)), continue; end
         if ischar(arg), arg = cellstr(arg); end
         for index_arg=1:numel(arg)  % loop on input argument content when e.g. cellstr array
-          this = arg{index_arg}; % must be a char or single cellstr
+          if iscell(arg)
+            this = arg{index_arg}; % must be a char or single cellstr
+          else
+            this = arg(index_arg); % e.g. struct/object
+          end
           if isempty(this), continue; end
-          if ~isempty(dir(this)) || any(strcmp(strtok(this, ':'), {'http' 'https' 'ftp' 'file'}))
+          if ischar(this) && (~isempty(dir(this)) || any(strcmp(strtok(this, ':'), {'http' 'https' 'ftp' 'file'})))
             try
               this = iLoad(this); % imported data from file goes in Data
             catch ME

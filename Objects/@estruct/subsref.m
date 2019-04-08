@@ -43,6 +43,7 @@ function v = subsref(a,S)
 % See also estruct, fieldnames, findfield, isfield, set, get, getalias, setalias, 
 %   getaxis, setaxis
 v = [];
+if ischar(S), S=struct('type','.','subs', S); end
 if numel(a) > 1
   if strcmp(S(1).type,'()') && iscellstr(S(1).subs) && ~strcmp(S(1).subs{1},':')
     v = {}; % special case array('field') returns the field for each array element
