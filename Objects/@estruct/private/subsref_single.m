@@ -72,7 +72,7 @@ function v = get_single_alias(s, v)
   if isfield(s, v) % a link to a valid field in root object (single level)
     v = builtin('subsref',s, struct('type','.','subs', v)); % get true value/alias (no follow)
   elseif strcmp(v, 'matlab: sqrt(this.Signal)') % for default Error (no eval)
-    v = sqrt(get(s,'Signal'));
+    v = sqrt(double(get(s,'Signal')));
   elseif strncmp(v, 'matlab',6) && numel(v) > 8 % URL matlab:
     v = get_single_eval(s, v);
   elseif ~isempty(dir(v)) || any(strcmp(strtok(v, ':'), {'http' 'https' 'ftp' 'file'})) % URL http https ftp file: 

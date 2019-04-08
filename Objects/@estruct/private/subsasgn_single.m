@@ -83,10 +83,6 @@ function s = set_single(s, field, value, follow, s0)
             return
           end
         end
-      elseif isempty(value) % && ~follow: set link/alias to empty: remove it
-        % empty value
-        s = rmfield(s, tok);
-        return
       end
       % if ~follow: change value. Calls "s.(tok)=value" i.e. subsasgn
       s = builtin('subsasgn',s, S, value); % set true value/alias (no follow)
