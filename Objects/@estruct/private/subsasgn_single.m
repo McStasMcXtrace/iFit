@@ -27,6 +27,9 @@ function a = subsasgn_single(a, S, val, a0)
   if default  % other cases
     a = builtin('subsasgn', a, S, val);
   end
+  if isa(a, 'estruct')
+    history(a, mfilename, S, val);
+  end
 
 % ----------------------------------------------------------------------------
 function s = set_single(s, field, value, follow, s0)

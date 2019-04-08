@@ -13,9 +13,8 @@ function new = copyobj(self, org)
   
   % handle arrays by copying the new0
   if nargin == 1,  org=''; end
-  if isempty(org), org=self; end
   
-  if ~isstruct(org) && ~isobject(org)
+  if ~isempty(org) && ~isstruct(org) && ~isobject(org)
     new = self; % this may not be a deep copy
     return
   end
@@ -28,7 +27,7 @@ function new = copyobj(self, org)
     end
     return
   end
-  if numel(org) > 1
+  if numel(org) > 1 && nargin > 1
     new = [];
     for index=1:numel(org)
       new = [ new copyobj(self, org(index)) ];
@@ -44,6 +43,12 @@ function new = copyobj(self, org)
     % handle object: transfer properties: this is a safe way to instantiate a subclass
     new = feval(class(self)); % new empty object of same class
     wrn_flag = true;
+    if isempty(org)
+      flag_nargin=1;
+      org = self;
+    else
+      flag_nargin=nargin;
+    end
     for p = fieldnames(org)'
       % skip Tag that must be unique
       if strcmp(p{1}, 'Tag'), continue; end
@@ -62,4 +67,8 @@ function new = copyobj(self, org)
       end
     end
   end
-  
+  if flag_nargin==1
+    history(new, mfilename, self);
+  else
+    history(new, mfilename, self, org);
+  end

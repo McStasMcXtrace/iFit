@@ -39,13 +39,15 @@ if all(signal_sz == 0) || all(error_sz == 0) || all(monitor_sz == 0) % empty ?
     s = builtin('subsasgn', s, struct('type','.','subs','Signal'),  fields{signal_id}); 
     signal_sz  = sz{signal_id};
   end
-  if all(error_sz == 0) && ~isempty(error_id)
-    s = builtin('subsasgn', s, struct('type','.','subs','Error'),   fields{error_id});
-    error_sz   = sz{error_id};
-  end
-  if all(monitor_id == 0) && ~isempty(monitor_id)
-    s = builtin('subsasgn', s, struct('type','.','subs','Monitor'), fields{monitor_id}); 
-    monitor_sz = sz{monitor_id};
+  if ~isempty(signal_sz)
+    if all(error_sz == 0) && ~isempty(error_id)
+      s = builtin('subsasgn', s, struct('type','.','subs','Error'),   fields{error_id});
+      error_sz   = sz{error_id};
+    end
+    if all(monitor_id == 0) && ~isempty(monitor_id)
+      s = builtin('subsasgn', s, struct('type','.','subs','Monitor'), fields{monitor_id}); 
+      monitor_sz = sz{monitor_id};
+    end
   end
 end
 
@@ -68,6 +70,8 @@ s.Private.cache.size = signal_sz; % for faster size execution
 % first search amongst axes_id, then blind search.
 axescheck_find_axes(s, fields(axes_id), dims(axes_id), sz(axes_id));
 axescheck_find_axes(s, fields,          dims,          sz);
+
+history(s, mfilename, s);
 
 % ------------------------------------------------------------------------------
 function [signal_id, error_id, monitor_id, axes_id] = axescheck_find_signal(self, fields, dims, sz)

@@ -112,7 +112,7 @@ for i=1:length(fn) % loop on B fields
   end
 
 end
-
+history(A, mfilename, A, varargin{:});
 
 % union:     OR:  isfield(A,s) || isfield(B,s)
 % intersect: AND: isfield(A,s) && isfield(B,s)

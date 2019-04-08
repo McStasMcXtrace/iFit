@@ -49,7 +49,7 @@ function s = setaxis(s,varargin)
   for index=1:2:numel(varargin) % loop on requested properties
     name = varargin{index}; % axis rank as numeric or string
     value= varargin{index+1};
-    if ischar(value) && any(strcmp(value, {'biggest','largest','first','shortest','simplest'})
+    if ischar(value) && any(strcmp(value, {'biggest','largest','first','shortest','simplest'}))
       value = findfield(s, '', [ value ' numeric' ]);
     end
     if ~ischar(name) && ~iscellstr(name) && ~isnumeric(name)
@@ -116,4 +116,5 @@ function s = setaxis(s,varargin)
     end % for n_index
     
   end % for index
+  history(s, mfilename, varargin{:});
   s.Private.cache.check_requested = true;
