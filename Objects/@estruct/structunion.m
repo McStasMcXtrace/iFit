@@ -1,22 +1,10 @@
 function structure = structunion(A, varargin)
-% structunion concatenate/merge structures
+% STRUCTUNION concatenate/merge structures
 %
-% Recursively merges fields and subfields of structures A and B to result structure Res
-% Simple recursive algorithm merges fields and subfields of two structures
-%   Example:
-%   A.field1=1;
-%   A.field2.subfield1=1;
-%   A.field2.subfield2=2;
-% 
-%   B.field1=1;
-%   B.field2.subfield1=10;
-%   B.field2.subfield3=30;
-%   B.field3.subfield1=1;
-% 
-%   C=structunion(A,B);
+%   STRUCTUNION is equivalent to STRUCTCAT.
 %
-%  by Igor Kaufman, 02 Dec 2011, BSD
-% <http://www.mathworks.com/matlabcentral/fileexchange/34054-merge-structures>
+% Version: $Date$ $Version$ $Author$
+% See also: structcat, structintersection, structdiff
   
   structure = structcat(A,varargin{:});
   

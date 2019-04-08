@@ -12,8 +12,6 @@ function Res = structcat(A,varargin)
 % Res=structcat(A,B,'xor')
 %   The result has fields which are either in A and B but not both (difference)
 %
-% The operator above can also be any binary comparison operator such as 'isequal'.
-%
 % Example:
 %   A.field1=1;
 %   A.field2.subfield1=1;
@@ -26,7 +24,8 @@ function Res = structcat(A,varargin)
 % 
 %   C=structcat(A,B);
 %
-%  by Igor Kaufman, 02 Dec 2011, BSD
+% Version: $Date$ $Version$ $Author$
+% Contribution from Igor Kaufman, 02 Dec 2011, BSD
 % <http://www.mathworks.com/matlabcentral/fileexchange/34054-merge-structures>
 
 op='or'; % default operator
@@ -67,7 +66,7 @@ for i=1:length(fn) % loop on B fields
   isfieldR = isfield(Res,s);
   fieldA=[]; fieldB=[]; fieldR=[];
   if isfieldA
-   fieldA=getfield(A,s);
+    fieldA=getfield(A,s);
   end
   if isfieldB
     fieldB=getfield(B,s);
@@ -77,7 +76,7 @@ for i=1:length(fn) % loop on B fields
   end
 
   try
-    addme = all(feval(op, isfieldA, isfieldB)); % apply operator 'op'='or','and','xor'
+    addme = feval(op, isfieldA, isfieldB); % apply operator 'op'='or','and','xor'
   catch
     addme = false;
   end
