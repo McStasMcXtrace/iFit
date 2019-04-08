@@ -7,7 +7,7 @@ function a=find(a)
 % output: v: value of the iData Signal (logical)
 % ex:     'find(iData(rand(10)))'
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also  iData/find, iData
 
 % EF 11/07/00 creation

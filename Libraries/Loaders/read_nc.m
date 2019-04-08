@@ -37,7 +37,7 @@ function S = read_nc(File,varargin)
 
 function obj = read_nc2(File)
 % inspired from netcdfobj contribution on Matlab Central.
-% E. Farhi ILL, EUPL.
+% $Author$
 
   % open the file
   fid = netcdf.open(File);

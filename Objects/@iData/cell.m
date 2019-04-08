@@ -7,7 +7,7 @@ function [content,fields]=cell(s)
 % output: content: content of the iData structure (cell)
 %         fields:  field names of the iData object (cell)
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also  iData/cell, iData/double, iData/struct, 
 %           iData/char, iData/size
 

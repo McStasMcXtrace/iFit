@@ -6,7 +6,7 @@ function c = help(s)
 % input:  s: object or array (iData) 
 % output: c: iData identification (structure)
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also  iData/cell, iData/double, iData/struct, 
 %           iData/char, iData/size, iData/get
 %

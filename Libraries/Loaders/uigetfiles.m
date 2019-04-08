@@ -12,7 +12,7 @@ function [filename, pathname] = uigetfiles(filterspec, title, varargin)
 %                or  [x y]
 %            and     'MultiSelect', 'on'|'off'
 %
-% Version: $Date$ $Author$
+% Version: $Date$ $Version$ $Author$
 % See also: uigetfile, uigetdir
 
 % calls: none

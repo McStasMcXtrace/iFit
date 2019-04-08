@@ -8,7 +8,7 @@ function b = subsref(a,S)
 %   a.p     returns the parameter values, same as a.ParameterValues
 %   a.Par   returns the parameter "Par" value
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iFunc, iFunc/subsasgn
 
 % This implementation is very general, except for a few lines

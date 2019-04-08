@@ -9,7 +9,7 @@ function b = subsref(a,S)
 %     signal = iData(model)
 %     signal = iData(model, p)  uses given parameters
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, iData/subsasgn
 
 % This implementation is very general, except for a few lines

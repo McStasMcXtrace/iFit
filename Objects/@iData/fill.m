@@ -17,7 +17,7 @@ function c=fill(a, n)
 % output: c: filled object (iData)
 % ex:     a=iData([ ifitpath 'Data/Monitor_GV*']); b=hist(a); c=fill(b);
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also iData, accumarray, hist, histc, iData/plot, sum, iData/interp, iData/event, iData/squeeze, iData/pack
 
 % private: inpaintn from Garcia D. 2012-2014

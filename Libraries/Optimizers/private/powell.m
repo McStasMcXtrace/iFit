@@ -16,7 +16,7 @@ function [pars,fval,istop,output]=powell(S,x0,options)
 %   nS: number of objective function evaluations
 
 %   Copyright (c) 2001 by LASIM-DEQUI-UFRGS
-%   $Date$  $Date$
+%   Date:  $Date$
 %   Argimiro R. Secchi (arge@enq.ufrgs.br)
 
 mxit=options.MaxIter;

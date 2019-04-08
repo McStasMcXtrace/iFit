@@ -7,7 +7,7 @@ function a=logical(a)
 % output: v: value of the iData Signal (logical)
 % ex:     'logical(iData(rand(10)))'
 %
-% Version: $Date$
+% Version: $Date$ $Version$ $Author$
 % See also  iData/cell, iData/double, iData/struct, 
 %           iData/char, iData/size
 

@@ -18,7 +18,7 @@
 % output: structure
 % Example: y=read_inx(fullfile(ifitpath, 'Data','YIG_4A_corr_vana_spectre.inx')); isstruct(y)
 %
-% (c) J. Ollivier, ILL, EUPL 1.1
+% (c) J. Ollivier, ILL, EUPL 1.1 2013
 % See also: read_endf, read_mccode, read_llb_tas, read_anytext
 
 

@@ -14,7 +14,7 @@ function s=str2struct(string)
 %
 % Example: str=str2struct('Temperature: 200; RV=3; comment something nice; a="blah"'); isstruct(str)
 %
-% Version: $Date$ $Author$
+% Version: $Date$ $Version$ $Author$
 % See also: mat2str, num2str, eval, sprintf, class2str
 
 s={};
