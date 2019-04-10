@@ -49,7 +49,7 @@ properties
   end
   
   properties (Access=protected, Constant=true)  % shared by all instances
-    Protected={'Protected','Labels','Axes','Tag','Private'} % can not be changed
+    Protected={'Protected','Axes','Tag','Private'} % can not be changed
   end
   
 % ------------------------------------------------------------------------------
@@ -221,9 +221,16 @@ properties
     %   
     %      See also getfield, setfield, fieldnames, orderfields, rmfield,
     %      isstruct, estruct. 
-      if nargin ~= 2, return; end
+      tf=false;
+      if nargin < 2, f=''; end
+      if iscellstr(f), f=char(f); end
+      if isempty(f) || ~ischar(f), return; end
       if numel(self) == 1
-        tf = isfield(struct(self), f);
+        if any(f == '.') % compound field: we search with findfield
+          tf = ~isempty(findfield(self, f));
+        else
+          tf = isfield(struct(self), f); % faster
+        end
       else
         tf = zeros(size(self));
         for index=1:numel(self); tf(index) = isfield(self(index), f); end

@@ -3,25 +3,28 @@ function c = binary(a, b, op, varargin)
 %
 % Operator may apply on an estruct array and:
 %   a scalar
-%   a vector/matrix: if its dimensionality is lower than the object, 
+%   a vector/matrix: if its dimensionality is lower than the object,
 %     it is replicated on the missing dimensions
 %   a single estruct object, which is then used for each estruct array element
 %     operator(a(index), b)
-%   an estruct array, which should then have the same dimension as the other 
+%   an estruct array, which should then have the same dimension as the other
 %     estruct argument, in which case operator applies on pairs of both arguments.
 %     operator(a(index), b(index))
 %   an iFunc object (2nd arg), which is then evaluated on the estruct axes for operator
 %
-% operator may be: 'plus','minus','combine'
-%                  'times','rdivide', 'ldivide','mtimes','mrdivide','mldivide', 'conv', 'xcorr'
-%                  'lt', 'gt', 'le', 'ge', 'ne', 'eq', 'and', 'or', 'xor', 'isequal', 'deconv'
+% binary operator may be:
+% 	combine conv convn deconv eq ge gt isequal ldivide le lt
+%	minus mldivide mpower mrdivide mtimes ne plus power rdivide sqr times xcorr
+%   and or xor
+
+
 %
-% Contributed code (Matlab Central): 
+% Contributed code (Matlab Central):
 %   genop: Douglas M. Schwarz, 13 March 2006
 %
 % Version: $Date$ $Version$ $Author$
 
-% for the estimate of errors, we use the Gaussian error propagation (quadrature rule), 
+% for the estimate of errors, we use the Gaussian error propagation (quadrature rule),
 % or the simpler average error estimate (derivative).
 
 % handle input estruct arrays
@@ -42,7 +45,7 @@ if (isa(a, 'estruct') & numel(a) > 1)
     end
     return
   elseif isa(b, 'estruct') & numel(b) ~= numel(a) & numel(b) ~= 1
-    disp(, ...
+    disp(...
     [ mfilename ': If you wish to force this operation, use ' op ...
       '(a,b{0}) to operate with the object Signal, not the object itself (which has axes).' ]);
     error(...
@@ -68,10 +71,10 @@ elseif isa(b, 'estruct') & numel(b) > 1
 end
 
 if ischar(a) && (exist(a, 'file') || any(strncmp(a, {'file:/','http:/','ftp://','https:'},6)))
-  a = estruct(a); % import file    
+  a = estruct(a); % import file
 end
 if ischar(b) && (exist(b, 'file') || any(strncmp(b, {'file:/','http:/','ftp://','https:'},6)))
-  b = estruct(b); % import file    
+  b = estruct(b); % import file
 end
 
 % when given an iFunc, we evaluate it on the estruct axes
@@ -89,7 +92,7 @@ if (isempty(a) || isempty(b))
   if any(strcmp(op, {'plus','minus','combine'}))
     if     isempty(a), c=b; return;
     elseif isempty(b), c=a; return; end
-  else c = []; return; 
+  else c = []; return;
   end
 end
 
@@ -161,23 +164,23 @@ if all(m1(:)==0) && all(m2(:)==0), m1=0; m2=0; end
 
 % 'y'=normalized signal, 'd'=normalized error, 'p1' set to true when normalization
 % to the Monitor is required (i.e. all operations except combine).
-if not(all(m1(:) == 0)) && not(all(m1(:) == 1)) && p1, 
-  y1 = genop(@rdivide, s1, m1); d1 = genop(@rdivide,e1,m1); 
+if not(all(m1(:) == 0)) && not(all(m1(:) == 1)) && p1,
+  y1 = genop(@rdivide, s1, m1); d1 = genop(@rdivide,e1,m1);
 else y1=s1; d1=e1; end
-if not(all(m2(:) == 0)) && not(all(m2(:) == 1)) && p1, 
-  y2 = genop(@rdivide,s2,m2); d2 = genop(@rdivide,e2,m2); 
+if not(all(m2(:) == 0)) && not(all(m2(:) == 1)) && p1,
+  y2 = genop(@rdivide,s2,m2); d2 = genop(@rdivide,e2,m2);
 else y2=s2; d2=e2; end
 
 % operation
 switch op
 case {'plus','minus','combine'}
-  if strcmp(op, 'combine'), 
+  if strcmp(op, 'combine'),
        s3 = genop( @plus,  y1, y2); % @plus without Monitor nomalization (y=s)
        if isscalar(m1), m1=m1*ones(size(s1)); end
        if isscalar(m2), m2=m2*ones(size(s2)); end
   else s3 = genop( op,     y1, y2); end
   i1 = isnan(y1(:)); i2=isnan(y2(:));
-  % if NaN's are found (from interp), use non NaN values in the other data set 
+  % if NaN's are found (from interp), use non NaN values in the other data set
   if any(i1) && ~isscalar(y2), s3(i1) = y2(i1); end
   if any(i2) && ~isscalar(y1), s3(i2) = y1(i2); end
 
@@ -189,8 +192,8 @@ case {'plus','minus','combine'}
     e3 = [];  % set to sqrt(Signal) (default)
   end
 
-  if     all(m1==0), m3 = m2; 
-  elseif all(m2==0), m3 = m1; 
+  if     all(m1==0), m3 = m2;
+  elseif all(m2==0), m3 = m1;
   else
     try
       m3 = genop(@plus, m1, m2);
@@ -201,12 +204,12 @@ case {'plus','minus','combine'}
     end
   end
   clear i1 i2
-  
-case {'times','rdivide', 'ldivide','mtimes','mrdivide','mldivide','mpower','conv','xcorr','deconv'}
+
+case {'times','rdivide', 'ldivide','mtimes','mrdivide','mldivide','mpower','conv','convn','xcorr','deconv'}
   % Signal
   if strcmp(op, 'conv') || strcmp(op, 'deconv') || strcmp(op, 'xcorr')
     s3 = fconv(y1, y2, varargin{:});  % pass additional arguments to fconv
-    if nargin == 4
+    if nargin >= 4
       if strfind(varargin{1}, 'norm')
         m2 = 0;
       end
@@ -214,7 +217,7 @@ case {'times','rdivide', 'ldivide','mtimes','mrdivide','mldivide','mpower','conv
   else
     s3 = genop(op, y1, y2);
   end
-  
+
   % Error = s3*sqrt(e1/s1^2+e2/s2^2)
   % when e.g. s1 is scalar, e1 is 0 then s3=s1*s2, and the e3 error should just be s1*e2
   try
@@ -224,10 +227,10 @@ case {'times','rdivide', 'ldivide','mtimes','mrdivide','mldivide','mpower','conv
   catch
     e3=[];  % set to sqrt(Signal) (default)
   end
-  
+
   % Monitor
-  if     all(m1==0), m3 = m2; 
-  elseif all(m2==0), m3 = m1; 
+  if     all(m1==0), m3 = m2;
+  elseif all(m2==0), m3 = m1;
   elseif p1
     try
       m3 = genop(@times, m1, m2);
@@ -235,7 +238,7 @@ case {'times','rdivide', 'ldivide','mtimes','mrdivide','mldivide','mpower','conv
       m3 = [];  % set to 1 (default)
     end
   else m3=get(c,'Monitor'); end
-  
+
 case {'power'}
   s3 = genop(op, y1, y2);
 
@@ -246,9 +249,9 @@ case {'power'}
   catch
     e3 = [];  % set to sqrt(Signal) (default)
   end
-  
-  if     all(m1==0), m3 = m2; 
-  elseif all(m2==0), m3 = m1; 
+
+  if     all(m1==0), m3 = m2;
+  elseif all(m2==0), m3 = m1;
   elseif p1
     try
       m3 = genop(@times, m1, m2);
@@ -256,7 +259,7 @@ case {'power'}
       m3 = [];  % set to 1 (default)
     end
   else m3=get(c,'Monitor'); end
-  
+
 case {'lt', 'gt', 'le', 'ge', 'ne', 'eq', 'and', 'or', 'xor', 'isequal'}
   s3 = genop(op, y1, y2);
   try
@@ -276,15 +279,15 @@ clear e1 e2 m1 m2 y1 y2
 
 % set Signal label
 s1=s1(1:min(10, numel(s1)));
-if isa(a, 'estruct'), [dummy, al] = getaxis(a,'0'); 
-else 
-  al=num2str(s1(:)'); if length(al) > 10, al=[ al(1:10) '...' ]; end 
+if isa(a, 'estruct'), [dummy, al] = getaxis(a,'0');
+else
+  al=num2str(s1(:)'); if length(al) > 10, al=[ al(1:10) '...' ]; end
 end
 s2=s2(1:min(10, numel(s2)));
-if isa(b, 'estruct'), [dummy, bl] = getaxis(b,'0'); 
-else 
+if isa(b, 'estruct'), [dummy, bl] = getaxis(b,'0');
+else
   bl=num2str(s2(:)');
-  if length(bl) > 10, bl=[ bl(1:10) '...' ]; end 
+  if length(bl) > 10, bl=[ bl(1:10) '...' ]; end
 end
 
 clear s1 s2
@@ -305,8 +308,8 @@ if transpose_ab==1
 end
 
 % operate with Signal/Monitor and Error/Monitor (back to Monitor data)
-if not(all(m3(:) == 0 | m3(:) == 1)) & p1, 
-  s3 = genop(@times, s3, m3); e3 = genop(@times,e3,m3); 
+if not(all(m3(:) == 0 | m3(:) == 1)) & p1,
+  s3 = genop(@times, s3, m3); e3 = genop(@times,e3,m3);
 end
 
 % update object (store result)
@@ -334,7 +337,7 @@ end
 clear m3 y3
 
 % fill missing axes when objects are orthogonal
-if isa(a, 'estruct') && isa(b, 'estruct') && orthogonal_ab 
+if isa(a, 'estruct') && isa(b, 'estruct') && orthogonal_ab
   index_b=1;
   ax = getaxis(c);
   for index=1:ndims(c)

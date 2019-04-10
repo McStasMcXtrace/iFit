@@ -31,7 +31,7 @@ function v = getaxis(s,varargin)
 % See also estruct, fieldnames, findfield, isfield, set, get, getalias, setalias, 
 %   getaxis, setaxis
 
-  if nargin == 1, v = getaxis(s, 1:numel(s.Axes)); return; end
+  if nargin == 1, v = s.Axes; return; end
   
   % handle array of struct
   v = {};
@@ -69,10 +69,10 @@ function v = getaxis(s,varargin)
         if isscalar(name{n_index})
           if strcmp(name{n_index},'0')  % Signal definition
             v{end+1} = builtin('subsref',s, struct('type','.','subs','Signal'));
-          elseif isfinite(str2num(name{n_index}))
+          elseif isfinite(str2num(name{n_index})) && str2num(name{n_index}) <= numel(s.Axes)
             v{end+1} = s.Axes{str2num(name{n_index})};  % get definition in Axes (cell)
           else 
-            error([ mfilename ': invalid axis rank ''' name{n_index} '''. Should be ''0'' to ''9'' or ''Signal'' or ''Error''.' ]);
+            v{end+1} = []; % axis rank beyond dimension of object Signal
           end
         elseif strcmp(name{n_index}, 'Signal')
           name{n_index} = 0;  % then will use rank as number=0, not char

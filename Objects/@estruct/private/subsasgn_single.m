@@ -11,7 +11,7 @@ function a = subsasgn_single(a, S, val, a0)
                   % syntax: a.('field') follows links (set), can be a compound field.
     if ischar(S.subs) S.subs = cellstr(S.subs); end
     if iscellstr(S.subs) && isscalar(S.subs) 
-      if ~ismethod(a, S.subs{1})
+      if ~isobject(a) || ~ismethod(a, S.subs{1})
         % follow links for '.' subsref, not for '()'
         a = set_single(a, S.subs{1}, val, S.type(1)=='.', a0);  % which handles aliases
         default = false;
@@ -49,7 +49,7 @@ function s = set_single(s, field, value, follow, s0)
   if any(field == '.')
     field = textscan(field,'%s','Delimiter','.'); field=field{1};
     typs=cell(size(field)); [typs{:}] = deal('.');
-    S = struct('type',typs, 'subs', subs);
+    S = struct('type',typs, 'subs', field);
   else
     field = cellstr(field);
     S = struct('type','.','subs', field{1});

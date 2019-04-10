@@ -1,7 +1,7 @@
 function c = conv(a,b, shape)
-% c = conv(a,b) : computes the convolution of estruct objects
+% c = conv(a,b) : computes the convolution of iData objects
 %
-%   @estruct/conv function to compute the convolution of data sets (FFT based).
+%   @iData/conv function to compute the convolution of data sets (FFT based).
 %     A deconvolution mode is also possible.
 %     When used with a single scalar value, it is used as a width to build a 
 %       gaussian function, with same width along all dimensions
@@ -12,8 +12,8 @@ function c = conv(a,b, shape)
 %       configuration using ResLibCal. Any RESCAL-type parameters are sent to 
 %       ResLibCal and if a Model exists, it is upgraded with a 4D convolution.
 %
-% input:  a: object or array (estruct or numeric)
-%         b: object or array (estruct or numeric or scalar)
+% input:  a: object or array (iData or numeric)
+%         b: object or array (iData or numeric or scalar)
 %     shape: optional shape of the return value
 %          full         Returns the full two-dimensional convolution.
 %          same         Returns the central part of the convolution of the same size as a.
@@ -31,11 +31,11 @@ function c = conv(a,b, shape)
 %          background   Remove the background from the filter 'b' (subtracts the minimal value)
 %     Default shape is 'same'
 %
-% output: c: object or array (estruct)
+% output: c: object or array (iData)
 % ex:     c=conv(a,b); c=conv(a,b, 'same pad background center normalize');
 %
 % Version: $Date$ $Version$ $Author$
-% See also estruct, estruct/times, estruct/convn, estruct/fft, estruct/xcorr, fconv, fconvn, fxcorr, conv, deconv
+% See also iData, iData/times, iData/convn, iData/fft, iData/xcorr, fconv, fconvn, fxcorr, conv, deconv
 if nargin ==1
 	b = a;
 end
@@ -43,7 +43,7 @@ if nargin < 3, shape = 'same'; end
 
 % handle array of objects
 if numel(a) > 1
-  c = zeros(estruct, numel(a),1);
+  c = zeros(iData, numel(a),1);
   for index=1:numel(a)
     c(index) = feval(mfilename, a(index), b, shape);
   end
@@ -54,9 +54,9 @@ end
 % handle input argument types
 if isa(b, 'iFunc')
   % we evaluate the Model 'b' with the axes from 'a'
-  b = a(b); % call estruct.subsref(iFunc)
+  b = a(b); % call iData.subsref(iFunc)
 elseif strcmp(b, 'tas')
-  % convolute the estruct.Model with ResLibCal, overlay parameters from the Data set
+  % convolute the iData.Model with ResLibCal, overlay parameters from the Data set
   % and provide missing axes from the data set into the Model
   c = ResLibCal(a);
   return
@@ -82,5 +82,5 @@ elseif isa(b,'double') && numel(b) == ndims(a)
   shape = [ shape ' normalize' ];
 end
 
-c = binary(a, b, 'conv', shape);
+c = iData_private_binary(a, b, 'conv', shape);
 

@@ -105,10 +105,10 @@ function s = setaxis(s,varargin)
         else % Axis
           % set the axis value
           if iscell(s.Axes) && numel(s.Axes) >= name{n_index}
-            if ischar(s.Axes{name{n_index}})
+            if ischar(s.Axes{name{n_index}}) && ~ischar(value)
               s = subsasgn_single(s, s.Axes{name{n_index}}, value); % follow link for assignment
             else
-              s.Axes{name{n_index}} = value;
+              s.Axes{name{n_index}} = value; % set definition from char link/alias
             end
           end
         end

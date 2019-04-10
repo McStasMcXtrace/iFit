@@ -10,7 +10,7 @@ function v = subsref_single(v, S, a)
   case {'()','.'} % syntax: a('fields') does not follow links (getalias).
                   % syntax: a.('field') follows links (get), can be a compound field.
     if ischar(S.subs) S.subs = cellstr(S.subs); end
-    if iscellstr(S.subs) && isscalar(S.subs) && ~ismethod(v, S.subs{1})
+    if iscellstr(S.subs) && isscalar(S.subs) && (~isobject(v) || ~ismethod(v, S.subs{1}))
       % follow links for '.' subsref, not for '()'
       v = get_single(v, S.subs{1}, S.type(1)=='.', a);  % which handles aliases in 'a'
       default = false;

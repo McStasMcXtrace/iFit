@@ -16,7 +16,7 @@ if nargin >= 3 || ~isempty(varargin)
   for i1=1:length(varargin)
     if i1 > 1, c = ','; else c=''; end
     b = varargin{i1};
-    if isstruct(b)
+    if ~isa(b,'estruct') && isstruct(b)
       b = class2str('',b,'eval');
     end
     if ischar(b)
