@@ -1,19 +1,19 @@
 function a = isnan(a)
-% b = isnan(s) : True for NaN iData object elements
+% b = isnan(s) : True for NaN estruct object elements
 %
-%   @iData/isnan function to return true for NaN elements
+%   @estruct/isnan function to return true for NaN elements
 %   of 's', i.e. that are NaN ('not a number')
 %
 %   To remove nan's and inf's values use: fill(s)
 %
-% input:  s: object or array (iData)
-% output: b: object or array (iData)
+% input:  s: object or array (estruct)
+% output: b: object or array (estruct)
 % ex:     b=isnan(a);
 %
 % Version: $Date$ $Version$ $Author$
-% See also iData, iData/sign, iData/isreal, iData/isfinite, iData/isnan,
-%          iData/isinf, iData/isfloat, iData/isinterger,
-%          iData/isnumeric, iData/islogical, iData/isscalar, 
-%          iData/isvector, iData/issparse, iData/fill
+% See also estruct, estruct/sign, estruct/isreal, estruct/isfinite, estruct/isnan,
+%          estruct/isinf, estruct/isfloat, estruct/isinterger,
+%          estruct/isnumeric, estruct/islogical, estruct/isscalar, 
+%          estruct/isvector, estruct/issparse, estruct/fill
 
-a = iData_private_unary(a, 'isnan');
+a = unary(a, 'isnan');

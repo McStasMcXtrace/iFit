@@ -1,14 +1,14 @@
 function a = tanh(a)
-% b = tanh(s) : computes the hyperbolic tangent of iData object
+% b = tanh(s) : computes the hyperbolic tangent of estruct object
 %
-%   @iData/tanh function to compute the hyperbolic tangent of data sets.
+%   @estruct/tanh function to compute the hyperbolic tangent of data sets.
 %
-% input:  s: object or array (iData)
-% output: b: object or array (iData)
+% input:  s: object or array (estruct)
+% output: b: object or array (estruct)
 % ex:     b=tanh(a);
 %
 % Version: $Date$ $Version$ $Author$
-% See also iData, iData/cos, iData/acos, iData/sin, iData/asin, iData/tan, iData/atan
+% See also estruct, estruct/cos, estruct/acos, estruct/sin, estruct/asin, estruct/tan, estruct/atan
 
-a = iData_private_unary(a, 'tanh');
+a = unary(a, 'tanh');
 

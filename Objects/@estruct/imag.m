@@ -1,14 +1,14 @@
 function a = imag(a)
-% b = imag(s) : imaginary part of iData object
+% b = imag(s) : imaginary part of estruct object
 %
-%   @iData/imag function to return the imaginary part of data sets.
+%   @estruct/imag function to return the imaginary part of data sets.
 %
-% input:  s: object or array (iData)
-% output: b: object or array (iData)
+% input:  s: object or array (estruct)
+% output: b: object or array (estruct)
 % ex:     b=imag(a);
 %
 % Version: $Date$ $Version$ $Author$
-% See also iData, iData/uminus, iData/abs, iData/real, iData/imag, iData/uplus
+% See also estruct, estruct/uminus, estruct/abs, estruct/real, estruct/imag, estruct/uplus
 
-a = iData_private_unary(a, 'imag');
+a = unary(a, 'imag');
 

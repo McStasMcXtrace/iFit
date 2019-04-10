@@ -1,14 +1,14 @@
 function a = sin(a)
-% b = sin(s) : computes the sine of iData object
+% b = sin(s) : computes the sine of estruct object
 %
-%   @iData/acos function to compute the sine of data sets (using radians).
+%   @estruct/acos function to compute the sine of data sets (using radians).
 %
-% input:  s: object or array (iData)
-% output: b: object or array (iData)
+% input:  s: object or array (estruct)
+% output: b: object or array (estruct)
 % ex:     b=sin(a);
 %
 % Version: $Date$ $Version$ $Author$
-% See also iData, iData/cos, iData/acos, iData/sin, iData/asin, iData/tan, iData/atan
+% See also estruct, estruct/cos, estruct/acos, estruct/sin, estruct/asin, estruct/tan, estruct/atan
 
-a = iData_private_unary(a, 'sin');
+a = unary(a, 'sin');
 

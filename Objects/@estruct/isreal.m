@@ -1,18 +1,18 @@
 function a = isreal(a)
-% b = isreal(s) : True for real iData object elements
+% b = isreal(s) : True for real estruct object elements
 %
-%   @iData/isreal function to return true for real elements
+%   @estruct/isreal function to return true for real elements
 %   of 's', i.e. that are not complex.
 %
-% input:  s: object or array (iData)
+% input:  s: object or array (estruct)
 % output: b: array (int)
 % ex:     b=isreal(a);
 %
 % Version: $Date$ $Version$ $Author$
-% See also iData, iData/sign, iData/isreal, iData/isfinite, iData/isnan,
-%          iData/isinf, iData/isfloat, iData/isinterger,
-%          iData/isnumeric, iData/islogical, iData/isscalar, 
-%          iData/isvector, iData/issparse
+% See also estruct, estruct/sign, estruct/isreal, estruct/isfinite, estruct/isnan,
+%          estruct/isinf, estruct/isfloat, estruct/isinterger,
+%          estruct/isnumeric, estruct/islogical, estruct/isscalar, 
+%          estruct/isvector, estruct/issparse
 
-a = iData_private_unary(a, 'isreal');
+a = unary(a, 'isreal');
 a = uint8(a);

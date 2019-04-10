@@ -1,14 +1,14 @@
 function a = atan(a)
-% b = atan(s) : computes the arc tangent of iData object
+% b = atan(s) : computes the arc tangent of estruct object
 %
-%   @iData/atan function to compute the inverse tangent of data sets (in radians).
+%   @estruct/atan function to compute the inverse tangent of data sets (in radians).
 %
-% input:  s: object or array (iData)
-% output: b: object or array (iData)
+% input:  s: object or array (estruct)
+% output: b: object or array (estruct)
 % ex:     b=atan(a);
 %
 % Version: $Date$ $Version$ $Author$
-% See also iData, iData/cos, iData/acos, iData/sin, iData/asin, iData/tan, iData/atan
+% See also estruct, estruct/cos, estruct/acos, estruct/sin, estruct/asin, estruct/tan, estruct/atan
 
-a = iData_private_unary(a, 'atan');
+a = unary(a, 'atan');
 

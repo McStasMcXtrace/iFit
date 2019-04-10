@@ -1,15 +1,15 @@
 function a = conj(a)
-% b = conj(s) : conjugate of iData object
+% b = conj(s) : conjugate of estruct object
 %
-%   @iData/conj function to return conjugate of data sets
+%   @estruct/conj function to return conjugate of data sets
 %
-% input:  s: object or array (iData)
-% output: b: object or array (iData)
+% input:  s: object or array (estruct)
+% output: b: object or array (estruct)
 % ex:     b=conj(a);
 %
 % Version: $Date$ $Version$ $Author$
-% See also iData, iData/transpose, iData/ctranspose, iData?imag, iData/real
+% See also estruct, estruct/transpose, estruct/ctranspose, estruct?imag, estruct/real
 
-a = iData_private_unary(a, 'conj');
+a = unary(a, 'conj');
 
 

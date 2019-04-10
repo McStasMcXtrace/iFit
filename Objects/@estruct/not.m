@@ -1,15 +1,15 @@
 function a = not(a)
-% b = not(s) : computes the logical 'not' of iData object
+% b = not(s) : computes the logical 'not' of estruct object
 %
-%   @iData/not function to compute the logical 'not' of data sets, 
-%     i.e. returns 0 where iData Signal is not zero, and 1 otherwise.
+%   @estruct/not function to compute the logical 'not' of data sets, 
+%     i.e. returns 0 where estruct Signal is not zero, and 1 otherwise.
 %
-% input:  s: object or array (iData)
-% output: b: object or array (iData)
+% input:  s: object or array (estruct)
+% output: b: object or array (estruct)
 % ex:     b=not(a);
 %
 % Version: $Date$ $Version$ $Author$
-% See also iData, iData/or, iData/and
+% See also estruct, estruct/or, estruct/and
 
-a = iData_private_unary(a, 'not');
+a = unary(a, 'not');
 

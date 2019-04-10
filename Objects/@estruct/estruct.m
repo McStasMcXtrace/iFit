@@ -116,7 +116,7 @@ properties
       while index<=nargin
         this = varargin{index}; s = [];
         if isobject(this)
-          if numel(this) == 1, this = struct(this); else continue; end
+          if numel(this) == 1, this = struct(this); else this = []; end
         end
         if ischar(this)
           if index<numel(varargin) && isvarname(this)   % input: name/value pair, e.g. 'par',value, ...
@@ -125,9 +125,9 @@ properties
             structs{end+1} = s; this = [];
             varargin{index} = []; varargin{index+1} = []; % clear memory
             index=index+1;  % increment name/value pair
-          elseif exist(this, 'file') || any(strcmp(strtok(this, ':'), {'http' 'https' 'ftp' 'file'}))
+          elseif ~isempty(dir(this)) || any(strcmp(strtok(this, ':'), {'http' 'https' 'ftp' 'file'}))
             % pass: we handle this below when assembling the object(s)
-            continue;
+            this = [];
           else
             s.value = str2struct(this); % convert to struct ?
             s.name  = inputname(index);
@@ -261,7 +261,7 @@ properties
     %   
     %      See also setalias, getalias, isfield, fieldnames.
     
-    % compatibility with original iData (2007-2019)
+    % compatibility with original estruct (2007-2019)
       self = rmfield(self, varargin{:});
     end 
     

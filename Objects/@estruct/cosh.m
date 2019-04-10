@@ -1,14 +1,14 @@
 function a = cosh(a)
-% b = cosh(s) : computes the hyperbolic cosine of iData object
+% b = cosh(s) : computes the hyperbolic cosine of estruct object
 %
-%   @iData/cosh function to compute the hyperbolic cosine of data sets.
+%   @estruct/cosh function to compute the hyperbolic cosine of data sets.
 %
-% input:  s: object or array (iData)
-% output: b: object or array (iData)
+% input:  s: object or array (estruct)
+% output: b: object or array (estruct)
 % ex:     b=cosh(a);
 %
 % Version: $Date$ $Version$ $Author$
-% See also iData, iData/cos, iData/acos, iData/sin, iData/asin, iData/tan, iData/atan
+% See also estruct, estruct/cos, estruct/acos, estruct/sin, estruct/asin, estruct/tan, estruct/atan
 
-a = iData_private_unary(a, 'cosh');
+a = unary(a, 'cosh');
 

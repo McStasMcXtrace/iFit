@@ -1,14 +1,14 @@
 function a = log10(a)
-% b = log10(s) : base 10 logarithm value of iData object
+% b = log10(s) : base 10 logarithm value of estruct object
 %
-%   @iData/log10 function to return the base 10 logarithm value of data sets
+%   @estruct/log10 function to return the base 10 logarithm value of data sets
 %
-% input:  s: object or array (iData)
-% output: b: object or array (iData)
+% input:  s: object or array (estruct)
+% output: b: object or array (estruct)
 % ex:     b=log10(a);
 %
 % Version: $Date$ $Version$ $Author$
-% See also iData, iData/exp, iData/log, iData/log10, iData/sqrt
+% See also estruct, estruct/exp, estruct/log, estruct/log10, estruct/sqrt
 
-a = iData_private_unary(a, 'log10');
+a = unary(a, 'log10');
 

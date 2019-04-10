@@ -1,18 +1,18 @@
 function a = isinterger(a)
-% b = isinterger(s) : True for integer iData object elements
+% b = isinterger(s) : True for integer estruct object elements
 %
-%   @iData/isinterger function to return true for integer elements
+%   @estruct/isinterger function to return true for integer elements
 %   of 's', i.e. that are of type 'uint' and 'int'.
 %
-% input:  s: object or array (iData)
-% output: b: object or array (iData)
+% input:  s: object or array (estruct)
+% output: b: object or array (estruct)
 % ex:     b=isinterger(a);
 %
 % Version: $Date$ $Version$ $Author$
-% See also iData, iData/sign, iData/isreal, iData/isfinite, iData/isnan,
-%          iData/isinf, iData/isfloat, iData/isinterger,
-%          iData/isnumeric, iData/islogical, iData/isscalar, 
-%          iData/isvector, iData/issparse
+% See also estruct, estruct/sign, estruct/isreal, estruct/isfinite, estruct/isnan,
+%          estruct/isinf, estruct/isfloat, estruct/isinterger,
+%          estruct/isnumeric, estruct/islogical, estruct/isscalar, 
+%          estruct/isvector, estruct/issparse
 
-a = iData_private_unary(a, 'isinteger');
+a = unary(a, 'isinteger');
 a = uint8(a);

@@ -1,14 +1,14 @@
 function a = acos(a)
-% b = cos(s) : computes the cosine of iData object
+% b = cos(s) : computes the cosine of estruct object
 %
-%   @iData/cos function to compute the cosine of data sets (using radians).
+%   @estruct/cos function to compute the cosine of data sets (using radians).
 %
-% input:  s: object or array (iData)
-% output: b: object or array (iData)
+% input:  s: object or array (estruct)
+% output: b: object or array (estruct)
 % ex:     b=cos(a);
 %
 % Version: $Date$ $Version$ $Author$
-% See also iData, iData/cos, iData/acos, iData/sin, iData/asin, iData/tan, iData/atan
+% See also estruct, estruct/cos, estruct/acos, estruct/sin, estruct/asin, estruct/tan, estruct/atan
 
-a = iData_private_unary(a, 'cos');
+a = unary(a, 'cos');
 

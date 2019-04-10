@@ -1,20 +1,20 @@
 function a = isfinite(a)
-% b = isfinite(s) : True for finite iData object elements
+% b = isfinite(s) : True for finite estruct object elements
 %
-%   @iData/isfinite function to return true for finite elements
+%   @estruct/isfinite function to return true for finite elements
 %   of 's', i.e. that are not NaN, Inf or -Inf.
 %
 %   To remove nan's and inf's values use: fill(s)
 %
-% input:  s: object or array (iData)
+% input:  s: object or array (estruct)
 % output: b: array (int)
 % ex:     b=isfinite(a);
 %
 % Version: $Date$ $Version$ $Author$
-% See also iData, iData/sign, iData/isreal, iData/isfinite, iData/isnan,
-%          iData/isinf, iData/isfloat, iData/isinterger,
-%          iData/isnumeric, iData/islogical, iData/isscalar, 
-%          iData/isvector, iData/issparse, iData/fill
+% See also estruct, estruct/sign, estruct/isreal, estruct/isfinite, estruct/isnan,
+%          estruct/isinf, estruct/isfloat, estruct/isinterger,
+%          estruct/isnumeric, estruct/islogical, estruct/isscalar, 
+%          estruct/isvector, estruct/issparse, estruct/fill
 
-a = iData_private_unary(a, 'isfinite');
+a = unary(a, 'isfinite');
 

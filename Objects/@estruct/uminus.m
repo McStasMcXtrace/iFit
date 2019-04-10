@@ -1,14 +1,14 @@
 function a = uminus(a)
-% b = uminus(s) : opposite value of iData object
+% b = uminus(s) : opposite value of estruct object
 %
-%   @iData/uminus function to return the opposite value of data sets, i.e. b=-s.
+%   @estruct/uminus function to return the opposite value of data sets, i.e. b=-s.
 %
-% input:  s: object or array (iData)
-% output: b: object or array (iData)
+% input:  s: object or array (estruct)
+% output: b: object or array (estruct)
 % ex:     b=uminus(a);
 %
 % Version: $Date$ $Version$ $Author$
-% See also iData, iData/uminus, iData/abs, iData/real, iData/imag, iData/uplus
+% See also estruct, estruct/uminus, estruct/abs, estruct/real, estruct/imag, estruct/uplus
 
-a = iData_private_unary(a, 'uminus');
+a = unary(a, 'uminus');
 

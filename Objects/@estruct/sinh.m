@@ -1,14 +1,14 @@
 function a = sinh(a)
-% b = sinh(s) : computes the hyperbolic sine of iData object
+% b = sinh(s) : computes the hyperbolic sine of estruct object
 %
-%   @iData/sinh function to compute the hyperbolic sine of data sets.
+%   @estruct/sinh function to compute the hyperbolic sine of data sets.
 %
-% input:  s: object or array (iData)
-% output: b: object or array (iData)
+% input:  s: object or array (estruct)
+% output: b: object or array (estruct)
 % ex:     b=sinh(a);
 %
 % Version: $Date$ $Version$ $Author$
-% See also iData, iData/cos, iData/acos, iData/sin, iData/asin, iData/tan, iData/atan
+% See also estruct, estruct/cos, estruct/acos, estruct/sin, estruct/asin, estruct/tan, estruct/atan
 
-a = iData_private_unary(a, 'sinh');
+a = unary(a, 'sinh');
 

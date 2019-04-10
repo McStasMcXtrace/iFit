@@ -1,14 +1,14 @@
 function c = sqr(a)
-% c = sqr(a) : computes the square of iData objects
+% c = sqr(a) : computes the square of estruct objects
 %
-%   @iData/sqr function to compute the square of data sets
+%   @estruct/sqr function to compute the square of data sets
 %
-% input:  a: object or array (iData)
-% output: c: object or array (iData)
+% input:  a: object or array (estruct)
+% output: c: object or array (estruct)
 % ex:     c=sqr(a);
 %
 % Version: $Date$ $Version$ $Author$
-% See also iData, iData/times, iData/power
+% See also estruct, estruct/times, estruct/power
 
-c = iData_private_binary(a, 2, 'power');
+c = binary(a, 2, 'power');
 

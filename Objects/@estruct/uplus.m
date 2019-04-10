@@ -1,15 +1,15 @@
 function a = uplus(a)
-% b = uplus(s) : makes a copy of iData object
+% b = uplus(s) : makes a copy of estruct object
 %
-%   @iData/uplus function to return a duplicate of data sets.
-%   b=+a creates a new iData object with same content as 'a', but different Tag/ID and Date.
+%   @estruct/uplus function to return a duplicate of data sets.
+%   b=+a creates a new estruct object with same content as 'a', but different Tag/ID and Date.
 %
-% input:  s: object or array (iData)
-% output: b: object or array (iData)
+% input:  s: object or array (estruct)
+% output: b: object or array (estruct)
 % ex:     b=uplus(a);
 %
 % Version: $Date$ $Version$ $Author$
-% See also iData, iData/uminus, iData/abs, iData/real, iData/imag, iData/uplus
+% See also estruct, estruct/uminus, estruct/abs, estruct/real, estruct/imag, estruct/uplus
 
-a = iData_private_unary(a, 'uplus');
+a = unary(a, 'uplus');
 

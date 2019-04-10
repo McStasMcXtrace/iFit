@@ -1,15 +1,15 @@
 function a = norm(a)
-% b = norm(s) : norm-2 of iData object
+% b = norm(s) : norm-2 of estruct object
 %
-%   @iData/norm function to return the norm-2 of data sets
+%   @estruct/norm function to return the norm-2 of data sets
 %   This function computes the norm of the object 's'.
 %
-% input:  s: object or array (iData)
+% input:  s: object or array (estruct)
 % output: b: norm (double)
 % ex:     b=norm(a);
 %
 % Version: $Date$ $Version$ $Author$
-% See also iData, iData/sum, iData/trapz, norm
+% See also estruct, estruct/sum, estruct/trapz, norm
 
-a = iData_private_unary(a, 'norm');
+a = unary(a, 'norm');
 

@@ -1,17 +1,17 @@
 function a = full(a)
-% b = full(s) : Convert iData object storage to full matrix
+% b = full(s) : Convert estruct object storage to full matrix
 %
-%   @iData/full function to use full matrix storage, which stores
+%   @estruct/full function to use full matrix storage, which stores
 %   all elements in Signal, Error and Monitor (as opposed to sparse). 
 %
-% input:  s: object or array (iData)
-% output: b: object or array (iData)
+% input:  s: object or array (estruct)
+% output: b: object or array (estruct)
 % ex:     b=full(a);
 %
 % Version: $Date$ $Version$ $Author$
-% See also iData, iData/pack, iData/sparse
+% See also estruct, estruct/pack, estruct/sparse
 
-a = iData_private_unary(a, 'full');
+a = unary(a, 'full');
 
 if nargout == 0 & length(inputname(1))
   assignin('caller',inputname(1),a);
