@@ -261,7 +261,7 @@ case {'power'}
   else m3=get(c,'Monitor'); end
 
 case {'lt', 'gt', 'le', 'ge', 'ne', 'eq', 'and', 'or', 'xor', 'isequal'}
-  s3 = genop(op, y1, y2);
+  s3 = logical(genop(op, y1, y2));
   try
     e3 = sqrt(genop( op, d1.^2, d2.^2));
     e3 = 2*genop(@divide, e3, genop(@plus, y1, y2)); % normalize error to mean signal
@@ -279,17 +279,16 @@ clear e1 e2 m1 m2 y1 y2
 
 % set Signal label
 s1=s1(1:min(10, numel(s1)));
-if isa(a, 'estruct'), [dummy, al] = getaxis(a,'0');
+if isa(a, 'estruct'), al = label(a,'0');
 else
   al=num2str(s1(:)'); if length(al) > 10, al=[ al(1:10) '...' ]; end
 end
 s2=s2(1:min(10, numel(s2)));
-if isa(b, 'estruct'), [dummy, bl] = getaxis(b,'0');
+if isa(b, 'estruct'), bl = label(b,'0');
 else
   bl=num2str(s2(:)');
   if length(bl) > 10, bl=[ bl(1:10) '...' ]; end
 end
-
 clear s1 s2
 
 % ensure that Monitor and Error have the right dimensions
@@ -314,27 +313,13 @@ end
 
 % update object (store result)
 c  = set(c, 'Signal', s3);
-y3 = get(c, 'Signal');
-% test if we could update signal as expected, else we store the new value directly in the field
-if sum(s3(~isnan(s3))) ~= sum(y3(~isnan(y3)))
-  c = setalias(c, 'Signal', s3, [  op '(' al ',' bl ')' ]);
-end
+label(c, 'Signal', [  op '(' al ',' bl ')' ]);
 clear s3
-% for Error and Monitor, we do the same, except that these are set to scalars
-% in setalias, so we directly set them in c.Alias.Values{2|3}
 e3=abs(e3);
-c  = set(c, 'Error', e3);
-y3 = get(c, 'Error');
-if sum(e3(~isnan(e3))) ~= sum(y3(~isnan(y3)))
-  c.Alias.Values{2} = e3;
-end
+c  = set(c, 'Error', abs(e3));
 clear e3
 c  = set(c, 'Monitor', m3);
-y3 = get(c, 'Monitor');
-if sum(m3(~isnan(m3))) ~= sum(y3(~isnan(y3)))
-  c.Alias.Values{3} = m3;
-end
-clear m3 y3
+clear m3
 
 % fill missing axes when objects are orthogonal
 if isa(a, 'estruct') && isa(b, 'estruct') && orthogonal_ab
@@ -343,14 +328,14 @@ if isa(a, 'estruct') && isa(b, 'estruct') && orthogonal_ab
   for index=1:ndims(c)
     if isempty(getaxis(c, num2str(index)))
       x       = getaxis(b, index_b);           % axis value
-      [xd,xl] = getaxis(b, num2str(index_b));  % get the axis definition
+      xd      = getaxis(b, num2str(index_b));  % get the axis definition
       % must make sure we do not overwrite an existing axis name
       if any(strcmp(xd, ax)), xd = sprintf('Axis_%i', index); end
       if any(strcmp(xd, ax)), xd = sprintf('axis_%i', index); end
       if any(strcmp(xd, ax)), xd = sprintf('%s_%i', op, index); end
       index_b = index_b+1;
       if ~isempty(xd) && ischar(xd)
-        c=setalias(c, xd, x, xl);
+        c=setalias(c, xd, x);
         c=setaxis(c, index, xd);
       else
         c=setaxis(c, index, x);
@@ -358,9 +343,6 @@ if isa(a, 'estruct') && isa(b, 'estruct') && orthogonal_ab
     end
   end
 end
-
-c = setaxis(c); % check axes
-
 
 c.Command=cmd;
 history(c, op, a,b);
