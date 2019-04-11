@@ -16,11 +16,11 @@ function a = subsasgn(a,S,val)
 %
 %   A('field')    =val
 %     Set complex field in structure and does NOT follow links.
-%     This syntax sets 'aliases' (does not travel through links) when the 
+%     This syntax sets 'aliases' (does not travel through links) when the
 %       value is a string/char.
 %     Equivalent to set(s, 'field', val, 'alias') and setalias(s, 'field', val)
 %
-%   In the alias case above, a string/char value allows to link to internal or 
+%   In the alias case above, a string/char value allows to link to internal or
 %   external links, as well as evaluated expression, with the following syntax cases:
 %     'field'                           a simple link to an other property 'field'
 %     'field1.field2...'                a nested link to an other property
@@ -30,8 +30,8 @@ function a = subsasgn(a,S,val)
 %     'ftp://some_distant_resource'     an FTP URL (proxy settings may need to be set)
 %     'matlab: some_expression'         some code to evaluate. 'this' refers to the object itself
 %
-%   File and URL can refer to compressed resources (zip, gz, tar, Z) which are 
-%   extracted on-the-fly. In case the URL/file resource contains 'sections', a 
+%   File and URL can refer to compressed resources (zip, gz, tar, Z) which are
+%   extracted on-the-fly. In case the URL/file resource contains 'sections', a
 %   search token can be specified with syntax such as 'file://filename#token'.
 %
 %   A = SUBSASGN(A,S,B) is called for the syntax A(I)=B, A{I}=B, or
@@ -42,7 +42,7 @@ function a = subsasgn(a,S,val)
 %
 % Example: s=estruct; s.x = 1:10; s('y')='blah'; isnumeric(s.x) & ischar(s('y'))
 % Version: $Date$ $Version$ $Author$
-% See also estruct, fieldnames, findfield, isfield, set, get, getalias, setalias, 
+% See also estruct, fieldnames, findfield, isfield, set, get, getalias, setalias,
 %   getaxis, setaxis
 
 if numel(a) > 1
@@ -59,11 +59,14 @@ elseif ischar(S(1).subs(1)) && any(strcmp(S(1).subs, a.Protected))
   error([ mfilename ': can not set Protected property ' S(1).subs ' in object ' a.Tag ]);
 end
 
-% we use a recursive approach until we reach the last level for assigment
+% we use a recursive approach until we reach the last level for assignment
 % then propagate back the update to the upper levels
 a = subsasgn_recursive(a, S, val);
 
 % reset cache (as we have changed the object: fields, values, ...)
-a.Private.cache.findfield = [];
+if isa(a, 'estruct')
+  history(a, mfilename, S, val);
+end
+
 a.ModificationDate = clock;
 

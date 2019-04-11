@@ -4,13 +4,13 @@ function s = setaxis(s,varargin)
 %   the syntax a{rank}=value. The axis rank 0 corresponds with the Signal/Monitor value.
 %   The axis of rank 1 corresponds with rows, 2 with columns, 3 with pages, etc.
 %
-%   SETAXIS(a, 'Signal',value) Set the Signal/Monitor value, equivalent to 
+%   SETAXIS(a, 'Signal',value) Set the Signal/Monitor value, equivalent to
 %   a{0}=value and setaxis(a, 0, value).
 %
 %   SETAXIS(a, 'Error', value) Set the Error/Monitor value.
 %
 %   SETAXIS(a, 'rank', 'alias') Set axis definition (alias). The axis of rank 0
-%   corresponds with the Signal definition. The 'value' can be specified as 
+%   corresponds with the Signal definition. The 'value' can be specified as
 %  'biggest' to indicate the numeric biggest array, as in findfield.
 %
 %   An alias is a string/char which allows to link to internal or external links
@@ -23,19 +23,19 @@ function s = setaxis(s,varargin)
 %     'ftp://some_distant_resource'     an FTP URL (proxy settings may need to be set)
 %     'matlab: some_expression'         some code to evaluate. 'this' refers to the object itself
 %
-%   File and URL can refer to compressed resources (zip, gz, tar, Z) which are 
-%   extracted on-the-fly. In case the URL/file resource contains 'sections', a 
+%   File and URL can refer to compressed resources (zip, gz, tar, Z) which are
+%   extracted on-the-fly. In case the URL/file resource contains 'sections', a
 %   search token can be specified with syntax such as 'file://filename#token'.
 %
 %   SETAXIS(a) check axes, Signal, Monitor, Error.
 %
 % Example: s=estruct('x',1:10,'y',1:20, 'data',rand(10,20)); setaxis(s,1,'x'); isnumeric(getaxis(s,1))
 % Version: $Date$ $Version$ $Author$
-% See also estruct, fieldnames, findfield, isfield, set, get, getalias, setalias, 
+% See also estruct, fieldnames, findfield, isfield, set, get, getalias, setalias,
 %   getaxis, setaxis
 
   if nargin == 1, s = axescheck(s); return; end
-  
+
   % handle array of struct
   if numel(s) > 1
     for index=1:numel(s)
@@ -43,7 +43,7 @@ function s = setaxis(s,varargin)
     end
     return
   end
-  
+
   m = []; % will hold monitor value
   % handle array/cell of axes
   for index=1:2:numel(varargin) % loop on requested properties
@@ -64,14 +64,14 @@ function s = setaxis(s,varargin)
       % setaxis(a, 'Error')                   = Error/Monitor
       get_mon = false; sig=[]; err=[];
       % set the alias definition
-      if ischar(name{n_index}) 
+      if ischar(name{n_index})
         if isscalar(name{n_index})
           if strcmp(name{n_index},'0')  % Signal definition
             s = builtin('subsasgn',s, struct('type','.','subs','Signal'), value);
             s.Private.cache.size = [];
           elseif isfinite(str2num(name{n_index}))
             s.Axes{str2num(name{n_index})}=value;  % set definition in Axes (cell)
-          else 
+          else
             error([ mfilename ': invalid axis rank ''' name{n_index} '''. Should be ''0'' to ''9'' or ''Signal'' or ''Error''.' ]);
           end
         elseif strcmp(name{n_index}, 'Signal')
@@ -89,7 +89,7 @@ function s = setaxis(s,varargin)
       % second test for 'Error/Monitor' (and now we have Monitor - shared with 'Signal' case)
       if ischar(name{n_index}) && strcmp(name{n_index}, 'Error')
         if isnumeric(value) && (isscalar(m) || isequal(size(m),size(value)))
-          value = value.*m; 
+          value = value.*m;
         end
         s = subsasgn_single(s, 'Error', value); % follow links -> value
       end
@@ -98,7 +98,7 @@ function s = setaxis(s,varargin)
         % set the alias value: interpret result using our subsasgn (follow links)
         if name{n_index} == 0 % {0}=Signal/Monitor
           if isnumeric(value) && (isscalar(m) || isequal(size(m),size(sig)))
-            value=value.*m; 
+            value=value.*m;
           end
           s = subsasgn_single(s, 'Signal', value);
           s.Private.cache.size = [];
@@ -108,13 +108,15 @@ function s = setaxis(s,varargin)
             if ischar(s.Axes{name{n_index}}) && ~ischar(value)
               s = subsasgn_single(s, s.Axes{name{n_index}}, value); % follow link for assignment
             else
+              if numel(s.Axes{name{n_index}}) ~= numel(value) % value has changed significantly, request check
+                s.Private.cache.check_requested = true;
+              end
               s.Axes{name{n_index}} = value; % set definition from char link/alias
             end
           end
         end
       end
     end % for n_index
-    
+
   end % for index
   history(s, mfilename, varargin{:});
-  s.Private.cache.check_requested = true;

@@ -28,7 +28,7 @@ if numel(this) > 1
     end
     labl=this;
   end
-  
+
   return
 end
 
@@ -45,7 +45,7 @@ aliases = varargin{1};
 % check input alias
 if     ischar(aliases), aliases=cellstr(aliases); end
 if ~iscellstr(aliases) && ~isnumeric(aliases)
-  error([ mfilename ': Require a char/cellstr/numeric Alias name, but you gave me a ' class(aliases) ]); 
+  error([ mfilename ': Require a char/cellstr/numeric Alias name, but you gave me a ' class(aliases) ]);
 end
 if isnumeric(aliases), aliases=num2cell(aliases); end
 
@@ -54,7 +54,7 @@ if nargin >= 3
   values = varargin{2};
   if     ischar(values), values=cellstr(values); end
   if ~iscellstr(values)
-    error([ mfilename ': Require a char/cellstr label, but you gave me a ' class(values) ]); 
+    error([ mfilename ': Require a char/cellstr label, but you gave me a ' class(values) ]);
   end
 else values = cell(size(aliases));
 end
@@ -63,9 +63,35 @@ end
 labl = {};
 for index=1:numel(aliases)
   alias=aliases{index};
-  
+
+  l = label_single(this, alias, values{index}, nargin);
+  if nargin == 2 % get
+    if isempty(l)
+      if strcmp(alias,'Signal')
+        [l, alias] = label_single(this, '0', values{index}, nargin);
+      elseif strcmp(alias,'0') || isequal(alias, 0)
+        [l, alias] = label_single(this, 'Signal', values{index}, nargin);
+      end
+    end
+    labl{end+1} = l;
+  end
+
+end
+
+if nargin > 2, labl=this;
+else
+  if numel(labl) == 1, labl=labl{1}; end
+end
+
+% ------------------------------------------------------------------------------
+function [labl, alias] = label_single(this, alias, value, n)
+  % a single set/get for alias
+  labl = '';
   if isnumeric(alias) || isfinite(str2double(alias)) % rank is given -> replace by corresponding alias
     tmp = getaxis(this, num2str(alias)); % this is the definition of axis rank
+    if isempty(tmp) && alias == 0
+      tmp = getaxis(this, 'Signal');
+    end
   elseif isfield(this, alias)
     tmp = getaxis(this, alias);
   end
@@ -75,22 +101,15 @@ for index=1:numel(aliases)
     alias = sprintf('axis_%i', alias);
   end
   clear tmp
-  if nargin == 2  % get
+  if n == 2  % get
     if isfield(this, [ 'Labels.' alias ]) || isfield(this.Labels, alias) % is the alias label defined ?
-         labl{end+1} = subsref_single(this, [ 'Labels.' alias ]);  % ok we have it
-    else labl{end+1}=''; end                  % else invalid
+         labl = subsref_single(this, [ 'Labels.' alias ]);  % ok we have it
+    end                  % else invalid
   else            % set
-    subsasgn_single(this, [ 'Labels.' alias ], validstr(values{index}));
+    subsasgn_single(this, [ 'Labels.' alias ], validstr(value));
   end
-end
-
-if nargin > 2, labl=this; 
-else
-  if numel(labl) == 1, labl=labl{1}; end
-end
 
 % ------------------------------------------------------------------------------
-
 function str=validstr(str)
   % validate a string as a single line
   if iscellstr(str), str=sprintf('%s;', str{:}); end

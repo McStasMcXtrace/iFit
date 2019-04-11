@@ -17,12 +17,12 @@ function s = axescheck(s)
     return
   end
 
-s.Private.cache.check_requested = 0; % ok, we are working on this
+s.Private.cache.check_requested = false; % ok, we are working on this
 
 %% Check Signal, Monitor, Error ================================================
 
 % get the size of the Signal, Monitor, Error (follow links)
-signal_sz = size(subsref_single(s, 'Signal')); 
+signal_sz = size(subsref_single(s, 'Signal'));
 monitor_sz= size(subsref_single(s, 'Monitor'));
 error_sz  = size(subsref_single(s, 'Error'));
 axes_id   = [];
@@ -36,7 +36,7 @@ if all(signal_sz == 0) || all(error_sz == 0) || all(monitor_sz == 0) % empty ?
   [signal_id, error_id, monitor_id, axes_id] = axescheck_find_signal(s, fields, dims, sz);
   % change those which are not set (set definition)
   if all(signal_sz == 0) && ~isempty(signal_id)
-    s = builtin('subsasgn', s, struct('type','.','subs','Signal'),  fields{signal_id}); 
+    s = builtin('subsasgn', s, struct('type','.','subs','Signal'),  fields{signal_id});
     signal_sz  = sz{signal_id};
   end
   if ~isempty(signal_sz)
@@ -45,7 +45,7 @@ if all(signal_sz == 0) || all(error_sz == 0) || all(monitor_sz == 0) % empty ?
       error_sz   = sz{error_id};
     end
     if all(monitor_id == 0) && ~isempty(monitor_id)
-      s = builtin('subsasgn', s, struct('type','.','subs','Monitor'), fields{monitor_id}); 
+      s = builtin('subsasgn', s, struct('type','.','subs','Monitor'), fields{monitor_id});
       monitor_sz = sz{monitor_id};
     end
   end
@@ -75,20 +75,20 @@ history(s, mfilename, s);
 
 % ------------------------------------------------------------------------------
 function [signal_id, error_id, monitor_id, axes_id] = axescheck_find_signal(self, fields, dims, sz)
-  
+
   signal_id = []; error_id = []; monitor_id=[]; axes_id = [];
 
-  if      isempty(dims), return; 
-  elseif isscalar(dims), signal_id=1; return; 
+  if      isempty(dims), return;
+  elseif isscalar(dims), signal_id=1; return;
   end
-  fields0 =fields; 
+  fields0 =fields;
   % we identify named numeric fields, and remove them from our definitions
   for index=1:numel(fields) % decreasing size
     if isempty(fields{index}), continue; end  % skip empty fields/already tagged
     % remove fields that can not be used/cross-referenced
     if any(strcmp(fields{index}, {'Date','ModificationDate','Error','Signal','Monitor'}))
       fields0{index} = ''; dims(index) = 0; sz{index} = 0; fields{index} = '';
-      continue; 
+      continue;
     end
     if isempty(error_id) && ~strcmp(fields{index}, 'Error') && ~isempty(strfind(lower(fields{index}), 'err'))
       error_id = index;   % if found, dimension must match signal, or scalar
@@ -122,7 +122,7 @@ function [signal_id, error_id, monitor_id, axes_id] = axescheck_find_signal(self
     error_id = []; monitor_id=[]; axes_id = [];
     return
   end
-  
+
   % now check dimensions wrt signal
   if ~isempty(error_id) && ~all(dims(signal_id) == dims(error_id)) && dims(error_id) ~= 1
     error_id = [];  % found error does not match signal nor scalar
@@ -135,14 +135,14 @@ function [signal_id, error_id, monitor_id, axes_id] = axescheck_find_signal(self
 function axescheck_find_axes(self, fields, dims, sz)
 
   if isempty(dims), return; end
-  
+
   % scan Axes/dimensions
   for index=1:ndims(self)
     % get current axis definition
     if index <= numel(self.Axes)
       def = self.Axes{index};
     else def=[]; end
-    
+
     % when not empty, we check that it is:
     %   size(Signal) or size(rank)
     if ~isempty(def)
@@ -155,15 +155,15 @@ function axescheck_find_axes(self, fields, dims, sz)
       if axescheck_size_axes(self, index, ax_sz)
         continue
       end
-      
+
       % if we reach here, axis is invalid
       def=[]; self.Axes{index} = [];
     end
-    
+
     if isempty(def)
     % when empty we search for one amongst fields that is:
     %   size(Signal) or size(rank)
-    
+
       % get definition of Signal, Error and Monitor, so that we do not use these.
       not_use = self.Axes; % will not use already defined axes
       for findex={'Signal','Error','Monitor'}
@@ -181,12 +181,12 @@ function axescheck_find_axes(self, fields, dims, sz)
       end
     end
   end % for
-  
+
   % ----------------------------------------------------------------------------
   function tf = axescheck_size_axes(self, index, ax_sz)
     tf = false;
     %   size(Signal) or size(rank) as vector
     if (numel(ax_sz) == ndims(self) && all(ax_sz == size(self))) ...
-    || (numel(ax_sz) >= index && isscalar(find(ax_sz>1)) && ax_sz(index) == size(self, index))
+    || (numel(ax_sz) >= index && isscalar(find(ax_sz>1)) && prod(ax_sz) == size(self, index))
       tf = true;  % valid axis definition/value
     end

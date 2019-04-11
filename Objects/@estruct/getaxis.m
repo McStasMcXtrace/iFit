@@ -4,7 +4,7 @@ function v = getaxis(s,varargin)
 %   the syntax a{rank}. The axis rank 0 corresponds with the Signal/Monitor value.
 %   The axis of rank 1 corresponds with rows, 2 with columns, 3 with pages, etc.
 %
-%   GETAXIS(a, 'Signal') Get the Signal/Monitor value, equivalent to a{0} and 
+%   GETAXIS(a, 'Signal') Get the Signal/Monitor value, equivalent to a{0} and
 %   getaxis(a, 0).
 %
 %   GETAXIS(a, 'Error')  Get the Error/Monitor value.
@@ -22,17 +22,17 @@ function v = getaxis(s,varargin)
 %     'ftp://some_distant_resource'     an FTP URL (proxy settings may need to be set)
 %     'matlab: some_expression'         some code to evaluate. 'this' refers to the object itself
 %
-%   File and URL can refer to compressed resources (zip, gz, tar, Z) which are 
-%   extracted on-the-fly. In case the URL/file resource contains 'sections', a 
+%   File and URL can refer to compressed resources (zip, gz, tar, Z) which are
+%   extracted on-the-fly. In case the URL/file resource contains 'sections', a
 %   search token can be specified with syntax such as 'file://filename#token'.
 %
 % Example: s=estruct('x',1:10,'y',1:20, 'data',rand(10,20)); setaxis(s,1,'x'); isnumeric(getaxis(s,1))
 % Version: $Date$ $Version$ $Author$
-% See also estruct, fieldnames, findfield, isfield, set, get, getalias, setalias, 
+% See also estruct, fieldnames, findfield, isfield, set, get, getalias, setalias,
 %   getaxis, setaxis
 
   if nargin == 1, v = s.Axes; return; end
-  
+
   % handle array of struct
   v = {};
   if numel(s) > 1
@@ -42,13 +42,12 @@ function v = getaxis(s,varargin)
     v = reshape(v, size(s));
     return
   end
-  
+
   % check object when we evaluate/get some data out of it, and changes were marked.
   if isfield(s.Private,'cache') && isfield(s.Private.cache,'check_requested') ...
     && s.Private.cache.check_requested
     axescheck(s);
   end
-  
   m = []; % will hold monitor value
   % handle array/cell of axes
   for index=1:numel(varargin) % loop on requested properties
@@ -71,7 +70,7 @@ function v = getaxis(s,varargin)
             v{end+1} = builtin('subsref',s, struct('type','.','subs','Signal'));
           elseif isfinite(str2num(name{n_index})) && str2num(name{n_index}) <= numel(s.Axes)
             v{end+1} = s.Axes{str2num(name{n_index})};  % get definition in Axes (cell)
-          else 
+          else
             v{end+1} = []; % axis rank beyond dimension of object Signal
           end
         elseif strcmp(name{n_index}, 'Signal')
@@ -92,6 +91,7 @@ function v = getaxis(s,varargin)
         if isscalar(m) || isequal(size(m),size(err)), v{end+1} = err./m;
         else                                          v{end+1} = err;
         end
+        continue
       end
       % getaxis(s, rank): get the axis value
       if isnumeric(name{n_index}) && isscalar(name{n_index}) && name{n_index} >= 0
@@ -109,10 +109,15 @@ function v = getaxis(s,varargin)
             else
               v{end+1} = def;
             end
-          elseif name{n_index} <= ndims(s) % invalid Axis (not assigned): use a vector matching Signal dimension
-            v{end+1} = 1:size(s, name{n_index});
           else % axis rank beyond dimension of object Signal
             v{end+1} = [];
+          end
+          if isempty(v{end}) && name{n_index} <= ndims(s)
+            if numel(find(size(s)>1)) == 1
+              v{end} = 1:prod(size(s));
+            else
+              v{end} = 1:size(s, name{n_index});
+            end
           end
           % check axis orientation
           n = size(v{end});

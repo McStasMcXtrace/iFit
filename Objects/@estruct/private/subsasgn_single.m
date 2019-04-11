@@ -10,7 +10,7 @@ function a = subsasgn_single(a, S, val, a0)
   case {'()','.'} % syntax: a('fields') does not follow links (setalias).
                   % syntax: a.('field') follows links (set), can be a compound field.
     if ischar(S.subs) S.subs = cellstr(S.subs); end
-    if iscellstr(S.subs) && isscalar(S.subs) 
+    if iscellstr(S.subs) && isscalar(S.subs)
       if ~isobject(a) || ~ismethod(a, S.subs{1})
         % follow links for '.' subsref, not for '()'
         a = set_single(a, S.subs{1}, val, S.type(1)=='.', a0);  % which handles aliases
@@ -27,23 +27,15 @@ function a = subsasgn_single(a, S, val, a0)
   if default  % other cases
     a = builtin('subsasgn', a, S, val);
   end
-  if isa(a, 'estruct')
-    history(a, mfilename, S, val);
-  end
 
 % ----------------------------------------------------------------------------
 function s = set_single(s, field, value, follow, s0)
   % set_single set a single field to given value
   % when follow is true, the existing field value is checked for further link
   %   then the initial structure s0 is set again.
-  
+
   if nargin <= 3, follow=true; end
   if nargin <= 4, s0=s; end
-  
-  if any(strcmp(field, {'Signal','Monitor','Error','Axes'})) && isa(s0, 'estruct')
-    s0.Private.cache.check_requested = true;
-    s0.Private.cache.size=[];
-  end
 
   % cut the field into pieces with '.' as separator
   if any(field == '.')
@@ -54,7 +46,7 @@ function s = set_single(s, field, value, follow, s0)
     field = cellstr(field);
     S = struct('type','.','subs', field{1});
   end
-    
+
   % use builtin subsasgn for the whole path when 'not follow'
   if ~follow && numel(S) > 1
     s = builtin('subsasgn', s, S, value);
@@ -71,17 +63,20 @@ function s = set_single(s, field, value, follow, s0)
         else
           s.(S.subs) = [];  % a normal structure
         end
+        if isa(s0, 'estruct'), s0.Private.cache.findfield = []; end
       end
       % subsasgn is faster than setfield which itself calls subsasgn
       if follow
         % get possible alias
         v = builtin('subsref',s, S);
-        if ischar(v) && isfield(s0, strtok(v, '.')) % link exists in original objet ?
+        if ischar(v) && isfield(s0, strtok(v, '.')) % link exists in original object ?
           try
             s0 = set_single(s0, v, value, follow); % set link in root object
             % must exit recursive levels
             return
           end
+        elseif isa(s0, 'estruct') && isnumeric(v) && numel(v) ~= numel(value)
+          s0.Private.cache.check_requested = true;
         end
       end
       % if ~follow: change value. Calls "s.(tok)=value" i.e. subsasgn
