@@ -2,10 +2,10 @@ function b = unary(a, op, varargin)
 % UNARY handles unary operations
 %
 % Supported operations:
-% abs acosh acos asinh asin atanh atan ceil conj cosh cos ctranspose del2 exp 
-% fliplr flipud floor full imag isfinite isfloat isinf isinteger islogical 
-% isnan isnumeric isreal isscalar issparse log10 log norm not permute 
-% real reshape resize round sign sinh sin sparse sqrt tanh tan transpose uminus uplus 
+% abs acosh acos asinh asin atanh atan ceil conj cosh cos ctranspose del2 exp
+% fliplr flipud floor full imag isfinite isfloat isinf isinteger islogical
+% isnan isnumeric isreal isscalar issparse log10 log norm not permute
+% real reshape resize round sign sinh sin sparse sqrt tanh tan transpose uminus uplus
 %
 % present but not used here: 'double','single','logical','find'
 
@@ -14,7 +14,7 @@ if numel(a) > 1
   b = {};
   for index=1:numel(a)
     this = unary(a(index), op, varargin{:});
-    if (isnumeric(this)||islogical(this)) && ~isa(this, 'estruct') && ~isscalar(this), 
+    if (isnumeric(this)||islogical(this)) && ~isa(this, 'estruct') && ~isscalar(this),
       this = { this };
     end
     b = [ b this ];
@@ -112,7 +112,7 @@ try
       % apply same operator on error and Monitor
         e = feval(op, e);
         m = feval(op, m);
-    case {'floor','ceil','round'}	
+    case {'floor','ceil','round'}
         % apply same operator on error
         e = feval(op, e);
     case 'del2'
@@ -122,7 +122,7 @@ try
         b = new_s;
         return
     case {'isscalar','isvector','issparse','isreal','isfloat','isnumeric','isinteger', ...
-          'islogical','double','single','logical','find','norm'}
+          'islogical','double','single','logical','find','norm','all','any'}
         % result is a single value
         b = new_s;
         return
@@ -149,30 +149,19 @@ end
 e = abs(e);
 b = copyobj(a);
 b = set(b, 'Signal', new_s, 'Error', e, 'Monitor', m);
-% test if we could update signal as expected, else we store the new value directly in the field
-if ~isequal(subsref(b,struct('type','.','subs','Signal')), new_s)
-  b = setalias(b, 'Signal', new_s); % , [  op '(' sl ')' ]);
-end
-clear new_s
-if ~isequal(subsref(b,struct('type','.','subs','Error')), e)
-  b = setalias(b, 'Error', e);
-end
-clear e
-if ~isequal(subsref(b,struct('type','.','subs','Monitor')), m)
-  b = setalias(b, 'Monitor', m);
-end
-clear m
-switch op
-    case { 'transpose', 'ctranspose'}; % .' and ' respectively
-	if ndims(b) > 1
-  	x1 = getaxis(b, '1'); % axis names
-  	x2 = getaxis(b, '2');
-  	v1 = getaxis(b, 1);   % axis values
-  	v2 = getaxis(b, 2);
-  	if ~isempty(x2), b= setaxis(b, 1, x2, transpose(v2)); end
-  	if ~isempty(x1), b= setaxis(b, 2, x1, transpose(v1)); end
-    end
+label(b, 'Signal', [  op '(' sl ')' ]);
+clear new_s e m
+
+if any(strcmp(op,{ 'transpose', 'ctranspose'})); % .' and ' respectively
+  if ndims(b) > 1
+    x1 = getaxis(b, '1'); % axis names
+    x2 = getaxis(b, '2');
+    v1 = getaxis(b, 1);   % axis values
+    v2 = getaxis(b, 2);
+    if ~isempty(x2), b= setaxis(b, 1, x2); set(b, x2, transpose(v2)); end
+    if ~isempty(x1), b= setaxis(b, 2, x1); set(b, x1, transpose(v1)); end
+  end
 end
 b.Command=cmd;
-history(b, op, a);  
+history(b, op, a);
 
