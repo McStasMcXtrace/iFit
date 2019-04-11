@@ -30,7 +30,7 @@ elseif ~isempty(findstr(out,'Lazy')) || ~isempty(findstr(out,'Crystallographica'
   columns_header = [ this ' ' columns_header ];
   % the Lazy format has a column named 'D VALUE': remove the space so that columns are not shifted
   columns_header = strrep(columns_header, 'D VALUE','D_VALUE');
-  columns = strread(columns_header,'%s','delimiter',' ;#');
+  columns = textscan(columns_header,'%s','delimiter',' ;#');
   columns = columns(~cellfun('isempty', columns));
   for index=1:length(columns)
     % clean the column name so that it looks like a variable name
