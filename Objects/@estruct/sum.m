@@ -1,8 +1,20 @@
 function b = sum(a, varargin)
-% ABS absolute value of object
+%  SUM Sum of in object Signal.
+%    S = SUM(X) is the sum of the Signal of the object X. If
+%    X is a N-D object, SUM(X) operates along the first
+%    non-singleton dimension.
+%    If X is floating point, that is double or single, S is
+%    accumulated natively, that is in the same class as X,
+%    and S has the same class as X. If X is not floating point,
+%    S is accumulated in double and S has class double.
 %
-%   ABS(X) return a new object with its Signal set as the absolute value of the
-%   input object.
+%    S = SUM(X,DIM) sums along the dimension DIM. 
+%
+%    S = SUM(X,'double') and S = SUM(X,DIM,'double') accumulate
+%    S in double and S has class double, even if X is single.
+%
+%    S = SUM(X,'native') and S = SUM(X,DIM,'native') accumulate
+%    S natively and S has the same class as X.
 %
 % Example: s=estruct(-10:10); any(s< 0) && all(abs(s))>=0
 % Version: $Date$ $Version$ $Author$

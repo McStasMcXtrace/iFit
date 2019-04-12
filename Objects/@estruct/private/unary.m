@@ -103,15 +103,15 @@ try
       c = cosh(s);
       e = e./(c.*c);
     case { 'transpose', 'ctranspose'}; % .' and ' respectively
-      e = feval(op, e);
-      m = feval(op, m);
-    case {'sparse','full','flipud','fliplr'}
+      e = feval(op, e), varargin{:};
+      m = feval(op, m, varargin{:});
+    case {'sparse','full','flipud','fliplr','flipdim'}
       % apply same operator on error and Monitor
-      e = feval(op, e);
-      m = feval(op, m);
+      e = feval(op, e, varargin{:});
+      m = feval(op, m, varargin{:});
     case {'floor','ceil','round'}
       % apply same operator on error
-      e = feval(op, e);
+      e = feval(op, e, varargin{:});
     case 'del2'
       new_s = new_s*2*ndims(a);
       e = 2*ndims(a)*del2(e);

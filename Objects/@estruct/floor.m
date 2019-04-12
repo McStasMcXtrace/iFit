@@ -1,13 +1,9 @@
 function a = floor(a)
-% b = floor(s) : lower integer round of estruct object
+%  FLOOR  Round towards minus infinity.
+%    FLOOR(X) rounds the Signal of X to the nearest integers
+%    towards minus infinity.
 %
-%   @estruct/floor function to round the elements of 's' to the nearest integers
-%   towards minus infinity.
-%
-% input:  s: object or array (estruct)
-% output: b: object or array (estruct)
-% ex:     b=floor(a);
-%
+% Example: s=estruct([-1.2 0.6 1.5]); all(floor(s) == [-2 0 1])
 % Version: $Date$ $Version$ $Author$
 % See also estruct, estruct/floor, estruct/ceil, estruct/round
 
