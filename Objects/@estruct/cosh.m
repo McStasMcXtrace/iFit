@@ -1,12 +1,8 @@
 function a = cosh(a)
-% b = cosh(s) : computes the hyperbolic cosine of estruct object
+%  COSH   Hyperbolic cosine.
+%    COSH(X) is the hyperbolic cosine of the Signal of object X.
 %
-%   @estruct/cosh function to compute the hyperbolic cosine of data sets.
-%
-% input:  s: object or array (estruct)
-% output: b: object or array (estruct)
-% ex:     b=cosh(a);
-%
+% Example: s=estruct(0:10); all(cosh(s) == cosh(0:10))
 % Version: $Date$ $Version$ $Author$
 % See also estruct, estruct/cos, estruct/acos, estruct/sin, estruct/asin, estruct/tan, estruct/atan
 

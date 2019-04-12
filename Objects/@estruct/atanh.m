@@ -1,12 +1,8 @@
 function a = atanh(a)
-% b = atanh(s) : computes the inverse hyperbolic tangent of estruct object
+%  ATANH  Inverse hyperbolic tangent.
+%    ATANH(X) is the inverse hyperbolic tangent of the Signal of object X.
 %
-%   @estruct/atanh function to compute the inverse hyperbolic tangent of data sets.
-%
-% input:  s: object or array (estruct)
-% output: b: object or array (estruct)
-% ex:     b=atanh(a);
-%
+% Example: s=estruct([-1 0 1]); all(atanh(s) == atanh([-1 0 1]))
 % Version: $Date$ $Version$ $Author$
 % See also estruct, estruct/cos, estruct/acos, estruct/sin, estruct/asin, estruct/tan, estruct/atan
 

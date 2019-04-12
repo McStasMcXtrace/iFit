@@ -1,12 +1,9 @@
 function a = conj(a)
-% b = conj(s) : conjugate of estruct object
+%  CONJ   Complex conjugate.
+%    CONJ(X) is the complex conjugate of Signal of object X.
+%    For a complex X, CONJ(X) = REAL(X) - i*IMAG(X).
 %
-%   @estruct/conj function to return conjugate of data sets
-%
-% input:  s: object or array (estruct)
-% output: b: object or array (estruct)
-% ex:     b=conj(a);
-%
+% Example: s=estruct([-i 0 i]); all(conj(s) == [i 0 -i])
 % Version: $Date$ $Version$ $Author$
 % See also estruct, estruct/transpose, estruct/ctranspose, estruct?imag, estruct/real
 

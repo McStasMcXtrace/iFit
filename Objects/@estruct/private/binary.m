@@ -268,7 +268,8 @@ case {'lt', 'gt', 'le', 'ge', 'ne', 'eq', 'and', 'or', 'xor', 'isequal'}
   catch
     e3=0; % no error
   end
-  m3 = 1; % set to 1 (default)
+  m3 = ones(size(get(c, 'Monitor'))); % set to 1 (default)
+  if numel(m3) > 1 && all(m3(:) == m3(1)), m3=1; end
 otherwise
   if isa(a,'estruct'), al=a.Tag; else al=num2str(a); end
   if isa(b,'estruct'), bl=b.Tag; else bl=num2str(b); end

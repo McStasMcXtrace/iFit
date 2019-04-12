@@ -184,10 +184,12 @@ properties
             if isempty(this{index_data}), continue; end
             if numel_new == 1
               new.Data = this{index_data};
+              history(new, mfilename, new0, this{index_data});
               new.Private.cache.check_requested = true; % request a check at first 'get'
             else
               new1 = copyobj(new0);
               new1.Data = this{index_data}; this{index_data} = [];
+              history(new1, mfilename, new0, this{index_data});
               new1.Private.cache.check_requested = true; % request a check at first 'get'
               new = [ new new1 ]; % build array
             end % index_data

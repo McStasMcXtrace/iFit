@@ -1,15 +1,14 @@
 function a = ctranspose(a)
-% b = ctranspose(s) : complex conjugate transpose of estruct object
+%  '   Complex conjugate transpose.   
+%    X' is the complex conjugate transpose of X. 
 %
-%   @estruct/ctranspose function to return the complex conjugate transpose of data sets
-%     which corresponds to syntax: b = s'
-%   When the argument is an estruct array, the whole array is transposed. To
-%     transpose each array element, use transpose(s) or b=s.'
+%    B = CTRANSPOSE(A) is called for the syntax A' (complex conjugate
+%    transpose) when A is an object.
 %
-% input:  s: object or array (estruct)
-% output: b: object or array (estruct)
-% ex:     b=ctranspose(a);
+%    When the argument is an object array, the whole array is transposed. To
+%    transpose each array element, use syntax: transpose(s) or b=s.'
 %
+% Example: s=estruct(rand(3,6)); all(all(s' == s{0}'))
 % Version: $Date$ $Version$ $Author$
 % See also estruct, estruct/transpose, estruct/ctranspose, estruct/setaxis, estruct/getaxis
 

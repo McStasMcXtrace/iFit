@@ -9,7 +9,7 @@ function b = all(a, varargin)
 %    ALL(X,DIM) works down the dimension DIM.  For example, ALL(X,1)
 %    works down the first dimension (the rows) of X.
 %
-% Example: s=estruct(-10:10); any(s.Signal< 0) && all(double(abs(s))>=0)
+% Example: s=estruct(-10:10); any(s<0) && all(abs(s)>=0
 % Version: $Date$ $Version$ $Author$
 % See also estruct, estruct/any
 

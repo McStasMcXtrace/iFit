@@ -22,7 +22,7 @@ s.Private.cache.check_requested = false; % ok, we are working on this
 %% Check Signal, Monitor, Error ================================================
 
 % get the size of the Signal, Monitor, Error (follow links)
-signal_sz = size(subsref_single(s, 'Signal'));
+signal_sz = size(s);
 monitor_sz= size(subsref_single(s, 'Monitor'));
 error_sz  = size(subsref_single(s, 'Error'));
 axes_id   = [];

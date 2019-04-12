@@ -61,6 +61,12 @@ end
 
 % we scan aliases
 labl = {};
+% a change of label should not trigger a check of Signal/axes.
+if isfield(this.Private,'cache') && isfield(this.Private.cache,'check_requested')
+  check = this.Private.cache.check_requested;
+else
+  check = false;
+end
 for index=1:numel(aliases)
   alias=aliases{index};
 
@@ -77,7 +83,7 @@ for index=1:numel(aliases)
   end
 
 end
-
+this.Private.cache.check_requested = check;
 if nargin > 2, labl=this;
 else
   if numel(labl) == 1, labl=labl{1}; end

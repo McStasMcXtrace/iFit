@@ -1,12 +1,8 @@
 function a = asinh(a)
-% b = asinh(s) : computes the inverse hyperbolic sine of estruct object
+%  ASINH  Inverse hyperbolic sine.
+%    ASINH(X) is the inverse hyperbolic sine of the Signal of object X.
 %
-%   @estruct/asinh function to compute the inverse hyperbolic sine of data sets.
-%
-% input:  s: object or array (estruct)
-% output: b: object or array (estruct)
-% ex:     b=asinh(a);
-%
+% Example: s=estruct([-1 0 1]); all(asinh(s) == asinh([-1 0 1]))
 % Version: $Date$ $Version$ $Author$
 % See also estruct, estruct/cos, estruct/acos, estruct/sin, estruct/asin, estruct/tan, estruct/atan
 
