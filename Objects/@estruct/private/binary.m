@@ -260,7 +260,7 @@ case {'power'}
     end
   else m3=get(c,'Monitor'); end
 
-case {'lt', 'gt', 'le', 'ge', 'ne', 'eq', 'and', 'or', 'xor', 'isequal'}
+case {'lt', 'gt', 'le', 'ge', 'ne', 'eq', 'and', 'or', 'xor' }
   s3 = logical(genop(op, y1, y2));
   try
     e3 = sqrt(genop( op, d1.^2, d2.^2));
@@ -270,6 +270,9 @@ case {'lt', 'gt', 'le', 'ge', 'ne', 'eq', 'and', 'or', 'xor', 'isequal'}
   end
   m3 = ones(size(get(c, 'Monitor'))); % set to 1 (default)
   if numel(m3) > 1 && all(m3(:) == m3(1)), m3=1; end
+case {'isequal','isequaln','isequalwithequalnans'}
+  c = logical(feval(op, y1, y2));
+  return
 otherwise
   if isa(a,'estruct'), al=a.Tag; else al=num2str(a); end
   if isa(b,'estruct'), bl=b.Tag; else bl=num2str(b); end
