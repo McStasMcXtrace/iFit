@@ -9,9 +9,29 @@ function b = all(a, varargin)
 %    ALL(X,DIM) works down the dimension DIM.  For example, ALL(X,1)
 %    works down the first dimension (the rows) of X.
 %
-% Example: s=estruct(-10:10); any(s<0) && all(abs(s)>=0
+%    ALL(X, 0) does the same as above, but returns a single scalar per object.
+%
+% Example: s=estruct(-10:10); any(s<0) && all(abs(s)>=0)
 % Version: $Date$ $Version$ $Author$
 % See also estruct, estruct/any
 
+if nargin > 1 && isequal(varargin{1},0)
+  flag_scalar = true;
+  varargin(1)=[];
+else
+  flag_scalar = false;
+end
+
 b = unary(a, 'all', varargin{:});
+
+if flag_scalar
+  if iscell(b)
+    for index=1:numel(b)
+      this = b{index};
+      b{index} = all(this(:));
+    end
+  else
+    b = all(b(:));
+  end
+end
 

@@ -66,76 +66,79 @@ new_s = feval(op, s, varargin{:});
 
 % handle error/monitor stuff
 try
-    switch op
-    case 'acos'
-      e = -e./sqrt(1-s.*s);
-    case 'acosh'
-      e = e./sqrt(s.*s-1);
-    case 'asin'
-      e = e./sqrt(1-s.*s);
-    case 'asinh'
-      e = e./sqrt(1+s.*s);
-    case 'atan'
-      e = e./(1+s.*s);
-    case 'atanh'
-      e = e./(1-s.*s);
-    case 'cos'
-      e = -e.*sin(s);
-    case 'cosh'
-      e = e.*sinh(s);
-    case 'exp'
-      e = e.*exp(s);
-    case 'log'
-      e = e./s;
-    case 'log10'
-      e = e./(log(10)*s);
-    case 'sin'
-      e = e.*cos(s);
-    case 'sinh'
-      e = e.*cosh(s);
-    case 'sqrt'
-      e = e./(2*sqrt(s));
-      m = m.^0.5;
-    case 'tan'
-      c = cos(s);
-      e = e./(c.*c);
-    case 'tanh'
-      c = cosh(s);
-      e = e./(c.*c);
-    case { 'transpose', 'ctranspose'}; % .' and ' respectively
-      e = feval(op, e), varargin{:};
-      m = feval(op, m, varargin{:});
-    case {'sparse','full','flipud','fliplr','flipdim'}
-      % apply same operator on error and Monitor
-      e = feval(op, e, varargin{:});
-      m = feval(op, m, varargin{:});
-    case {'floor','ceil','round'}
-      % apply same operator on error
-      e = feval(op, e, varargin{:});
-    case 'del2'
-      new_s = new_s*2*ndims(a);
-      e = 2*ndims(a)*del2(e);
-    case {'sign','isfinite','isnan','isinf'}
+  switch op
+  case 'acos'
+    e = -e./sqrt(1-s.*s);
+  case 'acosh'
+    e = e./sqrt(s.*s-1);
+  case 'asin'
+    e = e./sqrt(1-s.*s);
+  case 'asinh'
+    e = e./sqrt(1+s.*s);
+  case 'atan'
+    e = e./(1+s.*s);
+  case 'atanh'
+    e = e./(1-s.*s);
+  case 'cos'
+    e = -e.*sin(s);
+  case 'cosh'
+    e = e.*sinh(s);
+  case 'exp'
+    e = e.*exp(s);
+  case 'log'
+    e = e./s;
+  case 'log10'
+    e = e./(log(10)*s);
+  case 'sin'
+    e = e.*cos(s);
+  case 'sinh'
+    e = e.*cosh(s);
+  case 'sqrt'
+    e = e./(2*sqrt(s));
+    m = m.^0.5;
+  case 'tan'
+    c = cos(s);
+    e = e./(c.*c);
+  case 'tanh'
+    c = cosh(s);
+    e = e./(c.*c);
+  case { 'transpose', 'ctranspose'}; % .' and ' respectively
+    e = feval(op, e), varargin{:};
+    m = feval(op, m, varargin{:});
+  case {'sparse','full','flipud','fliplr','flipdim'}
+    % apply same operator on error and Monitor
+    e = feval(op, e, varargin{:});
+    m = feval(op, m, varargin{:});
+  case {'floor','ceil','round'}
+    % apply same operator on error
+    e = feval(op, e, varargin{:});
+  case 'del2'
+    new_s = new_s*2*ndims(a);
+    e = 2*ndims(a)*del2(e);
+  case {'sign','isfinite','isnan','isinf'}
+    b = new_s;
+    return
+  case {'isscalar','isvector','issparse','isreal','isfloat','isnumeric','isinteger', ...
+        'islogical','double','single','logical','find','norm','all','any','nonzeros'}
+    % result is a single value or array
+    b = new_s;
+    return
+  case {'uminus','abs','real','imag','uplus','not','conj'}
+    % retain error, do nothing
+  case {'sum'}
+    if isscalar(new_s)
       b = new_s;
       return
-    case {'isscalar','isvector','issparse','isreal','isfloat','isnumeric','isinteger', ...
-          'islogical','double','single','logical','find','norm','all','any'}
-      % result is a single value or array
-      b = new_s;
-      return
-    case {'uminus','abs','real','imag','uplus','not','conj'}
-      % retain error, do nothing
-    case {'sum'}
-      if isscalar(new_s)
-        b = new_s;
-        return
-      end
-    case {'permute','reshape','iData_private_resize'}
-      if ~isscalar(e) && ~isempty(e),  e = feval(op, e, varargin{:}); end
-      if ~isscalar(m) && ~isempty(m),  m = feval(op, m, varargin{:}); end
-    otherwise
-      error([ mfilename, ': Can not apply operation ' op ' on object ' a.Tag ]);
+    else
+      try; e = sqrt(feval(op, e.^2, varargin{:})); end
+      try; m = feval(op, m, varargin{:}); end
     end
+  case {'permute','reshape','resize'}
+    if ~isscalar(e) && ~isempty(e),  e = feval(op, e, varargin{:}); end
+    if ~isscalar(m) && ~isempty(m),  m = feval(op, m, varargin{:}); end
+  otherwise
+    error([ mfilename, ': Can not apply operation ' op ' on object ' a.Tag ]);
+  end
 end
 clear s
 
