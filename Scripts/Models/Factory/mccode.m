@@ -7,7 +7,7 @@ function y = mccode(instr, options, parameters)
 % MODEL CREATION:
 % ------------------------------------------------------------------------------
 % mccode(description)
-%       creates a model with specified McCode instrument 
+%       creates a model with specified McCode instrument
 %       The instrument may be given as an '.instr' McCode description, or directly
 %       as an executable. Distant URL (ftp, http, https) can also be used.
 % mccode('')
@@ -21,7 +21,7 @@ function y = mccode(instr, options, parameters)
 %                          the last simulation files are stored therein 'sim'.
 %                        dir can also be 'pwd' for current, or 'tmp' for temporary location.
 %   options.ncount:      number of neutron events per iteration, e.g. 1e6 (double)
-%   options.mpi:         number of processors/cores to use with MPI on localhost (integer) 
+%   options.mpi:         number of processors/cores to use with MPI on localhost (integer)
 %                          when MPI is available, and mpi options is not given,
 %                          all cores are then used.
 %   options.machines:    filename containing the list of machines/nodes to use (string)
@@ -45,7 +45,7 @@ function y = mccode(instr, options, parameters)
 %   a temporary directory is created and the instrument is copied there, which may
 %   cause issues if local components are to be used.
 %
-% mccode(description, options, parameters) 
+% mccode(description, options, parameters)
 %   Specifies the instrument parameters values to use as default. These values can
 %   be given as a string e.g. 'QM=1; lambda=2.36' or a structure.
 %
@@ -56,7 +56,7 @@ function y = mccode(instr, options, parameters)
 %   iData(model, 'lambda=2.36; Powder="Al.laz"')
 %   iData(model, struct('lambda',2.36,'Powder','Al.laz'))
 %
-% The options ncount, seed, gravitation, monitor can be changed for the model 
+% The options ncount, seed, gravitation, monitor can be changed for the model
 % evaluation, with e.g.:
 %   model.UserData.options.ncount     =1e5;
 %   model.UserData.options.gravitation=1;
@@ -70,19 +70,19 @@ function y = mccode(instr, options, parameters)
 %
 % MODEL EVALUATION:
 % ------------------------------------------------------------------------------
-% model(p) 
+% model(p)
 %   evaluates the model with given parameters (vector, cell, structure). Only
 %   scalar/double parameters of the instrument can be varied. Other parameters are kept fixed.
-% model(p, nan) 
+% model(p, nan)
 %   evaluates the model and return the raw McCode data set (monitor).
-% model(p, x,y,...) 
+% model(p, x,y,...)
 %   evaluates the model and interpolates the McCode data set onto given axes.
 %
-% The model 'value' is the last monitor, or set from 
+% The model 'value' is the last monitor, or set from
 %   model.UserData.options.monitor
 % It can be converted to an iData with iData(model, ...)
 %
-% The raw monitors of the last simulation are stored as iData objects in 
+% The raw monitors of the last simulation are stored as iData objects in
 %   model.UserData.monitors
 % You can plot them all with e.g.:
 %   subplot(model)
@@ -92,7 +92,7 @@ function y = mccode(instr, options, parameters)
 %         x,y,...: axes (double)
 %
 % output: y: monitor value
-% ex:     model =mccode('templateDIFF'); 
+% ex:     model =mccode('templateDIFF');
 %         signal=iData(model, [], linspace(-10,100,100));
 %         signal=iData(model, [], nan); % to get the raw monitor
 %         signal=iData(model, 'lambda=2.36; Powder=Al.laz', nan); % to get the raw monitor
@@ -107,7 +107,7 @@ function y = mccode(instr, options, parameters)
 % MODEL PARAMETER SCAN
 % ------------------------------------------------------------------------------
 % It is possible to scan model parameters when using vectors as value for the
-% parameters. To achieve that, the parameter values must be given as a named 
+% parameters. To achieve that, the parameter values must be given as a named
 % structure.
 % For instance, to scan the RV parameter in the templateDIF instrument, use:
 %   model = mccode('templateDIFF');
@@ -123,12 +123,12 @@ function y = mccode(instr, options, parameters)
 %   model = mccode('templateDIFF');  % maximize
 %   fix(model, 'all'); model.RV='free';
 %   model.RV=[0 1 2];        % bounds and starting value
-%   p = fmax( model , [], '', nan)  % return the optimal parameters using the raw monitors
+%   [p,c,msg,output] = fmax( model, [], 'OutputFcn=fminplot', nan)  % return the optimal parameters using the raw monitors
 %
 % Version: $Date$ $Version$ $Author$
 % See also iFunc, iFunc/fits, iFunc/plot, iFunc/feval, mcstas
 %          <a href="http://www.mcstas.org">McStas</a>, <a href="http://www.mccode.org">McCode</a>
-% 
+%
 
 % check for McCode executable
 persistent mccode_present
@@ -143,7 +143,7 @@ if nargin > 1
   if ischar(options)
     options = str2struct(options);
   elseif ~isstruct(options)
-    options=[]; 
+    options=[];
   end
 else
   options=[];
@@ -153,7 +153,7 @@ if isempty(options)
 end
 options = instrument_parse_options(options);
 
-if nargin < 3, 
+if nargin < 3,
   parameters = [];
 end
 if ischar(parameters)
@@ -192,17 +192,17 @@ elseif ischar(instr) && strcmp(instr,'identify')
   return
 else
   % empty choice: pop-up a file selector
-  if isempty(instr), 
+  if isempty(instr),
     filterspec = {'*.*', 'All files (*.*)' ; ...
                   '*.instr', 'McCode instrument (*.instr)' ; ...
                   '*.out;*.exe','McCode compiled instrument executable (*.out, *.exe)' };
     [filename, pathname] = uigetfile(filterspec,'Select a McStas/McXtrace instrument to load');
     if isempty(filename),    return; end
     if isequal(filename, 0), return; end
-    options.instrument = fullfile(pathname, filename); 
+    options.instrument = fullfile(pathname, filename);
   else
     if strcmp(instr, 'defaults')
-      instr='templateDIFF.instr'; 
+      instr='templateDIFF.instr';
       if ~isfield(options,'dir') options.dir='pwd'; end
     end
 %    elseif strcmp(instr, 'identify')
@@ -216,14 +216,14 @@ end
 
 if isempty(options.instrument), return; end
 if iscell(options.instrument), options.instrument = options.instrument{1}; end
-disp([ mfilename ': Using instrument: ' options.instrument ] );  
+disp([ mfilename ': Using instrument: ' options.instrument ] );
 
 % target directory aliases
 if strcmp(options.dir, 'pwd')
   options.dir = pwd;
 elseif any(strcmp(options.dir, {'tmp','temp','tempname'}))
   options.dir = tempname;
-end     
+end
 
 % determine if we use a fully qualified path in instrument, then sets it.
 [p,f,e] = fileparts( options.instrument );
@@ -245,13 +245,13 @@ if ~isempty(options.dir)
 end
 
 % use temporary directory to build/assemble parts.
-if isempty(options.dir), 
-  options.dir = tempname; 
+if isempty(options.dir),
+  options.dir = tempname;
 end
 if ~isdir(options.dir)
   mkdir(options.dir);
 end
-        
+
 % copy file locally
 try
   copyfile(options.instrument, options.dir);
@@ -306,10 +306,10 @@ elseif ~isempty(info)
 else
   disp([ mfilename ': WARNING: No information could be retrieved from ' options.instrument ]);
 end
-fid = fopen(exe, 'r'); 
+fid = fopen(exe, 'r');
 UserData.instrument_executable = uint8(fread(fid, Inf)); fclose(fid);
 UserData.instrument_exe = exe;
-  
+
 [p,f,e] = fileparts(options.instrument); options.instrument = [ f e ];
 [p,f,e] = fileparts(UserData.instrument_exe);        UserData.instrument_exe = [ f e ];
 
@@ -333,8 +333,8 @@ for index=1:numel(c)
   if isfield(parameters, f{index})
     this = parameters.(f{index});
   end
-  if ~isempty(this) && isfinite(this), 
-       y.Guess(end+1) = this; 
+  if ~isempty(this) && isfinite(this),
+       y.Guess(end+1) = this;
   else y.Guess(end+1) = nan; end
 end
 
@@ -352,7 +352,7 @@ y.Description= [ 'McCode virtual experiment ' options.instrument ...
     NL '  Monitors are stored in UserData.monitors' ];
 y.UserData   = UserData;
 
-% assemble the Expression: 
+% assemble the Expression:
 %     build target directory (put back executable if missing)
 %     assemble all parameters and options (command line). Handle MPI and machine list
 %     execute
@@ -535,16 +535,16 @@ function options = instrument_parse_options(options)
   if ~isfield(options,'trace'),      options.trace      = ''; end
   if ~isfield(options,'compile'),    options.compile    = 1; end
   if ~isfield(options,'raw'),        options.raw        = ''; end
-  
+
 % ------------------------------------------------------------------------------
 function present = mccode_check(options)
 % check if McCode (mcstas or mcxtrace) is present
 
   % required to avoid Matlab to use its own libraries
   if ismac,      precmd = 'DYLD_LIBRARY_PATH= ; DISPLAY= ; ';
-  elseif isunix, precmd = 'LD_LIBRARY_PATH= ;  DISPLAY= ; '; 
+  elseif isunix, precmd = 'LD_LIBRARY_PATH= ;  DISPLAY= ; ';
   else           precmd = ''; end
-  
+
   present.mccode = '';
   for totest = { options.mccode, 'mcrun','mxrun' }
     if ~isempty(present.mccode), break; end
@@ -557,7 +557,7 @@ function present = mccode_check(options)
       end
     end
   end
-  
+
   if isempty(present.mccode)
     disp([ mfilename ': WARNING: ' options.mccode ' McStas/McXtrace executable is not installed. Get it at www.mccode.org' ]);
     disp('  The model can still be created if the instrument is given as an executable.')
@@ -566,7 +566,7 @@ function present = mccode_check(options)
   else
     disp([ '  McCode          (http://www.mccode.org) as "' present.mccode '"' ]);
   end
-  
+
   % test for mpirun
   present.mpirun = '';
   for calc={options.mpirun, 'mpirun', 'mpiexec'}
@@ -585,8 +585,8 @@ function instr = mccode_search_instrument(instr, d)
 
   % get/search instrument
   % check if the instrument exists, else attempt to find it
-  
-  if strncmp(instr,'http://',7) || strncmp(instr,'https://',8) || strncmp(instr,'ftp://',6) 
+
+  if strncmp(instr,'http://',7) || strncmp(instr,'https://',8) || strncmp(instr,'ftp://',6)
     tmpfile = tempname;
     % Keep file extension, may be useful for iData load
     [filepath,name,ext] = fileparts(instr);
@@ -614,15 +614,15 @@ function instr = mccode_search_instrument(instr, d)
     end
     instr = tmpfile;
   end
-      
-      
+
+
   if ~isempty(instr)
     index = dir(instr);
   else return;
   end
-  
+
   if ~isempty(index), return; end % given file is fully qualified
-  
+
   for ext={'.instr','.out','.exe',''}
     out = [ instr ext{1} ];
     % check for instrument in McStas/McXtrace libraries
@@ -649,12 +649,12 @@ function instr = mccode_search_instrument(instr, d)
       end
     end
   end
-  
+
   if isempty(index)
     disp([ mfilename ': ERROR: Can not find instrument ' instr ]);
     instr = '';
   end
-  
+
 % ------------------------------------------------------------------------------
 % function to search for a file recursively
 function fileList = getAllFiles(dirName, File, recursive)
@@ -699,7 +699,7 @@ function fileList = getAllFiles(dirName, File, recursive)
     end
     % more relaxed search
     index = find(~cellfun(@isempty,strfind(fileList, File)));
-    if ~isempty(index)  
+    if ~isempty(index)
       fileList = fileList(index);
       for i=1:numel(fileList)
         fileList{i} = fullfile(dirName,fileList{i});  % get the full path/file name
@@ -713,7 +713,7 @@ function fileList = getAllFiles(dirName, File, recursive)
   validIndex = ~ismember(subDirs,{'.','..'}) ...
     & ~strncmp(subDirs, '.',1);                % Find index of subdirectories
                                                %   that are not '.' or '..' or hidden
-  
+
   if recursive
     for iDir = find(validIndex)                  % Loop over valid subdirectories
       nextDir = fullfile(dirName,subDirs{iDir}); % Get the subdirectory path
@@ -726,21 +726,21 @@ function fileList = getAllFiles(dirName, File, recursive)
 function [info, exe] = instrument_get_info(executable)
   % calls the instrument with --info or --help to attempt to get information
   % parse the output and return a structure.
-  
+
   info = ''; exe = '';
   if ismac,      precmd = 'DYLD_LIBRARY_PATH= ; DISPLAY= ; ';
-  elseif isunix, precmd = 'LD_LIBRARY_PATH= ; DISPLAY= ; '; 
+  elseif isunix, precmd = 'LD_LIBRARY_PATH= ; DISPLAY= ; ';
   else           precmd = ''; end
-  
+
   [p,f,e] = fileparts(executable);
-  
+
   for name={executable, fullfile(p,f), f, [ f e ], fullfile('.',f), fullfile('.',[ f e])}
     for ext={'','.out','.exe'}
       for opt={' --info',' --help',' -h'}
         % look for executable and test with various extensions
         exe = [ name{1} ext{1} ];
         [status, result] = system([ precmd exe opt{1} ]);
-        if (status == 0 || status == 255) 
+        if (status == 0 || status == 255)
           info = result;
           return
         end
@@ -753,9 +753,9 @@ function result = instrument_compile(options)
 
   % compile the instrument using McCode
   if ismac,      precmd = 'DYLD_LIBRARY_PATH= ; DISPLAY= ; ';
-  elseif isunix, precmd = 'LD_LIBRARY_PATH= ; DISPLAY= ; '; 
+  elseif isunix, precmd = 'LD_LIBRARY_PATH= ; DISPLAY= ; ';
   else           precmd = ''; end
-  
+
   if isempty(options.mccode)
       status=1;
       result = [ mfilename ': McCode (mcrun/mxrun) not found. Try "mccode check" first.' ];
@@ -763,7 +763,7 @@ function result = instrument_compile(options)
       disp([ mfilename ': Compiling instrument from ' options.instrument ...
         ' using ' options.mccode]);
       % assemble the command line: compile, no particle generated
-      cmd = [ options.mccode ' --force-compile ' options.instrument ' --ncount=0' ];  
+      cmd = [ options.mccode ' --force-compile ' options.instrument ' --ncount=0' ];
       if isfield(options,'mpi') && options.mpi > 1
         cmd = [ cmd ' --mpi=1' ];
       end
@@ -774,15 +774,15 @@ function result = instrument_compile(options)
   end
 
   % stop if compilation fails...
-  if (status ~= 0 && status ~= 255) 
+  if (status ~= 0 && status ~= 255)
     disp(result);
     error([ mfilename ': ERROR: failed compilation of ' options.instrument ]);
-  end  
-  
+  end
+
 % ------------------------------------------------------------------------------
 function [dynamic, static] = instrument_get_parameters(info)
   % analyze the --help or --info string and search for parameters with default values
-  
+
   % we search
   % line  'Parameters: par1(type) par2(type) ...
   % lines 'Param: <name>=<val>  only for parameters which have default values
@@ -790,17 +790,17 @@ function [dynamic, static] = instrument_get_parameters(info)
   % lines 'par (type) [default='val']'
   %
   % 'type' can be: double, string, int
-  
+
   if isempty(info), return; end
   info = textscan(info, '%s','Delimiter','\n\r');
   info = info{1};
-  
+
   dynamic = struct();
   static  = struct();
-  
+
   % will set flag to true when we start to scan 'Instrument parameters'
-  flag_instr_pars = false;  
-  
+  flag_instr_pars = false;
+
   % now we scan lines
   for l_index = 1:numel(info)
     this_line = strtrim(info{l_index});
@@ -819,7 +819,7 @@ function [dynamic, static] = instrument_get_parameters(info)
           name = par{index};
           if ~isempty(name), static.(name{1}) = []; end
       end
-      
+
     elseif strncmpi(this_line, 'Param:', length('Param:'))
       par = str2struct(this_line); c={}; f={};
       while isstruct(par)
