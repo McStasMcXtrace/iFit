@@ -1,14 +1,10 @@
 function a = imag(a)
-% b = imag(s) : imaginary part of estruct object
+%  IMAG   Complex imaginary part.
+%    IMAG(X) is the imaginary part of X.
+%    See I or J to enter complex numbers.
 %
-%   @estruct/imag function to return the imaginary part of data sets.
-%
-% input:  s: object or array (estruct)
-% output: b: object or array (estruct)
-% ex:     b=imag(a);
-%
+% Example: s=estruct(rand(5)+i*rand(5)); any(imag(s),0)
 % Version: $Date$ $Version$ $Author$
-% See also estruct, estruct/uminus, estruct/abs, estruct/real, estruct/imag, estruct/uplus
+% See also estruct, estruct/isreal, i, j, estruct/real
 
 a = unary(a, 'imag');
-

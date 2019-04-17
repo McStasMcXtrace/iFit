@@ -1,18 +1,12 @@
-function a = islogical(a)
-% b = islogical(s) : True for logical estruct object elements
+function v = islogical(a)
+%  ISLOGICAL True for logical object.
+%    ISLOGICAL(X) returns true if X is a logical object Signal and false otherwise.
+%    Logical arrays must be used to perform logical 0-1 indexing.
 %
-%   @estruct/islogical function to return true for logical elements
-%   of 's', i.e. that are of type 'true (1) or false(0)'.
-%
-% input:  s: object or array (estruct)
-% output: b: object or array (estruct)
-% ex:     b=islogical(a);
-%
+% Example: s=estruct([true false]); islogical(s)
 % Version: $Date$ $Version$ $Author$
-% See also estruct, estruct/sign, estruct/isreal, estruct/isfinite, estruct/isnan,
-%          estruct/isinf, estruct/isfloat, estruct/isinterger,
-%          estruct/isnumeric, estruct/islogical, estruct/isscalar, 
-%          estruct/isvector, estruct/issparse
+% See also estruct, estruct/isnumeric, logical
 
-a = unary(a, 'islogical');
-a = uint8(a);
+v = unary(a, 'islogical');
+if iscell(v), v = cell2mat(v); end
+v = logical(v);

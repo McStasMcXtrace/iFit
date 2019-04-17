@@ -151,7 +151,7 @@ properties
         if isempty(s.name), s.name=sprintf('%s_%i', class(s.value), index); end
         if ~isfield(new, s.name), new.addprop(s.name); end
         new.(s.name)=s.value;
-        if isnumeric(s.value) && ~isscalar(s.value)
+        if (isnumeric(s.value) | islogical(s.value)) && ~isscalar(s.value)
           new.Private.cache.check_requested = true;
         end
         structs{index} = []; % clear memory

@@ -1,18 +1,12 @@
-function a = issparse(a)
-% b = issparse(s) : True for sparse matrix estruct object
+function v = issparse(a)
+%  ISSPARSE True for sparse matrix.
+%    ISSPARSE(S) is 1 if the storage class of S Signal is sparse
+%    and 0 otherwise.
 %
-%   @estruct/issparse function to return true if data set is a vector
-%   of 's', i.e. that size is 1xN or Nx1
-%
-% input:  s: object or array (estruct)
-% output: b: object or array (estruct)
-% ex:     b=issparse(a);
-%
+% Example: s=estruct(sparse(eye(5))); issparse(s)
 % Version: $Date$ $Version$ $Author$
-% See also estruct, estruct/sign, estruct/isreal, estruct/isfinite, estruct/isnan,
-%          estruct/isinf, estruct/isfloat, estruct/isinterger,
-%          estruct/isnumeric, estruct/islogical, estruct/isscalar, 
-%          estruct/isvector, estruct/issparse
+% See also estruct, estruct/full, estruct/sparse
 
-a = unary(a, 'issparse');
-a = uint8(a);
+v = unary(a, 'issparse');
+if iscell(v), v=cell2mat(v); end
+v = logical(v);

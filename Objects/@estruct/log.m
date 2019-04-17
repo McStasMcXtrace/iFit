@@ -1,15 +1,13 @@
-function a = log(a)
-% b = log(s) : natural logarithm value of estruct object
+function b = log(a)
+%  LOG    Natural logarithm.
+%    LOG(Z) is the natural logarithm (ln) of the elements of X.
+%    Complex results are produced if Z is not positive.
+%    For complex or negative Z=x+i*y, the complex logarithm is returned.
+%      log(Z) = log(abs(Z)) + i*atan2(y,x)
+%    Use log10 for the base 10 log.
 %
-%   @estruct/log function to return the natural logarithm value of data sets, ln(s)
-%   Use log10 for the base 10 log.
-%
-% input:  s: object or array (estruct)
-% output: b: object or array (estruct)
-% ex:     b=log(a);
-%
+% Example: s=estruct([-1 -1]); all(imag(log(s)) == pi)
 % Version: $Date$ $Version$ $Author$
-% See also estruct, estruct/exp, estruct/log, estruct/log10, estruct/sqrt
+% See also estruct, estruct/exp, estruct/log10
 
-a = unary(a, 'log');
-
+b = unary(a, 'log');

@@ -1,19 +1,13 @@
 function a = full(a)
-% b = full(s) : Convert estruct object storage to full matrix
+%  FULL   Convert sparse object to full matrix.
+%    A = FULL(X) converts a sparse object S to full storage
+%    organization.  If X is a full object, it is left unchanged.
+%    FULL affects Signal, Error and Monitor in the object.
 %
-%   @estruct/full function to use full matrix storage, which stores
-%   all elements in Signal, Error and Monitor (as opposed to sparse). 
+%    If A is full, issparse(A) returns 0.
 %
-% input:  s: object or array (estruct)
-% output: b: object or array (estruct)
-% ex:     b=full(a);
-%
+% Example: S = estruct(sparse(rand(200,200) < 2/3)); F=full(S); ~issparse(F) & issparse(S)
 % Version: $Date$ $Version$ $Author$
-% See also estruct, estruct/pack, estruct/sparse
+% See also estruct, estruct/pack, estruct/sparse, estruct/pack
 
 a = unary(a, 'full');
-
-if nargout == 0 & length(inputname(1))
-  assignin('caller',inputname(1),a);
-end
-

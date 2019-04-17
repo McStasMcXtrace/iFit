@@ -1,19 +1,12 @@
-function a = isnan(a)
-% b = isnan(s) : True for NaN estruct object elements
+function b = isnan(a)
+%  ISNAN  True for Not-a-Number (NaN).
+%    ISNAN(X) returns an array that contains 1's where
+%    the elements of X are NaN's and 0's where they are not.
 %
-%   @estruct/isnan function to return true for NaN elements
-%   of 's', i.e. that are NaN ('not a number')
+%    To remove nan's and inf's values use: fill(s)
 %
-%   To remove nan's and inf's values use: fill(s)
-%
-% input:  s: object or array (estruct)
-% output: b: object or array (estruct)
-% ex:     b=isnan(a);
-%
+% Example: s=estruct([pi NaN Inf -Inf]); all(isnan(s) == [0 1 0 0])
 % Version: $Date$ $Version$ $Author$
-% See also estruct, estruct/sign, estruct/isreal, estruct/isfinite, estruct/isnan,
-%          estruct/isinf, estruct/isfloat, estruct/isinterger,
-%          estruct/isnumeric, estruct/islogical, estruct/isscalar, 
-%          estruct/isvector, estruct/issparse, estruct/fill
+% See also estruct, estruct/isfinite, estruct/isinf, estruct/fill
 
-a = unary(a, 'isnan');
+b = unary(a, 'isnan');

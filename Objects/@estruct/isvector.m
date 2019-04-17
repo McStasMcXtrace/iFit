@@ -14,6 +14,7 @@ function v = isvector(s)
 
 
 v = unary(s, 'isvector');
+if iscell(v), v = cell2mat(v); end
 
 % special case for event data sets: signal is a vector, all axes have same dimension
 for index=1:numel(s) % OK with object arrays

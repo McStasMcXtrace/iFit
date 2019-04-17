@@ -1,14 +1,10 @@
 function a = real(a)
-% b = real(s) : real value of estruct object
+%  REAL   Complex real part.
+%    REAL(X) is the real part of X.
+%    See I or J to enter complex numbers.
 %
-%   @estruct/real function to return the real value of data sets.
-%
-% input:  s: object or array (estruct)
-% output: b: object or array (estruct)
-% ex:     b=real(a);
-%
+% Example: s=estruct(rand(5)+i*rand(5)); any(real(s),0)
 % Version: $Date$ $Version$ $Author$
-% See also estruct, estruct/uminus, estruct/abs, estruct/real, estruct/imag, estruct/uplus
+% See also estruct, estruct/isreal, i, j, estruct/imag
 
 a = unary(a, 'real');
-

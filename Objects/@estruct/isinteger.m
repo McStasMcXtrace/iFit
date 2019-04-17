@@ -1,18 +1,18 @@
-function a = isinterger(a)
-% b = isinterger(s) : True for integer estruct object elements
+function v = isinterger(a)
+%  ISINTEGER True for objects of integer data type.
+%    ISINTEGER(A) returns true if A is an object Signal of integer data
+%    type and false otherwise.
 %
-%   @estruct/isinterger function to return true for integer elements
-%   of 's', i.e. that are of type 'uint' and 'int'.
+%    The 8 integer data types in MATLAB are int8, uint8, int16, uint16,
+%    int32, uint32, int64 and uint64.
 %
-% input:  s: object or array (estruct)
-% output: b: object or array (estruct)
-% ex:     b=isinterger(a);
-%
+% Example: s=estruct(uint8(-10:10)); isinteger(s)
 % Version: $Date$ $Version$ $Author$
-% See also estruct, estruct/sign, estruct/isreal, estruct/isfinite, estruct/isnan,
+% See also estruct, estruct/isreal, estruct/isfinite, estruct/isnan,
 %          estruct/isinf, estruct/isfloat, estruct/isinterger,
-%          estruct/isnumeric, estruct/islogical, estruct/isscalar, 
+%          estruct/isnumeric, estruct/islogical, estruct/isscalar,
 %          estruct/isvector, estruct/issparse
 
-a = unary(a, 'isinteger');
-a = uint8(a);
+v = unary(a, 'isinteger');
+if iscell(v), v = cell2mat(v); end
+v = logical(v);

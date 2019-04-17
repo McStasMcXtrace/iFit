@@ -1,14 +1,10 @@
 function a = log10(a)
-% b = log10(s) : base 10 logarithm value of estruct object
+% LOG10  Common (base 10) logarithm.
+%    LOG10(X) is the base 10 logarithm of the Signal of X.
+%    Complex results are produced if X is not positive.
 %
-%   @estruct/log10 function to return the base 10 logarithm value of data sets
-%
-% input:  s: object or array (estruct)
-% output: b: object or array (estruct)
-% ex:     b=log10(a);
-%
+% Example: s=estruct([10 100 1000]); all(log10(s) == [1 2 3])
 % Version: $Date$ $Version$ $Author$
-% See also estruct, estruct/exp, estruct/log, estruct/log10, estruct/sqrt
+% See also estruct, estruct/exp, estruct/log
 
 a = unary(a, 'log10');
-

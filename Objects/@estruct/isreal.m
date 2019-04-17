@@ -1,18 +1,17 @@
-function a = isreal(a)
-% b = isreal(s) : True for real estruct object elements
+function v = isreal(a)
+%  ISREAL True for real object.
+%    ISREAL(X) returns 1 if X does not have an imaginary part
+%    and 0 otherwise.
 %
-%   @estruct/isreal function to return true for real elements
-%   of 's', i.e. that are not complex.
+%    ~ISREAL(X) detects objects that have an imaginary part even if
+%    it is all zero.
+%    ~ANY(IMAG(X),0) detects strictly real objects, whether X has
+%    an all zero imaginary part allocated or not.
 %
-% input:  s: object or array (estruct)
-% output: b: array (int)
-% ex:     b=isreal(a);
-%
+% Example: s=estruct(rand(5)+i*rand(5)); ~isreal(s)
 % Version: $Date$ $Version$ $Author$
-% See also estruct, estruct/sign, estruct/isreal, estruct/isfinite, estruct/isnan,
-%          estruct/isinf, estruct/isfloat, estruct/isinterger,
-%          estruct/isnumeric, estruct/islogical, estruct/isscalar, 
-%          estruct/isvector, estruct/issparse
+% See also estruct, estruct/real, estruct/imag, complex
 
-a = unary(a, 'isreal');
-a = uint8(a);
+v = unary(a, 'isreal');
+if iscell(v), v = cell2mat(v); end
+v = logical(v);

@@ -1,19 +1,18 @@
 function c = lt(a,b)
-% c = lt(a,b) : lower-than comparison of estruct objects
+% <  Less than (lt).
+%    A < B does element by element comparisons between A and B
+%    and returns an object of the same size with elements set to logical 1
+%    where the relation is true and elements set to logical 0 where it is
+%    not.
+%    When comparing two estruct objects, the monitor weighting is applied.
 %
-%   @estruct/lt (<) comparison operator
-%     when comparing two estruct objects, the monitor weighting is applied.
+%    C = LT(A,B) is called for the syntax 'A <= B'.
 %
-% input:  a: object or array (estruct or numeric)
-%         b: object or array (estruct or numeric)
-% output: c: object or array which Signal is the comparison result (estruct)
-% ex:     c= a<1; d=find(a<b);
-%
+% Example: s=estruct(-10:10); any(s < 0)
 % Version: $Date$ $Version$ $Author$
 % See also estruct, estruct/find, estruct/gt, estruct/lt, estruct/ge, estruct/le, estruct/ne, estruct/eq
 
 if nargin ==1
-	b=[];
+  b=[];
 end
 c = binary(a, b, 'lt');
-

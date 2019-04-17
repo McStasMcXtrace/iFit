@@ -1,20 +1,16 @@
-function c = times(a,b)
-% c = times(a,b) : computes the product of estruct objects
+function c = xor(a,b)
+%  XOR Logical EXCLUSIVE OR.
+%    XOR(S,T) is the logical symmetric difference of objects S and T.
+%    The result is logical 1 (TRUE) where either S or T, but not both, is
+%    nonzero.  The result is logical 0 (FALSE) where S and T are both zero
+%    or nonzero.
 %
-%   @estruct/times (*) function to compute the product of data sets=a.*b
-%     the square of a single estruct object should rather be computed 
-%     using the power law.
-%
-% input:  a: object or array (estruct or numeric)
-%         b: object or array (estruct or numeric)
-% output: c: object or array (estruct)
-% ex:     c=a.*2;
-%
+% Example: s=estruct(-10:10); all(xor(s, ~s), 0)
 % Version: $Date$ $Version$ $Author$
-% See also estruct, estruct/minus, estruct/plus, estruct/times, estruct/rdivide, estruct/power
+% See also estruct, estruct/and, estruct/or
 if nargin ==1
-	b=[];
+  b=[];
 end
 
-c = binary(a, b, 'times');
+c = binary(a, b, 'xor');
 

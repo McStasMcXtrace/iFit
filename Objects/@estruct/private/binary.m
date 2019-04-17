@@ -13,8 +13,8 @@ function c = binary(a, b, op, varargin)
 %   an iFunc object (2nd arg), which is then evaluated on the estruct axes for operator
 %
 % binary operator may be:
-% 	combine conv convn deconv eq ge gt isequal ldivide le lt
-%	minus mldivide mpower mrdivide mtimes ne plus power rdivide sqr times xcorr
+%   combine conv convn deconv eq ge gt isequal ldivide le lt
+% minus mldivide mpower mrdivide mtimes ne plus power rdivide sqr times xcorr
 %   and or xor
 
 
@@ -171,7 +171,7 @@ if not(all(m2(:) == 0)) && not(all(m2(:) == 1)) && p1,
   y2 = genop(@rdivide,s2,m2); d2 = genop(@rdivide,e2,m2);
 else y2=s2; d2=e2; end
 
-% operation
+% operation ============================================================
 switch op
 case {'plus','minus','combine'}
   if strcmp(op, 'combine'),

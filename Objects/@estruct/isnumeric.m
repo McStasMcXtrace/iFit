@@ -1,18 +1,14 @@
-function a = isnumeric(a)
-% b = isnumeric(s) : True for numeric estruct object elements
+function v = isnumeric(a)
+% ISNUMERIC True for numeric arrays.
+%    ISNUMERIC(A) returns true if A is a numeric array and false otherwise.
 %
-%   @estruct/isnumeric function to return true for numeric elements
-%   of 's', i.e. that are of type double, single, integer.
+%    For example, integer and float (single and double) objects are numeric,
+%    while logicals, strings, cell arrays, and structure arrays are not.
 %
-% input:  s: object or array (estruct)
-% output: b: object or array (estruct)
-% ex:     b=isnumeric(a);
-%
+% Example: s=estruct(-10:10); isnumeric(s)
 % Version: $Date$ $Version$ $Author$
-% See also estruct, estruct/sign, estruct/isreal, estruct/isfinite, estruct/isnan,
-%          estruct/isinf, estruct/isfloat, estruct/isinterger,
-%          estruct/isnumeric, estruct/islogical, estruct/isscalar, 
-%          estruct/isvector, estruct/issparse
+% See also estruct/double, estruct/isinteger, estruct/isfloat
 
-a = unary(a, 'isnumeric');
-a = uint8(a);
+v = unary(a, 'isnumeric');
+if iscell(v), v = cell2mat(v); end
+v = logical(v);
