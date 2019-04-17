@@ -7,7 +7,7 @@ function ret=webbrowser(url, method)
 %   This browser has very limited rendering capabilities. It does not support 
 %     JavaScript, and other 'modern' HTML extensions (flash, HTML5,...).
 %   The browser has a display pane, a Home button, a Back button, an editable URL 
-%   field, and keeps track of the navigation history. Does not support proxy settings.
+%   field, and keeps track of the navigation history. 
 %
 %   webbrowser        Opens an empty browser.
 %   webbrowser(file)  Display the specified file (full path or in the Matlab search path)
@@ -45,7 +45,7 @@ function ret=webbrowser(url, method)
     end
   end
   
-  handles=[];
+  handles={};
   
   % return code from Browser: 0=OK, 1=error.
   ret=1;  % error code
@@ -67,51 +67,57 @@ function ret=webbrowser(url, method)
       if strncmp(root, 'file://',7)
         root = fileparts(url(8:end));
       end
-      handles(1) = figure('menubar','none', 'Name', url,'NextPlot','new');
+      handles{1} = figure('menubar','none', 'Name', url,'NextPlot','new');
       % button bar [ Back URL History Home ]
       % Back button
-      handles(2) = uicontrol('style','pushbutton','Units','Normalized', ...
+      handles{2} = uicontrol('style','pushbutton','Units','Normalized', ...
         'ToolTip', 'Go back one page', ...
         'String','<-','Position',[0.01 0.91 0.04 0.05], 'Callback',@setBack);
       % URL text
-      handles(3) = uicontrol('style','edit','Units','Normalized', ...
+      handles{3} = uicontrol('style','edit','Units','Normalized', ...
         'ToolTip', 'Type a URL here (http://, file://, ...) or "matlab:<command>"', 'BackgroundColor','white', ...
         'String', url, 'Position',[0.06 0.91 0.63 0.05], 'Callback',@setURL);
       % History
-      handles(4) = uicontrol('style','pushbutton','Units','Normalized', ...
+      handles{4} = uicontrol('style','pushbutton','Units','Normalized', ...
         'ToolTip', 'List of previous URL', ...
         'String', 'History', 'Position',[0.70 0.91 0.14 0.05], 'Callback',@setFromHistory);
       % HOME button
-      handles(5) = uicontrol('style','pushbutton','Units','Normalized', ...
+      handles{5} = uicontrol('style','pushbutton','Units','Normalized', ...
         'ToolTip', sprintf('Go back to Home main page\n%s',Home ), ...
         'String','HOME','Position',[0.85 0.91 0.14 0.05], 'Callback',@setHome);
       % File Menu
-      handles(6) = uimenu(handles(1), 'Label', 'File');
-      uimenu(handles(6), 'Label', 'Open URL', 'Callback', @openURL, 'Accelerator','O');
-      uimenu(handles(6), 'Label', 'Save as...', 'Callback', @savePage, 'Accelerator','S');
-      uimenu(handles(6), 'Label', 'Export page', 'Callback', @printPage, 'Accelerator','P');
-      uimenu(handles(6), 'Separator','on', 'Label', 'Quit', ...
+      handles{6} = uimenu(handles{1}, 'Label', 'File');
+      uimenu(handles{6}, 'Label', 'Open URL', 'Callback', @openURL, 'Accelerator','O');
+      uimenu(handles{6}, 'Label', 'Save as...', 'Callback', @savePage, 'Accelerator','S');
+      uimenu(handles{6}, 'Label', 'Export page', 'Callback', @printPage, 'Accelerator','P');
+      uimenu(handles{6}, 'Label', 'Quit', 'Separator','on', ...
         'Callback', @exitBrowser, 'Accelerator','Q');
       % Navigation Menu
-      handles(6) = uimenu(handles(1), 'Label', 'Navigation');
-      uimenu(handles(6), 'Label', 'Home', 'Callback', @setHome, 'Accelerator','H');
-      uimenu(handles(6), 'Label', 'Back', 'Callback', @setBack, 'Accelerator','B');
-      uimenu(handles(6), 'Label', 'Set from history...', 'Callback', @setFromHistory, 'Accelerator','L');
-      uimenu(handles(6), 'Separator','on', 'Label', 'About this Browser', 'Callback', @aboutBrowser);
+      handles{7} = uimenu(handles{1}, 'Label', 'Navigation');
+      uimenu(handles{7}, 'Label', 'Home', 'Callback', @setHome, 'Accelerator','H');
+      uimenu(handles{7}, 'Label', 'Back', 'Callback', @setBack, 'Accelerator','B');
+      uimenu(handles{7}, 'Label', 'Set from history...', 'Callback', @setFromHistory, 'Accelerator','L');
+      uimenu(handles{7}, 'Label', 'Set Network Proxy...', 'Separator','on', 'Callback', @setProxy);
+      uimenu(handles{7}, 'Label', 'About this Browser', 'Callback', @aboutBrowser);
       
       je         = javax.swing.JEditorPane('text/html',url);
       jp         = javax.swing.JScrollPane(je);
-      [hcomponent, hcontainer] = javacomponent(jp, [], handles(1));
+      [hcomponent, hcontainer] = javacomponent(jp, [], handles{1});
       set(hcontainer, 'units', 'normalized', 'position', [0,0,1,.9]);
       je.setDragEnabled(true)
       je.setEditable(false);
       ret=setPage(url);
       set(je, 'HyperlinkUpdateCallback',@action_follow_link);
-      set(handles(1), 'UserData', je);
+      set(handles{1}, 'UserData', je);
   end
   if ret % could not open browser
     disp(url)
     if ~isempty(dir(url)), type(url); end
+  end
+  
+  % protect figure from over-plotting
+  if ~isempty(handles)
+    set(handles{1},'HandleVisibility','callback');
   end
   
   function ret=open_system_browser(url)
@@ -147,7 +153,7 @@ function ret=webbrowser(url, method)
   
   function exitBrowser(src,evnt) % Menu File:Quit
     if ~isempty(handles)
-      delete(handles(1));
+      delete(handles{1});
     end
   end
   
@@ -204,7 +210,7 @@ function ret=webbrowser(url, method)
         je.setText( link );
       end
     else % this is a supported URL
-      url = get(handles(3), 'String');  % the current URL
+      url = get(handles{3}, 'String');  % the current URL
       if ~isempty(dir([ root filesep link ]))
         link = [ root filesep link ];
       elseif link(1) == '#'
@@ -277,7 +283,7 @@ function ret=webbrowser(url, method)
       end
     end
     list{end+1} = url;
-    set(handles(3), 'String', url);
+    set(handles{3}, 'String', url);
   end
   
   function setHome(src,evnt)     % go back to Home
@@ -293,11 +299,11 @@ function ret=webbrowser(url, method)
   
   function setURL(src, evnt)     % set URL by changing the URL edit box content
     if ~isempty(handles)
-      link = get(handles(3), 'String');
+      link = get(handles{3}, 'String');
       if ~isempty(link)
         setPage(link);
       else
-        set(handles(3), 'String', url); % restore the previous URL
+        set(handles{3}, 'String', url); % restore the previous URL
       end
     end
   end
@@ -320,12 +326,39 @@ function ret=webbrowser(url, method)
   end
   
   function aboutBrowser(src, evnt) % about dialog
-    helpdlg(sprintf('This is a simplistic web browser, built from Matlab/Java. Does not support proxy settings. E. Farhi, ILL, France <farhi@ill.fr> Aug 2017. Copyright: Licensed under BSD. VISIT http://ifit.mccode.org for more.'), 'About this simplistic Browser');
+    helpdlg(sprintf('This is a simplistic web browser, built from Matlab/Java. E. Farhi, ILL, France <farhi@ill.fr> Aug 2017. Copyright: Licensed under BSD. VISIT http://ifit.mccode.org for more.'), 'About this simplistic Browser');
   end
   
-  % protect figure from over-plotting
-  if ~isempty(handles)
-    set(handles(1),'HandleVisibility','callback');
+  function setProxy(src, evnt) % Set the network Proxy
+  
+  % define the input dialog arguments
+    prompt  = {'Proxy address if you are behind a proxy {\color{blue} [e.g. myproxy.mycompany.com or empty]}. To remove a proxy setting, specify an empty proxy.', ...
+              'Proxy port if you are behind a proxy {\color{blue} [8888 or 0 or empty]}. To remove a proxy port setting, specify an empty port.'};
+    default = {'proxy.ill.fr','8888'};
+    name    = [ mfilename ': Network Proxy settings' ];
+    % options
+    options.Resize      = 'on';
+    options.WindowStyle = 'modal';
+    options.Interpreter ='tex';    
+    
+    answer = inputdlg(prompt, name, 1, default, options);
+    
+    if ~isempty(answer)
+      % now  set the proxy stuff
+      ProxyHost=answer{1}; % Proxy address if you are behind a proxy [e.g. myproxy.mycompany.com or empty]
+ 
+      java.lang.System.setProperty('http.proxyHost', ProxyHost); 
+      com.mathworks.mlwidgets.html.HTMLPrefs.setUseProxy(true);
+      com.mathworks.mlwidgets.html.HTMLPrefs.setProxyHost(ProxyHost);
+      
+      ProxyPort=answer{2}; % Proxy port if you are behind a proxy [8888 or 0 or empty]
+      try
+        java.lang.System.setProperty('http.proxyPort', ProxyPort);
+        com.mathworks.mlwidgets.html.HTMLPrefs.setProxyPort(ProxyPort);
+      catch
+        warning([ mfilename ': could not set ProxyPort ' ProxyPort ]);
+      end
+    end
   end
   
 end
