@@ -4,7 +4,7 @@ function v = subsref_single(v, S, a)
   if ischar(S), S=struct('type','.','subs', S); end
   if ~isstruct(S),  error([ mfilename ': invalid reference (2nd arg) expect struct, is ' class(S) ]); end
   if numel(S) ~= 1, error([ mfilename ': only works with a single level reference' ]); end
-  
+      
   default = true;
   switch S.type
   case {'()','.'} % syntax: a('fields') does not follow links (getalias).
@@ -14,6 +14,17 @@ function v = subsref_single(v, S, a)
       % follow links for '.' subsref, not for '()'
       v = get_single(v, S.subs{1}, S.type(1)=='.', a);  % which handles aliases in 'a'
       default = false;
+    elseif iscell(S.subs)
+      if any(cellfun(@(c)isa(c,'estruct'), S.subs))
+        for index=1:numel(S.subs)
+          if isa(S.subs{index},'estruct')
+            S.subs{index} = subsindex(S.subs{index}); 
+          end
+        end
+      end
+      if isa(v,'estruct')
+        v = subsref_single(v,'Signal');
+      end
     end
   case '{}' % syntax: a{axis_rank} get axis value/alias (getaxis)
     if isa(v, 'estruct') && numel(S.subs{1}) == 1 % scalar numeric or char
