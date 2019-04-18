@@ -1,8 +1,8 @@
 function c = times(a,b)
-%  .*  Array multiply (times).
-%    X.*Y denotes element-by-element multiplication.
+% .*  Array multiply (times).
+%   X.*Y denotes element-by-element multiplication.
 %
-%    C = TIMES(A,B) is called for the syntax 'A .* B'.
+%   C = TIMES(A,B) is called for the syntax 'A .* B'.
 %
 % Example: a=estruct(-10:10); c=a.*2; max(c{0}) == 20
 % Version: $Date$ $Version$ $Author$
@@ -12,4 +12,3 @@ if nargin ==1
 end
 
 c = binary(a, b, 'times');
-

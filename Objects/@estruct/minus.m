@@ -1,18 +1,13 @@
 function c = minus(a,b)
-% c = minus(a,b) : computes the difference of estruct objects
+% -   Minus.
+%   A - B subtracts object B from A.
+%   C = MINUS(A,B) is called for the syntax 'A - B' to compute the difference.
 %
-%   @estruct/minus (-) function to compute the difference of data sets
-%
-% input:  a: object or array (estruct or numeric)
-%         b: object or array (estruct or numeric)
-% output: c: object or array (estruct)
-% ex:     c=a-1;
-%
+% Example: s=estruct(-10:10); c=s-1; c{0}(1) == -11
 % Version: $Date$ $Version$ $Author$
 % See also estruct, estruct/minus, estruct/plus, estruct/times, estruct/rdivide
 
 if nargin ==1
-	b=[];
+  b=[];
 end
 c = binary(a, b, 'minus');
-

@@ -16,9 +16,9 @@ function y=fconv(x, h, shape)
 %          valid        Returns only those parts of the convolution that are computed
 %                       without the zero-padded edges. Using this option, y has size
 %                       [mx-mh+1,nx-nh+1] when all(size(x) >= size(h)).
-%          deconv       Performs an FFT deconvolution.
-%          deconv_iter  Performs an iterative deconvolution.
-%          correlation  Compute the correlation instead of the convolution (one
+%          inverse      Performs an FFT deconvolution/decorrelation.
+%          iterative    Performs an iterative deconvolution/decorrelation.
+%          correlation  Compute the (de)correlation instead of the (de)convolution (one
 %                       of the FFT's is then conjugated).
 %          pad          Pads the x signal by replicating its starting/ending values
 %                       in order to minimize the convolution side effects.
@@ -33,7 +33,7 @@ function y=fconv(x, h, shape)
 %      See also FCONVN, FXCORR, CONV, CONV2, FILTER, FILTER2, FFT, IFFT
 %
 % Version: $Date$ $Version$ $Author$
-% 
+%
 
 
 y=[];
@@ -114,47 +114,47 @@ if ~isempty(strfind(shape,'iter'))
   % we search y so that y*h = x
   accuracy      = 1e-2;        % criteria for stopping
   max_iterations= 100;
-  
+
   % initiate process
   y          = x;
   iterations = 0;
   delta_y_previous = [];
-  
+
   while iterations < max_iterations
-  
-    % evaluate the convolution product
+
+    % evaluate the convolution/correlation product
     y_broad = fconv(y,h,'same pad');
-    
+
     % evaluate the difference with our expected result 'a'
     delta_y = y_broad - x; % effect of broadening
     if ~isempty(delta_y_previous) && sum(abs(delta_y_previous(:))) < 10*sum(abs(delta_y))
       % error increases tremendously
-      error([ mfilename ': ERROR: iterative deconvolution failed. The procedure does not converge. Try fconv(a,b,''deconv'').' ])
+      error([ mfilename ': ERROR: iterative deconvolution failed. The procedure does not converge. Try fconv(a,b,''inverse'').' ])
     end
-      
-    
+
+
     % we remove that effect from the deconvolved 'c'
     y = y - delta_y;
-    
+
     % test if we are close enough to stop
     if all(abs(delta_y) <= abs(accuracy*y))
-      break; 
+      break;
     end
     iterations = iterations+1;
     delta_y_previous = delta_y;
   end
 else
 
-  X=fftn(x, Ly2);		       % Fast Fourier transform (pads with zeros up to the next power of 2)
-  H=fftn(h, Ly2);	           % Fast Fourier transform
+  X=fftn(x, Ly2);          % Fast Fourier transform (pads with zeros up to the next power of 2)
+  H=fftn(h, Ly2);            % Fast Fourier transform
 
-  if (strfind(shape,'deconv'))
-    Y=X./H;      	           % FFT Division= deconvolution
+  if strfind(shape,'deconv') || strfind(shape,'inverse')
+    Y=X./H;                  % FFT Division= deconvolution
   else
-    Y=X.*H;      	           % FFT Product = convolution
+    Y=X.*H;                  % FFT Product = convolution
   end
   y=ifftn(Y, Ly2);           % Inverse fast Fourier transform
-  
+
   % Take just the first N elements
   S.type='()';
   for i=1:length(Ly)

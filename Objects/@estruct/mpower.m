@@ -1,12 +1,8 @@
 function c = mpower(a,b)
-% c = mpower(a,b) : computes the matrix-power of estruct objects
+% ^   Object power.
+%   A^B is A to the B power.
 %
-%   @estruct/mpower function to compute the power of data sets
-%
-% input:  a: object or array (estruct or numeric)
-%         b: object or array (estruct or numeric)
-% output: c: object or array (estruct)
-% ex:     c=a^2;
+%   C = MPOWER(A,B) is called for the syntax 'A ^ B'.
 %
 % Version: $Date$ $Version$ $Author$
 % See also estruct, estruct/times, estruct/rdivide, estruct/power
@@ -14,5 +10,4 @@ function c = mpower(a,b)
 if nargin == 1,
   b = a;
 end
-c = binary(a, b, 'mpower');
-
+c = binary(a, b, 'power');

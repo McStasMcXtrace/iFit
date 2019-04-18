@@ -52,8 +52,8 @@ end
 % and then multiply again by the Monitor
 
 % operate with Signal/Monitor and Error/Monitor
-if ~isempty(find(strcmp(op, {'norm','asin', 'acos','atan','cos','sin','exp','log',...
- 'log10','sqrt','tan','asinh','atanh','acosh','sinh','cosh','tanh','isnan','isfinite','isinf'}))) ...
+if any(strcmp(op, {'norm','asin', 'acos','atan','cos','sin','exp','log',...
+ 'log10','sqrt','tan','asinh','atanh','acosh','sinh','cosh','tanh','isnan','isfinite','isinf'})) ...
    && not(all(m(:) == 0 | m(:) == 1))
   s = genop(@rdivide, s, m);
   e = genop(@rdivide, e, m);
@@ -103,13 +103,13 @@ try
     c = cosh(s);
     e = e./(c.*c);
   case { 'transpose', 'ctranspose'}; % .' and ' respectively
-    e = feval(op, e), varargin{:};
+    e = feval(op, e, varargin{:});
     m = feval(op, m, varargin{:});
   case {'sparse','full','flipud','fliplr','flipdim'}
     % apply same operator on error and Monitor
     e = feval(op, e, varargin{:});
     m = feval(op, m, varargin{:});
-  case {'floor','ceil','round'}
+  case {'floor','ceil','round','not'}
     % apply same operator on error
     e = feval(op, e, varargin{:});
   case 'del2'
@@ -123,7 +123,7 @@ try
     % result is a single value or array
     b = new_s;
     return
-  case {'uminus','abs','real','imag','uplus','not','conj'}
+  case {'uminus','abs','real','imag','uplus','conj'}
     % retain error, do nothing
   case {'sum'}
     if isscalar(new_s)
@@ -143,8 +143,8 @@ end
 clear s
 
 % operate with Signal/Monitor and Error/Monitor (back to Monitor data)
-if ~isempty(find(strcmp(op, {'norm','asin', 'acos','atan','cos','sin','exp','log',...
- 'log10','sqrt','tan','asinh','atanh','acosh','sinh','cosh','tanh'}))) ...
+if any(strcmp(op, {'norm','asin', 'acos','atan','cos','sin','exp','log',...
+ 'log10','sqrt','tan','asinh','atanh','acosh','sinh','cosh','tanh'})) ...
    && not(all(m(:) == 0 | m(:) == 1))
   new_s = genop(@times, new_s, m);
   e     = genop(@times, e, m);
@@ -169,4 +169,3 @@ if any(strcmp(op,{ 'transpose', 'ctranspose'})); % .' and ' respectively
 end
 b.Command=cmd;
 history(b, op, a);
-

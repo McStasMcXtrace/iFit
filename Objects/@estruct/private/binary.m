@@ -205,7 +205,7 @@ case {'plus','minus','combine'}
   end
   clear i1 i2
 
-case {'times','rdivide', 'ldivide','mtimes','mrdivide','mldivide','mpower','conv','convn','xcorr','deconv'}
+case {'times','rdivide', 'ldivide','mtimes','mrdivide','mldivide','conv','convn','xcorr','deconv'}
   % Signal
   if strcmp(op, 'conv') || strcmp(op, 'deconv') || strcmp(op, 'xcorr')
     s3 = fconv(y1, y2, varargin{:});  % pass additional arguments to fconv
@@ -239,7 +239,7 @@ case {'times','rdivide', 'ldivide','mtimes','mrdivide','mldivide','mpower','conv
     end
   else m3=get(c,'Monitor'); end
 
-case {'power'}
+case {'power','mpower'}
   s3 = genop(op, y1, y2);
 
   try
@@ -350,4 +350,3 @@ end
 
 c.Command=cmd;
 history(c, op, a,b);
-

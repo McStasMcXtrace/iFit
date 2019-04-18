@@ -1,11 +1,13 @@
 function y=size(s, varargin)
 % SIZE get object size
-%   D = SIZE(X) for a single object returns the size of its Signal. For an array
-%   of objects, the size of the array is returned.
+%   D = SIZE(X) for a single object returns the size of its Signal. For
+%   an array of objects, the size of the array is returned.
 %
 %   M = SIZE(X,DIM) returns the length of the dimension specified
 %   by the scalar DIM.  For example, SIZE(X,1) returns the number
 %   of rows. If DIM > NDIMS(X), M will be 1.
+%
+%   To get the size of all objects in an array S, use ARRAYFUN('size',S)
 %
 % Example: s=estruct(rand(5)); all(size(s.Signal) == size(s))
 % Version: $Date$ $Version$ $Author$
@@ -33,4 +35,3 @@ else
     y = [];
   end
 end
-

@@ -2,7 +2,7 @@ function vout = arrayfun(fun, s)
 % ARRAYFUN Apply a function to each element of estruct array.
 %    A = ARRAYFUN(FUN, B) applies the function specified by FUN to each
 %    element in estruct array B. To use a class method explicitly, specify e.g.
-%      FUN = @B.method or @B.method(arg1, ...) 
+%      FUN = @B.method or @B.method(arg1, ...)
 %
 % Example: s = estruct(1:10); numel(arrayfun(@(s)size(s,2),[s s])) == 2
 % Version: $Date$ $Version$ $Author$
@@ -11,7 +11,7 @@ function vout = arrayfun(fun, s)
 % get the number of output arguments from 'fun'
   vout        = cell(1,numel(s));
   nout        = nargout(fun);
-  
+
 % call FUN for each array element
   for index=1:numel(s)
     if nout>0
@@ -29,23 +29,23 @@ function vout = arrayfun(fun, s)
   if ~isempty(vout) && numel(vout) == numel(s) && ~isscalar(vout)
     vout = reshape(vout, size(s));
   end
-  
+
 % when all items are of same class and size, make it uniform
   if numel(vout) > 1
     vout_class  = cellfun(@class, vout, 'UniformOutput',false);
-    vout_numel  = cellfun(@numel, vout); 
+    vout_numel  = cellfun(@numel, vout);
     if all(strcmp(vout_class{1}, vout_class)) && all(vout_numel == vout_numel(1))
       % all same class and number of elements
       success = false;
       if size(vout{1},1) == 1 % row vector
         try
-          vout = cell2mat(vout');
+          vout = cell2mat(vout);
           success = true;
         end
       end
       if ~success
         try
-          vout = cell2mat(vout);
+          vout = cell2mat(vout');
           success = true;
         end
       end
@@ -53,4 +53,3 @@ function vout = arrayfun(fun, s)
   end
 % single returned cell ?
   if iscell(vout) && numel(vout) == 1, vout = vout{1}; end
-  

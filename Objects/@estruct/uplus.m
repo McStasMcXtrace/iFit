@@ -1,15 +1,11 @@
 function a = uplus(a)
-% b = uplus(s) : makes a copy of estruct object
+%  +  Unary plus.
+%    +A for objects is A. A new object is created, with same content,
+%    but different Tag/ID and Date (same as COPYOBJ).
 %
-%   @estruct/uplus function to return a duplicate of data sets.
-%   b=+a creates a new estruct object with same content as 'a', but different Tag/ID and Date.
-%
-% input:  s: object or array (estruct)
-% output: b: object or array (estruct)
-% ex:     b=uplus(a);
+%    B = UPLUS(A) is called for the syntax '+A'.
 %
 % Version: $Date$ $Version$ $Author$
 % See also estruct, estruct/uminus, estruct/abs, estruct/real, estruct/imag, estruct/uplus
 
 a = unary(a, 'uplus');
-

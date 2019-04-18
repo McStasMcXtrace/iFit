@@ -1,15 +1,14 @@
-function a = not(a)
-% b = not(s) : computes the logical 'not' of estruct object
+function b = not(a)
+% ~   Logical NOT.
+%   ~A performs a logical NOT of input object A, and returns an object
+%    containing elements set to either logical 1 (TRUE) or logical 0 (FALSE).
+%    An element of the output object is set to 1 if A Signal contains a zero value
+%    element at that same array location.  Otherwise, that element is set to
+%    0.
 %
-%   @estruct/not function to compute the logical 'not' of data sets, 
-%     i.e. returns 0 where estruct Signal is not zero, and 1 otherwise.
-%
-% input:  s: object or array (estruct)
-% output: b: object or array (estruct)
-% ex:     b=not(a);
+%    B = NOT(A) is called for the syntax '~A'
 %
 % Version: $Date$ $Version$ $Author$
 % See also estruct, estruct/or, estruct/and
 
-a = unary(a, 'not');
-
+b = unary(a, 'not');

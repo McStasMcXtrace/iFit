@@ -1,6 +1,5 @@
 function [match, field] = strfind(s, varargin)
 % STRFIND Find a string within object.
-%
 %   STRFIND is equivalent to FINDSTR.
 %
 % Example: s=estruct('x',1:10,'y','blah'); ischar(strfind(s, 'blah'))

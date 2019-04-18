@@ -1,24 +1,25 @@
 function new = copyobj(self, org)
-  % COPYOBJ makes a deep copy of initial object
-  %   copy the properties from 'self' into the instantiated object 'new'.
+  % COPYOBJ makes a deep copy of initial object.
+  %   COPYOBJ(A) copy the properties from A into a new object.
+  %   The notation +A is equivalent.
   %
-  %   new = COPYOBJ(self)
-  %     creates a deep copy of the initial object 'self'
-  %   new = COPYOBJ(self, content)
-  %     creates an empty object and fill it with 'content' (struct/object)
+  %   new = COPYOBJ(self) creates a deep copy of the initial object 'self'
+  %
+  %   new = COPYOBJ(self, content) creates an empty object and fill it
+  %   with 'content' (struct/object)
   %
   % Example: s = estruct(1:10); s1=copyobj(s); axescheck(s1); isequal(s.Signal, s1.Signal)
   % Version: $Date$ $Version$ $Author$
   % see also estruct
-  
+
   % handle arrays by copying the new0
   if nargin == 1,  org=''; end
-  
+
   if ~isempty(org) && ~isstruct(org) && ~isobject(org)
     new = self; % this may not be a deep copy
     return
   end
-  
+
   % handle array input
   if numel(self) > 1
     new = [];
@@ -38,8 +39,8 @@ function new = copyobj(self, org)
   % single deep copy
   if ~isa(self, 'handle') && isa(org, 'estruct') && isempty(self)
     % assigment is OK for non handle objects
-    new = org;  
-  else 
+    new = org;
+  else
     % handle object: transfer properties: this is a safe way to instantiate a subclass
     new = feval(class(self)); % new empty object of same class
     wrn_flag = true;

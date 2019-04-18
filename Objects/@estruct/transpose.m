@@ -1,15 +1,12 @@
 function a = transpose(a)
-% b = transpose(s) : non-conjugate transpose of estruct object
+% .' Transpose.
+%    X.' is the non-conjugate transpose.
+%    When the argument is an array, each element is transposed. To
+%    transpose the array itself, use CTRANSPOSE(s) or b=s'
 %
-%   @estruct/transpose function to return the non-conjugate transpose of data sets
-%     which corresponds to syntax: b = s.'
-%   When the argument is an estruct array, each element is transposed. To
-%     transpose the array itself, use ctranspose(s) or b=s'
+%    B = TRANSPOSE(A) is called for the syntax A.'
 %
-% input:  s: object or array (estruct)
-% output: b: object or array (estruct)
-% ex:     b=transpose(a);
-%
+% Example: s=estruct(rand(3,6)); all(all(s.' == s{0}.'))
 % Version: $Date$ $Version$ $Author$
 % See also estruct, estruct/transpose, estruct/ctranspose, estruct/setaxis, estruct/getaxis
 
@@ -20,4 +17,3 @@ elseif ndims(a) <=2
 else
   a = permute(a, [2 1]);
 end
-

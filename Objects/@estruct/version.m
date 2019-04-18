@@ -1,6 +1,5 @@
 function [b, vers, info] = version(a,long_request)
 % VERSION return class version
-%
 %   VERSION(s) return the version of the estruct class
 %
 %   VERSION(s, 'long') returns the full version with all contributors.
@@ -43,7 +42,7 @@ end
 
 function memStats = memoryInfo()
     % Cross-platform function to get memory usage
-    % 
+    %
     % @author Sviatoslav Danylenko <dev@udf.su>
     % @license BSD
     %
@@ -61,7 +60,7 @@ function memStats = memoryInfo()
     % used: the total amount of used memory in kB
     % cache: the total amount of memory used for cache in kB
     % usedMatlab: the maount of by current MATLAB process used memory in kB
-    
+
     % Commands List for Unix:
     %  Get process memory usage:
     %   ps -p <PID> -o rss --no-headers
@@ -69,9 +68,9 @@ function memStats = memoryInfo()
     %   awk '/VmSwap|VmRSS/{print $2}' /proc/<PID>/status
     %  Get memory usage information:
     %   free -m | sed -n ''2p''
-    
+
 % <https://fr.mathworks.com/matlabcentral/fileexchange/45598-memoryinfo>
-%  
+%
 %Copyright (c) 2014, Sviatoslav Danylenko
 %All rights reserved.
 %
@@ -96,7 +95,7 @@ function memStats = memoryInfo()
 %CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 %ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 %POSSIBILITY OF SUCH DAMAGE.
-    
+
     memStats = struct('total', false, ...
         'free', false, ...
         'used', false, ...
@@ -109,7 +108,7 @@ function memStats = memoryInfo()
         );
     if isunix
         pid = feature('getpid');
-        
+
         [~, usedMatlab] = unix(['awk ''/VmSwap|VmRSS/{print $2}'' /proc/' num2str(pid) '/status']);
         try
             usedMatlab = regexp(usedMatlab, '\n', 'split');
@@ -117,7 +116,7 @@ function memStats = memoryInfo()
             memStats.swap.usedMatlab = str2double(usedMatlab{2});
         catch err %#ok
         end
-        
+
         [~, memUsageStr] = unix('free -k | sed -n ''2p''');
         try
             memUsage = cell2mat(textscan(memUsageStr,'%*s %u %u %u %*u %*u %u','delimiter',' ','collectoutput',true,'multipleDelimsAsOne',true));
@@ -127,8 +126,8 @@ function memStats = memoryInfo()
             memStats.cache = memUsage(4);
         catch err %#ok
         end
-        
-        
+
+
         [~, swapUsageStr] = unix('free -k | tail -1');
         try
             swapUsage = cell2mat(textscan(swapUsageStr,'%*s %u %u %u','delimiter',' ','collectoutput',true,'multipleDelimsAsOne',true));
@@ -150,12 +149,10 @@ function memStats = memoryInfo()
         memStats.swap.total = bytes2kBytes(sys.VirtualAddressSpace.Total);
         memStats.swap.used = memStats.swap.total - memStats.swap.free;
     end
-    
+
 end
 
 function kbytes = bytes2kBytes(bytes)
     % bytes to kB konversion
     kbytes = round(bytes/1024);
 end
-
-

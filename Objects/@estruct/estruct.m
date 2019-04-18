@@ -351,14 +351,26 @@ properties
 
     function v = single(self)
       %   SINGLE Convert to SINGLE precision.
-      %      SINGLE(X) returns the SINGLE precision value of the object.
+      %      SINGLE(X) returns the single precision value of the object.
       v = cast(self, 'single');
     end
 
     function v = logical(self)
       %   LOGICAL Convert to logical (0=false, any other=true).
-      %      LOGICAL(X) returns the SINGLE precision value of the object.
+      %      LOGICAL(X) returns the logical value of the object.
       v = cast(self, 'logical');
+    end
+
+    function v = uint32(self)
+      %   UINT32 Convert to uint32, e.g. for indexing.
+      %      UINT32(X) returns the unsigned integer alue of the object.
+      v = cast(self, 'uint32');
+    end
+
+    function v = int32(self)
+      %   UNT32 Convert to int32.
+      %      INT32(X) returns the integer alue of the object.
+      v = cast(self, 'int32');
     end
 
     function s = repmat(self, varargin)

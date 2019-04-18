@@ -1,23 +1,17 @@
 function c = convn(a,b)
-% c = convn(a,b) : computes the convolution of an estruct object with a response function 
+% CONVN N-dimensional normalised convolution.
+%   C = CONVN(A,B) computes the convolution of object A with automatic
+%   centering and normalization of the filter B. This is a shortcut for
+%   CONV(A,B, 'same pad background center normalize')
 %
-%   @estruct/convn function to compute the convolution of data sets with automatic centering
-%     and normalization of the filter. This is a shortcut for
-%       conv(a,b, 'same pad background center normalize')
-%     When used with a single scalar value, it is used as a width to build a 
-%       gaussian function, with same width along all dimensions
-%     When used with a vector of same length as the object dimension, a nD
-%       gaussian function with width as vector elements along each diemsions
-%
-% input:  a: object or array, signal (estruct or numeric)
-%         b: object or array, filter (estruct or numeric)
-% output: c: object or array (estruct)
-% ex:     c=convn(a,b);
+%   C = CONVN(A, width) convolves A with a normalised Gaussian function
+%   which width can be given as a single scalar (same width along all
+%   dimensions), or a vector of same length as the object dimension.
 %
 % Version: $Date$ $Version$ $Author$
 % See also estruct, estruct/times, estruct/conv, estruct/fft, estruct/xcorr, fconv, fconvn, fxcorr
 if nargin ==1
-	b=a;
+  b=a;
 end
 if isscalar(b)
   b = [ 1 mean(getaxis(a,1)) double(b) 0]; % use input as a width
@@ -37,5 +31,3 @@ elseif isa(b,'double') && numel(b) == ndims(a)
   b = g;
 end
 c = binary(a, b, 'conv', 'same pad background center normalize');
-
-
