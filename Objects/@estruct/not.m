@@ -6,7 +6,7 @@ function b = not(a)
 %    element at that same array location.  Otherwise, that element is set to
 %    0.
 %
-%    B = NOT(A) is called for the syntax '~A'
+%    B = NOT(A) is called for the syntax '~A'.
 %
 % Version: $Date$ $Version$ $Author$
 % See also estruct, estruct/or, estruct/and

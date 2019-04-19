@@ -1,15 +1,15 @@
-function a = norm(a)
-% b = norm(s) : norm-2 of estruct object
+function v = norm(a, varargin)
+% NORM   Object norm.
+%   Computes the norm of the object Signal. The default is to use the 
+%   2-norm, defined as sqrt(sum( |a|^2 ))
 %
-%   @estruct/norm function to return the norm-2 of data sets
-%   This function computes the norm of the object 's'.
-%
-% input:  s: object or array (estruct)
-% output: b: norm (double)
-% ex:     b=norm(a);
+%     NORM(V,P)    = sum(abs(V).^P)^(1/P).
+%     NORM(V)      = norm(V,2).
+%     NORM(V,inf)  = max(abs(V)).
+%     NORM(V,-inf) = min(abs(V)).
 %
 % Version: $Date$ $Version$ $Author$
 % See also estruct, estruct/sum, estruct/trapz, norm
 
-a = unary(a, 'norm');
+v = unary(a, 'norm', varargin{:});
 

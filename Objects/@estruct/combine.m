@@ -5,6 +5,9 @@ function c = combine(a,varargin)
 %     (S1+S2) over monitor (M1+M2)
 %   where S1,M1 and S2,M2 and the Signal and Monitor of the two objects.
 %
+%   Alternatively, the addition (PLUS) is defined as the normalised sum:
+%       (M1+M2)*(S1/M1+S2/M2) over monitor(M1+M2)
+%
 %   C = COMBINE([ A B C ...]) combines iteratively all objects.
 %   C = COMBINE(A, B, C, ...) combines iteratively all objects.
 %

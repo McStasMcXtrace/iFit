@@ -18,7 +18,7 @@ function b = sum(a, varargin)
 %
 %    S = SUM(X, 0) does the same as above, but returns the total sum per object.
 %
-% Example: s=estruct(-10:10); any(s< 0) && all(abs(s))>=0
+% Example: s=estruct(-10:10); sum(s,0) == 0
 % Version: $Date$ $Version$ $Author$
 % See also estruct, estruct/uminus, estruct/abs, estruct/real, estruct/imag, estruct/uplus
 

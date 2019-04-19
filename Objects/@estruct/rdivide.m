@@ -1,17 +1,12 @@
 function c = rdivide(a,b)
-% c = rdivide(a,b) : computes the ratio of estruct objects
+% ./  Right object divide.
+%    A./B denotes element-by-element division (object ratio). 
+%    The syntax A/B is the same as A./B
 %
-%   @estruct/rdivide (./) function to compute the ratio of data sets
-%
-% input:  a: object or array (estruct or numeric)
-%         b: object or array (estruct or numeric)
-% output: c: object or array (estruct)
-% ex:     c=a./2; c=a./b;
+%    C = RDIVIDE(A,B) is called for the syntax 'A ./ B
 %
 % Version: $Date$ $Version$ $Author$
 % See also estruct, estruct/minus, estruct/plus, estruct/times, estruct/rdivide
-if nargin ==1
-	b=[];
-end
+
 c = binary(a, b, 'rdivide');
 

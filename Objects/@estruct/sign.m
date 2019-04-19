@@ -1,19 +1,12 @@
 function a = sign(a)
-% b = sign(s) : sign of estruct object
-%
-%   @estruct/sign function to return the sign of data sets
-%   This function computes the sign of the object 's', i.e
-%   -1 for negative values, 0 for null, and +1 for positive values.
-%
-% input:  s: object or array (estruct)
-% output: b: object or array (estruct)
-% ex:     b=sign(a);
+% SIGN   Signum function.
+%   For each Signal element of X, SIGN(X) returns 1 if the element
+%   is greater than zero, 0 if it equals zero and -1 if it is
+%   less than zero.  For the nonzero elements of complex X,
+%   SIGN(X) = X ./ ABS(X).
 %
 % Version: $Date$ $Version$ $Author$
-% See also estruct, estruct/sign, estruct/isreal, estruct/isfinite, estruct/isnan,
-%          estruct/isinf, estruct/isfloat, estruct/isinterger,
-%          estruct/isnumeric, estruct/islogical, estruct/isscalar, 
-%          estruct/isvector, estruct/issparse
+% See also estruct, estruct/abs
 
 a = unary(a, 'sign');
 

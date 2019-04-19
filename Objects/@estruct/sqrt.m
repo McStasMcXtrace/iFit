@@ -1,11 +1,7 @@
 function a = sqrt(a)
-% b = sqrt(s) : square root value of estruct object
-%
-%   @estruct/sqrt function to return the square root value of data sets
-%
-% input:  s: object or array (estruct)
-% output: b: object or array (estruct)
-% ex:     b=sqrt(a);
+%  SQRT   Square root.
+%   SQRT(X) is the square root of the elements of X. Complex 
+%   results are produced if X is not positive.
 %
 % Version: $Date$ $Version$ $Author$
 % See also estruct, estruct/sqrt, estruct/power

@@ -73,6 +73,3 @@ end
 % and make sure we squeeze object singleton dimensions
 b = squeeze(b);
 
-if nargout == 0 && ~isempty(inputname(1))
-  assignin('caller',inputname(1),b);
-end

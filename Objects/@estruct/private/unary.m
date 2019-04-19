@@ -62,6 +62,10 @@ end
 % new Signal value is set HERE <================================================
 if ~isfloat(s) && ~any(strcmp(op, {'isfloat','isinteger','islogical'})), s=double(s); end
 
+if strcmp(op, 'norm') % norm only valid on vctors:matrices
+  s = s(:);
+end
+
 new_s = feval(op, s, varargin{:});
 
 % handle error/monitor stuff

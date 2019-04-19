@@ -1,11 +1,6 @@
 function c = sqr(a)
-% c = sqr(a) : computes the square of estruct objects
-%
-%   @estruct/sqr function to compute the square of data sets
-%
-% input:  a: object or array (estruct)
-% output: c: object or array (estruct)
-% ex:     c=sqr(a);
+% SQR computes the square of object.
+%   SQR(X) has its Signal squared, and is equivalent to POWER(X,2).
 %
 % Version: $Date$ $Version$ $Author$
 % See also estruct, estruct/times, estruct/power

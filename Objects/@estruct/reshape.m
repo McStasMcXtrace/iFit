@@ -66,6 +66,3 @@ for index=1:length(dims)
   end
 end
 
-if nargout == 0 && ~isempty(inputname(1))
-  assignin('caller',inputname(1),a);
-end

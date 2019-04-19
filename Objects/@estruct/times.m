@@ -1,6 +1,7 @@
 function c = times(a,b)
-% .*  Array multiply (times).
+% .*  Object multiply (times).
 %   X.*Y denotes element-by-element multiplication.
+%   The syntax X*Y is the same as X.*Y
 %
 %   C = TIMES(A,B) is called for the syntax 'A .* B'.
 %
