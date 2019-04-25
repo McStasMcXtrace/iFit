@@ -1,5 +1,5 @@
 function new = copyobj(self, org)
-  % COPYOBJ makes a deep copy of initial object.
+  % COPYOBJ Makes a deep copy of initial object.
   %   COPYOBJ(A) copy the properties from A into a new object.
   %   The notation +A is equivalent.
   %

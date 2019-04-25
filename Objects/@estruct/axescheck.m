@@ -1,9 +1,11 @@
 function s = axescheck(s)
-% AXESCHECK check the Signal and Axes of an object
-%   AXESCHECK(s)
-%     Check Signal and Axes. When not set, the largest numeric field is assigned
-%     as the Signal, and missing Axes are searched accordingly.
-%     Monitor and Error are also checked to match Signal dimension.
+% AXESCHECK Check the Signal and Axes of an object.
+%   AXESCHECK(s) Check Signal and Axes. When not set, the largest numeric
+%   field is assigned as the Signal, and missing Axes are searched accordingly.
+%   Monitor and Error are also checked to match Signal dimension.
+%
+%   Usually, the objects are checked automatically for integrity, and it
+%   is not required to manually call this method.
 %
 % Example: s = estruct(1:10); numel(s.Signal) == 10
 % Version: $Date$ $Version$ $Author$

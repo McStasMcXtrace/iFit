@@ -1,6 +1,7 @@
 function c = combine(a,varargin)
-% COMBINE combines (merge) objects
+% COMBINE Combines (merge) objects Signal and axes.
 %   C = COMBINE(A,B) combines all objects in [A B] into a single object.
+%   The merge is carried out on Signal and Axes.
 %   The combine operator (aka merge) of two objects is defined as:
 %     (S1+S2) over monitor (M1+M2)
 %   where S1,M1 and S2,M2 and the Signal and Monitor of the two objects.

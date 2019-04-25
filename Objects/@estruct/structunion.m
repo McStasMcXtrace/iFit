@@ -1,5 +1,5 @@
 function structure = structunion(A, varargin)
-% STRUCTUNION concatenate/merge structures
+% STRUCTUNION Concatenate/merge structures fields.
 %   STRUCTUNION is equivalent to STRUCTCAT (union, OR).
 %
 % Version: $Date$ $Version$ $Author$

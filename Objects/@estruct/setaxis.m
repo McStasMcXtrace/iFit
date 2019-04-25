@@ -1,5 +1,5 @@
 function s = setaxis(s,varargin)
-% SETAXIS set axis definition or value in object.
+% SETAXIS Set axis definition or value in object.
 %   SETAXIS(a, rank, value) Set axis value (and follow aliases). This is equivalent to
 %   the syntax a{rank}=value. The axis rank 0 corresponds with the Signal/Monitor value.
 %   The axis of rank 1 corresponds with rows, 2 with columns, 3 with pages, etc.

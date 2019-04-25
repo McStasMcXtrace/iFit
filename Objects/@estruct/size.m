@@ -1,5 +1,5 @@
 function y=size(s, varargin)
-% SIZE get object size
+% SIZE Get object size.
 %   D = SIZE(X) for a single object returns the size of its Signal. For
 %   an array of objects, the size of the array is returned.
 %
@@ -31,7 +31,7 @@ else
   try
     y = y(varargin{:});
   catch
-    warning([ mfilename ': ERROR: Invalid dimension specification [ ' sprintf('%i ', varargin{:}) '] for object ' s.Tag ' of dimensionality ' num2str(ndims(s)) ])
+    warning([ mfilename ': ERROR: Invalid dimension specification [ ' sprintf('%i ', varargin{:}) '] for object ' s.Tag ' ' s.Name ' of dimensionality ' num2str(ndims(s)) ])
     y = [];
   end
 end

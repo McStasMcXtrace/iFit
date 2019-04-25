@@ -1,12 +1,12 @@
 function structure = uitable(structure,options)
-% UITABLE a dialogue which allows to modify structure(s) in a table
+% UITABLE A dialogue which allows to modify structure(s) in a table
 %
 % In modal (default) creation mode, the updated structure is returned upon
-%   closing the window. A modal dialog box prevents a user from interacting 
+%   closing the window. A modal dialog box prevents a user from interacting
 %   with other windows before responding to the modal dialog box.
 % In non-modal creation mode, the window is displayed, and remains visible
 %   while the execution is resumed. The call to uitable returns a
-%   configuration which should be used as follows to retrieve the modified 
+%   configuration which should be used as follows to retrieve the modified
 %   structure later:
 %     ad = uitable(a, struct('CreateMode','non-modal'));
 %     % continue execution, and actually edit and close the window
@@ -28,10 +28,10 @@ function structure = uitable(structure,options)
 %     options.TooltipString: a string to display (as help)
 %     options.CreateMode: can be 'modal' (default) or 'non-modal'.
 %     options.Tag: a tag for the dialogue.
-%     options.CloseRequestFcn: a function handle or expresion to execute when 
+%     options.CloseRequestFcn: a function handle or expresion to execute when
 %       closing the dialogue in 'non-modal' mode.
 %     options.ColumnFormat: a cell which specifies how to handle the structure field
-%       values. The 'auto' mode 
+%       values. The 'auto' mode
 %       'char' all values can be anything.
 %       'auto' protects scalar numeric values from being changed to something else (default).
 %
@@ -39,10 +39,10 @@ function structure = uitable(structure,options)
 %   structure: the modified structure in 'modal' mode (default),
 %     or the dialogue information structure in 'non-modal' mode.
 %     In non-modal mode, the dialogue information can be obtained from
-%       out  = uitable(structure,struct('CreateMode','non-modal')) 
+%       out  = uitable(structure,struct('CreateMode','non-modal'))
 %       Data = getappdata(0,out.tmp_storage);
 %
-% Example: 
+% Example:
 %   a.Test=1; a.Second='blah'; uitable(a)
 %   options.ListString={'Test This is the test field','Second 2nd'};
 %   uitable([a a], options);
@@ -50,13 +50,13 @@ function structure = uitable(structure,options)
 % Version: $Date$ $Version$ $Author$
 
   fields  = fieldnames(structure);    % members of the structure
-  
+
   % get options or default values
   if nargin == 0, structure=[]; end
   if isempty(structure) || ~isstruct(structure), return; end
   if nargin == 1, options=[]; end
-  
-  
+
+
   if ~isfield(options, 'Name')
     if ~isempty(inputname(1))
       options.Name = [ 'Edit ' inputname(1) ];
@@ -90,19 +90,19 @@ function structure = uitable(structure,options)
   if ~isfield(options,'CreateMode')
     options.CreateMode = 'modal';
   end
-  
+
   % create a uitable from the structure fields and values
   f = figure('Name',options.Name, 'MenuBar','none', ...
       'NextPlot','new', ...
       'Tag', options.Tag, 'Units','pixels', ...
       'CloseRequestFcn', ...
         [ 'setappdata(0,''' tmp_storage ''', get(findobj(gcbf,''Tag'',''' options.Tag '_Table' '''),''Data'')); delete(gcbf)' ]);
-  
+
   % override default mechanism for Table update when closing
   if isfield(options, 'CloseRequestFcn') && ~strcmp(options.CreateMode, 'modal')
     set(f, 'CloseRequestFcn', options.CloseRequestFcn);
   end
-  
+
   % sort ListString so that it matches the fields
   ListString = cell(size(fields));
   for index=1:numel(fields)
@@ -117,7 +117,7 @@ function structure = uitable(structure,options)
   end
   options.ListString = ListString;
   structure = rmfield(struct(structure), 'Private');
-  
+
   % create the Table content to display, handle array of structures
   % check if the structure values are numeric, logical, or char
   Data0       = cell(numel(fields), numel(structure)+2);  % 1st column=ListString, % 2nd column=fieldnames
@@ -136,7 +136,7 @@ function structure = uitable(structure,options)
       elseif strcmp(options.ColumnFormat,'char')
         fields_type{index,index_s+2} = class(item);
         if ~ischar(item) && ~isobject(item) && isnumeric(item)
-          Data0{index,index_s+2} = num2str(item); 
+          Data0{index,index_s+2} = num2str(item);
         end
       end
     end
@@ -159,7 +159,7 @@ function structure = uitable(structure,options)
   if p(3) < 10, p(3) = 10; end
   set(f, 'Position',p);
   set(f, 'Units', 'pixels');
-  
+
   % set ColumnName
   ColumnName = 'Description';
   ColumnName = [ ColumnName 'Field' num2cell(1:numel(structure)) ];
@@ -187,18 +187,18 @@ function structure = uitable(structure,options)
     'ColumnWidth',ColumnWidth,'TooltipString',options.TooltipString, ...
     'ColumnName',ColumnName, ...
     'ColumnFormat', ColumnFormat);
-    
+
   % add context menu to add a field
-  uicm = uicontextmenu; 
+  uicm = uicontextmenu;
   uimenu(uicm, 'Label','Revert (undo all changes)', 'Callback', @uitable_revert);
   uimenu(uicm, 'Label','Append property/field',     'Callback', @uitable_append);
   uimenu(uicm, 'Label','OK',     'Callback', 'close(gcbf)', 'separator','on');
   uimenu(uicm, 'Label','CANCEL', 'Callback', @uitable_cancel);
   % attach contexual menu to the table
   try
-    set(t,   'UIContextMenu', uicm); 
+    set(t,   'UIContextMenu', uicm);
   end
-  
+
   % assemble the dialogue information structure
   ad.figure       = f;
   ad.table        = t;
@@ -209,16 +209,16 @@ function structure = uitable(structure,options)
   ad.size         = size(struct2cell(structure));   % initial Data
   set(f, 'UserData', ad);
   setappdata(0,tmp_storage,Data0);   % we shall collect the Table content here
-  
+
   % when the figure is deleted, we should get the uitable Data back
   % wait for figure close
   if strcmp(options.CreateMode, 'modal')
     uiwait(f);
     Data = getappdata(0,tmp_storage);
-    if isempty(Data), 
+    if isempty(Data),
       structure = [];
       rmappdata(0, tmp_storage);
-      return; 
+      return;
     end
     % get new field names
     fields = genvarname(strtok(Data(:,2)));
@@ -244,7 +244,7 @@ function structure = uitable(structure,options)
   else
     structure = ad;
   end
-  
+
   % ==============================================================================
   function uitable_revert(source, evnt)
   % restore initial data
@@ -252,7 +252,7 @@ function structure = uitable(structure,options)
     Data = getappdata(0,ad.tmp_storage);
     set(ad.table, 'Data',Data);
   end
-    
+
   function uitable_append(source, evnt)
   % add a new line to the table
     ad   = get(gcbf, 'UserData');
@@ -260,16 +260,16 @@ function structure = uitable(structure,options)
     % append a line
     Data(end+1,:) = cell(1,size(Data,2));
     fields_type(end+1,:) = cell(1,size(Data,2));
-    Data{end,1}   = 'New field'; 
-    Data{end,2}   = 'New'; 
+    Data{end,1}   = 'New field';
+    Data{end,2}   = 'New';
     set(ad.table, 'Data',Data);
   end
-  
+
   function uitable_cancel(source, evnt)
   % cancel edit
     ad   = get(gcbf, 'UserData');
     setappdata(0,ad.tmp_storage,[]);
     delete(gcbf)
   end
-  
+
 end

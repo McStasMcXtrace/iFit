@@ -1,5 +1,5 @@
 function v = getaxis(s,varargin)
-% GETAXIS get axis definition or value in object.
+% GETAXIS Get axis definition or value in object.
 %   GETAXIS(a, rank) Get axis value (and follow aliases). This is equivalent to
 %   the syntax a{rank}. The axis rank 0 corresponds with the Signal/Monitor value.
 %   The axis of rank 1 corresponds with rows, 2 with columns, 3 with pages, etc.

@@ -1,22 +1,14 @@
 function [match, field] = findstr(s, str, option)
-% FINDSTR look for strings stored in object
+% FINDSTR Look for strings within object.
 %   match = FINDSTR(s)      returns all strings in object
 %
 %   match = FINDSTR(s, str) returns the strings in object containg 'str'
 %
-%   match = FINDSTR(s, str, option) the 'option' may contain 'exact' to search 
-%   for the exact occurence, and 'case' to specifiy a case sensitive search.
+%   match = FINDSTR(s, str, option) the 'option' may contain 'exact' to search
+%   for the exact occurence, 'case' to specifiy a case sensitive search,
+%   'first' and 'last' to specify the first or last match.
 %
-%   [match,field] = FINDSTR(..) also returns field name it appears in. 
-%
-% syntax:
-%   [match, field]=findstr(s, str, option)
-%
-% input:  s:      object or array (struct)
-%         str:    string to search in object, or '' (char or cellstr).
-%         option: 'exact' 'case' or '' (char)
-% output: match:  content of struct fields that contain 'str' (cellstr)
-%         field:  name of struct fields that contain 'str' (cellstr)
+%   [match,field] = FINDSTR(..) also returns field name it appears in.
 %
 % Example: s=estruct('x',1:10,'y','blah'); ischar(findstr(s, 'blah'))
 % Version: $Date$ $Version$ $Author$
@@ -41,7 +33,7 @@ end
 
 [fields, types] = findfield(s,'','char');  % get all fields and types
 
-index=[ find(strcmp('char', types)) ; find(strcmp('cell', types)) ]; 
+index=[ find(strcmp('char', types)) ; find(strcmp('cell', types)) ];
 if isempty(index), field=[]; match=[]; return; end
 
 clear types
@@ -84,9 +76,14 @@ elseif strfind(option, 'case')
   % handle 'case' option
   index = ~cellfun(@isempty, strfind(match, str));
 else
-  
+
   % relaxed search: non case sensitive, find token (not exact comparison)
   index = ~cellfun(@isempty, strfind(lower(match), lower(str)));
+end
+if strfind(option, 'first') && ~isempty(index)
+  index=index(1);
+elseif strfind(option, 'last') && ~isempty(index)
+  index=index(end);
 end
 match = match(index);
 field = field(index);
@@ -97,7 +94,7 @@ if numel(match) == 1, match=match{1}; end
 % -------------------------------------------------------------------------
 function c=cell2char(c)
 if iscell(c) && ischar(c{1})
-    c = char(c); 
+    c = char(c);
 elseif ~ischar(c)
     c = '';
 end

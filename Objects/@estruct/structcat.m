@@ -1,5 +1,5 @@
 function Res = structcat(A,varargin)
-% STRUCTCAT concatenate (merge) structures
+% STRUCTCAT Concatenate (merge) structures fields.
 %   Res=STRUCTCAT(A,B) Recursively merges fields and subfields of
 %   structures A and B to result structure Res.
 %

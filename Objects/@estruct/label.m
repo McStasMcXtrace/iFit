@@ -1,18 +1,18 @@
 function labl = label(this, varargin)
-% b = label(s, alias, label) : Change iData label for a given alias/axis
+% LABEL Label for a given alias/axis.
+%   L = LABEL(s, rank) Get axis label. Rank 0 is for the Signal,
+%   rank values 1:ndims(s) indicate an axis.
 %
-%   @iData/label function to set/get labels
-%     label(s, alias) returns the current label
-%     label(s)        returns the object Label
-%     label(s, rank, label)   sets the object label
-%   The input iData object is updated if no output argument is specified.
+%   LABEL(s, rank, 'text') Set axis label. Rank 0 is for the Signal,
+%   rank values 1:ndims(s) indicate an axis.
 %
-% input:  s: object or array (iData)
-%         alias: name of the alias or index of the axis (char/numeric)
-%         label: new label (char/cellstr)
-% output: b: object or array (iData)
-% ex:     b=label(a,'x','new xlabel'); b=label(a,'x'); b=label(a, 1,'new xlabel');
+%   L = LABEL(s, 'alias') Get named alias label.
 %
+%   LABEL(s, 'alias','text') Set named alias label.
+%
+%   LABEL(s) Returns the object Label (s.Label property.
+%
+% Example: s=estruct(1:10); label(s,'Signal','text'); strcmp(label(s,0),'text')
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/plot, iData/xlabel, iData/ylabel, iData/zlabel, iDala/clabel
 

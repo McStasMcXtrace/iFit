@@ -1,5 +1,5 @@
 function b = abs(a)
-%  ABS absolute value of object
+%  ABS Absolute value of object
 %    ABS(X) return a new object with its Signal set as the absolute value of the
 %    input object.
 %
@@ -8,4 +8,3 @@ function b = abs(a)
 % See also estruct, estruct/uminus, estruct/abs, estruct/real, estruct/imag, estruct/uplus
 
 b = unary(a, 'abs');
-

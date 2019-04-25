@@ -1,5 +1,5 @@
 function [match, types, dims, sz] = findfield(s, field, option)
-% FINDFIELD find fields, type and number of elements in object
+% FINDFIELD Find fields, type and number of elements in object.
 %   match = FINDFIELD(s) returns the name of all fields
 %
 %   match = FINDFIELD(s, field)  returns the name of all fields that match 'field'
@@ -7,7 +7,7 @@ function [match, types, dims, sz] = findfield(s, field, option)
 %   [match,type,n] = FINDFIELD(s, field, option)
 %     The optional 'option' argument can contain one or more keywords:
 %     The 'exact'   option will search for the exact occurrences.
-%     The 'case'    option specifies a case sensitive search. 
+%     The 'case'    option specifies a case sensitive search.
 %     The 'numeric' option will return only numerical fields.
 %     The 'char'    option will return only character fields.
 %     The 'first'   option returns the first match (with shortest name/link).
@@ -16,19 +16,8 @@ function [match, types, dims, sz] = findfield(s, field, option)
 %     For instance, to identify the largest numeric element in object, use:
 %       f=findfield(s,'','numeric biggest')
 %
-%   [match,type,n,sz] = FINDFIELD(...) also return the type, number of elements 
+%   [match,type,n,sz] = FINDFIELD(...) also return the type, number of elements
 %   and size of fields
-%
-% syntax:
-%   [match, types, nelements,sz]=findfield(s, field, option)
-%
-% input:  s: object or array (s)
-%         field: field name to search, or '' (char).
-%         option: empty or 'exact' 'case' 'char' or 'numeric' (char)
-% output: match:  names of matching fields (cellstr)
-%         types:  types of matching fields (cellstr), e.g. 'double', 'char', 'struct'...
-%         nelements: total number of elements of matching fields (double)
-%         sz:     size of matching fields (cellstr)
 %
 % Example: s=estruct('x', rand(6)); f=findfield(s,'','biggest'); numel(get(s,f)) == 36
 % Version: $Date$ $Version$ $Author$
@@ -69,15 +58,15 @@ if isfield(s.Private, 'cache') && isfield(s.Private.cache, mfilename) ...
   sz    = cache.sizes;
 else
   struct_s=rmfield(struct(s),s.Protected);  % private/protected stuff must remain so.
-  
+
   % find all fields in object structure
   [match, types, dims, sz] = struct_getfields(struct_s, '');
-  
+
   [match, index] = unique(match);
   types=types(index);
   dims =dims(index);
   sz   =sz(index);
-  
+
   % set content into cache
   cache.match = match;
   cache.types = types;
@@ -100,14 +89,14 @@ if ~isempty(strfind(option, 'numeric')) || ~isempty(strfind(option, 'char'))
     index=          find(strcmp( 'char', types));
   else index=[];                            % all / other
   end
-  
+
   if ~isempty(index)
     match  = match(index); % restrict search to numeric/char data
     dims   = dims(index);
     types  = types(index);
     sz     = sz(index);
   end
-  
+
   % sort fields in descending size order
   [dims, index]  = sort(dims, 'descend');
   match  = match(index);
@@ -115,7 +104,7 @@ if ~isempty(strfind(option, 'numeric')) || ~isempty(strfind(option, 'char'))
   sz     = sz(index);
 end
 
-% restrict search to a given token 
+% restrict search to a given token
 if ~isempty(field)
   if isempty(strfind(option, 'case'))
     field = lower(field);
@@ -178,7 +167,7 @@ end
 
 
 % ============================================================================
-% private function struct_getfields, returns field, class, numel 
+% private function struct_getfields, returns field, class, numel
 function [f, t, n, z] = struct_getfields(structure, parent)
 
 f={}; t={}; n=[]; z={};
@@ -212,7 +201,7 @@ end
 failed=true;
 if getfield(whos('structure'), 'bytes') < 1e9
   try
-    c = struct2cell(structure); 
+    c = struct2cell(structure);
     t = cellfun(@class, c, 'UniformOutput', 0);
     n = cellfun(@numel, c);
     z = cellfun(@size,  c, 'UniformOutput', 0);

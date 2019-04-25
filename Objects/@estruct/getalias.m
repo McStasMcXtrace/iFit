@@ -1,10 +1,10 @@
 function s = getalias(self, varargin)
-% GETALIAS get object aliases (char properties)
+% GETALIAS Get object aliases (definition).
 %   GETALIAS(s, 'PropertyName') returns the definition of the specified property.
 %   GETALIAS(s, ...) is equivalent to GET(s, ..., 'alias')
 %
 %   GETALIAS is similar to GET except when the alias value is given as a string/char.
-%   In this case, the value allows to link to internal or external links, 
+%   In this case, the value allows to link to internal or external links,
 %   as well as evaluated expression, with the following syntax cases:
 %     'field'                           a simple internal link to an other property 'field'
 %     'field1.field2...'                a nested internal link to an other property
@@ -14,7 +14,7 @@ function s = getalias(self, varargin)
 %     'ftp://some_distant_resource'     an FTP URL (proxy settings may need to be set)
 %     'matlab: some_expression'         some code to evaluate. 'this' refers to the object itself
 %
-%   File and URL can refer to compressed resources (zip, gz, tar, Z) which are 
+%   File and URL can refer to compressed resources (zip, gz, tar, Z) which are
 %   extracted on-the-fly. In case the URL/file resource contains 'sections' a search token
 %   can be specified with syntax such as 'file://filename#token'.
 %
@@ -24,7 +24,7 @@ function s = getalias(self, varargin)
 %
 % Example: s=estruct; set(s, 'a', 1); setalias(s, 'b.c','a'); get(s, 'b.c') == 1 && strcmp(getalias(s, 'b.c'),'a')
 % Version: $Date$ $Version$ $Author$
-% See also estruct, fieldnames, findfield, isfield, set, get, getalias, setalias, 
+% See also estruct, fieldnames, findfield, isfield, set, get, getalias, setalias,
 %   getaxis, setaxis
 
 if nargin == 1

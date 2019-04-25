@@ -1,5 +1,5 @@
 function v=ndims(s)
-% NDIMS get the dimensionality of estruct object (Signal).
+% NDIMS Get the dimensionality of estruct object (Signal).
 %   D = NDIMS(s) get the dimensionality of object, i.e. that of its Signal.
 %   For an input array of objects, ndims returns the number of dimensions
 %   of the array.

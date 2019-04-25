@@ -35,7 +35,7 @@ if numel(m) > 1 && all(m(:) == m(1)), m=m(1); end
 % make sure sparse is done with 'double' type
 if strcmp(op, 'sparse')
   if ndims(a) > 2
-    error([ mfileame ': Operation ' op ' can only be used on 1d/2d data sets. Object ' a.Tag ' is ' num2str(ndims(a)) 'd.' ]);
+    error([ mfileame ': Operation ' op ' can only be used on 1d/2d data sets. Object ' a.Tag ' ' a.Name ' is ' num2str(ndims(a)) 'd.' ]);
   end
   if ~strcmp(class(s), 'double') && ~strcmp(class(s), 'logical')
     s = double(s);
@@ -141,7 +141,7 @@ try
     if ~isscalar(e) && ~isempty(e),  e = feval(op, e, varargin{:}); end
     if ~isscalar(m) && ~isempty(m),  m = feval(op, m, varargin{:}); end
   otherwise
-    error([ mfilename, ': Can not apply operation ' op ' on object ' a.Tag ]);
+    error([ mfilename, ': Can not apply operation ' op ' on object ' a.Tag ' ' a.Name ]);
   end
 end
 clear s

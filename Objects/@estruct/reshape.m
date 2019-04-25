@@ -2,10 +2,10 @@ function a = reshape(a, varargin)
 % c = reshape(a) : reshape the object Signal
 %
 %   @estruct/reshape function to reshape the object Signal array
-%     reshape(a, m,n,p,...) 
+%     reshape(a, m,n,p,...)
 %       reshapes the Signal as an m*n*p*... array the number of elements in
 %       the initial Signal must be m*n*p*...
-%     reshape(a, [m n p ...]) 
+%     reshape(a, [m n p ...])
 %       is the same thing as above
 %
 %     The resulting object has the elements of the initial data reordered
@@ -39,7 +39,7 @@ end
 sz = size(a);
 if prod(sz) ~= prod(dims)
   estruct_private_error(mfilename,[ 'To RESHAPE the number of elements must not change. Object ' ...
-      a.Tag ' "' a.Title ' has dimension ' mat2str(size(a)) ' but requested to reshape into ' ...
+      a.Tag ' "' a.Name ' has dimension ' mat2str(size(a)) ' but requested to reshape into ' ...
       mat2str(dims) '. You can rather try the estruct/resize method.' ]) ;
 end
 
@@ -50,9 +50,9 @@ myisvector = @(c)length(c) == numel(c);
 for index=1:length(dims)
   if length(sz) >= index && sz(index) ~= dims(index)
     x  = getaxis(a, index);
-    if myisvector(x), 
-        x=x(:); sa = [length(x) 1]; 
-        new_sa = [ dims(index) 1 ]; 
+    if myisvector(x),
+        x=x(:); sa = [length(x) 1];
+        new_sa = [ dims(index) 1 ];
     else
         sa = size(x);
         new_sa = dims;
@@ -65,4 +65,3 @@ for index=1:length(dims)
     end
   end
 end
-

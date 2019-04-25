@@ -1,12 +1,12 @@
 function [b, vers, info] = version(a,long_request)
-% VERSION return class version
+% VERSION Return class version
 %   VERSION(s) return the version of the estruct class
 %
 %   VERSION(s, 'long') returns the full version with all contributors.
 %
-%   [str, ver, info] = VERSION(s)
-%     returns as well the short version name 'ver', and additional infotmation:
-%       memory (total, free, used by Matlab in kb) and number of available CPU's
+%   [str, ver, info] = VERSION(s) returns as well the short version name
+%   'ver', and additional information: memory (total, free, used by
+%   Matlab in kb) and number of available CPU's.
 %
 % Example: v=version(estruct); ischar(v)
 % Version: $Date$ $Version$ $Author$

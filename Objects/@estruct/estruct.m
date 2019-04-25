@@ -1,5 +1,5 @@
 classdef estruct < dynamicprops
-%ESTRUCT Create or convert to estruct.
+%ESTRUCT Create or convert to an estruct object.
 %  S = ESTRUCT('field1',VALUES1,'field2',VALUES2,...) creates
 %  an object with the specified fields and values (as properties).
 %
@@ -34,7 +34,7 @@ properties
     ModificationDate=[];
     Source          = pwd;
     Tag             ='';
-    Title           ='';
+    Name            ='';
     User            = getenv('USER');
     UserData        =[];
 
@@ -56,7 +56,7 @@ properties
 
   methods
     function new = estruct(varargin)
-    %ESTRUCT Create or convert to extended structure array.
+    %ESTRUCT Create or convert to an estruct object.
     %  S = ESTRUCT('field1',VALUES1,'field2',VALUES2,...) creates a
     %  structure array with the specified fields and values.  The value
     %  arrays VALUES1, VALUES2, etc. must be cell arrays of the same
@@ -81,7 +81,6 @@ properties
     %        lengths: [5 3]
     %
     %  Example: s = estruct('type',{'big','little'},'color','red','x',{3 4})
-    %
     %  See also isstruct, setfield, getfield, fieldnames, orderfields,
     %  isfield, rmfield, deal, substruct, struct2cell, cell2struct.
 
@@ -303,7 +302,7 @@ properties
     end
 
     function new = cell2struct(self, varargin)
-    %   CELL2STRUCT Convert cell array to structure array.
+    %   CELL2STRUCT Convert cell array to estruct array.
     %      S = CELL2STRUCT(C,FIELDS,DIM) converts the cell array C into
     %      the structure S by folding the dimension DIM of C into fields of
     %      S.  SIZE(C,DIM) must match the number of field names in FIELDS.
@@ -323,10 +322,11 @@ properties
       new = copyobj(self, cell2struct(varargin{:}));
     end
 
-    function s = char(self)
-      %  CHAR Create character array (string).
-      %      S = CHAR(X) converts the structure X into a character representation
+    function s = cellstr(self)
+      %  CELLSTR Convert an estruct object into a cell array of strings.
+      %      S = CELLSTR(X) converts the structure X into a cell of strings.
       s = class2str(self, 'eval');
+      s = textscan(s, '%s','Delimiter',';');
     end
 
     function v = cast(self, typ)
@@ -368,7 +368,7 @@ properties
     end
 
     function v = int32(self)
-      %   UNT32 Convert to int32.
+      %   INT32 Convert to int32.
       %      INT32(X) returns the integer alue of the object.
       v = cast(self, 'int32');
     end

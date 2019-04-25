@@ -21,7 +21,7 @@ end
 if ~islogical(s)
   y = uint32(s);
   if any(y(:) <= 0)
-    error([ mfilename ': Invalid index values from object ' s.Tag '. Some indices are <= 0.' ]);
+    error([ mfilename ': Invalid index values from object ' s.Tag ' ' s.Name '. Some indices are <= 0.' ]);
   end
 else
   y = logical(s);
