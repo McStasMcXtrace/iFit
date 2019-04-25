@@ -1,16 +1,16 @@
-function Res = structcat(A,varargin)
-% STRUCTCAT Concatenate (merge) structures fields.
-%   Res=STRUCTCAT(A,B) Recursively merges fields and subfields of
+function Res = setor(A,varargin)
+% SETOR Concatenate (merge) structures fields.
+%   Res=SETOR(A,B) Recursively merges fields and subfields of
 %   structures A and B to result structure Res.
 %
-%   Res=STRUCTCAT(A,B,'or') The result has fields which are either in A
+%   Res=SETOR(A,B,'or') The result has fields which are either in A
 %   and B (union). This is the default.
 %
-%   Res=STRUCTCAT(A,B,'and') The result has fields which are both in A
-%   and B (intersection).
+%   Res=SETOR(A,B,'and') The result has fields which are both in A
+%   and B (intersection). This is equivalent to SETAND.
 %
-%   Res=STRUCTCAT(A,B,'xor') The result has fields which are either in A
-%   and B but not both (difference).
+%   Res=SETOR(A,B,'xor') The result has fields which are either in A
+%   and B but not both (difference). is equivalent to SETXOR.
 %
 % Example:
 %   A.field1=1;
@@ -22,7 +22,7 @@ function Res = structcat(A,varargin)
 %   B.field2.subfield3=30;
 %   B.field3.subfield1=1;
 %
-%   C=structcat(A,B);
+%   C=setor(A,B);
 %
 % Version: $Date$ $Version$ $Author$
 % Contribution from Igor Kaufman, 02 Dec 2011, BSD
@@ -45,7 +45,7 @@ if nargin ==1, return; end
 
 if numel(varargin) > 1
   for index = 1:numel(varargin)
-    Res = structcat(A, varargin{index}, op);
+    Res = setor(A, varargin{index}, op);
   end
   return
 else B = varargin{1};
@@ -82,7 +82,7 @@ for i=1:length(fn) % loop on B fields
   end
   if addme
     if isstruct(fieldA) && isstruct(fieldB)
-      Res=setfield(Res,s,structcat(fieldA, fieldB, op));  % recursive inside structures
+      Res=setfield(Res,s,setor(fieldA, fieldB, op));  % recursive inside structures
     elseif ~isfieldR
       Res.addprop(s);
       if isempty(fieldA)
