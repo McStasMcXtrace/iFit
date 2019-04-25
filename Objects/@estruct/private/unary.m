@@ -62,8 +62,11 @@ end
 % new Signal value is set HERE <================================================
 if ~isfloat(s) && ~any(strcmp(op, {'isfloat','isinteger','islogical'})), s=double(s); end
 
-if strcmp(op, 'norm') % norm only valid on vctors:matrices
+if strcmp(op, 'norm') % norm only valid on vectors:matrices
   s = s(:);
+end
+if nargin > 2 && isequal(varargin{1},0) && any(strcmp(op, {'sum','mean','var','median'}))
+  s = s(:); varargin(1) = [];
 end
 
 new_s = feval(op, s, varargin{:});
@@ -129,7 +132,7 @@ try
     return
   case {'uminus','abs','real','imag','uplus','conj'}
     % retain error, do nothing
-  case {'sum'}
+  case {'sum','mean','median','var'}
     if isscalar(new_s)
       b = new_s;
       return

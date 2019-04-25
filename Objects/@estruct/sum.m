@@ -22,23 +22,11 @@ function b = sum(a, varargin)
 % Version: $Date$ $Version$ $Author$
 % See also estruct, estruct/uminus, estruct/abs, estruct/real, estruct/imag, estruct/uplus
 
+b = unary(a, mfilename, varargin{:});
+
 if nargin > 1 && isequal(varargin{1},0)
-  flag_scalar = true;
-  varargin(1)=[];
-else
-  flag_scalar = false;
-end
-
-b = unary(a, 'sum', varargin{:});
-
-if flag_scalar
   if iscell(b)
-    for index=1:numel(b)
-      this = b{index};
-      b{index} = sum(this(:));
-    end
-  else
-    b = sum(b(:));
+    b = cell2mat(b);
   end
 end
 
