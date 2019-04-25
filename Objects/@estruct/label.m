@@ -67,6 +67,7 @@ if isfield(this.Private,'cache') && isfield(this.Private.cache,'check_requested'
 else
   check = false;
 end
+this.Private.cache.check_requested = false;
 for index=1:numel(aliases)
   alias=aliases{index};
 
