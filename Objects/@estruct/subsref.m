@@ -68,6 +68,17 @@ if isfield(a.Private,'cache') && isfield(a.Private.cache,'check_requested') ...
 end
 
 v = a;
+
+% special case when calling a method with syntax: object.method(args) 
+% further parameters are stored as S(2:end).subs
+if strcmp(S(1).type,'.') && ismethod(v, S(1).subs)
+  if numel(S) > 1, args = S(2).subs; S(2) = []; 
+  else args = {}; end
+  v = feval(S(1).subs, v, args{:}); % evaluate method
+  S(1) = []; 
+end
+
+% other cases: . () {}
 for index=1:numel(S)
   % travel through indexed references
   v = subsref_single(v, S(index), a);

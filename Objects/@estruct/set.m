@@ -34,10 +34,12 @@ function s = set(s, varargin)
 % 
 %  SET(S) displays all object properties.
 %
+%  To remove an alias/property use RMFIELD or RMALIAS.
+%
 % Example: s=estruct; set(s, 'a', 1); set(s, 'b.c','a','alias'); get(s, 'b.c') == 1 && strcmp(get(s, 'b.c','alias'),'a')
 % Version: $Date$ $Version$ $Author$
 % See also estruct, fieldnames, findfield, isfield, set, get, getalias, setalias, 
-%   getaxis, setaxis
+%   getaxis, setaxis, rmalias, rmfield
 
 % NOTE: the rationale here is to implement all the logic in subasgn and just call it.
 
@@ -65,15 +67,18 @@ function s = set(s, varargin)
   
   % now 's' is a single object. We handle name/value pairs
   for index=1:2:numel(varargin)
-    if index == numel(varargin), break; end
+    if index == numel(varargin), break; end % missing value ?
     name = varargin{index};
     value= varargin{index+1};
-    if ~ischar(name) && ~iscellstr(name)
+    if ~ischar(name) && ~iscellstr(name) && ~(isscalar(name) && isnumeric(name))
       error([ mfilename ': SET works with name/value pairs. The ' num2str(index) '-th argument is of type ' class(name) ]);
     end
-    name = cellstr(name);
+    if ischar(name), name = cellstr(name); end
     for n_index=1:numel(name)
-      if follow
+      if isnumeric(name) || ~isnan(str2double(name))
+        S.type = '{}'; S.subs={ name(n_index) };
+        s = subsasgn(s, S, value);
+      elseif follow
         s = subsasgn(s, struct('type','.', 'subs',name{n_index}), value);
       else
         s = subsasgn(s, struct('type','()','subs',name{n_index}), value);

@@ -3,31 +3,21 @@ TODO:
 
 revamp cat to work on Signal when given dim, else catenate structures ? Data ?
 rework on union/intersection/diff/cat
-end
-char and cellstr->class2str
 commandhistory and command management
 disp/display ?
 dog
 event
 fileattrib and Attributes
-find
 findobj
-all unary calls -> unaryfun(method, object/array)
-object(index) -> call object{0}(index) now
 load and postprocess
 max
 meshgrid, interp, intersect, union, etc.
-permute
 reshape
 resize
 rmaxis
 save
 sort
-sparse
 squeeze
-no subsindex, better use find for indexing
-title
-transpose
 fix uitable
 
 ndims: make it work for event data

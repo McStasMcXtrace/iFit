@@ -113,6 +113,8 @@ function s = setaxis(s,varargin)
               end
               s.Axes{name{n_index}} = value; % set definition from char link/alias
             end
+          else % axis does not exist yet
+            s.Axes{name{n_index}} = value; % direct assigment for new axis
           end
         end
       end

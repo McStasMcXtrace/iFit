@@ -23,13 +23,12 @@ function s = setalias(self, varargin)
 %
 %   SETALIAS(s, 'P1', 'V1', 'P2','V2' ...) sets multiple aliases.
 %
-%   SETALIAS(s, 'PropertyName')
-%   SETALIAS(s, 'PropertyName','') remove PropertyName from object.
+%   To remove an alias/property use RMFIELD or RMALIAS.
 %
 % Example: s=estruct; set(s, 'a', 1); setalias(s, 'b.c','a'); get(s, 'b.c') == 1 && strcmp(getalias(s, 'b.c'),'a')
 % Version: $Date$ $Version$ $Author$
 % See also estruct, fieldnames, findfield, isfield, set, get, getalias, setalias,
-%   getaxis, setaxis
+%   getaxis, setaxis, rmalias, rmfield
 
 if nargin == 1
   s = findfield(self);

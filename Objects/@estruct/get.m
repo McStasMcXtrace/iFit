@@ -68,12 +68,15 @@ function v = get(s, varargin)
   % handle array/cell of fields
   for index=1:numel(varargin) % loop on requested properties
     name = varargin{index};
-    if ~ischar(name) && ~iscellstr(name)
-      error([ mfilename ': GET works with property name argument (char/cellstr). The ' num2str(index) '-th argument is of type ' class(name) ]);
+    if ~ischar(name) && ~iscellstr(name) && ~(isscalar(name) && isnumeric(name))
+      error([ mfilename ': GET works with property name argument (char/cellstr/scalar). The ' num2str(index) '-th argument is of type ' class(name) ]);
     end
-    name = cellstr(name);
+    if ischar(name), name = cellstr(name); end
     for n_index=1:numel(name)
-      if follow
+      if isnumeric(name) || ~isnan(str2double(name))
+        S.type = '{}'; S.subs={ name(n_index) };
+        v{end+1} = subsref(s, S);
+      elseif follow
         v{end+1} = subsref(s, struct('type','.', 'subs',name{n_index}));
       else
         v{end+1} = subsref(s, struct('type','()','subs',name{n_index}));

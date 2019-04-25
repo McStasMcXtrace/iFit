@@ -148,10 +148,14 @@ function axescheck_find_axes(self, fields, dims, sz)
     % when not empty, we check that it is:
     %   size(Signal) or size(rank)
     if ~isempty(def)
-      try
-        ax_sz = size(get(self, def));
-      catch
-        ax_sz = [];
+      if ischar(def)
+        try
+          ax_sz = size(get(self, def));
+        catch
+          ax_sz = [];
+        end
+      elseif isnumeric(def)
+        ax_sz = size(def);
       end
 
       if axescheck_size_axes(self, index, ax_sz)
@@ -188,7 +192,7 @@ function axescheck_find_axes(self, fields, dims, sz)
   function tf = axescheck_size_axes(self, index, ax_sz)
     tf = false;
     %   size(Signal) or size(rank) as vector
-    if (numel(ax_sz) == ndims(self) && all(ax_sz == size(self))) ...
+    if (numel(ax_sz) == numel(size(self)) && all(ax_sz == size(self))) ...
     || (numel(ax_sz) >= index && isscalar(find(ax_sz>1)) && prod(ax_sz) == size(self, index))
       tf = true;  % valid axis definition/value
     end
