@@ -1,27 +1,27 @@
 function Res = structcat(A,varargin)
 % STRUCTCAT concatenate (merge) structures
+%   Res=STRUCTCAT(A,B) Recursively merges fields and subfields of
+%   structures A and B to result structure Res.
 %
-% Res=structcat(A,B)
-%   Recursively merges fields and subfields of structures A and B to result structure Res
-%   Simple recursive algorithm merges fields and subfields of two structures
+%   Res=STRUCTCAT(A,B,'or') The result has fields which are either in A
+%   and B (union). This is the default.
 %
-% Res=structcat(A,B,'or')
-%   The result has fields which are either in A and B (union). This is the default.
-% Res=structcat(A,B,'and')
-%   The result has fields which are both in A and B (intersection)
-% Res=structcat(A,B,'xor')
-%   The result has fields which are either in A and B but not both (difference)
+%   Res=STRUCTCAT(A,B,'and') The result has fields which are both in A
+%   and B (intersection).
+%
+%   Res=STRUCTCAT(A,B,'xor') The result has fields which are either in A
+%   and B but not both (difference).
 %
 % Example:
 %   A.field1=1;
 %   A.field2.subfield1=1;
 %   A.field2.subfield2=2;
-% 
+%
 %   B.field1=1;
 %   B.field2.subfield1=10;
 %   B.field2.subfield3=30;
 %   B.field3.subfield1=1;
-% 
+%
 %   C=structcat(A,B);
 %
 % Version: $Date$ $Version$ $Author$
@@ -32,12 +32,12 @@ op='or'; % default operator
 
 for index=1:numel(varargin)
   if ischar(varargin{index}) || isa(varargin{index}, 'function_handle')
-    op=varargin{index}; 
+    op=varargin{index};
     varargin(index)=[]; break;
   end
 end
 
-Res=[]; 
+Res=[];
 if nargin>0
     Res=A;  % we start with initial structure
 end
@@ -85,9 +85,9 @@ for i=1:length(fn) % loop on B fields
       Res=setfield(Res,s,structcat(fieldA, fieldB, op));  % recursive inside structures
     elseif ~isfieldR
       Res.addprop(s);
-      if isempty(fieldA) 
+      if isempty(fieldA)
         Res=setfield(Res,s,fieldB);
-      elseif isempty(fieldA) 
+      elseif isempty(fieldA)
         Res=setfield(Res,s,fieldA);
       else % in A and B: catenate
         if isnumeric(fieldA) && isnumeric(fieldB) && isvector(fieldA) && isvector(fieldB)
