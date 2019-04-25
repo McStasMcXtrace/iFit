@@ -23,7 +23,9 @@ end
 % single model object
 if isempty(p)
   p = self.ParameterValues(:);
-elseif ischar(p) && any(strcmp(p, {'guess','current'}))
+elseif ischar(p) && any(strcmp(p, {'guess','guess_only'}))
+  p = feval(self, 'guess_only', varargin{:});
+elseif ischar(p)
   p = feval(self, p, varargin{:});
 end
 n = self.Parameters(1:numel(p));
