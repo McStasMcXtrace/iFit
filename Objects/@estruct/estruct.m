@@ -279,6 +279,17 @@ properties
     % compatibility with original estruct (2007-2019)
       self = rmfield(self, varargin{:});
     end
+    
+    function self=rmaxis(self, f)
+    %   RMAXIS Remove an axis from object(s).
+    %     RMAXIS(S, AX) removes the axis AX specified as a single rank index.
+      if nargin ~= 2 || ~isnumeric(f) || ~isscalar(f), return; end
+      if numel(self) == 1
+        if numel(self.Axes) >= f, self.Axes{f} = []; end
+      else
+        for index=1:numel(self); rmfield(self(index), f); end
+      end
+    end % rmfield
 
     function c = struct2cell(self)
     %   STRUCT2CELL Convert structure array to cell array.
