@@ -1,49 +1,62 @@
-function d = char(self)
+function d = char(self, option)
+% CHAR Convert object to character string.
+%   S = CHAR(X) converts the object X into a character representation,
+%   showing its Tag, Title/Name, last command, and Label.
+%
+%   S = CHAR(X, 'short') and S = CHAR(X, 'compact') produce a compact representation
+%
+%   Use CELLSTR to obtain an exact string representation which evaluation
+%   rebuilds the object.
+%
+% Example: s=estruct(1:10); ischar(char(s))
+% Version: $Date$ $Version$ $Author$
+% See also: estruct, cellstr, double.
 
   % build the output string
   d = '';
   for index=1:numel(self)
     s = self(index);
-    if length(self) > 1
-      d = [ d sprintf('%5i ',index) ];                        % index
-    end
-    if isempty(s.Tag)
-      d = [ d sprintf('%9s ','<nul>') ];                      % Tag
-    else
-      d = [ d sprintf('%9s ',s.Tag) ];
-    end
-    d = [ d sprintf('%11s ', [ mat2str(size(s)) ]) ];  % size
-    
+    if length(self) > 1, d1 = index;   else d1=[]; end        % index
+    if isempty(s.Tag),   d2 = '<nul>'; else d2=s.Tag; end     % Tag
+    d3 = mat2str(size(s));                                    % size
+
     t = cellstr(s.Name); t = strtrim(t{1}); t(~isstrprop(t,'print') | t=='\' | t=='%')='';
-    if length(t) > 31, t = [ t(1:27) '...' ]; end             % object.Name
-    
+    if length(t) > 31, t = [ t(1:27) '...' ]; end             % Name
+
     ts = title(s); if isempty(ts), ts = getaxis(s, '0'); end
     if ~ischar(ts), ts = ''; end
     t = [ t ' "' ts '"' ]; t = strtrim(t); t(~isstrprop(t,'print') | t=='\')='';
     if length(t) > 41, t = [ t(1:37) '..."'  ]; end           % title(Signal)
-    d = [ d sprintf('%43s ', [ '''' t '''' ]) ];
-    
+    d4 = [ '''' t '''' ];
+
     h = cellstr(s.Command); h = strtrim(h{end}); h(~isstrprop(h,'print') | h=='\')='';
     if length(h) > 23, h = [ h(1:20) '...' ]; end             % last command
-    d = [ d sprintf('%s ', h) ];
-    
-    if ~isempty(s.Label) && ~isempty(s.DisplayName)
+    d5 = h;
+
+    if ~isempty(s.Label)
       h = cellstr(s.Label); h = strtrim(h{1}); h(~isstrprop(h,'print') | h=='\')='';
-      if length(h) > 13, h = [ h(1:10) ]; end                 % Label/DisplayName
-      d = [ d sprintf('%s', h) ];
-      h = cellstr(s.DisplayName); h = strtrim(h{1}); h(~isstrprop(h,'print') | h=='\')='';
-      if length(h) > 13, h = [ h(1:10) '...' ]; end           %
-      d = [ d sprintf('/%s', h) ];
-    elseif ~isempty(s.Label)
-      h = cellstr(s.Label); h = strtrim(h{1}); h(~isstrprop(h,'print') | h=='\')='';
-      if length(h) > 18, h = [ h(1:15) '...' ]; end           % Label
-      d = [ d sprintf('%s', h) ];
-    elseif ~isempty(s.DisplayName)
+      if length(h) > 18, h = [ h(1:15) '...' ]; end                 % Label/DisplayName
+      d6 = h;
+    else d6=[]; end
+    if ~isempty(s.DisplayName)
       h = cellstr(s.DisplayName); h = strtrim(h{1}); h(~isstrprop(h,'print') | h=='\')='';
       if length(h) > 18, h = [ h(1:15) '...' ]; end           % DisplayName
-      d = [ d sprintf('%s', h) ];
+      d7 = h;
+    else d7 = []; end
+    if ~isempty(d6) && ~isempty(d7)
+      d6=[ d6 '/' ];
     end
 
-    d = [ d sprintf('\n') ];
+    % build the final string
+    if nargin == 1
+      d = sprintf('%5i %9s %11s %43s %23s %s%s', ...
+        d1, d2, d3, d4, d5, d6, d7);
+    else % compact form
+      d = sprintf('%i %s %s %s %s %s%s', ...
+        d1, d2, d3, d4, d5, d6, d7);
+    end
+    if numel(self) > 1
+      d = [ d sprintf('\n') ];
+    end
 
   end

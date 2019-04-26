@@ -1,42 +1,33 @@
 TODO:
+------------------------------------------------------------------------
 
-
+subsref/subsasgn: allow estruct(index) to extract new object Signal, Axes, etc instead of just Signal as now
 revamp cat to work on Signal when given dim, else catenate structures ? Data ?
 rework on union/intersection/diff/cat
-commandhistory and command management
 disp/display ?
 dog
 event
 fileattrib and Attributes
 findobj
 load and postprocess
-max
+max min
 meshgrid, interp, intersect, union, etc.
 reshape
 resize
-rmaxis
 save
-sort
+sort/unique
 squeeze
 fix uitable
-
+plot etc !!
+runtest
+check sum median mean error bar
 ndims: make it work for event data
-
-UNARY:
-abs.m acosh.m acos.m all.m any.m asinh.m asin.m atanh.m atan.m ceil.m conj.m cosh.m cos.m ctranspose.m del2.m exp.m fliplr.m flipud.m floor.m full.m imag.m isfinite.m isfloat.m isinf.m isinteger.m islogical.m isnan.m isnumeric.m isreal.m isscalar.m issparse.m log10.m log.m norm.m not.m permute.m real.m reshape.m resize.m round.m sign.m sinh.m sin.m sparse.m sqrt.m tanh.m tan.m transpose.m uminus.m uplus.m
-
-BINARY:
-combine.m conv.m convn.m deconv.m eq.m ge.m gt.m le.m lt.m minus.m mpower.m mrdivide.m mtimes.m ne.m plus.m power.m rdivide.m sqr.m times.m isequal.m
-
-TO ADD ?
-setdiff (structdiff)
-setxor (structintersection)
-issorted
-ismember
-uniquetol
 mod
 rem
-idivide
-fix
-isequalwithequalnans(A, B) == isequal but NaN are equal (else they are not) or isequaln when exists
 
+------------------------------------------------------------------------
+UNARY:
+abs.m acosh.m acos.m all.m any.m asinh.m asin.m atanh.m atan.m ceil.m conj.m cosh.m cos.m ctranspose.m del2.m exp.m find.m flipdim.m fliplr.m flipud.m floor.m full.m imag.m isfinite.m isfloat.m isinf.m isinteger.m islogical.m isnan.m isnumeric.m isreal.m isscalar.m issparse.m isvector.m log10.m log.m mean.m median.m nonzeros.m norm.m not.m permute.m real.m reshape.m resize.m round.m sign.m sinh.m sin.m sparse.m sqrt.m sum.m tanh.m tan.m transpose.m uminus.m uplus.m var.m
+BINARY:
+and.m combine.m conv.m convn.m deconv.m eq.m ge.m gt.m isequal.m le.m lt.m minus.m mpower.m ne.m or.m plus.m power.m rdivide.m sqr.m times.m version.m xor.m
+setor.m setxor.m setand.m
