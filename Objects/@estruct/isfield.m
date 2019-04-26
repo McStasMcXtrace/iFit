@@ -11,11 +11,10 @@ function tf = isfield(self, f)
   %   isstruct, estruct.
     tf=false;
     if nargin < 2, f=''; end
-    if iscellstr(f), f=char(f); end
     if isempty(f) || (~ischar(f) && ~iscellstr(f)), return; end
     if numel(self) == 1
       if any(f == '.') % compound field: we search with findfield
-        tf = ~isempty(findfield(self, f, 'isfield'));
+        tf = findfield(self, f, 'isfield');
       else
         tf = isfield(struct(self), f); % faster
       end

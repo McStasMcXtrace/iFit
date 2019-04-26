@@ -18,7 +18,7 @@ function v = subsref(a,S)
 %     This syntax gets 'aliases' (does not travel through links).
 %     Equivalent to get(s, 'field', 'alias') and getalias(s, 'field')
 
-%   In the alias case above, a string/char value allows to link to internal or 
+%   In the alias case above, a string/char value allows to link to internal or
 %   external links, as well as evaluated expression, with the following syntax cases:
 %     'field'                           a simple link to an other property 'field'
 %     'field1.field2...'                a nested link to an other property
@@ -28,8 +28,8 @@ function v = subsref(a,S)
 %     'ftp://some_distant_resource'     an FTP URL (proxy settings may need to be set)
 %     'matlab: some_expression'         some code to evaluate. 'this' refers to the object itself
 %
-%   File and URL can refer to compressed resources (zip, gz, tar, Z) which are 
-%   extracted on-the-fly. In case the URL/file resource contains 'sections', a 
+%   File and URL can refer to compressed resources (zip, gz, tar, Z) which are
+%   extracted on-the-fly. In case the URL/file resource contains 'sections', a
 %   search token can be specified with syntax such as 'file://filename#token'.
 %
 %   B = SUBSREF(A,S) is called for the syntax A(I), A{I}, or A.I
@@ -40,7 +40,7 @@ function v = subsref(a,S)
 %
 % Example: s=estruct('x',1:10,'y','blah'); isnumeric(s.x) & ischar(s('y'))
 % Version: $Date$ $Version$ $Author$
-% See also estruct, fieldnames, findfield, isfield, set, get, getalias, setalias, 
+% See also estruct, fieldnames, findfield, isfield, set, get, getalias, setalias,
 %   getaxis, setaxis
 v = [];
 if ischar(S), S=struct('type','.','subs', S); end
@@ -69,13 +69,13 @@ end
 
 v = a;
 
-% special case when calling a method with syntax: object.method(args) 
+% special case when calling a method with syntax: object.method(args)
 % further parameters are stored as S(2:end).subs
 if strcmp(S(1).type,'.') && ismethod(v, S(1).subs)
-  if numel(S) > 1, args = S(2).subs; S(2) = []; 
+  if numel(S) > 1, args = S(2).subs; S(2) = [];
   else args = {}; end
   v = feval(S(1).subs, v, args{:}); % evaluate method
-  S(1) = []; 
+  S(1) = [];
 end
 
 % other cases: . () {}
@@ -83,4 +83,3 @@ for index=1:numel(S)
   % travel through indexed references
   v = subsref_single(v, S(index), a);
 end % for
-

@@ -4,7 +4,7 @@ function v = subsref_single(v, S, a)
   if ischar(S), S=struct('type','.','subs', S); end
   if ~isstruct(S),  error([ mfilename ': invalid reference (2nd arg) expect struct, is ' class(S) ]); end
   if numel(S) ~= 1, error([ mfilename ': only works with a single level reference' ]); end
-      
+
   default = true;
   switch S.type
   case {'()','.'} % syntax: a('fields') does not follow links (getalias).
@@ -18,7 +18,7 @@ function v = subsref_single(v, S, a)
       if any(cellfun(@(c)isa(c,'estruct'), S.subs))
         for index=1:numel(S.subs)
           if isa(S.subs{index},'estruct')
-            S.subs{index} = subsindex(S.subs{index}); 
+            S.subs{index} = subsindex(S.subs{index});
           end
         end
       end
@@ -76,7 +76,7 @@ function v = get_single(s, field, follow, s0)
       end
     end
   end
-  
+
 % ----------------------------------------------------------------------------
 function v = get_single_alias(s, v)
   if ~ischar(v), return; end
@@ -86,12 +86,12 @@ function v = get_single_alias(s, v)
     v = sqrt(double(get(s,'Signal')));
   elseif strncmp(v, 'matlab',6) && numel(v) > 8 % URL matlab:
     v = get_single_eval(s, v);
-  elseif ~isempty(dir(v)) || any(strcmp(strtok(v, ':'), {'http' 'https' 'ftp' 'file'})) % URL http https ftp file: 
+  elseif ~isempty(dir(v)) || any(strcmp(strtok(v, ':'), {'http' 'https' 'ftp' 'file'})) % URL http https ftp file:
     try
       v = iLoad(v);
     end
   end
-  
+
 % ----------------------------------------------------------------------------
 function value = get_single_eval(this, value)
  % get_single_eval a sandbox to valuate a matlab expression
@@ -108,5 +108,3 @@ function value = get_single_eval(this, value)
       value = getReport(ME);
     end
   end
-  
-

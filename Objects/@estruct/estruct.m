@@ -49,7 +49,8 @@ properties
   end
 
   properties (Access=protected, Constant=true)  % shared by all instances
-    properties_Protected={'Protected','Axes','Tag','Private'} % can not be changed
+    properties_Protected={'properties_Protected','properties_Base', ...
+      'Axes','Tag','Private'} % can not be changed
     properties_Base={'Creator', 'Command', 'Date', 'Data', 'DisplayName', ...
       'Label', 'ModificationDate', 'Source', 'Tag', 'Name', 'User', 'UserData'};
   end
