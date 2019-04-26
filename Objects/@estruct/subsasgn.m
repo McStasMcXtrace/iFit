@@ -53,9 +53,9 @@ end
 % check for protected properties
 if ischar(S), S=struct('type','.','subs', S); end
 
-if iscell(S(1).subs) && any(strcmp(S(1).subs{1}, a.Protected))
+if iscell(S(1).subs) && any(strcmp(S(1).subs{1}, a.properties_Protected))
   error([ mfilename ': can not set Protected property ' S(1).subs{1} ' in object ' a.Tag ]);
-elseif ischar(S(1).subs(1)) && any(strcmp(S(1).subs, a.Protected))
+elseif ischar(S(1).subs(1)) && any(strcmp(S(1).subs, a.properties_Protected))
   error([ mfilename ': can not set Protected property ' S(1).subs ' in object ' a.Tag ]);
 end
 
@@ -69,4 +69,3 @@ if isa(a, 'estruct')
 end
 
 a.ModificationDate = clock;
-

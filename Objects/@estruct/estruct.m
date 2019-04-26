@@ -49,7 +49,9 @@ properties
   end
 
   properties (Access=protected, Constant=true)  % shared by all instances
-    Protected={'Protected','Axes','Tag','Private'} % can not be changed
+    properties_Protected={'Protected','Axes','Tag','Private'} % can not be changed
+    properties_Base={'Creator', 'Command', 'Date', 'Data', 'DisplayName', ...
+      'Label', 'ModificationDate', 'Source', 'Tag', 'Name', 'User', 'UserData'};
   end
 
 % ------------------------------------------------------------------------------
@@ -57,32 +59,27 @@ properties
   methods
     function new = estruct(varargin)
     %ESTRUCT Create or convert to an estruct object.
-    %  S = ESTRUCT('field1',VALUES1,'field2',VALUES2,...) creates a
-    %  structure array with the specified fields and values.  The value
-    %  arrays VALUES1, VALUES2, etc. must be cell arrays of the same
-    %  size, scalar cells or single values.  Corresponding elements of the
-    %  value arrays are placed into corresponding structure array elements.
-    %  The size of the resulting structure is the same size as the value
-    %  cell arrays or 1-by-1 if none of the values is a cell.
+    %  S = ESTRUCT('field1',VALUES1,'field2',VALUES2,...) creates
+    %  an object with the specified fields and values (as properties).
     %
-    %  ESTRUCT is similar to STRUCT, but brings extended functionalities.
+    %  ESTRUCT(a,b,c,...) imports input arguments into an estruct object.
+    %
+    %  ESTRUCT('filename') imports the file name and store its content into a Data property.
+    %  Multiple files can be given, each producing a distinct object arranged
+    %  into an array. File names can also be given as URL (file: http: https: ftp:)
+    %  and/or be compressed (zip, gz, tar, Z).
     %
     %  ESTRUCT(OBJ) converts the object OBJ into its equivalent
-    %  structure.  The class information is lost.
+    %  estruct.  The initial class information is lost.
     %
-    %  ESTRUCT([]) creates an empty structure.
+    %  ESTRUCT([]) creates an empty object.
     %
-    %  To create fields that contain cell arrays, place the cell arrays
-    %  within a VALUE cell array.  For instance,
-    %    s = estruct('strings',{{'hello','yes'}},'lengths',[5 3])
-    %  creates the 1-by-1 structure
-    %     s =
-    %        strings: {'hello'  'yes'}
-    %        lengths: [5 3]
+    %  ESTRUCT is similar to STRUCT, but is designed to hold scientifi data.
     %
-    %  Example: s = estruct('type',{'big','little'},'color','red','x',{3 4})
-    %  See also isstruct, setfield, getfield, fieldnames, orderfields,
-    %  isfield, rmfield, deal, substruct, struct2cell, cell2struct.
+    % Example: s = estruct('type',{'big','little'},'color','red','x',{3 4}); isstruct(s)
+    % Version: $Date$ $Version$ $Author$
+    % See also isstruct, setfield, getfield, fieldnames, orderfields,
+    %   isfield, rmfield, deal, substruct, struct2cell, cell2struct.
 
       persistent id
 
@@ -99,6 +96,7 @@ properties
       end
       new.Tag = [ 'iD' sprintf('%0.f', id) ]; % unique ID
       new.ModificationDate = new.Date;
+
       % add our 'static' properties so that they are equially handled by
       % subsref/subsasgn
       new.addprop('Error');           % e.g. an alias or empty
@@ -211,40 +209,6 @@ properties
       tf = true; % isa(self, mfilename); always true
     end
 
-    function tf = isfield(self, f)
-    %   ISFIELD True if field is in structure array.
-    %      ISFIELD(S,FIELD) returns true if the string FIELD is the name of a
-    %      field in the structure array S.
-    %
-    %      TF = ISFIELD(S,FIELDNAMES) returns a logical array, TF, the same size
-    %      as the size of the cell array FIELDNAMES.  TF contains true for the
-    %      elements of FIELDNAMES that are the names of fields in the structure
-    %      array S and false otherwise.
-    %
-    %      NOTE: TF is false when FIELD or FIELDNAMES are empty.
-    %
-    %      Example:
-    %         s = estruct('one',1,'two',2);
-    %         fields = isfield(s,{'two','pi','One',3.14})
-    %
-    %      See also getfield, setfield, fieldnames, orderfields, rmfield,
-    %      isstruct, estruct.
-      tf=false;
-      if nargin < 2, f=''; end
-      if iscellstr(f), f=char(f); end
-      if isempty(f) || ~ischar(f), return; end
-      if numel(self) == 1
-        if any(f == '.') % compound field: we search with findfield
-          tf = ~isempty(findfield(self, f));
-        else
-          tf = isfield(struct(self), f); % faster
-        end
-      else
-        tf = zeros(size(self));
-        for index=1:numel(self); tf(index) = isfield(self(index), f); end
-      end
-    end
-
     function self=rmfield(self, f)
     %   RMFIELD Remove fields from a structure array.
     %      S = RMFIELD(S,'field') removes the specified field from the
@@ -278,8 +242,8 @@ properties
 
     % compatibility with original estruct (2007-2019)
       self = rmfield(self, varargin{:});
-    end
-    
+    end % rmalias
+
     function self=rmaxis(self, f)
     %   RMAXIS Remove an axis from object(s).
     %     RMAXIS(S, AX) removes the axis AX specified as a single rank index.
@@ -289,7 +253,7 @@ properties
       else
         for index=1:numel(self); rmfield(self(index), f); end
       end
-    end % rmfield
+    end % rmaxis
 
     function c = struct2cell(self)
     %   STRUCT2CELL Convert structure array to cell array.
@@ -310,7 +274,7 @@ properties
         c = arrayfun('struct2cell', self);
       end
 
-    end
+    end % struct2cell
 
     function new = cell2struct(self, varargin)
     %   CELL2STRUCT Convert cell array to estruct array.
@@ -331,14 +295,16 @@ properties
         error([ mfilename ': cell2struct(estruct, ...) only works with a single estruct.' ])
       end
       new = copyobj(self, cell2struct(varargin{:}));
-    end
+    end % cell2struct
 
     function s = cellstr(self)
       %  CELLSTR Convert an estruct object into a cell array of strings.
       %      S = CELLSTR(X) converts the structure X into a cell of strings.
+      %
+      % See also: char
       s = class2str(self, 'eval');
       s = textscan(s, '%s','Delimiter',';');
-    end
+    end % cellstr
 
     function v = cast(self, typ)
       %   CAST  Cast object to a different data type or class.
@@ -352,7 +318,7 @@ properties
         v = cell(size(self));
         for index=1:numel(self); v{index} = cast(self(index), typ); end
       end
-    end
+    end % cast
 
     function v = double(self)
       %   DOUBLE Convert to double precision.
@@ -399,7 +365,7 @@ properties
         error([ mfilename ': repmat(estruct, M,N,...) only works with a single estruct.' ])
       end
       s = estruct(repmat(struct(self), varargin{:}));
-    end
+    end % repmat
 
     function o = ones(self, varargin)
       % ONES   Ones array.
@@ -411,7 +377,7 @@ properties
       %    'S' structure.
       if nargin == 1, o=self(1); return; end
       o = repmat(self, varargin{:});
-    end
+    end % ones
 
     function z = zeros(self, varargin)
       % ZEROS  Zeros array.
@@ -423,7 +389,7 @@ properties
       %    empty structures.
       if nargin == 1, z=estruct; return; end
       z = ones(estruct, varargin{:});
-    end
+    end % zeros
 
     function s = struct(self)
       % STRUCT Create or convert to structure array.
@@ -434,7 +400,7 @@ properties
       else
         s = arrayfun('struct', self);
       end
-    end
+    end % struct
 
   end % methods
 
