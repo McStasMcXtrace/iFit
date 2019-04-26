@@ -49,11 +49,11 @@ function d = char(self, option)
 
     % build the final string
     if nargin == 1
-      d = sprintf('%5i %9s %11s %43s %23s %s%s', ...
-        d1, d2, d3, d4, d5, d6, d7);
+      d = [ d sprintf('%5i %8s %11s %43s %23s %s%s', ...
+        d1, d2, d3, d4, d5, d6, d7) ];
     else % compact form
-      d = sprintf('%i %s %s %s %s %s%s', ...
-        d1, d2, d3, d4, d5, d6, d7);
+      d = [ d sprintf('%i %s %s %s %s %s%s', ...
+        d1, d2, d3, d4, d5, d6, d7) ];
     end
     if numel(self) > 1
       d = [ d sprintf('\n') ];

@@ -151,6 +151,7 @@ properties
         new.(s.name)=s.value;
         if (isnumeric(s.value) | islogical(s.value)) && ~isscalar(s.value)
           new.Private.cache.check_requested = true;
+          history(new, 'set', new, s.name, s.value);
         end
         structs{index} = []; % clear memory
       end
@@ -181,14 +182,20 @@ properties
           for index_data=1:numel(this)
             if isempty(this{index_data}), continue; end
             if numel_new == 1
-              new.Data = this{index_data};
-              history(new, mfilename, new0, this{index_data});
-              new.Private.cache.check_requested = true; % request a check at first 'get'
+              new1 = new;
             else
               new1 = copyobj(new0);
-              new1.Data = this{index_data}; this{index_data} = [];
-              history(new1, mfilename, new0, this{index_data});
-              new1.Private.cache.check_requested = true; % request a check at first 'get'
+            end
+
+            new1.Data = this{index_data}; this{index_data} = [];
+            if isstruct(new1.Data) && isfield(new1.Data, 'Source') && isfield(new1.Data, 'Loader') % iload struct
+              history(new, 'load', new0, new.Data.Source);
+            else
+              history(new, mfilename, new0, this{index_data});
+            end
+            history(new1, mfilename, new0, this{index_data});
+            new1.Private.cache.check_requested = true; % request a check at first 'get'
+            if numel_new > 1
               new = [ new new1 ]; % build array
             end % index_data
             numel_new = numel_new+1;
@@ -298,13 +305,19 @@ properties
       new = copyobj(self, cell2struct(varargin{:}));
     end % cell2struct
 
-    function s = cellstr(self)
+    function s = cellstr(self, varargin)
       %  CELLSTR Convert an estruct object into a cell array of strings.
       %      S = CELLSTR(X) converts the structure X into a cell of strings.
       %
+      %      S = CELLSTR(X,'short') converts the structure X into a cellstr
+      %      and a compact storage. The resulting representation does not
+      %      allow to rebuild the full object.
+      %
       % See also: char
-      s = class2str(self, 'eval');
+      s = copyobj(self); s.Private = [];
+      s = class2str(s, [ varargin{:} ]);
       s = textscan(s, '%s','Delimiter',';');
+      if numel(s) == 1, s=s{1}; end
     end % cellstr
 
     function v = cast(self, typ)

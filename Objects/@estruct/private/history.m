@@ -17,21 +17,21 @@ if nargin >= 3 || ~isempty(varargin)
     if i1 > 1, c = ','; else c=''; end
     b = varargin{i1};
     if ~isa(b,'estruct') && isstruct(b)
-      b = class2str('',b,'eval');
+      b = class2str('',b,'eval short');
     end
     if ischar(b)
-      if numel(b) > 100, b=[ b(1:20) '...' b((end-20):end) ]; end 
+      if numel(b) > 100, b=[ b(1:20) '...' b((end-20):end) ]; end
       toadd = [ toadd c ' ''' b '''' ];
     elseif isobject(b) && isfield(b, 'Tag')
       toadd = [ toadd c b.Tag ];
       if isempty(tocat), tocat = ' %'; end
       tocat = [ tocat ' <' class(b) ' ' b.Tag ' ' b.Source '> ' ];
-    elseif isnumeric(b) || islogical(b) 
+    elseif isnumeric(b) || islogical(b)
       if ndims(b) > 2,   b=b(:); end
-      if numel(b) > 50, toadd = [ toadd c ' [' sprintf('%g ',double(b(1:20))) '...' sprintf('%g ',double(b((end-20):end))) ']' ]; 
-      elseif isempty(b) 
+      if numel(b) > 50, toadd = [ toadd c ' [' sprintf('%g ',double(b(1:20))) '...' sprintf('%g ',double(b((end-20):end))) ']' ];
+      elseif isempty(b)
         toadd = [ toadd c ' []' ];
-      else 
+      else
         toadd = [ toadd c ' [' sprintf('%g ',double(full(b))) ']' ];
       end
     else
@@ -39,16 +39,16 @@ if nargin >= 3 || ~isempty(varargin)
     end
   end
   meth = [ a.Tag '=' meth '(' toadd ');' tocat ];
-  
+
 end
 
 for index=1:numel(a)
   d=a(index);
-  if isempty(d.Command), 
-  	d.Command = { meth }; 
+  if isempty(d.Command),
+    d.Command = { meth };
   else
-  	if ~iscellstr(d.Command), d.Command = { char(d.Command) }; end
-  	d.Command{end+1} = meth;
+    if ~iscellstr(d.Command), d.Command = { char(d.Command) }; end
+    d.Command{end+1} = meth;
   end
   d.Command=d.Command(:);
   % a(index) = d; % not needed as we use handles
