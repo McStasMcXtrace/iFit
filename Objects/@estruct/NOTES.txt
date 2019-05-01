@@ -17,7 +17,6 @@ resize
 save
 sort/unique
 squeeze
-fix uitable
 plot etc !!
 runtest
 check sum median mean error bar
