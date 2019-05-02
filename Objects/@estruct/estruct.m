@@ -15,9 +15,10 @@ classdef estruct < dynamicprops
 %
 %  ESTRUCT([]) creates an empty object.
 %
-%  ESTRUCT is similar to STRUCT, but is designed to hold scientifi data.
+%  ESTRUCT is similar to STRUCT, but is designed to hold scientific data.
 %
 % Example: s = estruct('type',{'big','little'},'color','red','x',{3 4}); isstruct(s)
+% Example: s = estruct(peaks); isstruct(s)
 % Version: $Date$ $Version$ $Author$
 % See also isstruct, setfield, getfield, fieldnames, orderfields,
 %   isfield, rmfield, deal, substruct, struct2cell, cell2struct.
@@ -75,7 +76,7 @@ properties
     %
     %  ESTRUCT([]) creates an empty object.
     %
-    %  ESTRUCT is similar to STRUCT, but is designed to hold scientifi data.
+    %  ESTRUCT is similar to STRUCT, but is designed to hold scientific data.
     %
     % Example: s = estruct('type',{'big','little'},'color','red','x',{3 4}); isstruct(s)
     % Version: $Date$ $Version$ $Author$

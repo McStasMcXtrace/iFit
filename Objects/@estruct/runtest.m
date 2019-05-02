@@ -1,12 +1,30 @@
-function r = runtest(s, m)
+function r = runtest(s, m, option)
 % RUNTEST run a set of tests on object methods
+%   RUNTEST(s) checks all object methods. In deployed versions, only the 'test'
+%   functions can be used, whereas from Matlab, the internal Example liens can be
+%   used for testing.
+%
+%   RUNTEST(s, 'method') and RUNTEST(s, {'method1',..}) checks only the given 
+%   methods. When not given or empty, all methods are checked.
+%
+%   RUNTEST(..., 'testsuite') generates a test suite (list of functions)
+%
+%   R = RUNTEST(...) perform the test and returns a structure array with test results.
+%
+%   RUNTEST(s, R) where R is a RUNTEST structure array, displays the test results.
 
-if nargin == 1
+if nargin <2
   m = [];
 end
 if isstruct(m)
   runtest_report(m)
   return
+end
+if nargin < 3 
+  if ischar(m) && strcmp(m, 'testsuite')
+    m = '';
+    option='testsuite';
+  else option = ''; end
 end
 
 if isempty(m)
@@ -17,7 +35,6 @@ if isempty(m)
     for sindex=1:numel(ms)
       mindex=find(strcmp(ms{sindex}, m));
       if ~isempty(mindex)
-        disp([ 'removing ' ms{sindex} ' from ' super{1} ]);
         m{mindex}='';
       end
     end
@@ -29,77 +46,89 @@ m=cellstr(m);
 r = runtest_dotest(s, m);
 
 % display results
-fprintf(1, '%s: %s %i tests\n', mfilename, class(s), numel(r));
+fprintf(1, '%s: %s %i tests from %s\n', mfilename, class(s), numel(r), pwd);
 disp('--------------------------------------------------------------------------------')
 runtest_report(r);
+
+if ~isdeployed && ischar(option) && strcmp(option, 'testsuite')
+  runtest_testsuite(s, r);
+end
 
 % ------------------------------------------------------------------------------
 function r = runtest_dotest(s, m)
 % RUNTEST_DOTEST performs a test for given method 'm'
   r = [];
-  fprintf(1,'Running %s (%s) for %i methods\n',...
-    mfilename, class(s), numel(m));
+  fprintf(1,'Running %s (%s) for %i methods (from %s)\n',...
+    mfilename, class(s), numel(m), pwd);
 
   for mindex=1:numel(m)
     % test if the method is functional
     if isempty(m{mindex}) || ~ischar(m{mindex}), continue; end
     if strcmp(mfilename, m{mindex}), continue; end % not myself
-    
-    % check if method is valid. Must be convertible to pcode (in temporary dir)
-    pw = pwd;
-    p = tempname; mkdir(p); cd(p)
-    failed = [];
-    try
-      pcode(which([ class(s) '/' m{mindex} ]));
-    catch ME
-      failed= ME;
-    end
-    rmdir(p, 's'); cd(pw); % clean temporary directory used for the p-code
-    if ~isempty(failed)
-      h   = []; % invalid method (can not get help)
-      res = runtest_init(m{mindex});
-      res.Details.Status = 'ERROR';
-      res.Details.Output = failed;
-      res.Incomplete     = true;
-      res.Failed         = true;
-      r = [ r res ];
-      continue
-    end
-    
-    
-    % get the HELP text (not in deployed)
-    failed = [];
-    try
-      h   = help([ class(s) '.' m{mindex} ]);
-    catch ME
-      failed = ME;
-    end
-    if ~isempty(failed) % invalid method (can not get help)
-      res = runtest_init(m{index});
-      res.Details.Status = 'ERROR';
-      res.Details.Output = failed;
-      res.Incomplete     = true;
-      res.Failed         = true;
-      r = [ r res ];
-      continue
-    end
-    
-    % get the Example lines in Help
-    if ~isempty(h)
-      h = textscan(h, '%s','Delimiter','\n'); h=strtrim(h{1});
-      % get the Examples: lines
-      ex= strfind(strtrim(h), 'Example:');
-      ex= find(~cellfun(@isempty, ex));
-    else ex=[];
-    end
     res = [];
     
-    % perform test for each Example line in Help
-    for index=ex
-      if ~isempty(index) && ~isempty(h{index})
-        code= strrep(h{index}, 'Example:','');
-        res = runtest_dotest_single(s, m{mindex}, code);
+    % check if code is valid (not in deployed). 
+    % Must be convertible to pcode (in temporary dir)
+    if ~isdeployed
+      pw = pwd;
+      p = tempname; mkdir(p); cd(p)
+      failed = [];
+      try
+        pcode(which([ class(s) '/' m{mindex} ]));
+      catch ME
+        failed= ME;
+      end
+      rmdir(p, 's'); cd(pw); % clean temporary directory used for the p-code
+      if ~isempty(failed)
+        h   = []; % invalid method (can not get help)
+        res = runtest_init(m{mindex});
+        res.Details.Status = 'ERROR';
+        res.Details.Output = failed;
+        res.Incomplete     = true;
+        res.Failed         = true;
         r = [ r res ];
+        continue
+      end
+    end
+    
+    % get the HELP text (not in deployed)
+    if ~isdeployed
+      failed = [];
+      try
+        if strcmp(class(s),m{mindex})
+          h   = help([ class(s) ]);
+        else
+          h   = help([ class(s) '.' m{mindex} ]);
+        end
+      catch ME
+        failed = ME;
+      end
+      if ~isempty(failed) % invalid method (can not get help)
+        res = runtest_init(m{index});
+        res.Details.Status = 'ERROR';
+        res.Details.Output = failed;
+        res.Incomplete     = true;
+        res.Failed         = true;
+        r = [ r res ];
+        continue
+      end
+
+      % get the Example lines in Help
+      if ~isempty(h)
+        h = textscan(h, '%s','Delimiter','\n'); h=strtrim(h{1});
+        % get the Examples: lines
+        ex= strfind(strtrim(h), 'Example:');
+        ex= find(~cellfun(@isempty, ex));
+      else ex=[];
+      end
+
+      % perform test for each Example line in Help
+      for index=ex'
+        if ~isempty(index) && ~isempty(h{index})
+          code= strrep(h{index}, 'Example:','');
+          res = runtest_dotest_single(s, m{mindex}, code);
+          r = [ r res ];
+        end
       end
     end
     
@@ -130,7 +159,6 @@ function res = runtest_init(m)
   res.Incomplete=false;
   res.Duration  =0;
   res.Details.Code   =''; 
-  res.Details.Index  =0;
   res.Details.Status ='';
   res.Details.Output ='';
   res.Details.Code   ='';
@@ -149,7 +177,7 @@ function res = runtest_dotest_single(s, m, code)
   
   % init result to 'empty'
   res = runtest_init(m);
-  res.Details.Code = code;
+  res.Details.Code = strtrim(code);
   
   % perform test <<< HERE
   t0 = clock;
@@ -195,7 +223,7 @@ function runtest_report(r)
 % ------------------------------------------------------------------------------
 function [passed, failed, output] = runtest_sandbox(ln)
   passed=false; failed=false; output='';
-  fprintf(1, '.');
+  % fprintf(1, '.');
   try
     clear ans
     output = evalc(ln);
@@ -211,9 +239,53 @@ function [passed, failed, output] = runtest_sandbox(ln)
     output = ME;
     failed = true;
   end
+  
+% ------------------------------------------------------------------------------ 
+function runtest_testsuite(s, r)
+% RUNTEST_TESTSUITE generate a set of functions from the Example lines
+  p = tempname; mkdir(p); 
+  disp([ mfilename ': generating test suite...' ]);
+  for index=1:numel(r)
+    res = r(index);
+    filename = [ 'test_' class(s) '_' res.Name ];
+    if strcmp(res.Details.Code, filename), continue; end
+    if isempty(res.Details.Code), continue; end
     
+    % create the file when it does not exist
+    if isempty(dir(fullfile(p,[ filename '.m' ])))
+      fid = fopen(fullfile(p,[ filename '.m' ]),'w');
+      if fid == -1, continue; end
+      fprintf(fid, 'function ret=%s\n', filename);
+      fprintf(fid, '%% %s checks for class %s, method ''%s''\n', ...
+        upper(filename), class(s), res.Name);
+      fprintf(fid, '%%   %s returns ERROR when the test could not run\n%%   OK when test is passed, FAILED otherwise.\n',...
+        upper(filename));
+    else
+      % the test already exists. We have multiple tests for same method. catenate.
+      fid = fopen(fullfile(p,[ filename '.m' ]),'a');
+      if fid == -1, continue; end
+      fprintf(fid, '%% -------------------------------------------------\n');
+    end
+    fprintf(fid, 'clear ans\n');
+    fprintf(fid, 'try\n');
+    fprintf(fid, '  %s\n', res.Details.Code);
+    fprintf(fid, 'catch ME\n');
+    fprintf(fid, '  ret=[ ''ERROR '' mfilename ]; return\n');
+    fprintf(fid, 'end\n');
+    fprintf(fid, 'result = ans;\n');
+    fprintf(fid, 'if (isnumeric(result) || islogical(result)) && all(result(:))\n');
+    fprintf(fid, '  ret=[ ''OK '' mfilename ];\n');
+    fprintf(fid, 'elseif ischar(result) && any(strcmpi(strtok(result),{''OK'',''passed''}))\n');
+    fprintf(fid, '  ret=[ ''OK '' mfilename ];\n');
+    fprintf(fid, 'else\n');
+    fprintf(fid, '  ret=[ ''FAILED '' mfilename ]; return\n');
+    fprintf(fid, 'end\n');
+    fclose(fid);
+  end
+  disp([ mfilename ': test suite generated in <a href="' p '">' p '</a>' ]);
 % ------------------------------------------------------------------------------
 function str = cleanupcomment(comment)
+% CLEANUPCOMMENT clean a string from EOL and duplicate spaces.
 
   % Replace linefeeds and carriage returns.
   str = strrep(comment, char(10), ' ');
