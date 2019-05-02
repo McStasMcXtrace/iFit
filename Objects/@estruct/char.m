@@ -29,9 +29,11 @@ function d = char(self, option)
     if length(t) > 41, t = [ t(1:37) '..."'  ]; end           % title(Signal)
     d4 = [ '''' t '''' ];
 
-    h = cellstr(s.Command); h = strtrim(h{end}); h(~isstrprop(h,'print') | h=='\')='';
-    if length(h) > 23, h = [ h(1:20) '...' ]; end             % last command
-    d5 = h;
+    h = cellstr(s.Command); if ~isempty(h)
+      h = strtrim(h{end}); h(~isstrprop(h,'print') | h=='\')='';
+      if length(h) > 23, h = [ h(1:20) '...' ]; end             % last command
+    end
+    d5 = char(h);
 
     if ~isempty(s.Label)
       h = cellstr(s.Label); h = strtrim(h{1}); h(~isstrprop(h,'print') | h=='\')='';
