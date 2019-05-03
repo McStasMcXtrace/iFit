@@ -4,6 +4,9 @@ function a = history(a, meth, varargin)
 %   'meth' may be given as a method name plus additional arguments which
 %   are transformed into chars to build a command line meth(varargin)
 
+% This file is used by: all methods that record entries in the Command property
+%   unary binary axescheck commandhistory copyobj estruct interp setaxis setor subsasgn
+
 % EF 23/09/07 iData implementation
 
 if ~ischar(meth)

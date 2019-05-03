@@ -27,10 +27,12 @@ function z = genop(op,x,y)
 %
 %       f = genop(@minus);
 %       X2 = f(X,mean(X));
-
+%
 % written by Douglas M. Schwarz
 % email: dmschwarz (at) urgrad (dot) rochester (dot) edu
 % 13 March 2006
+
+% This file is used by: unary binary
 
 % This function was inspired by an idea by Urs Schwarz (no relation) and
 % the idea for returning a function handle was shamelessly stolen from
