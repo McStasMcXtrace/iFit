@@ -155,7 +155,7 @@ classdef YAML
             if isempty(r), result = java.util.ArrayList(); return; end
             if ischar(r)
                 result = java.lang.String(r);
-            elseif builtin('isnumeric', r) && ~isscalar(r)
+            elseif (builtin('isnumeric', r) || builtin('islogical',r)) && ~isscalar(r)
                 result = java.util.ArrayList();
                 if isvector(r)
                   result = java.lang.String(sprintf('%g ', r));
@@ -166,6 +166,8 @@ classdef YAML
                 end
             elseif builtin('isnumeric', r)
                 result = java.lang.Double(r);
+            elseif builtin('islogical',r)
+                result = java.lang.Integer(r);
             elseif isstruct(r) && numel(r) == 1
                 result = java.util.LinkedHashMap();
                 keys = fields(r);
