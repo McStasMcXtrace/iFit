@@ -268,9 +268,16 @@ function file = cif2hkl_cod(file)
     
     % query COD
     disp([ mfilename ': querying COD at http://www.crystallography.net/cod/result.php?formula=' formula ]);
+    ip = java.net.InetAddress.getByName('www.crystallography.net');
+    if ~ip.isReachable(1000)
+      notReachable = true;
+    else notReachable = false; end
     try
       cod   = urlread([ 'http://www.crystallography.net/cod/result.php?formula=' formula ]);
     catch
+      notReachable = true;
+    end
+    if notReachable
       disp([ mfilename ': It seems I can not reach www.crystallography.net !' ]);
       disp('>>> if you are behind a Proxy, you MUST set from the Matlab/iFit prompt e.g.:');
       disp('  ProxyHost=''proxy.ill.fr'' % no need for "http://" there');
