@@ -241,7 +241,9 @@ end
 if ~isempty(options.dir)
   testDir = ['deleteMe_', num2str(floor(rand*1e12))];
   [isWritable,message,messageid] = mkdir(options.dir, testDir);
-  if ~isWritable, options.dir = ''; end
+  if ~isWritable, options.dir = ''; % will use TMPDIR
+  else rmdir(fullfile(options.dir, testDir),'s');
+  end
 end
 
 % use temporary directory to build/assemble parts.
@@ -306,7 +308,12 @@ elseif ~isempty(info)
 else
   disp([ mfilename ': WARNING: No information could be retrieved from ' options.instrument ]);
 end
-fid = fopen(exe, 'r');
+[fid, message] = fopen(exe, 'r');
+if fid == -1
+  disp(message);
+  disp(info);
+  error([ mfilename ': the executable ' exe ' is not accessbile. Perhaps you have a system command with the same name ? Change instrument name ?' ]);
+end
 UserData.instrument_executable = uint8(fread(fid, Inf)); fclose(fid);
 UserData.instrument_exe = exe;
 
@@ -488,7 +495,7 @@ try
 catch
     signal = [];
 end
-y.UserData.options.ncount = ncount;
+y.UserData.options.ncount = ncount; % restore initial ncount
 if isa(signal,'iData')
   if numel(signal) > 1  % get the last one
     signal=signal(end);
@@ -550,8 +557,8 @@ function present = mccode_check(options)
     if ~isempty(present.mccode), break; end
     for ext={'','.pl','.py','.exe','.out'}
       % look for executable and test with various extensions
-      [status, result] = system([ precmd totest{1} ext{1} ]);
-      if (status == 1 || status == 255) && (~ispc || isempty(strfind(result, [ '''' totest{1} ext{1} '''' ])))
+      [status, result] = system([ precmd totest{1} ext{1} ]); % usually 127 indicates 'command not found'
+      if any(status == [ 0 1 255]) && (~ispc || isempty(strfind(result, [ '''' totest{1} ext{1} '''' ])))
         present.mccode = [ totest{1} ext{1} ];
         break
       end
@@ -561,8 +568,9 @@ function present = mccode_check(options)
   if isempty(present.mccode)
     disp([ mfilename ': WARNING: ' options.mccode ' McStas/McXtrace executable is not installed. Get it at www.mccode.org' ]);
     disp('  The model can still be created if the instrument is given as an executable.')
-    disp([ mfilename ': You may try "mccode check" after extending the PATH with e.g.' ])
-    disp('setenv(''PATH'', [getenv(''PATH'') '':/usr/local/bin'' '':/usr/bin'' '':/usr/share/bin'' ]);');
+    disp('You may try "mccode check" after extending the PATH with e.g.')
+    disp('  setenv(''PATH'', [getenv(''PATH'') '':/usr/local/bin'' '':/usr/bin'' '':/usr/share/bin'' ]);');
+    disp('You may as well indicate the McCode executable with e.g. options.mccode=''/usr/local/bin/mccrun''.' );
   else
     disp([ '  McCode          (http://www.mccode.org) as "' present.mccode '"' ]);
   end
@@ -861,4 +869,3 @@ function [dynamic, static] = instrument_get_parameters(info)
       end
     end
   end
-

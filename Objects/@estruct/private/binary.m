@@ -14,15 +14,15 @@ function c = binary(a, b, op, varargin)
 %
 % binary operator may be:
 %   combine conv convn deconv eq ge gt isequal ldivide le lt
-% minus mldivide mpower mrdivide mtimes ne plus power rdivide sqr times xcorr
+%   minus mldivide mpower mrdivide mtimes ne plus power rdivide sqr times xcorr
 %   and or xor
-
-
 %
 % Contributed code (Matlab Central):
 %   genop: Douglas M. Schwarz, 13 March 2006
 %
 % Version: $Date$ $Version$ $Author$
+
+% This file is used by: all binary operators above
 
 % for the estimate of errors, we use the Gaussian error propagation (quadrature rule),
 % or the simpler average error estimate (derivative).
