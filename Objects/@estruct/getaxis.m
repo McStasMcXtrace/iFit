@@ -1,4 +1,4 @@
-function v = getaxis(s,varargin)
+function [v,lab] = getaxis(s,varargin)
 % GETAXIS Get axis definition or value in object.
 %   GETAXIS(a, rank) Get axis value (and follow aliases). This is equivalent to
 %   the syntax a{rank}. The axis rank 0 corresponds with the Signal/Monitor value.
@@ -31,15 +31,16 @@ function v = getaxis(s,varargin)
 % See also estruct, fieldnames, findfield, isfield, set, get, getalias, setalias,
 %   getaxis, setaxis
 
-  if nargin == 1, v = s.Axes; return; end
+  if nargin == 1, v = s.Axes; if nargout > 1, lab = label(s, 1:ndims(s)); end; return; end
 
   % handle array of struct
-  v = {};
+  v = {}; lab={};
   if numel(s) > 1
     for index=1:numel(s)
-      v{end+1} = getaxis(s(index), varargin{:});
+      [v{end+1},lab{end+1}] = getaxis(s(index), varargin{:});
     end
-    v = reshape(v, size(s));
+    v   = reshape(v,   size(s));
+    lab = reshape(lab, size(s));
     return
   end
 
@@ -68,11 +69,13 @@ function v = getaxis(s,varargin)
         if isscalar(name{n_index})
           if strcmp(name{n_index},'0')  % Signal definition
             v{end+1} = builtin('subsref',s, struct('type','.','subs','Signal'));
+
           elseif isfinite(str2num(name{n_index})) && str2num(name{n_index}) <= numel(s.Axes)
             v{end+1} = s.Axes{str2num(name{n_index})};  % get definition in Axes (cell)
           else
             v{end+1} = []; % axis rank beyond dimension of object Signal
           end
+          if nargout > 1, lab{end+1} = label(s, str2num(name{n_index})); end
         elseif strcmp(name{n_index}, 'Signal')
           name{n_index} = 0;  % then will use rank as number=0, not char
           get_mon = true;
@@ -112,6 +115,7 @@ function v = getaxis(s,varargin)
           else % axis rank beyond dimension of object Signal
             v{end+1} = [];
           end
+          if nargout > 1, lab{end+1} = label(s, name{n_index}); end
           if isempty(v{end}) && name{n_index} <= ndims(s)
             if numel(find(size(s)>1)) == 1
               v{end} = 1:prod(size(s));
@@ -138,3 +142,6 @@ function v = getaxis(s,varargin)
     end
   end
   if numel(v) == 1, v = v{1}; end
+  if nargout > 1
+    if numel(lab) == 1, lab=lab{1}; end
+  end

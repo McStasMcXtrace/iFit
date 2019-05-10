@@ -26,7 +26,7 @@ function b = meshgrid(a, varargin)
 
 % handle input iData arrays
 if numel(a) > 1
-  b = zeros(iData, numel(a), 1);
+  b = zeros(estruct, numel(a), 1);
   for index=1:numel(a)
     b(index) = meshgrid(a(index),varargin{:});
   end
@@ -56,7 +56,7 @@ end
 myisvector = @(c)length(c) == numel(c);
 for index=1:ndims(a)
   v = getaxis(a, index);
-  
+
   % compute the initial axis length
   if myisvector(v), a_len = numel(v);
   else            a_len = size( v, index);
@@ -80,7 +80,7 @@ if isvector(a) > 2
 end
 
 % create a regular grid
-[f_axes, changed] = iData_meshgrid(a, n_dims, method);
+[f_axes, changed] = private_meshgrid(a, n_dims, method);
 fillme            = strfind(method, 'fill');
 method            = strtrim(strrep(method, 'vector', ''));
 

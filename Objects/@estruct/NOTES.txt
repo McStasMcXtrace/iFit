@@ -23,6 +23,8 @@ check sum median mean error bar
 ndims: make it work for event data
 mod
 rem
+hist
+fill (fillmissing as in table object)
 
 ------------------------------------------------------------------------
 UNARY:
