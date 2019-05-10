@@ -54,9 +54,9 @@ classdef iFunc_McCode < iFunc
         m = varargin{1};
       else
         % create new McCode model and convert it to iFunc_McCode
-        m = mccode(varargin{:}); 
+        m = mccode(varargin{:});
       end
-      
+
       % from here, we must have either an iFunc or an iFunc_McCode
       if isa(m, mfilename)
         obj = m; obj.class = mfilename;
@@ -64,7 +64,7 @@ classdef iFunc_McCode < iFunc
       elseif ~isa(m, 'iFunc')
         error([ mfilename ': the given input ' class(m) ' does not seem to be convertible to iFunc_McCode.' ])
       end
-      
+
       % check if the McCode subclass is appropriate
       flag = false;
       for t = { 'McCode','McStas',' McXtrace' }'
@@ -75,7 +75,7 @@ classdef iFunc_McCode < iFunc
       if ~flag
         error([ mfilename ': the given iFunc model does not seem to be an McCode flavour object.' ])
       end
-      
+
       % transfer properties
       % this is a safe way to instantiate a subclass
       warning off MATLAB:structOnObject
@@ -84,9 +84,9 @@ classdef iFunc_McCode < iFunc
         obj.(p{1}) = m.(p{1});
       end
       obj.class = mfilename;
- 
+
     end % iFunc_McCode constructor
-    
+
     function f = iFunc(self)
       % iFunc_McCode: iFunc: convert a single iFunc_McCode back to iFunc
       f = iFunc;
@@ -96,10 +96,10 @@ classdef iFunc_McCode < iFunc
       end
       f.class = 'iFunc';
     end
-    
+
     function model_info = info(self)
       % iFunc_McCode: info: return/display model information just as --info
-      
+
       if nargout
         model_info = self.UserData.instrument_info;
       else
@@ -108,7 +108,7 @@ classdef iFunc_McCode < iFunc
         disp(self);
       end
     end
-    
+
     % overloaded feval which prefers to use 'nan' when axes are undefined
     function [signal, self, ax, name] = feval(self, varargin)
       % iFunc_McCode: feval: Evaluate an McCode model value using given parameters and axes.
@@ -135,15 +135,17 @@ classdef iFunc_McCode < iFunc
             end
           end
         end
-          
+        varargin{1}= p;
+        if nargin == 2, varargin{end+1} = nan; end % use 'raw monitor' output
+
         [signal, self, ax, name] = feval@iFunc(self, varargin{:});
       end
       if ~isempty(inputname(1))
         assignin('caller',inputname(1),self); % update in original object
       end
     end % feval (override iFunc)
-    
-    
+
+
     % overloaded inputdlg to display the instrument parameters in a dialogue
     % calls private/mccode_run
     function [v,self] = inputdlg(self)
@@ -154,30 +156,30 @@ classdef iFunc_McCode < iFunc
     % iFunc_McCode: uitable: run a McCode instrument model and request instrument parameters in a dialogue
       [v,self] = dialog(self);
     end
-    
+
     % overloaded edit to edit the instrument code
     function self = edit(self)
       % iFunc_McCode: edit: edit the instrument source description, and re-build the model when modified.
-      
+
       % we display the instrument source code (when not 'out') in TextEdit
       % as a temporary file. We wait for TextEdit to close.
-      
+
       source = self.UserData.instrument_source;
       if ~ischar(source), return; end
-      
+
       d = tempname;
       mkdir(d);
       filename = fullfile(d, self.UserData.options.instrument);
       % write the comtent of the current object in the temporary file
       fid=fopen(filename, 'w');
-      if fid==-1, 
+      if fid==-1,
         warning([ mfilename ': WARNING: model ' self.Name ' ' self.Tag ' could not write ' filename ]);
         return
-      else 
+      else
         fprintf(fid, '%s\n', source);
         fclose(fid);
       end
-      
+
       fig = TextEdit(filename);
       waitfor(fig);
       % get the (updated) source file and create new object
@@ -191,7 +193,7 @@ classdef iFunc_McCode < iFunc
       if numel(source2) > n && ~all(isspace(source2((n+1):end)))
         has_changed = true;
       end
-      
+
       if has_changed
         % compile new object
         self = iFunc_McCode(filename);
@@ -200,7 +202,7 @@ classdef iFunc_McCode < iFunc
         end
       end
     end % edit
-    
+
     % overloaded subplot
     function h = subplot(self, varargin)
       % iFunc_McCode: subplot: plot the instrument simulation results (monitors)
@@ -210,17 +212,17 @@ classdef iFunc_McCode < iFunc
         h = subplot@iFunc(self, varargin{:});
       end
     end % subplot
-    
+
     function [comps, fig, self]=trace(self, varargin)
       % iFunc_McCode/plot: runs the model in --trace mode and capture the output
       % grab all MCDISPLAY lines, and render the TRACE information into a figure (3D geometry view).
       [comps, fig, self]=plot(self, varargin{:});
     end
-    
+
     function disp(self)
       disp@iFunc(self);
       if isfield(self.UserData,'Parameters_Constant') && isstruct(self.UserData.Parameters_Constant)
-        disp('Other Parameters:')
+        disp('Other Parameters (UserData.Parameters_Constant):')
         for f=fieldnames(self.UserData.Parameters_Constant)'
           val = self.UserData.Parameters_Constant.(f{1});
           if ischar(val)
@@ -232,5 +234,5 @@ classdef iFunc_McCode < iFunc
       end
     end
   end
-  
+
 end

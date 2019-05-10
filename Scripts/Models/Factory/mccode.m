@@ -16,6 +16,12 @@ function y = mccode(instr, options, parameters)
 %       list all available instruments in a list for a selection.
 % mccode('defaults')
 %       uses templateDIFF.instr neutron powder diffractometer as example.
+% mccode('check')
+% mccode('check', options)
+%       check for the McStas/McXtrace installation. You can indicate explicitly 
+%       the location of the 'mcrun/mxrun'  command with e.g. 
+%       options.mccode='/usr/local/bin/mcrun'. The 'mcstas' and 'mcrun/mxrun' 
+%       commands should be available.
 % mccode(description, options) also specifies additional McCode options, e.g.
 %   options.dir:         directory where to store results, or set automatically (string)
 %                          the last simulation files are stored therein 'sim'.
