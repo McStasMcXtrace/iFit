@@ -227,11 +227,24 @@ properties
     %      when FIELDS is a character array or cell array of strings.  The
     %      changed structure is returned. The size of input S is preserved.
     %
+    %      S = RMFIELD(S,'all') removes all fields except base ones. The resulting
+    %      object retains metadata, but removes any additional alias/property.
+    %
     %      See also setfield, getfield, isfield, fieldnames.
       if nargin ~= 2, return; end
+      if ischar(f) && strcmp(f, 'all')
+        f = fieldnames(self);
+      end
       if numel(self) == 1
-        if isfield(self, f)
-          delete(findprop(self, f));
+        if ~iscellstr(f), f = cellstr(f); end
+        for index=1:numel(f)
+          if isfield(self, f{index})
+            if ~any(strcmp(f{index}, self.properties_Base)) ...
+            && ~any(strcmp(f{index}, self.properties_Protected)) ...
+            && ~any(strcmp(f{index}, {'Signal','Error','Monitor'}))
+              delete(findprop(self, f{index}));
+            end
+          end
         end
       else
         for index=1:numel(self); rmfield(self(index), f); end
@@ -246,6 +259,9 @@ properties
     %      S = RMALIAS(S,FIELDS) removes more than one field at a time
     %      when FIELDS is a character array or cell array of strings.  The
     %      changed structure is returned. The size of input S is preserved.
+    %
+    %      S = RMFIELD(S,'all') removes all fields except base ones. The resulting
+    %      object retains metadata, but removes any additional alias/property.
     %
     %      See also setalias, getalias, isfield, fieldnames.
 
@@ -402,7 +418,7 @@ properties
       %
       %    ZEROS(S,M,N,P,...) or ZEROS(S,[M N P ...]) is an M-by-N-by-P-by-... array of
       %    empty structures.
-      if nargin == 1, z=estruct; return; end
+      if nargin == 1, z=copyobj(rmfield(self,'all')); return; end
       z = ones(estruct, varargin{:});
     end % zeros
 
