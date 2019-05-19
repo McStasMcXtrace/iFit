@@ -418,6 +418,8 @@ properties
       %
       %    ZEROS(S,M,N,P,...) or ZEROS(S,[M N P ...]) is an M-by-N-by-P-by-... array of
       %    empty structures.
+      %
+      %    ZEROS(S) removes all properties except base ones, and keep metadata.
       if nargin == 1, z=copyobj(rmfield(self,'all')); return; end
       z = ones(estruct, varargin{:});
     end % zeros

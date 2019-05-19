@@ -53,10 +53,9 @@ end
 
 % build new estruct object to hold the result
 if isempty(a), axescheck(a); end % make sure we have something to interpolate (check first)
-b = copyobj(a);
 
 % object check
-if isempty(a), return; end
+if isempty(a), b=a; return; end
 
 % default axes/parameters
 i_axes = cell(1,ndims(a)); i_labels=i_axes;
@@ -109,10 +108,6 @@ for index=1:length(varargin)
   clear c
 end % input arguments parsing
 
-b = history(b, mfilename, a, varargin{:});
-cmd=b.Command;
-clear varargin a
-
 % check for method to be valid
 if ~any(strcmp(method, {'linear','cubic','spline','nearest','v4'}))
   warning([ mfilename ': Interpolation method ' method ' is not supported. Use: linear, cubic, spline, nearest, v4. Defaulting to linear.']);
@@ -123,21 +118,21 @@ end
 
 % test axes and decide to call meshgrid if necessary
 
-if isvector(b) >=2 % event data set: redirect to hist method (accumarray)
+if isvector(a) >=2 % event data set: redirect to hist method (accumarray)
   f_axes = private_meshgrid(f_axes, s_dims, 'vector'); % private function
-  b = hist(b, f_axes{:});
+  b = hist(a, f_axes{:});
   return
 end
 
 % check final axes
-i_dims = size(b); % Signal/object dimensions (initial)
+i_dims = size(a); % Signal/object dimensions (initial)
 f_dims = i_dims;  % Signal/object dimensions (final)
 myisvector = @(c)length(c) == numel(c);
 
 % do we have mixed vector and matrix i_axes initial axes ?
 has_vector = 0;
 has_matrix = 0;
-for index=1:ndims(b)
+for index=1:ndims(a)
   v = f_axes{index};
   if isempty(v), v= i_axes{index}; end % no axis specified, use the initial one
 
@@ -145,8 +140,8 @@ for index=1:ndims(b)
   if myisvector(v), a_len = numel(v); has_vector=1;
   else            a_len = size( v, index); has_matrix=1;
   end
-  if isvector(b) >= 2 && a_len > prod(size(b))^(1/ndims(b))*2 % event data set
-    a_len = prod(size(b))^(1/ndims(b))*2;
+  if isvector(a) >= 2 && a_len > prod(size(a))^(1/ndims(a))*2 % event data set
+    a_len = prod(size(a))^(1/ndims(a))*2;
   end
   if a_len == 1, a_len = 2; end
   f_dims(index) = a_len;
@@ -158,7 +153,7 @@ end
 % do we have mixed vector and matrix f_axes final axes ?
 has_vector = 0;
 has_matrix = 0;
-for index=1:ndims(b)
+for index=1:ndims(a)
   v = f_axes{index};
   if isempty(v), v= i_axes{index}; end % no axis specified, use the initial one
 
@@ -166,8 +161,8 @@ for index=1:ndims(b)
   if myisvector(v), a_len = numel(v); has_vector=1;
   else            a_len = size( v, index); has_matrix=1;
   end
-  if isvector(b) >= 2 && a_len > prod(size(b))^(1/ndims(b))*2 % event data set
-    a_len = prod(size(b))^(1/ndims(b))*2;
+  if isvector(a) >= 2 && a_len > prod(size(a))^(1/ndims(a))*2 % event data set
+    a_len = prod(size(a))^(1/ndims(a))*2;
   end
   if a_len == 1, a_len = 2; end
   f_dims(index) = a_len;
@@ -183,7 +178,7 @@ end
 % test if interpolation axes have changed w.r.t input object (for possible quick exit)
 has_changed = 0;
 
-for index=1:ndims(b)
+for index=1:ndims(a)
   this_i = i_axes{index}; if myisvector(this_i), this_i=this_i(:); end
   this_f = f_axes{index}; if myisvector(this_f), this_f=this_f(:); end
   if ~isequal(this_i, this_f)
@@ -202,11 +197,12 @@ for index=1:ndims(b)
 end
 
 % get Signal, error and monitor.
-i_signal = subsref(b,struct('type','.','subs','Signal'));
+i_signal = subsref(a,struct('type','.','subs','Signal'));
 
 % quick exit check based on the Signal
 if any(isnan(i_signal(:))), has_changed=1; end
 if ~has_changed && ~requires_meshgrid
+  b = a;
   return;
 end
 
@@ -220,7 +216,7 @@ end
 % prepare interpolation Signal, Error, Monitor ---------------------------------
 i_class    = class(i_signal); i_signal = double(i_signal);
 
-i_error = getalias(b, 'Error');
+i_error = getalias(a, 'Error');
 if ~isempty(i_error),
   % check if Error is sqrt(Signal) or a constant
   if strcmp(i_error, 'sqrt(this.Signal)')
@@ -229,30 +225,30 @@ if ~isempty(i_error),
     % keep that as a constant value
   else
     % else get the value
-    i_error  = subsref(b,struct('type','.','subs','Error'));
+    i_error  = subsref(a,struct('type','.','subs','Error'));
   end
   i_error    = double(i_error);
 end
 
-i_monitor = getalias(b, 'Monitor');
+i_monitor = getalias(a, 'Monitor');
 if ~isempty(i_monitor),
   % check if Monitor is 1 or a constant
   if isnumeric(i_monitor) && isscalar(i_monitor) == 1
     % keep that as a constant value
   else
     % else get the value
-    i_monitor  =subsref(b,struct('type','.','subs','Monitor'));
+    i_monitor  =subsref(a,struct('type','.','subs','Monitor'));
   end
   i_monitor    = double(i_monitor);
 end
 
 % check f_axes vector orientation
-for index=1:ndims(b)
+for index=1:ndims(a)
   i_axes{index} = double(i_axes{index});
   f_axes{index} = double(f_axes{index});
   if myisvector(f_axes{index})
     % orient the vector along the dimension
-    n = ones(1,ndims(b));
+    n = ones(1,ndims(a));
     n(index) = numel(f_axes{index});
     if length(n) == 1, n=[ n 1]; end
     f_axes{index}=reshape(f_axes{index},n);
@@ -261,7 +257,7 @@ end
 
 % make sure input axes are monotonic. output axes should be OK ------------
 i_nonmonotonic=0;
-for index=1:ndims(b)
+for index=1:ndims(a)
   dif = diff(i_axes{index},1,index);
   if all(dif(:) < 0) || all(dif(:) >= 0), continue; end
   i_nonmonotonic=index; break;
@@ -270,7 +266,7 @@ end
 if i_nonmonotonic && length(i_axes) > 1
   % transform the initial data into individual points, then interpolate on
   % a regular grid
-  i_axes_new  = private_meshgrid(i_axes, size(b));
+  i_axes_new  = private_meshgrid(i_axes, size(a));
   % must make sure initial axes given as vector have same length as signal
   flag_ndgrid_needed = 0;
   for index=1:length(i_axes)
@@ -310,11 +306,11 @@ end
 
 % last test to check if axes have changed ---------------------------------
 has_changed = 0;
-for index=1:ndims(b)    % change to double before interpolation
+for index=1:ndims(a)    % change to double before interpolation
   i_axes{index}=double(i_axes{index});
   f_axes{index}=double(f_axes{index});
 end
-for index=1:ndims(b)
+for index=1:ndims(a)
   x = i_axes{index}; x=x(:)';
   if ~isequal(i_axes{index}, f_axes{index})
     has_changed = 1;
@@ -322,12 +318,12 @@ for index=1:ndims(b)
   end
 end
 if ~has_changed,
-  return;
+  b=a; return;
 end
 
 % interpolation takes place here ------------------------------------------
 [f_signal, meth] = private_interp(i_axes, i_signal, f_axes, method);
-if isscalar(f_signal), return; end % single scalar value
+if isscalar(f_signal), b=a; return; end % single scalar value
 
 if isnumeric(i_error) && length(i_error) > 1,
      f_error = private_interp(i_axes, i_error,  f_axes, method);
@@ -354,43 +350,14 @@ end
 clear i_signal
 
 % transfer Data and Axes --------------------------------------------------
-b.Data.Signal =f_signal;  clear f_signal
-b.Data.Error  =f_error;   clear f_error
-b.Data.Monitor=f_monitor; clear f_monitor
+b = zeros(a);  % new object derived from 'a'
+set(b, 'Signal' , f_signal);  clear f_signal
+set(b, 'Error',   f_error);   clear f_error
+set(b, 'Monitor', f_monitor); clear f_monitor
 for index=1:length(f_axes)
-  b.Data.([ 'axis' num2str(index) ]) = f_axes{index};
+  set(b, [ 'axis' num2str(index) ], f_axes{index});
+  setaxis(b, index, [ 'axis' num2str(index) ]);
 end
+setalias(b, 'Interpolation', meth, 'Interpolation method used');
+history(b, mfilename, a, varargin{:});
 
-
-return
-
-% update new aliases, but remove old axes which are numeric (to free memory)
-g = getalias(b);
-to_remove=[];
-for index=4:length(g)
-  if any(strcmp(g{index}, b.Alias.Axis))
-    if isnumeric(b.Alias.Values{index})
-      to_remove=[ to_remove index ];
-    end
-  end
-end
-b.Alias.Values(to_remove) = [];
-b.Alias.Names(to_remove)  = [];
-b.Alias.Labels(to_remove) = [];
-setalias(b,'Signal', 'Data.Signal');
-setalias(b,'Error',  'Data.Error');
-setalias(b,'Monitor','Data.Monitor');
-setalias(b,'Interpolation',meth,'Interpolation method used');
-
-% clear axes
-rmaxis (b);
-
-for index=1:length(f_axes)
-  if index <= length(i_labels)
-    b=setalias(b,[ 'axis' num2str(index) ], [ 'Data.axis' num2str(index) ], i_labels{index});
-  else
-    b=setalias(b,[ 'axis' num2str(index) ], [ 'Data.axis' num2str(index) ]);
-  end
-  b=setaxis (b, index, [ 'axis' num2str(index) ]);
-end
-b.Command=cmd;

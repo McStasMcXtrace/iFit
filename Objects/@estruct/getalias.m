@@ -18,7 +18,7 @@ function s = getalias(self, varargin)
 %   extracted on-the-fly. In case the URL/file resource contains 'sections' a search token
 %   can be specified with syntax such as 'file://filename#token'.
 %
-%   GETALIAS(S) displays all object properties defines as strings.
+%   GETALIAS(S) displays all object properties defined as strings.
 %
 %   GETALIAS(s, 'PropertyName1', 'PropertyName2', ...) return multiple aliases.
 %
