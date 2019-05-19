@@ -11,6 +11,15 @@ function tf = isfield(self, f)
   %   isstruct, estruct.
     tf=false;
     if nargin < 2, f=''; end
+    % handle case for multiple field names
+    if numel(self) == 1 && iscellstr(f)
+      tf = logical(zeros(size(f)));
+      for index=1:numel(f)
+        tf(index) = isfield(self, f{index});
+      end
+      return
+    end
+    
     if isempty(f) || (~ischar(f) && ~iscellstr(f)), return; end
     if numel(self) == 1
       if any(f == '.') % compound field: we search with findfield
