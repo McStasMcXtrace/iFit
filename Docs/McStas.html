@@ -107,6 +107,7 @@
 
 
 
+
       provides all <a href="iFunc.html">iFunc</a> methods, but also
       specific methods adapted to McCode simulations:<br>
       <ul>
@@ -277,6 +278,7 @@
 
 
 
+
             as mccode('defaults')</i></li>
       </ul>
       In order to improve the computational efficiency, it is advised to
@@ -303,6 +305,7 @@
       which in both cases will select monitor files which <i>match</i>
       the given string as an exact file name or match the pattern when
       using a wildcard expression ( <font color="#cc33cc">'*Theta*' </font>).
+
 
 
 
@@ -338,6 +341,7 @@
 
 
 
+
       (which are <a href="iData.html">iData</a> object(s)), such as in
       the following example where we sum all selected monitors from the
       pattern (when more than one are found), and define the criteria as
@@ -350,6 +354,7 @@
       <ul>
         <li>model=<font color="#3366ff">mccode</font>(<font
             color="#cc33cc">'templateDIFF'</font>,<font color="#cc33cc">'monitor=<b>"</b>*Theta*
+
 
 
 
@@ -384,10 +389,11 @@
       Under Windows, it is usually required to specify the name of the
       compiler and the McStas executables. This boils down to:<br>
       <ol>
-        <li>Edit the Environment variable <b>'Path'</b> (Control
-          Panel/System) and add to it e.g.<i> 'C:\mcstas-2.5\bin'</i>.</li>
-        <li>Create an Environment variable <b>'MCSTAS_CC'</b> with
-          value e.g. <i>'gcc'</i>.</li>
+        <li>Edit the System Environment variable <b>'Path'</b> (Control
+          Panel/System) and add to it e.g.<i> 'C:\mcstas-2.5\bin'</i>.<br>
+        </li>
+        <li>Create a new System Environment variable <b>'MCSTAS_CC'</b>
+          with value e.g. <i>'gcc'</i>.</li>
         <li>It may be needed to also specify the McStas/McXtrace
           executable as <i>options.mccode='</i><i>C:\mcstas-2.5\bin\mcrun.pl'</i></li>
         <li>When not using MPI, the instrument should be created with <i>options.mpi=1</i>
@@ -428,6 +434,7 @@
 
 
 
+
             parameters);</li>
         </ul>
       </div>
@@ -443,6 +450,7 @@
           <li>model= <font color="#3366ff">mccode</font>(<font
               color="#cc33cc">'templateDIFF'</font>);</li>
           <li> <font color="#3366ff"><font color="#000000">value = </font>iData</font>(model,
+
 
 
 
@@ -614,6 +622,7 @@ of
 
 
 
+
       iterations required to scan large dimensionality spaces. In
       practice you should avoid spaces above 2 or 3 scanned parameters.
       Exceeding this will undoubtedly require very long computation
@@ -680,6 +689,7 @@ of
 
 
 
+
       else the optimizer can get lost, produce un-meaningful results, or
       return <span style="font-style: italic;">NaN</span> parameter
       values.<br>
@@ -704,6 +714,7 @@ of
             style="color: rgb(204, 51, 204);">'final';</span></li>
         <li><span style="color: rgb(204, 51, 204);"><span style="color:
               rgb(0, 0, 0);"><span style="font-weight: bold;">options.OutputFcn</span>=</span>'fminplot';
+
 
 
 
@@ -770,6 +781,7 @@ of
 
 
 
+
       methods</a>, the optimizer final status and optional returned
     information can be obtained with e.g.&nbsp;
     <pre style="margin-left: 40px;">&gt;&gt; model = <span style="color: rgb(51, 102, 255);">mccode</span>(<span style="color: rgb(204, 51, 204);">'templateDIFF'</span>,<font color="#cc33cc">'monitor=*Theta*'</font>);	% monitor contains 'Theta'<br>&gt;&gt; <font color="#3366ff">fix</font>(model, <font color="#cc33cc">'all'</font>); 				% fix all but RV L2<br>&gt;&gt; model.RV=<font color="#cc33cc">'free'</font>; model.RV=[0.5 0.8 1.5];	% set RV bounds and value in a single assignment<br>&gt;&gt; model.L2=<font color="#cc33cc">'free'</font>; model.L2=[1 3 4];<br>&gt;&gt; [parameters, fval, <span style="color: rgb(255, 0, 0);">status, output</span>]=<span style="color: rgb(51, 102, 255);">fmax</span>(model<span style="color: rgb(204, 51, 204);"></span>,<span style="color: rgb(51, 102, 255);">[], </span><span style="color: rgb(204, 51, 204);">'optimizer=fminimfil; OutputFcn=fminplot'</span>, <b>nan</b>);</pre>
@@ -794,10 +806,12 @@ of
 
 
 
+
     </span>and<span style="font-style: italic;"> </span><span
       style="font-style: italic;">output.parsHessianUncertainty</span>.<br>
     <br>
     To abort the optimization, just <span style="font-weight: bold;">close
+
 
 
 
@@ -847,6 +861,7 @@ of
 
 
 
+
     <a href="http://www.mcstas.org">McStas</a>/McXtrace use a
     Monte-Carlo technique (which means 'random'), the criteria is a
     noisy function. The stop conditions must then usually be quite
@@ -858,6 +873,7 @@ of
     recommend to constrain parameter ranges (<span style="color:
       rgb(255, 0, 0);">see <a href="#mozTocId359721">below</a></span>).
     Also, increasing the<span style="font-style: italic;"> 'ncount' </span>(which
+
 
 
 
@@ -931,6 +947,7 @@ of
 
 
 
+
         file_out, lambda, mode, verbose)</li>
     </ul>
     The iFit version can use as first argument <b>'file_in'</b>:<br>
@@ -940,6 +957,7 @@ of
       <li>a CFL file (FullProf)</li>
       <li>a INS/SHX/RES file (ShelX)</li>
       <li>a chemical formula with syntax e.g. <font color="#cc33cc">'cod:
+
 
 
 
@@ -1041,6 +1059,7 @@ of
           <td valign="top">a <a href="Models.html#mozTocId677670">simple
 
 
+
               acoustic branch</a> ranging up to 20 meV<br>
           </td>
         </tr>
@@ -1048,9 +1067,11 @@ of
           <td valign="top">s = <font color="#3366ff">sqw_sine3d</font>([
 
 
+
             15 20 ]);<br>
           </td>
           <td valign="top">a <a href="Models.html#mozTocId677670">simple
+
 
 
               optic branch </a>oscillating from 15 to 20 meV<br>
@@ -1349,6 +1370,7 @@ of
           important; float: none;">inc = <font color="#3366ff">incoherent</font>(g,
 
 
+
           <font color="#cc33cc">'T'</font>, 10, <font color="#cc33cc">'DW'</font>,
           0.05); <i>% all multi-phonon terms, to be summed-up</i></span></li>
       <li><span style="color: rgb(0, 0, 0); font-size: medium;
@@ -1376,6 +1398,7 @@ of
     procedure is as follows:<br>
     <ol>
       <li>First convert the input trajectory into a NetCDF file (<i>MDANSE/File/Trajectory
+
 
 
           converters</i> menu). </li>
@@ -1447,6 +1470,7 @@ of
           important; float: none;">inc = <font color="#3366ff">incoherent</font>(g,
 
 
+
           <font color="#cc33cc">'T'</font>, 10, <font color="#cc33cc">'DW'</font>,
           0.05); <i>% all multi-phonon terms, to be summed-up</i></span></li>
       <li><span style="color: rgb(0, 0, 0); font-size: medium;
@@ -1491,6 +1515,7 @@ of
 
 
 
+
       component: coherent and incoherent scattering from a single
       crystal</h4>
     The <i>Single_crystal_inelastic</i> component is an experimental
@@ -1517,6 +1542,7 @@ of
     <div style="text-align: center;">
       <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
+
 
 
 
