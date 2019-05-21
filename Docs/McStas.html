@@ -106,6 +106,7 @@
 
 
 
+
       provides all <a href="iFunc.html">iFunc</a> methods, but also
       specific methods adapted to McCode simulations:<br>
       <ul>
@@ -163,7 +164,7 @@
         <pre>&gt;&gt;  <span style="color: rgb(51, 102, 255);">mccode</span>(<span style="color: rgb(204, 51, 204);">'instrument'</span>, options)</pre>
       </blockquote>
       and the following options:<br>
-      <table cellspacing="2" cellpadding="2" width="100%" border="1">
+      <table border="1" cellpadding="2" cellspacing="2" width="100%">
         <tbody>
           <tr>
             <td valign="top"><b>options.dir</b></td>
@@ -224,6 +225,15 @@
             <td valign="top">0 or 1 to force re-compilation of the
               executable.</td>
           </tr>
+          <tr>
+            <td valign="top"><b>options.mccode</b><br>
+            </td>
+            <td valign="top">set the executable path to 'mcrun'
+              (default, neutrons) or 'mxrun' (xrays). The command should
+              be accessible in the system executable PATH. A full path
+              name can also be specified.<br>
+            </td>
+          </tr>
         </tbody>
       </table>
       &nbsp;<br>
@@ -266,6 +276,7 @@
 
 
 
+
             as mccode('defaults')</i></li>
       </ul>
       In order to improve the computational efficiency, it is advised to
@@ -279,8 +290,8 @@
               McStas: evolution of a monitor"
               src="images/iFit_McStas_Monitor_scan.png" alt="iFit:
               McStas: evolution of a monitor" style="border: 0px solid ;
-              width: 200px; height: 177px;" height="503" align="right"
-              width="568" border="0"></a></li>
+              width: 200px; height: 177px;" align="right" border="0"
+              height="503" width="568"></a></li>
       </ul>
       or afterwards:<br>
       <ul>
@@ -292,6 +303,7 @@
       which in both cases will select monitor files which <i>match</i>
       the given string as an exact file name or match the pattern when
       using a wildcard expression ( <font color="#cc33cc">'*Theta*' </font>).
+
 
 
 
@@ -325,6 +337,7 @@
 
 
 
+
       (which are <a href="iData.html">iData</a> object(s)), such as in
       the following example where we sum all selected monitors from the
       pattern (when more than one are found), and define the criteria as
@@ -337,6 +350,7 @@
       <ul>
         <li>model=<font color="#3366ff">mccode</font>(<font
             color="#cc33cc">'templateDIFF'</font>,<font color="#cc33cc">'monitor=<b>"</b>*Theta*
+
 
 
 
@@ -365,6 +379,20 @@
       standalone version, no Matlab license is needed. To use all the
       CPU cores, you need to have installed an MPI library, e.g.
       OpenMPI.<br>
+      <br>
+      <b><i>Windows systems</i></b><br>
+      Under Windows, it is usually required to specify the name of the
+      compiler and the McStas executables. This boils down to:<br>
+      <ol>
+        <li>Edit the Environment variable <b>'Path'</b> (Control
+          Panel/System) and add to it e.g.<i> 'C:\mcstas-2.5\bin'</i>.</li>
+        <li>Create an Environment variable <b>'MCSTAS_CC'</b> with
+          value e.g. <i>'gcc'</i>.</li>
+        <li>It may be needed to also specify the McStas/McXtrace
+          executable as <i>options.mccode='</i><i>C:\mcstas-2.5\bin\mcrun.pl'</i></li>
+        <li>When not using MPI, the instrument should be created with <i>options.mpi=1</i>
+          or <i>options.mpirun='none'</i>.</li>
+      </ol>
       <h3><a class="mozTocH3" name="mozTocId234815"></a>Running a single
         simulation</h3>
       The model value is corresponds with the 'options.monitor'
@@ -388,6 +416,7 @@
           <li> parameters.RV=1;</li>
           <li> parameters.lambda=2.36;</li>
           <li> <font color="#3366ff"><font color="#000000">value = </font>iData</font>(model,
+
 
 
 
@@ -425,6 +454,7 @@
 
 
 
+
             <font color="#cc33cc">'RV=1; lambda=2.36'</font>, nan)&nbsp;
             <i>% the last monitor</i><br>
           </li>
@@ -440,8 +470,8 @@
                 title="iFit: McStas: evolution of a monitor"
                 src="images/iFit_McStas_Monitor_scan.png" alt="iFit:
                 McStas: evolution of a monitor" style="border: 0px solid
-                ; width: 200px; height: 177px;" height="503"
-                align="right" width="568" border="0"></a></li>
+                ; width: 200px; height: 177px;" align="right" border="0"
+                height="503" width="568"></a></li>
           <li>model.UserData.monitors<br>
           </li>
         </ul>
@@ -452,8 +482,8 @@
           <li><font color="#3366ff">subplot</font>(model.UserData.monitors)<a
               href="images/iFit_McStas_simulate.png"><img
                 alt="iFit_McStas_simulate" title="iFit_McStas_simulate"
-                src="images/iFit_McStas_simulate.png" height="186"
-                align="right" width="200" border="0"></a></li>
+                src="images/iFit_McStas_simulate.png" align="right"
+                border="0" height="186" width="200"></a></li>
         </ul>
         You can equally set the non numerical scalar parameters (e.g.
         strings and integers):<br>
@@ -480,8 +510,8 @@
         To display the instrument geometry, use the syntax:<a
           href="images/iFit_McStas_plot_geometry.png"><img
             alt="McStas_plot_geometry" title="McStas_plot_geometry"
-            src="images/iFit_McStas_plot_geometry.png" height="180"
-            align="right" width="200" border="0"></a><br>
+            src="images/iFit_McStas_plot_geometry.png" align="right"
+            border="0" height="180" width="200"></a><br>
         <pre style="margin-left: 40px;">&gt;&gt; model = <font color="#3366ff">mccode</font>(<font color="#cc33cc">'defaults'</font>)<br>&gt;&gt; <span style="color: rgb(51, 102, 255);">plot</span>(model<span style="color: rgb(204, 51, 204);"></span>);</pre>
         which open a geometrical representation of the instrument. The
         current model parameters are used. It can be given as well a set
@@ -545,7 +575,7 @@
         <pre>&gt;&gt; catenated = <font color="#3366ff">cat</font>(scan, 2);</pre>
       </blockquote>
       <pre style="margin-left: 40px;"><a href="images/iFit_McStas_scan2D_integral.png"><img title="iFit:          MsCtas scan: ploting the integral monitor value" src="images/iFit_McStas_scan2D_integral.png" alt="iFit: MsCtas          scan: ploting the integral monitor value" style="border: 0px
-          solid ; width: 200px; height: 177px;" height="503" align="right" width="568" border="0"></a></pre>
+          solid ; width: 200px; height: 177px;" align="right" border="0" height="503" width="568"></a></pre>
       Multidimensional scans are also possible. In the following
       example, we launch a quick 2D scan with parameters specified as a
       structure:<br>
@@ -565,6 +595,7 @@ of
 the
 number
 of
+
 
 
 
@@ -648,6 +679,7 @@ of
 
 
 
+
       else the optimizer can get lost, produce un-meaningful results, or
       return <span style="font-style: italic;">NaN</span> parameter
       values.<br>
@@ -672,6 +704,7 @@ of
             style="color: rgb(204, 51, 204);">'final';</span></li>
         <li><span style="color: rgb(204, 51, 204);"><span style="color:
               rgb(0, 0, 0);"><span style="font-weight: bold;">options.OutputFcn</span>=</span>'fminplot';
+
 
 
 
@@ -736,6 +769,7 @@ of
 
 
 
+
       methods</a>, the optimizer final status and optional returned
     information can be obtained with e.g.&nbsp;
     <pre style="margin-left: 40px;">&gt;&gt; model = <span style="color: rgb(51, 102, 255);">mccode</span>(<span style="color: rgb(204, 51, 204);">'templateDIFF'</span>,<font color="#cc33cc">'monitor=*Theta*'</font>);	% monitor contains 'Theta'<br>&gt;&gt; <font color="#3366ff">fix</font>(model, <font color="#cc33cc">'all'</font>); 				% fix all but RV L2<br>&gt;&gt; model.RV=<font color="#cc33cc">'free'</font>; model.RV=[0.5 0.8 1.5];	% set RV bounds and value in a single assignment<br>&gt;&gt; model.L2=<font color="#cc33cc">'free'</font>; model.L2=[1 3 4];<br>&gt;&gt; [parameters, fval, <span style="color: rgb(255, 0, 0);">status, output</span>]=<span style="color: rgb(51, 102, 255);">fmax</span>(model<span style="color: rgb(204, 51, 204);"></span>,<span style="color: rgb(51, 102, 255);">[], </span><span style="color: rgb(204, 51, 204);">'optimizer=fminimfil; OutputFcn=fminplot'</span>, <b>nan</b>);</pre>
@@ -759,10 +793,12 @@ of
 
 
 
+
     </span>and<span style="font-style: italic;"> </span><span
       style="font-style: italic;">output.parsHessianUncertainty</span>.<br>
     <br>
     To abort the optimization, just <span style="font-weight: bold;">close
+
 
 
 
@@ -810,6 +846,7 @@ of
 
 
 
+
     <a href="http://www.mcstas.org">McStas</a>/McXtrace use a
     Monte-Carlo technique (which means 'random'), the criteria is a
     noisy function. The stop conditions must then usually be quite
@@ -821,6 +858,7 @@ of
     recommend to constrain parameter ranges (<span style="color:
       rgb(255, 0, 0);">see <a href="#mozTocId359721">below</a></span>).
     Also, increasing the<span style="font-style: italic;"> 'ncount' </span>(which
+
 
 
 
@@ -846,8 +884,8 @@ of
       href="images/iFit_McStas_optimize.png"><img
         src="images/iFit_McStas_optimize.png" alt="iFit: McStas wrapper:
         dynamic optimization evolution" style="border: 0px solid ;
-        width: 200px; height: 190px;" height="483" align="right"
-        width="508" border="0"></a>
+        width: 200px; height: 190px;" align="right" border="0"
+        height="483" width="508"></a>
     <ul>
       <li><font color="#3366ff">xlim</font>(model, <font
           color="#cc33cc">'par'</font>, [min max])</li>
@@ -892,6 +930,7 @@ of
       <li>[file_out, result] = <font color="#3366ff">cif2hkl</font>(file_in,
 
 
+
         file_out, lambda, mode, verbose)</li>
     </ul>
     The iFit version can use as first argument <b>'file_in'</b>:<br>
@@ -901,6 +940,7 @@ of
       <li>a CFL file (FullProf)</li>
       <li>a INS/SHX/RES file (ShelX)</li>
       <li>a chemical formula with syntax e.g. <font color="#cc33cc">'cod:
+
 
 
           La Mn O3'</font> (Hill notation)</li>
@@ -987,7 +1027,7 @@ of
     <br>
     We first create a 4D S(q,w) model, such as:<br>
     <br>
-    <table cellspacing="2" cellpadding="2" width="100%" border="1">
+    <table border="1" cellpadding="2" cellspacing="2" width="100%">
       <tbody>
         <tr>
           <td valign="top"><u><i>Command to generate a S(hklw) 4D model</i></u><u><i><br>
@@ -1000,15 +1040,18 @@ of
           </td>
           <td valign="top">a <a href="Models.html#mozTocId677670">simple
 
+
               acoustic branch</a> ranging up to 20 meV<br>
           </td>
         </tr>
         <tr>
           <td valign="top">s = <font color="#3366ff">sqw_sine3d</font>([
 
+
             15 20 ]);<br>
           </td>
           <td valign="top">a <a href="Models.html#mozTocId677670">simple
+
 
               optic branch </a>oscillating from 15 to 20 meV<br>
           </td>
@@ -1305,6 +1348,7 @@ of
           initial; text-decoration-color: initial; display: inline !
           important; float: none;">inc = <font color="#3366ff">incoherent</font>(g,
 
+
           <font color="#cc33cc">'T'</font>, 10, <font color="#cc33cc">'DW'</font>,
           0.05); <i>% all multi-phonon terms, to be summed-up</i></span></li>
       <li><span style="color: rgb(0, 0, 0); font-size: medium;
@@ -1332,6 +1376,7 @@ of
     procedure is as follows:<br>
     <ol>
       <li>First convert the input trajectory into a NetCDF file (<i>MDANSE/File/Trajectory
+
 
           converters</i> menu). </li>
       <li>Then open that file. </li>
@@ -1401,6 +1446,7 @@ of
           initial; text-decoration-color: initial; display: inline !
           important; float: none;">inc = <font color="#3366ff">incoherent</font>(g,
 
+
           <font color="#cc33cc">'T'</font>, 10, <font color="#cc33cc">'DW'</font>,
           0.05); <i>% all multi-phonon terms, to be summed-up</i></span></li>
       <li><span style="color: rgb(0, 0, 0); font-size: medium;
@@ -1444,6 +1490,7 @@ of
     <h4><a class="mozTocH4" name="mozTocId36233"></a>Single_crystal_inelastic
 
 
+
       component: coherent and incoherent scattering from a single
       crystal</h4>
     The <i>Single_crystal_inelastic</i> component is an experimental
@@ -1470,6 +1517,7 @@ of
     <div style="text-align: center;">
       <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
+
 
 
 
