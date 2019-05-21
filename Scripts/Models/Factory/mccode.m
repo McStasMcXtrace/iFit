@@ -18,9 +18,9 @@ function y = mccode(instr, options, parameters)
 %       uses templateDIFF.instr neutron powder diffractometer as example.
 % mccode('check')
 % mccode('check', options)
-%       check for the McStas/McXtrace installation. You can indicate explicitly 
-%       the location of the 'mcrun/mxrun'  command with e.g. 
-%       options.mccode='/usr/local/bin/mcrun'. The 'mcstas' and 'mcrun/mxrun' 
+%       check for the McStas/McXtrace installation. You can indicate explicitly
+%       the location of the 'mcrun/mxrun'  command with e.g.
+%       options.mccode='/usr/local/bin/mcrun'. The 'mcstas' and 'mcrun/mxrun'
 %       commands should be available.
 % mccode(description, options) also specifies additional McCode options, e.g.
 %   options.dir:         directory where to store results, or set automatically (string)
@@ -314,7 +314,12 @@ elseif ~isempty(info)
 else
   disp([ mfilename ': WARNING: No information could be retrieved from ' options.instrument ]);
 end
-[fid, message] = fopen(exe, 'r');
+[fid, message] = fileattrib(exe);
+if     ~fid || ~isstruct(message), fid=-1;
+elseif isfield(message,'UserExecute') && ~message.UserExecute, fid=-1; end
+if fid == 1
+  [fid, message] = fopen(exe, 'r');
+end
 if fid == -1
   disp(message);
   disp(info);
@@ -564,7 +569,7 @@ function present = mccode_check(options)
     for ext={'','.pl','.py','.exe','.out'}
       % look for executable and test with various extensions
       [status, result] = system([ precmd totest{1} ext{1} ]); % usually 127 indicates 'command not found'
-      if any(status == [ 0 1 255]) && (~ispc || isempty(strfind(result, [ '''' totest{1} ext{1} '''' ])))
+      if any(status == [ -1 1 255]) && (~ispc || isempty(strfind(result, [ '''' totest{1} ext{1} '''' ])))
         present.mccode = [ totest{1} ext{1} ];
         break
       end
@@ -574,9 +579,10 @@ function present = mccode_check(options)
   if isempty(present.mccode)
     disp([ mfilename ': WARNING: ' options.mccode ' McStas/McXtrace executable is not installed. Get it at www.mccode.org' ]);
     disp('  The model can still be created if the instrument is given as an executable.')
-    disp('You may try "mccode check" after extending the PATH with e.g.')
+    disp('You may try "mccode check" after extending the PATH to the MCSTAS executable location with e.g.')
     disp('  setenv(''PATH'', [getenv(''PATH'') '':/usr/local/bin'' '':/usr/bin'' '':/usr/share/bin'' ]);');
     disp('You may as well indicate the McCode executable with e.g. options.mccode=''/usr/local/bin/mccrun''.' );
+    disp('It may also be required so set the MCSTAS_CC environment variable to an active C compiler.')
   else
     disp([ '  McCode          (http://www.mccode.org) as "' present.mccode '"' ]);
   end
@@ -586,12 +592,34 @@ function present = mccode_check(options)
   for calc={options.mpirun, 'mpirun', 'mpiexec'}
     % now test executable
     [st,result]=system([ precmd 'echo "0" | ' calc{1} ]);
-    if any(st == 0:2) && (~ispc || isempty(strfind(result, [ '''' calc{1} '''' ])))
+    if any(st == [ -1 0:2 ]) && (~ispc || isempty(strfind(result, [ '''' calc{1} '''' ])))
         present.mpirun=calc{1};
         st = 0;
         disp([ '  MPI             (http://www.openmpi.org) as "' present.mpirun '"' ]);
         break;
     end
+  end
+
+  % test for C compiler
+  present.cc = '';
+  for try_cc={getenv('CC'),'cc','gcc','ifc','pgcc','clang','tcc'}
+    if ~isempty(try_cc{1})
+      [status, result] = system([ precmd try_cc{1} ]);
+      if status == 4 || ~isempty(strfind(result,'no input file'))
+        present.cc = try_cc{1};
+        disp([ '  CC              C compiler as "' present.cc '"' ]);
+        break;
+      end
+    end
+  end
+  if isempty(present.cc)
+    disp([ mfilename ': ERROR: C compiler is not available from PATH:' ])
+    disp(getenv('PATH'))
+    disp([ mfilename ': You may have to extend the PATH with e.g.' ])
+    disp('setenv(''PATH'', [getenv(''PATH'') '':/usr/local/bin'' '':/usr/bin'' '':/usr/share/bin'' ]);');
+
+    warning('%s: Can''t find a valid C compiler. Install any of: gcc, ifc, pgcc, clang, tcc\n', ...
+    mfilename);
   end
 
 % ------------------------------------------------------------------------------
@@ -748,13 +776,14 @@ function [info, exe] = instrument_get_info(executable)
 
   [p,f,e] = fileparts(executable);
 
-  for name={executable, fullfile(p,f), f, [ f e ], fullfile('.',f), fullfile('.',[ f e])}
+  for name={ fullfile(p,f), f,  fullfile('.',f) }
     for ext={'','.out','.exe'}
+      if isempty(dir([ name{1} ext{1} ])), continue; end
       for opt={' --info',' --help',' -h'}
         % look for executable and test with various extensions
         exe = [ name{1} ext{1} ];
         [status, result] = system([ precmd exe opt{1} ]);
-        if (status == 0 || status == 255)
+        if any(status == [ -1 0 255 ])
           info = result;
           return
         end
@@ -788,7 +817,7 @@ function result = instrument_compile(options)
   end
 
   % stop if compilation fails...
-  if (status ~= 0 && status ~= 255)
+  if ~any(status == [ -1 0 255 ])
     disp(result);
     error([ mfilename ': ERROR: failed compilation of ' options.instrument ]);
   end
