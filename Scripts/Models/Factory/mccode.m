@@ -267,7 +267,7 @@ end
 options.instrument = fullfile(options.dir,[f e]);
 
 if isfield(options, 'mpi') && options.mpi <= 1
-  options.mpirun = 'none'; % no MPI needed
+  options.mpirun = ''; % no MPI needed
 end
 if isempty(options.mpirun)
   options.mpirun = mccode_present.mpirun; % get MPIRUN from system
@@ -564,9 +564,9 @@ function present = mccode_check(options)
   else           precmd = ''; end
 
   present.mccode = '';
-  for totest = { options.mccode, 'mcrun','mxrun' }
+  for totest = { options.mccode, 'mcrun-pl','mxrun-pl','mcrun','mxrun' }
     if ~isempty(present.mccode), break; end
-    for ext={'','.pl','.py','.exe','.out'}
+    for ext={'','.pl','.py','.bat','.exe','.out'}
       % look for executable and test with various extensions
       [status, result] = system([ precmd totest{1} ext{1} ]); % usually 127 indicates 'command not found'
       if any(status == [ -1 1 255]) && (~ispc || isempty(strfind(result, [ '''' totest{1} ext{1} '''' ])))
