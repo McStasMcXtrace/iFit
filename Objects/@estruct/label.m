@@ -93,7 +93,7 @@ end
 % ------------------------------------------------------------------------------
 function [labl, alias] = label_single(this, alias, value, n)
   % a single set/get for alias
-  labl = '';
+  labl = ''; tmp='';
   if isnumeric(alias) || isfinite(str2double(alias)) % rank is given -> replace by corresponding alias
     tmp = getaxis(this, num2str(alias)); % this is the definition of axis rank
     if isempty(tmp) && alias == 0
