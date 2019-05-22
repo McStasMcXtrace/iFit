@@ -420,7 +420,7 @@ properties
       %    empty structures.
       %
       %    ZEROS(S) removes all properties except base ones, and keep metadata.
-      if nargin == 1, z=copyobj(rmfield(self,'all')); return; end
+      if nargin == 1, z=rmfield(copyobj(self),'all'); return; end
       z = ones(estruct, varargin{:});
     end % zeros
 
