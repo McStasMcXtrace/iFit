@@ -37,7 +37,6 @@ s = a.Command;
 if nargout == 0 || nargout == 2
   T   = a.Name;
   if isempty(T), T = title(a); end
-  if isempty(T), T = getaxis(a, '0'); end
   if iscell(T) && ~isempty(T),  T=T{1}; end
   if ~ischar(T), T = ''; end
   T   = regexprep(T,'\s+',' '); % remove duplicate spaces

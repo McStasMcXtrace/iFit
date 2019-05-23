@@ -204,9 +204,9 @@ if ~isempty(strfind(method,'colorbar'))
 end
 
 % add a UIcontextMenu so that right-click gives info about the object plot
-T   = a.Name;
-if isempty(T), T=label(a,0); end
-if ~ischar(T), T=char(T); end
+T   = a.Name; ttl = title(a);
+if isempty(T), T=ttl; end
+if ~ischar(T) || isempty(T), T=char(T,'short'); end
 if ~isvector(T), T=transpose(T); T=T(:)'; end
 T   = regexprep(T,'\s+',' '); % remove duplicated spaces
 cmd = char(a.Command{end});
@@ -266,7 +266,7 @@ try
   set(h,          'Tag',  [ mfilename '_' a.Tag ]);
   set(children,   'Tag',  [ mfilename '_' a.Tag ]);
 end
-set(gcf, 'Name', char(a));
+set(gcf, 'Name', char(a,'short'));
 
 % labels
 if ~isempty(strfind(method,'hide_ax'))
