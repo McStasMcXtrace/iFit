@@ -12,3 +12,5 @@ function t = title(a, varargin)
 % See also iData, iData/plot
 
 t = label(a, 0, varargin{:});
+if isempty(t), t = getalias(a,'Signal'); end
+if isempty(t) || ~ischar(t), t = a.Name; end

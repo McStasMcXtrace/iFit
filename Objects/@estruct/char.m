@@ -23,7 +23,7 @@ function d = char(self, option)
     t = cellstr(s.Name); t = strtrim(t{1}); t(~isstrprop(t,'print') | t=='\' | t=='%')='';
     if length(t) > 31, t = [ t(1:27) '...' ]; end             % Name
 
-    ts = title(s); if isempty(ts), ts = getaxis(s, '0'); end
+    ts = title(s);
     if ~ischar(ts), ts = ''; end
     t = [ t ' "' ts '"' ]; t = strtrim(t); t(~isstrprop(t,'print') | t=='\')='';
     if length(t) > 41, t = [ t(1:37) '..."'  ]; end           % title(Signal)

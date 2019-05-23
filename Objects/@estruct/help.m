@@ -56,9 +56,9 @@ for index=1:numel(s)
   end
 
   % info about the plot --------------------------------------------------
-  T   = a.Name;
-  if isempty(T), T=label(a,0); end
-  if ~ischar(T), T=char(T); end
+  T   = a.Name; ttl = title(a);
+  if isempty(T), T=ttl; end
+  if ~ischar(T) || isempty(T), T=char(T,'short'); end
   if ~isvector(T), T=transpose(T); T=T(:)'; end
   T   = regexprep(T,'\s+',' '); % remove duplicated spaces
   cmd = char(a.Command{end});
@@ -77,7 +77,7 @@ for index=1:numel(s)
   d = '';
   if ~isempty(a.Label) && ~isempty(a.DisplayName)
     if strcmp(a.Label, a.DisplayName)
-        if ~isempty(title(a)), a.DisplayName=title(a);
+        if ~isempty(ttl), a.DisplayName=ttl;
         else a.DisplayName=fS; end
     end
     g = cellstr(a.Label); g=deblank(g{1});
