@@ -15,7 +15,7 @@ end
 
 % clean method string from the plot type and supported options not to be passed to matlab plot commands
 if ischar(method)
-  toremove='plot3 stem3 scatter3 scatter stem plot mesh surf waterfall tight auto hide view2 view3 transparent axis hide_err hide_errorbars hide_error contour contour3 surfc surfl contourf pcolor median mean half slice flat interp faceted light clabel colorbar shifted hide_axes painters zbuffer whole full legend replace update grid';
+  toremove='plot3 stem3 scatter3 scatter stem plot mesh surf waterfall tight auto hide view2 view3 transparent axis hide_err hide_errorbars hide_error contour contour3 surfc surfl contourf pcolor median mean half slice flat interp faceted light clabel colorbar shifted hide_axes painters zbuffer whole full legend replace update grid compact';
   toremove=strread(toremove,'%s','delimiter',' ');
   this_method = method;
   for index=1:length(toremove)
@@ -269,7 +269,8 @@ end
 set(gcf, 'Name', char(a,'short'));
 
 % labels
-if ~isempty(strfind(method,'hide_ax'))
+if ~isempty(strfind(method,'hide_ax')) || ~isempty(strfind(method, 'hide')) ...
+  || ~isempty(strfind(method, 'compact')) 
   % set(gca,'visible','off'); 
   % set(gca,'XTickLabel',[],'XTick',[]); set(gca,'YTickLabel',[],'YTick',[]); set(gca,'ZTickLabel',[],'ZTick',[])
   xlabel(' '); ylabel(' '); zlabel(' ');

@@ -92,7 +92,10 @@ function [h, xlab, ylab, ret] = private_plot_1d(a, method, this_method, varargin
       end % HG2 case
       
       % option to hide errorbar
-      if ~isempty(strfind(method, 'hide_err')) || all(abs(e) >= abs(y) | e == 0) % && numel(h) > 1
+      if ~isempty(strfind(method, 'hide_err')) ...
+      || ~isempty(strfind(method, 'hide')) ...
+      || ~isempty(strfind(method, 'compact')) ...
+      || all(abs(e) >= abs(y) | e == 0) % && numel(h) > 1
         eh = findobj(h,'Type','errorbar');
         if isempty(eh) && numel(h) > 1, eh = h(2);
         elseif isempty(eh) && strcmp(get(h,'Type'),'hggroup')
