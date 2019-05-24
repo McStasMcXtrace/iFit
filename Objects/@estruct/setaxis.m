@@ -15,13 +15,14 @@ function s = setaxis(s,varargin)
 %
 %   An alias is a string/char which allows to link to internal or external links
 %   as well as evaluated expression, with the following syntax cases:
-%     'field'                           a simple link to an other property 'field'
-%     'field1.field2...'                a nested link to an other property
-%     'file://some_file_path'           a local file URL
-%     'http://some_distant_resource'    an HTTP URL (proxy settings may need to be set)
-%     'https://some_distant_resource'   an HTTPS URL (proxy settings may need to be set)
-%     'ftp://some_distant_resource'     an FTP URL (proxy settings may need to be set)
-%     'matlab: some_expression'         some code to evaluate. 'this' refers to the object itself
+%     'field'                         a simple link to an other property 'field'
+%     'field1.field2...'              a nested link to an other property
+%     'file://some_file_path'         a local file URL
+%     'http://some_distant_resource'  an HTTP URL (proxy settings may need to be set)
+%     'https://some_distant_resource' an HTTPS URL (proxy settings may need to be set)
+%     'ftp://some_distant_resource'   an FTP URL (proxy settings may need to be set)
+%     'matlab: some_expression'       some code to evaluate. 'this' refers to the 
+%                                     object itself e.g. 'matlab: this.Signal*2'
 %
 %   File and URL can refer to compressed resources (zip, gz, tar, Z) which are
 %   extracted on-the-fly. In case the URL/file resource contains 'sections', a
@@ -88,7 +89,8 @@ function s = setaxis(s,varargin)
       end
       % second test for 'Error/Monitor' (and now we have Monitor - shared with 'Signal' case)
       if ischar(name{n_index}) && strcmp(name{n_index}, 'Error')
-        if isnumeric(value) && (isscalar(m) || isequal(size(m),size(value)))
+        if isnumeric(value) && ~isempty(m) ...
+        && (isscalar(m) || isequal(size(m),size(value)))
           value = value.*m;
         end
         s = subsasgn_single(s, 'Error', value); % follow links -> value
@@ -97,7 +99,8 @@ function s = setaxis(s,varargin)
       if isnumeric(name{n_index}) && isscalar(name{n_index}) && name{n_index} >= 0
         % set the alias value: interpret result using our subsasgn (follow links)
         if name{n_index} == 0 % {0}=Signal/Monitor
-          if isnumeric(value) && (isscalar(m) || isequal(size(m),size(sig)))
+          if isnumeric(value) && ~isempty(m) ...
+          && (isscalar(m) || isequal(size(m),size(sig)))
             value=value.*m;
           end
           s = subsasgn_single(s, 'Signal', value);

@@ -7,17 +7,18 @@ function s = setalias(self, varargin)
 %   SETALIAS is similar to SET except when the alias value is given as a string/char.
 %   In this case, the value allows to link to internal or external links,
 %   as well as evaluated expression, with the following syntax cases:
-%     'field'                           a simple internal link to an other property 'field'
-%     'field1.field2...'                a nested internal link to an other property
-%     'file://some_file_path'           a local file URL
-%     'http://some_distant_resource'    an HTTP URL (proxy settings may need to be set)
-%     'https://some_distant_resource'   an HTTPS URL (proxy settings may need to be set)
-%     'ftp://some_distant_resource'     an FTP URL (proxy settings may need to be set)
-%     'matlab: some_expression'         some code to evaluate. 'this' refers to the object itself
+%     'field'                         a simple link to an other property 'field'
+%     'field1.field2...'              a nested link to an other property
+%     'file://some_file_path'         a local file URL
+%     'http://some_distant_resource'  an HTTP URL (proxy settings may need to be set)
+%     'https://some_distant_resource' an HTTPS URL (proxy settings may need to be set)
+%     'ftp://some_distant_resource'   an FTP URL (proxy settings may need to be set)
+%     'matlab: some_expression'       some code to evaluate. 'this' refers to the 
+%                                     object itself e.g. 'matlab: this.Signal*2'
 %
 %   File and URL can refer to compressed resources (zip, gz, tar, Z) which are
-%   extracted on-the-fly. In case the URL/file resource contains 'sections' a search token
-%   can be specified with syntax such as 'file://filename#token'.
+%   extracted on-the-fly. In case the URL/file resource contains 'sections' a 
+%   search token can be specified with syntax such as 'file://filename#token'.
 %
 %   SETALIAS(S) displays all object properties defines as strings.
 %
@@ -37,4 +38,8 @@ elseif nargin ==2
   varargin{end+1}='';
 end
 
-s = set(self, varargin{:}, 'alias');
+if nargin == 4 && ischar(varargin{end}) % set Label or use 'alias'
+  s = set(self, varargin{:});
+else
+  s = set(self, varargin{:}, 'alias');
+end
