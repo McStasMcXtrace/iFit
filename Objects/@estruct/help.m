@@ -3,7 +3,6 @@ function c = help(s)
 %   HELP(S) displays the object information in a Dialogue window
 %
 %   H = HELP(S) returns the object information as a structure
-%   @estruct/help: display information about the data set as a Dialogue
 %
 % Version: $Date$ $Version$ $Author$
 % See also  estruct/cell, estruct/double, estruct/struct, 
