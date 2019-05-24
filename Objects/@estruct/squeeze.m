@@ -1,22 +1,17 @@
 function a = squeeze(a)
-% c = squeeze(a) : remove singleton dimensions from estruct objects/arrays
+% SQUEEZE remove singleton dimensions from objects.
+%   B = SQUEEZE(A) returns an array B with the same elements as
+%   A but with all the singleton dimensions removed.  A singleton
+%   is a dimension such that size(A,dim)==1.  2-D arrays are
+%   unaffected by squeeze so that row vectors remain rows.
 %
-%   @estruct/squeeze returns an object B with the same elements as
-%    A but with all the singleton dimensions removed.  A singleton
-%    is a dimension such that size(A,dim)==1.  2-D arrays are
-%    unaffected by squeeze so that row vectors remain rows.
+%   In addition, to further 'clean' an object, use FILL or RESIZE, and PACK. 
+%   You may as well use RESIZE or REDUCEVOLUME to reduce the size of the object.
 %
-%   In addition, to further 'clean' an object, use estruct/fill or
-%   estruct/resize, and estruct/pack. You may as well use estruct/resize or
-%   estruct/reducevolume to reduce the size of the object.
-%
-% input:  a: object or array (estruct)
-% output: c: object or array (estruct)
-% ex:     c=squeeze(estruct(rand(5,1,3)));
-%
+% Example: c=squeeze(estruct(rand(5,1,3)));
 % Version: $Date$ $Version$ $Author$
 % See also estruct, estruct/pack, estruct/fill, estruct/resize, estruct/size,
-% estruct/reducevolume
+%   estruct/reducevolume
 
 d = size(a);
 d = d(find(d > 1));

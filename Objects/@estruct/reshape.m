@@ -38,7 +38,7 @@ end
 % use reshape on Signal, Error, Monitor
 sz = size(a);
 if prod(sz) ~= prod(dims)
-  estruct_private_error(mfilename,[ 'To RESHAPE the number of elements must not change. Object ' ...
+  error([ mfilename ': To RESHAPE the number of elements must not change. Object ' ...
       a.Tag ' "' a.Name ' has dimension ' mat2str(size(a)) ' but requested to reshape into ' ...
       mat2str(dims) '. You can rather try the estruct/resize method.' ]) ;
 end
@@ -60,7 +60,7 @@ for index=1:length(dims)
 
     % resize axis if changed
     if ~isequal(sa, new_sa)
-      x = estruct_private_resize(x, new_sa);
+      x = private_resize(x, new_sa);
       a = setaxis(a, index, x);
     end
   end
