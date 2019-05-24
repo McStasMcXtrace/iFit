@@ -77,6 +77,7 @@ function s = set_single(s, field, value, follow, s0)
           end
         elseif isa(s0, 'estruct') && isnumeric(v) && numel(v) ~= numel(value)
           s0.Private.cache.check_requested = true;
+          s0.Private.cache.size = [];
         end
       end
       % if ~follow: change value. Calls "s.(tok)=value" i.e. subsasgn

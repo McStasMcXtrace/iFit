@@ -99,7 +99,7 @@ properties
       new.Tag = [ 'iD' sprintf('%0.f', id) ]; % unique ID
       new.ModificationDate = new.Date;
 
-      % add our 'static' properties so that they are equially handled by
+      % add our 'static' properties so that they are equally handled by
       % subsref/subsasgn
       new.addprop('Error');           % e.g. an alias or empty
       new.addprop('Monitor');         % e.g. an alias or empty
@@ -420,7 +420,17 @@ properties
       %    empty structures.
       %
       %    ZEROS(S) removes all properties except base ones, and keep metadata.
-      if nargin == 1, z=rmfield(copyobj(self),'all'); return; end
+      if nargin == 1,
+        z=estruct;
+        z.Creator         = self.Creator;
+        z.Date            = self.Date;
+        z.DisplayName     = self.DisplayName;
+        z.Source          = self.Source;
+        z.Name            = self.Name;
+        z.User            = self.User;
+        z.UserData        = self.UserData;
+        return
+      end
       z = ones(estruct, varargin{:});
     end % zeros
 
