@@ -4,7 +4,7 @@ function c = ldivide(a,b)
 %   to COMBINE, so that A.\B = LDIVIDE(A,B) = COMBINE(A,B)
 %
 % Version: $Date$ $Version$ $Author$
-% See also iData, iData/minus, iData/plus, iData/times, iData/mldivide
+% See also estruct, estruct/minus, estruct/plus, estruct/times, estruct/mldivide
 if nargin ==1
   b=[];
 end

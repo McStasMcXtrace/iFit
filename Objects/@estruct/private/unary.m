@@ -9,7 +9,7 @@ function b = unary(a, op, varargin)
 %
 % present but not used here: 'double','single','logical','find'
 
-% handle input iData arrays
+% handle input estruct arrays
 if numel(a) > 1
   b = {};
   for index=1:numel(a)

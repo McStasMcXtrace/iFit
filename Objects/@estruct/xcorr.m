@@ -27,7 +27,7 @@ function c = xcorr(a,b, shape)
 %   instance 'same pad background center normalize'.
 %
 % Version: $Date$ $Version$ $Author$
-% See also iData, iData/times, iData/convn, iData/fft, convn, fconv, fconvn
+% See also estruct, estruct/times, estruct/convn, estruct/fft, convn, fconv, fconvn
 if nargin ==1
   b = a;
 end

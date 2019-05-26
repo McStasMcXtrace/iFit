@@ -1,11 +1,11 @@
 function a = squeeze(a)
-% SQUEEZE remove singleton dimensions from objects.
+% SQUEEZE Remove singleton dimensions from objects.
 %   B = SQUEEZE(A) returns an array B with the same elements as
 %   A but with all the singleton dimensions removed.  A singleton
 %   is a dimension such that size(A,dim)==1.  2-D arrays are
 %   unaffected by squeeze so that row vectors remain rows.
 %
-%   In addition, to further 'clean' an object, use FILL or RESIZE, and PACK. 
+%   In addition, to further 'clean' an object, use FILL or RESIZE. 
 %   You may as well use RESIZE or REDUCEVOLUME to reduce the size of the object.
 %
 % Example: c=squeeze(estruct(rand(5,1,3)));
@@ -50,7 +50,7 @@ if numel(a) == 1
   
   % move the un-used/scalar axes to the end (code from subsref)
   
-  % get the scalar axes and thos not
+  % get the scalar axes and those not
   axis_scalar    = [];
   axis_notscalar = [];
   % check if the sub indices supress an axis: move it further

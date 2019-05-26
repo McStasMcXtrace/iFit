@@ -24,7 +24,9 @@ function b = interpn(a, varargin)
 %      'cubic'   - cubic interpolation as long as the data is uniformly
 %                  spaced, otherwise the same as 'spline'
 %
-%    VI = INTERPN(..., 'grid') uses meshgrid/ndgrid to determine new axes as arrays
+%    VI = INTERPN(..., 'grid') uses meshgrid/ndgrid to determine new axes as arrays.
+%
+%    VI = INTERPN(..., 'vector') requests all axes to be set as vectors.
 %
 % Version: $Date$ $Version$ $Author$
 % See also estruct, interp1, interpn, ndgrid, estruct/setaxis, estruct/getaxis,
@@ -32,17 +34,11 @@ function b = interpn(a, varargin)
 
 % private_interp and private_meshgrid are in private
 
-% input: option: linear, spline, cubic, nearest
-% axes are defined as rank of matrix dimensions
-% plot function is plot(y,x,Signal)
-% rand(10,20) 10 rows, 20 columns
-% pcolor/surf with view(2) shows x=1:20, y=1:10
-
 % handle input arrays
 if numel(a) > 1
   b = zeros(estruct, numel(a), 1);
   for index=1:numel(a)
-    b(index) = interp(a(index), varargin{:});
+    b(index) = interpn(a(index), varargin{:});
   end
   b = reshape(b, size(a));
   return

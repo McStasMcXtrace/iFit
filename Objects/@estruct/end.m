@@ -6,9 +6,6 @@ function b = end(s,k,n)
 % Version: $Date$ $Version$ $Author$
 % See also: estruct
 
-% EF 27/07/00 creation
-% EF 23/09/07 iData implementation
-
 if numel(s) > 1
   if n == 1, b=numel(s); else b=size(s,k); end
   return
