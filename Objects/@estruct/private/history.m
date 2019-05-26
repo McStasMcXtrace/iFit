@@ -7,8 +7,6 @@ function a = history(a, meth, varargin)
 % This file is used by: all methods that record entries in the Command property
 %   unary binary axescheck commandhistory copyobj estruct interp setaxis setor subsasgn
 
-% EF 23/09/07 iData implementation
-
 if ~ischar(meth)
   disp([ class(a) '/' mfilename ': command to add in the history should be a char, now ' class(meth) ]);
   return

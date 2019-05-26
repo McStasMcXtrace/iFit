@@ -1,6 +1,6 @@
 function ud=private_plot_contextmenu(a, h, xlab, ylab, zlab,  T, S, d, cmd, mp, mname)
 % private_plot_contextmenu: add a contextmenu to the plot
-% used in iData/plot
+% used in estruct/plot
 %
 % input:
 %   a:    objects
@@ -107,8 +107,8 @@ if all(isempty(index))
   end
     
   % menu About iFit
-  uimenu(uicm, 'Separator','on','Label', 'About iFit/iData', 'Callback', ...
-    [ 'msgbox(''' version(iData,2) sprintf('. Visit <http://ifit.mccode.org>') ''',''About iFit'',''help'')' ]);
+  uimenu(uicm, 'Separator','on','Label', 'About iFit/estruct', 'Callback', ...
+    [ 'msgbox(''' version(estruct,2) sprintf('. Visit <http://ifit.mccode.org>') ''',''About iFit'',''help'')' ]);
 
   ud.contextmenu_object = uicm;
   ud.handles = handles;
@@ -229,8 +229,8 @@ if isempty(get(gca,   'UIContextMenu'))
     uimenu(uicm, 'Label',[ 'Linear/Log axis ' strtok(xlabel(a)) ],'Callback', 'if strcmp(get(gca,''xscale''),''linear'')  set(gca,''xscale'',''log''); else set(gca,''xscale'',''linear''); end');
   end
 
-  uimenu(uicm, 'Separator','on','Label', 'About iFit/iData', ...
-    'Callback',[ 'msgbox(''' version(iData,2) sprintf('. Visit <http://ifit.mccode.org>') ''',''About iFit'',''help'')' ]);
+  uimenu(uicm, 'Separator','on','Label', 'About iFit/estruct', ...
+    'Callback',[ 'msgbox(''' version(estruct,2) sprintf('. Visit <http://ifit.mccode.org>') ''',''About iFit'',''help'')' ]);
 
   ud.contextmenu_gca = uicm;
   set(gca, 'UserData',      ud);

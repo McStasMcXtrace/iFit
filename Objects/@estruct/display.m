@@ -1,19 +1,12 @@
 function d = display(s_in, name)
-% d = display(s) : display iData object (from command line)
+% DISPLAY Display object.
+%   DISPLAY(X) is called for the object X when the semicolon is not used
+%   to terminate a statement. 
 %
-% @iData/display function to display iData object.
-%   Used when no ';' sign follows a iData object in matlab.
-% The return value may be catched as a string to display.
-%
-% input:  s: object or array (iData)
-% output: d: string to display (char)
-% ex:     'display(iData)' or 'iData'
+%   S = DISPLAY(X) same as above and return a string with the object description.
 %
 % Version: $Date$ $Version$ $Author$
-% See also iData, iData/disp, iData/get
-
-% EF 27/07/00 creation
-% EF 23/09/07 iData implementation
+% See also estruct, estruct/disp, estruct/get
 
 if nargin == 2 && ~isempty(name)
   iname = name;

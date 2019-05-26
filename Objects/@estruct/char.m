@@ -12,6 +12,7 @@ function d = char(self, option)
 % Version: $Date$ $Version$ $Author$
 % See also: estruct, cellstr, double.
 
+  if nargin < 2, option=''; end
   % build the output string
   d = '';
   for index=1:numel(self)
@@ -50,12 +51,14 @@ function d = char(self, option)
     end
 
     % build the final string
-    if nargin == 1
+    if nargin == 1 || ~any(strcmp(option,{'short','compact'}))
       d = [ d sprintf('%5i %8s %11s %43s %23s %s%s', ...
         d1, d2, d3, d4, d5, d6, d7) ];
+      d = cleanupcomment(d,'long');
     else % compact form
       d = [ d sprintf('%i %s %s %s %s %s%s', ...
         d1, d2, d3, d4, d5, d6, d7) ];
+      d = cleanupcomment(d);
     end
     if numel(self) > 1
       d = [ d sprintf('\n') ];

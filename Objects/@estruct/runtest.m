@@ -284,19 +284,3 @@ function runtest_testsuite(s, r)
   end
   disp([ mfilename ': test suite generated in <a href="' p '">' p '</a>' ]);
 % ------------------------------------------------------------------------------
-function str = cleanupcomment(comment)
-% CLEANUPCOMMENT clean a string from EOL and duplicate spaces.
-
-  % Replace linefeeds and carriage returns.
-  str = strrep(comment, char(10), ' ');
-  str = strrep(str, char(13), ' ');
-
-  % Replace all double spaces with single spaces.
-  while (strfind(str, '  '))
-	  str = strrep(str, '  ', ' ');
-  end
-
-  % Remove leading and trailing space.
-  str = strtrim(str);
-
-  

@@ -274,7 +274,7 @@ if ~isempty(strfind(method,'hide_ax')) || ~isempty(strfind(method, 'hide')) ...
   % set(gca,'visible','off'); 
   % set(gca,'XTickLabel',[],'XTick',[]); set(gca,'YTickLabel',[],'YTick',[]); set(gca,'ZTickLabel',[],'ZTick',[])
   xlabel(' '); ylabel(' '); zlabel(' ');
-  title(T,'interpreter','none');
+  title(cleanupcomment(T),'interpreter','none');
 else
   if ~isempty(xlab), xlabel(xlab); end
   if ~isempty(ylab), ylabel(ylab); end

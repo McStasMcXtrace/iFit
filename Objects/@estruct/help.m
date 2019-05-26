@@ -132,8 +132,8 @@ for index=1:numel(s)
     end
     if prod(size(a)) < 1e4
       try
-        [S, f] = std(a, -index1);
-        minmaxstd=[ minmaxstd sprintf(' <%g +/- %g>', f,S) ];
+        [W, C] = std(a, index1);
+        minmaxstd=[ minmaxstd sprintf(' <%g +/- %g>', C,W) ];
       end
     end
     if isnumeric(v), v=''; end
@@ -165,7 +165,7 @@ for index=1:numel(s)
   ud.ylabel = ylabel(a);
   ud.zlabel = zlabel(a);
   ud.title  = T;
-  ud.name   = char(a);
+  ud.name   = char(a,'short');
   ud.commands = commandhistory(a);
   ud.handle = [];
   ud.tproperties = tproperties;

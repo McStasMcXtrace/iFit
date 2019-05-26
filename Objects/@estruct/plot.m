@@ -57,14 +57,11 @@ function h=plot(a, varargin)
 %   sliceomatic: Eric Ludlam 2001-2008
 %
 % Version: $Date$ $Version$ $Author$
-% See also iData, interp1, interpn, ndgrid, plot, iData/setaxis, iData/getaxis
-%          iData/xlabel, iData/ylabel, iData/zlabel, iData/clabel, iData/title
-%          shading, lighting, surf, iData/slice, iData/contour3, iData/contourf
-%          iData/contour, iData/surf, iData/slice, iData/plot3, iData/surfl, 
-%          iData/surfc, iData/mesh
-
-
-
+% See also estruct, interp1, interpn, ndgrid, plot, estruct/setaxis, estruct/getaxis
+%          estruct/xlabel, estruct/ylabel, estruct/zlabel, estruct/clabel, estruct/title
+%          shading, lighting, surf, estruct/slice, estruct/contour3, estruct/contourf
+%          estruct/contour, estruct/surf, estruct/slice, estruct/plot3, estruct/surfl, 
+%          estruct/surfc, estruct/mesh
 
 h      = [];
 funcs  = []; % additional iFunc objects to plot afterwards...
