@@ -73,8 +73,6 @@ s.Private.cache.size = signal_sz; % for faster size execution
 axescheck_find_axes(s, fields(axes_id), dims(axes_id), sz(axes_id));
 axescheck_find_axes(s, fields,          dims,          sz);
 
-history(s, mfilename, s);
-
 % ------------------------------------------------------------------------------
 function [signal_id, error_id, monitor_id, axes_id] = axescheck_find_signal(self, fields, dims, sz)
 

@@ -52,13 +52,11 @@ function d = char(self, option)
 
     % build the final string
     if nargin == 1 || ~any(strcmp(option,{'short','compact'}))
-      d = [ d sprintf('%5i %8s %11s %43s %23s %s%s', ...
-        d1, d2, d3, d4, d5, d6, d7) ];
-      d = cleanupcomment(d,'long');
+      d = [ d cleanupcomment(sprintf('%5i %8s %11s %43s %23s %s%s', ...
+        d1, d2, d3, d4, d5, d6, d7),'long') ];
     else % compact form
-      d = [ d sprintf('%i %s %s %s %s %s%s', ...
-        d1, d2, d3, d4, d5, d6, d7) ];
-      d = cleanupcomment(d);
+      d = [ d cleanupcomment(sprintf('%i %s %s %s %s %s%s', ...
+        d1, d2, d3, d4, d5, d6, d7)) ];
     end
     if numel(self) > 1
       d = [ d sprintf('\n') ];
