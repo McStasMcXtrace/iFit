@@ -143,4 +143,6 @@ function s = subsref_estruct(a, S)
     end
   end
   s.Private.cache.size = [];
+  s.Private.cache.std_c= [];
+  s.Private.cache.std_w= [];
   axescheck(s);
