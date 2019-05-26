@@ -14,7 +14,7 @@ function labl = label(this, varargin)
 %
 % Example: s=estruct(1:10); label(s,'Signal','text'); strcmp(label(s,0),'text')
 % Version: $Date$ $Version$ $Author$
-% See also iData, iData/plot, iData/xlabel, iData/ylabel, iData/zlabel, iDala/clabel
+% See also estruct, estruct/plot, estruct/xlabel, estruct/ylabel, estruct/zlabel, iDala/clabel
 
 if numel(this) > 1
   if nargin < 3 % get labels (return them)
