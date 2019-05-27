@@ -25,6 +25,14 @@ end
 
 cmd=a.Command;
 
+% make sure the object axes/Signal are set.
+if isfield(a.Private,'cache') 
+  if (isfield(a.Private.cache,'check_requested') && a.Private.cache.check_requested) ...
+  || (~isfield(a.Private.cache,'size') || isempty(a.Private.cache.size))
+    axescheck(a);
+  end
+end
+
 % get Signal Error and Monitor (does a check if needed)
 s = subsref(a,struct('type','.','subs','Signal'));
 e = subsref(a,struct('type','.','subs','Error'));
@@ -140,7 +148,7 @@ try
       try; e = sqrt(feval(op, e.^2, varargin{:})); end
       try; m = feval(op, m, varargin{:}); end
     end
-  case {'permute','reshape','resize'}
+  case {'permute','reshape','private_resize'}
     if ~isscalar(e) && ~isempty(e),  e = feval(op, e, varargin{:}); end
     if ~isscalar(m) && ~isempty(m),  m = feval(op, m, varargin{:}); end
   otherwise

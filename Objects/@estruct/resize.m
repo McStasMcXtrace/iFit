@@ -42,7 +42,7 @@ if ndims(a) == 1 && length(dims) > 1
   dims(1:2) = ceil(dims(1:2) ./ size(a)); % new dimension for replication
   set(b, 'Signal', repmat(subsref(a,struct('type','.','subs','Signal')), dims));
 else
-  b  = unary(copyobj(a), 'estruct_private_resize', dims);
+  b  = unary(copyobj(a), 'private_resize', dims);
 end
 
 % then update axes
@@ -57,7 +57,7 @@ for index=1:length(dims)
 
     % resize axis if changed
     if ~isequal(sa, new_sa)
-      x = estruct_private_resize(x, new_sa);
+      x = private_resize(x, new_sa);
       b = setaxis(b, index, x);
     end
   end
@@ -65,4 +65,4 @@ end
 
 % and make sure we squeeze object singleton dimensions
 b = squeeze(b);
-
+history(b, mfilename, a, varargin{:});

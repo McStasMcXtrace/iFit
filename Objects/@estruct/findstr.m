@@ -76,13 +76,12 @@ elseif strfind(option, 'case')
   % handle 'case' option
   index = ~cellfun(@isempty, strfind(match, str));
 else
-
   % relaxed search: non case sensitive, find token (not exact comparison)
   index = ~cellfun(@isempty, strfind(lower(match), lower(str)));
 end
-if strfind(option, 'first') && ~isempty(index)
+if ~isempty(strfind(option, 'first')) && ~isempty(index)
   index=index(1);
-elseif strfind(option, 'last') && ~isempty(index)
+elseif ~isempty(strfind(option, 'last')) && ~isempty(index)
   index=index(end);
 end
 match = match(index);

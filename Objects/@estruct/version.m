@@ -26,6 +26,7 @@ function [b, vers, info] = version(a,long_request)
   if nargout > 2
     % grab additional information
     info = memoryInfo;
+    info.arch = computer;
     try; info.NumCores    = feature('NumCores'); end
     try; info.GetOS       = feature('GetOS'); end
     try; info.MatlabPid   = feature('GetPid'); end

@@ -62,3 +62,5 @@ c = zeros(a);
 c = set(c, 'Signal',  s);
 c = set(c, 'Error',   e);
 c = set(c, 'Monitor', m);
+
+history(c, mfilename, a, n);

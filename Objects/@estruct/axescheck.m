@@ -7,7 +7,7 @@ function s = axescheck(s)
 %   Usually, the objects are checked automatically for integrity, and it
 %   is not required to manually call this method.
 %
-% Example: s = estruct(1:10); numel(s.Signal) == 10
+% Example: s = estruct(1:10); prod(size(s)) == 10
 % Version: $Date$ $Version$ $Author$
 % see also estruct, getaxis, setaxis
 
