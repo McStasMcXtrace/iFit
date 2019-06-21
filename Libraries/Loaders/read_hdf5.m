@@ -33,7 +33,7 @@ if nargin == 0 || any(strcmp(filename, {'identify','query','defaults'}))
     data.name        ='HDF5/NeXus Hierarchical Data Format';
     data.method      =mfilename;
     data.postprocess ='openhdf';
-    data.extension   ={'hdf','hdf5','h5','nx','nxs','n5','nxspe'};
+    data.extension   ={'hdf','hdf5','h5','nx','nxs','n5','nxspe','cxi'};
     return
 end
 

@@ -173,7 +173,7 @@
     </h4>
     <span style="font-weight: bold;"> </span>
     <table style="text-align: left; width: 100%;" border="1"
-      cellpadding="2" cellspacing="2">
+      cellspacing="2" cellpadding="2">
       <tbody>
         <tr>
           <td style="vertical-align: top; background-color: rgb(255,
@@ -543,6 +543,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
             You can also read and write such files using <a
 href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/lamp/">LAMP</a>.</td>
           <td valign="top"><br>
@@ -559,6 +560,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
               format</a> (single array)<br>
           </td>
           <td valign="top">yes<br>
@@ -571,7 +573,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
       formats (neutrons and X-ray, ...)</h4>
     <span style="font-weight: bold;"> </span>
     <table style="text-align: left; width: 100%;" border="1"
-      cellpadding="2" cellspacing="2">
+      cellspacing="2" cellpadding="2">
       <tbody>
         <tr>
           <td style="vertical-align: top; background-color: rgb(255,
@@ -758,6 +760,7 @@ href="http://www.ill.eu/instruments-support/instruments-groups/groups/tof/softwa
 
 
 
+
             This data can also be imported/generated with <a
 href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/lamp/">Lamp</a>.</td>
           <td style="vertical-align: top;">Yes<br>
@@ -854,6 +857,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
               Scientific WinView</a> / PI Acton image file<br>
           </td>
           <td style="vertical-align: top;"><br>
@@ -909,7 +913,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
         <tr>
           <td style="vertical-align: top;"><span style="color: rgb(204,
               51, 204); font-weight: bold;">'nx','nxs','n4',<br>
-              'n5','nxspe'</span><br>
+              'n5','nxspe','cxi'</span><br>
             <font color="#cc33cc">NeXus</font><br>
           </td>
           <td style="vertical-align: top;">binary<br>
@@ -918,8 +922,10 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
               href="http://nexusformat.org/">NeXus</a> files are HDF4/5
             files. See above format description for more information.
             This format includes all types of derivatives (such as NX
-            SPE from ISIS). Such files can be edited/viewed with e.g <a
-              href="http://www.hdfgroup.org/hdf-java-html/hdfview">hdfview</a>.
+            SPE from ISIS, and <a href="https://www.cxidb.org/">CXI</a>).
+            Such files can be edited/viewed with e.g <a
+              href="http://www.hdfgroup.org/hdf-java-html/hdfview">hdfview</a>
+            and <a href="http://www.silx.org/">silx</a> view.<br>
           </td>
           <td style="vertical-align: top;">Yes (as HDF5)<br>
           </td>
@@ -979,6 +985,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
               definition</a>. This format gathers <span
               style="font-style: italic;">CIF</span> and <span
               style="font-style: italic;">imgCIF</span> standards. These
@@ -1000,6 +1007,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
             'hdr' file requires an ssociated 'img' file. <a
               href="http://en.wikipedia.org/wiki/Analyze_%28imaging_software%29">Format</a>
             from the Analyze <a href="http://www.analyzedirect.com/">Biomedical
+
 
 
 
@@ -1151,6 +1159,7 @@ href="http://www.ill.eu/sites/fullprof/php/programs24b7.html?pagina=Crysfml">Cry
 
 
 
+
                 Open Database</a><span style="color: rgb(0, 0, 0);
                 font-size: medium; font-style: normal;
                 font-variant-ligatures: normal; font-variant-caps:
@@ -1220,6 +1229,7 @@ href="http://www.ill.eu/sites/fullprof/php/programs24b7.html?pagina=Crysfml">Cry
                 word-spacing: 0px; -webkit-text-stroke-width: 0px;
                 text-decoration-style: initial; text-decoration-color:
                 initial; display: inline ! important; float: none;"><span>&nbsp;</span>which
+
 
 
 
@@ -1373,6 +1383,7 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
 
 
 
+
               Nuclear Data File</a> with specific support for the
             thermal neutron scattering law (TSL) section (MF7, MT=2 and
             4). Can make use of <a href="http://pyne.io/">PyNE</a> when
@@ -1438,6 +1449,7 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
           <td valign="top">Sqw 4D data set for <a
 href="http://www.mcstas.org/download/components/contrib/Single_crystal_inelastic.html">McStas
 
+
               Single_crystal_inelastic</a> component. <i>This format is
               <b>not</b> similar to the Sqw Horace objects.<br>
             </i></td>
@@ -1491,12 +1503,12 @@ href="http://www.mcstas.org/download/components/contrib/Single_crystal_inelastic
     and any following options is forwarded to the text reader. The
     possible options are:<br>
     <br>
-    <table border="1" cellpadding="2" cellspacing="2" width="100%">
+    <table border="1" cellspacing="2" cellpadding="2" width="100%">
       <tbody>
         <tr>
-          <td align="center" valign="top"><i>Text import option</i><i><br>
+          <td valign="top" align="center"><i>Text import option</i><i><br>
             </i></td>
-          <td align="center" valign="top"><i>Description</i><i><br>
+          <td valign="top" align="center"><i>Description</i><i><br>
             </i></td>
         </tr>
         <tr>
@@ -1509,6 +1521,7 @@ href="http://www.mcstas.org/download/components/contrib/Single_crystal_inelastic
               </font></b></td>
           <td valign="top">When numerical data blocks only use <a
               href="http://manpages.ubuntu.com/manpages/man3/isalpha.3.html">isspace</a>(3)
+
 
 
 
@@ -1654,7 +1667,7 @@ href="http://www.mcstas.org/download/components/contrib/Single_crystal_inelastic
       style="font-weight: bold;"></span> entry for INX files.<br>
     <br>
     <table style="text-align: left; width: 70%;" border="1"
-      cellpadding="2" cellspacing="2">
+      cellspacing="2" cellpadding="2">
       <tbody>
         <tr>
           <td style="vertical-align: top;">
@@ -1756,6 +1769,7 @@ href="http://www.mcstas.org/download/components/contrib/Single_crystal_inelastic
 
 
 
+
         from <span style="color: rgb(51, 102, 255);">prefdir</span> or
         <span style="color: rgb(51, 102, 255);">ifitpath/Loaders</span>.</li>
       <li>Create a new structure (which you may name as you wish) and
@@ -1782,13 +1796,15 @@ href="http://www.mcstas.org/download/components/contrib/Single_crystal_inelastic
       <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
 
+
           - iFit/Loaders - </span><span style="font-style: italic;">
-          $Date$ $Revision$ $Author$</span><span style="font-style: italic;"> </span>-
-        back to <a href="index.html">Main iFit Page </a><a
-          href="http://www.ill.eu/"><img title="ILL, Grenoble, France
-            &lt;www.ill.eu&gt;" src="images/ILL-web-jpeg.jpg" alt="ILL,
-            Grenoble, France &lt;www.ill.eu&gt;" style="border: 0px
-            solid ; width: 53px; height: 50px;" align="right"></a></div>
+          $Date$ $Revision$ $Author$</span><span style="font-style:
+          italic;"> </span>- back to <a href="index.html">Main iFit
+          Page </a><a href="http://www.ill.eu/"><img title="ILL,
+            Grenoble, France &lt;www.ill.eu&gt;"
+            src="images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France
+            &lt;www.ill.eu&gt;" style="border: 0px solid ; width: 53px;
+            height: 50px;" align="right"></a></div>
     </div>
   </body>
 </html>

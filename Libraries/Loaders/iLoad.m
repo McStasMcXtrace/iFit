@@ -362,6 +362,9 @@ function [data, format] = iLoad(filename, loader, varargin)
     
     % The import takes place HERE ================================================
     if isdir(filename), filename = [ filename filesep '*']; end % all elements in case of directory
+    if isempty(dir(filename))
+      warning([ mfilename ': possibly invalid filename ' filename ]);
+    end
     % handle the '%20' character replacement as space
     filename = strrep(filename, '%20',' ');
     while filename(end) == ';', filename(end)=''; end % in case there is a leading ';' in place of \n
