@@ -2,7 +2,7 @@ function s = set(s, varargin)
 % SET    Set object properties.
 %  V = SET(S,'PropertyName','Value') 
 %    Set the value of the specified property/field in the structure.
-%    The object S can be an array.
+%    The object S can be an array. The Value can be anything (char, alias, numeric).
 %
 %    The 'PropertyName' can be a full structure path, such as 'field1.field2' in
 %    in which case the value assigment is made recursive (travel through).
@@ -19,18 +19,21 @@ function s = set(s, varargin)
 %    This syntax is equivalent to SETALIAS(S, 'PropertyName1','Value1',...)
 %    In this case, the assigment allows to link to internal or external links, 
 %    as well as evaluated expression, with the syntax cases for the 'Value':
-%     'field'                           a simple link to an other property 'field'
-%     'field1.field2...'                a nested link to an other property
-%     'file://some_file_path'           a local file URL
-%     'http://some_distant_resource'    an HTTP URL (proxy settings may need to be set)
-%     'https://some_distant_resource'   an HTTPS URL (proxy settings may need to be set)
-%     'ftp://some_distant_resource'     an FTP URL (proxy settings may need to be set)
-%     'matlab: some_expression'         some code to evaluate. 'this' refers to the 
-%                                       object itself e.g. 'matlab: this.Signal*2'
+%     'field'                         a simple link to an other property 'field'
+%     'field1.field2...'              a nested link to an other property
+%     'file://some_file_path'         a local file URL
+%     'http://some_distant_resource'  an HTTP URL (proxy settings may need to be set)
+%     'https://some_distant_resource' an HTTPS URL (proxy settings may need to be set)
+%     'ftp://some_distant_resource'   an FTP URL (proxy settings may need to be set)
+%     'matlab: some_expression'       some code to evaluate. 'this' refers to the 
+%                                     object itself e.g. 'matlab: this.Signal*2'
 %
 %    File and URL can refer to compressed resources (zip, gz, tar, Z) which are 
 %    extracted on-the-fly. In case the URL/file resource contains 'sections' a search token
 %    can be specified with syntax such as 'file://filename#token'.
+%
+%  V = SET(S, 'Property','Value','Label')
+%  Sets the Value and Label for the given Property.
 % 
 %  SET(S) displays all object properties.
 %
@@ -57,12 +60,14 @@ function s = set(s, varargin)
     end
     return
   end
-  
+  lab = ''; follow = true; % default: we travel through links
   % check last argument as 'alias' ? will not follow links, but set aliases directly.
-  if nargin >=4 && rem(numel(varargin),2) == 1 && ischar(varargin{end}) && any(strcmp(varargin{end}, {'link','alias'}))
-       follow = false;  % we set aliases and do not link for get/subsref.
-       varargin(end) = [];
-  else follow = true;   % we travel through links
+  if nargin >=4 && rem(numel(varargin),2) == 1 && ischar(varargin{end}) 
+    if any(strcmp(varargin{end}, {'link','alias'}))
+       follow = false;  % we set aliases and do not link for get/subsref
+    else lab = varargin(end);
+    end
+    varargin(end) = []; 
   end
   
   % now 's' is a single object. We handle name/value pairs
@@ -84,6 +89,10 @@ function s = set(s, varargin)
         s = subsasgn(s, struct('type','()','subs',name{n_index}), value);
       end
     end
+  end
+  
+  if ~isempty(lab)
+    label(s, name, lab);
   end
   
   % reset cache (as we have changed the object: fields, values, ...)

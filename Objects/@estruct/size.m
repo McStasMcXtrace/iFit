@@ -9,7 +9,7 @@ function y=size(s, varargin)
 %
 %   To get the size of all objects in an array S, use ARRAYFUN('size',S)
 %
-% Example: s=estruct(rand(5)); all(size(s.Signal) == size(s))
+% Example: s=estruct(rand(5)); all(size(s) == size(s.Signal))
 % Version: $Date$ $Version$ $Author$
 % See also estruct, get, length, ndims
 

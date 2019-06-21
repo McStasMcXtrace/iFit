@@ -24,7 +24,7 @@ function b = var(a, varargin)
 % 
 %    The variance is the square of the standard deviation (STD).
 %
-% Example: s=estruct(-10:10); var(s,0) == 0
+% Example: s=estruct(-10:10); var(s,0) == 38.5
 % Version: $Date$ $Version$ $Author$
 % See also estruct, estruct/uminus, estruct/abs, estruct/real, estruct/imag, estruct/uplus
 

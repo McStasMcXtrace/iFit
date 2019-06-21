@@ -7,7 +7,7 @@ function s = axescheck(s)
 %   Usually, the objects are checked automatically for integrity, and it
 %   is not required to manually call this method.
 %
-% Example: s = estruct(1:10); numel(s.Signal) == 10
+% Example: s = estruct(1:10); prod(size(s)) == 10
 % Version: $Date$ $Version$ $Author$
 % see also estruct, getaxis, setaxis
 
@@ -72,8 +72,6 @@ s.Private.cache.size = signal_sz; % for faster size execution
 % first search amongst axes_id, then blind search.
 axescheck_find_axes(s, fields(axes_id), dims(axes_id), sz(axes_id));
 axescheck_find_axes(s, fields,          dims,          sz);
-
-history(s, mfilename, s);
 
 % ------------------------------------------------------------------------------
 function [signal_id, error_id, monitor_id, axes_id] = axescheck_find_signal(self, fields, dims, sz)

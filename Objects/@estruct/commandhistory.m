@@ -12,7 +12,7 @@ function [s,fig] = commandhistory(a, fig, varargin)
 %   command.
 %
 % Version: $Date$ $Version$ $Author$
-% See also iData, iData/disp, iData/display
+% See also estruct, estruct/disp, estruct/display
 
 % syntax for CloseRequest callback from the listdlg
 if nargin >= 2 && ischar(fig)
@@ -24,7 +24,7 @@ elseif nargin == 2 && ishandle(fig)
   return
 end
 
-% handle input iData arrays
+% handle input estruct arrays
 if numel(a) > 1
   s = cell(size(a)); fig=s;
   for index=1:numel(a)
@@ -37,7 +37,6 @@ s = a.Command;
 if nargout == 0 || nargout == 2
   T   = a.Name;
   if isempty(T), T = title(a); end
-  if isempty(T), T = getaxis(a, '0'); end
   if iscell(T) && ~isempty(T),  T=T{1}; end
   if ~ischar(T), T = ''; end
   T   = regexprep(T,'\s+',' '); % remove duplicate spaces
@@ -50,7 +49,7 @@ if nargout == 0 || nargout == 2
   ad.object = a;
   set(fig,'UserData', ad);
   setappdata(0,ad.tag,ad);
-  set(fig, 'closerequestfcn','commandhistory(iData, gcbf); delete(gcbf)');
+  set(fig, 'closerequestfcn','commandhistory(estruct, gcbf); delete(gcbf)');
   selection=[]; ok=0;
 end
 

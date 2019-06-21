@@ -11,6 +11,7 @@ Ag_3_a.hdf4: an image of an algae cell [binary, HDF4 image]
 Al.cif: Aluminium CIF file [text]
 AL20_017.DAT: example data files from the D3 reflectometer at Chalk River CNBC NRU [text]
 Bunny-LowPoly2.stl: an STL of the Stanford Bunny
+brucker1.dx: an Electronic Chemistry Exchange format file [text]
 C004 and R014: LLB/TAS data files [LLB, binary]
 cyno_atlas.4dint.hdr and cyno_atlas.4dint.img: Tomographic monkey brain data - Volume dataset in Analyze format. Open the 'hdr' file. See ReadAnalyze  [binary]
 D2O_liq_290_coh/inc.sqw: Dynamic structure factor S(q,w) of heavy water from GROMACS/TIP4p [McStas Sqw]

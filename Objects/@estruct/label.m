@@ -14,7 +14,7 @@ function labl = label(this, varargin)
 %
 % Example: s=estruct(1:10); label(s,'Signal','text'); strcmp(label(s,0),'text')
 % Version: $Date$ $Version$ $Author$
-% See also iData, iData/plot, iData/xlabel, iData/ylabel, iData/zlabel, iDala/clabel
+% See also estruct, estruct/plot, estruct/xlabel, estruct/ylabel, estruct/zlabel, iDala/clabel
 
 if numel(this) > 1
   if nargin < 3 % get labels (return them)
@@ -93,7 +93,7 @@ end
 % ------------------------------------------------------------------------------
 function [labl, alias] = label_single(this, alias, value, n)
   % a single set/get for alias
-  labl = '';
+  labl = ''; tmp='';
   if isnumeric(alias) || isfinite(str2double(alias)) % rank is given -> replace by corresponding alias
     tmp = getaxis(this, num2str(alias)); % this is the definition of axis rank
     if isempty(tmp) && alias == 0

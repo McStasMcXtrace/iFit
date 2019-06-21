@@ -23,7 +23,9 @@ function v = subsref_single(v, S, a)
         end
       end
       if isa(v,'estruct')
-        v = subsref_single(v,'Signal');
+        % v = subsref_single(v,'Signal');
+        v = subsref_estruct(v, S);
+        return
       end
     end
   case '{}' % syntax: a{axis_rank} get axis value/alias (getaxis)
@@ -83,7 +85,7 @@ function v = get_single_alias(s, v)
   if isfield(s, v) % a link to a valid field in root object (single level)
     v = builtin('subsref',s, struct('type','.','subs', v)); % get true value/alias (no follow)
   elseif strcmp(v, 'matlab: sqrt(this.Signal)') % for default Error (no eval)
-    v = sqrt(double(get(s,'Signal')));
+    v = sqrt(abs(double(get(s,'Signal'))));
   elseif strncmp(v, 'matlab',6) && numel(v) > 8 % URL matlab:
     v = get_single_eval(s, v);
   elseif ~isempty(dir(v)) || any(strcmp(strtok(v, ':'), {'http' 'https' 'ftp' 'file'})) % URL http https ftp file:
@@ -108,3 +110,39 @@ function value = get_single_eval(this, value)
       value = getReport(ME);
     end
   end
+
+% ----------------------------------------------------------------------------
+function s = subsref_estruct(a, S)
+
+  s = copyobj(a);
+
+  % perform rebinning on Signal
+  set(s, 'Signal', subsref(get(a, 'Signal'), S));
+
+  % perform rebinning on Error
+  try
+    set(s, 'Error', subsref(get(a, 'Error'), S));
+  end
+
+  % perform rebinning on Monitor
+  try
+    set(s, 'Monitor', subsref(get(a, 'Monitor'), S));
+  end
+
+  % perform rebinning on axes
+  myisvector = @(c)length(c) == numel(c);
+  for index=1:length(S.subs)
+    x = getaxis(a, index);
+    try
+      if myisvector(x),
+        if ~strcmp(S.subs{index},':'), x = x(S.subs{index}); end
+      else
+        x = subsref(x,S);
+      end
+      setaxis(s, index, x);
+    end
+  end
+  s.Private.cache.size = [];
+  s.Private.cache.std_c= [];
+  s.Private.cache.std_w= [];
+  axescheck(s);

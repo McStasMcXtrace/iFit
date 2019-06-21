@@ -102,6 +102,20 @@ elseif isa(b, 'estruct')
   cmd=b.Command;
 end
 
+% make sure the object axes/Signal are set.
+if isa(a, 'estruct') && isfield(a.Private,'cache') 
+  if (isfield(a.Private.cache,'check_requested') && a.Private.cache.check_requested) ...
+  || (~isfield(a.Private.cache,'size') || isempty(a.Private.cache.size))
+    axescheck(a);
+  end
+end
+if isa(b, 'estruct') && isfield(b.Private,'cache') 
+  if (isfield(b.Private.cache,'check_requested') && b.Private.cache.check_requested) ...
+  || (~isfield(b.Private.cache,'size') || isempty(b.Private.cache.size))
+    axescheck(b);
+  end
+end
+
 % handle special case of operation with transposed 1D data set and an other one
 if (~isscalar(a) && isvector(a) && size(a,1)==1 && ~isscalar(b) && ~isvector(b)) || ...
    (~isscalar(b) && isvector(b) && size(b,1)==1 && ~isscalar(a) && ~isvector(a))

@@ -12,6 +12,7 @@ function d = char(self, option)
 % Version: $Date$ $Version$ $Author$
 % See also: estruct, cellstr, double.
 
+  if nargin < 2, option=''; end
   % build the output string
   d = '';
   for index=1:numel(self)
@@ -23,7 +24,7 @@ function d = char(self, option)
     t = cellstr(s.Name); t = strtrim(t{1}); t(~isstrprop(t,'print') | t=='\' | t=='%')='';
     if length(t) > 31, t = [ t(1:27) '...' ]; end             % Name
 
-    ts = title(s); if isempty(ts), ts = getaxis(s, '0'); end
+    ts = title(s);
     if ~ischar(ts), ts = ''; end
     t = [ t ' "' ts '"' ]; t = strtrim(t); t(~isstrprop(t,'print') | t=='\')='';
     if length(t) > 41, t = [ t(1:37) '..."'  ]; end           % title(Signal)
@@ -50,12 +51,12 @@ function d = char(self, option)
     end
 
     % build the final string
-    if nargin == 1
-      d = [ d sprintf('%5i %8s %11s %43s %23s %s%s', ...
-        d1, d2, d3, d4, d5, d6, d7) ];
+    if nargin == 1 || ~any(strcmp(option,{'short','compact'}))
+      d = [ d cleanupcomment(sprintf('%5i %8s %11s %43s %23s %s%s', ...
+        d1, d2, d3, d4, d5, d6, d7),'long') ];
     else % compact form
-      d = [ d sprintf('%i %s %s %s %s %s%s', ...
-        d1, d2, d3, d4, d5, d6, d7) ];
+      d = [ d cleanupcomment(sprintf('%i %s %s %s %s %s%s', ...
+        d1, d2, d3, d4, d5, d6, d7)) ];
     end
     if numel(self) > 1
       d = [ d sprintf('\n') ];

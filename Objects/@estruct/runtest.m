@@ -187,7 +187,9 @@ function res = runtest_dotest_single(s, m, code)
   res.Duration = etime(clock, t0);
   res.Details.Output = output;
   if passed,     res.Details.Status = 'passed';
-  elseif failed, res.Details.Status = 'FAILED';
+  elseif failed, 
+    if isempty(output) || ischar(output) res.Details.Status = 'FAILED';
+    else res.Details.Status = 'ERROR'; end
   end
   
 
@@ -218,7 +220,7 @@ function runtest_report(r)
   disp('Totals:')
   fprintf(1, '  %i Passed, %i Failed, %i Incomplete.\n', ...
     sum([ r.Passed ]), sum([ r.Failed ]), sum([ r.Incomplete ]));
-  fprintf(1, '  %f seconds testing time.\n', sum([ r.Duration ]));
+  fprintf(1, '  %.2f seconds testing time.\n', sum([ r.Duration ]));
 
 % ------------------------------------------------------------------------------
 function [passed, failed, output] = runtest_sandbox(ln)
@@ -227,7 +229,11 @@ function [passed, failed, output] = runtest_sandbox(ln)
   try
     clear ans
     output = evalc(ln);
-    result = ans;
+    if exist('ans','var')
+      result = ans;
+    else
+      result = 1;
+    end
     if (isnumeric(result) || islogical(result)) && all(result(:))
       passed=true;
     elseif ischar(result) && any(strcmpi(strtok(result),{'OK','passed'}))
@@ -284,19 +290,3 @@ function runtest_testsuite(s, r)
   end
   disp([ mfilename ': test suite generated in <a href="' p '">' p '</a>' ]);
 % ------------------------------------------------------------------------------
-function str = cleanupcomment(comment)
-% CLEANUPCOMMENT clean a string from EOL and duplicate spaces.
-
-  % Replace linefeeds and carriage returns.
-  str = strrep(comment, char(10), ' ');
-  str = strrep(str, char(13), ' ');
-
-  % Replace all double spaces with single spaces.
-  while (strfind(str, '  '))
-	  str = strrep(str, '  ', ' ');
-  end
-
-  % Remove leading and trailing space.
-  str = strtrim(str);
-
-  

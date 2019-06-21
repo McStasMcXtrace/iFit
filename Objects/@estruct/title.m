@@ -9,6 +9,8 @@ function t = title(a, varargin)
 %   The object name is obtained with s.Name
 %
 % Version: $Date$ $Version$ $Author$
-% See also iData, iData/plot
+% See also estruct, estruct/plot
 
 t = label(a, 0, varargin{:});
+if isempty(t), t = getalias(a,'Signal'); end
+if isempty(t) || ~ischar(t), t = a.Name; end

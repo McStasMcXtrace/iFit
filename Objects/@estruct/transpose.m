@@ -6,7 +6,7 @@ function a = transpose(a)
 %
 %    B = TRANSPOSE(A) is called for the syntax A.'
 %
-% Example: s=estruct(rand(3,6)); all(all(s.' == s{0}.'))
+% Example: s=estruct(rand(3,6)); all(size(transpose(s)) == [6 3])
 % Version: $Date$ $Version$ $Author$
 % See also estruct, estruct/transpose, estruct/ctranspose, estruct/setaxis, estruct/getaxis
 
