@@ -9,13 +9,13 @@ ProductCode={E951CA03-31D5-45CB-9D9A-19096B73992D}
 ProductUpdateCode={C038750F-BFD3-4305-B9A7-E84BF21B83C8}
 SummaryTitle=iFit 2.0-rc1 data analysis and fitting to models
 SummarySubject=Data Analysis
-SummaryAuthor=Emmanuel FARHI, Computing for Science, ILL
+SummaryAuthor=Emmanuel FARHI, Soleil
 SummaryKeywords=data analysis, matlab, math, import, export, plot, fit
 SummaryComments=Get more information at <http://ifit.mccode.org>
 SupportProductURL=http://ifit.mccode.org
-SupportURL=http://www.ill.eu
-SupportPhoneNumber=+33 476 207 135
-SupportContactPerson=Emmanuel FARHI <farhi@ill.eu>
+SupportURL=http://ifit.mccode.org
+SupportPhoneNumber=
+SupportContactPerson=Emmanuel FARHI <emmanuel.farhi@synchrotron-soleil.fr>
 SupportProductUpdateURL=http://ifit.mccode.org
 SupportProductComments=Follow us on ifit.mccode.org
 

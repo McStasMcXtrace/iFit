@@ -8,7 +8,7 @@
 * Instrument: Template TAS instrument
 *
 * %Identification
-* Written by: <a href="mailto:farhi@ill.fr">Emmanuel Farhi</a>
+* Written by: <a href="mailto:emmanuel.farhi@synchrotron-soleil.fr">Emmanuel Farhi</a>
 * Date: 2006
 * Origin: <a href="http://www.ill.fr">ILL (France)</a>
 * Release: McStas CVS_080624
@@ -81,6 +81,8 @@
 *
 * %Link
 * Rescal for Matlab at http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/matlab-ill/
+* %Link
+* ResLibCal at http://ifit.mccode.org/Applications/ResLibCal/doc/ResLibCal.html
 * %Link
 * Restrax at http://omega.ujf.cas.cz/restrax/
 * %End

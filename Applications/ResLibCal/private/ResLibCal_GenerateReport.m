@@ -90,8 +90,7 @@ function filename = ResLibCal_GenerateReport(filename)
     
     fprintf(fid,[ '<a href="http://ifit.mccode.org">Powered by iFit ' ...
       '<img src="http://ifit.mccode.org/images/iFit-logo.png" width=35 height=32></a> \n' ...
-      '<a href="http://www.ill.eu">(c) ILL ' ...
-      '<img title="ILL, Grenoble, France www.ill.eu" src="http://ifit.mccode.org/images/ILL-web-jpeg.jpg" alt="ILL, Grenoble, France www.ill.eu" style="width: 33px; height: 32px;"></a><hr>\n' ]);
+      '<hr>\n' ]);
     fprintf(fid, '</body>');
     web(filename);
     if isdeployed

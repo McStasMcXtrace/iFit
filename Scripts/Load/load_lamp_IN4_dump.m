@@ -7,6 +7,7 @@ function a=load_lamp_IN4_dump(a,t)
 % load_lamp_IN4_dump(a,'transpose') handle transposed data set
 %
 % (Quick'n'Dirty writup for IN4 data, 20080408 PW)
+% http://lamp.mccode.org/
 %
 % Version: $Date$ $Version$ $Author$
 % See also: iData/load, iLoad, save, iData/saveas

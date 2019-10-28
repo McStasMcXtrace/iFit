@@ -15,7 +15,7 @@ function ret=webbrowser(url, method)
 %   webbrowser(url,'system') tries first to open the web page with the system browser.
 %
 %   Copyright: Licensed under the BSD, version 1.0.1
-%              E. Farhi, ILL, France <farhi@ill.fr> Aug 2017, http://ifit.mccode.org
+%              E. Farhi, Soleil, France <emmanuel.farhi@synchrotron-soleil.fr> Aug 2017, http://ifit.mccode.org
 
   list = {};
 
@@ -326,7 +326,7 @@ function ret=webbrowser(url, method)
   end
   
   function aboutBrowser(src, evnt) % about dialog
-    helpdlg(sprintf('This is a simplistic web browser, built from Matlab/Java. E. Farhi, ILL, France <farhi@ill.fr> Aug 2017. Copyright: Licensed under BSD. VISIT http://ifit.mccode.org for more.'), 'About this simplistic Browser');
+    helpdlg(sprintf('This is a simplistic web browser, built from Matlab/Java. E. Farhi, Soleil, France <emmanuel.farhi@synchrotron-soleil.fr> Aug 2017. Copyright: Licensed under BSD. VISIT http://ifit.mccode.org for more.'), 'About this simplistic Browser');
   end
   
   function setProxy(src, evnt) % Set the network Proxy

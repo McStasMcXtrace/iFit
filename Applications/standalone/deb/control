@@ -8,7 +8,7 @@ Suggests: mcstas-suite, libopenmpi-dev
 Section: Science
 Priority: optional
 Homepage: http://ifit.mccode.org
-Maintainer: Emmanuel Farhi <farhi@ill.fr>
+Maintainer: Emmanuel Farhi <emmanuel.farhi@synchrotron-soleil.fr>
 Description: @IFIT_NAME@ generic data analysis and fitting to models
  Simple methods to be used for complex data analysis
  .

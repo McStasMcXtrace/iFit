@@ -7,7 +7,7 @@ from __future__ import print_function
 
 __docformat__ = "restructuredtext en"
 __version__   = '1.0'
-__author__    = "E. Farhi <farhi@ill.fr>"
+__author__    = "E. Farhi <emmanuel.farhi@synchrotron-soleil.fr>"
 
 # all dependencies
 import numpy

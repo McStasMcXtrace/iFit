@@ -15,13 +15,25 @@ This is done via Git/Github. You need to create a Github account first. This is 
 
 # Procedure via simple comments
 
-An other way is to simple send me your comments by creating an Issue:
+An other way is to simply send me your comments by creating an Issue:
 
 This is done via Git/Github. You need to create a Github account first. This is free and fast.
 
 - Click on the Github Issues tab
 - Click on the New Issue (green button, top-right)
-- Explain what you want/suggest/report. Ypu can assign 'labels' such as Enhancement (requests), Bug, etc.
+- Explain what you want/suggest/report. You can assign 'labels' such as Enhancement (requests), Bug, etc.
 - Attach any file there (you may have to create a ZIP archive)
 
+# Procedure via simple email
+
+Last, if you do not have any GitHub account, just send an email to the iFit mailing list:
+
+- ifit-users@mccode.org
+
+and attach any relevant information, e.g.:
+
+- the commands that trigger the error
+- the trace of the error (message)
+- any necessay data file needed to reproduce the error
+- additional information regarding your system version, Matlab, etc.
 

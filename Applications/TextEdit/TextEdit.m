@@ -24,7 +24,7 @@ function hF = TextEdit(filename, options)
 % $ Rev. 0.0.1 $ 02/08/2014 $
 %
 % Improved with Java component thanks to Yair Altman comments.
-% by E. Farhi <farhi@ill.fr> Institut Laue-Langevin BSD, 2017
+% by E. Farhi <emmanuel.farhi@synchrotron-soleil.fr> BSD, 2017
 % Rev 1.0
 %
 % Orig: http://fr.mathworks.com/matlabcentral/fileexchange/47614-textedit
@@ -346,8 +346,8 @@ end
 % About
     function textedit_about(~,~)
 
-        devel='Initial design by By: Jorge De Los Santos; Improved by E. Farhi, ILL, 2017.';
-        e_mail='E-mail: delossantosmfq@gmail.com; farhi@ill.fr';
+        devel='Initial design by By: Jorge De Los Santos; Improved by E. Farhi, 2017.';
+        e_mail='E-mail: delossantosmfq@gmail.com; emmanuel.farhi@synchrotron-soleil.fr';
         blog='Blog: http://matlab-typ.blogspot.mx ; http://ifit.mccode.org';
         nvrs='TextEdit 2.0';
         

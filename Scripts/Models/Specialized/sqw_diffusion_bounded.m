@@ -49,7 +49,7 @@ function signal=sqw_diffusion_bounded(varargin)
 %       omega < 0, neutron gains energy, anti-Stokes
 %
 %  This model is equivalent to the QENS_ChudleyElliot model in LAMP.
-%  [http://lamp.mccode.org].
+%  [http://lamp.mccode.org/].
 %
 % Usage:
 % ------

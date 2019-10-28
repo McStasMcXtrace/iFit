@@ -6,7 +6,7 @@ Welcome to the iFit/iData package
 
                           http://ifit.mccode.org
                           <br>
-                          E. Farhi, ILL/CS [farhi@ill.fr]
+                          E. Farhi, ILL/CS [emmanuel.farhi@synchrotron-soleil.fr]
                           <br>
                           Version @IFIT_VERSION@ - @IFIT_DATE@
 

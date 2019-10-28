@@ -18,7 +18,7 @@ To build a Debian package manually
 
 To sign the debian package:
   gpg --gen-key
-  gpg --armor --export farhi@ill.eu --output farhi@www.ill.fr.gpg.key
+  gpg --armor --export emmanuel.farhi@synchrotron-soleil.fr --output farhi@synchrotron.soleil.fr.gpg.key
   apt-get install dpkg-sig
   dpkg-sig --sign builder <file.deb>
 
@@ -49,7 +49,7 @@ open -a terminal standalone/ifit &
 
 osascript  <<EOF
 tell app "Terminal"
-  set custom title of front window to "iFit (c) ILL <ifit.mccode.org>"
+  set custom title of front window to "iFit (c) Soleil <ifit.mccode.org>"
   set normal text color of front window to "blue"
 end tell
 EOF
@@ -99,7 +99,7 @@ Matlab is a registered trademark of The Mathworks Inc.
 
   5- in left panel Contents:iFit/Applications Tab:Configuration
     Destination: /Applications (no custom location)
-    Package ID: ill.eu.ifit.iFit.pkg
+    Package ID: synchrotron.soleil.fr.ifit.iFit.pkg
     Version: 1.5
     Require admin auth
 

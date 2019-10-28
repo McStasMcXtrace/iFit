@@ -52,7 +52,7 @@ function signal=sqw_diffusion_jump(varargin)
 %       omega < 0, neutron gains energy, anti-Stokes
 %
 %  This model is equivalent to the QENS_JumpDiffusionTranslation model in LAMP.
-%  and QENS_RandomWalkTranslation when t0=0 [http://lamp.mccode.org].
+%  and QENS_RandomWalkTranslation when t0=0 [http://lamp.mccode.org/].
 %
 % Usage:
 % ------

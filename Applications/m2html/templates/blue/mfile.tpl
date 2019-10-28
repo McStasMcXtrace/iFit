@@ -65,6 +65,6 @@ This function is called by:
 <div class="fragment"><pre>{SOURCECODE}</pre></div>
 <!-- END source -->
 
-<hr><address>Generated on {DATE} by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005. <a href="http://ifit.mccode.org">iFit</a> (c) E.Farhi/<a href="http://www.ill.eu">ILL</a> EUPL 1.1</address>
+<hr><address>Generated on {DATE} by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005. <a href="http://ifit.mccode.org">iFit</a> (c) E.Farhi/Soleil EUPL 1.1</address>
 </body>
 </html>

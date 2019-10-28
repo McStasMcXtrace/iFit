@@ -2,7 +2,8 @@ function b = iData_private_2lamp(a)
 % private function to convert/clean an object to match a LAMP processed 
 % workspace
 % once created, the LAMP workspace can be saved with:
-%  save(b, '', 'hdf5 data');
+%   save(b, '', 'hdf5 data');
+% see: http://lamp.mccode.org/
 
 % LAMP processed workspace:
 % root: [HISTORY=string

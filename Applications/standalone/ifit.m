@@ -337,7 +337,7 @@ function inline_display_banner
   disp(' ');
   disp('                          ** Welcome to iFit **');
   disp('                            <ifit.mccode.org>');
-  disp('                E. Farhi, Institut Laue Langevin, France (c)');
+  disp('                E. Farhi, Synchrotron Soleil, France (c)');
   disp('                      Licensed under the EUPL V.1.1');
   disp(' ');
   disp(version(iData));
