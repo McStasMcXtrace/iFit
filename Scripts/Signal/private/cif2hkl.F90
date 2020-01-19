@@ -1,3 +1,45 @@
+!
+!   cif2hkl: convert a CIF or CFL crystal structure file into a PowderN reflection list.
+!
+!   cif2hkl 1.1 (18 Dec 2012) by Farhi E. [farhi@ill.fr] using crysFML <http://forge.ill.fr/projects/crysfml>
+!   Copyright (C) 2009 Institut Laue Langevin, EUPL license.
+!   This is free software; see the source for copying conditions.
+!   There is NO warranty; not even for MERCHANTABILITY or FITNESS
+!   FOR A PARTICULAR PURPOSE.
+!
+! Usage: ./cif2hkl [options][-o outfile] file1 file2 ...
+! Action: Read a CIF/CFL/SHX/PCR crystallographic description 
+!         and generates a HKL F^2 reflection list.
+! Input:
+!   file1...          Input file in CIF, PCR, CFL, SHX, INS, RES format.
+!                       The file format is determined from its extension
+!                         .CIF           Crystallographic Information File
+!                         .PCR/.CFL      FullProf file
+!                         .SHX/.INS/.RES ShelX file
+! Output:
+!   a file with readable header, and reflection list with columns
+!     [ H K L Multiplicity Sin(Theta/Lambda) d_spacing |F|^2 ]
+! Options:
+! --help     or -h    Show this help
+! --version  or -v    Display program version
+! --out FILE          Specify the name of the next output file.
+!    -o FILE            Default is to add .hkl to the initial file name.
+! --lambda LAMBDA     Set the incoming probe wavelength [Angs].
+!    -l    LAMBDA       Default is 0.5
+! --powder   or -p    Generate a list of unique HKL reflections (for powders). Default.
+! --xtal     or -x    Generate a list of all HKL reflections (for single crystals).
+! --verbose           Display processing details.
+! --no-outout-files   Just read the CIF/CFL/ShelX file (for checking).
+! Example: ./cif2hkl -o CaF2.laz CaF2.cfl
+
+! Compile with:
+!   gfortran -O2 -o cif2hkl cif2hkl.F90 -lm
+!   ./cif2hkl ../CIF/CaF2.cfl
+! 
+! Create Matlab Mex with:
+!     mex -c -O cif2hkl.F90
+!     mex -O cif2hkl_mex.c cif2hkl.o -o cif2hkl -lgfortran
+
 !!-------------------------------------------------------
 !!---- Crystallographic Fortran Modules Library (CrysFML)
 !!-------------------------------------------------------
@@ -55922,35 +55964,44 @@ program cif2hkl
       if (argv(1:2) == "-h" .or. argv(1:6) == "--help") then
         call print_usage(pgmname, message)
         write(*,*) trim(message)
+        stop
       end if
       if (argv(1:2) == "-v" .or. argv(1:9) == "--version") then
         call print_version(pgmname, message)
         write(*,*) trim(message)
+        stop
       end if
       if ( (argv(1:8) == "--lambda" .or. argv(1:2) == "-l") .and. i<argc) then
         i=i+1
         call getarg(i, argv)
         read(argv, *) lambda
+        cycle
       end if
       if ( (argv(1:5) == "--out".or. argv(1:2) == "-o") .and. i < argc) then
         i=i+1
         call getarg(i, outfile)
+        cycle
       end if
       if ( (argv(1:6) == "--mode".or. argv(1:2) == "-m") .and. i < argc) then
         i=i+1
         call getarg(i, mode)
+        cycle
       end if
       if (argv(1:2) == "-p" .or. argv(1:3) == "--p") then
         powxtal = "p"
+        cycle
       end if
       if (argv(1:2) == "-x" .or. argv(1:3) == "--x") then
         powxtal = "x"
+        cycle
       end if
       if (argv(1:8) == "-verbose" .or. argv(1:9) == "--verbose") then
         verbose = 1
+        cycle
       end if
       if (argv(1:4) == "--no") then
         powxtal = "-"
+        cycle
       end if
       if (argv(1:1) .ne. '-') then
         ! convert argv[i]: process conversion
@@ -55964,6 +56015,7 @@ program cif2hkl
 
         ! revert outfile to default
         outfile = ""
+        cycle
       end if
     end do
   end if
