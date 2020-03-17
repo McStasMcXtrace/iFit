@@ -71,7 +71,9 @@ function v = get_single(s, field, follow, s0)
       % when 'follow', we need to access values iteratively and check for possible 'alias' (char)
       if follow && ischar(v) && ~strcmp(S(index).subs,'Source')
         if any(v == '.') && all(isletter(v) | v == '_' | v == '.' | isstrprop(v, 'digit')) % a compound link
-          v = get_single(s, v, follow, s0);
+          try % this may fail when e.g. field is a file name with extension -> has a dot.
+            v = get_single(s, v, follow, s0);
+          end
         else
           v = get_single_alias(s0, v); % access a link/alias in initial object/structure
         end
