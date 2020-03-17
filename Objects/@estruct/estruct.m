@@ -178,7 +178,7 @@ properties
               disp([ mfilename ': WARNING: failed importing ' char(this) ]);
             end
           end
-          % this can now be initial char/cellstr, a struct from iLoad, or a cell of structs from iLoad
+          % 'this' can be initial char/cellstr, a struct from iLoad, or a cell of structs from iLoad
           if ~iscell(this), this = { this }; end
           for index_data=1:numel(this)
             if isempty(this{index_data}), continue; end
@@ -188,14 +188,23 @@ properties
               new1 = copyobj(new0);
             end
 
-            new1.Data = this{index_data}; this{index_data} = [];
-            if isstruct(new1.Data) && isfield(new1.Data, 'Source') && isfield(new1.Data, 'Loader') % iload struct
-              history(new, 'load', new0, new.Data.Source);
-            else
-              history(new, mfilename, new0, this{index_data});
+            new1.Data = this{index_data}; 
+            history(new1, mfilename, this{index_data});
+            this{index_data} = []; % and clear memory
+            if isstruct(new1.Data) && isfield(new1.Data, 'Source') && isfield(new1.Data, 'Loader') % iLoad struct
+              % we transfer the iLoad struct to the estruct.
+              new1 = struct2estruct(new1.Data, new1); % updates estruct (in 'private')
+              % assign default Signal and axes
+              new1 = axescheck(new1);
+              % and call any postprocess (if any)
+              if isfield(new1, 'postprocess')
+                new1 = private_postprocess(new1, new1.postprocess); % can return an array
+                new1 = reshape(new1, 1, numel(new1)); % a row
+              end
             end
-            history(new1, mfilename, new0, this{index_data});
-            new1.Private.cache.check_requested = true; % request a check at first 'get'
+            for index_new1 = 1:numel(new1) % post process may create more objects
+              set(new1(index_new1), 'Private.cache.check_requested',true); % request a check at first 'get'
+            end
             if numel_new > 1
               new = [ new new1 ]; % build array
             end % index_data
