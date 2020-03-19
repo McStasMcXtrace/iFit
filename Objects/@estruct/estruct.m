@@ -203,9 +203,14 @@ properties
               if isfield(new1, 'postprocess')
                 new1 = private_postprocess(new1, new1.postprocess); % can return an array
                 if numel(new1) > 1
+                  % need to check for duplicates (when post-process creates new data sets)
+                  new1 = private_remove_duplicates(new1);
+                end
+                if numel(new1) > 1
                   new1 = reshape(new1, 1, numel(new1)); % a row
                 end
               end
+              
             end
             for index_new1 = 1:numel(new1) % post process may create more objects
               set(new1(index_new1), 'Private.cache.check_requested',true); % request a check at first 'get'
@@ -215,9 +220,9 @@ properties
             end % index_data
             numel_new = numel_new+1;
           end
-        end % index_arg
+        end % index_arg (content of varg in case this is an array/cellstr for iLoad)
 
-      end % index_varg
+      end % index_varg (initial input arg)
 
     end % estruct (instantiate)
 

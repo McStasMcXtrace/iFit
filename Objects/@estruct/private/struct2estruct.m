@@ -28,7 +28,8 @@ function b=struct2estruct(a, varargin)
     b.Data = a.Data;
   end
   for index=1:length(f) % store the estruct static fields
-    if any(strcmp(f{index},fb)) && ~strcmp(f{index}, 'Data')
+    if any(strcmp(f{index},fb)) && ~strcmp(f{index}, 'Data') ...
+    && ~any(strcmp(f{index}, b.properties_Protected))
       b = set(b,f{index}, a.(f{index}));
     end
   end
