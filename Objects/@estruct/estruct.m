@@ -199,7 +199,9 @@ properties
               % and call any postprocess (if any)
               if isfield(new1, 'postprocess')
                 new1 = private_postprocess(new1, new1.postprocess); % can return an array
-                new1 = reshape(new1, 1, numel(new1)); % a row
+                if numel(new1) > 1
+                  new1 = reshape(new1, 1, numel(new1)); % a row
+                end
               end
             end
             for index_new1 = 1:numel(new1) % post process may create more objects
