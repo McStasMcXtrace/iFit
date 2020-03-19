@@ -69,7 +69,8 @@ properties
     %  ESTRUCT('filename') imports the file name and store its content into a Data property.
     %  Multiple files can be given, each producing a distinct object arranged
     %  into an array. File names can also be given as URL (file: http: https: ftp:)
-    %  and/or be compressed (zip, gz, tar, Z).
+    %  and/or be compressed (zip, gz, tar, Z). The import uses a guessed importer.
+    %  Use 'load(estruct, file, loader)' to specify the importer.
     %
     %  ESTRUCT(OBJ) converts the object OBJ into its equivalent
     %  estruct.  The initial class information is lost.
@@ -136,7 +137,10 @@ properties
             structs{end+1} = s; this = [];
             varargin{index} = [];
           end
-        end % ischar
+        elseif isstruct(this) && isfield(this, 'Source') && isfield(this, 'Loader') % iLoad struct
+          % pass: we handle this iLoad struct when assembling the object(s)
+            this = [];
+        end
 
         if ~isempty(this)
           s.value = this;
