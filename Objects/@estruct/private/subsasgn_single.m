@@ -1,5 +1,6 @@
 function a = subsasgn_single(a, S, val, a0)
 % subsasgn_single single level assignment
+%   SUBSASGN_SINGLE(a,S,val,a0) assigns a.(S) = val in root object a0
   if nargin<4, a0=a; end
   if ischar(S), S=struct('type','.','subs', S); end
   if ~isstruct(S),  error([ mfilename ': invalid reference (2nd arg) expect struct, is ' class(S) ]); end

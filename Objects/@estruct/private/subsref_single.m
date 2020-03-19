@@ -1,5 +1,6 @@
 function v = subsref_single(v, S, a)
 % subsref_single single level subsref
+%   SUBSREF_SINGLE(v, S, a) gets v.(S) from root object a. Default with v=a.
   if nargin<3, a=v; end
   if ischar(S), S=struct('type','.','subs', S); end
   if ~isstruct(S),  error([ mfilename ': invalid reference (2nd arg) expect struct, is ' class(S) ]); end
@@ -37,7 +38,6 @@ function v = subsref_single(v, S, a)
   if default  % other cases
     v = builtin('subsref', v, S);
   end
-
 % ------------------------------------------------------------------------------
 function v = get_single(s, field, follow, s0)
   % get_single get a single field, recursively, and can follow char links
