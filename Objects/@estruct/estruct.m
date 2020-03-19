@@ -83,10 +83,13 @@ properties
     % See also isstruct, setfield, getfield, fieldnames, orderfields,
     %   isfield, rmfield, deal, substruct, struct2cell, cell2struct.
 
-      persistent id
+      persistent id meth
+
+      if isempty(meth), meth = methods(mfilename); end
 
       warning('off','MATLAB:structOnObject');
       new.Private.cache = []; % init cache to empty
+      new.Private.cache.methods = meth;
       % handle Tag number
       if isempty(id) id=0; end
       if id > 1e6,   id=0; end % use clock
@@ -455,6 +458,13 @@ properties
         s = arrayfun('struct', self);
       end
     end % struct
+
+    function tf = ismethod(self, m)
+      % ISMETHOD  True if method of object.
+      %   ISMETHOD(OBJ,NAME) returns 1 if string NAME is a method of object
+      %   OBJ, and 0 otherwise.
+      tf = any(strcmp(m ,self.Private.cache.methods));
+    end % ismethod
 
   end % methods
 

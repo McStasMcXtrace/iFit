@@ -42,7 +42,8 @@ function new = copyobj(self, org)
     new = org;
   else
     % handle object: transfer properties: this is a safe way to instantiate a subclass
-    new = feval(class(self)); % new empty object of same class
+    % new = feval(class(self)); % new empty object of same class
+    new = estruct;
     wrn_flag = true;
     if isempty(org)
       flag_nargin=1;
