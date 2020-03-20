@@ -26,6 +26,9 @@ function [data, format] = iLoad(filename, loader, varargin)
 %   iLoad('file.zip')
 %   iLoad('file#token');
 %   iLoad('http://path/name'); 
+%   iLoad([1 2 3 4])
+%   iLoad(structure)
+%   iLoad({ 1:10, 3:4:80 })
 %
 % Additional remarks:
 % --------------------
@@ -36,6 +39,8 @@ function [data, format] = iLoad(filename, loader, varargin)
 %   iLoad config        get the loaders list as a configuration structure
 %   iLoad formats       list of all supported file formats
 %   iLoad FMT formats   list of file formats matching FMT
+%   iLoad verbose       switch to verbose mode (more messages)
+%   iLoad silent        switch to silent mode (no messages)
 %
 % The iLoad_ini configuration file can be loaded and saved in the Preference 
 % directory using 
@@ -88,10 +93,10 @@ function [data, format] = iLoad(filename, loader, varargin)
   if nargin == 0, filename=''; end
   if nargin < 2,  loader = ''; end
   if nargin ==1 && (ischar(filename) || isstruct(filename))
-    if any(strcmp(filename, {'load config','config','force','force load config','formats','display config','load','save','compile','check'}))
+    if any(strcmp(filename, {'load config','config','force','force load config','formats','display config','load','save','compile','check','silent','verbose'}))
       [data, format] = iLoad('', filename, varargin{:});
       return
-    elseif  isstruct(filename)
+    elseif  isconfig(filename)
       config = filename;
       loader = 'save';
       read_anytext('config');
@@ -131,7 +136,7 @@ function [data, format] = iLoad(filename, loader, varargin)
     return
   elseif any(strcmp(loader, {'force','force load config','compile','check'}))
   
-    config  = iLoad_config_load;                          % force omport
+    config  = iLoad_config_load;                          % force import
     data = iLoad_check_compile(filename, loader, config); % check executables
     return
   elseif strcmp(loader, 'formats') || strcmp(loader, 'display config')  || strcmp(loader, 'list')
@@ -149,6 +154,13 @@ function [data, format] = iLoad(filename, loader, varargin)
       config = filename;
     end
     data = iLoad_config_save(config);
+    return
+  elseif any(strcmp(loader, {'silent','verbose'}))
+    if strcmp(loader, 'silent')
+      config.verbosity = 0;
+    elseif strcmp(loader, 'verbose')
+      config.verbosity = 2;
+    end
     return
   end
   % ------------------------------------------------------------------------------
@@ -411,6 +423,9 @@ function [data, format] = iLoad(filename, loader, varargin)
       end % all elements in case of directory
     end
     [data, format] = iLoad(filename, loader, varargin{:});
+  elseif isiloadstruct(filename)
+    data   = filename;
+    format = filename.Loader;
   else
     % data not empty, but not a file name
     data = iLoad_loader_check([ inputname(1) ' variable of class ' class(filename) ], filename, 'variable');
@@ -428,4 +443,26 @@ function [data, format] = iLoad(filename, loader, varargin)
   end
 
 end % iLoad (main)
+
+% ------------------------------------------------------------------------------
+function tf = isconfig(filename)
+  % ISCONFIG Return true when filename is a struct with an iLoad config
+  tf = false;
+  if ~isstruct(filename), return; end
+  for f = {'FileName','UseSystemDialogs','MeX','loaders'}
+    if ~isfield(filename, f{1}), return; end
+  end
+  if ~iscell(filename.loader), return; end
+  tf = true;
+end
+
+function tf = isiloadstruct(filename)
+  % ISILOADSTRUCT Return true when this is already an iLoad struct
+  
+  tf = false;
+  for f={'Data' 'Source' 'Title' 'Date' 'Format' 'Command' 'Creator' 'User' 'Label' 'Loader'}
+    if ~isfield(filename, f{1}), return; end
+  end
+  tf = true;
+end
 

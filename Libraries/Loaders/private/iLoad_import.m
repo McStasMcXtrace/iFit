@@ -2,7 +2,11 @@ function [data, loader] = iLoad_import(filename, loader, config, varargin)
 % function to import single data with given method(s)
 
   data = []; isbinary=0;
-  verbose = 1; % set this to 1 to get more output for debugging
+  if isfield(config, 'verbosity')
+    verbose = config.verbosity;
+  else
+    verbose = 0; % set this to 1 to get more output for debugging
+  end
   
   if isempty(dir(filename))
     loader = 'Failed to load file (does not exist)';
