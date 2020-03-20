@@ -7,6 +7,8 @@ function out = load(a, varargin)
 %   that most common data importers are tested until one works. 
 %   The list of preferred loader definitions can be set into an iLoad_ini file or
 %   iLoad.ini in the preferences directory. Refer to 'iload' for more information.
+%   As opposed to ESTRUCT(file), the LOAD method can specify a given loader, and
+%   applies further post-processing filters.
 %
 %   s = LOAD(estruct, file, loader) same as above, and specifies the loader to
 %   use. The loader can be an exact function name, such as 'read_hdf5'
@@ -27,6 +29,7 @@ function out = load(a, varargin)
 %   LOAD(estruct, file, 'gui') displays a list dialogue to select a loader to use.
 %
 %   LOAD(estruct, ...) loads data, and updates initial estruct object.
+%   The data can be anything, including a structure, cell, array, ...
 %   The input estruct object is updated if no output argument is specified.
 %
 %   Default supported formats include: any text based including CSV, Lotus1-2-3, SUN sound, 
@@ -73,7 +76,8 @@ if ~iscell(files),   files   = { files }; end
 if ~iscell(loaders), loaders = { loaders }; end
 out = [];
 loader = [];
-% convert iload structs to estruct (and call post-process)
+
+% convert iload structs to estruct (no post-process yet)
 for i=1:numel(files)
   if isempty(files{i}), continue; end
   
@@ -81,10 +85,24 @@ for i=1:numel(files)
   if numel(this_estruct) > 1 % make a row
     this_estruct = reshape(this_estruct, 1, numel(this_estruct));
   end
+  
+  % and call any postprocess (if any)
+  if isfield(this_estruct, 'postprocess')
+    this_estruct = private_postprocess(this_estruct, this_estruct.postprocess); % can return an array
+    if numel(this_estruct) > 1
+      % need to check for duplicates (when post-process creates new data sets)
+      this_estruct = private_remove_duplicates(this_estruct);
+    end
+    if numel(this_estruct) > 1
+      this_estruct = reshape(this_estruct, 1, numel(this_estruct)); % a row
+    end
+  end
 
   out = [ out this_estruct ];
   clear this_estruct
 end %for i=1:length(files)
+
+
 
 % set Command history and Label/DisplayName
 for i=1:numel(out)
