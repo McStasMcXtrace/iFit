@@ -199,7 +199,11 @@ properties
               new1 = copyobj(new0);
             end
 
-            new1.Data = this{index_data}; 
+            if isstruct(this{index_data})
+              new1 = struct2estruct(this{index_data}, new1);
+            else
+              new1.Data = this{index_data}; 
+            end
             history(new1, mfilename, this{index_data});
             this{index_data} = []; % and clear memory
             if isstruct(new1.Data) && isfield(new1.Data, 'Source') && isfield(new1.Data, 'Loader') % iLoad struct
