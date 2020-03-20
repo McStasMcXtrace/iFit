@@ -18,50 +18,46 @@ function b=struct2estruct(a, varargin)
     return
   end
 
-  f  = fieldnames(a);
   if nargin == 1
     b = estruct;
-  else
+  elseif isa(varargin{1}, 'estruct')
     b = varargin{1};
   end
-  if isfield(a, 'Data')   % start by storing the raw Data
-    b.Data = a.Data;
+  
+  if isfield(a, 'Title') && ~isfield(a, 'Name')
+    a.Name = a.Title; a = rmfield(a, 'Title');
   end
-  for index=1:length(f) % store the estruct static fields
-    if any(strcmp(f{index},fb)) && ~strcmp(f{index}, 'Data') ...
-    && ~any(strcmp(f{index}, b.properties_Protected))
-      b = set(b,f{index}, a.(f{index}));
+
+  % transfer the fields (except protected ones)
+  for f=fieldnames(a)'
+    if any(strcmp(f{1}, b.properties_Protected)), continue; end % ignore protected
+    if isfield(b, f{1})
+      b.(f{1}) = a.(f{1});
+    else
+      set(b, f{1}, a.(f{1})); % add new property
     end
-  end
-    
-  if ~isfield(a, 'Data')   % store whole file content if possible.
-    b.Data = a;
-%  else
-%    disp(['estruct: warning: could not import all fields from structure.' ]);
-  elseif isfield(a, 'Headers')
-    b.Data.Attributes = a.Headers;
-    b=setalias(b, 'Attributes', 'Data.Attributes', 'Headers (text)' );
-  elseif isfield(a, 'Attributes')
-    b.Data.Attributes = a.Attributes;
-    b=setalias(b, 'Attributes', 'Data.Attributes', 'Headers (text)' );
   end
   
-  if isfield(a, 'Command')
-    b.Command = a.Command;
+  % handle some more specific stuff
+  % Attributes Headers MetaData Loader postprocess
+  if isfield(a, 'Headers')
+    label(b, 'Headers', 'Headers (text)' );
   end
-  % transfer some standard fields from iLoad when empty/non-existent
-  for f={'Source','Date','Label','Format','User','Loader'}
-    if isfield(a, f{1}) && ~isempty(a.(f{1})) ...
-    && (~isfield(b, f{1}) || (isempty(getalias(b,f{1})) && isempty(getalias(b,f{1})))) ...
-      if isfield(b, f{1})
-        b.(f{1}) = a.(f{1});
-      else
-        set(b, f{1}, a.(f{1}));
-      end
+  if isfield(a, 'Attributes')
+    label(b, 'Attributes', 'Attributes (text)' );
+  end
+  if isfield(b.Data,'MetaData') && ~isfield(b, 'MetaData')
+    set(b, 'MetaData', 'Data.MetaData');
+  end
+  if isfield(b, 'MetaData')
+    [pathname,filename,ext] = fileparts(b.Source);
+    label(b, 'MetaData', [ 'MetaData from ' filename ext ] );
+    try
+      b=load_clean_metadata(b);
     end
   end
-  if isfield(a, 'Title') && ~isempty(a.Title), b.Name = a.Title; end
-  if isfield(a, 'Loader') && isfield(a.Loader, 'postprocess') && ~isempty(a.Loader.postprocess)
+  if ~isfield(b,        'postprocess') &&  isfield(a, 'Loader') ...
+  &&  isfield(a.Loader, 'postprocess') && ~isempty(a.Loader.postprocess)
     set(b, 'postprocess', a.Loader.postprocess);
   end
   
@@ -70,22 +66,15 @@ function b=struct2estruct(a, varargin)
   end
   
   if isempty(b.Command), b.Command= cellstr('estruct(<struct>)'); end
-  try
-      [pathname,filename,ext] = fileparts(b.Source);
-      if isfield(b.Data, 'MetaData')
-        b=setalias(b, 'MetaData', 'Data.MetaData', [ 'MetaData from ' filename ext ]);
-        b=load_clean_metadata(b);
-      end
-  end
   
   % ------------------------------------------------------------------------------
   
-function a=load_clean_metadata(a, loaders, filenames)
-% test each field of MetaData and search for equal aliases
-  this = a.Data.MetaData;
+function a=load_clean_metadata(a)
+% LOAD_CLEAN_METADATA test each field of MetaData and search for equal aliases
+  this = a.MetaData;
   meta_names = fieldnames(this);
-  alias_names=getalias(a);
-  %treat each MetaData
+  alias_names= getalias(a);
+  % treat each MetaData
   for index=1:length(meta_names)
     if numel(getfield(this, meta_names{index})) > 1000
     for index_alias=1:length(alias_names)
@@ -98,5 +87,5 @@ function a=load_clean_metadata(a, loaders, filenames)
     end % for
     end % if
   end
-  a.Data.MetaData = this;
+  a.MetaData = this;
 

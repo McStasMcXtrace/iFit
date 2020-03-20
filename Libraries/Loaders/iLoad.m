@@ -40,7 +40,7 @@ function [data, format] = iLoad(filename, loader, varargin)
 %   iLoad formats       list of all supported file formats
 %   iLoad FMT formats   list of file formats matching FMT
 %   iLoad verbose       switch to verbose mode (more messages)
-%   iLoad silent        switch to silent mode (no messages)
+%   iLoad silent        switch to silent mode (no messages, default)
 %
 % The iLoad_ini configuration file can be loaded and saved in the Preference 
 % directory using 
