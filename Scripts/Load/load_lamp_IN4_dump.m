@@ -12,8 +12,8 @@ function a=load_lamp_IN4_dump(a,t)
 % Version: $Date$ $Version$ $Author$
 % See also: iData/load, iLoad, save, iData/saveas
 
-if ~isa(a,'iData')
-  a = iData(iLoad(a));  % no post-processing
+if ~isa(a,'estruct')
+  a = estruct(iLoad(a));  % no post-processing
 end
 
 % handle input iData arrays
@@ -24,7 +24,6 @@ if numel(a) > 1
   return
 end
 
-a=iData(a);
 % Find proper labels for Signal and Axis
 
 axes_fields=findfield(a,'Axes_');

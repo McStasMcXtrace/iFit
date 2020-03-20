@@ -8,8 +8,8 @@ function a=load_ill_tas(a)
 % See also: iData/load, iLoad, save, iData/saveas
 % 
 
-if ~isa(a,'iData')
-  a = iData(iLoad(a,'ILL TAS'));  % no post-processing
+if ~isa(a,'estruct')
+  a = estruct(iLoad(a,'ILL TAS'));  % no post-processing
 end
 
 % handle input iData arrays
@@ -23,8 +23,6 @@ if numel(a) > 1
   a = b;
   return
 end
-
-a=iData(a);
 
 % get the main data block header: MetaData.PNT or DATA_
 try

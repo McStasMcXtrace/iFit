@@ -3,8 +3,8 @@ function out = opencdf(filename)
 %        and set the 'ans' variable to an iData object with its content
 % 
 
-if ~isa(filename,'iData')
-  out = iData(filename,'NetCDF');  % with post-processing
+if ~isa(filename,'estruct')
+  out = estruct(filename,'NetCDF');  % with post-processing
   return
 else
   out = filename;

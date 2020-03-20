@@ -3,8 +3,8 @@ function out = openspe(filename)
 %        and set the 'ans' variable to an iData object with its content
 % 
 
-if ~isa(filename,'iData')
-  out = iData(filename,'SPE');  % with post-processing
+if ~isa(filename,'estruct')
+  out = estruct(filename,'SPE');  % with post-processing
 else
   out = filename;
 end

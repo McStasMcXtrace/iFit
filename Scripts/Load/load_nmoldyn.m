@@ -7,8 +7,8 @@ function a = load_nmoldyn(filename)
 % See also: iData/load, iLoad, save, iData/saveas
 % 
 
-if ~isa(filename,'iData')
-  a = iData(iLoad(filename)); % no post-processing
+if ~isa(filename,'estruct')
+  a = estruct(iLoad(filename)); % no post-processing
 else
   a = filename; 
 end

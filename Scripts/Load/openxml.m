@@ -3,8 +3,8 @@ function out = openxml(filename)
 %        and set the 'ans' variable to an iData object with its content
 % 
 
-if ~isa(filename,'iData')
-  out = iData(filename,'XML');  % with post-processing
+if ~isa(filename,'estruct')
+  out = load(estruct, filename,'XML');  % with post-processing
 else
   out = filename;
 end

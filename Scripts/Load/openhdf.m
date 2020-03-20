@@ -7,8 +7,8 @@ if nargin < 2
   format = 'HDF';
 end
 
-if ~isa(filename,'iData')
-  out = iData(filename,format);
+if ~isa(filename,'estruct')
+  out = estruct(filename,format);
 else
   out = filename;
 end
@@ -20,7 +20,7 @@ if numel(out) > 1
   out = []; % the number of elements may change, can not simply replace
   for index=1:numel(in)
     out = [ out ; feval(mfilename, in(index)) ];
-    in(index) = iData; % free memory
+    in(index) = estruct; % free memory
   end
   return
 end

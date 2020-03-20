@@ -3,8 +3,8 @@ function out = opensqw(filename)
 %        display it and set the 'ans' variable to an iData object with its content
 % 
 
-if ~isa(filename,'iData')
-  out = iData(iLoad(filename,'sqw')); % no post-processing
+if ~isa(filename,'estruct')
+  out = estruct(iLoad(filename,'sqw')); % no post-processing
 else
   out = filename;
 end
@@ -34,15 +34,14 @@ elseif ~isempty(findstr(out,'Sqw'))
     % case: 2D S(q,w)
     if ~isempty(q_index) 
       q_values= fields{q_index}; 
-      setalias(out,'q', q_values, 'Q [AA-1]'); setaxis(out,1,'q');
+      setalias(out,'q', q_values); setaxis(out,1,'q'); label(out, 1, 'Q [AA-1]'); 
     end
     % get Energy
     
     if ~isempty(w_index)
       w_values= fields{w_index}; 
-      setalias(out,'w', w_values, 'w [meV]');  setaxis(out,2,'w');
+      setalias(out,'w', w_values); setaxis(out,2,'w'); label(out, 2, 'w [meV]');  
     end
-    
     out = transpose(out);
   elseif size(out.Signal, 2) == 5
     % case: 4D S(hkl,w)

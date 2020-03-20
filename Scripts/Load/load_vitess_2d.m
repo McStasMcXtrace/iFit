@@ -9,8 +9,8 @@ function a=load_vitess_2d(a)
 % See also: iData/load, iLoad, save, iData/saveas
 % 
 
-if ~isa(a,'iData')
-  a = iData(iLoad(a,mfilename));  % no post-processing
+if ~isa(a,'estruct')
+  a = estruct(iLoad(a,mfilename));  % no post-processing
 end
 
 % handle input iData arrays

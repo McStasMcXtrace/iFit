@@ -3,15 +3,15 @@ function out = openhdr(filename)
 %        and set the 'ans' variable to an iData object with its content
 % 
 
-if ~isa(filename,'iData')
-  out = iData(iLoad(filename,'Analyze')); % no post-processing
+if ~isa(filename,'estruct')
+  out = estruct(iLoad(filename,'Analyze')); % no post-processing
 else
   out = filename;
 end
 clear filename;
 
 if numel(out) > 1
-  % handle input iData arrays
+  % handle input object arrays
   for index=1:numel(out)
     out(index) = feval(mfilename, out(index));
   end

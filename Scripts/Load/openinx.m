@@ -3,8 +3,8 @@ function out = openinx(filename)
 %        and set the 'ans' variable to an iData object with its content
 % 
 
-if ~isa(filename,'iData')
-  out = iData(iLoad(filename,'ILL INX')); % no post-processing
+if ~isa(filename,'estruct')
+  out = estruct(iLoad(filename,'ILL INX')); % no post-processing
 else
   out = filename;
 end

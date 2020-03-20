@@ -8,8 +8,8 @@ if nargin < 2
   format = 'LAZ';
 end
 
-if ~isa(a,'iData')
-  out = iData(iLoad(a,format));  % no post-processing
+if ~isa(a,'estruct')
+  out = estruct(iLoad(a,format));  % no post-processing
 else
   out = a;
 end

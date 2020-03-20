@@ -4,8 +4,8 @@ function out = openedf(filename)
 % 
 
 
-if ~isa(filename,'iData')
-  out = iData(filename,'EDF');
+if ~isa(filename,'estruct')
+  out = estruct(filename,'EDF');
 else
   out = filename;
 end

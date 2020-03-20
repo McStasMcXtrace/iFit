@@ -7,8 +7,8 @@ if nargin < 2
   format = 'STL';
 end
 
-if ~isa(filename,'iData')
-  out = iData(iLoad(filename,format));   % no post-processing
+if ~isa(filename,'estruct')
+  out = estruct(iLoad(filename,format));   % no post-processing
 else
   out = filename;
 end
