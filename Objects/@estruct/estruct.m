@@ -1,27 +1,29 @@
 classdef estruct < dynamicprops
-%ESTRUCT Create or convert to an estruct object.
-%  S = ESTRUCT('field1',VALUES1,'field2',VALUES2,...) creates
-%  an object with the specified fields and values (as properties).
-%
-%  ESTRUCT(a,b,c,...) imports input arguments into an estruct object.
-%
-%  ESTRUCT('filename') imports the file name and store its content into a Data property.
-%  Multiple files can be given, each producing a distinct object arranged
-%  into an array. File names can also be given as URL (file: http: https: ftp:)
-%  and/or be compressed (zip, gz, tar, Z).
-%
-%  ESTRUCT(OBJ) converts the object OBJ into its equivalent
-%  estruct.  The initial class information is lost.
-%
-%  ESTRUCT([]) creates an empty object.
-%
-%  ESTRUCT is similar to STRUCT, but is designed to hold scientific data.
-%
-% Example: s = estruct('type',{'big','little'},'color','red','x',{3 4}); isstruct(s)
-% Example: s = estruct(peaks); isstruct(s)
-% Version: $Date$ $Version$ $Author$
-% See also isstruct, setfield, getfield, fieldnames, orderfields,
-%   isfield, rmfield, deal, substruct, struct2cell, cell2struct.
+% ESTRUCT Create or convert to an estruct object.
+%   S = ESTRUCT('field1',VALUES1,'field2',VALUES2,...) creates
+%   an object with the specified fields and values (as properties).
+% 
+%   ESTRUCT(a,b,c,...) imports input arguments into an estruct object.
+% 
+%   ESTRUCT('filename') imports the file name and store its content into a Data property.
+%   Multiple files can be given, each producing a distinct object arranged
+%   into an array. File names can also be given as URL (file: http: https: ftp:)
+%   and/or be compressed (zip, gz, tar, Z). The import uses a guessed importer
+%   and does not apply any post-process filter (raw data from file).
+%   Use 'LOAD(estruct, file, loader)' to specify the importer and apply
+%   post-processing.
+% 
+%   ESTRUCT(OBJ) converts the object OBJ into its equivalent
+%   estruct.  The initial class information is lost.
+% 
+%   ESTRUCT([]) creates an empty object.
+% 
+%   ESTRUCT is similar to STRUCT, but is designed to hold scientific data.
+% 
+%  Example: s = estruct('type',{'big','little'},'color','red','x',{3 4}); isstruct(s)
+%  Version: $Date$ $Version$ $Author$
+%  See also estruct/load, isstruct, setfield, getfield, fieldnames, orderfields,
+%    isfield, rmfield, deal, substruct, struct2cell, cell2struct.
 
 properties
 
@@ -69,8 +71,10 @@ properties
     %  ESTRUCT('filename') imports the file name and store its content into a Data property.
     %  Multiple files can be given, each producing a distinct object arranged
     %  into an array. File names can also be given as URL (file: http: https: ftp:)
-    %  and/or be compressed (zip, gz, tar, Z). The import uses a guessed importer.
-    %  Use 'load(estruct, file, loader)' to specify the importer.
+    %  and/or be compressed (zip, gz, tar, Z). The import uses a guessed importer
+    %  and does not apply any post-process filter (raw data from file).
+    %  Use 'LOAD(estruct, file, loader)' to specify the importer and apply
+    %  post-processing.
     %
     %  ESTRUCT(OBJ) converts the object OBJ into its equivalent
     %  estruct.  The initial class information is lost.
@@ -81,7 +85,7 @@ properties
     %
     % Example: s = estruct('type',{'big','little'},'color','red','x',{3 4}); isstruct(s)
     % Version: $Date$ $Version$ $Author$
-    % See also isstruct, setfield, getfield, fieldnames, orderfields,
+    % See also estruct.load, isstruct, setfield, getfield, fieldnames, orderfields,
     %   isfield, rmfield, deal, substruct, struct2cell, cell2struct.
 
       persistent id meth
@@ -201,20 +205,8 @@ properties
             if isstruct(new1.Data) && isfield(new1.Data, 'Source') && isfield(new1.Data, 'Loader') % iLoad struct
               % we transfer the iLoad struct to the estruct.
               new1 = struct2estruct(new1.Data, new1); % updates estruct (in 'private')
-              % assign default Signal and axes
+              % assign default Signal and axes before going further
               new1 = axescheck(new1);
-              % and call any postprocess (if any)
-              if isfield(new1, 'postprocess')
-                new1 = private_postprocess(new1, new1.postprocess); % can return an array
-                if numel(new1) > 1
-                  % need to check for duplicates (when post-process creates new data sets)
-                  new1 = private_remove_duplicates(new1);
-                end
-                if numel(new1) > 1
-                  new1 = reshape(new1, 1, numel(new1)); % a row
-                end
-              end
-              
             end
             for index_new1 = 1:numel(new1) % post process may create more objects
               set(new1(index_new1), 'Private.cache.check_requested',true); % request a check at first 'get'
