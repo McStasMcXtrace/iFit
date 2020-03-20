@@ -222,7 +222,7 @@ function str = class2str_eval(data, options)
   str       = '';
 
   if ischar(data)
-    if shorten && numel(data) > 100, data = data'; data=[ transpose(data(1:97)) '...' ]; end
+    if shorten && numel(data) > 100, data = data(:); data=[ transpose(data(1:97)) '...' ]; end
     str = [ '''' class2str_validstr(data) '''' ];
   elseif numel(data) == 1 && ishandle(data) && ~isnumeric(data)
     % ignore, except for numeric (scalar)
