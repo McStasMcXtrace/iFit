@@ -21,15 +21,15 @@ if nargin == 0 || any(strcmp(filename, {'identify','query','defaults'}))
 end
 
 if ishandle(filename)
-  s = handle2iData(filename);
+  s = handle2struct(filename);
 else
   f       = openfig(filename, 'new','invisible');
-  s = handle2iData(f);
+  s = handle2struct(f);
 end
 
 % ------------------------------------------------------------------------------
-% handle2iData: converts a figure/graphic handle into a structure
-function out=handle2iData(in)
+% handle2struct: converts a figure/graphic handle into a structure
+function out=handle2struct(in)
   try 
     t = get(in,'DisplayName');
     if isempty(t), t=get(get(in,'Parent'),'DisplayName'); end
@@ -42,7 +42,7 @@ function out=handle2iData(in)
   if strcmp(get(in,'type'),'hggroup')
     t = [ 'figure ' t ];
     h = get(in,'Children');
-    out = handle2iData(h(1)); % first item
+    out = handle2struct(h(1)); % first item
     out.Title=t;
     out.Label=t;
   elseif strcmp(get(in,'type'),'line')
@@ -129,7 +129,7 @@ function out=handle2iData(in)
     h = [ findobj(in, 'type','line') ; findobj(in, 'type','surface') ; findobj(in, 'type','image')  ];
     out = [];
     for index=1:length(h)
-      this_out = handle2iData(h(index));
+      this_out = handle2struct(h(index));
       if isempty(this_out.Title) && ~isempty(t)
         this_out.Title = t;
         this_out.Label = t;

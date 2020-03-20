@@ -31,7 +31,9 @@ function b=struct2estruct(a, varargin)
   % transfer the fields (except protected ones)
   for f=fieldnames(a)'
     if any(strcmp(f{1}, b.properties_Protected)), continue; end % ignore protected
-    if isfield(b, f{1})
+    if ismethod(b, f{1})
+      warning([ mfilename ': skipping input struct field ' f{1} ' as it matches a method name' ])
+    elseif isfield(b, f{1})
       b.(f{1}) = a.(f{1});
     else
       set(b, f{1}, a.(f{1})); % add new property
