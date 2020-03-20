@@ -37,6 +37,7 @@ catch
 end
 s.image = imread(filename);
 if exist('exifread') == 2
+    warning('off','MATLAB:exifread:DeprecatedFunction');
     try
     s.EXIF = exifread(filename);
     end
