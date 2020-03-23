@@ -29,13 +29,15 @@ function h = edit(a, option)
   end
   
   if ndims(a) > 2
-    warning([ mfilename ': object ' a.Tag ' dimension is ' num2str(ndims(a)) ' but should be 1 or 2 to be edited. Skipping.' ]);
+    if a.verbose
+      warning([ mfilename ': object ' a.Tag ' dimension is ' num2str(ndims(a)) ' but should be 1 or 2 to be edited. Skipping.' ]);
+    end
     h = 0;
     return
   end
 
   if exist('uitable') && usejava('jvm')
-    if prod(size(a)) > 1e5
+    if prod(size(a)) > 1e5 && a.verbose
       warning([ mfilename ': Object ' a.Tag ' is too large (numel=' num2str(prod(size(a))) ...
     '.\n\tYou should rebin with e.g. a=a(1:2:end, 1:2:end, ...).' ]);
     end

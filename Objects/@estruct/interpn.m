@@ -74,9 +74,11 @@ for index=1:length(varargin)
     method = c;
   elseif isa(varargin{index}, 'estruct')  % object axes
     if length(c) > 1
-      warning(['%s: Can not interpolate onto all axes of %i-th input argument which is an array of [%i] elements.\n' ...
+      if a.verbose
+        warning(['%s: Can not interpolate onto all axes of %i-th input argument which is an array of [%i] elements.\n' ...
         '\tUsing first element only.'], ...
         mfilename, index, numel(c));
+      end
       c = c(1);
     end
     for j1 = 1:ndims(c)
@@ -95,7 +97,7 @@ for index=1:length(varargin)
       axis_arg_index = axis_arg_index+1;
       if ~isempty(c{j1}), f_axes{axis_arg_index} = c{j1}; end
     end
-  elseif ~isempty(c)
+  elseif ~isempty(c) && a.verbose
     warning([ mfilename ': Input argument ' num2str(index) ' of class ' class(c) ' size [' num2str(size(c)) '] is not supported. Ignoring.']);
   end
   clear c
@@ -103,7 +105,9 @@ end % input arguments parsing
 
 % check for method to be valid
 if ~any(strcmp(method, {'linear','cubic','spline','nearest','v4'}))
-  warning([ mfilename ': Interpolation method ' method ' is not supported. Use: linear, cubic, spline, nearest, v4. Defaulting to linear.']);
+  if a.verbose
+    warning([ mfilename ': Interpolation method ' method ' is not supported. Use: linear, cubic, spline, nearest, v4. Defaulting to linear.']);
+  end
   method = 'linear';
 end
 

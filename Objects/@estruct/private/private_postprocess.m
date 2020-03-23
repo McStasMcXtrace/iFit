@@ -16,6 +16,8 @@ function this = private_postprocess(this, postprocess)
     this = history(this, postprocess, this);
 
   catch ME
-    warning(getReport(ME));
-    warning([mfilename ': Error when calling post-process ' postprocess '. file: ' this.Source ]);
+    if this.verbose
+      warning(getReport(ME));
+      warning([mfilename ': Error when calling post-process ' postprocess '. file: ' this.Source ]);
+    end
   end

@@ -31,7 +31,9 @@ else
   try
     y = y(varargin{:});
   catch
-    warning([ mfilename ': ERROR: Invalid dimension specification [ ' sprintf('%i ', varargin{:}) '] for object ' s.Tag ' ' s.Name ' of dimensionality ' num2str(ndims(s)) ])
+    if s.verbose
+      warning([ mfilename ': ERROR: Invalid dimension specification [ ' sprintf('%i ', varargin{:}) '] for object ' s.Tag ' ' s.Name ' of dimensionality ' num2str(ndims(s)) ])
+    end
     y = [];
   end
 end

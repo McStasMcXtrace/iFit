@@ -98,8 +98,9 @@ if dim > 0
 elseif ~isreal(w) && dim < 0
   inputname1 = inputname(1);
   if isempty(inputname1), inputname1 = class(a); end
-
-  warning([ mfilename ': The computed standard deviation is imaginary. ' ...
+  if a.verbose
+    warning([ mfilename ': The computed standard deviation is imaginary. ' ...
     'You should use std(' inputname1 ', ' num2str(-dim) ')' ])
+  end
 end
 

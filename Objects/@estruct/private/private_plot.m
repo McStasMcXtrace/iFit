@@ -38,9 +38,11 @@ method = lower(method);
 % check if the object is not too large, else rebin accordingly
 if prod(size(a)) > 1e6 
   if isempty([ strfind(method,'whole') strfind(method,'full') ])
-    warning([ mfilename ': Object ' a.Tag ' "' a.Name '" is large (numel=' num2str(prod(size(a))) ...
+    if a.verbose
+      warning([ mfilename ': Object ' a.Tag ' "' a.Name '" is large (numel=' num2str(prod(size(a))) ...
       ').\n\tNow rebinning for display purposes with e.g. a=reducevolume(a);' ...
       '\n\tUse e.g plot(a, ''whole'') to plot the whole data set and be able to zoom tiny regions.' ]);
+    end
     tag = a.Tag;
     a=reducevolume(a);
     a.Tag = tag;
@@ -161,7 +163,9 @@ otherwise % 3d data sets: volumes
       a = rmaxis(a,to_remove);
     else
       sz = size(a); sz(extent_index(4:end)) = 1;
-      warning([ mfilename ': Reducing ' num2str(ndims(a)) '-th dimensional data ' a.Tag ' "' a.Name '" to 3D with a=resize(a, ' mat2str(sz) ')' ]);
+      if a.verbose
+        warning([ mfilename ': Reducing ' num2str(ndims(a)) '-th dimensional data ' a.Tag ' "' a.Name '" to 3D with a=resize(a, ' mat2str(sz) ')' ]);
+      end
       a = squeeze(resize(a, sz));
     end
   end

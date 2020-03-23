@@ -18,8 +18,10 @@ if 1 < length(out) && length(i1) < length(out)
   removed = find(i == 0);
   i       = unique(i(i>0));
   if length(out) > length(i)
-    warning('%s: Removing duplicated data sets %i -> %i', mfilename, length(out), length(i))
-    warning([ mfilename ': ' char(out(removed)) ])
+    if out(1).verbose
+      warning('%s: Removing duplicated data sets %i -> %i', mfilename, length(out), length(i))
+      warning([ mfilename ': ' char(out(removed)) ])
+    end
     out = out(i);
   end
 end

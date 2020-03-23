@@ -26,7 +26,7 @@ end
 
 % loop on all estruct to find intersection area
 for index=1:numel(a)
-  if ndims(a(index)) ~= ndims(a(1))
+  if ndims(a(index)) ~= ndims(a(1)) && a(1).verbose
     warning([ mfilename ': Object %s requires same dimensionality.\n' ...
       '\tobject %s %s is %i but object %s is %i. Extending object.' ], ...
       type, inputname(1), a(1).Tag, ndims(a(1)), a(index).Tag, ndims(a(index)));

@@ -57,13 +57,17 @@ if isempty(signal_sz), return; end
 
 % check Error and Monitor: must be size(Signal) or expression or scalar
 if all(error_sz) && prod(signal_sz) ~= prod(error_sz) && ~all(error_sz ==1)
-  warning([ mfilename ': invalid Error (size ' mat2str(error_sz) ...
-    ' does not match Signal ' mat2str(signal_sz) ') in object ' s.Tag ])
+  if s.verbose
+    warning([ mfilename ': invalid Error (size ' mat2str(error_sz) ...
+      ' does not match Signal ' mat2str(signal_sz) ') in object ' s.Tag ])
+  end
   s = builtin('subsasgn', s, struct('type','.','subs','Error'), []);
 end
 if all(monitor_sz) && prod(signal_sz) ~= prod(monitor_sz) && ~all(monitor_sz ==1)
-  warning([ mfilename ': invalid Monitor (size ' mat2str(monitor_sz) ...
-    ' does not match Signal ' mat2str(signal_sz) ') in object ' s.Tag ])
+  if s.verbose
+    warning([ mfilename ': invalid Monitor (size ' mat2str(monitor_sz) ...
+      ' does not match Signal ' mat2str(signal_sz) ') in object ' s.Tag ])
+  end
   s = builtin('subsasgn', s, struct('type','.','subs','Monitor'), []);
 end
 s.Private.cache.size = signal_sz; % for faster size execution
