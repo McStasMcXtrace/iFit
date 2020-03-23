@@ -19,6 +19,11 @@ classdef estruct < dynamicprops
 %   ESTRUCT([]) creates an empty object.
 % 
 %   ESTRUCT is similar to STRUCT, but is designed to hold scientific data.
+%
+%   You may change the verbosity (level of output messages) with the 'verbose'
+%   property, e.g. a=estruct; a.verbose = 1;
+%   The verbosity level is common to all objects and methods. A null verbosity 
+%   corresponds with no messages (silent).
 % 
 %  Example: s = estruct('type',{'big','little'},'color','red','x',{3 4}); isstruct(s)
 %  Version: $Date$ $Version$ $Author$
@@ -28,18 +33,18 @@ classdef estruct < dynamicprops
 properties
 
     % MetaData properties (sorted in alpha order)
-    Creator         = mfilename;
-    Command         ={};
-    Date            = clock;
-    Data            =[]; % where we store most of the Data
-    DisplayName     ='';
-    Label           ='';
-    ModificationDate=[];
-    Source          = pwd;
-    Tag             ='';
-    Name            ='';
-    User            = getenv('USER');
-    UserData        =[];
+    Creator         = mfilename;  % The Creator/Software of the object
+    Command         ={};          % The history of the object (cellstr)
+    Date            = clock;      % The Date of creation of the object
+    Data            =[];          % Where we store most of the Data
+    DisplayName     ='';          % The apparent name of the object, e.g. for plots
+    Label           ='';          % The label of the object
+    ModificationDate=[];          % The Date of last modification
+    Source          = pwd;        % The data source
+    Tag             ='';          % A unique ID for the object
+    Name            ='';          % The Name/Title of the object
+    User            = getenv('USER'); % Who created the object
+    UserData        =[];          % An area to store what you want
 
   end % properties
 
@@ -47,8 +52,9 @@ properties
 
     Private
     % Data handling: Signal, Axes, ...
-    Labels= struct(); % struct: Labels.Signal, ... Labels.Axes{1:ndims}
-    Axes  = {};       % cell{1:ndims} e.g. aliases
+    Labels  = struct(); % struct: Labels.Signal, ... Labels.Axes{1:ndims}
+    Axes    = {};       % cell{1:ndims} e.g. aliases
+    verbose = 0;
   end
 
   properties (Access=protected, Constant=true)  % shared by all instances
@@ -470,6 +476,26 @@ properties
       %   OBJ, and 0 otherwise.
       tf = any(strcmp(m ,self.Private.cache.methods));
     end % ismethod
+    
+    function self = set.verbose(self, value)
+    % SET VERBOSE Set the verbosity level
+    %     0 silent
+    %     1 normal
+    %     2 verbose
+    %     3 debug
+
+      self.verbose = private_verbose(value);
+    end
+    
+    function value = get.verbose(self)
+    % GET VERBOSE Get the verbosity level
+    %     0 silent
+    %     1 normal
+    %     2 verbose
+    %     3 debug
+
+      value = private_verbose;
+    end
 
   end % methods
 
