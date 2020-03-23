@@ -190,7 +190,7 @@ properties
           if isempty(this), continue; end
           if ischar(this) && (~isempty(dir(this)) || any(strcmp(strtok(this, ':'), {'http' 'https' 'ftp' 'file'})))
             try
-              this = iLoad(this); % imported data from file goes in Data
+              this = load(estruct, this, 'raw'); % import file/URL, no post-processing
             catch ME
               disp([ mfilename ': WARNING: failed importing ' char(this) ]);
             end
@@ -199,30 +199,34 @@ properties
           if ~iscell(this), this = { this }; end
           for index_data=1:numel(this)
             if isempty(this{index_data}), continue; end
-            if numel_new == 1
-              new1 = new;
+            if isa(this{index_data}, 'estruct')
+              new1 = this{index_data};
             else
-              new1 = copyobj(new0);
-            end
+              if numel_new == 1
+                new1 = new;
+              else
+                new1 = copyobj(new0);
+              end
 
-            if isstruct(this{index_data})
-              new1 = struct2estruct(this{index_data}, new1);
-            else
-              new1.Data = this{index_data}; 
-            end
-            history(new1, mfilename, this{index_data});
-            this{index_data} = []; % and clear memory
-            if isstruct(new1.Data) && isfield(new1.Data, 'Source') && isfield(new1.Data, 'Loader') % iLoad struct
-              % we transfer the iLoad struct to the estruct.
-              new1 = struct2estruct(new1.Data, new1); % updates estruct (in 'private')
-              % assign default Signal and axes before going further
-              new1 = axescheck(new1);
-            end
+              if isstruct(this{index_data})
+                new1 = struct2estruct(this{index_data}, new1);
+              else
+                new1.Data = this{index_data}; 
+              end
+              history(new1, mfilename, this{index_data});
+              this{index_data} = []; % and clear memory
+              if isstruct(new1.Data) && isfield(new1.Data, 'Source') && isfield(new1.Data, 'Loader') % iLoad struct
+                % we transfer the iLoad struct to the estruct.
+                new1 = struct2estruct(new1.Data, new1); % updates estruct (in 'private')
+              end
+            end % isa estruct or other type to concatenate
             for index_new1 = 1:numel(new1) % post process may create more objects
               set(new1(index_new1), 'Private.cache.check_requested',true); % request a check at first 'get'
             end
-            if numel_new > 1
-              new = [ new new1 ]; % build array
+            if numel_new == 1
+              new = new1;
+            else
+              new = [ new ; new1(:) ]; % build array
             end % index_data
             numel_new = numel_new+1;
           end

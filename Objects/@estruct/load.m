@@ -53,6 +53,17 @@ function out = load(a, varargin)
 % Version: $Date$ $Version$ $Author$
 % See also: iLoad, save, estruct/saveas, Loaders
 
+% check for 'no postprocess/raw' options
+use_post_process = true;
+varg = varargin;
+for index=1:numel(varargin)
+  if ischar(varargin{index}) && any(strcmp(varargin{index},{'raw','no postprocess'}))
+    use_post_process = false;
+    varg{index} = [];
+  end
+end
+varargin = varg;
+
 [files, loaders] = iLoad(varargin{:}); % import files as structures HERE
 
 if isempty(files), out=[]; return; end
@@ -74,39 +85,31 @@ if isstruct(files) && numel(files) > 1 && numel(loaders) == 1
 end
 if ~iscell(files),   files   = { files }; end
 if ~iscell(loaders), loaders = { loaders }; end
-out = [];
+out    = [];
 loader = [];
 
-% convert iload structs to estruct (no post-process yet)
+% convert iLoad structs to estruct (no post-process yet)
 for i=1:numel(files)
   if isempty(files{i}), continue; end
-  
-  this_estruct = estruct(files{i}); % convert
-  if numel(this_estruct) > 1 % make a row
-    this_estruct = reshape(this_estruct, 1, numel(this_estruct));
-  end
+
+  this_estruct = struct2estruct(files{i}); % convert into new estruct
   
   % and call any postprocess (if any)
-  if isfield(this_estruct, 'postprocess')
+  if use_post_process && isfield(this_estruct, 'postprocess')
     this_estruct = private_postprocess(this_estruct, this_estruct.postprocess); % can return an array
     if numel(this_estruct) > 1
       % need to check for duplicates (when post-process creates new data sets)
       this_estruct = private_remove_duplicates(this_estruct);
     end
-    if numel(this_estruct) > 1
-      this_estruct = reshape(this_estruct, 1, numel(this_estruct)); % a row
-    end
   end
 
-  out = [ out this_estruct ];
+  out = [ out ; this_estruct(:) ];
   clear this_estruct
 end %for i=1:length(files)
 
-
-
 % set Command history and Label/DisplayName
+history(out, mfilename, a, varargin{:});
 for i=1:numel(out)
-  out(i).Command{end+1}=[ out(i).Tag '=load(estruct,''' out(i).Source ''');' ];
   if isempty(out(i).DisplayName) && isempty(out(i).Label)
     [p,f,e] = fileparts(out(i).Source);
     out(i)  = set(out(i),'Label',[ f e ]);

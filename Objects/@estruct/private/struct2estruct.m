@@ -27,14 +27,22 @@ function b=struct2estruct(a, varargin)
   if isfield(a, 'Title') && ~isfield(a, 'Name')
     a.Name = a.Title; a = rmfield(a, 'Title');
   end
+  
+  if isfield(a, 'Data') % we populate Data. When is struct, will add more properties here.
+    b.Data = a.Data; a = rmfield(a, 'Data');
+  end
 
   % transfer the fields (except protected ones)
   for f=fieldnames(a)'
     if any(strcmp(f{1}, b.properties_Protected)), continue; end % ignore protected
     if ismethod(b, f{1})
-      warning([ mfilename ': skipping input struct field ' f{1} ' as it matches a method name' ])
-    elseif isfield(b, f{1})
+      if b.verbose
+        warning([ mfilename ': skipping input struct field ' f{1} ' as it matches a method name' ])
+      end
+    elseif isfield(b, f{1})   % matches a root object property
       b.(f{1}) = a.(f{1});
+    elseif isstruct(b.Data)
+      b.Data.(f{1}) = a.(f{1}); % add new property in Data
     else
       set(b, f{1}, a.(f{1})); % add new property
     end
@@ -42,8 +50,14 @@ function b=struct2estruct(a, varargin)
   
   % handle some more specific stuff
   % Attributes Headers MetaData Loader postprocess
+  if isfield(b.Data,'Headers') && ~isfield(b, 'Headers')
+    set(b, 'Headers', 'Data.Headers');
+  end
   if isfield(a, 'Headers')
     label(b, 'Headers', 'Headers (text)' );
+  end
+  if isfield(b.Data,'Attributes') && ~isfield(b, 'Attributes')
+    set(b, 'Attributes', 'Data.Attributes');
   end
   if isfield(a, 'Attributes')
     label(b, 'Attributes', 'Attributes (text)' );
