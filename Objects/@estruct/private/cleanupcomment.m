@@ -16,8 +16,11 @@ function str = cleanupcomment(comment,option)
     while (strfind(str, '  '))
 	    str = strrep(str, '  ', ' ');
     end
+    % Remove leading and trailing space.
+    str = strtrim(str);
+  else
+    str = deblank(str);
   end
 
-  % Remove leading and trailing space.
-  str = strtrim(str);
+  
 
