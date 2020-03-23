@@ -40,7 +40,7 @@ function [data, format] = iLoad(filename, loader, varargin)
 %   iLoad formats       list of all supported file formats
 %   iLoad FMT formats   list of file formats matching FMT
 %   iLoad verbose       switch to verbose mode (more messages)
-%   iLoad silent        switch to silent mode (no messages, default)
+%   iLoad silent        switch to silent mode (no message, default)
 %
 % The iLoad_ini configuration file can be loaded and saved in the Preference 
 % directory using 
@@ -253,7 +253,9 @@ function [data, format] = iLoad(filename, loader, varargin)
           format = this_format;
           return
         else
-          fprintf(1, 'iLoad: Warning: Could not find pattern "%s". Importing whole file...\n', filesub(2:end));
+          if config.verbosity
+            fprintf(1, 'iLoad: Warning: Could not find pattern "%s". Importing whole file...\n', filesub(2:end));
+          end
           filename = fileroot;
         end
       end
@@ -314,7 +316,9 @@ function [data, format] = iLoad(filename, loader, varargin)
           % write to temporary file
           tmpfile = urlwrite(filename, tmpfile);
         catch ME
-          disp(ME.message);
+          if config.verbosity
+            disp(ME.message);
+          end
           use_wget = true;
         end
       end
@@ -323,7 +327,9 @@ function [data, format] = iLoad(filename, loader, varargin)
         cmd = ['wget ' filename ' -O ' tmpfile]; disp(cmd)
         [status, result] = system(cmd);
         if status
-          disp(result);
+          if config.verbosity
+            disp(result);
+          end
           error([ mfilename ': Can not get URL ' filename ]);
         end
       end
@@ -346,8 +352,10 @@ function [data, format] = iLoad(filename, loader, varargin)
           filename = [ tempdir filesep name ];
           url = true;
         catch ME
-          fprintf(1, 'iLoad: Can''t extract file "%s" (%s).\n', filename,cmd);
-          warning(ME.message)
+          if config.verbosity
+            fprintf(1, 'iLoad: Can''t extract file "%s" (%s).\n', filename,cmd);
+            warning(ME.message)
+          end
           return
         end
       elseif exist(cmd)
@@ -355,8 +363,10 @@ function [data, format] = iLoad(filename, loader, varargin)
         try
           filenames = feval(cmd, filename, tempdir);
         catch ME
-          fprintf(1, 'iLoad: Can''t extract file "%s" (%s).\n', filename,cmd);
-          warning(ME.message)
+          if config.verbosity
+            fprintf(1, 'iLoad: Can''t extract file "%s" (%s).\n', filename,cmd);
+            warning(ME.message)
+          end
           return
         end
         [data, format] = iLoad(filenames, loader, varargin{:}); % is now local
@@ -364,8 +374,10 @@ function [data, format] = iLoad(filename, loader, varargin)
           try
             delete(filenames{index});
           catch ME
-            fprintf(1,'iLoad: Can''t delete temporary file "%s" (%s).\n', filename{index},cmd);
-            warning(ME.message)
+            if config.verbosity
+              fprintf(1,'iLoad: Can''t delete temporary file "%s" (%s).\n', filename{index},cmd);
+              warning(ME.message)
+            end
           end
         end
         return
@@ -374,7 +386,7 @@ function [data, format] = iLoad(filename, loader, varargin)
     
     % The import takes place HERE ================================================
     if isdir(filename), filename = [ filename filesep '*']; end % all elements in case of directory
-    if isempty(dir(filename))
+    if isempty(dir(filename)) && config.verbosity
       warning([ mfilename ': possibly invalid filename ' filename ]);
     end
     % handle the '%20' character replacement as space
@@ -383,8 +395,10 @@ function [data, format] = iLoad(filename, loader, varargin)
     try
       [data, format] = iLoad_import(filename, loader, config, varargin{:}); % <<<<<<<<<<
     catch ME
-      disp(getReport(ME))
-      fprintf(1, 'iLoad: Failed to import file %s. Ignoring.\n  %s\n', filename, ME.message);
+      if config.verbosity
+        disp(getReport(ME))
+        fprintf(1, 'iLoad: Failed to import file %s. Ignoring.\n  %s\n', filename, ME.message);
+      end
       data=[];
     end
   elseif isempty(filename)
@@ -435,10 +449,12 @@ function [data, format] = iLoad(filename, loader, varargin)
   % remove temporary file if needed
   if (url)
     try
-    delete(filename);
+      delete(filename);
     catch ME
-    fprintf(1,'iLoad: Can''t delete temporary file "%s".\n', filename);
-    warning(ME.message);
+      if config.verbosity
+        fprintf(1,'iLoad: Can''t delete temporary file "%s".\n', filename);
+        warning(ME.message);
+      end
     end
   end
 

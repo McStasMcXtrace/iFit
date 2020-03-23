@@ -107,6 +107,7 @@ function config = iLoad_config_load
   loaders    = loaders(index);
   
   % check if other configuration fields are present, else defaults
+  if ~isfield(config, 'verbosity'), config.verbosity = 1; end
   if ~isfield(config, 'UseSystemDialogs'), config.UseSystemDialogs = 'no'; end
   if ~isfield(config, 'FileName'),         config.FileName = ''; end
   if ~isfield(config, 'MeX'), config.MeX = []; end
