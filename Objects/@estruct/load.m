@@ -96,6 +96,9 @@ for i=1:numel(files)
   
   % and call any postprocess (if any)
   if use_post_process && isfield(this_estruct, 'postprocess')
+    if a.verbose
+      try; disp([ mfilename ': calling post-process ' char(this_estruct.postprocess) ' for ' char(this_estruct,'short') ]); end
+    end
     this_estruct = private_postprocess(this_estruct, this_estruct.postprocess); % can return an array
     if numel(this_estruct) > 1
       % need to check for duplicates (when post-process creates new data sets)

@@ -12,6 +12,8 @@ classdef estruct < dynamicprops
 %   and does not apply any post-process filter (raw data from file).
 %   Use 'LOAD(estruct, file, loader)' to specify the importer and apply
 %   post-processing.
+%
+%   ESTRUCT silent|verbose|debug sets the verbosity level.
 % 
 %   ESTRUCT(OBJ) converts the object OBJ into its equivalent
 %   estruct.  The initial class information is lost.
@@ -132,7 +134,17 @@ properties
           if numel(this) == 1, this = struct(this); else this = []; end
         end
         if ischar(this) && ~isempty(this)
-          if index<numel(varargin) && isvarname(this)   % input: name/value pair, e.g. 'par',value, ...
+          if any(strcmp(this, {'verbose','normal'}))
+            new.verbose = 1;
+            if exist('iLoad','file'), iLoad('verbose'); end
+            return;
+          elseif strcmp(this, 'silent')
+            new.verbose = 0;
+            if exist('iLoad','file'), iLoad('silent'); end
+            return;
+          elseif strcmp(this, 'debug')
+            new.verbose = 2; return;
+          elseif index<numel(varargin) && isvarname(this)   % input: name/value pair, e.g. 'par',value, ...
             s.name = this;
             s.value= varargin{index+1};
             structs{end+1} = s; this = [];
