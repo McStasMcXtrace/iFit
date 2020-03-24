@@ -73,7 +73,7 @@ function [data, format] = iLoad(filename, loader, varargin)
 %
 % See also: importdata, load, iLoad_ini, Loaders
 %
-% Part of: Loaders utilities (ILL library)
+% Part of: Loaders utilities (iFit library)
 % Author:  E. Farhi <emmanuel.farhi@synchrotron-soleil.fr>. 
 % Version: $Date$ $Version$ $Author$
 % 

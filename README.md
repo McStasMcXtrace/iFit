@@ -6,14 +6,14 @@ Welcome to the iFit/iData package
 
                           http://ifit.mccode.org
                           <br>
-                          E. Farhi, ILL/CS [emmanuel.farhi@synchrotron-soleil.fr]
+                          E. Farhi, EXP/GRADES [emmanuel.farhi@synchrotron-soleil.fr]
                           <br>
                           Version @IFIT_VERSION@ - @IFIT_DATE@
 
 <br>
-<img src="https://github.com/McStasMcXtrace/iFit/blob/master/Docs/images/iFit-logo.png">
+<img src="Docs/images/iFit-logo.png">
 <br>
-<img src="https://github.com/McStasMcXtrace/iFit/blob/master/Docs/images/ILL-web-jpeg.jpg" style="width: 50%; height: 50%">
+<img src="Docs/images/logo_soleil.png" style="width: 50%; height: 50%">
 </p>
 
 Purpose
@@ -105,18 +105,12 @@ License: EUPL
 -------------
 
   Basically this is open-source. Use it if you find it useful, and enrich it.
-  If you do produce new methods, please send them back to me so that they are 
-  added in the software and thus benefit to the community.
+  If you do produce new methods, please send them back to me so that they are added in the software and thus benefit to the community.
 
-  In short, you can use, copy, distribute and modify the Code. However, a number 
-  of restrictions apply, especially when producing derived work (that is modify 
-  and redistribute the code in other products). In particular, the derived work 
-  must be licensed under the EUPL or a Compatible License, label all modifications 
-  explicitly, distribute the Source Code, and cite the Original work.
+  In short, you can use, copy, distribute and modify the Code. However, a number of restrictions apply, especially when producing derived work (that is modify and redistribute the code in other products). In particular, the derived work must be licensed under the EUPL or a Compatible License, label all modifications explicitly, distribute the Source Code, and cite the Original work.
   The Source code of iFit is freely available at <http://ifit.mccode.org>
 
-  A number of additions, included in the software, where obtained from the Matlab 
-  Central contributions, and are BSD licensed.
+  A number of additions, included in the software, where obtained from the Matlab Central contributions, and are BSD licensed.
   
   Matlab is a registered trademark of The Mathworks Inc.
 

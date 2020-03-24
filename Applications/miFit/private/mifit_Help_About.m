@@ -1,7 +1,7 @@
 function h=mifit_Help_About(fig)
 % Help/About: display the About dialogue. The handle ID is in adddata(gcf, 'handle_About')
   if nargin ==0, fig=''; end
-  icon = fullfile(ifitpath,'Docs','images','ILL-web-jpeg.jpg');
+  icon = fullfile(ifitpath,'Docs','images','logo_soleil.png');
   
   % Display About dialog
   t = [ sprintf('Welcome to miFit, a GUI to iFit.\n ') version(iData,2) ];
