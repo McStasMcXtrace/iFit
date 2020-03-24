@@ -39,7 +39,8 @@ function [data, format] = iLoad(filename, loader, varargin)
 %   iLoad config        get the loaders list as a configuration structure
 %   iLoad formats       list of all supported file formats
 %   iLoad FMT formats   list of file formats matching FMT
-%   iLoad verbose       switch to verbose mode (more messages)
+%   iLoad verbose       switch to verbose mode (normal messages)
+%   iLoad debug         switch to debug mode (many messages)
 %   iLoad silent        switch to silent mode (no message, default)
 %
 % The iLoad_ini configuration file can be loaded and saved in the Preference 
@@ -93,7 +94,10 @@ function [data, format] = iLoad(filename, loader, varargin)
   if nargin == 0, filename=''; end
   if nargin < 2,  loader = ''; end
   if nargin ==1 && (ischar(filename) || isstruct(filename))
-    if any(strcmp(filename, {'load config','config','force','force load config','formats','display config','load','save','compile','check','silent','verbose'}))
+    if any(strcmpi(filename, ...
+      {'load config','config','force','force load config','formats', ...
+       'display config','load','save','compile','check', ...
+       'silent','verbose','debug','normal'}))
       [data, format] = iLoad('', filename, varargin{:});
       return
     elseif  isconfig(filename)
@@ -116,20 +120,7 @@ function [data, format] = iLoad(filename, loader, varargin)
     
     % look for a specific importer when filename is specified
     if ~isempty(filename)
-      data = {};
-      for index=1:length(config.loaders)
-        this = config.loaders{index};
-        keepme=0;
-        if ~isempty(strfind(lower(this.name), lower(filename))) | ~isempty(strfind(lower(this.method), lower(filename)))
-          keepme = 1;
-        elseif isfield(this,'extension') && any(strncmpi(filename, this.extension, length(filename)))
-          keepme=1;
-        end
-        if keepme, data = { data{:} this }; end
-      end
-      if length(data) == 1
-        data = data{1}; 
-      end
+      data = iLoad_config_find(filename, config);
     else
       data = config;
     end
@@ -155,12 +146,16 @@ function [data, format] = iLoad(filename, loader, varargin)
     end
     data = iLoad_config_save(config);
     return
-  elseif any(strcmp(loader, {'silent','verbose'}))
-    if strcmp(loader, 'silent')
+  elseif any(strcmpi(loader, {'silent','verbose', 'debug','normal'}))
+    switch lower(loader)
+    case 'silent'
       config.verbosity = 0;
-    elseif strcmp(loader, 'verbose')
+    case {'verbose','normal'}
+      config.verbosity = 1;
+    case 'debug'
       config.verbosity = 2;
     end
+    data = config;
     return
   end
   % ------------------------------------------------------------------------------
@@ -259,7 +254,7 @@ function [data, format] = iLoad(filename, loader, varargin)
           filename = fileroot;
         end
       end
-    end % filename with '#' anchor
+    end % filename with '#' anchor internal link
     
     if strncmp(filename, 'file://', length('file://'))
       filename = filename(7:end); % remove 'file://' from local name
@@ -275,11 +270,11 @@ function [data, format] = iLoad(filename, loader, varargin)
       end
     end
     
-    if isempty(dir(filename)) && ~isempty(dir(fullfile(ifitpath,'Data',filename)))
-          filename = fullfile(ifitpath,'Data',filename);
+    if isempty(dir(filename)) && ~isempty(which(filename))
+          filename = which(filename);
     end
     
-    if isdir(filename), filename = [ filename filesep '*']; end % all elements in case of directory
+    if isdir(filename), filename = fullfile(filename,'*'); end % all elements in case of directory
     
     % handle single file name (possibibly with wildcard)
     if ~isempty(find(filename == '*')) | ~isempty(find(filename == '?'))  % wildchar !!#
@@ -385,13 +380,16 @@ function [data, format] = iLoad(filename, loader, varargin)
     end
     
     % The import takes place HERE ================================================
-    if isdir(filename), filename = [ filename filesep '*']; end % all elements in case of directory
+    
+    % handle the '%20' character replacement as space (from URL)
+    filename = strrep(filename, '%20',' ');
+    while filename(end) == ';', filename(end)=''; end % in case there is a leading ';' in place of \n
+    if config.verbosity > 1
+      disp([ mfilename ': loading filename ' filename ' with loader ' loader])
+    end
     if isempty(dir(filename)) && config.verbosity
       warning([ mfilename ': possibly invalid filename ' filename ]);
     end
-    % handle the '%20' character replacement as space
-    filename = strrep(filename, '%20',' ');
-    while filename(end) == ';', filename(end)=''; end % in case there is a leading ';' in place of \n
     try
       [data, format] = iLoad_import(filename, loader, config, varargin{:}); % <<<<<<<<<<
     catch ME

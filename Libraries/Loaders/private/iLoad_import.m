@@ -35,11 +35,20 @@ function [data, loader] = iLoad_import(filename, loader, config, varargin)
     loader=loader(loader_index);
   elseif ischar(loader) || iscellstr(loader)
     % test if loader is the user name of a function
-    loader = iLoad_config_find(loader);
+    loader = iLoad_config_find(loader, config);
+  end
+
+  if config.verbosity > 1 && numel(loader) > 1
+    disp([ mfilename ': found ' num2str(numel(loader)) ' loaders to try.' ]);
+    for index=1:length(loader)
+      if iscell(loader), this_loader = loader{index};
+      else this_loader = loader(index); end
+      disp(this_loader);
+    end
   end
   
   % handle multiple loaders (cell or struct array)
-  if (iscell(loader) || isstruct(loader)) && length(loader) > 1
+  if (iscell(loader) || isstruct(loader)) && numel(loader) > 1
     loader=loader(:);
     recompile = 0;
     for index=1:length(loader)
@@ -115,9 +124,14 @@ function [data, loader] = iLoad_import(filename, loader, config, varargin)
   % avoid calling text importer with binary
   if any(strcmp(loader.method, {'text','read_anytext','looktxt'})) && isbinary, return; end
   
-  % call the loader
+  % CALL THE LOADER
   data = feval(loader.method, varg{:});
-  if isempty(data), return; end
+  if isempty(data)
+    if config.verbosity > 1
+      disp([ mfilename ': ' char(loader.method) ' probably FAILED to import ' filename ]);
+    end
+    return;
+  end
 
   % special test to avoid reading binary file with read_anytext
   data = iLoad_loader_check(filename, data, loader);
