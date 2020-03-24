@@ -31,24 +31,45 @@ axes_id   = [];
 
 % get all numeric fields (e.g. from findfield cache), sorted by decreasing size
 [fields, ~, dims, sz] = findfield(s,'','numeric');
+if s.verbose > 1
+  for index=1:numel(fields)
+    disp([ mfilename ': ' num2str(index) ' as ' fields{index} ' numel [' num2str(dims(index)) ']' ])
+  end
+end
 
 % define Signal,Error,Monitor when not yet so
 if all(signal_sz == 0) || all(error_sz == 0) || all(monitor_sz == 0) % empty ?
-  % identify signal, error, monitor
+  % identify signal, error, monitor and axes based on names. Signal can also be set as the biggest field.
   [signal_id, error_id, monitor_id, axes_id] = axescheck_find_signal(s, fields, dims, sz);
+  if s.verbose > 1
+    disp([ mfilename ': called axescheck_find_signal' ]);
+    disp([ '  signal:  ' num2str(signal_id) ' as ' fields{signal_id} ])
+    if ~isempty(error_id),   disp([ '  error:   ' num2str(error_id)    ' as ' fields{error_id} ]); end
+    if ~isempty(monitor_id), disp([ '  monitor: ' num2str(monitor_id)  ' as ' fields{monitor_id} ]); end
+    if ~isempty(axes_id),    disp([ '  axes:    ' num2str(axes_id) ]); end
+  end
   % change those which are not set (set definition)
   if all(signal_sz == 0) && ~isempty(signal_id)
     s = builtin('subsasgn', s, struct('type','.','subs','Signal'),  fields{signal_id});
     signal_sz  = sz{signal_id};
+    if s.verbose > 1,
+      disp([ mfilename ': setting Signal = ' fields{signal_id} ' [' num2str(dims(signal_id)) ']' ]);
+    end
   end
   if ~isempty(signal_sz)
     if all(error_sz == 0) && ~isempty(error_id)
       s = builtin('subsasgn', s, struct('type','.','subs','Error'),   fields{error_id});
       error_sz   = sz{error_id};
+      if s.verbose > 1,
+        disp([ mfilename ': setting Error = ' fields{error_id} ' [' num2str(dims(error_id)) ']' ]);
+      end
     end
     if all(monitor_id == 0) && ~isempty(monitor_id)
       s = builtin('subsasgn', s, struct('type','.','subs','Monitor'), fields{monitor_id});
       monitor_sz = sz{monitor_id};
+      if s.verbose > 1,
+        disp([ mfilename ': setting Monitor = ' fields{monitor_id} ' [' num2str(dims(monitor_id)) ']' ]);
+      end
     end
   end
 end
@@ -79,7 +100,9 @@ axescheck_find_axes(s, fields,          dims,          sz);
 
 % ------------------------------------------------------------------------------
 function [signal_id, error_id, monitor_id, axes_id] = axescheck_find_signal(self, fields, dims, sz)
-
+  % AXESCHECK_FIND_SIGNAL Search for Signal, Error, Monitor and Axes based on their names
+  %   Signal can also be set as the biggest field.
+  %   Return the index in the field cell.
   signal_id = []; error_id = []; monitor_id=[]; axes_id = [];
 
   if      isempty(dims), return;
@@ -161,6 +184,9 @@ function axescheck_find_axes(self, fields, dims, sz)
       end
 
       if axescheck_size_axes(self, index, ax_sz)
+        if self.verbose > 1
+          disp([ mfilename ': axescheck_find_axes: checked axis[' num2str(index) '] ' num2str(def) ' with size ' mat2str(ax_sz) ]);
+        end
         continue
       end
 
@@ -176,6 +202,7 @@ function axescheck_find_axes(self, fields, dims, sz)
       not_use = self.Axes; % will not use already defined axes
       for findex={'Signal','Error','Monitor'}
         not_use{end+1} = getalias(self, findex{1});
+        not_use{end+1} = findex{1};
       end
       not_use = not_use(~cellfun(@isempty, not_use)); % clean empty elements
 
@@ -183,6 +210,9 @@ function axescheck_find_axes(self, fields, dims, sz)
         % check for field
         if ~any(strcmp(fields{findex}, not_use)) && axescheck_size_axes(self, index, sz{findex})
           % found a valid axis definition/value
+          if self.verbose > 1
+            disp([ mfilename ': axescheck_find_axes: found axis[' num2str(index) '] as ' fields{findex} ' with size ' mat2str(sz{findex}) ]);
+          end
           self.Axes{index} = fields{findex};
           break
         end
