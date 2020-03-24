@@ -134,17 +134,22 @@ properties
           if numel(this) == 1, this = struct(this); else this = []; end
         end
         if ischar(this) && ~isempty(this)
-          if any(strcmp(this, {'verbose','normal'}))
+          switch lower(this)
+          case {'verbose','normal'}
             new.verbose = 1;
             if exist('iLoad','file'), iLoad('verbose'); end
             return;
-          elseif strcmp(this, 'silent')
+          case 'debug'
+            new.verbose = 2;
+            if exist('iLoad','file'), iLoad('debug'); end
+            return;
+          case 'silent'
             new.verbose = 0;
             if exist('iLoad','file'), iLoad('silent'); end
             return;
-          elseif strcmp(this, 'debug')
-            new.verbose = 2; return;
-          elseif index<numel(varargin) && isvarname(this)   % input: name/value pair, e.g. 'par',value, ...
+          end
+
+          if index<numel(varargin) && isvarname(this)   % input: name/value pair, e.g. 'par',value, ...
             s.name = this;
             s.value= varargin{index+1};
             structs{end+1} = s; this = [];
