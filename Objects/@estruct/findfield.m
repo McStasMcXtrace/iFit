@@ -19,7 +19,8 @@ function [match, types, dims, sz] = findfield(s, field, option)
 %       f=findfield(s,'','numeric biggest')
 %
 %   [match,type,n,sz] = FINDFIELD(...) also return the type, number of elements
-%   and size of fields
+%   and size of fields. When a field is a char alias to an other element (link),
+%   it is not resolved, and returned as a char.
 %
 % Example: s=estruct('x', rand(6)); f=findfield(s,'','biggest'); numel(get(s,f)) == 36
 % Version: $Date$ $Version$ $Author$
@@ -64,10 +65,11 @@ else
   % find all fields in object structure
   [match, types, dims, sz] = struct_getfields(struct_s, '');
 
-  [match, index] = unique(match);
-  types=types(index);
-  dims =dims(index);
-  sz   =sz(index);
+  % sort by name. This can mess up the result.
+  %[match, index] = unique(match); % sort by name
+  %types=types(index);
+  %dims =dims(index);
+  %sz   =sz(index);
 
   % set content into cache
   cache.match = match;
@@ -145,7 +147,7 @@ function [match, types, dims, sz, m] = struct_search_token(field, option, match,
 
     if strfind(option, 'exact')
       % get direct name or from last word of 'matchs'
-      if isempty(m), m = find_last_word(matchs); end
+      if nargin < 7 || isempty(m), m = find_last_word(matchs); end
       index = unique([ find(strcmp(field, matchs)) ; find(strcmp(field, m)) ]);
     else
       index = strfind(matchs, field);

@@ -37,7 +37,7 @@ index=[ find(strcmp('char', types)) ; find(strcmp('cell', types)) ];
 if isempty(index), field=[]; match=[]; return; end
 
 clear types
-% get all field names containg char/cellstr data
+% get all field names containing char/cellstr data
 fields = fields(index);
 % get their content
 matchs = get(s, fields);
