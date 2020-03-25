@@ -8,7 +8,7 @@ if nargin < 2
 end
 
 if ~isa(filename,'estruct')
-  out = estruct(filename,format);
+  out = estruct(iLoad(filename,format));
 else
   out = filename;
 end
