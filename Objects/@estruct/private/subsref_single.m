@@ -46,6 +46,7 @@ function v = get_single(s, field, follow, s0)
 
   if nargin < 3, follow=true; end
   if nargin < 4, s0=s; end
+  if iscellstr(field), field = char(field); end
 
   % cut the field into pieces with '.' as separator
   if any(field == '.')
@@ -67,7 +68,18 @@ function v = get_single(s, field, follow, s0)
     v = s;
     for index=1:numel(S)
       % subsref is faster than getfield which itself calls subsref
-      v = builtin('subsref',v, S(index)); % get true value/alias (no follow)
+      failed = true;
+      try
+        v = builtin('subsref',v, S(index)); % get true value/alias (no follow)
+      catch
+        f = findfield(s0, S(index).subs, 'exact case');
+        if ischar(f) || numel(f) == 1
+          v = get_single(v, f, S.type(1)=='.', s0);
+        else
+          error([ mfilename ': No appropriate method, property, or unique field "' char(field) '" for class estruct.' ]);
+        end
+      end
+      
       % when 'follow', we need to access values iteratively and check for possible 'alias' (char)
       if follow && ischar(v) && ~strcmp(S(index).subs,'Source')
         if any(v == '.') && all(isletter(v) | v == '_' | v == '.' | isstrprop(v, 'digit')) % a compound link
@@ -84,15 +96,19 @@ function v = get_single(s, field, follow, s0)
 % ----------------------------------------------------------------------------
 function v = get_single_alias(s, v)
   if ~ischar(v), return; end
+  if size(v,1) > 1, v=v(:)'; end % make it a row
   if isfield(s, v) % a link to a valid field in root object (single level)
     v = builtin('subsref',s, struct('type','.','subs', v)); % get true value/alias (no follow)
   elseif strcmp(v, 'matlab: sqrt(this.Signal)') % for default Error (no eval)
     v = sqrt(abs(double(get(s,'Signal'))));
   elseif strncmp(v, 'matlab',6) && numel(v) > 8 % URL matlab:
     v = get_single_eval(s, v);
-  elseif ~isempty(dir(v)) || any(strcmp(strtok(v, ':'), {'http' 'https' 'ftp' 'file'})) % URL http https ftp file:
-    try
-      v = iLoad(v);
+  else
+    try; d = dir(v); catch; d=[]; end
+    if ~isempty(d) || any(strcmp(strtok(v, ':'), {'http' 'https' 'ftp' 'file'})) % URL http https ftp file:
+      try
+        v = iLoad(v);
+      end
     end
   end
 
