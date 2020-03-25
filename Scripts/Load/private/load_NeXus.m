@@ -10,10 +10,10 @@ function out = load_NeXus(in)
 
 % first we identify the number of NXdata and NXdetector blocks
 
-[allfields, alltypes] = findfield(in);
+[allfields] = findfield(in);
 
-f       = allfields(strcmp(alltypes, 'char'));  % get all char paths
-c       = deblank(get(in, f));                 % get their content
+f       = findfield(in,'','char');             % get all char paths
+c       = deblank(get(in, f, 'alias'));                 % get their content
 nxblock = strcmpi(c, 'NXdata') | strcmpi(c, 'NXdetector');
 field   = f(nxblock);
 if isempty(strfind(in.Format, 'NeXus'))
@@ -37,7 +37,7 @@ end
 
 out = [];
 for index=1:numel(field)
-  % create an iData object with the proper Signal, Axes, ...
+  % create an object with the proper Signal, Axes, ...
   if isempty(out)
     this = load_NeXus_NXdata(in, field{index}, 'overload', allfields);
   else

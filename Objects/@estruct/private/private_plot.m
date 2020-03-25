@@ -34,6 +34,7 @@ end % plot array
 
 % plot a single object
 method = lower(method);
+notify(a, 'ObjectPlotted');
 
 % check if the object is not too large, else rebin accordingly
 if prod(size(a)) > 1e6 

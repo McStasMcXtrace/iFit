@@ -12,13 +12,14 @@ function s = axescheck(s)
 % see also estruct, getaxis, setaxis
 
 % handle array of struct
-  if numel(s) > 1
-    for index=1:numel(s)
-      s(index) = axescheck(s(index));
-    end
-    return
+if numel(s) > 1
+  for index=1:numel(s)
+    s(index) = axescheck(s(index));
   end
+  return
+end
 
+notify(s, 'ObjectUpdated');
 s.Private.cache.check_requested = false; % ok, we are working on this
 
 %% Check Signal, Monitor, Error ================================================

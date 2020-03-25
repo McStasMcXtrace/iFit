@@ -6,6 +6,15 @@ function v = subsref_single(v, S, a)
   if ~isstruct(S),  error([ mfilename ': invalid reference (2nd arg) expect struct, is ' class(S) ]); end
   if numel(S) ~= 1, error([ mfilename ': only works with a single level reference' ]); end
 
+  if a.verbose > 2
+    if ischar(S.subs) || iscellstr(S.subs)
+      disp([ mfilename ': get object "' S.type char(S.subs) '"' ])
+    else
+      disp([ mfilename ': get object "' S.type '"' ])
+      disp(S.subs)
+    end
+  end
+
   default = true;
   switch S.type
   case {'()','.'} % syntax: a('fields') does not follow links (getalias).
