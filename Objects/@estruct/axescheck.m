@@ -108,42 +108,55 @@ function [signal_id, error_id, monitor_id, axes_id] = axescheck_find_signal(self
   if      isempty(dims), return;
   elseif isscalar(dims), signal_id=1; return;
   end
-  fields0 =fields;
-  % we identify named numeric fields, and remove them from our definitions
+
+  % clean fields with 'Protected' stuff.
   for index=1:numel(fields) % decreasing size
     if isempty(fields{index}), continue; end  % skip empty fields/already tagged
     % remove fields that can not be used/cross-referenced
-    if any(strcmp(fields{index}, {'Date','ModificationDate','Error','Signal','Monitor'}))
-      fields0{index} = ''; dims(index) = 0; sz{index} = 0; fields{index} = '';
-      continue;
+    field_root = strtok(fields{index},'.');
+    if any(strcmp(fields{index}, self.properties_Base)) ...
+    || any(strcmp(fields{index}, self.properties_Protected)) ...
+    || any(strcmp(fields{index}, {'Error','Signal','Monitor'})) ...
+    || any(strcmp(field_root,    {'Attributes','Headers','Labels','postprocess','verbose'}))
+      fields{index} = ''; dims(index) = 0; sz{index} = 0;
     end
-    if isempty(error_id) && ~strcmp(fields{index}, 'Error') && ~isempty(strfind(lower(fields{index}), 'err'))
+  end
+
+  % we search for Monitor, Error and Axes by name.
+  % we identify named numeric fields, and remove them from our definitions
+  for index=1:numel(fields) % decreasing size
+    if isempty(fields{index}), continue; end  % skip empty fields/already tagged
+    if isempty(error_id) && ~isempty(strfind(lower(fields{index}), 'err'))
       error_id = index;   % if found, dimension must match signal, or scalar
       fields{index} = '';
-    elseif isempty(monitor_id) && ~strcmp(fields{index}, 'Monitor') && ~isempty(strfind(lower(fields{index}), 'mon')) ...
+    elseif isempty(monitor_id) && ~isempty(strfind(lower(fields{index}), 'mon')) ...
       monitor_id = index; % if found, dimension must match signal, or scalar
       fields{index} = '';
     elseif ~isempty(strfind(lower(fields{index}), 'axis')) ...
-      || ~isempty(strfind(lower(fields{index}), 'axes'))
+      ||   ~isempty(strfind(lower(fields{index}), 'axes'))
       axes_id(end+1) = index; % if found, dimension must match signal, size(rank)
-      fields{index} = '';
-    elseif isempty(signal_id) && ~strcmp(fields{index}, 'Signal') ...
-      && (~isempty(strfind(lower(fields{index}), 'signa')) ...
-      || ~isempty(strfind(lower(fields{index}), 'int')) || ~isempty(strfind(lower(fields{index}), 'amp')))
-      signal_id = index;  % signal is named
       fields{index} = '';
     end
   end
-  fields = fields0;
-  if ~isempty(signal_id) && any(signal_id == [ error_id monitor_id axes_id ])
-    signal_id = []; % wrong guess for Signal
+
+  % We search for the Signal. Its size must be max(dims). Its name must not match
+  % 'error','monitor' or any other alias.
+  maxdim = max(dims); signal_id_candidate = [];
+  for index=1:numel(fields) % decreasing size
+    if isempty(fields{index}), continue; end  % skip empty fields/already tagged
+    if isempty(signal_id) && ~strcmp(fields{index}, 'Signal') ...
+      && (~isempty(strfind(lower(fields{index}), 'signa')) ...
+        || ~isempty(strfind(lower(fields{index}), 'int')) ...
+        || ~isempty(strfind(lower(fields{index}), 'amp')))
+      signal_id_candidate(end+1) = index;  % signal is named
+      fields{index} = '';
+    elseif dims(index) == maxdim
+      signal_id_candidate(end+1) = index;
+    else break; % not max size, not a nice name.
+    end
   end
-  % signal not defined ? get the first biggest field available
-  if isempty(signal_id)
-    maxdim = dims;
-    maxdim([ error_id monitor_id axes_id ]) = []; % remove found named fields
-    signal_id = find(maxdim == max(dims) & maxdim > 0,1);  % the first biggest
-  end
+  if ~isempty(signal_id_candidate), signal_id = signal_id_candidate(1); end
+
   % no Signal found: then nothing can be defined, return
   if isempty(signal_id)
     error_id = []; monitor_id=[]; axes_id = [];
