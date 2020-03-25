@@ -56,15 +56,26 @@ properties
     % Data handling: Signal, Axes, ...
     Labels  = struct(); % struct: Labels.Signal, ... Labels.Axes{1:ndims}
     Axes    = {};       % cell{1:ndims} e.g. aliases
-    verbose = 0;
+    verbose = 0;        % 0:silent, 1:normal, 2:debug
+    Attributes = [];    % field attributes. Map the object structure.
   end
 
   properties (Access=protected, Constant=true)  % shared by all instances
     properties_Protected={'properties_Protected','properties_Base', ...
-      'Axes','Tag','Private','Labels'} % can not be changed
+      'Axes','Tag','Private','Labels', 'Attributes' } % can not be changed manually
     properties_Base={'Creator', 'Command', 'Date', 'Data', 'DisplayName', ...
-      'Label', 'ModificationDate', 'Source', 'Tag', 'Name', 'User', 'UserData'};
+      'Label', 'ModificationDate', 'Source', 'Tag', 'Name', 'User', 'UserData', ...
+      'Attributes' };
   end
+  
+  events
+    % These are inherited from dynamicprops
+    % PropertyAdded
+    % PropertyRemoved
+    % ObjectBeingDestroyed
+    ObjectUpdated % triggered when a check is done
+    ObjectPlotted % triggered when the object is plotted
+  end % events
 
 % ------------------------------------------------------------------------------
 
