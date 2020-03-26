@@ -1,16 +1,14 @@
-function [b, location] = fileattrib(a, field, attribute, value)
-% [attribute, link] = fileattrib(s, field) : return a field Attribute
-%
-%   @estruct/fileattrib function which looks for an associated Attribute to a field.
+function [b, location] = fileattrib(a, field, varargin)
+% FILEATTRIB Get or set field Attributes
+%   Looks for an associated Attribute to a field.
 %      Attributes are set from e.g. NetCDF/CDF/NeXus/HDF files.
 %      returns []  when no attribute exists
-%      returns NaN when the field is already an attribute
 %
-%   s=fileattrib(s, field, attribute) sets the attribute for given field, when
-%     attribute is given as a struct.
+%   s=FILEATTRIB(s, field, attribute) sets the attribute for given field, when
+%   attribute is given as a struct.
 %
-%   s=fileattrib(s, field, name, value) sets the attribute 'name=value' for given
-%     field.
+%   s=FILEATTRIB(s, field, name, value) sets the attribute 'name=value' for given
+%   field.
 %
 % input:  s:     object or array (estruct)
 %         field: Alias/path in the object (string)
@@ -25,16 +23,37 @@ function [b, location] = fileattrib(a, field, attribute, value)
 % Version: $Date$ $Version$ $Author$
 % See also estruct, isfield
 
-% The Attribute property maps the object structure and allow to store any
+% The Attribute property maps the object structure and allows to store any
 % information attached to an existing hierarchy.
 
 location = [];
 if nargin == 1
-  [~,b] = fileattrib(a.Source);
+  b = get(a, 'Attributes');
+  return
+end
+
+% handle object arrays
+if numel(a) > 1
+  b        = {};
+  location = {};
+  for index=1:numel(a)
+    [b{end+1}, location{end+1}] = fileattrib(a(index), field, varargin{:});
+  end
+  return
+end
+
+% handle field array
+if iscell(field) && numel(field) > 1
+  b        = {};
+  location = {};
+  for index=1:numel(field)
+    [b{end+1}, location{end+1}] = fileattrib(a, field{index}, varargin{:});
+  end
   return
 end
 
 % first resolve the 'true' path to the field.
+field = char(field);
 try
   f = getalias(a, field);
   if ~isempty(f) && ischar(f) && isfield(a, f)
@@ -88,9 +107,10 @@ if nargin == 2
   return
 else
   % set attribute value
-  if nargin == 4 && ischar(attribute)
-    sattr.(attribute) = value;
-    attribute = sattr;
+  if nargin == 4 && ischar(varargin{1})
+    attribute.(varargin{1}) = varargin{2};
+  else
+    attribute = varargin{1};
   end
   if isstruct(attribute)
     % we merge with existing
