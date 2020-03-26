@@ -53,8 +53,8 @@ end
 locations = { [ base group field '.Attributes' ], ...
               [ base group 'Attributes.' field ], ...
               [ 'Attributes.' base group field ], ...
-              [ 'Headers.' base group field ]};
-
+              [ 'Headers.'    base group field ], ...
+              [ 'Attributes.'      group field ] };
 
 for loc = locations
   if isfield(a, loc{1}), location = loc{1}; break; end
@@ -70,13 +70,16 @@ end
 
 try
   b = get(a, location, 'alias');
-  if isempty(b)
-    b = get(a, location);
-  end
-catch ME
+catch
   b = [];
-  if nargin == 2 && a.verbose > 1
-    disp([ mfilename ': could not get Attribute ' location ]);
+end
+if isempty(b)
+  try
+    b = get(a, location);
+  catch
+    if nargin == 2 && a.verbose > 1
+      disp([ mfilename ': could not get Attribute ' location ]);
+    end
   end
 end
   
@@ -104,23 +107,15 @@ end
 
 % ------------------------------------------------------------------------------
 function [base, group, lastword] = getAttributePath(field)
-% GETATTRIBUTEPATH the entry name into basename, group and dataset
+% GETATTRIBUTEPATH Cut the entry name into basename, group and dataset
+  tokens = textscan(field, '%s', 'Delimiter','./\\');
+  tokens = strcat(tokens{1},'.');
+  lastword=tokens{end}; lastword(end) = [];
 
-  % get group and field names
-  lastword_index = find(field == '.' | field == '/' | field == '\', 2, 'last'); % get the group and the field name
-  if isempty(lastword_index)
-    lastword = field; 
-    group    = '';
-    base     = '';                            % Attributes.<field>.
-  elseif isscalar(lastword_index)
-    lastword = field((lastword_index+1):end); 
-    group    = field(1:lastword_index);
-    base     = '';                            % <group>.Attributes.<field>
-  else 
-    lastword = field( (lastword_index(2)+1):end ); 
-    group    = field( (lastword_index(1)+1):lastword_index(2) ); 
-    base     = field(1:lastword_index(1));    % <basename>.<group>.Attributes.<field>
+  if numel(tokens) == 1
+    base = ''; group = '';
+  elseif numel(tokens) == 2
+    base = ''; group = tokens{1};
+  else
+    base = tokens{1}; group = [ tokens{2:(end-1)} ];
   end
-
-  if ~isempty(base)  && base(end)  ~= '.', base = [ base '.' ]; end
-  if ~isempty(group) && group(end) ~= '.', group= [ group '.' ]; end

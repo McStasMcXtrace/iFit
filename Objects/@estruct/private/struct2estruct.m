@@ -47,7 +47,7 @@ function b=struct2estruct(a, varargin)
       set(b, f{1}, a.(f{1})); % add new property
     end
   end
-  
+  disp(b.Data)
   % handle some more specific stuff
   % Attributes Headers MetaData Loader postprocess
   if isfield(b.Data,'Headers') && ~isfield(b, 'Headers')
@@ -56,7 +56,7 @@ function b=struct2estruct(a, varargin)
   if isfield(a, 'Headers')
     label(b, 'Headers', 'Headers (text)' );
   end
-  if isfield(b.Data,'Attributes') && ~isfield(b, 'Attributes')
+  if isfield(b.Data,'Attributes') && (~isfield(b, 'Attributes') || isempty(b.Attributes))
     set(b, 'Attributes', 'Data.Attributes');
   end
   if isfield(a, 'Attributes')
