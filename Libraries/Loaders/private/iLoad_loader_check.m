@@ -1,10 +1,10 @@
 function data = iLoad_loader_check(file, data, loader)
-% iLoad_loader_check: make the data pretty looking
+% ILOAD_LOADER_CHECK make the data pretty looking
 
   if isempty(data), return; end
   % handle case when a single file generates a data set
   newdata = {};
-  if isstruct(data) & length(data)>1
+  if isstruct(data) && length(data)>1
     for index=1:numel(data)
       newdata = { newdata{:} iLoad_loader_check(file, data(index), loader) };
     end
@@ -12,7 +12,7 @@ function data = iLoad_loader_check(file, data, loader)
     return
   elseif iscellstr(data)
     fprintf(1, 'iLoad: Failed to import file %s with method %s (%s). Got a cell of strings. Ignoring\n', file, loader.name, char(loader.method));
-  elseif iscell(data) & numel(data)>1
+  elseif iscell(data) && numel(data)>1
     for index=1:length(data)
       if ~isempty(data{index})
         this = iLoad_loader_check(file, data{index}, loader);
@@ -27,7 +27,7 @@ function data = iLoad_loader_check(file, data, loader)
 
   name='';
   % check loader
-  if isstruct(loader),
+  if isstruct(loader)
     method = loader.method;
     options= loader.options;
     if isfield(loader, 'name'), name=loader.name; end
@@ -35,16 +35,18 @@ function data = iLoad_loader_check(file, data, loader)
     method = loader; options=''; 
   end
 
-  if isempty(method), method='iData/load'; end
+  if isempty(method), method='iFit/load';
+  elseif isa(method, 'function_handle'), method = func2str(method);
+  end
   if strcmp(loader, 'variable')
-    method='iData/load';
+    method='iFit/load';
   end
   
   % check all members of the imported data. Create a 'standardized' structure.
-  if isempty(name), name=method; end
+  if isempty(name), name=char(method); end
   if iscell(options), options= cellstr(options{1}); options= [ options{1} ' ...' ]; end
-  if ~isfield(data, 'Source')  & ~isfield(data, 'Date') ...
-   & ~isfield(data, 'Command') & ~isfield(data,' Data')
+  if ~isfield(data, 'Source')  && ~isfield(data, 'Date') ...
+   & ~isfield(data, 'Command') && ~isfield(data,' Data')
     new_data.Data = data;
     % transfer some standard fields as possible
     if isfield(data, 'Source'), new_data.Source= data.Source; end
@@ -77,18 +79,18 @@ function data = iLoad_loader_check(file, data, loader)
   end
 
   if ~isfield(data, 'Format'),
-    if ~strcmp(loader, 'variable'), data.Format  = [ name ' import with Matlab ' method ];  
-    else data.Format  = [ 'Matlab ' method ]; end
+    if ~strcmp(loader, 'variable'), data.Format  = [ name ' import with Matlab ' char(method) ];  
+    else data.Format  = [ 'Matlab ' char(method) ]; end
   end
 
   if strcmp(loader, 'variable')
-    data.Command = [ 'iLoad(' file ', ''' method ''', '''  options '''); % ' method ' method ' ];
+    data.Command = [ 'iLoad(' file ', ''' char(method) ''', '''  options '''); % ' method ' method ' ];
   else
-    data.Command = [ 'iLoad(''' file ''', ''' method ''', ''' options '''); % ' method ' method' ];
+    data.Command = [ 'iLoad(''' file ''', ''' char(method) ''', ''' options '''); % ' method ' method' ];
   end
 
-  if ~isfield(data, 'Creator'), data.Creator = [ name ' iData/load/' method ]; 
-  else data.Creator = [ name ' iData/load/' method ' - ' data.Creator ]; end
+  if ~isfield(data, 'Creator'), data.Creator = [ name ' iFit/load/' char(method) ]; 
+  else data.Creator = [ name ' iFit/load/' char(method) ' - ' data.Creator ]; end
   if ~isfield(data, 'User'),
     if isunix
       data.User    = [ getenv('USER') ' running on ' computer ' from ' pwd ];
@@ -99,7 +101,7 @@ function data = iLoad_loader_check(file, data, loader)
   if ~isfield(data, 'Label'), data.Label = ''; end
   if     isfield(loader,'name')   data.Format = loader.name; 
   elseif isfield(loader,'method') data.Format=[ char(loader.method) ' import' ]; 
-  elseif ischar(loader)           data.Format=[ char(loader) ' import' ]; end
+  elseif ischar(loader)           data.Format=[ loader ' import' ]; end
   data.Loader = loader;
   
 end % Load_loader_check

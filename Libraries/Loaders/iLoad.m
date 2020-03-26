@@ -87,7 +87,7 @@ function [data, format] = iLoad(filename, loader, varargin)
 
   if isempty(config)
     config  = iLoad_config_load;
-    warning off backtrace % limit level of output messages 
+    % warning off backtrace % limit level of output messages 
   end
 
   data = []; format = [];
@@ -385,7 +385,7 @@ function [data, format] = iLoad(filename, loader, varargin)
     filename = strrep(filename, '%20',' ');
     while filename(end) == ';', filename(end)=''; end % in case there is a leading ';' in place of \n
     if config.verbosity > 1
-      disp([ mfilename ': loading filename ' filename ' with loader ' loader])
+      disp([ mfilename ': loading filename ' filename ' with loader ' char(loader) ])
     end
     if isempty(dir(filename)) && config.verbosity
       warning([ mfilename ': possibly invalid filename ' filename ]);

@@ -40,7 +40,12 @@ end % iLoad_loader_auto
 function loaders = iLoad_loader_extension(formats, ext)
 % iLoad_loader_extension: identify loaders for which any registered extension match 'ext'
 %   or loader has no extension (all match), or '*'
-  exts = cellfun(@(c)getfield(c, 'extension'), formats, 'UniformOutput',false);
+
+  persistent exts
+  if isempty(exts)
+    exts = cellfun(@(c)getfield(c, 'extension'), formats, 'UniformOutput',false);
+  end
+  
   done = zeros(size(exts));
   loaders={};
   % first we add formats that exactly match extensions
@@ -69,9 +74,12 @@ function loaders = iLoad_loader_patterns(formats, file_start, isbinary, ext)
   % keep when patterns found in file_start
   % or format has patterns=='' and is text
   % or no pattern at all
-  exts   = cellfun(@(c)getfield(c, 'extension'), formats, 'UniformOutput',false);
-  pats   = cellfun(@(c)getfield(c, 'patterns'),  formats, 'UniformOutput',false);
-  istext = cellfun(@(c)getfield(c, 'istext'),    formats);
+  persistent exts pats istext
+  if isempty(exts)
+    exts   = cellfun(@(c)getfield(c, 'extension'), formats, 'UniformOutput',false);
+    pats   = cellfun(@(c)getfield(c, 'patterns'),  formats, 'UniformOutput',false);
+    istext = cellfun(@(c)getfield(c, 'istext'),    formats);
+  end
   done   = zeros(size(istext));
   nopat  = zeros(size(istext));
   loaders={};
@@ -91,7 +99,6 @@ function loaders = iLoad_loader_patterns(formats, file_start, isbinary, ext)
     end
   end
   % we keep formats that exactly match extension (but not if patterns do not match)
-  exts = cellfun(@(c)getfield(c, 'extension'), formats, 'UniformOutput',false);
   % we add formats that exactly match extensions
   for index=1:numel(exts)
     if ~done(index) && ~nopat(index)

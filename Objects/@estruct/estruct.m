@@ -226,9 +226,10 @@ properties
           % 'this' can be initial char/cellstr, a struct from iLoad, or a cell of structs from iLoad
           if ~iscell(this), this = { this }; end
           for index_data=1:numel(this)
-            if isempty(this{index_data}), continue; end
+            if numel(this{index_data}) == 0, continue; end
             if isa(this{index_data}, 'estruct')
               new1 = this{index_data};
+            elseif isempty(this{index_data}), continue;
             else
               if numel_new == 1
                 new1 = new;
