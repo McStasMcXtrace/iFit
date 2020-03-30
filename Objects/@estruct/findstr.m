@@ -31,16 +31,13 @@ if numel(s) > 1
   return
 end
 
-[fields, types] = findfield(s,'','char');  % get all fields and types
-
-index=[ find(strcmp('char', types)) ; find(strcmp('cell', types)) ];
-if isempty(index), field=[]; match=[]; return; end
-
-clear types
 % get all field names containing char/cellstr data
-fields = fields(index);
-% get their content
-matchs = get(s, fields);
+fields = findfield(s,'','char');
+
+if isempty(fields), field=[]; match=[]; return; end
+
+% get their content, but does not follow links
+matchs = get(s, fields,'alias');
 % convert to char using private inline function handle
 matchs = cellfun(@cell2char, matchs, 'UniformOutput', false);
 

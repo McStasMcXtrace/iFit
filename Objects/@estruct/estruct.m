@@ -2,6 +2,7 @@ classdef estruct < dynamicprops
 % ESTRUCT Create or convert to an estruct object.
 %   S = ESTRUCT('field1',VALUES1,'field2',VALUES2,...) creates
 %   an object with the specified fields and values (as properties).
+%   ESTRUCT is similar to STRUCT, but is designed to hold scientific data.
 % 
 %   ESTRUCT(a,b,c,...) imports input arguments into an estruct object.
 % 
@@ -13,24 +14,22 @@ classdef estruct < dynamicprops
 %   Use 'LOAD(estruct, file, loader)' to specify the importer and apply
 %   post-processing.
 %
-%   ESTRUCT silent|verbose|debug sets the verbosity level.
-% 
+%   ESTRUCT silent|verbose|debug sets the verbosity level. The verbosity level is
+%   common to all objects and methods. You may also change the verbosity (level
+%   of output messages) with the 'verbose' property, e.g.
+%     a=estruct; a.verbose = 1;
+%   A null verbosity corresponds with no messages (silent). 
+%
 %   ESTRUCT(OBJ) converts the object OBJ into its equivalent
 %   estruct.  The initial class information is lost.
 % 
 %   ESTRUCT([]) creates an empty object.
-% 
-%   ESTRUCT is similar to STRUCT, but is designed to hold scientific data.
 %
-%   You may change the verbosity (level of output messages) with the 'verbose'
-%   property, e.g. a=estruct; a.verbose = 1;
-%   The verbosity level is common to all objects and methods. A null verbosity 
-%   corresponds with no messages (silent).
-% 
-%  Example: s = estruct('type',{'big','little'},'color','red','x',{3 4}); isstruct(s)
-%  Version: $Date$ $Version$ $Author$
-%  See also estruct/load, isstruct, setfield, getfield, fieldnames, orderfields,
-%    isfield, rmfield, deal, substruct, struct2cell, cell2struct.
+%   Example: s = estruct('type',{'big','little'},'color','red','x',{3 4}); isstruct(s)
+%   Example: s = estruct(1:10); isstruct(s)
+%   Version: $Date$ $Version$ $Author$
+%   See also estruct/load, isstruct, setfield, getfield, fieldnames, orderfields,
+%     isfield, rmfield, deal, substruct, struct2cell, cell2struct.
 
 properties
 
@@ -39,7 +38,7 @@ properties
     Command         ={};          % The history of the object (cellstr)
     Date            = clock;      % The Date of creation of the object
     Data            =[];          % Where we store most of the Data
-    DisplayName     ='';          % The apparent name of the object, e.g. for plots
+    DisplayName     ='';          % The apparent name of the object, e.g. for plots. SHOULD BE AN ALIAS TO LABEL
     Label           ='';          % The label of the object
     ModificationDate=[];          % The Date of last modification
     Source          = pwd;        % The data source
@@ -146,7 +145,7 @@ properties
         end
         if ischar(this) && ~isempty(this)
           switch lower(this)
-          case {'verbose','normal'}
+          case {'verbose','normal','default'}
             new.verbose = 1;
             if exist('iLoad','file'), iLoad('verbose'); end
             return;

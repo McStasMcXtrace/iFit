@@ -7,7 +7,7 @@ if 1 < length(out) && length(i1) < length(out)
   % some data sets seem to be duplicated: make additional tests
   % look for similarities
   sources = get(out, 'Source');
-  titls   = get(out, 'Title');
+  titls   = get(out, 'Name');
   labs    = get(out, 'Label');
   sums    = sum(out, 0); % total signal
   i       = 1:length(out);
