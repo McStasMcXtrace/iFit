@@ -1,6 +1,6 @@
 function [s,fig] = commandhistory(a, fig, varargin)
 % COMMANDHISTORY Show the command history of object.
-%   COMMANDHISTORY(S) opens a dialogue showing all comands used so far
+%   COMMANDHISTORY(S) opens a dialogue showing all commands used so far
 %   to procuce the current object. The dialogue allows to export the
 %   commands as a script.
 %

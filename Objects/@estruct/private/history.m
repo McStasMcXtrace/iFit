@@ -7,6 +7,8 @@ function a = history(a, meth, varargin)
 % This file is used by: all methods that record entries in the Command property
 %   unary binary axescheck commandhistory copyobj estruct interp setaxis setor subsasgn
 
+if nargin < 2, return; end
+  
 if ~ischar(meth)
   disp([ class(a) '/' mfilename ': command to add in the history should be a char, now ' class(meth) ]);
   return
@@ -23,10 +25,12 @@ if nargin >= 3 || ~isempty(varargin)
     if ischar(b)
       if numel(b) > 100, b=[ b(1:20) '...' b((end-20):end) ]; end
       toadd = [ toadd c ' ''' b '''' ];
-    elseif isobject(b) && isfield(b, 'Tag')
-      toadd = [ toadd c b.Tag ];
+    elseif all(isobject(b)) && all(isfield(b, 'Tag'))
+      t = sprintf('%c%s', c, getfield(b, 'Tag'));
+      s = sprintf('%c%s', c, getfield(b, 'Source'));
+      toadd = [ toadd c t ];
       if isempty(tocat), tocat = ' %'; end
-      tocat = [ tocat ' <' class(b) ' ' b.Tag ' ' b.Source '> ' ];
+      tocat = [ tocat ' <' class(b) ' ' t ' ' s '> ' ];
     elseif isnumeric(b) || islogical(b)
       if ndims(b) > 2,   b=b(:); end
       if numel(b) > 50, toadd = [ toadd c ' [' sprintf('%g ',double(b(1:20))) '...' sprintf('%g ',double(b((end-20):end))) ']' ];
@@ -43,6 +47,7 @@ if nargin >= 3 || ~isempty(varargin)
 
 end
 
+% handle arrays
 for index=1:numel(a)
   d=a(index);
   if isempty(d.Command),

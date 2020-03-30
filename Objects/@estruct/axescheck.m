@@ -34,8 +34,12 @@ axes_id   = [];
 [fields, ~, dims, sz] = findfield(s,'','numeric');
 if s.verbose > 1
   for index=1:numel(fields)
-    disp([ mfilename ': ' num2str(index) ' as ' fields{index} ' numel [' num2str(dims(index)) ']' ])
+    if dims(index) > 1
+      disp([ mfilename ': ' num2str(index) ' as ' fields{index} ' numel [' num2str(dims(index)) ']' ])
+    end
   end
+  disp([ mfilename ': scalars as ' sprintf('%s ', fields{dims == 1}) ]);
+  disp([ mfilename ': empty   as ' sprintf('%s ', fields{dims == 0}) ]);
 end
 
 % define Signal,Error,Monitor when not yet so
@@ -237,8 +241,10 @@ function axescheck_find_axes(self, fields, dims, sz)
   % ----------------------------------------------------------------------------
   function tf = axescheck_size_axes(self, index, ax_sz)
     tf = false;
-    %   size(Signal) or size(rank) as vector
+    % size(Signal) or size(rank) as vector
+    %   NOTE: some data sets have 'central' axes values with numel = dim(Signal)-1
     if (numel(ax_sz) == numel(size(self)) && all(ax_sz == size(self))) ...
-    || (numel(ax_sz) >= index && isscalar(find(ax_sz>1)) && prod(ax_sz) == size(self, index))
+    || (numel(ax_sz) >= index && isscalar(find(ax_sz>1)) && prod(ax_sz) == size(self, index)) ...
+    || (numel(ax_sz) >= index && isscalar(find(ax_sz>1)) && prod(ax_sz) == size(self, index)-1) ...
       tf = true;  % valid axis definition/value
     end

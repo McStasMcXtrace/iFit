@@ -19,8 +19,9 @@ function out = load_NeXus(in)
 %   NXprocess
 %   NXuser
 
-out = in;
+out     = [];
 verbose = in.verbose;
+tag     = in.Tag;
 
 % We search for the 'NX_class' items. These identify the entries.
 % These are defined as Attributes.
@@ -44,39 +45,40 @@ if ~iscell(NXdata_path), NXdata_path = { NXdata_path }; end
 if ~iscell(NXdata_attr), NXdata_attr = { NXdata_attr }; end
 
 % We search for 'signal' Attributes (exact case). This defines the Signal.
-NXdata_path_signal = {};
+NXdata_path_signal = {}; NXsignal_path = {};
 for index=1:numel(NXdata_path)
   if ~isstruct(NXdata_attr{index}) || isempty(NXdata_attr{index}), continue; end
   % we use the overloaded struct.findfield shipped with iFit
-  if ~isempty(findfield(NXdata_attr{index}, 'signal','exact case'))
+  fsignal = findfield(NXdata_attr{index}, 'signal','exact case');
+  if ~isempty(fsignal)
     % this is an NXdata with 'signal' Attribute.
     NXdata_path_signal{end+1} = NXdata_path{index};
+    fsignal = strrep(fsignal{1}, '.signal','');
+    NXsignal_path{end+1}           = [ NXdata_path{index} '.' fsignal ];
   end
 end
 
 if verbose > 1
   disp([ mfilename ': found ' num2str(numel(NXdata_path_signal)) ...
-    ' data sets with Signal in object ' in.Tag ]);
+    ' data sets with Signal in object ' tag ]);
 end
 if isempty(NXdata_path_signal), return; end % No Signal in any NXdata/NXdetector
 
 % we create as many output objects as NXdata and NXdetector entries
 for index=1:numel(NXdata_path_signal)
+  % all assignments are sent to the end of the loop to avoid intermediate checks.
+
+  if verbose > 1
+    disp([ mfilename ': defining Signal ' NXsignal_path{index} ' in object ' tag ]);
+    disp([ mfilename ':   NXdata ' NXdata_path_signal{index} ' with Signal in object ' tag ]);
+  end
+  
   % we define a new object with Signal
-  if numel(NXdata_path_signal) > 1, this = copyobj(in); else this = in; end
+  if 1 || numel(NXdata_path_signal) > 1, this = copyobj(in); else this = in; end
   attr = NXdata_path{index};
-  setaxis(this, 0, NXdata_path_signal{index});
 
   % assign a Label to the Signal, using the Attributes.
   lab = strrep(class2str(NXdata_path{index}, 'no comment short'), 'struct_str.','');
-  label(  this, 0, strrep(lab, sprintf('\n'), '') );
-
-  % we extract the NXdata which holds the Signal
-  [~, this_NXdata] = fileparts(NXdata_path_signal{index});
-  if verbose > 1
-    disp([ mfilename ': defining Signal ' NXdata_path_signal{index} ' in object ' in.Tag ]);
-    disp([ mfilename ':   NXdata ' this_NXdata ' with Signal in object ' in.Tag ]);
-  end
 
   % determine the NXentry we are in (when multiple).
   % The NXentry_path corresponds with the beginning of the NXdata_path{index}
@@ -97,7 +99,7 @@ for index=1:numel(NXdata_path_signal)
   end
   set(this, 'NXentry', this_NXentry);
   if verbose > 1
-    disp([ mfilename ':   NXentry ' this_NXentry ' with NXdata/Signal in object ' in.Tag ]);
+    disp([ mfilename ':   NXentry ' this_NXentry ' with NXdata/Signal in object ' tag ]);
   end
 
   % get the NX_class in this lightweight object
@@ -115,16 +117,17 @@ for index=1:numel(NXdata_path_signal)
       % Alias: e.g. instrument -> NXinstrument block
       setalias(this, l{1}, NXblock{1});
       if verbose > 1
-        disp([ mfilename ':   NX ' l{1} ' as ' NXblock{1} ' in object ' in.Tag ]);
+        disp([ mfilename ':   NX ' l{1} ' as ' NXblock{1} ' in object ' tag ]);
       end
     end
   end
 
-  % now set the axes...
+  % now search the axes...
   % according to nexusformat.org the axes are defined with either:
   %   
 
-  
+  setalias(this, 'Signal', NXsignal_path{index});
+  label(  this,  'Signal', strrep(lab, sprintf('\n'), '') );
   out = [ out this ];
 
 end
