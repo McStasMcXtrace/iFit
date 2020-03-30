@@ -7,7 +7,7 @@ if nargin < 2
   format = 'HDF';
 end
 
-if ~isa(filename,'estruct')
+if ~isa(filename,'estruct') && ~isa(filename, 'iData')
   out = estruct(iLoad(filename,format));
 else
   out = filename;
