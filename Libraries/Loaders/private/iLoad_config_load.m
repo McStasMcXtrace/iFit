@@ -1,6 +1,13 @@
 function config = iLoad_config_load
 % iLoad_config_load: load the configuration and format customization
 
+  persistent cached_config
+
+  if ~isempty(cached_config)
+    config = cached_config;
+    return
+  end
+  
   loaders      = {};
   config       = [];
   % read user list of loaders which is a cell of format descriptions
@@ -120,6 +127,8 @@ function config = iLoad_config_load
   end
   
   config.loaders = loaders; % updated list of loaders
+
+  cached_config = config;
   
 end % iLoad_config_load
 
