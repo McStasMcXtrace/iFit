@@ -18,20 +18,22 @@ function out = load_NeXus(in)
 %   NXsample
 %   NXprocess
 %   NXuser
+%
+% Attributes can be as follows:
+%   NXdata@signal= '<signal>'             name of field with signal (string)
+%   NXdata@axes  = '<axis1>,<axis2>,...'  name of axes, in order (string, cellstr)
+%                                         '.' indicates unspecified axis.
+%
+%   NXdata.<signal>@signal=1          indicates this is the signal
+%   NXdata.<signal>@axes='<axis1>,<axis2>,...' name of axes for the signal
+%   NXdata.<axis1>@axis=<rank>          indicates this is an axis of given rank
 
 out     = [];
-verbose = in.verbose;
-tag     = in.Tag;
 
 % We search for the 'NX_class' items. These identify the entries.
 % These are defined as Attributes.
-NX_class = findfield(in, 'NX_class');
+[NX_class, NX_path] = load_NeXus_class(in);
 if isempty(NX_class), return; end % Not a NeXus file
-
-% Then we remove the '.Attributes' and '.NX_class' tokens to get the true path.
-NX_path = strrep(NX_class, '.Attributes','');
-NX_path = strrep(NX_path,  '.NX_class',  ''); % path to NX entries
-NX_class= get(in, NX_class);                  % type of NX entries (NX_class)
 
 % location of NXdata stuff
 NXdata_path = NX_path(strcmp(NX_class, 'NXdata')  | strcmp(NX_class, 'NXdetector'));
@@ -45,49 +47,53 @@ if ~iscell(NXdata_path), NXdata_path = { NXdata_path }; end
 if ~iscell(NXdata_attr), NXdata_attr = { NXdata_attr }; end
 
 % We search for 'signal' Attributes (exact case). This defines the Signal.
-NXdata_path_signal = {}; NXsignal_path = {};
+NXdata_path_signal = [];
 for index=1:numel(NXdata_path)
   if ~isstruct(NXdata_attr{index}) || isempty(NXdata_attr{index}), continue; end
-  % we use the overloaded struct.findfield shipped with iFit
-  fsignal = findfield(NXdata_attr{index}, 'signal','exact case');
-  if ~isempty(fsignal)
+  % we use the overloaded struct.findfield shipped with iFit to search for 'signal'
+  if  isfield(          NXdata_attr{index}, 'signal') ...
+  || ~isempty(findfield(NXdata_attr{index}, 'signal','exact case'))
     % this is an NXdata with 'signal' Attribute.
-    NXdata_path_signal{end+1} = NXdata_path{index};
-    fsignal = strrep(fsignal{1}, '.signal','');
-    NXsignal_path{end+1}           = [ NXdata_path{index} '.' fsignal ];
+    NXdata_path_signal(end+1) = index; % NXdata index which has a signal inside.
   end
 end
 
-if verbose > 1
+if in.verbose > 1
   disp([ mfilename ': found ' num2str(numel(NXdata_path_signal)) ...
-    ' data sets with Signal in object ' tag ]);
+    ' data sets with Signal in object ' in.Tag ]);
 end
 if isempty(NXdata_path_signal), return; end % No Signal in any NXdata/NXdetector
 
 % we create as many output objects as NXdata and NXdetector entries
+all_signal_names = {};
 for index=1:numel(NXdata_path_signal)
   % all assignments are sent to the end of the loop to avoid intermediate checks.
+  this_NXdata = NXdata_path{NXdata_path_signal(index)}; % NXdata path containing a Signal
 
-  if verbose > 1
-    disp([ mfilename ': defining Signal ' NXsignal_path{index} ' in object ' tag ]);
-    disp([ mfilename ':   NXdata ' NXdata_path_signal{index} ' with Signal in object ' tag ]);
+  [this,this_signal_name] = load_NeXus_single(in, this_NXdata, NXentry_path);
+  % add a new data set when Signal is not already found.
+  if isempty(strcmp(this_signal_name, all_signal_names))
+    out = [ out this ];
+    all_signal_names{end+1} = this_signal_name;
   end
-  
-  % we define a new object with Signal
-  if 1 || numel(NXdata_path_signal) > 1, this = copyobj(in); else this = in; end
-  attr = NXdata_path{index};
 
-  % assign a Label to the Signal, using the Attributes.
-  lab = strrep(class2str(NXdata_path{index}, 'no comment short'), 'struct_str.','');
+end
 
-  % determine the NXentry we are in (when multiple).
-  % The NXentry_path corresponds with the beginning of the NXdata_path{index}
+% ------------------------------------------------------------------------------
+function [this, this_signal_name] = load_NeXus_single(in, this_NXdata, NXentry_path)
+% LOAD_NEXUS_SINGLE Analyse the attributes and determine the NXentry above
+%   the given NXdata, as well as the inner Signal, Axes, and other symbols.
+
+  this = copyobj(in); % we work on a copy
+  if isempty(this_NXdata) || ~ischar(this_NXdata), return; end
+
+  % determine the NXentry we are in (when multiple) ============================
+  % The NXentry_path corresponds with the beginning of the this_NXdata
   % where the signal resides.
   this_NXentry = []; NXentry_remove = {};
   for index_entry=1:numel(NXentry_path)
     % store NXentry in which the Signal is located.
-    if strncmp(NXentry_path{index_entry}, NXdata_path{index}, ...
-        numel(NXentry_path{index_entry}))
+    if strncmp(NXentry_path{index_entry}, this_NXdata, numel(NXentry_path{index_entry}))
       this_NXentry = NXentry_path{index_entry};
     else
       NXentry_remove{end+1} = NXentry_path{index_entry};
@@ -95,40 +101,160 @@ for index=1:numel(NXdata_path_signal)
   end
   % Then remove other NXentry groups and set an alias to the current NXentry
   if ~isempty(this_NXentry) && ~isempty(NXentry_remove)
-    set(this, NXentry_remove, []);
+    set(this, NXentry_remove, []); % follow links to empty the targets
   end
-  set(this, 'NXentry', this_NXentry);
-  if verbose > 1
-    disp([ mfilename ':   NXentry ' this_NXentry ' with NXdata/Signal in object ' tag ]);
+  if ~isempty(this_NXentry), setalias(this, 'NXentry', this_NXentry); end
+  setalias(this, 'NXdata',  this_NXdata);
+  axescheck(this, 'nocheck'); % disable auto axes check
+  if in.verbose > 1
+    if ~isempty(this_NXentry), disp([ mfilename ': NXentry ' this_NXentry ]); end
+    disp([ mfilename ':   NXdata '  this_NXdata  ]);
   end
 
   % get the NX_class in this lightweight object
-  NX_class_entry = findfield(this, 'NX_class');
-  % remove the '.Attributes' and '.NX_class' tokens to get the true path.
-  NX_path_entry = strrep(NX_class_entry, '.Attributes','');
-  NX_path_entry = strrep(NX_path_entry,  '.NX_class',  ''); % path to NX entries
-  NX_class_entry= get(this, NX_class_entry);                % type of NX entries (NX_class)
+  [NX_class_entry, NX_path_entry] = load_NeXus_class(this);
+
+  % remove all other NXdata items ==============================================
+  % this allows to properly search within a single NXdata, without any chance of
+  % interference with other data blocks.
+  index_all = strcmp('NXdata', NX_class_entry) | strcmp('NXdetector', NX_class_entry);
+  index_this= find(strcmp(this_NXdata, NX_class_entry));
+  index_all(index_this) = 0; % make sure we do not remove the active NXdata block
+  set(this, NX_path_entry(find(index_all)), []); % follow links to empty targets
+  axescheck(this, 'nocheck'); % disable auto axes check
   
-  % define 'NX' aliases in this Data block
-  % NXinstrument NXprocess NXsample
-  for l={'Instrument','Sample','Process','User'}
-    NXblock = NX_path_entry(strcmp(NX_class_entry, [ 'NX' lower(l{1}) ]));
+  % define 'NX' aliases in this Data block =====================================
+  % NXinstrument NXprocess NXsample may be used from top-level. Expose them.
+  for l={'NXinstrument','NXsample','NXprocess','NXuser'}
+    NXblock = NX_path_entry(strcmp(NX_class_entry, l{1}));
     if ~isempty(NXblock) && ~isfield(this, l{1})
       % Alias: e.g. instrument -> NXinstrument block
       setalias(this, l{1}, NXblock{1});
-      if verbose > 1
-        disp([ mfilename ':   NX ' l{1} ' as ' NXblock{1} ' in object ' tag ]);
+      if in.verbose > 1
+        disp([ mfilename ': ' l{1} ' ' NXblock{1} ]);
       end
     end
   end
+  axescheck(this, 'nocheck'); % disable auto axes check
 
-  % now search the axes...
-  % according to nexusformat.org the axes are defined with either:
-  %   
+  % determine the Signal =======================================================
+  % Attributes can be as follows:
+  %   NXdata@signal= '<signal>'         name of field with signal (string)
+  %   NXdata.<signal>@signal=1          indicates this is the signal
+  
+  this_NXdata_attr = fileattrib(this, this_NXdata);
+  this_signal_name = [];
 
-  setalias(this, 'Signal', NXsignal_path{index});
-  label(  this,  'Signal', strrep(lab, sprintf('\n'), '') );
-  out = [ out this ];
+  % is 'signal' an attribute of the NXdata ?
+  if isfield(this_NXdata_attr, 'signal')
+    %   NXdata@signal= '<signal>'         name of field with signal (string)
+    this_signal_name = [ this_NXdata '.' this_NXdata_attr.signal ];
+  else
+    %   NXdata.<signal>@signal=1          indicates this is the signal (old style)
+    % the attribute is attached to the Signal itself. Search it...
+    attr_signal_path = findfield(this, 'signal','exact case');
+    % search for a '.signal' that is an Attribute.
+    isattribute      = cellfun(@numel, strfind(attr_signal_path, '.Attributes'));
+    attr_signal_path = attr_signal_path(find(isattribute));
+    % get the 'signal' attribute value: Is it a boolean (1) ?
+    if ~isempty(attr_signal_path)
+      if iscell(attr_signal_path), attr_signal_path = attr_signal_path{1}; end
+      attr_signal_value = get(this, attr_signal_path);
+      if isnumeric(attr_signal_value) && isscalar(attr_signal_value) ...
+        && attr_signal_value
+        % clean Attribute path. Remove 'Attributes' and get the name before '.signal'.
+        attr_signal_path = strrep(attr_signal_path, '.Attributes', '');
+        index = find(attr_signal_path == '.', 1, 'last');
+        this_signal_name = attr_signal_path(1:(index-1));
+      end
+    end
+  end
+  % check if the Signal is indeed numeric
+  if ~isempty(this_signal_name) && ~isempty(findfield(in, this_signal_name, 'numeric'))
+    setalias(this, 'Signal',  this_signal_name);
+    axescheck(this, 'nocheck'); % disable auto axes check
+    if in.verbose > 1
+      disp([ mfilename ':     Signal ' this_signal_name  ]);
+    end
+    % assign a Label to the Signal, using the Attributes.
+    attr_signal_value = fileattrib(this, 'Signal');
+    attr_signal_value = strrep(class2str(attr_signal_value, 'no comment short'), 'struct_str.','');
+    label(this, 'Signal', attr_signal_value);
+  else
+    if in.verbose > 1
+      disp([ mfilename ':     WARNING: no numeric Signal found in this NXdata.' ]);
+    end
+    return
+  end
 
-end
+  % determine the axes =========================================================
+  % Attributes can be as follows:
+  %   NXdata@axes  = '<axis1>,<axis2>,...'  name of axes, in order (string, cellstr)
+  %                                         '.' indicates unspecified axis.
+  %   NXdata.<signal>@axes='<axis1>,<axis2>,...' name of axes for the signal
+  %   NXdata.<axis1>@axis =<rank>          indicates this is an axis of given rank
+  this_axes_names = {};
+  add_NXdata_path = true; % flag to prepend NXdata path 
+  if isfield(this_NXdata_attr, 'axes')
+    %   NXdata@axes  = '<axis1>,<axis2>,...'  name of axes, in order (string, cellstr)
+    this_axes_names = this_NXdata_attr.axes;
+  elseif ~isempty(findfield(this, 'axes','exact case'))
+    %   NXdata.<signal>@axes='<axis1>,<axis2>,...' name of axes for the signal
+    attr_axes_path = findfield(this, 'axes','exact case');
+    % search for a '.axes' that is an Attribute.
+    isattribute    = cellfun(@numel, strfind(attr_axes_path, '.Attributes'));
+    attr_axes_path = attr_axes_path(find(isattribute));
+    % get the 'axes' attribute value: is it a string/cellstr ?
+    if ~isempty(attr_axes_path)
+      if iscell(attr_axes_path), attr_axes_path = attr_axes_path{1}; end
+      this_axes_names= get(this, attr_axes_path);  % a string/cellstr with axes names
+    end
+  elseif ~isempty(findfield(this, 'axis','exact case'))
+    %   NXdata.<axis1>@axis =<rank>          indicates this is an axis of given rank
+    attr_axes_path = findfield(this, 'axis','exact case');
+    for index=1:numel(attr_axes_path)
+      attr_axes_value= get(this, attr_axes_path{index}); % a numeric/scalar
+      if isnumeric(attr_axes_value) && isscalar(attr_axes_value)
+        % clean Attribute path. Remove 'Attributes' and get the name before '.axis'.
+        attr_axis_path = strrep(attr_axes_path{index}, '.Attributes', '');
+        index = find(attr_axis_path == '.', 1, 'last');
+        this_axes_names{attr_axes_value} = attr_axis_path(1:(index-1)); % full path
+        add_NXdata_path = false;
+      end
+    end
+  end
+  if ~isempty(this_axes_names) && add_NXdata_path
+    if ischar(this_axes_names)
+      this_axes_names = textscan(this_axes_names, '%s','Delimiter',','); % split in tokens
+      this_axes_names = this_axes_names{1};
+    end
+    this_axes_names = strcat(this_NXdata, '.', this_axes_names); % NXdata.<axes>
+  end
+  if ischar(this_axes_names), this_axes_names = cellstr(this_axes_names); end
+  % assign axes when these are numeric
+  for index=1:numel(this_axes_names)
+    this_name = this_axes_names{index};
+    if this_name(end) ~= '.' && ~isempty(findfield(in, this_name, 'numeric'))
+      setaxis(this, index, this_name);
+    end
+  end
+  if in.verbose > 1
+    for index=1:numel(this_axes_names)
+      disp([ mfilename ':     Axis{' num2str(index) '} ' this_axes_names{index} ]);
+    end
+  end
+  
 
+% ------------------------------------------------------------------------------
+function [NX_class, NX_path] = load_NeXus_class(in)
+% LOAD_NEXUS_CLASS Determine the NeXus classes and their path as data sets
+  NX_path  = [];
+  NX_class = [ findfield(in, 'NX_class', 'exact case') ...
+               findfield(in, 'class', 'exact case') ];
+  if isempty(NX_class), return; end % Not a NeXus file
+
+  % Then we remove the '.Attributes' and '.NX_class' tokens to get the true path.
+  NX_path = strrep(NX_class, '.Attributes','');
+  NX_path = strrep(NX_path,  '.NX_class',  ''); % path to NX entries
+  NX_path = strrep(NX_path,  '.class',  '');    % path to NX entries (old style)
+  NX_class= get(in, NX_class);                  % type of NX entries (NX_class)
