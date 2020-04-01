@@ -1,4 +1,4 @@
-function s = axescheck(s)
+function s = axescheck(s, option)
 % AXESCHECK Check the Signal and Axes of an object.
 %   AXESCHECK(s) Check Signal and Axes. When not set, the largest numeric
 %   field is assigned as the Signal, and missing Axes are searched accordingly.
@@ -7,7 +7,11 @@ function s = axescheck(s)
 %   Usually, the objects are checked automatically for integrity, and it
 %   is not required to manually call this method.
 %
-% Example: s = estruct(1:10); prod(size(s)) == 10
+%   AXESCHECK(s, 'nocheck') makes no check and prevents object to be checked
+%   until a further assignment is done. This can be used to assign many properties
+%   without testing the object. Only a final assignment will trigger a check.
+%
+% Example: s = estruct(1:10); isa(axescheck(s),'estruct')
 % Version: $Date$ $Version$ $Author$
 % see also estruct, getaxis, setaxis
 
@@ -21,6 +25,10 @@ end
 
 notify(s, 'ObjectUpdated');
 s.Private.cache.check_requested = false; % ok, we are working on this
+
+if nargin == 2 && strcmp(option, 'nocheck')
+  return
+end
 
 %% Check Signal, Monitor, Error ================================================
 
@@ -100,8 +108,11 @@ s.Private.cache.size = signal_sz; % for faster size execution
 
 %% check Axes: must be size(Signal) or expression or size(rank)
 % first search amongst axes_id, then blind search.
-axescheck_find_axes(s, fields(axes_id), dims(axes_id), sz(axes_id));
-axescheck_find_axes(s, fields,          dims,          sz);
+ok = axescheck_find_axes(s, fields(axes_id), dims(axes_id), sz(axes_id));
+if ok < numel(signal_sz)
+  % some axes were not found from reduced Axes search. Try with full object.
+  axescheck_find_axes(s, fields,          dims,          sz);
+end
 
 % ------------------------------------------------------------------------------
 function [signal_id, error_id, monitor_id, axes_id] = axescheck_find_signal(self, fields, dims, sz)
@@ -177,8 +188,9 @@ function [signal_id, error_id, monitor_id, axes_id] = axescheck_find_signal(self
   end
 
 % ------------------------------------------------------------------------------
-function axescheck_find_axes(self, fields, dims, sz)
+function ok = axescheck_find_axes(self, fields, dims, sz)
 
+  ok = 0;
   if isempty(dims), return; end
 
   % scan Axes/dimensions
@@ -205,6 +217,7 @@ function axescheck_find_axes(self, fields, dims, sz)
         if self.verbose > 1
           disp([ mfilename ': axescheck_find_axes: checked axis[' num2str(index) '] ' num2str(def) ' with size ' mat2str(ax_sz) ]);
         end
+        ok = ok + 1;
         continue
       end
 
@@ -232,6 +245,7 @@ function axescheck_find_axes(self, fields, dims, sz)
             disp([ mfilename ': axescheck_find_axes: found axis[' num2str(index) '] as ' fields{findex} ' with size ' mat2str(sz{findex}) ]);
           end
           self.Axes{index} = fields{findex};
+          ok = ok + 1;
           break
         end
       end
