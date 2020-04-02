@@ -18,6 +18,9 @@ function str=class2str(this, data, options)
 %   to reduce the total size of the representation. The output does not
 %   contain the full initial object, but a reduced version.
 %
+%   CLASS2STR('root', ...) use 'root' as the name of the data. To not use any
+%   root name, specify ' ' as root name.
+%
 %   Multiple keywords can be used, such as 'no comment, short'.
 %
 % Example: y=class2str(struct('a',1,'b','a string comment','c',{'cell'})); ischar(y)
