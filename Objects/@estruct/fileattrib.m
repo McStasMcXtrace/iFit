@@ -81,21 +81,7 @@ locations = { [ base group field '.Attributes' ], ...
               [ 'Attributes.' base group field ] };
 
 for loc = unique(locations)
-  if isfield(a, loc{1})
-    try
-      b = get(a, loc{1}, 'alias');
-    catch
-      b = [];
-    end
-    if isempty(b)
-      try
-        b = get(a, loc{1});
-      end
-    end
-    if ~isempty(b)
-      location = loc{1}; break;
-    end
-  end
+  if isfield(a, loc{1}), location = loc{1}; break; end
 end
 
 % select default location when does not exist yet.
@@ -104,6 +90,15 @@ if isempty(location)
 end
 if a.verbose > 1
   disp([ mfilename ': Attribute location ' location ]);
+end
+
+try
+  b = get(a, loc{1}, 'alias');
+end
+if isempty(b)
+  try
+    b = get(a, loc{1});
+  end
 end
   
 if nargin == 2
