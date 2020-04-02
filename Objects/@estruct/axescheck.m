@@ -11,6 +11,8 @@ function s = axescheck(s, option)
 %   until a further assignment is done. This can be used to assign many properties
 %   without testing the object. Only a final assignment will trigger a check.
 %
+%   AXESCHECK(s, 'force') force to re-assign the signal and axes.
+%
 % Example: s = estruct(1:10); isa(axescheck(s),'estruct')
 % Version: $Date$ $Version$ $Author$
 % see also estruct, getaxis, setaxis
@@ -26,8 +28,10 @@ end
 notify(s, 'ObjectUpdated');
 s.Private.cache.check_requested = false; % ok, we are working on this
 
-if nargin == 2 && strcmp(option, 'nocheck')
-  return
+if nargin == 2
+  if strcmp(option, 'nocheck')
+    return
+  end
 end
 
 %% Check Signal, Monitor, Error ================================================
@@ -38,24 +42,33 @@ monitor_sz= size(subsref_single(s, 'Monitor'));
 error_sz  = size(subsref_single(s, 'Error'));
 axes_id   = [];
 
+if nargin == 2 && strcmp(option, 'force')
+  % clear current settings
+  signal_sz = 0;
+  monitor_sz= 0;
+  error_sz  = 0;
+  s.Axes    = {};
+end
+
 % get all numeric fields (e.g. from findfield cache), sorted by decreasing size
 [fields, ~, dims, sz] = findfield(s,'','numeric');
 if s.verbose > 1
   for index=1:numel(fields)
     if dims(index) > 1
-      disp([ mfilename ': ' num2str(index) ' as ' fields{index} ' numel [' num2str(dims(index)) ']' ])
+      disp([ mfilename ': DEBUG: ' num2str(index) ' as ' fields{index} ' numel [' num2str(dims(index)) ']' ])
     end
   end
-  disp([ mfilename ': scalars as ' sprintf('%s ', fields{dims == 1}) ]);
-  disp([ mfilename ': empty   as ' sprintf('%s ', fields{dims == 0}) ]);
+  disp([ mfilename ': DEBUG: scalars as ' sprintf('%s ', fields{dims == 1}) ]);
+  disp([ mfilename ': DEBUG: empty   as ' sprintf('%s ', fields{dims == 0}) ]);
 end
 
 % define Signal,Error,Monitor when not yet so
 if all(signal_sz == 0) || all(error_sz == 0) || all(monitor_sz == 0) % empty ?
-  % identify signal, error, monitor and axes based on names. Signal can also be set as the biggest field.
+  % identify signal, error, monitor and axes based on names.
+  % Signal can also be set as the biggest field.
   [signal_id, error_id, monitor_id, axes_id] = axescheck_find_signal(s, fields, dims, sz);
   if s.verbose > 1
-    disp([ mfilename ': called axescheck_find_signal' ]);
+    disp([ mfilename ': DEBUG: called axescheck_find_signal' ]);
     disp([ '  signal:  ' num2str(signal_id) ' as ' fields{signal_id} ])
     if ~isempty(error_id),   disp([ '  error:   ' num2str(error_id)    ' as ' fields{error_id} ]); end
     if ~isempty(monitor_id), disp([ '  monitor: ' num2str(monitor_id)  ' as ' fields{monitor_id} ]); end
@@ -66,7 +79,7 @@ if all(signal_sz == 0) || all(error_sz == 0) || all(monitor_sz == 0) % empty ?
     s = builtin('subsasgn', s, struct('type','.','subs','Signal'),  fields{signal_id});
     signal_sz  = sz{signal_id};
     if s.verbose > 1,
-      disp([ mfilename ': setting Signal = ' fields{signal_id} ' [' num2str(dims(signal_id)) ']' ]);
+      disp([ mfilename ': DEBUG: setting Signal = ' fields{signal_id} ' [' num2str(dims(signal_id)) ']' ]);
     end
   end
   if ~isempty(signal_sz)
@@ -74,14 +87,14 @@ if all(signal_sz == 0) || all(error_sz == 0) || all(monitor_sz == 0) % empty ?
       s = builtin('subsasgn', s, struct('type','.','subs','Error'),   fields{error_id});
       error_sz   = sz{error_id};
       if s.verbose > 1,
-        disp([ mfilename ': setting Error = ' fields{error_id} ' [' num2str(dims(error_id)) ']' ]);
+        disp([ mfilename ': DEBUG: setting Error = ' fields{error_id} ' [' num2str(dims(error_id)) ']' ]);
       end
     end
     if all(monitor_id == 0) && ~isempty(monitor_id)
       s = builtin('subsasgn', s, struct('type','.','subs','Monitor'), fields{monitor_id});
       monitor_sz = sz{monitor_id};
       if s.verbose > 1,
-        disp([ mfilename ': setting Monitor = ' fields{monitor_id} ' [' num2str(dims(monitor_id)) ']' ]);
+        disp([ mfilename ': DEBUG: setting Monitor = ' fields{monitor_id} ' [' num2str(dims(monitor_id)) ']' ]);
       end
     end
   end
@@ -215,7 +228,7 @@ function ok = axescheck_find_axes(self, fields, dims, sz)
 
       if axescheck_size_axes(self, index, ax_sz)
         if self.verbose > 1
-          disp([ mfilename ': axescheck_find_axes: checked axis[' num2str(index) '] ' num2str(def) ' with size ' mat2str(ax_sz) ]);
+          disp([ mfilename ': DEBUG: axescheck_find_axes: checked axis[' num2str(index) '] ' num2str(def) ' with size ' mat2str(ax_sz) ]);
         end
         ok = ok + 1;
         continue
@@ -242,7 +255,7 @@ function ok = axescheck_find_axes(self, fields, dims, sz)
         if ~any(strcmp(fields{findex}, not_use)) && axescheck_size_axes(self, index, sz{findex})
           % found a valid axis definition/value
           if self.verbose > 1
-            disp([ mfilename ': axescheck_find_axes: found axis[' num2str(index) '] as ' fields{findex} ' with size ' mat2str(sz{findex}) ]);
+            disp([ mfilename ': DEBUG: axescheck_find_axes: setting axis[' num2str(index) '] as ' fields{findex} ' with size ' mat2str(sz{findex}) ]);
           end
           self.Axes{index} = fields{findex};
           ok = ok + 1;

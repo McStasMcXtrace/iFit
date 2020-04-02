@@ -62,7 +62,7 @@ try
   f = getalias(a, field);
   if ~isempty(f) && ischar(f) && isfield(a, f)
     if a.verbose > 1
-      disp([ mfilename ': field ' field ' is an alias for ' f ]);
+      disp([ mfilename ': DEBUG: field ' field ' is an alias for ' f ]);
     end
     field = f;
   end
@@ -89,7 +89,7 @@ if isempty(location)
   location = [ 'Attributes.' base group field ];
 end
 if a.verbose > 1
-  disp([ mfilename ': Attribute location ' location ]);
+  disp([ mfilename ': DEBUG: Attribute location ' location ]);
 end
 
 try
@@ -118,8 +118,8 @@ else
     end
     % and store
     set(a, location, b, 'alias');
-    if a.verbose
-      disp([ mfilename ': store ' location ]);
+    if a.verbose > 1
+      disp([ mfilename ': DEBUG: store ' location ]);
     end
   end
 end

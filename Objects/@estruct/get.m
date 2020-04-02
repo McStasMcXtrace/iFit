@@ -73,6 +73,14 @@ function v = get(s, varargin)
     end
     if ischar(name), name = cellstr(name); end
     for n_index=1:numel(name)
+      if s.verbose > 2
+        if isnumeric(name(n_index))
+          disp([ mfilename ': DEBUG: get ' num2str(name(n_index)) ])
+        else
+          disp([ mfilename ': DEBUG: get ' char(name(n_index)) ])
+        end
+      end
+  
       if isnumeric(name(n_index)) || ~isnan(str2double(name(n_index)))
         S.type = '{}'; S.subs={ name(n_index) };
         v{end+1} = subsref(s, S);

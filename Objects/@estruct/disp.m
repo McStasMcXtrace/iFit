@@ -48,7 +48,7 @@ for index=0:length(s_in.Axes)
   if length(x) == 1
     minmaxstd = sprintf('[%g]', x);
   elseif myisvector(X)
-    minmaxstd = sprintf('length [%i]', length(x));
+    minmaxstd = sprintf('length [%i]', numel(x));
   else
     minmaxstd = sprintf('size %s', mat2str(size(X)));
   end

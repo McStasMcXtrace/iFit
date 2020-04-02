@@ -19,7 +19,7 @@ if 1 < length(out) && length(i1) < length(out)
   i       = unique(i(i>0));
   if length(out) > length(i)
     if out(1).verbose
-      warning('%s: Removing duplicated data sets %i -> %i', mfilename, length(out), length(i))
+      warning('%s: Removing duplicate data sets %i -> %i', mfilename, length(out), length(i))
       warning([ mfilename ': ' char(out(removed)) ])
     end
     out = out(i);

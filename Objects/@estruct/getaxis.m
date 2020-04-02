@@ -65,6 +65,13 @@ function [v,lab] = getaxis(s,varargin)
       % getaxis(a, 'Error')                   = Error/Monitor
       get_mon = false; sig=[]; err=[];
       % get the alias definition
+      if s.verbose > 2
+        if isnumeric(name{n_index})
+          disp([ mfilename ': DEBUG: get axis ' num2str(name{n_index}) ])
+        else
+          disp([ mfilename ': DEBUG: get axis ' class(name{n_index}) ' ' char(name{n_index}) ])
+        end
+      end
       if ischar(name{n_index})
         if isscalar(name{n_index})
           if strcmp(name{n_index},'0')  % Signal definition

@@ -6,11 +6,11 @@ function v = subsref_single(v, S, a)
   if ~isstruct(S),  error([ mfilename ': invalid reference (2nd arg) expect struct, is ' class(S) ]); end
   if numel(S) ~= 1, error([ mfilename ': only works with a single level reference' ]); end
 
-  if builtin('isfield', a, 'verbose') && a.verbose > 2
+  if isa(a, 'estruct') && a.verbose > 2
     if ischar(S.subs) || iscellstr(S.subs)
-      disp([ mfilename ': get object "' S.type char(S.subs) '"' ])
+      disp([ mfilename ': DEBUG: get object "' S.type char(S.subs) '"' ])
     else
-      disp([ mfilename ': get object "' S.type '"' ])
+      disp([ mfilename ': DEBUG: get object "' S.type '"' ])
       disp(S.subs)
     end
   end
@@ -123,7 +123,7 @@ function v = get_single_alias(s, v)
 
 % ----------------------------------------------------------------------------
 function value = get_single_eval(this, value)
- % get_single_eval a sandbox to valuate a matlab expression
+ % GET_SINGLE_EVAL a sandbox to evaluate a matlab expression
  % 'this' refers to the initial object/structure
   self  = this; % in case we use a Pythonic syntax
   value = value(8:end);

@@ -38,6 +38,10 @@ function s = set_single(s, field, value, follow, s0)
   if nargin <= 3, follow=true; end
   if nargin <= 4, s0=s; end
 
+  if isa(s0, 'estruct') && s0.verbose > 2
+    disp([ mfilename ': DEBUG: field ' field ' -> ' class(value) ' [' num2str(numel(value)) '] ' num2str(follow) ]);
+  end
+
   % cut the field into pieces with '.' as separator
   if any(field == '.')
     field = textscan(field,'%s','Delimiter','.'); field=field{1};

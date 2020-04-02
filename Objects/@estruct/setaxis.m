@@ -64,8 +64,16 @@ function s = setaxis(s,varargin)
       % setaxis(a, 'Signal') -> setaxis(a, 0) = Signal/Monitor
       % setaxis(a, 'Error')                   = Error/Monitor
       get_mon = false; sig=[]; err=[];
+
+      if s.verbose > 2
+        disp([ mfilename ': DEBUG: setting axis ' num2str(name{n_index}) ' -> ' class(value) ' [' num2str(numel(value)) '] ' ]);
+      end
+  
       % set the alias definition
       if ischar(name{n_index})
+        if strcmp(name{n_index}, 'Signal') && ischar(value)
+          name{n_index} = '0';
+        end
         if isscalar(name{n_index})
           if strcmp(name{n_index},'0')  % Signal definition
             s = builtin('subsasgn',s, struct('type','.','subs','Signal'), value);
@@ -117,7 +125,7 @@ function s = setaxis(s,varargin)
               s.Axes{name{n_index}} = value; % set definition from char link/alias
             end
           else % axis does not exist yet
-            s.Axes{name{n_index}} = value; % direct assigment for new axis
+            s.Axes{name{n_index}} = value; % direct assignment for new axis
           end
         end
       end
