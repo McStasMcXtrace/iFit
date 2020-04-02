@@ -123,7 +123,7 @@ function [v,lab] = getaxis(s,varargin)
             v{end+1} = [];
           end
           if nargout > 1, lab{end+1} = label(s, name{n_index}); end
-          if isempty(v{end}) && name{n_index} <= ndims(s)
+          if (isempty(v{end}) || (isscalar(v{end}) && isnan(v{end}))) && name{n_index} <= ndims(s)
             if numel(find(size(s)>1)) == 1
               v{end} = 1:prod(size(s));
             else
