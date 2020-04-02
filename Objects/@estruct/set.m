@@ -72,7 +72,10 @@ function s = set(s, varargin)
   
   % now 's' is a single object. We handle name/value pairs
   for index=1:2:numel(varargin)
-    if index == numel(varargin), break; end % missing value ?
+    if index == numel(varargin)
+      warning([ mfilename ': SET works with name/value pairs. The ' num2str(index) '-th name argument misses its value. Skipping.' ]);
+      break;
+    end % missing value ?
     name = varargin{index};
     value= varargin{index+1};
     if ~ischar(name) && ~iscellstr(name) && ~(isscalar(name) && isnumeric(name))
@@ -80,7 +83,7 @@ function s = set(s, varargin)
     end
     if ischar(name), name = cellstr(name); end
     for n_index=1:numel(name)
-      if isnumeric(name) || ~isnan(str2double(name))
+      if isnumeric(name(n_index)) || ~isnan(str2double(name(n_index)))
         S.type = '{}'; S.subs={ name(n_index) };
         s = subsasgn(s, S, value);
       elseif follow
