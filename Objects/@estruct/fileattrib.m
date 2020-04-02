@@ -26,7 +26,7 @@ function [b, location] = fileattrib(a, field, varargin)
 % The Attribute property maps the object structure and allows to store any
 % information attached to an existing hierarchy.
 
-location = [];
+location = []; b = [];
 if nargin == 1
   b = get(a, 'Attributes');
   return
@@ -75,12 +75,27 @@ end
 % Possible attribute locations are listed below.
 locations = { [ base group field '.Attributes' ], ...
               [ base group 'Attributes.' field ], ...
-              [ 'Attributes.' base group field ], ...
               [ 'Headers.'    base group field ], ...
-              [ 'Attributes.'      group field ] };
+              [ 'Attributes.'      group field ], ...
+              [ base 'Attributes.' group field ], ...
+              [ 'Attributes.' base group field ] };
 
-for loc = locations
-  if isfield(a, loc{1}), location = loc{1}; break; end
+for loc = unique(locations)
+  if isfield(a, loc{1})
+    try
+      b = get(a, loc{1}, 'alias');
+    catch
+      b = [];
+    end
+    if isempty(b)
+      try
+        b = get(a, loc{1});
+      end
+    end
+    if ~isempty(b)
+      location = loc{1}; break;
+    end
+  end
 end
 
 % select default location when does not exist yet.
@@ -89,21 +104,6 @@ if isempty(location)
 end
 if a.verbose > 1
   disp([ mfilename ': Attribute location ' location ]);
-end
-
-try
-  b = get(a, location, 'alias');
-catch
-  b = [];
-end
-if isempty(b)
-  try
-    b = get(a, location);
-  catch
-    if nargin == 2 && a.verbose > 1
-      disp([ mfilename ': could not get Attribute ' location ]);
-    end
-  end
 end
   
 if nargin == 2
