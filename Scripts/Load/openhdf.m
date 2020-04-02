@@ -27,11 +27,15 @@ end
 
 if ~isempty(findstr(out, 'NeXus')) || ~isempty(findfield(out, {'NX_class','class'}))
   % special stuff for NeXus files
-  out = load_NeXus(out); % see private
+  out1 = load_NeXus(out); % see private
   
   % call other specific importers
-  if ~isempty(findfield(out, 'RITA_2'))
-    out = load_psi_RITA(out); % see private
+  if ismethod(out1, 'findfield') && ~isempty(findfield(out1, 'RITA_2'))
+    out1 = load_psi_RITA(out1); % see private
+  end
+
+  if isa(out1, 'estruct') || isa(out1, 'iData')
+    out = out1;
   end
   
 end % if Nexus
