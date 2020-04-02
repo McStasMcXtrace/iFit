@@ -109,10 +109,14 @@ function [labl, alias] = label_single(this, alias, value, n)
   end
   clear tmp
   if n == 2  % get
-    if isfield(this, [ 'Labels.' alias ]) || isfield(this.Labels, alias) % is the alias label defined ?
-         labl = subsref_single(this, [ 'Labels.' alias ]);  % ok we have it
-    end                  % else invalid
-  else            % set
+    % issue: can not use isfield: can not check for a Private property such as Labels.
+    % We try a direct get via subsref_single
+    try
+      labl = subsref_single(this.Labels, alias);
+    catch ME
+      labl = ''; % else invalid get
+    end  
+  else       % set
     subsasgn_single(this, [ 'Labels.' alias ], validstr(value));
   end
 
