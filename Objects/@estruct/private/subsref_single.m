@@ -117,12 +117,9 @@ function v = get_single_alias(s, v)
     v = sqrt(abs(double(get(s,'Signal'))));
   elseif strncmp(v, 'matlab',6) && numel(v) > 8 % URL matlab:
     v = get_single_eval(s, v);
-  else
-    try; d = dir(v); catch; d=[]; end
-    if ~isempty(d) || any(strcmp(strtok(v, ':'), {'http' 'https' 'ftp' 'file'})) % URL http https ftp file:
-      try
-        v = iLoad(v);
-      end
+  elseif any(strcmp(strtok(v, ':'), {'http' 'https' 'ftp' 'file'})) % URL http https ftp file:
+    try
+      v = iLoad(v);
     end
   end
 
