@@ -222,6 +222,8 @@ function ok = axescheck_find_axes(self, fields, dims, sz)
         catch
           ax_sz = [];
         end
+      elseif isnumeric(def) && isscalar(def) && isnan(def)
+        ax_sz = nan;
       elseif isnumeric(def)
         ax_sz = size(def);
       end
@@ -269,9 +271,8 @@ function ok = axescheck_find_axes(self, fields, dims, sz)
   function tf = axescheck_size_axes(self, index, ax_sz)
     tf = false;
     % size(Signal) or size(rank) as vector
-    %   NOTE: some data sets have 'central' axes values with numel = dim(Signal)-1
     if (numel(ax_sz) == numel(size(self)) && all(ax_sz == size(self))) ...
-    || (numel(ax_sz) >= index && isscalar(find(ax_sz>1)) && prod(ax_sz) == size(self, index)) ...
-    || (numel(ax_sz) >= index && isscalar(find(ax_sz>1)) && prod(ax_sz) == size(self, index)-1) ...
+    || (isscalar(ax_sz) && isnan(ax_sz)) ...
+    || (numel(ax_sz) >= index && isscalar(find(ax_sz>1)) && prod(ax_sz) == size(self, index))
       tf = true;  % valid axis definition/value
     end
