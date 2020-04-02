@@ -51,6 +51,10 @@ if ~isempty(strfind(option, 'force'))
   s.Private.cache.(mfilename) = [];
 end
 
+if ~isempty(strfind(option, 'isfield'))
+  option = [ option ' exact' ];
+end
+
 if isfield(s.Private, 'cache') && isfield(s.Private.cache, mfilename) ...
   && ~isempty(s.Private.cache.(mfilename))
   % get content from cache
@@ -235,8 +239,9 @@ function [f, t, n, z] = struct_getfields(structure, parent)
   if failed
     t = cell(1, numel(f)); n=zeros(1,numel(f)); z=t;
     for ii=1:length(f)
-      t{ii} = class(builtin('subsref',structure, struct('type','.','subs',f{ii})));
-      z{ii} = size( builtin('subsref',structure, struct('type','.','subs',f{ii})));
+      this = builtin('subsref',structure, struct('type','.','subs',f{ii}));
+      t{ii} = class(this);
+      z{ii} = size( this);
       n(ii) = prod(z{ii});
     end
   end
