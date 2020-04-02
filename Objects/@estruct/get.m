@@ -83,6 +83,7 @@ function v = get(s, varargin)
         if ~ischar(v{end}), v{end} = []; end % result must be an alias or []
       end
     end
+    if numel(name) == numel(v), v = reshape(v, size(name)); end
   end
   if numel(v) == 1, v = v{1}; end
   
