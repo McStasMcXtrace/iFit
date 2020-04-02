@@ -53,6 +53,10 @@ if iscell(field) && numel(field) > 1
 end
 
 % first resolve the 'true' path to the field.
+if isnumeric(field) && isscalar(field)
+  field = getaxis(a, num2str(field));
+  if isempty(field), b = []; return; end
+end
 field = char(field);
 try
   f = getalias(a, field);
