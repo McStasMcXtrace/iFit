@@ -40,8 +40,10 @@ function v = subsref_single(v, S, a)
     end
   case '{}' % syntax: a{axis_rank} get axis value/alias (getaxis)
     if isa(v, 'estruct') && numel(S.subs{1}) == 1 % scalar numeric or char
-      v = getaxis(v, S.subs{1});
-      default = false;
+      try
+        v = getaxis(v, S.subs{1});
+        default = false;
+      end
     end
   end
   if default  % other cases
@@ -56,6 +58,10 @@ function v = get_single(s, field, follow, s0)
   if nargin < 3, follow=true; end
   if nargin < 4, s0=s; end
   if iscellstr(field), field = char(field); end
+
+  if s0.verbose > 2
+    disp([ mfilename ': DEBUG: get_single ' field ' ' num2str(follow) ]);
+  end
 
   % cut the field into pieces with '.' as separator
   if any(field == '.')
@@ -88,7 +94,6 @@ function v = get_single(s, field, follow, s0)
           error([ mfilename ': No appropriate method, property, or unique field "' char(field) '" for class estruct.' ]);
         end
       end
-      
       % when 'follow', we need to access values iteratively and check for possible 'alias' (char)
       if follow && ischar(v) && ~strcmp(S(index).subs,'Source')
         if any(v == '.') && all(isletter(v) | v == '_' | v == '.' | isstrprop(v, 'digit')) % a compound link
@@ -126,6 +131,7 @@ function value = get_single_eval(this, value)
  % GET_SINGLE_EVAL a sandbox to evaluate a matlab expression
  % 'this' refers to the initial object/structure
   self  = this; % in case we use a Pythonic syntax
+  Data  = self.Data;
   value = value(8:end);
   try
     value = eval(value);

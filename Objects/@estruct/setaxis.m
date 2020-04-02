@@ -12,6 +12,7 @@ function s = setaxis(s,varargin)
 %   SETAXIS(a, 'rank', 'alias') Set axis definition (alias). The axis of rank 0
 %   corresponds with the Signal definition. The 'value' can be specified as
 %  'biggest' to indicate the numeric biggest array, as in findfield.
+%   A NaN axis value indicates we shall use 1,2,3...
 %
 %   An alias is a string/char which allows to link to internal or external links
 %   as well as evaluated expression, with the following syntax cases:
