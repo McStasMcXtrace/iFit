@@ -106,7 +106,7 @@ function [data, loader] = iLoad_import(filename, loader, config, varargin)
   % avoid calling text importer with binary
   if isbinary && any(strcmp(loader.method, {'text','read_anytext','looktxt'})), return; end
 
-  if config.verbosity
+  if config.verbosity > 1
     fprintf(1, 'iLoad: Importing file %s with method %s (%s)\n', ...
       filename, char(loader.name), char(loader.method));
   end
@@ -138,6 +138,9 @@ function [data, loader] = iLoad_import(filename, loader, config, varargin)
       disp([ mfilename ': ' char(loader.method) ' probably FAILED to import ' filename ]);
     end
     return;
+  elseif config.verbosity
+    fprintf(1, 'iLoad: Imported file %s with method %s (%s)\n', ...
+      filename, char(loader.name), char(loader.method));
   end
 
   % special test to avoid reading binary file with read_anytext
