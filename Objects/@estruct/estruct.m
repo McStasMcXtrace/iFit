@@ -332,9 +332,10 @@ properties
     function self=rmaxis(self, f)
     %   RMAXIS Remove an axis from object(s).
     %     RMAXIS(S, AX) removes the axis AX specified as a single rank index.
-      if nargin ~= 2 || ~isnumeric(f) || ~isscalar(f), return; end
+      if nargin ~= 2 || ~isnumeric(f), return; end
       if numel(self) == 1
-        if numel(self.Axes) >= f, self.Axes{f} = []; end
+        f = find( 1 <= f & f <= numel(self.Axes) );
+        for index=1:numel(f); self.Axes{f(index)} = []; end
       else
         for index=1:numel(self); rmfield(self(index), f); end
       end
