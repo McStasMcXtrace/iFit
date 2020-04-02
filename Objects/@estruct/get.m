@@ -73,21 +73,23 @@ function v = get(s, varargin)
     end
     if ischar(name), name = cellstr(name); end
     for n_index=1:numel(name)
+      if iscell(name), this_name = name{n_index};
+      else             this_name = name(n_index); end
       if s.verbose > 2
-        if isnumeric(name(n_index))
-          disp([ mfilename ': DEBUG: get ' num2str(name(n_index)) ])
+        if isnumeric(this_name)
+          disp([ mfilename ': DEBUG: get ' num2str(this_name) ])
         else
-          disp([ mfilename ': DEBUG: get ' char(name(n_index)) ])
+          disp([ mfilename ': DEBUG: get ' char(this_name) ])
         end
       end
   
-      if isnumeric(name(n_index)) || ~isnan(str2double(name(n_index)))
-        S.type = '{}'; S.subs={ name(n_index) };
+      if isnumeric(this_name) || (~isnan(str2double(this_name)) && isreal(str2double(this_name)))
+        S.type = '{}'; S.subs={ this_name };
         v{end+1} = subsref(s, S);
       elseif follow
-        v{end+1} = subsref(s, struct('type','.', 'subs',name{n_index}));
+        v{end+1} = subsref(s, struct('type','.', 'subs',this_name));
       else
-        v{end+1} = subsref(s, struct('type','()','subs',name{n_index}));
+        v{end+1} = subsref(s, struct('type','()','subs',this_name));
         if ~ischar(v{end}), v{end} = []; end % result must be an alias or []
       end
     end
