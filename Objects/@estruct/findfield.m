@@ -239,7 +239,7 @@ function [f, t, n, z] = struct_getfields(structure, parent)
   if failed
     t = cell(1, numel(f)); n=zeros(1,numel(f)); z=t;
     for ii=1:length(f)
-      this = builtin('subsref',structure, struct('type','.','subs',f{ii}));
+      this = builtin('subsref',structure, struct('type','.','subs',f0{ii}));
       t{ii} = class(this);
       z{ii} = size( this);
       n(ii) = prod(z{ii});
@@ -256,6 +256,10 @@ function [f, t, n, z] = struct_getfields(structure, parent)
         t = [t(:) ; st(:)];
         n = [n(:) ; sn(:)];
         z = [z(:) ; sz(:)];
+      catch ME
+        disp([ mfilename ': recursive parent ' parent ' f=' f{ii} ' f0=' f0{ii}])
+        structure
+        getReport(ME)
       end
     end
   end
