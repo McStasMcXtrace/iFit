@@ -131,7 +131,7 @@ properties
       new.addprop('Monitor');         % e.g. an alias or empty
       new.addprop('Signal');          % e.g. an alias
       new.Error = 'matlab: sqrt(this.Signal)';
-      if ~nargin, return; end
+      if ~nargin, new.Private.cache.check_requested = false; return; end
 
       % collect items to store: as structures, as data files, and others
       structs = {}; % cell: will contain struct('name','value')
@@ -148,14 +148,17 @@ properties
           case {'verbose','normal','default'}
             new.verbose = 1;
             if exist('iLoad','file'), iLoad('verbose'); end
+            new.Private.cache.check_requested = false;
             return;
           case 'debug'
             new.verbose = 2;
             if exist('iLoad','file'), iLoad('debug'); end
+            new.Private.cache.check_requested = false;
             return;
           case 'silent'
             new.verbose = 0;
             if exist('iLoad','file'), iLoad('silent'); end
+            new.Private.cache.check_requested = false;
             return;
           end
 
