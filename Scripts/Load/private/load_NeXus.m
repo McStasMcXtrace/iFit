@@ -70,9 +70,10 @@ for index=1:numel(NXdata_path_signal)
   % all assignments are sent to the end of the loop to avoid intermediate checks.
   this_NXdata = NXdata_path{NXdata_path_signal(index)}; % NXdata path containing a Signal
 
-  [this,this_signal_name] = load_NeXus_single(in, this_NXdata, NXentry_path);
+  [this,this_signal_name] = load_NeXus_single(in, ...
+    this_NXdata, NXentry_path, all_signal_names);
   % add a new data set when Signal is not already found.
-  if isempty(strcmp(this_signal_name, all_signal_names))
+  if ~isempty(this)
     out = [ out this ];
     all_signal_names{end+1} = this_signal_name;
   end
@@ -80,7 +81,8 @@ for index=1:numel(NXdata_path_signal)
 end
 
 % ------------------------------------------------------------------------------
-function [this, this_signal_name] = load_NeXus_single(in, this_NXdata, NXentry_path)
+function [this, this_signal_name] = load_NeXus_single(in, ...
+  this_NXdata, NXentry_path, all_signal_names)
 % LOAD_NEXUS_SINGLE Analyse the attributes and determine the NXentry above
 %   the given NXdata, as well as the inner Signal, Axes, and other symbols.
 
@@ -103,8 +105,10 @@ function [this, this_signal_name] = load_NeXus_single(in, this_NXdata, NXentry_p
   if ~isempty(this_NXentry) && ~isempty(NXentry_remove)
     set(this, NXentry_remove, []); % follow links to empty the targets
   end
-  if ~isempty(this_NXentry), setalias(this, 'NXentry', this_NXentry); end
-  setalias(this, 'NXdata',  this_NXdata);
+  % we use 'NX_' preneding. Using bare 'NX' may clash with other entries in the object
+  % so that e.g. 'NXdata' class may actually be resolved as a link in the object
+  if ~isempty(this_NXentry), setalias(this, 'NX_entry', this_NXentry); end
+  setalias(this, 'NX_data',  this_NXdata);
   axescheck(this, 'nocheck'); % disable auto axes check
   if in.verbose > 1
     if ~isempty(this_NXentry), disp([ mfilename ': NXentry ' this_NXentry ]); end
@@ -118,23 +122,10 @@ function [this, this_signal_name] = load_NeXus_single(in, this_NXdata, NXentry_p
   % this allows to properly search within a single NXdata, without any chance of
   % interference with other data blocks.
   index_all = strcmp('NXdata', NX_class_entry) | strcmp('NXdetector', NX_class_entry);
-  index_this= find(strcmp(this_NXdata, NX_class_entry));
+  index_this= find(strncmp(this_NXdata, NX_path_entry, numel(this_NXdata)));
   index_all(index_this) = 0; % make sure we do not remove the active NXdata block
+  % There is an issue here: The actual signal can be removed when set as an inner NXdata.
   set(this, NX_path_entry(find(index_all)), []); % follow links to empty targets
-  axescheck(this, 'nocheck'); % disable auto axes check
-  
-  % define 'NX' aliases in this Data block =====================================
-  % NXinstrument NXprocess NXsample may be used from top-level. Expose them.
-  for l={'NXinstrument','NXsample','NXprocess','NXuser'}
-    NXblock = NX_path_entry(strcmp(NX_class_entry, l{1}));
-    if ~isempty(NXblock) && ~isfield(this, l{1})
-      % Alias: e.g. instrument -> NXinstrument block
-      setalias(this, l{1}, NXblock{1});
-      if in.verbose > 1
-        disp([ mfilename ': ' l{1} ' ' NXblock{1} ]);
-      end
-    end
-  end
   axescheck(this, 'nocheck'); % disable auto axes check
 
   % determine the Signal =======================================================
@@ -169,6 +160,11 @@ function [this, this_signal_name] = load_NeXus_single(in, this_NXdata, NXentry_p
       end
     end
   end
+  % was this Signal found before ?
+  if ~isempty(strcmp(this_signal_name, all_signal_names))
+    this = []; return
+  end
+  
   % check if the Signal is indeed numeric
   if ~isempty(this_signal_name) && ~isempty(findfield(in, this_signal_name, 'numeric'))
     setalias(this, 'Signal',  this_signal_name);
@@ -178,14 +174,34 @@ function [this, this_signal_name] = load_NeXus_single(in, this_NXdata, NXentry_p
     end
     % assign a Label to the Signal, using the Attributes.
     attr_signal_value = fileattrib(this, 'Signal');
-    attr_signal_value = strrep(class2str(attr_signal_value, 'no comment short'), 'struct_str.','');
-    label(this, 'Signal', attr_signal_value);
+    if ~isempty(attr_signal_value)
+      if isfield(attr_signal_value, 'long_name')
+        attr_signal_value = attr_signal_value.long_name;
+      else
+        attr_signal_value = class2str(' ', attr_signal_value, 'no comment short');
+      end
+      label(this, 'Signal', attr_signal_value);
+    end
   else
     if in.verbose > 1
       disp([ mfilename ':     WARNING: no numeric Signal found in this NXdata.' ]);
     end
     return
   end
+
+  % define 'NX' aliases in this Data block =====================================
+  % NXinstrument NXprocess NXsample may be used from top-level. Expose them.
+  for l={'instrument','sample','process','user'}
+    NXblock = NX_path_entry(strcmp(NX_class_entry, [ 'NX' l{1} ]));
+    if ~isempty(NXblock) && ~isfield(this, l{1})
+      % Alias: e.g. instrument -> NXinstrument block
+      setalias(this, [ 'NX_' l{1} ], NXblock{1});
+      if in.verbose > 1
+        disp([ mfilename ': NX' l{1} ' ' NXblock{1} ]);
+      end
+    end
+  end
+  axescheck(this, 'nocheck'); % disable auto axes check
 
   % determine the axes =========================================================
   % Attributes can be as follows:
@@ -234,8 +250,19 @@ function [this, this_signal_name] = load_NeXus_single(in, this_NXdata, NXentry_p
   % assign axes when these are numeric
   for index=1:numel(this_axes_names)
     this_name = this_axes_names{index};
+    if isempty(this_name), continue; end
     if this_name(end) ~= '.' && ~isempty(findfield(in, this_name, 'numeric'))
       setaxis(this, index, this_name);
+    end
+    % assign a Label to the Axis, using the Attributes.
+    attr_axis_value = fileattrib(this, index);
+    if ~isempty(attr_axis_value)
+      if isfield(attr_axis_value, 'long_name')
+        attr_axis_value = attr_axis_value.long_name;
+      else
+        attr_axis_value = class2str(' ', attr_axis_value, 'no comment short');
+      end
+      label(this, index, attr_axis_value);
     end
   end
   if in.verbose > 1
