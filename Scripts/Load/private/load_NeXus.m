@@ -33,11 +33,17 @@ out     = [];
 % We search for the 'NX_class' items. These identify the entries.
 % These are defined as Attributes.
 [NX_class, NX_path] = load_NeXus_class(in);
-if isempty(NX_class), return; end % Not a NeXus file
+if isempty(NX_class),
+  if in.verbose > 1, disp([ mfilename ': Not a NeXus data set.' ]); end
+  return; % Not a NeXus file
+end 
 
 % location of NXdata stuff
 NXdata_path = NX_path(strcmp(NX_class, 'NXdata')  | strcmp(NX_class, 'NXdetector'));
-if isempty(NXdata_path), return; end
+if isempty(NXdata_path)
+  if in.verbose > 1, disp([ mfilename ': No NXdata blocks found.' ]); end
+  return;
+end
 % location of NXentry blocks
 NXentry_path= NX_path(strcmp(NX_class, 'NXentry') | strcmp(NX_class, 'NXsubentry')); 
 
