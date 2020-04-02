@@ -180,7 +180,7 @@ function [this, this_signal_name] = load_NeXus_single(in, ...
       else
         attr_signal_value = class2str(' ', attr_signal_value, 'no comment short');
       end
-      label(this, 'Signal', attr_signal_value);
+      set(this, [ 'Labels.' this_signal_name ], attr_signal_value);
     end
   else
     if in.verbose > 1
@@ -250,19 +250,21 @@ function [this, this_signal_name] = load_NeXus_single(in, ...
   % assign axes when these are numeric
   for index=1:numel(this_axes_names)
     this_name = this_axes_names{index};
-    if isempty(this_name), continue; end
-    if this_name(end) ~= '.' && ~isempty(findfield(in, this_name, 'numeric'))
+    if isempty(this_name) || this_name(end) == '.' || this_name(end) == ':', continue; end
+    if ~isempty(findfield(in, this_name, 'numeric'))
       setaxis(this, index, this_name);
+      axescheck(this, 'nocheck'); % disable auto axes check
     end
     % assign a Label to the Axis, using the Attributes.
-    attr_axis_value = fileattrib(this, index);
+    attr_axis_value = fileattrib(this, this_name);
     if ~isempty(attr_axis_value)
       if isfield(attr_axis_value, 'long_name')
         attr_axis_value = attr_axis_value.long_name;
       else
         attr_axis_value = class2str(' ', attr_axis_value, 'no comment short');
       end
-      label(this, index, attr_axis_value);
+      subsasgn(this, [ 'Labels.' this_name], attr_axis_value);
+      axescheck(this, 'nocheck'); % disable auto axes check
     end
   end
   if in.verbose > 1
