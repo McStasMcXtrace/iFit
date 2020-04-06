@@ -1,6 +1,30 @@
 function s = read_compressed(filename, option)
 % READ_COMPRESSED Read a compressed file (archive). 
 %   Read a ZIP, TAR, GZIP, LZ4, ZSTD, BZIP2, XZ, LZO, ... file.
+%   You should install the extractors individually.
+%   Recommended:
+%   * LZ4 <https://lz4.github.io/lz4/> (2011). Extremely fast.
+%   * ZSTD <https://github.com/facebook/zstd> (2015). Very fast.
+%   * BROTLI <https://github.com/google/brotli> (2013). Very fast.
+%   * LZO <https://www.lzop.org/> (1996-2017). Very fast.
+%   * PBZIP2 <https://github.com/ruanhuabin/pbzip2>. Parallelized BZIP2.
+%   * PIGZ <https://zlib.net/pigz/> (2007). Parallelized GZIP.
+%   * PIXZ <https://github.com/vasi/pixz> (2010). Parallelized XZ.
+%
+%   Other:
+%   * ZIP <https://support.pkware.com/home> (1989). Standard.
+%   * TAR <https://www.gnu.org/software/tar/>. Standard.
+%   * GZIP <https://www.gnu.org/software/gzip/> (1992). Standard.
+%   * BZIP2 <https://www.sourceware.org/bzip2/> (1996). Very compact.
+%   * LZMA <https://tukaani.org/lzma/> (1998). Slow, efficient.
+%   * XZ <https://tukaani.org/xz/>. Rather slow, very compact.
+%   * PXZ <https://jnovy.fedorapeople.org/pxz/>. Parallelized XZ.
+%   * 7Z <https://www.7-zip.org/> (1998).
+%   * RAR <https://www.rarlab.com/> (1993).
+%   * COMPRESS (Z) <https://ncompress.sourceforge.io/> (1985).
+%
+%   Recommended compressors are LZ4, ZSTD, PIGZ and PBZIP2.
+%   ZIP, GZIP and TAR are supported without further installation.
 %
 %   data=READ_COMPRESSED(file) extract compressed data from given file. When 
 %   available, a ramdisk (/dev/shm on Linux) is used as temporary directory.
@@ -155,6 +179,9 @@ function present = check_compressors(options)
              'xz',  'pixz -version',   'pixz -d',       'pixz -1';
              'xz',  'pxz --version',    'pxz -d',        'pxz -1';
              'xz',  'xz --version',     'xz -d',         'xz -1';
+             'rar', 'rar -version',     'rar x',         'rar a';
+             '7z',  '7z i',             '7z x',          '7z a';
+             'lzma','lzma --version',   'lzma -d',       'lzma -1';
              'zip', 'matlab:unzip',     'matlab:unzip',  'matlab:zip';
              'gz',  'matlab:gunzip',    'matlab:gunzip', 'matlab:gzip';
              'tar', 'matlab:untar',     'matlab:untar',  'matlab:tar' };
