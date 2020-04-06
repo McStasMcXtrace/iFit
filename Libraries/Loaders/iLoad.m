@@ -181,8 +181,6 @@ function [data, format] = iLoad(filename, loader, varargin)
     filename = filename{1};
   end
 
-  url = false; % flag indicating that 'filename' is a temp file to be removed afterwards
-
   % handle single file name
   if ischar(filename) & length(filename) > 0
     % handle ~ substitution for $HOME
@@ -331,54 +329,6 @@ function [data, format] = iLoad(filename, loader, varargin)
       filename = tmpfile;
     end
     
-    % handle compressed files (local or distant)
-    [pathstr, name, ext] = fileparts(filename);
-    if     strcmp(ext, '.zip'), cmd = 'unzip';
-    elseif strcmp(ext, '.tar'), cmd = 'untar';
-    elseif strcmp(ext, '.gz') || strcmp(ext, '.tgz'),  cmd = 'gunzip';
-    elseif strcmp(ext, '.Z'),   cmd = 'uncompress';
-    else                        cmd=''; end
-    if ~isempty(cmd)
-      % this is a compressed file/url. Extract to temporary dir.
-      if strcmp(cmd, 'uncompress')
-        copyfile(filename, tempdir, 'f');
-        try
-          system(['uncompress ' tempdir filesep name ext ]);
-          filename = [ tempdir filesep name ];
-          url = true;
-        catch ME
-          if config.verbosity
-            fprintf(1, 'iLoad: Can''t extract file "%s" (%s).\n', filename,cmd);
-            warning(ME.message)
-          end
-          return
-        end
-      elseif exist(cmd)
-        % extract to temporary dir
-        try
-          filenames = feval(cmd, filename, tempdir);
-        catch ME
-          if config.verbosity
-            fprintf(1, 'iLoad: Can''t extract file "%s" (%s).\n', filename,cmd);
-            warning(ME.message)
-          end
-          return
-        end
-        [data, format] = iLoad(filenames, loader, varargin{:}); % is now local
-        for index=1:length(filenames)
-          try
-            delete(filenames{index});
-          catch ME
-            if config.verbosity
-              fprintf(1,'iLoad: Can''t delete temporary file "%s" (%s).\n', filename{index},cmd);
-              warning(ME.message)
-            end
-          end
-        end
-        return
-      end
-    end
-    
     % The import takes place HERE ================================================
     
     % handle the '%20' character replacement as space (from URL)
@@ -444,18 +394,6 @@ function [data, format] = iLoad(filename, loader, varargin)
     format= '' ;
   end
 
-  % remove temporary file if needed
-  if (url)
-    try
-      delete(filename);
-    catch ME
-      if config.verbosity
-        fprintf(1,'iLoad: Can''t delete temporary file "%s".\n', filename);
-        warning(ME.message);
-      end
-    end
-  end
-
 end % iLoad (main)
 
 % ------------------------------------------------------------------------------
@@ -479,4 +417,6 @@ function tf = isiloadstruct(filename)
   end
   tf = true;
 end
+
+% ------------------------------------------------------------------------------
 
