@@ -55,116 +55,126 @@ end
 % close the hdf5 file after reading all groups
 if ~isempty(fileID), H5F.close(fileID); end
 
-% return
-
 end
 
-  % ============================================================
-  function [data, fileID] = getGroup(filename, data_info, h5_present, fileID)
-  % getGroup: recursively traverse the HDF tree
+% ============================================================
+function [data, fileID] = getGroup(filename, data_info, h5_present, fileID)
+% getGroup: recursively traverse the HDF tree
 
-    if nargin < 4, fileID = []; end
-    data = [];
-    root = data_info.Name;
-    if ~strcmp(root, '/'), root = [ root  '/' ]; end
+  if nargin < 4, fileID = []; end
+  data = [];
+  root = data_info.Name;
+  if ~strcmp(root, '/'), root = [ root  '/' ]; end
 
-    % Get group datasets
-    nvars   = length(data_info.Datasets);
-    for i = 1: nvars
-        if h5_present
-          val = h5read(filename,[root data_info.Datasets(i).Name]);
-          dataID = [root data_info.Datasets(i).Name];
-        else
-          % hdf5read can stall in R2010a. We use a low-level read
-          % val = hdf5read(filename,[data_info.Datasets(i).Name]);
-          if isempty(fileID)
-            fileID = H5F.open(filename, 'H5F_ACC_RDONLY', 'H5P_DEFAULT');
-          end
-          dataID = [];
-          try
-            dataID = H5D.open(fileID, [root data_info.Datasets(i).Name]);
-          end
-          try
-            if isempty(dataID), dataID = H5D.open(fileID, [ data_info.Datasets(i).Name]); end
-          end
-          if ~isempty(dataID)
-            val    = H5D.read(dataID, 'H5ML_DEFAULT', 'H5S_ALL', 'H5S_ALL', 'H5P_DEFAULT');
-            H5D.close(dataID);
-          else
-            warning([ mfilename ': ' filename ': ignoring invalid DataSet ' data_info.Datasets(i).Name ]);
-            val = [];
-          end
-          % H5F.close(fileID); done after reading all groups
-        end
-        if ~isempty(dataID)
-          if strcmp(class(val), 'hdf5.h5string'), val = char(val.Data); end
-          if iscellstr(val) && length(val) == 1,  val = char(val); end
-          name        = getName(data_info.Datasets(i).Name);
-          data.(name) = val; clear val;
-        end
-          
-        % get dataset attributes: group.Attributes.<dataset>.<attribute>
-        natts = length(data_info.Datasets(i).Attributes);
-        if natts && ~isfield(data,'Attributes'), data.Attributes = []; end
-        for j=1:natts
-            val = data_info.Datasets(i).Attributes(j).Value;
-            if strcmp(class(val), 'hdf5.h5string'), val=char(val.Data); end
-            if iscellstr(val) && length(val) == 1,  val = char(val); end
-            aname        = getName(data_info.Datasets(i).Attributes(j).Name);
-            data.Attributes.(name).(aname) = val;
-        end
-    end
-    
-    % handle Links -> Data sets
-    if isfield(data_info, 'Links') && ~isempty(data_info.Links)
-      nlinks  = length(data_info.Links);
-      for i = 1: nlinks
-        name = getName(data_info.Links(i).Name);
-        if isfield(data_info.Links(i),'Value')
-          val  = char(data_info.Links(i).Value);
-        elseif isfield(data_info.Links(i),'Target')
-          val  = char(data_info.Links(i).Target);
-        else
-            warning([ mfilename ': ' filename ': ignoring link ' name ]);
-            continue; 
-        end
-        % handle the HDF5 link so that it contains valid names
-        val((~isstrprop(val,'alphanum') & val ~= '/') | val == '-' | val == '+') = '_';
-        if val(1) == '/', val(1) = ''; end
-        val(val == '/') = '.';
-        data.(name) = val; % associate the link
-        % check if there are associated attributes and link them as well
-        [base, group, lastword] = getAttributePath(val);
-        % chek if exists: [ base group 'Attributes.' lastword ]
-        % or              [ base group 'Attributes' ]
-        data.Attributes.(name) = [ base group 'Attributes.' lastword ];
+  % Get group datasets
+  nvars   = length(data_info.Datasets);
+  for i = 1: nvars
+      if h5_present
+        val = h5read(filename,[root data_info.Datasets(i).Name]);
+        dataID = [root data_info.Datasets(i).Name];
+      else
+        if isempty(fileID), fileID=filename; end % open it the first time
+        [val, fileID] = myh5read(fileID,data_info.Datasets(i).Name, root);
+        dataID = [root data_info.Datasets(i).Name];
       end
-    end
-
-    % get group attributes: group.Attributes.<attribute>
-    natts = length(data_info.Attributes);
-    if natts && ~isfield(data,'Attributes'), data.Attributes = []; end
-    for j=1:natts
-        val = data_info.Attributes(j).Value;
-        if strcmp(class(val), 'hdf5.h5string'), val=char(val.Data); end
+      if ~isempty(dataID)
+        if strcmp(class(val), 'hdf5.h5string'), val = char(val.Data); end
         if iscellstr(val) && length(val) == 1,  val = char(val); end
-        name = getName(data_info.Attributes(j).Name);
-        data.Attributes.(name) = val;
-    end
-
-    % Get each subgroup
-    ngroups = length(data_info.Groups);
-    for i = 1 : ngroups
-      [group, fileID] = getGroup(filename, data_info.Groups(i), h5_present, fileID);
-      % assign the name of the group
-      name = getName(data_info.Groups(i).Name);
-      if ~isempty(name)
-        data.(name) = group; 
+        name        = getName(data_info.Datasets(i).Name);
+        data.(name) = val; clear val;
       end
-      clear group;
+        
+      % get dataset attributes: group.Attributes.<dataset>.<attribute>
+      natts = length(data_info.Datasets(i).Attributes);
+      if natts && ~isfield(data,'Attributes'), data.Attributes = []; end
+      for j=1:natts
+          val = data_info.Datasets(i).Attributes(j).Value;
+          if strcmp(class(val), 'hdf5.h5string'), val=char(val.Data); end
+          if iscellstr(val) && length(val) == 1,  val = char(val); end
+          aname        = getName(data_info.Datasets(i).Attributes(j).Name);
+          data.Attributes.(name).(aname) = val;
+      end
+  end
+  
+  % handle Links -> Data sets
+  if isfield(data_info, 'Links') && ~isempty(data_info.Links)
+    nlinks  = length(data_info.Links);
+    for i = 1: nlinks
+      name = getName(data_info.Links(i).Name);
+      if isfield(data_info.Links(i),'Value')
+        val  = char(data_info.Links(i).Value);
+      elseif isfield(data_info.Links(i),'Target')
+        val  = char(data_info.Links(i).Target);
+      else
+          warning([ mfilename ': ' filename ': ignoring link ' name ]);
+          continue; 
+      end
+      % handle the HDF5 link so that it contains valid names
+      val((~isstrprop(val,'alphanum') & val ~= '/') | val == '-' | val == '+') = '_';
+      if val(1) == '/', val(1) = ''; end
+      val(val == '/') = '.';
+      data.(name) = val; % associate the link
+      % check if there are associated attributes and link them as well
+      [base, group, lastword] = getAttributePath(val);
+      % chek if exists: [ base group 'Attributes.' lastword ]
+      % or              [ base group 'Attributes' ]
+      data.Attributes.(name) = [ base group 'Attributes.' lastword ];
     end
   end
 
+  % get group attributes: group.Attributes.<attribute>
+  natts = length(data_info.Attributes);
+  if natts && ~isfield(data,'Attributes'), data.Attributes = []; end
+  for j=1:natts
+      val = data_info.Attributes(j).Value;
+      if strcmp(class(val), 'hdf5.h5string'), val=char(val.Data); end
+      if iscellstr(val) && length(val) == 1,  val = char(val); end
+      name = getName(data_info.Attributes(j).Name);
+      data.Attributes.(name) = val;
+  end
+
+  % Get each subgroup
+  ngroups = length(data_info.Groups);
+  for i = 1 : ngroups
+    [group, fileID] = getGroup(filename, data_info.Groups(i), h5_present, fileID);
+    % assign the name of the group
+    name = getName(data_info.Groups(i).Name);
+    if ~isempty(name)
+      data.(name) = group; 
+    end
+    clear group;
+  end
+end
+
+% ------------------------------------------------------------------------------
+function [val, fileID] = myh5read(filename, name, root)
+% MYH5READ a compatibility function for h5read
+
+  % hdf5read can stall in R2010a. We use a low-level read
+  % val = hdf5read(filename,[data_info.Datasets(i).Name]);
+  if nargin < 3, root = ''; end
+  if isempty(root), root='/'; end
+  if ischar(filename)
+    fileID = H5F.open(filename, 'H5F_ACC_RDONLY', 'H5P_DEFAULT');
+  else
+    fileID = filename;
+  end
+  dataID = [];
+  try
+    dataID = H5D.open(fileID, [ root name ]);
+  end
+  try
+    if isempty(dataID), dataID = H5D.open(fileID, name); end
+  end
+  if ~isempty(dataID)
+    val    = H5D.read(dataID, 'H5ML_DEFAULT', 'H5S_ALL', 'H5S_ALL', 'H5P_DEFAULT');
+    H5D.close(dataID);
+  else
+    warning([ mfilename ': ' filename ': ignoring invalid DataSet ' name ]);
+    val = [];
+  end
+  % H5F.close(fileID); done after reading all groups
+end
 
 % ------------------------------------------------------------------------------
 
