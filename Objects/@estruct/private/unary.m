@@ -35,10 +35,17 @@ end
 
 % get Signal Error and Monitor (does a check if needed)
 s = subsref(a,struct('type','.','subs','Signal'));
-e = subsref(a,struct('type','.','subs','Error'));
-m = subsref(a,struct('type','.','subs','Monitor'));
-if numel(e) > 1 && all(e(:) == e(1)), e=e(1); end
-if numel(m) > 1 && all(m(:) == m(1)), m=m(1); end
+if strcmp(op(1:2), 'is') || ...
+  any(strcmp(op, {'sign','double','single','logical','find', ...
+    'norm','all','any','nonzeros'}))
+  e = 0; m = 1;
+else
+  e = subsref(a,struct('type','.','subs','Error'));
+  m = subsref(a,struct('type','.','subs','Monitor'));
+  if numel(e) > 1 && all(e(:) == e(1)), e=e(1); end
+  if numel(m) > 1 && all(m(:) == m(1)), m=m(1); end
+end
+
 
 % make sure sparse is done with 'double' type
 if strcmp(op, 'sparse')
@@ -61,14 +68,18 @@ end
 
 % operate with Signal/Monitor and Error/Monitor
 if any(strcmp(op, {'norm','asin', 'acos','atan','cos','sin','exp','log',...
- 'log10','sqrt','tan','asinh','atanh','acosh','sinh','cosh','tanh','isnan','isfinite','isinf'})) ...
+ 'log10','sqrt','tan','asinh','atanh','acosh','sinh','cosh','tanh'})) ...
    && not(all(m(:) == 0 | m(:) == 1))
   s = genop(@rdivide, s, m);
   e = genop(@rdivide, e, m);
 end
 
 % new Signal value is set HERE <================================================
-if ~isfloat(s) && ~any(strcmp(op, {'isfloat','isinteger','islogical'})), s=double(s); end
+if ~isfloat(s) && ~strcmp(op(1:2), 'is') && ...
+  ~any(strcmp(op, {'sign','double','single','logical','find', ...
+    'norm','all','any','nonzeros'}))
+  s=double(s);
+end
 
 if strcmp(op, 'norm') % norm only valid on vectors:matrices
   s = s(:);
@@ -168,7 +179,13 @@ end
 % new object -------------------------------------------------------------------
 e = abs(e);
 b = copyobj(a);
-b = set(b, 'Signal', new_s, 'Error', e, 'Monitor', m);
+if strcmp(op(1:2), 'is') || ...
+  any(strcmp(op, {'sign','double','single','logical','find', ...
+    'norm','all','any','nonzeros'}))
+  b = set(b, 'Signal', new_s); % will replace value
+else
+  b = set(b, 'Signal', new_s, 'Error', e, 'Monitor', m);
+end
 label(b, 'Signal', [  op '(' label(a, 'Signal') ')' ]);
 clear new_s e m
 
