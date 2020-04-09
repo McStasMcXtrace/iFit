@@ -25,7 +25,9 @@ function tf = isfield(self, f)
       if any(f == '.') % compound field: we search with findfield
         tf = findfield(self, f, 'isfield');
       else
-        tf = isfield(struct(self), f); % faster
+        tf = any(strcmp(f, fieldnames(self)));
+        % tf = isfield(struct(self), f);
+        % tf = ~isempty(findprop(self, f));
       end
     else
       tf = cell(size(self)); is_scalar = true;
