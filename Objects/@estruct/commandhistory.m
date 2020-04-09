@@ -11,6 +11,8 @@ function [s,fig] = commandhistory(a, fig, varargin)
 %   The text should better be a comment such as '% blah' or a matlab
 %   command.
 %
+% Example: iscellstr(commandhistory(estruct))
+%
 % Version: $Date$ $Version$ $Author$
 % See also estruct, estruct/disp, estruct/display
 

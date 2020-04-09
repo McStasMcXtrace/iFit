@@ -6,6 +6,8 @@ function disp(s_in, name, flat)
 % input:  s: object or array (estruct)
 % ex:     'disp(estruct)'
 %
+% Example: disp(estruct(peaks)); 1
+%
 % Version: $Date$ $Version$ $Author$
 % See also estruct, estruct/display, estruct/get
 

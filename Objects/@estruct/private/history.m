@@ -33,6 +33,7 @@ if nargin >= 3 || ~isempty(varargin)
       tocat = [ tocat ' <' class(b) ' ' t ' ' s '> ' ];
     elseif isnumeric(b) || islogical(b)
       if ndims(b) > 2,   b=b(:); end
+      b = full(b);
       if numel(b) > 50, toadd = [ toadd c ' [' sprintf('%g ',double(b(1:20))) '...' sprintf('%g ',double(b((end-20):end))) ']' ];
       elseif isempty(b)
         toadd = [ toadd c ' []' ];

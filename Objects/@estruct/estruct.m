@@ -101,7 +101,8 @@ properties
     %
     %  ESTRUCT is similar to STRUCT, but is designed to hold scientific data.
     %
-    % Example: s = estruct('type',{'big','little'},'color','red','x',{3 4}); isstruct(s)
+    % Example: s = estruct('type',{'big','little'},'color','red','x',{3 4}); ...
+    %          isstruct(s)
     % Version: $Date$ $Version$ $Author$
     % See also estruct.load, isstruct, setfield, getfield, fieldnames, orderfields,
     %   isfield, rmfield, deal, substruct, struct2cell, cell2struct.
@@ -274,6 +275,8 @@ properties
     %      ISSTRUCT(S) returns logical true (1) if S is a structure
     %      and logical false (0) otherwise.
     %
+    % Example: s = estruct; isstruct(s)
+    %
     % See also estruct, isfield, iscell, isnumeric, isobject.
       tf = true; % isa(self, mfilename); always true
     end
@@ -289,6 +292,9 @@ properties
     %
     %      S = RMFIELD(S,'all') removes all fields except base ones. The resulting
     %      object retains metadata, but removes any additional alias/property.
+    %
+    % Example: s=estruct; s.test =1; ...
+    %          isfield(s,'test') && ~isfield(rmfield(s,'test'),'test')
     %
     %      See also setfield, getfield, isfield, fieldnames.
       if nargin ~= 2, return; end
@@ -320,24 +326,29 @@ properties
     %      when FIELDS is a character array or cell array of strings.  The
     %      changed structure is returned. The size of input S is preserved.
     %
-    %      S = RMFIELD(S,'all') removes all fields except base ones. The resulting
+    %      S = RMALIAS(S,'all') removes all fields except base ones. The resulting
     %      object retains metadata, but removes any additional alias/property.
+    %
+    % Example: s=estruct; s.test =1; ...
+    %          isfield(s,'test') && ~isfield(rmalias(s,'test'),'test')
     %
     %      See also setalias, getalias, isfield, fieldnames.
 
-    % compatibility with original estruct (2007-2019)
+    % compatibility with original iData (2007-2019)
       self = rmfield(self, varargin{:});
     end % rmalias
 
     function self=rmaxis(self, f)
     %   RMAXIS Remove an axis from object(s).
     %     RMAXIS(S, AX) removes the axis AX specified as a single rank index.
+    %
+    % Example: s=estruct(1:10); s{1}=2:11; rmaxis(s,1); all(s{1} == 1:10)
       if nargin ~= 2 || ~isnumeric(f), return; end
       if numel(self) == 1
         f = find( 1 <= f & f <= numel(self.Axes) );
         for index=1:numel(f); self.Axes{f(index)} = []; end
       else
-        for index=1:numel(self); rmfield(self(index), f); end
+        for index=1:numel(self); rmaxis(self(index), f); end
       end
     end % rmaxis
 
@@ -348,7 +359,8 @@ properties
     %
     %      If S is N-D, C will have size [P SIZE(S)].
     %
-    %      Example:
+    %      Example: c = struct2cell(estruct); ...
+    %               iscell(c)
     %        clear s, s.category = 'tree'; s.height = 37.4; s.name = 'birch';
     %        c = struct2cell(s); f = fieldnames(s);
     %
@@ -369,10 +381,8 @@ properties
     %      S.  SIZE(C,DIM) must match the number of field names in FIELDS.
     %      FIELDS can be a character array or a cell array of strings.
     %
-    %      Example:
-    %        c = {'tree',37.4,'birch'};
-    %        f = {'category','height','name'};
-    %        s = cell2struct(estruct, c,f,2);
+    %      Example: s = cell2struct(estruct, {'tree',37.4,'birch'}, ...
+    %         {'category','height','name'},2); isa(s, 'estruct')
     %
     %      See also struct2cell, fieldnames.
       if nargin < 3, d=2; end
@@ -391,9 +401,11 @@ properties
       %      and a compact storage. The resulting representation does not
       %      allow to rebuild the full object.
       %
+      %  Example: iscellstr(cellstr(estruct(1:10)))
+      %
       % See also: char
       s = copyobj(self); s.Private = [];
-      s = class2str(s, [ varargin{:} ]);
+      s = class2str(s, varargin{:});
       s = textscan(s, '%s','Delimiter',';');
       if numel(s) == 1, s=s{1}; end
     end % cellstr
@@ -453,10 +465,18 @@ properties
       %    B = REPMAT(A,[M N P ...]) tiles the array A to produce a
       %    multidimensional array B composed of copies of A. The size of B is
       %    [size(A,1)*M, size(A,2)*N, size(A,3)*P, ...].
+
+      % % Example: numel(repmat(estruct, 11,10)) == 110
       if numel(self) > 1
         error([ mfilename ': repmat(estruct, M,N,...) only works with a single estruct.' ])
       end
-      s = estruct(repmat(struct(self), varargin{:}));
+      % we create M*N copies and then reshape the array.
+      s = [];
+      for index=1:prod([ varargin{:}])
+        this = copyobj(self);
+        if index == 1, s = this; else s = [ s this]; end
+      end
+      s = reshape(s, varargin{:});
     end % repmat
 
     function o = ones(self, varargin)
@@ -467,6 +487,8 @@ properties
       %
       %    ONES(S,M,N,P,...) or ONES(S,[M N P ...]) is an M-by-N-by-P-by-... array of
       %    'S' structure.
+      %
+      % Example: numel(ones(estruct, 11,10)) == 110
       if nargin == 1, o=self(1); return; end
       o = repmat(self, varargin{:});
     end % ones
@@ -481,6 +503,8 @@ properties
       %    empty structures.
       %
       %    ZEROS(S) removes all properties except base ones, and keep metadata.
+      %
+      % Example: numel(zeros(estruct, 11,10)) == 110
       if nargin == 1,
         z=estruct;
         z.Creator         = self.Creator;
@@ -510,7 +534,11 @@ properties
       % ISMETHOD  True if method of object.
       %   ISMETHOD(OBJ,NAME) returns 1 if string NAME is a method of object
       %   OBJ, and 0 otherwise.
-      tf = any(strcmp(m ,self.Private.cache.methods));
+      try
+        tf = any(strcmp(m ,self.Private.cache.methods));
+      catch
+        tf = any(strcmp(m, methods(self)));
+      end
     end % ismethod
     
     function self = set.verbose(self, value)

@@ -63,7 +63,7 @@ function s = set_single(s, field, value, follow, s0)
     else
       % single level indeed
       if ~isfield(s, S.subs) % new field ?
-        if isa(s, 'estruct')
+        if isa(s, 'estruct') && isempty(findprop(s, S.subs))
           s.addprop(S.subs);
         else
           s.(S.subs) = [];  % a normal structure

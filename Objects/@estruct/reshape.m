@@ -9,7 +9,7 @@ function b = reshape(a, varargin)
 %
 %   B = RESHAPE(A, [m n p ...]) is the same thing as above.
 %
-% Example: a=estruct(peaks(60)); b=reshape(a, 75, 48); all(dims(b) == [75 48])
+% Example: a=estruct(peaks(60)); b=reshape(a, 75, 48); all(size(b) == [75 48])
 % Version: $Date$ $Version$ $Author$
 % See also estruct, estruct/squeeze, estruct/size, estruct/permute, estruct/resize,
 % estruct/reducevolume

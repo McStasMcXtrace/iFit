@@ -13,3 +13,4 @@ function v = isfloat(a)
 
 v = unary(a, 'isfloat');
 if iscell(v), v=cell2mat(v); end
+v = logical(v);

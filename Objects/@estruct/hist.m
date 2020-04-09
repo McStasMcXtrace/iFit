@@ -123,7 +123,7 @@ for index=1:length(edges)
   c=setaxis(c, index, link);
 end
 
-history(b, mfilename, a, varargin{:});
+history(c, mfilename, a, varargin{:});
 % ------------------------------------------------------------------------------
 
 function [count edges mid loc] = histcn(X, varargin)

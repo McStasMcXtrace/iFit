@@ -37,7 +37,7 @@ end
 s = subsref(a,struct('type','.','subs','Signal'));
 if strcmp(op(1:2), 'is') || ...
   any(strcmp(op, {'sign','double','single','logical','find', ...
-    'norm','all','any','nonzeros'}))
+    'all','any','nonzeros'}))
   e = 0; m = 1;
 else
   e = subsref(a,struct('type','.','subs','Error'));
@@ -77,7 +77,7 @@ end
 % new Signal value is set HERE <================================================
 if ~isfloat(s) && ~strcmp(op(1:2), 'is') && ...
   ~any(strcmp(op, {'sign','double','single','logical','find', ...
-    'norm','all','any','nonzeros'}))
+    'all','any','nonzeros'}))
   s=double(s);
 end
 

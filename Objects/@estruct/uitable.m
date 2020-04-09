@@ -1,6 +1,6 @@
-function uitable(s,varargin)
+function f = uitable(s,varargin)
 % UITABLE A dialogue which allows to modify objects in a table
-%   UITABLE(s) edits a single object or array. The property values can be changed
+%   UITABLE(s) edits a single object. The property values can be changed
 %   and are updated when closing the window. The table has a contextual menu.
 %   New properties can be added. The table can be reverted to its initial 
 %   content, and printed. The dialog window is 'modal' by default.
@@ -41,14 +41,11 @@ function uitable(s,varargin)
 %     rmappdata(0, ad.tmp_storage);
 %
 % input:
-%   structure: the initial struct to edit
+%   structure: the initial object to edit
 %   options:   a set of options, namely:
-
 %
-% Example:
-%   a.Test=1; a.Second='blah'; uitable(a)
-%   options.ListString={'Test This is the test field','Second 2nd'};
-%   uitable([a a], options);
+% Example: h=uitable(estruct(1:10),'CreateMode','non-modal'); tf=ishandle(h); delete(h); tf
+%   a=estruct; a.Test=1; a.Second='blah'; uitable(a)
 %
 % Version: $Date$ $Version$ $Author$
 
@@ -56,7 +53,14 @@ function uitable(s,varargin)
 
   % get options or default values
   if nargin == 0, s=[]; end
-  if isempty(s) || ~isstruct(s), return; end
+  if all(isempty(s)) || ~all(isstruct(s)), return; end
+  if numel(s) > 1
+    sb = s(1);
+    if sb.verbose
+      warning([ mfilename ': editing first ' class(s) ' object out of ' num2str(numel(s)) ])
+    end
+    s = sb;
+  end
 
   % get/build options
   if nargin ==2 && isstruct(varargin{1})

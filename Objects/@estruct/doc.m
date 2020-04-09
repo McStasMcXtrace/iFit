@@ -7,7 +7,7 @@ function url = doc(a, token)
 %
 %   DOC(estruct, token) searches for a token.
 %
-% Example: doc(estruct,'Load')
+% Example: doc(estruct,'Load'); 1
 %
 % Version: $Date$ $Version$ $Author$
 % See also: estruct.help estruct.edit estruct.inputdlg

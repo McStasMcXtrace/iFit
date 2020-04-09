@@ -5,6 +5,8 @@ function d = display(s_in, name)
 %
 %   S = DISPLAY(X) same as above and return a string with the object description.
 %
+% Example: display(estruct(peaks)); 1
+%
 % Version: $Date$ $Version$ $Author$
 % See also estruct, estruct/disp, estruct/get
 
