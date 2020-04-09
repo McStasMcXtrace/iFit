@@ -12,22 +12,24 @@ function v = isvector(s)
 %          estruct/isnumeric, estruct/islogical, estruct/isscalar,
 %          estruct/isvector, estruct/issparse
 
+if numel(s) > 1
+  v = arrayfun(@isvector, s);
+  return;
+end
 
-v = unary(s, 'isvector');
-if iscell(v), v = cell2mat(v); end
+if numel(find(size(s) > 1)) == 1, v = true; else; v=false; end
 
 % special case for event data sets: signal is a vector, all axes have same dimension
-for index=1:numel(s) % OK with object arrays
-  if v(index) == 1 && numel(getaxis(s(index))) > 1
+if v && numel(s.Axes) > 1
 
-    % check that all axes have same length, else keep v=1
-    l = prod(size(s(index)));
-    flag = true;
-    for dim=1:numel(getaxis(s(index)))
-      if length(getaxis(s(index),dim)) ~= l, flag=false; break; end
-    end % dim
-    if flag, v(index) = 1+getaxis(s(index)); end % [Signal, Axes]
+  % check that all axes have same length, else keep v=1
+  l    = prod(size(s));
+  flag = true;
+  for dim=1:numel(s.Axes)
+    if length(getaxis(s,dim)) ~= l, flag=false; break; end
+  end % dim
+  if flag, v = 1+numel(s.Axes); end % [Signal, Axes]
 
-  end
+end
 
-end % index
+
