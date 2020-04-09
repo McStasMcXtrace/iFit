@@ -117,18 +117,28 @@ function r = runtest_dotest(s, m)
       if ~isempty(h)
         h = textscan(h, '%s','Delimiter','\n'); h=strtrim(h{1});
         % get the Examples: lines
-        ex= strfind(strtrim(h), 'Example:');
+        ex= strfind(h, 'Example:');
         ex= find(~cellfun(@isempty, ex));
       else ex=[];
       end
 
-      % perform test for each Example line in Help
-      for index=ex'
-        if ~isempty(index) && ~isempty(h{index})
-          code= strrep(h{index}, 'Example:','');
-          res = runtest_dotest_single(s, m{mindex}, code);
-          r = [ r res ];
+      % perform test for each Example line in Help. Ex is an index.
+      for this_example_index=1:numel(ex)
+        index = ex(this_example_index); % index of line starting with Example.
+        if isempty(index) || isempty(h{index}), continue; end
+        h{index} = strrep(h{index}, 'Example:','');
+        % we add lines. First must start with Example, and may go on with '...'
+        code = ''; iscontinuation = false;
+        for lindex=index:numel(h)
+          rline = h{lindex};
+          if (lindex == index) || iscontinuation
+            code = [ code strrep(rline, '...','') ];
+          end
+          if numel(rline) > 3 && strcmp(rline(end:-1:(end-2)),'...'), iscontinuation = true;
+          else break; end
         end
+        res = runtest_dotest_single(s, m{mindex}, code);
+        r = [ r res ];
       end
     end
     
@@ -158,6 +168,7 @@ function res = runtest_init(m)
   res.Failed    =false;
   res.Incomplete=false;
   res.Duration  =0;
+  res.Details.Name   = m;
   res.Details.Code   =''; 
   res.Details.Status ='';
   res.Details.Output ='';
@@ -181,15 +192,15 @@ function res = runtest_dotest_single(s, m, code)
   
   % perform test <<< HERE
   t0 = clock;
-  [passed, failed, output] = runtest_sandbox(res.Details.Code);
-  res.Passed   = passed;
-  res.Failed   = failed;
+  T = runtest_sandbox(res.Details.Code);
+  res.Passed   = T.passed;
+  res.Failed   = T.failed;
   res.Duration = etime(clock, t0);
-  res.Details.Output = output;
-  if passed,     res.Details.Status = 'passed';
-  elseif failed, 
-    if isempty(output) || ischar(output) res.Details.Status = 'FAILED';
-    else res.Details.Status = 'ERROR'; end
+  res.Details.Output = T.output;
+  if T.passed,     res.Details.Status = 'passed';
+  elseif T.failed, 
+    if isempty(T.output) || ischar(T.output) res.Details.Status = 'FAILED';
+    else res.Details.Status = 'ERROR'; res.Incomplete=true; end
   end
   
 
@@ -223,28 +234,9 @@ function runtest_report(r)
   fprintf(1, '  %.2f seconds testing time.\n', sum([ r.Duration ]));
 
 % ------------------------------------------------------------------------------
-function [passed, failed, output] = runtest_sandbox(ln)
-  passed=false; failed=false; output='';
-  % fprintf(1, '.');
-  try
-    clear ans
-    output = evalc(ln);
-    if exist('ans','var')
-      result = ans;
-    else
-      result = 1;
-    end
-    if (isnumeric(result) || islogical(result)) && all(result(:))
-      passed=true;
-    elseif ischar(result) && any(strcmpi(strtok(result),{'OK','passed'}))
-      passed=true;
-    else
-      failed=true;
-    end
-  catch ME
-    output = ME;
-    failed = true;
-  end
+function T = runtest_sandbox(ln)
+  % Sandbox execution, outside of the class to be able to properly evaluate strings.
+  T = evals(ln);
   
 % ------------------------------------------------------------------------------ 
 function runtest_testsuite(s, r)

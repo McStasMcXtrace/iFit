@@ -1,14 +1,15 @@
-function [passed, failed, output] = evals(ln)
+function T = evals(ln)
 % EVALS Evaluate expression similarly as EVALC but in a sandbox.
-%   passed = EVALS(expr) evaluates expression, and returns 'true' when the result
-%   is true, or generates 'ans' as non zero, or the output contains 'OK' or
-%   'passed' as first word.
-%
-%   [passed, failed, output] = EVALS(expr) returns 'failed' as true when the
-%   result was null/not OK, or failed execution. The output contains the
-%   evaluation result, or a MException object (when failed execution).
+%   T = EVALS(expr) evaluates expression, and returns a structure holding the
+%   evaluation
+%     T.passed is true when the result is true/non zero, or the output contains
+%             'OK' or 'passed' as first word.
+%     T.failed is true when the result was null/not OK, or failed execution.
+%     T.output holds anything that would that would normally be written to the
+%              command window, or a MException object (when failed execution).
 
   passed=false; failed=false; output='';
+  
   if iscellstr(ln)
     ln = sprintf('%s; ', ln{:});
   end
@@ -19,6 +20,7 @@ function [passed, failed, output] = evals(ln)
   try
     clear ans
     output = evalc(ln);
+
     if exist('ans','var')
       result = ans;
     else
@@ -26,7 +28,7 @@ function [passed, failed, output] = evals(ln)
     end
     if (isnumeric(result) || islogical(result)) && all(result(:))
       passed=true;
-    elseif ischar(result) && any(strcmpi(strtok(result),{'OK','passed'}))
+    elseif ischar(result) && any(strcmpi(strtok(result),{'OK','passed','ans'}))
       passed=true;
     else
       failed=true;
@@ -35,3 +37,7 @@ function [passed, failed, output] = evals(ln)
     output = ME;
     failed = true;
   end
+
+  T.passed = passed;
+  T.failed = failed;
+  T.output = output;
