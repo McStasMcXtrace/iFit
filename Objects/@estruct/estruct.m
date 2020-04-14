@@ -199,7 +199,6 @@ properties
         if ~isfield(new, s.name), new.addprop(s.name); end
         new.(s.name)=s.value;
         if (isnumeric(s.value) | islogical(s.value)) && ~isscalar(s.value)
-          new.Private.cache.check_requested = true;
           history(new, 'set', new, s.name, s.value);
         end
         structs{index} = []; % clear memory
@@ -252,9 +251,7 @@ properties
                 new1 = struct2estruct(new1.Data, new1); % updates estruct (in 'private')
               end
             end % isa estruct or other type to concatenate
-            for index_new1 = 1:numel(new1) % post process may create more objects
-              set(new1(index_new1), 'Private.cache.check_requested',true); % request a check at first 'get'
-            end
+            
             if numel_new == 1
               new = new1;
             else
@@ -265,6 +262,11 @@ properties
         end % index_arg (content of varg in case this is an array/cellstr for iLoad)
 
       end % index_varg (initial input arg)
+
+      % final check
+      for index_new = 1:numel(new) % post process may create more objects
+        set(new(index_new), 'Private.cache.check_requested',true); % request a check at first 'get'
+      end
 
     end % estruct (instantiate)
 
