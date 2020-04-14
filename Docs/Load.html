@@ -70,7 +70,7 @@
     These commands result in the following output, which produce an
     iData object:<br>
     <table style="text-align: left; width: 100%;" border="1"
-      cellspacing="2" cellpadding="2">
+      cellpadding="2" cellspacing="2">
       <tbody>
         <tr>
           <td style="vertical-align: top;">
@@ -174,10 +174,12 @@
 
 
 
+
         &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
         &nbsp;&nbsp;&nbsp; // import only parts which mention Data in
         file </i><br style="color: rgb(204, 51, 204);">
       <span style="color: rgb(204, 51, 204);">'http://path/file.zip#Data'</span>&nbsp;&nbsp;&nbsp;&nbsp;
+
 
 
 
@@ -295,27 +297,107 @@
       selector" title="iData load import method selector"
       src="images/iData_load_method_selector.png" align="right"><br>
     <ul>
-      <li>any Data in text format<br>
-      </li>
-      <li>ILL Data (legacy, text, most instruments at the <a
-          href="http://www.ill.fr/YellowBook/">ILL</a>)<br>
-      </li>
-      <li>ILL TAS Data (legacy, text, polarized or not)</li>
-      <li>ILL <a
-href="http://www.ill.eu/instruments-support/instruments-groups/instruments/cyclops/description/instrument-layout/">Cyclops</a>
-        neutron Laue diffractometer image (HBIN)<br>
-      </li>
+      <li>any Data in text format</li>
+      <li>most Image/Picture (*.gif, *.bmp, *.tif, *.jpg, *.png, ppm,
+        pgm, pbm)</li>
+      <li>ACE <a href="https://mcnp.lanl.gov/">MCNP</a> files (*.ace)
+        [requires <a href="http://pyne.io/">PyNE</a>]</li>
+      <li>AU NeXT/SUN (.au) sound</li>
+      <li>AVI Audio/Video Interleaved (*.avi)</li>
+      <li>CBF Xray/neutron diffraction <a
+          href="http://www.esrf.fr/computing/Forum/imgCIF/cbf_definition.html">Crystallographic
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          binary file</a> (*.cbf)</li>
+      <li>CDF (*.cdf)</li>
+      <li>CH Agilent Mass Spectrometry (*.CH, *.D, *.MS)</li>
       <li>Chalk River <a href="http://www.nrc-cnrc.gc.ca/cnbc/">CNBC</a>
-        NRU data, including multi-wire and polarized data<br>
-      </li>
-      <li>SPEC ESRF<br>
-      </li>
-      <li><a href="http://www.mcstas.org">McStas</a> (Scan DAT output,
-        1D, 2D monitor, event lists, sim file, Sqw, LAZ, LAU tables)</li>
-      <li>ISIS/SPE and SQW tof data (see <a
-          href="http://horace.isis.rl.ac.uk/">Horace</a> and <a
-          href="http://www.libisis.org/">LibISIS</a>)<br>
-      </li>
+        NRU data, including multi-wire and polarized data</li>
+      <li><a
+          href="http://en.wikipedia.org/wiki/Crystallographic_Information_File">CIF</a>,
+        <a href="http://www.ill.eu/sites/fullprof/">CFL/PCR</a>, <a
+          href="http://shelx.uni-ac.gwdg.de/SHELX/">INS/RES/SHX</a>
+        Crystallography files (FullProf, ShelX)</li>
+      <li>CSV Comma Separated Values (*.csv)</li>
+      <li>DAT <a href="http://www.qdusa.com/products/mpms3.html">Quantum
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          Design</a> VMS ppms/mpms</li>
+      <li>DLM Numerical single block (*.dlm)</li>
+      <li>DX <a href="http://www.jcamp-dx.org/">JCAMP-DX</a> (*.dx)
+        Electronic Chemistry Exchange format from IUPAC (*.dx)</li>
+      <li><a
+          href="https://www.oecd-nea.org/dbdata/data/manual-endf/endf102.pdf">ENDF</a>
+        <a href="https://en.wikipedia.org/wiki/Nuclear_data">Evaluated
+          Nuclear Data File</a> (*.endf,*.tsl)</li>
+      <li>ESRF data format (*.edf)</li>
+      <li>EZD, MRC and <a
+          href="http://en.wikipedia.org/wiki/CCP4_%28file_format%29">CCP4</a>
+        electron density maps (*.map, *.ezd, *.ccp4)</li>
+      <li>FIG (Matlab figure, *.fig)</li>
+      <li><a href="http://fits.gsfc.nasa.gov/">FITS</a> (*.fits) used in
+        astronomy</li>
+      <li><a href="https://en.wikipedia.org/wiki/G-code">GCODE</a>
+        numerical control programming language (*.g)</li>
+      <li><a href="http://www.hdfgroup.org/">HDF4</a> (*.hdf4)</li>
+      <li><a href="http://www.hdfgroup.org/">HDF5</a> (*.hdf5) including
+        the <a href="http://nexusformat.org">NeXus</a> format (*.nx,
+        *.n4, *.ns, *.n5, *.nxs), <a
+          href="http://www.mantidproject.org">Mantid</a> workspaces,
+        NeXus SPE and <a href="https://www.cxidb.org/">CXI</a>.</li>
+      <li>HSPY&nbsp;<a href="https://hyperspy.org/">HypersPy</a> HDF5
+        workspace (*.hspy)</li>
+      <li><a href="http://www.wavemetrics.com/">IBW</a> Igor Wave data
+        file (*.ibw)</li>
+      <li><a
+          href="https://en.wikipedia.org/wiki/IDL_%28programming_language%29">IDL</a>
+        SAV data (*.sav)</li>
+      <li>ILL Cyclops neutron Laue diffractometer image at the <a
+          href="http://www.ill.fr/YellowBook/">ILL</a> (HBIN)</li>
+      <li>ILL Data (legacy, text, most instruments at the <a
+          href="http://www.ill.fr/YellowBook/">ILL</a>)</li>
+      <li>ILL TAS Data (<a href="http://www.ill.fr/YellowBook/">ILL</a>
+        legacy, text, polarized or not)</li>
+      <li><a href="http://www.adsc-xray.com/products.html">IMG</a> ADSC
+        Quantum CCD Camera (*.img)</li>
       <li>INX tof data (ILL <a
 href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/all-software/tofhr/inx/">processed
 
@@ -345,39 +427,18 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
-          TOF</a>)<br>
-      </li>
-      <li>ESRF data format (*.edf)</li>
-      <li>Xray/neutron diffraction <a
-          href="http://www.esrf.fr/computing/Forum/imgCIF/cbf_definition.html">Crystallographic
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-          binary file</a> (*.cbf)</li>
+          TOF</a>)</li>
+      <li>ISIS/SPE and SQW tof data (see <a
+          href="http://horace.isis.rl.ac.uk/">Horace</a> and <a
+          href="http://www.libisis.org/">LibISIS</a>)</li>
+      <li>LLB TAS binary data files (R* and C*)</li>
+      <li>LVM LabView <a href="http://www.ni.com/white-paper/4139/en/">LVM</a>
+        and <a href="http://www.ni.com/white-paper/3727/en/">TDMS</a>
+        files (*.lvm; *.tdms)</li>
+      <li><a href="http://www.marresearch.com/">MAR</a> MarResearch CCD
+        Camera (*.mar, *.mccd), a variant of the TIFF format</li>
+      <li>MAT Matlab workspace (*.mat) a customized HDF</li>
       <li><a
           href="http://en.wikipedia.org/wiki/Analyze_%28imaging_software%29">MRI
 
@@ -407,130 +468,64 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
-          3D volume</a> Analyze 7.5 (*.hdr with associated *.img)</li>
-      <li><a href="http://nifti.nimh.nih.gov/">NifTI</a> medical imaging
-        volume data format (*.nii)<br>
-      </li>
-      <li>NeXT/SUN (.au) sound</li>
-      <li>Microsoft WAVE (.wav) sound</li>
-      <li>Audio/Video Interleaved (*.avi) </li>
-      <li><a href="http://www.unidata.ucar.edu/software/netcdf/">NetCDF</a>
-        (*.nc)<br>
-      </li>
-      <li>CDF (*.cdf)<br>
-      </li>
-      <li><a href="http://fits.gsfc.nasa.gov/">FITS</a> (*.fits) used in
-        astronomy<br>
-      </li>
-      <li>Microsoft Excel (*.xls)</li>
-      <li>Image/Picture (*.gif, *.bmp, *.tif, *.jpg, *.png, ppm, pgm,
-        pbm)<br>
-      </li>
-      <li><a href="http://www.hdfgroup.org/">HDF4</a> (*.hdf4)<br>
-      </li>
-      <li><a href="http://www.hdfgroup.org/">HDF5</a> (*.hdf5) including
-        the <a href="http://nexusformat.org">NeXus</a> format (*.nx,
-        *.n4, *.ns, *.n5, *.nxs), <a
-          href="http://www.mantidproject.org">Mantid</a> workspaces,
-        NeXus SPE and <a href="https://www.cxidb.org/">CXI</a>.<br>
-      </li>
-      <li>Matlab workspace (*.mat) a customized HDF<br>
-      </li>
-      <li>Comma Separated Values (*.csv)<br>
-      </li>
-      <li>Numerical single block (*.dlm)<br>
-      </li>
-      <li><a href="http://www.w3.org/XML/">XML</a> (*.xml)</li>
-      <li>FIG (Matlab figure, *.fig)</li>
-      <li><a href="http://www.rcsb.org/pdb/">Protein Data Bank (*.pdb)<br>
-        </a></li>
-      <li><a href="en.wikipedia.org/wiki/STL_%28file_format%29">STL</a>
-        stereolithography (*.stl)</li>
+
+          3D volume</a> Analyze 7.5 (*.hdr with associated *.img, Mayo
+        clinic)</li>
+      <li>MS RAW Thermo Finnigan Mass Spectrometry (*.RAW)</li>
+      <li>NC <a href="http://www.unidata.ucar.edu/software/netcdf/">NetCDF</a>
+        (*.nc)</li>
+      <li>NII <a href="http://nifti.nimh.nih.gov/">NifTI</a> medical
+        imaging volume data format (*.nii)</li>
+      <li>NMR Bruker, Varian and JEOL data files</li>
+      <li><a
+          href="https://docs.scipy.org/doc/numpy/neps/npy-format.html">NPY</a>
+        Numpy binary array (*.npy)</li>
+      <li><a href="http://en.wikipedia.org/wiki/Wavefront_.obj_file">OBJ</a>
+        Wavefront 3D (*.obj)</li>
       <li><a href="http://www.geomview.org/docs/html/OFF.html">OFF</a>
         object geometry (*.off)</li>
+      <li>OPUS Bruker FT-IR <a
+href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectroscopy/opus-software/overview.html">OPUS</a>
+        data files (*.0001, *.0002, ...)</li>
+      <li>PDB <a href="http://www.rcsb.org/pdb/">Protein Data Bank
+          (*.pdb)</a></li>
       <li><a href="http://en.wikipedia.org/wiki/PLY_%28file_format%29">PLY</a>
         Polygon File Format or the Stanford Triangle Format (*.ply)</li>
-      <li><a href="http://www.marresearch.com/">MAR</a> MarResearch CCD
-        Camera (*.mar, *.mccd), a variant of the TIFF format<br>
-      </li>
+      <li><a href="http://cms.mpi.univie.ac.at/vasp/guide/node59.html">POSCAR</a>
+        VASP file for molecular modelling</li>
+      <li>SDF HP/Agilent/Keysight Standard Data Format (*.SDF)</li>
       <li><a href="http://www.andor.com/scientific-cameras">SIF</a>
         Andor SIF CCD Camera (*.sif)</li>
+      <li>SIM <a href="http://www.mcstas.org">McStas</a> (Scan DAT
+        output, 1D, 2D monitor, event lists, sim file, Sqw, LAZ, LAU
+        tables)</li>
+      <li>SPEC ESRF</li>
       <li><a
           href="http://www.princetoninstruments.com/products/software/#1">SPE</a>
         Princeton/Roper Scientific WinView CCD / PI Acton Camera file
         (*.spe)</li>
-      <li><a href="http://www.adsc-xray.com/products.html">IMG</a> ADSC
-        Quantum CCD Camera (*.img)</li>
+      <li><a href="http://www-llb.cea.fr/logicielsllb/SpinWave/SW.html">SPINWAVE</a>
+        (LLB) input file for <i>sqw_spinwave</i></li>
+      <li>SQW4D Sqw 4D data set for <a
+href="http://www.mcstas.org/download/components/contrib/Single_crystal_inelastic.html">McStas
+
+
+          Single_crystal_inelastic</a> component (*.Sqw4)</li>
       <li><a
-          href="http://en.wikipedia.org/wiki/Crystallographic_Information_File">CIF</a>,
-        <a href="http://www.ill.eu/sites/fullprof/">CFL/PCR</a>, <a
-          href="http://shelx.uni-ac.gwdg.de/SHELX/">INS/RES/SHX</a>
-        Crystallography files (FullProf, ShelX)<br>
-      </li>
-      <li>EZD, MRC and <a
-          href="http://en.wikipedia.org/wiki/CCP4_%28file_format%29">CCP4</a>
-        electron density maps (*.map, *.ezd, *.ccp4)</li>
+href="file:///home/farhi/dev/iFit/Docs/en.wikipedia.org/wiki/STL_%28file_format%29">STL</a>
+        stereolithography (*.stl)</li>
+      <li>WAV Microsoft WAVE (.wav) sound</li>
+      <li>XLS Microsoft Excel (*.xls)</li>
+      <li><a href="http://www.w3.org/XML/">XML</a> (*.xml)</li>
+      <li>XVG <a href="http://plasma-gate.weizmann.ac.il/Grace/">XmGrace</a>
+        data set</li>
       <li><a href="http://en.wikipedia.org/wiki/Yaml">YAML</a> and <a
           href="http://en.wikipedia.org/wiki/JSON">JSON</a> (*.yaml,
         *.yml, *.json)</li>
-      <li>NMR Bruker, Varian and JEOL data files</li>
-      <li><a href="http://www.wavemetrics.com/">IBW</a> Igor Wave data
-        file (*.ibw)</li>
-      <li><a href="http://en.wikipedia.org/wiki/Wavefront_.obj_file">OBJ</a>
-        Wavefront 3D (*.obj)</li>
-      <li>LabView <a href="http://www.ni.com/white-paper/4139/en/">LVM</a>
-        and <a href="http://www.ni.com/white-paper/3727/en/">TDMS</a>
-        files (*.lvm; *.tdms)</li>
-      <li>Bruker FT-IR <a
-href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectroscopy/opus-software/overview.html">OPUS</a>
-        data files (*.0001, *.0002, ...)</li>
-      <li>LLB TAS binary data files (R* and C*)</li>
-      <li><a
-          href="https://en.wikipedia.org/wiki/IDL_%28programming_language%29">IDL</a>
-        SAV data (*.sav)</li>
-      <li>DAT <a href="http://www.qdusa.com/products/mpms3.html">Quantum
-
-
-
-
-
-
-
-
-
-
-
-
-
-          Design</a> VMS ppms/mpms</li>
-      <li>XVG <a href="http://plasma-gate.weizmann.ac.il/Grace/">XmGrace</a>
-        data set</li>
-      <li>Agilent Mass Spectrometry (*.CH, *.D, *.MS)</li>
-      <li>Thermo Finnigan Mass Spectrometry (*.RAW)</li>
-      <li><a
-          href="https://www.oecd-nea.org/dbdata/data/manual-endf/endf102.pdf">ENDF</a>
-        <a href="https://en.wikipedia.org/wiki/Nuclear_data">Evaluated
-          Nuclear Data File</a> (*.endf,*.tsl)</li>
-      <li>ACE <a href="https://mcnp.lanl.gov/">MCNP</a> files (*.ace)
-        [requires <a href="http://pyne.io/">PyNE</a>]</li>
-      <li>Numpy <a
-          href="https://docs.scipy.org/doc/numpy/neps/npy-format.html">NPY</a>
-        binary array (*.npy)</li>
-      <li>VASP <a
-          href="http://cms.mpi.univie.ac.at/vasp/guide/node59.html">POSCAR</a>
-        file for molecular modelling</li>
-      <li>HP/Agilent/Keysight Standard Data Format (*.SDF)</li>
-      <li><a href="http://www-llb.cea.fr/logicielsllb/SpinWave/SW.html">SPINWAVE</a>
-        (LLB) input file for <i>sqw_spinwave</i></li>
-      <li>Sqw 4D data set for <a
-href="http://www.mcstas.org/download/components/contrib/Single_crystal_inelastic.html">McStas
-
-          Single_crystal_inelastic</a> component (*.Sqw4)</li>
-      <li><a href="https://en.wikipedia.org/wiki/G-code">GCODE</a>
-        numerical control programming language (*.g)</li>
-      <li>JCAMP-DX Electronic Chemistry Exchange format from IUPAC (<a
-          href="http://www.jcamp-dx.org/">JCAMP-DX</a>) (*.dx)<br>
-      </li>
+    </ul>
+    <meta http-equiv="content-type" content="text/html;
+      charset=windows-1252">
+    <ul>
     </ul>
     A detailed list of format descriptions can be found in the <a
       style="font-weight: bold;" href="Loaders.html">Loaders</a> help
@@ -671,8 +666,10 @@ href="http://www.mcstas.org/download/components/contrib/Single_crystal_inelastic
 
 
 
+
         See <a
           href="http://www.mathworks.com/matlabcentral/fileexchange/3760">ReadAnalyze</a>&nbsp;
+
 
 
 
@@ -876,6 +873,7 @@ identify
 
 
 
+
     the proper importation method to use.<br>
     <br>
     The text files are processed with the <a
@@ -912,6 +910,7 @@ identify
     <hr style="width: 100%; height: 2px;">
     <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
+
 
 
 
