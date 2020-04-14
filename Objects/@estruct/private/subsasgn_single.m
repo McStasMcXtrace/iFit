@@ -54,7 +54,7 @@ function s = set_single(s, field, value, follow, s0)
 
   % use builtin subsasgn for the whole path when 'not follow'
   if ~follow && numel(S) > 1
-    s = builtin('subsasgn', s, S, value);
+    s = subsasgn(s, S, value);
     return
   else
     % now handle each level and test for char/alias value
