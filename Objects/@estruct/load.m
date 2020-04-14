@@ -102,7 +102,9 @@ for i=1:numel(files)
     this_estruct = private_postprocess(this_estruct, this_estruct.postprocess); % can return an array
     if numel(this_estruct) > 1
       % need to check for duplicates (when post-process creates new data sets)
-      this_estruct = private_remove_duplicates(this_estruct);
+      try
+        this_estruct = private_remove_duplicates(this_estruct);
+      end
     end
   end
 
