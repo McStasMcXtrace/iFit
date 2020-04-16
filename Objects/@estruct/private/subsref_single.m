@@ -59,7 +59,7 @@ function v = get_single(s, field, follow, s0)
   if nargin < 4, s0=s; end
   if iscellstr(field), field = char(field); end
 
-  if s0.verbose > 2
+  if isfield(s0, 'verbose') && s0.verbose > 2
     disp([ mfilename ': DEBUG: get_single ' field ' ' num2str(follow) ]);
   end
 
