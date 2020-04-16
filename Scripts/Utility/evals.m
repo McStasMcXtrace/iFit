@@ -2,7 +2,7 @@ function T = evals(ln)
 % EVALS Evaluate expression similarly as EVALC but in a sandbox.
 %   T = EVALS(expr) evaluates expression, and returns a structure holding the
 %   evaluation
-%     T.passed is true when the result is true/non zero, or the output contains
+%     T.passed is true when the result is true/non-zero, or the output contains
 %             'OK' or 'passed' as first word.
 %     T.failed is true when the result was null/not OK, or failed execution.
 %     T.output holds anything that would that would normally be written to the
@@ -28,7 +28,7 @@ function T = evals(ln)
     end
     if (isnumeric(result) || islogical(result)) && all(result(:))
       passed=true;
-    elseif ischar(result) && any(strcmpi(strtok(result),{'OK','passed','ans'}))
+    elseif ischar(result) && any(strcmpi(strtok(result),{'OK','passed','ans','done','success'}))
       passed=true;
     else
       failed=true;

@@ -4,6 +4,8 @@ function c = help(s)
 %
 %   H = HELP(S) returns the object information as a structure
 %
+% Example: s=estruct(1:10); isstruct(help(s))
+%
 % Version: $Date$ $Version$ $Author$
 % See also  estruct/cell, estruct/double, estruct/struct, 
 %           estruct/char, estruct/size, estruct/get
@@ -59,7 +61,7 @@ for index=1:numel(s)
   if isempty(T), T=ttl; end
   if ~ischar(T) || isempty(T), T=char(T,'short'); end
   if ~isvector(T), T=transpose(T); T=T(:)'; end
-  T   = regexprep(T,'\s+',' '); % remove duplicated spaces
+  T   = regexprep(T,'\s+',' '); % remove duplicate spaces
   cmd = char(a.Command{end});
   S   = a.Source;
   [pS, fS, eS] = fileparts(S);
@@ -72,26 +74,11 @@ for index=1:numel(s)
   if ~isempty(eS), S = [ S '.' eS ]; end
   if length(cmd) > 23, cmd = [ cmd(1:20) '...' ]; end
 
-  % DisplayName and Label
+  % Label
   d = '';
-  if ~isempty(a.Label) && ~isempty(a.DisplayName)
-    if strcmp(a.Label, a.DisplayName)
-        if ~isempty(ttl), a.DisplayName=ttl;
-        else a.DisplayName=fS; end
-    end
-    g = cellstr(a.Label); g=deblank(g{1});
-    if length(g) > 13, g = [ g(1:10) ]; end                 % Label/DisplayName
-    d = [ d sprintf('%s', g) ];
-    g = cellstr(a.DisplayName); g=deblank(g{1});
-    if length(g) > 13, g = [ g(1:10) '...' ]; end           % 
-    d = [ d sprintf('/%s', g) ];
-  elseif ~isempty(a.Label)
+  if ~isempty(a.Label)
     g = cellstr(a.Label); g=deblank(g{1});
     if length(g) > 23, g = [ g(1:20) '...' ]; end           % Label
-    d = [ d sprintf('%s', g) ];
-  elseif ~isempty(a.DisplayName)
-    g = cellstr(a.DisplayName); g=deblank(g{1});
-    if length(g) > 23, g = [ g(1:20) '...' ]; end           % DisplayName
     d = [ d sprintf('%s', g) ];
   end
   T0 = T; % original title, full.
@@ -110,37 +97,28 @@ for index=1:numel(s)
   tproperties = {};
   % axes and Signal stuff
   properties{end+1} = '[Rank]         [Value] [Description]';
+  % code from estruct.disp -----------------------------------------------------
   myisvector = @(c)length(c) == numel(c);
-  for index1=0:min([ ndims(a) length(getaxis(a)) ])
-    [v, l] = getaxis(a, num2str(index1));
-    if length(l) > 20, l = [l(1:18) '...' ]; end 
-    x      = getaxis(a, index1);
-    m      = get(a, 'Monitor');
+  for index=0:length(a.Axes)
+    [v, l] = getaxis(a, num2str(index,2));
+    if ~ischar(v)
+      if numel(v) > 5, v=v(1:5); end
+      v=mat2str(v);
+      if length(v) > 12, v = [v(1:12) '...' ]; end
+    end
+    if length(l) > 20, l = [l(1:18) '...' ]; end
+    X      = getaxis(a, index); x=X(:);
+    if issparse(x), x=full(x); end
     if length(x) == 1
-      minmaxstd = sprintf('[%g]', full(x));
-    elseif myisvector(x)
-      minmaxstd = sprintf('[%g:%g] length [%i]', full(min(x)), full(max(x)),length(x));
+      minmaxstd = sprintf('[%g]', x);
+    elseif myisvector(X)
+      minmaxstd = sprintf('length [%i]', numel(x));
     else
-      x=x(:);
-      minmaxstd = sprintf('[%g:%g] size [%s]', full(min(x)), full(max(x)),num2str(size(x)));
+      minmaxstd = sprintf('size %s', mat2str(size(X)));
     end
-    if index1==0
-      if not(all(m==1 | m==0))
-        minmaxstd=[ minmaxstd sprintf(' (per monitor=%g)', mean(m(:))) ];
-      end
-      minmaxstd=[ minmaxstd sprintf(' sum=%g', full(sum(private_cleannaninf(x)))) ];
-    end
-    if prod(size(a)) < 1e4
-      try
-        [W, C] = std(a, index1);
-        minmaxstd=[ minmaxstd sprintf(' <%g +/- %g>', C,W) ];
-      end
-    end
-    if isnumeric(v), v=''; end
-    t = sprintf('%6i %15s  %s %s', index1, v, l, minmaxstd);
+    t = sprintf('%6i %15s  %s %s\n', index, v, l, minmaxstd);
     tproperties{end+1} = t;
     properties{end+1}  = t;
-    clear x m
   end
 
   % model parameters

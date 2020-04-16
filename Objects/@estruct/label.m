@@ -10,9 +10,10 @@ function labl = label(this, varargin)
 %
 %   LABEL(s, 'alias','text') Set named alias label.
 %
-%   LABEL(s) Returns the object Label (s.Label property.
+%   LABEL(s) Returns the object Label (s.Label property).
 %
 % Example: s=estruct(1:10); label(s,'Signal','text'); strcmp(label(s,0),'text')
+%
 % Version: $Date$ $Version$ $Author$
 % See also estruct, estruct/plot, estruct/xlabel, estruct/ylabel, estruct/zlabel, iDala/clabel
 
@@ -72,42 +73,39 @@ for index=1:numel(aliases)
   alias=aliases{index};
 
   l = label_single(this, alias, values{index}, nargin);
-  if nargin == 2 % get
+  if nargin == 2 % get, try other naming of Signal
     if isempty(l)
-      if strcmp(alias,'Signal')
-        [l, alias] = label_single(this, '0', values{index}, nargin);
-      elseif strcmp(alias,'0') || isequal(alias, 0)
-        [l, alias] = label_single(this, 'Signal', values{index}, nargin);
+      for t = {'Signal','0','axis_0'}
+        [l, alias] = label_single(this, t{1}, values{index}, nargin);
+        if ~isempty(l), break; end
       end
     end
-    labl{end+1} = l;
   end
+  labl{end+1} = l;
 
 end
 this.Private.cache.check_requested = check;
-if nargin > 2, labl=this;
-else
-  if numel(labl) == 1, labl=labl{1}; end
-end
+if numel(labl) == 1, labl=labl{1}; end
 
 % ------------------------------------------------------------------------------
 function [labl, alias] = label_single(this, alias, value, n)
   % a single set/get for alias
-  labl = ''; tmp='';
+  labl = ''; tmp=[];
   if isnumeric(alias) || isfinite(str2double(alias)) % rank is given -> replace by corresponding alias
     tmp = getaxis(this, num2str(alias)); % this is the definition of axis rank
-    if isempty(tmp) && alias == 0
-      tmp = getaxis(this, 'Signal');
+    if isempty(tmp)
+      tmp = getalias(this, num2str(alias));
     end
-  elseif isfield(this, alias)
+  elseif ischar(alias) && isfield(this, alias)
     tmp = getaxis(this, alias);
   end
-  if ischar(tmp) && isfield(this, tmp);
+  if ischar(tmp) && isfield(this, tmp)
     alias = tmp;
   elseif isnumeric(alias)
     alias = sprintf('axis_%i', alias);
   end
   clear tmp
+  % the alias must be a valid path in the object
   if n == 2  % get
     % issue: can not use isfield: can not check for a Private property such as Labels.
     % We try a direct get via subsref_single
@@ -117,7 +115,8 @@ function [labl, alias] = label_single(this, alias, value, n)
       labl = ''; % else invalid get
     end  
   else       % set
-    subsasgn_single(this, [ 'Labels.' alias ], validstr(value));
+    labl = validstr(value);
+    subsasgn_single(this, [ 'Labels.' alias ], labl);
   end
 
 % ------------------------------------------------------------------------------

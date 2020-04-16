@@ -38,14 +38,13 @@ properties
     Command         ={};          % The history of the object (cellstr)
     Date            = clock;      % The Date of creation of the object
     Data            =[];          % Where we store most of the Data
-    DisplayName     ='';          % The apparent name of the object, e.g. for plots. SHOULD BE AN ALIAS TO LABEL
     Label           ='';          % The label of the object
     ModificationDate=[];          % The Date of last modification
-    Source          = pwd;        % The data source
-    Tag             ='';          % A unique ID for the object
     Name            ='';          % The Name/Title of the object
+    Source          = pwd;        % The data source
     User            = getenv('USER'); % Who created the object
     UserData        =[];          % An area to store what you want
+    Tag             ='';          % A unique ID for the object
 
   end % properties
 
@@ -57,6 +56,7 @@ properties
     Axes    = {};       % cell{1:ndims} e.g. aliases
     verbose = 0;        % 0:silent, 1:normal, 2:debug
     Attributes = [];    % field attributes. Map the object structure.
+    DisplayName='';     % The apparent name of the object, e.g. for plots. Alias to Label.
   end
 
   properties (Access=protected, Constant=true)  % shared by all instances
@@ -416,6 +416,10 @@ properties
       %   CAST  Cast object to a different data type or class.
       %     B = CAST(A,NEWCLASS) casts A to class NEWCLASS. A must be convertible to
       %     class NEWCLASS. NEWCLASS must be the name of one of the builtin data types.
+      %
+      % Example: s=estruct(1:10); isa(cast(s, 'uint64'), 'uint64')
+      %
+      % See also: estruct.double, estruct.int32, estruct.uint32
       if nargin < 2, typ=''; end
       if isempty(typ), typ='double'; end
       if numel(self) == 1
@@ -429,30 +433,50 @@ properties
     function v = double(self)
       %   DOUBLE Convert to double precision.
       %      DOUBLE(X) returns the double precision value of the object.
+      %
+      % Example: s=estruct(logical(-5:5)); isa(double(s), 'double')
+      %
+      % See also: estruct.single, estruct.cast
       v = cast(self, 'double');
     end
 
     function v = single(self)
       %   SINGLE Convert to SINGLE precision.
       %      SINGLE(X) returns the single precision value of the object.
+      %
+      % Example: s=estruct(logical(-5:5)); isa(single(s), 'single')
+      %
+      % See also: estruct.double, estruct.cast
       v = cast(self, 'single');
     end
 
     function v = logical(self)
       %   LOGICAL Convert to logical (0=false, any other=true).
       %      LOGICAL(X) returns the logical value of the object.
+      %
+      % Example: s=estruct(-5:5); isa(logical(s), 'logical')
+      %
+      % See also: estruct.double, estruct.cast
       v = cast(self, 'logical');
     end
 
     function v = uint32(self)
       %   UINT32 Convert to uint32, e.g. for indexing.
       %      UINT32(X) returns the unsigned integer alue of the object.
+      %
+      % Example: s=estruct(-5:5); isa(uint32(s), 'uint32')
+      %
+      % See also: estruct.double, estruct.cast
       v = cast(self, 'uint32');
     end
 
     function v = int32(self)
       %   INT32 Convert to int32.
       %      INT32(X) returns the integer alue of the object.
+      %
+      % Example: s=estruct(-5:5); isa(int32(s), 'int32')
+      %
+      % See also: estruct.double, estruct.cast
       v = cast(self, 'int32');
     end
 
@@ -467,8 +491,10 @@ properties
       %    B = REPMAT(A,[M N P ...]) tiles the array A to produce a
       %    multidimensional array B composed of copies of A. The size of B is
       %    [size(A,1)*M, size(A,2)*N, size(A,3)*P, ...].
-
-      % % Example: numel(repmat(estruct, 11,10)) == 110
+      %
+      % Example: numel(repmat(estruct, 11,10)) == 110
+      %
+      % See also: estruct.reshape, estruct.ones
       if numel(self) > 1
         error([ mfilename ': repmat(estruct, M,N,...) only works with a single estruct.' ])
       end
@@ -491,6 +517,8 @@ properties
       %    'S' structure.
       %
       % Example: numel(ones(estruct, 11,10)) == 110
+      %
+      % See also: estruct.reshape
       if nargin == 1, o=self(1); return; end
       o = repmat(self, varargin{:});
     end % ones
@@ -507,6 +535,8 @@ properties
       %    ZEROS(S) removes all properties except base ones, and keep metadata.
       %
       % Example: numel(zeros(estruct, 11,10)) == 110
+      %
+      % See also: estruct.reshape
       if nargin == 1,
         z=estruct;
         z.Creator         = self.Creator;
@@ -525,6 +555,8 @@ properties
       % STRUCT Create or convert to structure array.
       %   STRUCT(OBJ) converts the object OBJ into its equivalent
       %   structure.  The class information is lost.
+      %
+      % Example: s=estruct(1:10); isstruct(struct(s))
       if numel(self) == 1
         s = builtin('struct',self);
       else
@@ -536,12 +568,16 @@ properties
       % ISMETHOD  True if method of object.
       %   ISMETHOD(OBJ,NAME) returns 1 if string NAME is a method of object
       %   OBJ, and 0 otherwise.
+      %
+      % Example: s=estruct(1:10); ismethod(s, 'ismethod')
       try
         tf = any(strcmp(m ,self.Private.cache.methods));
       catch
         tf = any(strcmp(m, methods(self)));
       end
     end % ismethod
+
+    % special SETTERS and GETTERS ----------------------------------------------
     
     function self = set.verbose(self, value)
     % SET VERBOSE Set the verbosity level
@@ -550,7 +586,7 @@ properties
     %     2 verbose
     %     3 debug
 
-      self.verbose = private_verbose(value);
+      self.verbose = private_verbose(value); % shared verbose property
     end
     
     function value = get.verbose(self)
@@ -560,8 +596,17 @@ properties
     %     2 verbose
     %     3 debug
 
-      value = private_verbose;
+      value = private_verbose;                % shared verbose property
     end
+
+    function self = set.DisplayName(self, value)
+      self.Label = value; % alias to label property
+    end
+
+    function value = get.DisplayName(self)
+      value = self.Label; % alias to label property
+    end
+    
 
   end % methods
 

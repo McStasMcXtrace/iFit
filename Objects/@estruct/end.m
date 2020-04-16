@@ -3,6 +3,8 @@ function b = end(s,k,n)
 %   END(A,K,N) is called for indexing expressions involving the object A
 %   when END is part of the K-th index out of N indices.
 %
+% Example: s=estruct(1:10); isscalar(s(end))
+%
 % Version: $Date$ $Version$ $Author$
 % See also: estruct
 

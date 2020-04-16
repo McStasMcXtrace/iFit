@@ -1,24 +1,20 @@
 function [b, location] = fileattrib(a, field, varargin)
 % FILEATTRIB Get or set field Attributes
-%   Looks for an associated Attribute to a field.
-%      Attributes are set from e.g. NetCDF/CDF/NeXus/HDF files.
-%      returns []  when no attribute exists
+%   attribute = FILEATTRIB(s, field) looks for an associated Attribute to a field.
+%   Attributes are set from e.g. NetCDF/CDF/NeXus/HDF files. They correspond with
+%   additional information attached to object properties.
+%   Returns [] when no attribute exists.
 %
-%   s=FILEATTRIB(s, field, attribute) sets the attribute for given field, when
-%   attribute is given as a struct.
+%   FILEATTRIB(s, field, attribute) sets the attribute for given field.
+%   The attribute is often given as a struct. The attribute is returned.
 %
-%   s=FILEATTRIB(s, field, name, value) sets the attribute 'name=value' for given
-%   field.
+%   FILEATTRIB(s, field, name, value) sets the attribute 'name=value' for given
+%   field. The attribute is returned.
 %
-% input:  s:     object or array (estruct)
-%         field: Alias/path in the object (string)
-%         attributes: when given as a structure, sets the attributes for the field.
-%         it can also be given as a name/value pair
-% output: attribute: the value of the associated Attribute, or [].
-%                    or the updated object when storing attributes.
-%         link:      the path of the associated Attribute, or [].
-% ex:     b=fileattrib(a, 'Signal'); 
-%         b=fileattrib(b, 'Signal',struct('long_name','hello world'))
+%   [attr, loc] = FILEATTRIB(...) also returns the attribute location.
+%
+% Example: b=estruct(1:10); fileattrib(b, 'Signal','unit','carrots');...
+%          isstruct(fileattrib(b, 'Signal'))
 %
 % Version: $Date$ $Version$ $Author$
 % See also estruct, isfield

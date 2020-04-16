@@ -8,6 +8,8 @@ function t = title(a, varargin)
 %
 %   The object name is obtained with s.Name
 %
+% Example: s=estruct(1:10); title(s, 'argh'); strcmp(title(s), 'argh')
+%
 % Version: $Date$ $Version$ $Author$
 % See also estruct, estruct/plot
 

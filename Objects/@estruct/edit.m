@@ -1,4 +1,4 @@
-function h = edit(a, option)
+function [h, f] = edit(a, option)
   % EDIT Edit object values.
   %   EDIT(S) show the Signal in object S as a Table. The values are read-only.
   %   The data appears as a spreadsheet (requires Java to be enabled).
@@ -6,6 +6,10 @@ function h = edit(a, option)
   %   EDIT(S,'editable') edit the Signal values in object S. Values can be changed.
   %
   %   EDIT(estruct, handle) extract values from the Table handle into an estruct object.
+  %
+  %   [h, fig] = EDIT(...) return the Table and Figure handles.
+  %
+  % Example: s=estruct(rand(5)); [h,f]=edit(s); tf=ishandle(h); close(f); tf
   %
   % Version: $Date$ $Version$ $Author$
   % see also estruct.uitable
