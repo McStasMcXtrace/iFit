@@ -2,7 +2,7 @@
 *
 *                     Program looktxt.c
 *
-* looktxt version Looktxt 1.4 $Revision$ (Feb 10, 2014) by Farhi E. [farhi@ill.fr]
+* looktxt version Looktxt 1.4 $Revision$ (Feb 10, 2014) by Farhi E. [emmanuel.farhi@synchrotron-soleil.fr]
 *
 * Usage: looktxt [options] file1 file2 ...
 * Action: Search and export numerics in a text/ascii file.
@@ -96,7 +96,8 @@
 
 /*
     Looktxt: Search and export numerics in a text/ascii file
-    Copyright (C) 2009  E. Farhi <farhi at ill.eu>, Institut Laue Langevin
+    Copyright (C) 2009  E. Farhi <emmanuel.farhi at synchrotron-soleil.eu>, 
+    Synchrotron Soleil.
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -138,7 +139,7 @@
  */
 
 
-#define AUTHOR  "Farhi E. [farhi@ill.fr]"
+#define AUTHOR  "Farhi E. [emmanuel.farhi@synchrotron-soleil.fr]"
 #define DATE    "10 Feb 2014"
 #ifndef VERSION
 #define VERSION "1.4 $Revision$"
