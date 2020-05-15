@@ -3,10 +3,10 @@ function new = copyobj(self, org)
   %   COPYOBJ(A) copy the properties from A into a new object.
   %   The notation +A is equivalent.
   %
-  %   new = COPYOBJ(self) creates a deep copy of the initial object 'self'
+  %   new = COPYOBJ(self) creates a deep copy of the initial object 'self'.
   %
   %   new = COPYOBJ(self, content) creates an empty object and fill it
-  %   with 'content' (struct/object)
+  %   with 'content' (struct/object).
   %
   % Example: s = estruct(1:10); s1=copyobj(s); sum(s) == sum(s1)
   % Version: $Date$ $Version$ $Author$

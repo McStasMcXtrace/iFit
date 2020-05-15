@@ -69,7 +69,8 @@ function v = get_single(s, field, follow, s0)
     typs=cell(size(field)); [typs{:}] = deal('.');
     S = struct('type',typs, 'subs', field);
   elseif strcmp(field, ':') && ~follow % special case for (:)
-    S.type='()'; S.subs = {':'};
+    v = reshape(s, [ prod(size(s)) 1 ]);
+    return
   else % access a simple field name
     field = cellstr(field);
     S = struct('type','.','subs', field{1});

@@ -8,7 +8,7 @@ function h=subplot(a, varargin)
 %
 %   SUBPLOT(A, [m n], options) sends options to the plot.
 %
-% Example: a=estruct(peaks); h=subplot([a a]); tf=ishandle(h); delete(h); all(tf)
+% Example: a=estruct(peaks); h=subplot([a a]); tf=ishandle(h); delete(gcf); all(tf)
 % Version: $Date$ $Version$ $Author$
 % See also estruct, estruct/plot
 

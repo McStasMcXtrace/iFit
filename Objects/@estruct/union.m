@@ -1,16 +1,14 @@
 function [ai,bi] = union(a, b)
-% [ai,bi] = union(a, b) : computes object union area and values
+% UNION  Object axes union.
+%   [AU,BU]=UNION(A,B) for objects A and B, extends both object axes onto the 
+%   union of axes bounds. Resulting objects are returned, e.g. for performing
+%   further operations (e.g. combine, plus, ...).
 %
-%   @estruct/union function to pre-combine data sets
-%   This function computes the common axes union between data sets
-%   Resulting objects are returned, e.g. for performing further operations
-%     ai = union(a) where 'a' is an object array computes union of all elements
+%   AU = UNION(A) where 'A' is an object array computes intersection of
+%   all elements
 %
-% input:  a: object or array (estruct)
-%         b: object (estruct)
-% output: b: object or array (estruct)
-% ex:     b=union(a, a);
-%
+% Example: a=estruct(peaks); b=copyobj(a); moveaxis(a,1,-5); ...
+%   [au,bu]=union(a,b); size(au,1)==54
 % Version: $Date$ $Version$ $Author$
 % See also estruct, estruct/setaxis, estruct/getaxis, estruct/intersect
 

@@ -56,7 +56,7 @@ function h=plot(a, varargin)
 %   vol3d:       Joe Conti, 2004
 %   sliceomatic: Eric Ludlam 2001-2008
 %
-% Example: a=estruct(peaks); h=plot(a); tf=ishandle(h); delete(h); tf
+% Example: a=estruct(peaks); h=plot(a); tf=ishandle(h); delete(gcf); tf
 % Version: $Date$ $Version$ $Author$
 % See also estruct, interp1, interpn, ndgrid, plot, estruct/setaxis, estruct/getaxis
 %          estruct/xlabel, estruct/ylabel, estruct/zlabel, estruct/clabel, estruct/title

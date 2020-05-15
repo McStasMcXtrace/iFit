@@ -173,8 +173,19 @@ function [f_signal, method] = interp_TriScatteredInterp(i_axes, i_signal, f_axes
     F = TriScatteredInterp(i_axes{1}, i_signal);
     f_signal = F(f_axes{1});
   case 2
-    F = TriScatteredInterp(i_axes{[2 1]}, i_signal);
-    f_signal = F(f_axes{[2 1]});
+    X = i_axes{2}; Y = i_axes{1};
+    Z = i_signal;
+    if isvector(X) && isvector(Y) && numel(X)*numel(Y) == numel(Z)
+      [X,Y] = meshgrid(X,Y);
+      X=X(:); Y=Y(:);
+    end
+    F = TriScatteredInterp(X,Y,Z);
+    XI=f_axes{2}; YI = f_axes{1};
+    if isvector(XI) && isvector(YI) && numel(XI) ~= numel(YI)
+      [XI,YI] = meshgrid(XI,YI);
+      XI=XI(:); YI=YI(:);
+    end
+    f_signal = F(XI,YI);
   case 3
     F = TriScatteredInterp(i_axes{[2 1 3]}, i_signal);
     f_signal = F(f_axes{[2 1 3]});
@@ -226,9 +237,19 @@ function [f_signal, method] = interp_griddata(i_axes, i_signal, f_axes, method)
 
   if length(i_axes) == 2
     if ~any(strcmp(method,{'linear','nearest','cubic','v4','natural'})), method='linear'; end
-    warning('off','MATLAB:griddata:DuplicateDataPoints');
-    f_signal = griddata(i_axes{[2 1]}, i_signal, f_axes{[2 1]}, method);
-    method = [ method ' griddata'];
+    % check axes dimensions
+    X = i_axes{2};
+    Y = i_axes{1};
+    Z = i_signal;
+    if (isvector(X) && isvector(Y)) || ...
+      (all(size(X) == size(Z)) && all(size(Y) == size(Z)))
+      warning('off','MATLAB:griddata:DuplicateDataPoints');
+      f_signal = griddata(X,Y,Z, f_axes{[2 1]}, method);
+      method = [ method ' griddata'];
+    else % will not work. return.
+      f_signal = [];
+      return
+    end
 
   elseif length(i_axes) == 3 && exist('griddata3')
     if ~any(strcmp(method,{'linear','nearest'})), method='linear'; end

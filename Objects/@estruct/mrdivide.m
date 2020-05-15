@@ -5,6 +5,7 @@ function c = mrdivide(a,b)
 %
 %    C = MRDIVIDE(A,B) is called for the syntax 'A / B'.
 %
+% Example: a=estruct(peaks); b=a/a; all(b(:)==1)
 % Version: $Date$ $Version$ $Author$
 % See also estruct, estruct/minus, estruct/plus, estruct/times, estruct/rdivide, estruct/power
 

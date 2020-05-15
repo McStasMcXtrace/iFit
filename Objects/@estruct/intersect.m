@@ -1,13 +1,14 @@
 function [ai,bi] = intersect(a, b)
-% INTERSECT Set intersection.
-%   INTERSECT(A,B) for objects A and B, returns the subsets common to the
-%   two objects axes. Resulting objects are returned, e.g. for performing
-%   further operations
+% INTERSECT Object axes intersection.
+%   [AI,BI]=INTERSECT(A,B) for objects A and B, returns the subsets common to
+%   the two objects axes. Resulting objects are returned, e.g. for performing
+%   further operations (e.g. combine, plus, ...).
 %
 %   AI = INTERSECT(A) where 'A' is an object array computes intersection of
 %   all elements
 %
-% Example: a=estruct(peaks); b=copyobj(a); moveaxis(a,1,-5); c=intersect(a,b); size(c,1)==44
+% Example: a=estruct(peaks); b=copyobj(a); moveaxis(a,1,-5); ...
+%   [ai,bi]=intersect(a,b); size(ai,1)==44
 % Version: $Date$ $Version$ $Author$
 % See also estruct, estruct/setaxis, estruct/getaxis, estruct/interp, estruct/union
 
