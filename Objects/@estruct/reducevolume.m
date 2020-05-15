@@ -17,6 +17,7 @@ function s = reducevolume(a, R)
 % You may also use SQUEEZE to remove singleton dimensions, RESIZE to
 % compress/expand its size, and PACK to compress its storage.
 %
+% Example: a=estruct(peaks(2000)); b=reducevolume(a); prod(size(b)) < 2e6
 % Version: $Date$ $Version$ $Author$
 % See also estruct, estruct/squeeze, estruct/pack, estruct/resize, estruct/size
 

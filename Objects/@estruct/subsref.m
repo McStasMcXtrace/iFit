@@ -17,7 +17,7 @@ function v = subsref(a,S)
 %     Get complex field in structure and does NOT follow links.
 %     This syntax gets 'aliases' (does not travel through links).
 %     Equivalent to get(s, 'field', 'alias') and getalias(s, 'field')
-
+%
 %   In the alias case above, a string/char value allows to link to internal or
 %   external links, as well as evaluated expression, with the following syntax cases:
 %     'field'                           a simple link to an other property 'field'

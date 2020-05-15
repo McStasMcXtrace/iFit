@@ -54,7 +54,11 @@ for index=1:numel(a)
   if isempty(d.Command),
     d.Command = { meth };
   else
-    if ~iscellstr(d.Command), d.Command = { char(d.Command) }; end
+    if ~iscellstr(d.Command), 
+      if iscell(d.Command) && iscell(d.Command{1})
+        d.Command = { d.Command{:} };
+      else d.Command = { char(d.Command) }; end
+    end
     d.Command{end+1} = meth;
   end
   d.Command=d.Command(:);

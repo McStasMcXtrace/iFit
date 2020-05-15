@@ -5,6 +5,7 @@ function a = sign(a)
 %   less than zero.  For the nonzero elements of complex X,
 %   SIGN(X) = X ./ ABS(X).
 %
+% Example: a=estruct(peaks); b=sign(a); all(b(:)==1 | b(:)==-1)
 % Version: $Date$ $Version$ $Author$
 % See also estruct, estruct/abs
 
