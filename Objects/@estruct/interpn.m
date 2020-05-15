@@ -28,6 +28,7 @@ function b = interpn(a, varargin)
 %
 %    VI = INTERPN(..., 'vector') requests all axes to be set as vectors.
 %
+% Example: a=estruct(peaks); b=interpn(a, 'grid'); isequal(a,b)
 % Version: $Date$ $Version$ $Author$
 % See also estruct, interp1, interpn, ndgrid, estruct/setaxis, estruct/getaxis,
 %          estruct/hist, estruct/resize, estruct/reshape, estruct/fill
@@ -70,7 +71,7 @@ for index=1:length(varargin)
   c = varargin{index};
   if ischar(c) && ~isempty(strfind(c,'grid'))
     requires_meshgrid=1;
-  elseif ischar(c)                      % method (char)
+  elseif ischar(c) && ~isempty(c)         % method (char)
     method = c;
   elseif isa(varargin{index}, 'estruct')  % object axes
     if length(c) > 1
@@ -106,7 +107,7 @@ end % input arguments parsing
 % check for method to be valid
 if ~any(strcmp(method, {'linear','cubic','spline','nearest','v4'}))
   if a.verbose
-    warning([ mfilename ': Interpolation method ' method ' is not supported. Use: linear, cubic, spline, nearest, v4. Defaulting to linear.']);
+    warning([ mfilename ': Interpolation method "' method '" is not supported. Use: linear, cubic, spline, nearest, v4. Defaulting to linear.']);
   end
   method = 'linear';
 end

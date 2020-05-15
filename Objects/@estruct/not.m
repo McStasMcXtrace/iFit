@@ -8,6 +8,7 @@ function b = not(a)
 %
 %    B = NOT(A) is called for the syntax '~A'.
 %
+% Example: X=estruct([1 0 1 0]); all(not(X)==[0 1 0 1])
 % Version: $Date$ $Version$ $Author$
 % See also estruct, estruct/or, estruct/and
 

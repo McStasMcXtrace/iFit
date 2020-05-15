@@ -1,14 +1,18 @@
 function r = runtest(s, m, option)
 % RUNTEST run a set of tests on object methods
-%   RUNTEST(s) checks all object methods. In deployed versions, only the 'test'
-%   functions can be used, whereas from Matlab, the internal Example liens can be
-%   used for testing. The test functions must be named 'test_<class>_<method>'.
+%   RUNTEST(s) checks all object methods. 
+%   A test can be written as:
+%     An 'Example:' line for which following expressions is executed.
+%       The test can span on more lines with the '...' continuation symbol. 
+%     A script named 'test_<class>_<method>'.
+%   In deployed versions, only the 'test' functions can be used.
 %   Each test result must return e.g. a non-zero value, or 'OK'.
 %
 %   RUNTEST(s, 'method') and RUNTEST(s, {'method1',..}) checks only the given 
 %   methods. When not given or empty, all methods are checked.
 %
-%   RUNTEST(..., 'testsuite') generates a test suite (list of functions)
+%   RUNTEST(..., 'testsuite') generates a test suite (list of 
+%   'test_<class>_<method>' functions).
 %
 %   R = RUNTEST(...) perform the test and returns a structure array with test results.
 %

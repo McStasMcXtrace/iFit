@@ -28,12 +28,15 @@ function c = deconv(a,b, shape)
 %   Default SHAPE is 'deconv same'. Multiple keywords are allowed, for
 %   instance 'fft same pad background center normalize'.
 %
+% Example: a=estruct(peaks); b=conv(a); c=deconv(b); ~isempty(c)
 % Version: $Date$ $Version$ $Author$
 % See also estruct, estruct/times, estruct/convn, estruct/fft, estruct/xcorr, fconv, fconvn, fxcorr, conv, deconv
+
+if nargin < 3, shape = 'same'; end
 if nargin ==1
   b = a;
+  shape = 'same pad';
 end
-if nargin < 3, shape = 'same'; end
 if isscalar(b)
   b = [ 1 mean(getaxis(a,1)) double(b) 0]; % use input as a width
   b = gauss(b, getaxis(a,1));

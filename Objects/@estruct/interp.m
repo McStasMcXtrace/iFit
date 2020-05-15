@@ -26,6 +26,7 @@ function b = interp(self, varargin)
 %
 %    VI = INTERPN(..., 'grid') uses meshgrid/ndgrid to determine new axes as arrays
 %
+% Example: a=estruct(peaks); b=interp(a, 'grid'); isequal(a,b)
 % Version: $Date$ $Version$ $Author$
 % See also estruct, interp1, interpn, ndgrid, estruct/setaxis, estruct/getaxis,
 %          estruct/hist, estruct/resize, estruct/reshape, estruct/fill

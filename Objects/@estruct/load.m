@@ -48,8 +48,8 @@ function out = load(a, varargin)
 %     load(estruct,'formats') or iLoad('formats')
 %
 %  Type <a href="matlab:doc(estruct,'Load')">doc(estruct,'Load')</a> to access the iFit/Load Documentation.
-
-% Example: isa('estruct', load(estruct, 'peaks.hdf5'))
+%
+% Example: isa(load(estruct, 'peaks.hdf5'),'estruct')
 % Version: $Date$ $Version$ $Author$
 % See also: iLoad, save, estruct/saveas, Loaders
 

@@ -53,7 +53,7 @@ if ~isempty(strfind(shape,'pad')) || ~isempty(strfind(shape,'extend'))
 end
 
 % suppress background
-if (strfind(shape,'background'))
+if ~isempty(strfind(shape,'background'))
   h = h-min(h(:));
 end
 
@@ -88,11 +88,11 @@ if ~isempty(strfind(shape,'center')) ||  ~isempty(strfind(shape,'centre'))
 end
 
 % normalize the filter
-if (strfind(shape,'norm'))
+if ~isempty(strfind(shape,'norm'))
   h = h/sum(h(:));
 end
 
-if (strfind(shape,'corr'))
+if ~isempty(strfind(shape,'corr'))
   % rotate the filter by 180 deg for correlation
   Ly=size(h);
   S.type='()';
@@ -148,7 +148,7 @@ else
   X=fftn(x, Ly2);          % Fast Fourier transform (pads with zeros up to the next power of 2)
   H=fftn(h, Ly2);            % Fast Fourier transform
 
-  if strfind(shape,'deconv') || strfind(shape,'inverse')
+  if ~isempty(strfind(shape,'deconv')) || ~isempty(strfind(shape,'inverse'))
     Y=X./H;                  % FFT Division= deconvolution
   else
     Y=X.*H;                  % FFT Product = convolution
@@ -179,7 +179,7 @@ else
 end
 
 % reshape output as from convn and conv2
-if (strfind(shape,'same'))
+if ~isempty(strfind(shape,'same'))
   sizeA = [size(A) ones(1,ndims(y)-ndims(A))];
   sizeB = [size(h) ones(1,ndims(y)-ndims(h))];
   flippedKernelCenter = ceil((1 + sizeB)/2);
@@ -189,7 +189,7 @@ if (strfind(shape,'same'))
   end
   y = y(subs{:});
 
-elseif (strfind(shape,'valid'))
+elseif ~isempty(strfind(shape,'valid'))
   sizeB = [size(h) ones(1,ndims(y)-ndims(h))];
   outSize = max([size(A) ones(1,ndims(y)-ndims(A))] - sizeB + 1, 0);
   subs = cell(1,ndims(y));

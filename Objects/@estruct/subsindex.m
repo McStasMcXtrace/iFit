@@ -10,6 +10,7 @@ function y = subsindex(s)
 %    SUBSINDEX is invoked separately on all the subscripts in an
 %    expression such as X(A,B).
 %
+% Example: X=estruct(5:10); a=estruct(-5:2:50); b=a(X); all(b == 1:2:11)
 % Version: $Date$ $Version$ $Author$
 % See also estruct, estruct/subsasgn, estruct/subsref
 

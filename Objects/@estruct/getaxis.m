@@ -93,7 +93,7 @@ function [v,lab] = getaxis(s,varargin)
       % special case when we need the Monitor value
       if get_mon && isempty(m)
         m = subsref_single(s, 'Monitor'); % follow links -> value
-        if ~isnumeric(m), m=1; end
+        if isempty(m) || ~isnumeric(m) || all(~isfinite(m(:))) || all(~m(:)), m=1; end
       end
       % second test for 'Error/Monitor' (and now we have Monitor - shared with 'Signal' case)
       if ischar(name{n_index}) && strcmp(name{n_index}, 'Error')

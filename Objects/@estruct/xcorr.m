@@ -7,7 +7,7 @@ function c = xcorr(a,b, shape)
 %   can be given as a single scalar (same width along all dimensions),
 %   or a vector of same length as the object dimension.
 %
-%   C = CONV(A, B, SHAPE) returns the correlation with size and behaviour
+%   C = XCORR(A, B, SHAPE) returns the correlation with size and behaviour
 %   specified by SHAPE:
 %     'full'       returns the full convolution.
 %     'same'       (default) returns the central part of the convolution
@@ -26,6 +26,7 @@ function c = xcorr(a,b, shape)
 %   Default SHAPE is 'same center'. Multiple keywords are allowed, for
 %   instance 'same pad background center normalize'.
 %
+% Example: a=estruct(hist(randn(1,1000))); b=xcorr(a); std(a) < std(b)
 % Version: $Date$ $Version$ $Author$
 % See also estruct, estruct/times, estruct/convn, estruct/fft, convn, fconv, fconvn
 if nargin ==1

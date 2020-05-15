@@ -20,6 +20,7 @@ function b = meshgrid(a, varargin)
 %   B = MESHGRID(..., METHOD ...) uses specified METHOD for interpolation as one of
 %   'linear' (default), 'spline', 'cubic', or 'nearest'.
 %
+% Example: a=estruct(peaks); b=meshgrid(a, 101); size(b,1)==101
 % Version: $Date$ $Version$ $Author$
 % See also estruct, estruct/interp, estruct/hist, estruct/event, estruct/fill
 

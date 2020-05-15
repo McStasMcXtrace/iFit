@@ -8,6 +8,9 @@ function c = convn(a,b)
 %   which width can be given as a single scalar (same width along all
 %   dimensions), or a vector of same length as the object dimension.
 %
+%   C = CONVN(A) computes the normalised autoconvolution of A.
+%
+% Example: a=estruct(peaks); b=convn(a); ~isempty(b)
 % Version: $Date$ $Version$ $Author$
 % See also estruct, estruct/times, estruct/conv, estruct/fft, estruct/xcorr, fconv, fconvn, fxcorr
 if nargin ==1

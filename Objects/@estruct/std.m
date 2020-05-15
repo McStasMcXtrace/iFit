@@ -15,7 +15,7 @@ function [w,c] = std(a, dim)
 %
 %  [W,C] = STD(A, 0) computes std(Signal) and mean(Signal).
 %
-% Example: a=estruct(peaks); c=std(a);
+% Example: a=estruct(peaks); round(std(a))==14
 % Version: $Date$ $Version$ $Author$
 % See also estruct, estruct/median, estruct/mean
 w = []; c = [];
@@ -71,7 +71,7 @@ if ~isvector(a) || length(a.Axes) < ndims(a)
 else b = a;
 end
 
-s = getaxis(b,'Signal'); 
+s = getaxis(b, 'Signal'); 
 x = getaxis(b, abs(dim));
 
 s=s(:); x=x(:);

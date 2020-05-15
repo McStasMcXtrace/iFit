@@ -8,6 +8,7 @@ function v = norm(a, varargin)
 %     NORM(V,inf)  = max(abs(V)).
 %     NORM(V,-inf) = min(abs(V)).
 %
+% Example: X=estruct([0 1 2 3]); round(norm(X))==4
 % Version: $Date$ $Version$ $Author$
 % See also estruct, estruct/sum, estruct/trapz, norm
 

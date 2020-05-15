@@ -1,21 +1,17 @@
 function [m,id] = min(a,b, dim)
-% [m,id] = min(a,b, dim) : computes the maximum value of iData object(s)
+% MIN    Smallest component.
+%   MIN(A) returns a single value as the minimum value of the object signal.
 %
-%   @iData/min function to compute the maximum value of data sets.
-%     min(iData) returns a single value as the maximum value of the iData signal
-%     min(a,b)   returns an object which signal is the highest of a and b.
-%     min(a,[], dim) returns min value along dimension 'dim'
+%   MIN(A,B) returns an object which signal is the highest of A and B.
 %
-% input:  a: object or array (iData)
-%         b: object or array (iData/double)
-%         dim: dimension on which to operate
+%   MIN(A,[], DIM) returns minimum value along dimension 'DIM'
 %
-% output: m:  maximum value (double/iData)
-%         id: returns the indices of the maximum value (integer)
-% ex:     b=min(a);
+%   [M,I] = MIN(A,...) returns the minimum value/object in M, and the indices
+%   of the minimum values in vector I.
 %
+% Example: a=estruct(peaks); round(min(a))==-7
 % Version: $Date$ $Version$ $Author$
-% See also iData, min, iData/max
+% See also estruct, max, estruct/min
 
 if nargin == 1
   b = [];
@@ -25,8 +21,8 @@ if nargin <= 2
 end
 id=[];
 
-% handle input iData arrays
-if numel(a) > 1 & isa(a,'iData')
+% handle input estruct arrays
+if numel(a) > 1 & isa(a,'estruct')
   m = zeros(size(a)); id= m;
   for index=1:numel(a)
     [m(index), id(index)] = min(a(index), b, dim);
@@ -34,7 +30,7 @@ if numel(a) > 1 & isa(a,'iData')
   return
 end
 
-if ~isa(a, 'iData')
+if ~isa(a, 'estruct')
   [m,id] = min(b, a, dim);
   return
 end
@@ -47,15 +43,15 @@ if isempty(b)
   return
 end
 
-% find intersection between iData objects
+% find intersection between estruct objects
 cmd=a.Command;
-if isa(b, 'iData')
+if isa(b, 'estruct')
   [a,b] = intersect(a,b);
   m = copyobj(a);
   set(m, 'Signal', min(get(a,'Signal'), get(b,'Signal')));
   return
 else
-% handle iData and scalar/vector/matrix min/min
+% handle estruct and scalar/vector/matrix min/min
   m = copyobj(a);
   if isempty(dim) || ~isempty(b)
     y = min(getaxis(a,'Signal'), b);
@@ -76,6 +72,6 @@ else
   end
 end
 m.Command=cmd;
-m = iData_private_history(m, mfilename, a, b);
+m = estruct_private_history(m, mfilename, a, b);
 
 

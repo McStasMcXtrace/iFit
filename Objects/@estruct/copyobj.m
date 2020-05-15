@@ -69,6 +69,7 @@ function new = copyobj(self, org)
       end
     end
   end
+  axescheck(new);
   if flag_nargin==1
     history(new, mfilename, self);
   else
