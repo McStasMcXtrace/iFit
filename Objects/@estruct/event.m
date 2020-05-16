@@ -37,11 +37,9 @@ if nargin < 5, monitor=[]; end
 
 % handle array
 if numel(a) > 1
+  b = zeros(estruct, size(a));
   for index=1:numel(a)
-    a(index) = feval(mfilename, a(index), dim, signal, err, monitor);
-  end
-  if nargout == 0 && ~isempty(inputname(1))
-    assignin('caller',inputname(1),a);
+    b(index) = feval(mfilename, a(index), dim, signal, err, monitor);
   end
   return
 end

@@ -120,7 +120,3 @@ for i=1:numel(out)
     out(i)  = set(out(i),'Label',[ f e ]);
   end
 end % for
-
-if nargout == 0 && ~isempty(inputname(1))
-  assignin('caller',inputname(1),out);
-end

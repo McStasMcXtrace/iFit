@@ -1,13 +1,9 @@
 function disp(s_in, name)
-% disp(s) : display estruct object (details)
-%
-%   @estruct/disp function to display estruct object details
-%
-% input:  s: object or array (estruct)
-% ex:     'disp(estruct)'
+% DISP Display object (details).
+%   DISP(X) displays the object. Properties are displayed as well as Axes and 
+%   Signal definition and sizes.
 %
 % Example: disp(estruct(peaks)); 1
-%
 % Version: $Date$ $Version$ $Author$
 % See also estruct, estruct/display, estruct/get
 
