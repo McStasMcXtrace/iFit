@@ -126,7 +126,7 @@ function [name, value] = str2struct_value_pair(this)
 
 % ------------------------------------------------------------------------------
 function name = sanitize_name(name)
-  name(~isstrprop(name,'print')) = '';
+  name(~isstrprop(strtrim(name),'print')) = '';
   name(~isstrprop(name,'alphanum')) = '_';
   if name(1) == '_'
     name = name(find(name ~= '_', 1):end);
