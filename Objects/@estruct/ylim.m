@@ -10,7 +10,7 @@ function a = ylim(a, lims, exclude)
 % Version: $Date$ $Version$ $Author$
 % See also estruct, estruct/plot, estruct/ylabel
 
-% handle input iData arrays
+% handle input estruct arrays
 if nargin < 2, lims = ''; end
 if nargin < 3, exclude = ''; end
 if numel(a) > 1
@@ -51,7 +51,7 @@ end
 cmd=a.Command;
 a = subsref(a,s);
 a.Command=cmd;
-a=iData_private_history(a, mfilename, a, lims);
+a=estruct_private_history(a, mfilename, a, lims);
 
 if nargout == 0 & length(inputname(1))
   assignin('caller',inputname(1),a);

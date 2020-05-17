@@ -6,7 +6,7 @@ function h = surf(a, option)
 %   The plot graphic object handle H is returned.
 %   You may also use the SLICE(S) method to open an interactive 3D viewer.
 %
-%   H = SURFL(...,OPTION) specifies plot options for 2D and 3D plots: 
+%   H = SURFL(...,'OPTION') specifies plot options for 2D and 3D plots: 
 %                 flat, interp, faceted (for shading)
 %                 transparent, light, clabel
 %                 axis tight, axis auto, view2, view3

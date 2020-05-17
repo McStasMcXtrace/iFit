@@ -11,7 +11,7 @@ function h=plot(a, varargin)
 %   This corresponds to an overlay-type plot. This syntax is equivalent to
 %   H = PLOT([ S1 S2 S3 ...]).
 %
-%   H = PLOT(..., METHOD) specifies a rendering option.
+%   H = PLOT(..., 'METHOD') specifies a rendering option.
 %   For 1D plots y=f(x), METHOD is a string to specify color/symbol, such
 %     as in the usual PLOT function, e.g. METHOD='r-'. The 'hide_errorbars' method
 %     can be added to the line/color specification in order not to plot error bars.

@@ -14,7 +14,7 @@ function [s,sigma] = trapz(a,dim, varargin)
 %   (for instance 0). All axes are assumed to be distances.
 %
 % Version: $Date$ $Version$ $Author$
-% See also iData, iData/cumsum, iData/camproj, iData/sum, iData/cart2sph
+% See also estruct, estruct/cumsum, estruct/camproj, estruct/sum, estruct/cart2sph
 
 if nargin < 2, dim=1; end
 

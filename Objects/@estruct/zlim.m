@@ -10,7 +10,7 @@ function a = zlim(a, lims, exclude)
 % Version: $Date$ $Version$ $Author$
 % See also estruct, estruct/plot, estruct/zlabel
 
-% handle input iData arrays
+% handle input estruct arrays
 if nargin < 2, lims = ''; end
 if nargin < 3, exclude = ''; end
 if numel(a) > 1
