@@ -440,12 +440,28 @@
           </td>
         </tr>
         <tr>
+          <td valign="top"><font color="#cc33cc"><b>'nrrd' </b>Nearly
+              Raw Raster Data</font><br>
+          </td>
+          <td valign="top">text/binary<br>
+          </td>
+          <td valign="top">A mixed text/binary format that can store nD
+            data. Supported by e.g. <a
+              href="http://users.loni.ucla.edu/%7Epipeline/viewer/">BrainViewer</a>,&nbsp;
+            <a href="https://imagej.net/SCIFIO">ImageJ</a>, <a
+              href="https://discourse.slicer.org/">Slicer</a>, ...<br>
+          </td>
+          <td valign="top"><br>
+          </td>
+        </tr>
+        <tr>
           <td valign="top"><font color="#cc33cc">'<b>npy</b>' NUMPY</font><br>
           </td>
           <td valign="top">binary<br>
           </td>
           <td valign="top">Numpy binary array <a
               href="https://docs.scipy.org/doc/numpy/neps/npy-format.html">NPY
+
 
 
 
@@ -461,8 +477,10 @@
         </tr>
         <tr>
           <td style="vertical-align: top;"><span style="font-weight:
-              bold;"><span style="color: rgb(204, 51, 204);">'ppm' 'pgm'
-                'pbm'</span></span></td>
+              bold;"><span style="color: rgb(204, 51, 204);">
+                <meta http-equiv="content-type" content="text/html;
+                  charset=windows-1252">
+                'ppm' 'pgm' 'pbm'</span></span></td>
           <td style="vertical-align: top;">text<br>
           </td>
           <td style="vertical-align: top;"><a
@@ -483,6 +501,7 @@
               href="https://en.wikipedia.org/wiki/IDL_%28programming_language%29">IDL</a>
             saved data (see format <a
               href="http://www.physics.wisc.edu/%7Ecraigm/idl/savefmt/">here</a>).
+
 
 
 
@@ -684,6 +703,7 @@ href="http://www.bruker.com/fr/products/infrared-near-infrared-and-raman-spectro
 
 
 
+
               definition</a>. This format gathers <span
               style="font-style: italic;">CIF</span> and <span
               style="font-style: italic;">imgCIF</span> standards. These
@@ -738,6 +758,7 @@ href="http://www.ill.eu/sites/fullprof/php/programs24b7.html?pagina=Crysfml">Cry
                 letter-spacing: normal; text-align: left; text-indent:
                 0px; text-transform: none; white-space: normal;
                 word-spacing: 0px; -webkit-text-stroke-width: 0px;">Crystallography
+
 
 
 
@@ -814,6 +835,7 @@ href="http://www.ill.eu/sites/fullprof/php/programs24b7.html?pagina=Crysfml">Cry
                 word-spacing: 0px; -webkit-text-stroke-width: 0px;
                 text-decoration-style: initial; text-decoration-color:
                 initial; display: inline ! important; float: none;"><span>&nbsp;</span>which
+
 
 
 
@@ -924,6 +946,7 @@ href="file:///home/farhi/dev/iFit/Docs/Models_Phonons_Tutorial.html#mozTocId2506
 
 
 
+
               Nuclear Data File</a> with specific support for the
             thermal neutron scattering law (TSL) section (MF7, MT=2 and
             4). Can make use of <a href="http://pyne.io/">PyNE</a> when
@@ -1008,6 +1031,7 @@ href="file:///home/farhi/dev/iFit/Docs/Models_Phonons_Tutorial.html#mozTocId2506
 
 
 
+
               Imaging Resource of the Mayo Clinic</a>.Analyze files can
             be obtained from <a
               href="http://en.wikipedia.org/wiki/DICOM">DICOM</a> files
@@ -1032,8 +1056,8 @@ href="http://www.mathworks.com/matlabcentral/fileexchange/42997-dicom-to-nifti-c
           <td valign="top">binary<br>
           </td>
           <td valign="top">This is an <a
-              href="http://www.hdfgroup.org/">HDF5</a> flavour used by
-            <a href="https://hyperspy.org/"> HypersPy</a> for
+              href="http://www.hdfgroup.org/">HDF5</a> flavour used by <a
+              href="https://hyperspy.org/"> HypersPy</a> for
             multi-spectral analysis (e.g. an image for which each pixel
             carries a 1D/2D signal).<br>
           </td>
@@ -1101,6 +1125,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
             format is a S(phi,w) simple format for reduced neutron
             time-of-flight data (see <a
 href="http://www.ill.eu/instruments-support/instruments-groups/groups/tof/software/inx/">example</a>).
+
 
 
 
@@ -1244,6 +1269,7 @@ href="http://www.mathworks.com/matlabcentral/fileexchange/42997-dicom-to-nifti-c
             files. See above format description for more information.
             This format includes all types of derivatives (such as NX
             SPE from ISIS, and <a href="https://www.cxidb.org/">CXI</a>).
+
 
 
 
@@ -1438,6 +1464,7 @@ href="http://www.ill.eu/instruments-support/computing-for-science/cs-software/al
 
 
 
+
               Scientific WinView</a> / PI Acton image file<br>
           </td>
           <td style="vertical-align: top;"><br>
@@ -1505,6 +1532,7 @@ href="http://www.mcstas.org/download/components/contrib/Single_crystal_inelastic
 
 
 
+
               Single_crystal_inelastic</a> component. <i>This format is
               <b>not</b> similar to the Sqw Horace objects.<br>
             </i></td>
@@ -1538,6 +1566,20 @@ href="http://www.mcstas.org/download/components/contrib/Single_crystal_inelastic
               href="http://www.geomview.org/">Geomview</a>, <a
               href="http://www.cgl.ucsf.edu/chimera/">Chimera</a>. </td>
           <td style="vertical-align: top;">Yes<br>
+          </td>
+        </tr>
+        <tr>
+          <td valign="top"><font color="#cc33cc"><b>VOL</b> RAW binary
+              float32<br>
+              Tomography PyHST2</font><br>
+          </td>
+          <td valign="top">binary<br>
+          </td>
+          <td valign="top">A raw binary array (float32). An associated
+            .PAR file provides dimensions. Generated by e.g. <a
+              href="http://ftp.esrf.fr/scisoft/PYHST2/">PyHST2</a>.<br>
+          </td>
+          <td valign="top"><br>
           </td>
         </tr>
       </tbody>
@@ -1595,6 +1637,7 @@ href="http://www.mcstas.org/download/components/contrib/Single_crystal_inelastic
               </font></b></td>
           <td valign="top">When numerical data blocks only use <a
               href="http://manpages.ubuntu.com/manpages/man3/isalpha.3.html">isspace</a>(3)
+
 
 
 
@@ -1854,6 +1897,7 @@ href="http://www.mcstas.org/download/components/contrib/Single_crystal_inelastic
 
 
 
+
         from <span style="color: rgb(51, 102, 255);">prefdir</span> or
         <span style="color: rgb(51, 102, 255);">ifitpath/Loaders</span>.</li>
       <li>Create a new structure (which you may name as you wish) and
@@ -1879,6 +1923,7 @@ href="http://www.mcstas.org/download/components/contrib/Single_crystal_inelastic
     <div style="text-align: center;">
       <div style="text-align: center;"><span style="font-style: italic;">E.
 Farhi
+
 
 
 
