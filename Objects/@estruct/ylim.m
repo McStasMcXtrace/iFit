@@ -7,6 +7,7 @@ function a = ylim(a, lims, exclude)
 %
 %   YLIM(A,[YMIN YMAX], 'exclude') removes the specified range instead of keeping it.
 %
+% Example: a=estruct(peaks); b=ylim(a,[5 35]); all(ylim(b)==[5 35])
 % Version: $Date$ $Version$ $Author$
 % See also estruct, estruct/plot, estruct/ylabel
 
@@ -37,9 +38,9 @@ if isempty(lims)
 end
 
 if ~isempty(exclude)
-  index=find(lims(1) > axisvalues | axisvalues > lims(2));
+  index=find(lims(1) >= axisvalues | axisvalues >= lims(2));
 else
-  index=find(lims(1) < axisvalues & axisvalues < lims(2));
+  index=find(lims(1) <= axisvalues & axisvalues <= lims(2));
 end
 s.type='()';
 if ndims(a) > 1 && numel(axisvalues) == max(size(axisvalues))
@@ -51,7 +52,7 @@ end
 cmd=a.Command;
 a = subsref(a,s);
 a.Command=cmd;
-a=estruct_private_history(a, mfilename, a, lims);
+a=history(a, mfilename, a, lims);
 
 if nargout == 0 & length(inputname(1))
   assignin('caller',inputname(1),a);

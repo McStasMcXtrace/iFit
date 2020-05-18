@@ -7,6 +7,7 @@ function a = xlim(a, lims, exclude)
 %
 %   XLIM(A,[XMIN XMAX], 'exclude') removes the specified range instead of keeping it.
 %
+% Example: a=estruct(peaks); b=xlim(a,[5 35]); all(xlim(b)==[5 35])
 % Version: $Date$ $Version$ $Author$
 % See also estruct, estruct/plot, estruct/xlabel
 
@@ -38,9 +39,9 @@ if isempty(lims)
 end
 
 if ~isempty(exclude)
-  index=find(lims(1) > axisvalues | axisvalues > lims(2));
+  index=find(lims(1) >= axisvalues | axisvalues >= lims(2));
 else
-  index=find(lims(1) < axisvalues & axisvalues < lims(2));
+  index=find(lims(1) <= axisvalues & axisvalues <= lims(2));
 end
 s.type='()';
 if ndims(a) > 1

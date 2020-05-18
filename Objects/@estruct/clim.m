@@ -7,6 +7,7 @@ function a = clim(a, lims, exclude)
 %
 %   CLIM(A,[CMIN CMAX], 'exclude') removes the specified range instead of keeping it.
 %
+% Example: a=estruct(peaks); all(isnan(clim(a)))
 % Version: $Date$ $Version$ $Author$
 % See also estruct, estruct/plot, estruct/clabel
 
@@ -34,9 +35,9 @@ if isempty(lims)
 end
 
 if ~isempty(exclude)
-  index=find(lims(1) > axisvalues | axisvalues > lims(2));
+  index=find(lims(1) >= axisvalues | axisvalues >= lims(2));
 else
-  index=find(lims(1) < axisvalues & axisvalues < lims(2));
+  index=find(lims(1) <= axisvalues & axisvalues <= lims(2));
 end
 s.type='()';
 s.subs={ ':', ':', ':', index };
