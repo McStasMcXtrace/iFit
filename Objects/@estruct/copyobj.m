@@ -38,40 +38,47 @@ function new = copyobj(self, org)
 
   % single deep copy
   if ~isa(self, 'handle') && isa(org, 'estruct') && isempty(self)
-    % assigment is OK for non handle objects
+    % assignment is OK for non handle objects
     new = org;
   else
     % handle object: transfer properties: this is a safe way to instantiate a subclass
     % new = feval(class(self)); % new empty object of same class
-    new = estruct;
-    wrn_flag = true;
-    if isempty(org)
-      flag_nargin=1;
-      org = self;
-    else
-      flag_nargin=nargin;
-    end
-    for p = fieldnames(org)'
-      % skip Tag that must be unique
-      if strcmp(p{1}, 'Tag'), continue; end
-      try
-        if ~isfield(new, p{1})
-          new.addprop(p{1});
-        end
-        new.(p{1}) = org.(p{1});  % may fail when copying from enriched object
-      catch ME
-        if wrn_flag
-          disp(getReport(ME))
-          disp([ mfilename ': can not copy property ' p{1} ...
-                    ' from class ' class(org) ' into ' class(self) ]);
-          wrn_flag = false;
+
+    % use serialize/deserialize to recreate an object (Matlab >= R2010b)
+    if exist('getByteStreamFromArray')
+      x   = getByteStreamFromArray(org);
+      new = getArrayFromByteStream(x);
+      clear x
+    else % slower field-by-field reconstruction
+      new = estruct;
+      wrn_flag = true;
+      if isempty(org)
+        flag_nargin=1;
+        org = self;
+      else
+        flag_nargin=nargin;
+      end
+      for p = fieldnames(org)'
+        % skip Tag that must be unique
+        if strcmp(p{1}, 'Tag'), continue; end
+        try
+          if ~isfield(new, p{1})
+            new.addprop(p{1});
+          end
+          new.(p{1}) = org.(p{1});  % may fail when copying from enriched object
+        catch ME
+          if wrn_flag
+            disp(getReport(ME))
+            disp([ mfilename ': can not copy property ' p{1} ...
+                      ' from class ' class(org) ' into ' class(self) ]);
+            wrn_flag = false;
+          end
         end
       end
+      new.ModificationDate = new.Date;
+      new.Tag  = [ 'iD' sprintf('%0.f', private_id()) ]; % new unique ID
+      try
+        new.Private = org.Private;
+      end
     end
-  end
-  axescheck(new);
-  if flag_nargin==1
-    history(new, mfilename, self);
-  else
-    history(new, mfilename, self, org);
   end
