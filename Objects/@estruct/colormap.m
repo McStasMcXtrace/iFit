@@ -40,7 +40,8 @@ function h = colormap(varargin)
 %    winter     - Shades of blue and green color map.
 %    summer     - Shades of green and yellow color map.
 %
-% Example: a=estruct(peaks); colormap(a,jet,a+1,hsv,'log transparent')
+% Example: a=estruct(peaks); h=colormap(a,jet,a+1,hsv,'log transparent'); ...
+%          tf = all(ishandle(h)); delete(gcf); tf
 % Version: $Date$ $Version$ $Author$
 % See also estruct, estruct/plot, estruct/surf, estruct/caxis
 

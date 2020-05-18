@@ -1,7 +1,7 @@
 function h=subplot(a, varargin)
 % SUBPLOT  Display objects as a grid in tiled positions.
 %   SUBPLOT(A) and SUBPLOT(a, []) uses the best subplot fit. The object A can be
-%   given as an array, such as in SUBPLOT([A B C...]), or as separate argumentys
+%   given as an array, such as in SUBPLOT([A B C...]), or as separate arguments
 %   SUBPLOT(A,B,C...).
 %
 %   SUBPLOT(A, [m n]) uses an m x n subplot grid.
