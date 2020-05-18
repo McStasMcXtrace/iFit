@@ -107,7 +107,7 @@ properties
     % See also estruct.load, isstruct, setfield, getfield, fieldnames, orderfields,
     %   isfield, rmfield, deal, substruct, struct2cell, cell2struct.
 
-      persistent id meth
+      persistent meth
 
       if isempty(meth), meth = methods(mfilename); end
 
@@ -115,15 +115,7 @@ properties
       new.Private.cache = []; % init cache to empty
       new.Private.cache.methods = meth;
       % handle Tag number
-      if isempty(id) id=0; end
-      if id > 1e6,   id=0; end % use clock
-      if id <=0,
-        id = new.Date;
-        id = fix(id(6)*1e4);
-      else
-        id=id+1;
-      end
-      new.Tag = [ 'iD' sprintf('%0.f', id) ]; % unique ID
+      new.Tag = [ 'iD' sprintf('%0.f', private_id()) ]; % unique ID
       new.ModificationDate = new.Date;
 
       % add our 'static' properties so that they are equally handled by
