@@ -32,7 +32,7 @@ string = cellstr(string);
 
 cellstring = {};
 
-% split the string into seperate lines if they contain <EOL> characters
+% split the string into separate lines if they contain <EOL> characters
 for index=1:numel(string)
   this = string{index};
   if isempty(this), continue; end
@@ -59,7 +59,7 @@ end
 % ==============================================================================
 function [name, value] = str2struct_value_pair(this)
   % split token 'this' as name=value
-  [name, line] = strtok(this, ':=');
+  [name, line] = strtok(this, ':=>');
   if isempty(line)
       [name, line] = strtok(this, sprintf(' \t'));
   end
@@ -76,10 +76,13 @@ function [name, value] = str2struct_value_pair(this)
       return
     end
   end
+  % special case when reading an XML
+  line(find(line == '<')) = ' ';
 
   nextline = min(find(isstrprop(line, 'alphanum')));
   startline=line(1:nextline);
-  nextline=max(find(startline == '=' | startline == ' ' | startline == ':' | startline == '['));
+  nextline=max(find(startline == '=' | startline == ' ' | startline == ':' ...
+                  | startline == '[' | startline == '>'));
   if   nextline >= 1, nextline=nextline+1; 
   else name = []; return; end
   line = line(nextline:end);
@@ -90,11 +93,11 @@ function [name, value] = str2struct_value_pair(this)
   name = sanitize_name(name); % private inline (below)
   % handle case where line starts with a number not separated from
   % following text
-  if nextindex <= length(line) &&  ~isspace(line(nextindex)) && line(nextindex) ~= ']'
+  if ~isnumeric(value) && nextindex <= length(line) &&  ~isspace(line(nextindex)) && line(nextindex) ~= ']'
     value = line; % then a char
   end
 
-  % when value can not be obtained, try with num2str (for expressions)
+  % when value can not be obtained, try with str2num (for expressions)
   if isempty(value), 
     value=comment;
     if all(ismember(value, sprintf(' 0123456789+-.eEdDi\n\r\t\f')))
@@ -126,7 +129,8 @@ function [name, value] = str2struct_value_pair(this)
 
 % ------------------------------------------------------------------------------
 function name = sanitize_name(name)
-  name(~isstrprop(strtrim(name),'print')) = '';
+  name(~isstrprop(name,'print')) = '';
+  name = strtrim(name);
   name(~isstrprop(name,'alphanum')) = '_';
   if name(1) == '_'
     name = name(find(name ~= '_', 1):end);
