@@ -13,6 +13,7 @@ function [s,sigma] = trapz(a,dim, varargin)
 %   (vector of coordinates) or a single value used as center on all axes 
 %   (for instance 0). All axes are assumed to be distances.
 %
+% Example: a=estruct(peaks); b=trapz(a); ndims(b) == 1
 % Version: $Date$ $Version$ $Author$
 % See also estruct, estruct/cumsum, estruct/camproj, estruct/sum, estruct/cart2sph
 

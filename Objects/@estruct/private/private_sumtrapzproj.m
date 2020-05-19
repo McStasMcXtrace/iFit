@@ -53,7 +53,8 @@ end
 s = private_cleannaninf(s);
 e = private_cleannaninf(e);  
 
-[link, lab] = getalias(a, 'Signal');
+link = getalias(a, 'Signal');
+lab  = label(a, 'Signal');
 cmd= a.Command;
 b  = copyobj(a);
 

@@ -118,7 +118,7 @@ setalias(this2D, 'Signal', 'Data.cdata');
 this2D.Name = strtrim(lab);
 setaxis(this2D, 2, x);
 setaxis(this2D, 1, y);
-
+axescheck(this2D,'force');
 % assemble the new object
-h=plot(this2D, option);
+h=plot(this2D, [ option ' image' ]);
 
