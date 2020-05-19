@@ -1,4 +1,4 @@
-function c_axis = private_caxis(a, type)
+function c_axis=private_caxis(a, type)
 % compute common axis for union and intersection
 
 if nargin < 2,    type=''; end
@@ -24,12 +24,10 @@ for index=1:max_ndims
   c_len{index}  =  0;
 end
 
-% loop on all estruct to find intersection area
+% loop on all to find intersection area
 for index=1:numel(a)
-  if ndims(a(index)) ~= ndims(a(1)) && a(1).verbose
-    warning([ mfilename ': Object %s requires same dimensionality.\n' ...
-      '\tobject %s %s is %i but object %s is %i. Extending object.' ], ...
-      type, inputname(1), a(1).Tag, ndims(a(1)), a(index).Tag, ndims(a(index)));
+  if ndims(a(index)) ~= ndims(a(1))
+    warning([ mfilename ': Object ' type ' requires same dimensionality.\n\tobject ' inputname(1) ' ' a(1).Tag ' is ' num2str(ndims(a(1))) ' but object ' a(index).Tag ' is ' num2str(ndims(a(index))) '. Extending object.' ]);
   end
   for j_ax = 1:max_ndims  % for each dimension
     if j_ax <= ndims(a(index))

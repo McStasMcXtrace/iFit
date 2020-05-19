@@ -349,7 +349,7 @@ function d=inline_edit_estruct(h)
   else
     d = estruct(Signal);
   end
-  d.Title = [ 'edit(' UserData.Name ')' ];
+  d.Name = [ 'edit(' UserData.Name ')' ];
   
 function inline_edit_resize(varargin)
   % resize the Data set, padding with zeros

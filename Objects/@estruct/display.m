@@ -45,7 +45,7 @@ else
   if numel(s_in) > 1
     d = [ d sprintf('Index') ];
   end
-  d = [ d sprintf('    [Tag] [Dimension]                                     [Title] [Last command]') ];
+  d = [ d sprintf('    [Tag] [Dimension]                                     [Name]  [Last command]') ];
   if numel(s_in) > 1
     if any(~cellfun('isempty', get(s_in,'Label'))) || any(~cellfun('isempty', get(s_in,'DisplayName')))
       d = [ d '          [Label/DisplayName]' ];

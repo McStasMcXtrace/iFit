@@ -50,6 +50,7 @@ function s = setaxis(s,varargin)
   % handle array/cell of axes
   for index=1:2:numel(varargin) % loop on requested properties
     name = varargin{index}; % axis rank as numeric or string
+    if index+1 > numel(varargin), break; end
     value= varargin{index+1};
     if ischar(value) && any(strcmp(value, {'biggest','largest','first','shortest','simplest'}))
       value = findfield(s, '', [ value ' numeric' ]);
