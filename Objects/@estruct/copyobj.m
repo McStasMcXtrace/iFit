@@ -13,7 +13,7 @@ function new = copyobj(self, org)
   % see also estruct
 
   % handle arrays by copying the new0
-  if nargin == 1,  org=''; end
+  if nargin == 1,  org=self; end
 
   if ~isempty(org) && ~isstruct(org) && ~isobject(org)
     new = self; % this may not be a deep copy
@@ -45,10 +45,9 @@ function new = copyobj(self, org)
     % new = feval(class(self)); % new empty object of same class
 
     % use serialize/deserialize to recreate an object (Matlab >= R2010b)
-    if exist('getByteStreamFromArray')
+    if isa(org, 'estruct') && exist('getByteStreamFromArray')
       x   = getByteStreamFromArray(org);
       new = getArrayFromByteStream(x);
-      clear x
     else % slower field-by-field reconstruction
       new = estruct;
       wrn_flag = true;
@@ -75,10 +74,12 @@ function new = copyobj(self, org)
           end
         end
       end
+    end
+    if isfield(new, 'Date')
       new.ModificationDate = new.Date;
-      new.Tag  = [ 'iD' sprintf('%0.f', private_id()) ]; % new unique ID
-      try
-        new.Private = org.Private;
-      end
+    end
+    new.Tag  = [ 'iD' sprintf('%0.f', private_id()) ]; % new unique ID
+    try
+      new.Private = org.Private;
     end
   end
