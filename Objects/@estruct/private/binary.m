@@ -130,8 +130,8 @@ end
 
 % detect when objects are orthogonal
 sa = size(a); sb = size(b);
-if     numel(sa) > numel(sb), sb=sb(1:numel(sa));
-elseif numel(sb) > numel(sa), sa=sa(1:numel(sb));
+if     numel(sa) < numel(sb), sb=sb(1:numel(sa));
+elseif numel(sb) < numel(sa), sa=sa(1:numel(sb));
 end
 index=find((sa == 1 & sb > 1) | (sb ==1 & sa > 1));
 orthogonal_ab = (numel(index) == numel(sa));  % all orthogonal
