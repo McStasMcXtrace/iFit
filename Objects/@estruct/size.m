@@ -21,6 +21,12 @@ end
 if numel(s) == 0
   y=[0 0];
 else
+  % check object when we evaluate/get some data out of it, and changes were marked.
+  if isfield(s.Private,'cache') && isfield(s.Private.cache,'check_requested') ...
+    && s.Private.cache.check_requested
+    axescheck(s);
+  end
+
   % use cache when available for faster execution
   if isfield(s.Private,'cache') && isfield(s.Private.cache,'size') && ~isempty(s.Private.cache.size)
     y = s.Private.cache.size;
