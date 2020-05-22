@@ -117,6 +117,7 @@ function [labl, alias] = label_single(this, alias, value, n)
   else       % set
     labl = validstr(value);
     subsasgn_single(this, [ 'Labels.' alias ], labl);
+    labl = this;
   end
 
 % ------------------------------------------------------------------------------
