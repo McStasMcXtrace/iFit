@@ -16,6 +16,9 @@ Welcome to the iFit/iData package
 <img src="Docs/images/logo_soleil.png" style="width: 50%; height: 50%">
 </p>
 
+WARNING: this project is under heavy work - use the official releases at http://ifit.mccode.org
+====
+
 Purpose
 -------
 
