@@ -79,7 +79,7 @@ function new = copyobj(self, org)
       new.ModificationDate = new.Date;
     end
     new.Tag  = [ 'iD' sprintf('%0.f', private_id()) ]; % new unique ID
-    try
-      new.Private = org.Private;
+    if isfield(org,'Private')
+      try; new.Private = org.Private; end
     end
   end

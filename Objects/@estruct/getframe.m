@@ -16,7 +16,7 @@ function frame = getframe(a, dim, options)
 %
 % Example: f=getframe(estruct(peaks)); image(f.cdata); close(gcf); isstruct(f)
 % Version: $Date$ $Version$ $Author$
-% See also iData, iData/plot, getframe, image, imwrite
+% See also estruct, estruct/plot, getframe, image, imwrite
 
 if nargin < 2, dim=0; end
 if nargin < 3, options=''; end

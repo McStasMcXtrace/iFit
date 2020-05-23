@@ -40,9 +40,9 @@ function b = pca(a, varargin)
 %
 % Example: a=estruct(peaks); b=pca(a);
 % Version: $Date$ $Version$ $Author$
-% See also iData, iData/kmeans, iData/cwt, iData/corrcoef
+% See also estruct, estruct/kmeans, estruct/cwt, estruct/corrcoef
 
-% handle input iData arrays
+% handle input estruct arrays
 if numel(a) > 1
   % first align all objects (union)
   a = union(a);

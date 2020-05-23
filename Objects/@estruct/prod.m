@@ -16,7 +16,7 @@ function [s,sigma] = prod(a,dim)
 %
 % Example: s=estruct(-10:10); prod(s,0) == 0
 % Version: $Date$ $Version$ $Author$
-% See also iData, iData/plus, iData/prod, iData/cumprod, iData/mean
+% See also estruct, estruct/plus, estruct/prod, estruct/cumprod, estruct/mean
 
 if nargin < 2, dim=1; end
 

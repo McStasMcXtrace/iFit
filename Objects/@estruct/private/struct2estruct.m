@@ -36,7 +36,9 @@ function b=struct2estruct(a, varargin)
   for f=fieldnames(a)'
     if any(strcmp(f{1}, b.properties_Protected)), continue; end % ignore protected
     if ismethod(b, f{1})
-      if b.verbose
+      if isstruct(b.Data)
+        b.Data.(f{1}) = a.(f{1}); % add new method/property in Data
+      elseif b.verbose
         warning([ mfilename ': skipping input struct field ' f{1} ' as it matches a method name' ])
       end
     elseif isfield(b, f{1})   % matches a root object property

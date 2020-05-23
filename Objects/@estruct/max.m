@@ -72,6 +72,6 @@ else
   end
 end
 m.Command=cmd;
-m = estruct_private_history(m, mfilename, a, b);
+m = history(m, mfilename, a, b);
 
 

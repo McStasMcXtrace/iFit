@@ -33,7 +33,8 @@ function [pks,locs,extra] = findpeaks(a, dim, varargin)
 %   delete(gcf); numel(pks)==6
 % Example: a=estruct(peaks); ...
 %   [pks x extra] = findpeaks(a); ...
-%   plot(a); hold on; plot3(x{2},x{1},ones(size(x{1})),'ro'); delete(gcf); 1
+%   plot(a); hold on; plot3(x{2},x{1},ones(size(x{1})),'ro'); ...
+%   delete(gcf); numel(pks)>400
 % Version: $Date$ $Version$ $Author$
 % See also estruct, estruct/median, estruct/mean, estruct/std
 
@@ -78,7 +79,7 @@ function [pks,locs,extra] = findpeaks(a, dim, varargin)
   
   extra.indices   = locs;
   extra.baseline  = BaseLine(signal, 5);
-  extra,width     = PeakWidth(signal, 5); 
+  extra.width     = PeakWidth(signal, 5); 
   extra.sign      = findpeaks_slavic(signal);
   extra.sign      = extra.sign(locs);
 
