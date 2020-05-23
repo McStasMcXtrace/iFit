@@ -117,7 +117,7 @@ end
 % test axes and decide to call meshgrid if necessary
 
 if isvector(a) >=2 % event data set: redirect to hist method (accumarray)
-  f_axes = private_meshgrid(f_axes, s_dims, 'vector'); % private function
+  f_axes = private_meshgrid(f_axes, size(a), 'vector'); % private function
   b = hist(a, f_axes{:});
   return
 end
