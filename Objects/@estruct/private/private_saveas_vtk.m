@@ -22,15 +22,17 @@ if ndims(a) <= 2 && isvector(a) % line, 1D or 2D
     y = zeros(size(x));
   end
   Signal = getaxis(a, 0);
+  if numel(x) ~= numel(Signal), x=[]; end
+  if numel(y) ~= numel(Signal), y=[]; end
   export3Dline2VTK(filename, [ x(:) y(:) Signal(:) ], str); % export as VTK3 LINES
 elseif ndims(a) == 2 % surface with axes
-  a = interp(a,'grid');
+  a = meshgrid(a,'grid');
   x = getaxis(a, 2); x=x(:);
   y = getaxis(a, 1); y=y(:);
   z = getaxis(a, 0); z=z(:);
   exportTriangulation2VTK(filename, [x y z], delaunay(x,y), str);
 elseif ndims(a) == 3 % volume (no axes)
-  a = interp(a,'grid');
+  a = meshgrid(a,'grid');
   try
     vtkwrite(filename, 'structured_grid', ...
      getaxis(a, 1), getaxis(a, 2), getaxis(a, 3), ...

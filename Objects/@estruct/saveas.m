@@ -327,7 +327,7 @@ end
 
 % ==============================================================================
 % handle specific format actions
-try
+%try
   switch formatShort
   case 'avi'
     filename = private_saveas_avi(a, filename, options);
@@ -397,6 +397,7 @@ try
       case 'art'
         textart(b, filename); % in private
       otherwise
+        warning('off','MATLAB:imagesci:writehdf:colormapIgnoredForRgb');
         try
           imwrite(b, jet(256), filename, formatShort);
         catch
@@ -441,8 +442,6 @@ try
   case 'm'  % single m-file Matlab output (text), with the full object description
     filename = private_saveas_m(a, filename, name, options);
   case 'mat'  % single mat-file Matlab output (binary), with the full object description
-    % serialize for much faster save
-    a.Data = hlp_serialize(a.Data);
     varg = { filename };
     if ~isempty(inputname(1))
       eval([ inputname(1) '= a;' ]);
@@ -451,9 +450,8 @@ try
       eval([ a.Tag '= a;' ]);
       varg{2} = a.Tag;
     end
-    if isempty(dir(filename))
-      warning([ mfilename ': The file ' filename ' has been serialized. You MUST import it with load(estruct, ''' filename ''')' ])
-    else varg{3} = '-append';
+    if ~isempty(dir(filename))
+      varg{3} = '-append';
     end
     save(varg{:});
   case 'mrc'  % MRC map file
@@ -513,11 +511,11 @@ try
     warning([ mfilename ': Export of object ' inputname(1) ' ' a.Tag ' into format ' format ' is not supported. Ignoring.' ]);
     filename = [];
   end
-catch ME
-  warning(ME.message)
-  warning([ mfilename ': Export of object ' inputname(1) ' ' a.Tag ' into format ' format ' failed. Ignoring.' ]);
-  filename = [];
-end
+%catch ME
+  %warning(ME.message)
+  %warning([ mfilename ': Export of object ' inputname(1) ' ' a.Tag ' into format ' format ' failed. Ignoring.' ]);
+  %filename = [];
+%end
 
 % end of estruct/saveas
 

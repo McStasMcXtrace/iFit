@@ -40,7 +40,7 @@ function filename = private_saveas_stl(a, filename, format)
     else                        % OFF and PLY formats
       [fid, message]=fopen(filename,'w+');
       if fid == -1
-        warning(mfilename ': Error opening file ' filename ' to save object ' a.Tag 'in format ' format ]);
+        warning([mfilename ': Error opening file ' filename ' to save object ' a.Tag 'in format ' format ]);
         disp(message)
         return
       end

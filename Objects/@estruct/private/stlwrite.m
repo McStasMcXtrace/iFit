@@ -141,7 +141,7 @@ end
 
 % Close the file
 fclose(fid);
-fprintf('Wrote %d facets\n',length(facets(:))/3);
+% fprintf('%s: Wrote %d facets\n',mfilename, length(facets(:))/3);
 
 
 %% Input handling subfunctions

@@ -181,12 +181,13 @@ else
     [fid, msg] = fopen(edffile,'wb');
 end
 if fid == -1
-  fprintf(1, 'pmedf_write: cannot write file "%s"\n', edffile);
+  fprintf(1, '%s: cannot write file "%s"\n', mfilename, edffile);
   return
 end
 
 
-  fprintf('Writing %i x %i x %s to file "%s"\n',edf.dim1,edf.dim2,edf.datatype,edffile);
+  %fprintf('%s: Writing %i x %i x %s to file "%s"\n',mfilename, ...
+  %  edf.dim1,edf.dim2,edf.datatype,edffile);
 %    if (ehf.offset ~= 0)
 %	fprintf('SKIPPING offset is not yet supported! But it is easy...\n');
 %    end
@@ -202,7 +203,7 @@ end
   end
 
   if count~=nr*nc
-    fprintf('ERROR writing file %s (disk full?)\n', edffile);
+    fprintf('%s: ERROR writing file %s (disk full?)\n', mfilename, edffile);
   end
   
 
