@@ -321,8 +321,9 @@ try
             end
 
             space_dir_tmp = strtrim(cs(length('SPACE DIRECTIONS:')+1:end));     % remove leading and trailing spaces
+            space_dir_tmp = strrep(space_dir_tmp, ')(',') (');
 
-            spacedir_vecs = strsplit(space_dir_tmp); %  cell array of strings after split at {' ','\f','\n','\r','\t','\v'}
+            spacedir_vecs = strsplit2(space_dir_tmp); %  cell array of strings after split at {' ','\f','\n','\r','\t','\v'}
             SD_data = zeros(internal_spacedimension, internal_spacedimension);
             
             % Check each vector: either none or (f1,...,f_spaceDim) with fi
@@ -362,8 +363,10 @@ try
                     % Clean up by forcing single enclosing parentheses:
                     spacedir_vecs{i} = ['(',  axis_vector,  ')'];
                     % Check vector and extract numerical data
-                    vector_entries = strsplit(axis_vector, ',');
+                    vector_entries = strsplit2(axis_vector, ',');
                     if length(vector_entries) ~= internal_spacedimension
+vector_entries
+
                         error(['%s:\n vector for data axis %d (space axis %d) of the ' ...
                                 'per-axis field specifications "space directions:" should ' ...
                                 'contain %d entries corresponding to the space (or world) dimension ' ...
@@ -804,7 +807,7 @@ end
 
 % Turn space-separated list into cell array of strings. 
 function sl = extractStringList( strList )
-sl = strsplit(strtrim(strList)); % old Matlab file exchange version had a strange bug with lists of length 2
+sl = strsplit2(strtrim(strList)); % old Matlab file exchange version had a strange bug with lists of length 2
 end
 
 
@@ -837,7 +840,7 @@ end
 % added by the nhdr/nrrd writer function.
 function su_ca = extract_spaceunits_list( fieldValue )
   fv_trimmed = strtrim( fieldValue );
-  su_ca = strsplit(fv_trimmed, '"');                              % units are delimited by double quotes
+  su_ca = strsplit2(fv_trimmed, '"');                              % units are delimited by double quotes
   su_ca = su_ca(~ ( strcmp(su_ca, '') | strcmp(su_ca, ' ') ) );   % remove empty or blank space strings
   for i = 1:length(su_ca)
       su_ca{i} = strtrim( su_ca{i} );
@@ -866,7 +869,7 @@ function [filelist, LIST_mode, subdim] = extract_datafiles( field_string)
     return;
   else
     % single detached data file or multiple files written in concise form, non LIST mode
-    str_lst = strsplit(field_string); % without delimiters specified, splits at any sequence in the set  {' ','\f','\n','\r','\t','\v'}
+    str_lst = strsplit2(field_string); % without delimiters specified, splits at any sequence in the set  {' ','\f','\n','\r','\t','\v'}
     if length(str_lst) == 1
         % Single detached data file:
         filelist{1} = str_lst{1};
@@ -1028,6 +1031,8 @@ function numBytes = sizeOf(dataClass)
 
 end
 
+% ------------------------------------------------------------------------------
+
 % Get matlab type corresponding to each nrrd type
 % Date: November 2017
 % Author: Gaetan Rensonnet
@@ -1075,4 +1080,63 @@ function matlabdatatype = nrrd_getMatlabDataType(metaType)
     otherwise
         assert(false, 'Unknown datatype')
   end
+end
+
+% Get number of space dimensions ("space dimension" field) according to the
+% space descriptor, following the format definition at
+% http://teem.sourceforge.net/nrrd/format.html#spacedirections.
+%
+% Returns 3 if "space" field is one of
+% "right-anterior-superior" or "RAS"
+% "left-anterior-superior" or "LAS"
+% "left-posterior-superior" or "LPS"
+% "scanner-xyz"
+% "3D-right-handed"
+% "3D-left-handed"
+%
+% Returns 4 if "space" field is one of
+% "right-anterior-superior-time" or "RAST"
+% "left-anterior-superior-time" or "LAST"
+% "left-posterior-superior-time" or "LPST"
+% "scanner-xyz-time"
+% "3D-right-handed-time"
+% "3D-left-handed-time"
+%
+% Date: October 25, 2017
+% Author: Gaetan Rensonnet
+function sd = nrrd_getSpaceDimensions(spacedescriptor)
+
+if any(strcmpi(spacedescriptor,...
+        {'right-anterior-superior', 'RAS',...
+        'left-anterior-superior', 'LAS',...
+        'left-posterior-superior', 'LPS',...
+        'scanner-xyz',...
+        '3D-right-handed',...
+        '3D-left-handed'}...
+        ))
+    sd = 3;
+    
+elseif any(strcmpi(spacedescriptor,...
+        {'right-anterior-superior-time', 'RAST',...
+        'left-anterior-superior-time', 'LAST',...
+        'left-posterior-superior-time', 'LPST', ...
+        'scanner-xyz-time', ...
+        '3D-right-handed-time', ...
+        '3D-left-handed-time'}...
+        ))
+    sd = 4;
+    
+else
+    sd = -1;
+    % Unrecognized nrrd space descriptor (grace under fire)
+end
+end
+
+
+function tok = strsplit2(str, sep)
+  if nargin < 2
+    sep = sprintf(' \f\n\r\t\v');
+  end
+  tok = textscan(str, '%s', 'Delimiter', sep);
+  tok = tok{1};
 end
