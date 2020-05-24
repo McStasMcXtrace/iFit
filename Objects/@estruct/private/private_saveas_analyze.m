@@ -29,10 +29,11 @@ if ndims(a) == 4
     siz(4)=t(2)-t(1); 
 end
 
-WriteAnalyzeHdr(name,dim,siz,16,[65535 0],1,0,[0 0 0]);
-WriteAnalyzeImg(name,get(a,'Signal'),dim,siz,16,[65535 0],1,0,[0 0 0]);
+[result, FileNameHdr] = WriteAnalyzeHdr(name,dim,siz,16,[65535 0],1,0,[0 0 0]);
+[result, FileNameImg] = WriteAnalyzeImg(name,get(a,'Signal'),dim,siz,16,[65535 0],1,0,[0 0 0]);
+filename = { FileNameHdr, FileNameImg};
 
-function [result]=WriteAnalyzeHdr(name,dim,siz,pre,lim,scale,offset,origin,descr),
+function [result, FileName]=WriteAnalyzeHdr(name,dim,siz,pre,lim,scale,offset,origin,descr),
 %  Writes the analyze header file 
 %
 %    [result]=WriteAnalyzeHdr(name,dim,siz,pre,lim,scale,offset,origin[,descr])
@@ -233,7 +234,7 @@ fwrite(pid,zeros(89,1),'char');
 
 fclose(pid);
 
-function [result]=WriteAnalyzeImg(name,img,dim,siz,pre,lim,scale,offset,origin,descr)
+function [result,FileName]=WriteAnalyzeImg(name,img,dim,siz,pre,lim,scale,offset,origin,descr)
 %  Writes analyze image and header file 
 %
 %    [result]=WriteAnalyzeImg(name,img,dim,siz,pre,lim,scale,offset)

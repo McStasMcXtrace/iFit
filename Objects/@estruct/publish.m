@@ -1,17 +1,13 @@
 function a = publish(a, filename)
-% b = publish(s) : export the Dataset object as an HTML document.
+% PUBLISH Publish file containing cells to output file
+%   PUBLISH(A) exports object A into the current directory.
+%   The supporting output files are stored into an "img" subdirectory.
 %
-%   @estruct/publish function to export an object into a readable document.
+%   PUBLISH(A, FILE) exports object A to given HTML file name FILE.
 %
-%   publish(a, file)  export to given file name
-%   publish(a, dir)   export to given directory
+%   PUBLISH(A, DIR) exports A into an HTML document in given directory DIR.
 %
-% input:  s: object or array (estruct)
-%         filename: a file name or directory where to export. When not given
-%           the exportation takes place in the local directory.
-% output: b: generated filename
-% ex:     b=publish(estruct(peaks)); webbrowser(b, 'system')
-%
+% Example: b=publish(estruct(peaks)); tf=~isempty(dir(b)); delete(b); tf
 % Version: $Date$ $Version$ $Author$
 % See also estruct, estruct/save
 

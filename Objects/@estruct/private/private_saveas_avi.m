@@ -36,6 +36,7 @@ end
 if exist('avifile') 
   fig=figure('Visible','off');
   plot(a, options);
+  warning('off','MATLAB:audiovideo:avifile:FunctionToBeRemoved');
   aviobj = avifile(filename);
   for ang=0:5:360
     view([ ang 30])
