@@ -8,7 +8,7 @@ function f=avifile(a, filename, options)
 %     tight, hide_axes, interp, view2, view3, transparent, light, clabel, colorbar, 
 %     whole. Default is 'view3 axis tight'.
 %
-% Example: f=avifile(estruct(peaks)); ~isempty(dir(f)); delete(f);
+% Example: f=avifile(estruct(peaks)); tf=~isempty(dir(f)); delete(f); tf
 % Version: $Date$ $Version$ $Author$
 % See also estruct, estruct/saveas
 

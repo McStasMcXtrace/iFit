@@ -44,7 +44,7 @@ function [filename,format] = saveas(a, filename, format, options)
 %           'm'    save as a flat Matlab .m file (a function which returns an
 %                    estruct object or structure)
 %           'mantid' save as Mantid Processed Workspace, i.e. 'nxs mantid data' (HDF5)
-%           'mat'  save as a serialized '.mat' binary file (fast 'save', DEFAULT)
+%           'mat'  save as a '.mat' binary file (HDF5 based, DEFAULT)
 %           'nc'   save as NetCDF
 %
 %     Supported lossy formats are:
@@ -89,9 +89,7 @@ function [filename,format] = saveas(a, filename, format, options)
 %
 %  Type <a href="matlab:doc(estruct,'Save')">doc(estruct,'Save')</a> to access the iFit/Save Documentation.
 %
-% ex:     b=saveas(a, 'file', 'm');
-%         b=saveas(a, 'file', 'svg', 'axis tight');
-%         b=saveas(a, 'file', 'hdf data');
+% Example: f=saveas(estruct(peaks)); tf=~isempty(dir(f)); delete(f); tf
 % Version: $Date$ $Version$ $Author$
 % See also estruct, estruct/load, estruct/getframe, save, estruct/plot
 
@@ -123,6 +121,7 @@ if isempty(options) && any(ndims(a) >= 2), options='view2 axis tight'; end
 
 % supported format list
 filterspec = { ...
+      '*.art', 'Ascii Art (*.art)';
       '*.avi', 'Audio Video Interleave (AVI) movie (*.avi)'; ...
       '*.cdf',  'CDF (*.cdf)'; ...
       '*.csv', 'Comma Separated Values (suitable for Excel, *.csv)'; ...
@@ -132,8 +131,7 @@ filterspec = { ...
       '*.eps', 'Encapsulated PostScript (color, *.eps)'; ...
       '*.fig', 'Matlab figure (*.fig)'; ...
       '*.fits;*.fit;*.fts','IAU FITS binary image (*.fits, only for 2D objects)';
-      '*.gif;*.bmp;*.pbm;*.pcx;*.pgm;*.pnm;*.ppm;*.ras;*.xwd;*.png', ...
-        'Bitmap image (gif,png,bmp,pbm,pcx,pgm,pnm,ppm,ras)';
+      '*.gif;*.bmp;*.ras;*.xwd', 'Bitmap image (gif,bmp,ras)';
       '*.hdf;*.hdf5;*.h5;*.nxs;*.n5','Hierarchical Data Format 5 (*.hdf5, *.h5, *.hdf)'; ...
       '*.hdf4;*.h4;*.nxs;*.n4', 'Hierarchical Data Format 4 image (*.hdf4)'; ...
       '*.hdr', 'Analyze volume (*.hdr+img)'; ...

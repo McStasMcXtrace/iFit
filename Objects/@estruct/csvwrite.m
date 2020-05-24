@@ -3,7 +3,7 @@ function f=csvwrite(a, filename)
 %   F = CSVWRITE(S, FILENAME) writes object S into FILENAME as comma-separated 
 %   values.
 %
-% Example: f=csvwrite(estruct(peaks)); ~isempty(dir(f)); delete(f);
+% Example: f=csvwrite(estruct(peaks)); tf=~isempty(dir(f)); delete(f); tf
 % Version: $Date$ $Version$ $Author$
 % See also estruct, estruct/saveas
 

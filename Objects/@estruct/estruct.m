@@ -3,8 +3,11 @@ classdef estruct < dynamicprops
 %   S = ESTRUCT('field1',VALUES1,'field2',VALUES2,...) creates
 %   an object with the specified fields and values (as properties).
 %   ESTRUCT is similar to STRUCT, but is designed to hold scientific data.
+%   After creation, it can be manipulated as a normal array.
 % 
 %   ESTRUCT(a,b,c,...) imports input arguments into an estruct object.
+%   ESTRUCT(X,Y,... Signal) sets the Signal to the last given numeric array, and
+%   the axes as the previous vectors/arrays.
 % 
 %   ESTRUCT('filename') imports the file name and store its content into a Data property.
 %   Multiple files can be given, each producing a distinct object arranged
@@ -20,6 +23,7 @@ classdef estruct < dynamicprops
 %     a=estruct; a.verbose = 1;
 %   A null verbosity corresponds with no messages (silent). 
 %
+%   ESTRUCT(OBJ) when OBJ is an ESTRUCT checks for object consistency and return.
 %   ESTRUCT(OBJ) converts the object OBJ into its equivalent
 %   estruct.  The initial class information is lost.
 % 
@@ -80,26 +84,35 @@ properties
 
   methods
     function new = estruct(varargin)
-    %ESTRUCT Create or convert to an estruct object.
-    %  S = ESTRUCT('field1',VALUES1,'field2',VALUES2,...) creates
-    %  an object with the specified fields and values (as properties).
+    % ESTRUCT Create or convert to an estruct object.
+    %   S = ESTRUCT('field1',VALUES1,'field2',VALUES2,...) creates
+    %   an object with the specified fields and values (as properties).
+    %   ESTRUCT is similar to STRUCT, but is designed to hold scientific data.
+    %   After creation, it can be manipulated as a normal array.
+    % 
+    %   ESTRUCT(a,b,c,...) imports input arguments into an estruct object.
+    %   ESTRUCT(X,Y,... Signal) sets the Signal to the last given numeric array, and
+    %   the axes as the previous vectors/arrays.
+    % 
+    %   ESTRUCT('filename') imports the file name and store its content into a Data property.
+    %   Multiple files can be given, each producing a distinct object arranged
+    %   into an array. File names can also be given as URL (file: http: https: ftp:)
+    %   and/or be compressed (zip, gz, tar, Z). The import uses a guessed importer
+    %   and does not apply any post-process filter (raw data from file).
+    %   Use 'LOAD(estruct, file, loader)' to specify the importer and apply
+    %   post-processing.
     %
-    %  ESTRUCT(a,b,c,...) imports input arguments into an estruct object.
+    %   ESTRUCT silent|verbose|debug sets the verbosity level. The verbosity level is
+    %   common to all objects and methods. You may also change the verbosity (level
+    %   of output messages) with the 'verbose' property, e.g.
+    %     a=estruct; a.verbose = 1;
+    %   A null verbosity corresponds with no messages (silent). 
     %
-    %  ESTRUCT('filename') imports the file name and store its content into a Data property.
-    %  Multiple files can be given, each producing a distinct object arranged
-    %  into an array. File names can also be given as URL (file: http: https: ftp:)
-    %  and/or be compressed (zip, gz, tar, Z). The import uses a guessed importer
-    %  and does not apply any post-process filter (raw data from file).
-    %  Use 'LOAD(estruct, file, loader)' to specify the importer and apply
-    %  post-processing.
-    %
-    %  ESTRUCT(OBJ) converts the object OBJ into its equivalent
-    %  estruct.  The initial class information is lost.
-    %
-    %  ESTRUCT([]) creates an empty object.
-    %
-    %  ESTRUCT is similar to STRUCT, but is designed to hold scientific data.
+    %   ESTRUCT(OBJ) when OBJ is an ESTRUCT checks for object consistency and return.
+    %   ESTRUCT(OBJ) converts the object OBJ into its equivalent
+    %   estruct.  The initial class information is lost.
+    % 
+    %   ESTRUCT([]) creates an empty object.
     %
     % Example: s = estruct('type',{'big','little'},'color','red','x',{3 4}); ...
     %          isstruct(s)
@@ -110,6 +123,11 @@ properties
       persistent meth
 
       if isempty(meth), meth = methods(mfilename); end
+      
+      if nargin == 1 && isa(varargin{1}, 'estruct')
+        new = axescheck(varargin{1}, 'force');
+        return
+      end
 
       warning('off','MATLAB:structOnObject');
       new.Private.cache = []; % init cache to empty
@@ -128,6 +146,7 @@ properties
 
       % collect items to store: as structures, as data files, and others
       structs = {}; % cell: will contain struct('name','value')
+      flag_num_arg = 0;
 
       % append arguments as properties (not from files)
       index=1;
@@ -178,6 +197,10 @@ properties
         if ~isempty(this)
           s.value = this;
           s.name  = inputname(index);
+          if isnumeric(this) | islogical(this)
+            flag_num_arg = flag_num_arg+1;
+            s.axis=flag_num_arg;
+          end
           structs{end+1} = s;
         end
 
@@ -192,6 +215,13 @@ properties
         new.(s.name)=s.value;
         if (isnumeric(s.value) | islogical(s.value)) && ~isscalar(s.value)
           history(new, 'set', new, s.name, s.value);
+          if isfield(s,'axis')
+            if s.axis == flag_num_arg && ~strcmp(s.name,'Signal') % last num -> Signal
+              s.Signal = s.name; % alias
+            else
+              s.Axes{s.axis} = s.name;
+            end
+          end
         end
         structs{index} = []; % clear memory
       end
