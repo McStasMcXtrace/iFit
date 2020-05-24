@@ -1,20 +1,12 @@
 function c = mldivide(a,b)
-% c = mldivide(a,b) : a\b is fast notation for combine(a,b)
+% \  Combine (left object divide, mldivide)
+%   C = MLDIVIDE(A,B) is called for the syntax 'A \ B'. It is equivalent
+%   to COMBINE, so that A\B = A.\B = MLDIVIDE(A,B) = COMBINE(A,B)
 %
-%   @iData/mldivide (\) function to combine data sets
-%     the 'matrix left division' notation is used to ease
-%     combination data sets, so that:
-%       a\b = combine(a,b)
-%
-% input:  a: object or array (iData or numeric)
-%         b: object or array (iData or numeric)
-% output: c: object or array (iData)
-% ex:     c=a\b;
-%
+% Example: a=iData(peaks); a.Monitor=1; b=a\a; max(b) == max(a)
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/combine
 if nargin ==1
-	b=[];
+  b=[];
 end
 c = combine(a,b);
-

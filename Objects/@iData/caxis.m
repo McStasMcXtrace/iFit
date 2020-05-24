@@ -1,15 +1,12 @@
 function c = caxis(a, h)
-% c = caxis(s, h) : Use the 2D/3D data as the colormap (CData property) in current object.
+% CAXIS  Map an object onto a surface plot.
+%   C = CAXIS(S, H) uses the 2D/3D data S as the colormap (CData property) 
+%   in surface/figure H. The object Signal is automatically rescaled in order 
+%   to match the current surface/view axes. The modified graphics object handles
+%   are returned.
 %
-%   @iData/caxis function to use the current object as the colomap (CData).
-%     The iData object is automatically rescaled in order to match the current 
-%       surface/view axes.
-%
-% input:  s: object or array (iData)
-%         h: surface or figure  (handle)
-% output: c: graphics object handles that have been modified (handle array)
-% ex:     a=iData(peaks); plot(a); caxis(del2(a));
-%
+% Example: a=iData(peaks); plot(a); c=caxis(del2(a)); ...
+%          tf=ishandle(c); delete(gcf); tf
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/plot
 
@@ -20,7 +17,8 @@ c=[];
 
 % only one colormap/CData can be used
 if numel(a) > 1
-  iData_private_warning(mfilename, ['I can not handle iData arrays. ' inputname(1) ' size is [' num2str(size(a)) ']. Using first array element.']);
+  warning([ mfilename ': I can not handle iData arrays. ' inputname(1) ...
+    ' size is [' num2str(size(a)) ']. Using first array element.']);
   a = a(1);
 end
 
@@ -62,6 +60,4 @@ for index=1:numel(c)
        linspace(1,size(s,2),size(z,2)), linspace(1,size(s,1),size(z,1))' );
   set( c(index), 'CData', s);
 end
-
-
 

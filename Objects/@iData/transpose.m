@@ -1,23 +1,19 @@
 function a = transpose(a)
-% b = transpose(s) : non-conjugate transpose of iData object
+% .' Transpose.
+%    X.' is the non-conjugate transpose.
+%    When the argument is an array, each element is transposed. To
+%    transpose the array itself, use CTRANSPOSE(s) or b=s'
 %
-%   @iData/transpose function to return the non-conjugate transpose of data sets
-%     which corresponds to syntax: b = s.'
-%   When the argument is an iData array, each element is transposed. To
-%     transpose the array itself, use ctranspose(s) or b=s'
+%    B = TRANSPOSE(A) is called for the syntax A.'
 %
-% input:  s: object or array (iData)
-% output: b: object or array (iData)
-% ex:     b=transpose(a);
-%
+% Example: s=iData(rand(3,6)); all(size(transpose(s)) == [6 3])
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/transpose, iData/ctranspose, iData/setaxis, iData/getaxis
 
 if numel(a) > 1
-  a = iData_private_unary(a, 'transpose'); % a = builtin('transpose', a);
+  a = unary(a, 'transpose'); % a = builtin('transpose', a);
 elseif ndims(a) <=2
-  a = iData_private_unary(a, 'transpose');
+  a = unary(a, 'transpose');
 else
   a = permute(a, [2 1]);
 end
-

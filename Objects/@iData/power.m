@@ -1,18 +1,14 @@
 function c = power(a,b)
-% c = power(a,b) : computes the power of iData objects
+% .^   Object power.
+%   A.^B is A to the B power.
 %
-%   @iData/power function to compute the power of data sets
+%   C = POWER(A,B) is called for the syntax 'A .^ B'.
 %
-% input:  a: object or array (iData or numeric)
-%         b: object or array (iData or numeric)
-% output: c: object or array (iData)
-% ex:     c=a.^2;
-%
+% Example: a=iData(peaks); b=a^2; max(b) == max(a)^2
 % Version: $Date$ $Version$ $Author$
-% See also iData, iData/times, iData/rdivide, iData/power
+% See also iData, iData/times, iData/rdivide, iData/mpower
 
 if nargin == 1,
   b = a;
 end
-c = iData_private_binary(a, b, 'power');
-
+c = binary(a, b, 'power');

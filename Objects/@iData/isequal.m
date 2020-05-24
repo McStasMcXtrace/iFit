@@ -1,55 +1,24 @@
-function s = isequal(a,b)
-% c = isequal(a,b) : full numerical equality comparison of iData objects
+function c = isequal(a,b)
+%  ISEQUAL True if object Signals are numerically equal.
+%    NaNs are considered equal to each other.
+%    When comparing two iData objects, the monitor weighting is applied.
 %
-%   @iData/eq (==) exact equality comparison operator on Signal, Source,
-%   Label, Title, Monitor
+%    ISEQUAL(A,B) is 1 if the two object Signals are the same size
+%    and contain the same values, and 0 otherwise.
 %
-% input:  a: object or array (iData or numeric)
-%         b: object or array (iData or numeric)
-% output: c: logical array indicating equal objects (iData)
-% ex:     d=isequal(a,b);
-%
+% Example: a=iData([ nan -10:10 ]); isequal(a, [ nan -10:10 ])
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/find, iData/gt, iData/lt, iData/ge, iData/le, iData/ne, iData/eq
 
 if nargin ==1
-	b=[];
+  b=[];
 end
 
-if numel(a) > 1
-  s = [];
-  for index=1:numel(a)
-    s = [ s ; feval(mfilename, a(index), b) ];
-  end
-  return
-end
-% now 'a' is a single object
-
-if all(isempty(b))
-    s = isempty(a);
-    return
-end
-if any(~isa(b, 'iData'))
-    s = false;
-    return
-end
-
-% treat single 'a' object and compare with 'b': numel(a) == 1
-% 'b' can be an array
-sources = get(b, 'Source');
-titls   = get(b, 'Title');
-labs    = get(b, 'Label');
-signala = getaxis(a, 0);
-signalb = getaxis(b, 0);
-
-if numel(b) > 1
-  % compare a single 'a' with an array 'b'
-  s = strcmp(a.Source, sources) & strcmp(a.Title, titls) & strcmp(a.Label, labs) ...
-    & cellfun(@(x) isequal(x,signala) ,signalb);
+if exist('isequaln')
+  c = binary(a, b, 'isequaln');
+elseif exist('isequalwithequalnans')
+  c = binary(a, b, 'isequalwithequalnans');
 else
-  % compare a single 'a' with a single 'b'
-  s = strcmp(a.Source, sources) & strcmp(a.Title, titls) & strcmp(a.Label, labs) ...
-    & isequal(signala ,signalb);
+  c = binary(a, b, 'isequal');
 end
-
-
+if iscell(c), c = cell2mat(c); end

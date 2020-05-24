@@ -1,273 +1,137 @@
-function this = setaxis(this, rank, alias, value)
-% s = setaxis(s, rank, alias, value) : set iData axes
+function s = setaxis(s,varargin)
+% SETAXIS Set axis definition or value in object.
+%   SETAXIS(a, rank, value) Set axis value (and follow aliases). This is equivalent to
+%   the syntax a{rank}=value. The axis rank 0 corresponds with the Signal/Monitor value.
+%   The axis of rank 1 corresponds with rows, 2 with columns, 3 with pages, etc.
 %
-%   @iData/setaxis function to set iData axes.
-%     setaxis(object, rank, alias) defines axis of specified rank as the alias.
-%       The alias name must exist in the object.
-%     setaxis(object, rank, alias, value) also sets the alias value.
-%       The alias name must exist in the object, or it is created and assigned to the axis value.
-%     setaxis(object, rank, value) sets axis value (possibly creates an alias).
-%     setaxis(object)              tests all axes
-%     setaxis(object,'Signal')     sets the Signal to the biggest numerical field
-%   The input iData object is updated if no output argument is specified.
-%   The Signal/Monitor corresponds to axis rank 0. Setting its value multiplies 
-%     it by the Monitor and then assigns the Signal.
-%   Axis 1 is often labelled as 'y' (rows, vertical), 2 as 'x' (columns, horizontal).
-%   The special syntax a{0} multiplies the value by the Monitor and then assigns 
-%   the Signal, and a{n} assigns the axis of rank n.
-%     When the assigned value is a char, the axis definition is set.
-%       a{rank} = 'x'     is the same as   setaxis(a, rank, 'x')
-%     When the assigned value is numeric, the axis value is set.
-%       a{rank} = 1:100   is the same as   setaxis(a, rank, 1:100)
+%   SETAXIS(a, 'Signal',value) Set the Signal/Monitor value, equivalent to
+%   a{0}=value and setaxis(a, 0, value).
 %
-% input:  s: object or array (iData)
-%         rank: rank of the axis (integer)
-%         alias: name of an alias/field (char)
-%         value: value of the axis (char/alias/numeric)
-% output: s: array (iData)
-% ex:     setaxis(iData, 1, 'Temperature') defines Temperature as the 'y' axis (rank 1)
-%         a{1} =  'Temperature'            does the same
+%   SETAXIS(a, 'Error', value) Set the Error/Monitor value.
 %
+%   SETAXIS(a, 'rank', 'alias') Set axis definition (alias). The axis of rank 0
+%   corresponds with the Signal definition. The 'value' can be specified as
+%  'biggest' to indicate the numeric biggest array, as in findfield.
+%   A NaN axis value indicates we shall use 1,2,3...
+%
+%   An alias is a string/char which allows to link to internal or external links
+%   as well as evaluated expression, with the following syntax cases:
+%     'field'                         a simple link to an other property 'field'
+%     'field1.field2...'              a nested link to an other property
+%     'file://some_file_path'         a local file URL
+%     'http://some_distant_resource'  an HTTP URL (proxy settings may need to be set)
+%     'https://some_distant_resource' an HTTPS URL (proxy settings may need to be set)
+%     'ftp://some_distant_resource'   an FTP URL (proxy settings may need to be set)
+%     'matlab: some_expression'       some code to evaluate. 'this' refers to the 
+%                                     object itself e.g. 'matlab: this.Signal*2'
+%
+%   File and URL can refer to compressed resources (zip, gz, tar, Z) which are
+%   extracted on-the-fly. In case the URL/file resource contains 'sections', a
+%   search token can be specified with syntax such as 'file://filename#token'.
+%
+%   SETAXIS(a) check axes, Signal, Monitor, Error.
+%
+% Example: s=iData('x',1:10,'y',1:20, 'data',rand(10,20)); setaxis(s,1,'x'); isnumeric(getaxis(s,1))
 % Version: $Date$ $Version$ $Author$
-% See also iData, iData/getaxis, iData/get, iData/set, iData/rmaxis
+% See also iData, fieldnames, findfield, isfield, set, get, getalias, setalias,
+%   getaxis, setaxis
 
-% EF 27/07/00 creation
-% EF 23/09/07 iData implementation
-% ==============================================================================
+  if nargin == 1, s = axescheck(s); return; end
 
-persistent fields
-
-if isempty(fields), fields=fieldnames(iData); end
-
-if nargin < 3
-  alias='';
-end
-if nargin < 4
-  value=[];
-end
-
-n = nargin;
-
-% handle array of objects
-if numel(this) > 1
-  for index=1:numel(this)
-    if n == 1
-      this(index) = iData_checkaxes(this(index));
-    elseif n == 3
-      this(index) = setaxis(this(index), rank, alias);
-    elseif n == 4
-      this(index) = setaxis(this(index), rank, alias, value);
+  % handle array of struct
+  if numel(s) > 1
+    for index=1:numel(s)
+      s(index) = setaxis(s(index), varargin{:});
     end
+    return
   end
-  if nargout == 0 && ~isempty(inputname(1)) % update array inplace
-    assignin('caller', inputname(1), this);
-  end
-  return
-end
 
-%     setaxis(object)              tests all axes
-if nargin == 1
-  this = iData_checkaxes(this);
-  if nargout == 0 & length(inputname(1))
-    assignin('caller',inputname(1),this);
-  end
-  return
-end
-
-% check input arguments
-if isnumeric(alias),       value = alias; alias = ''; end
-if strcmp(rank, 'Signal'), rank  = 0;     alias = 'Signal'; end
-if isempty(rank) && isempty(alias), return; end
-if ~isnumeric(rank), 
-  iData_private_error(mfilename,[ 'the axis rank should be numeric and not ' class(rank) '.' ]);
-end
-
-if ischar(rank)
-  rank = str2double(rank);
-end
-
-% handle arrays of ranks/alias
-if isempty(isnan(rank)) && numel(rank) > 1
-  for index=1:numel(rank)
-    this = setaxis(this, rank(index), alias, value);
-  end
-  return
-elseif iscell(alias)
-  for index=1:numel(alias)
-    this = setaxis(this, rank, alias{index}, value);
-  end
-  if nargout == 0 & length(inputname(1))
-    assignin('caller',inputname(1),this);
-  end
-  return
-end
-
-% get the rank from the axis definition (alias) 
-if isempty(rank) && ~isempty(alias)
-  rank = find(strcmp(alias, this.Alias.Axis));
-
-% get the axis definition from the rank, or uses default alias for the axis 
-elseif ~isempty(rank) && isempty(alias)
-  % get the Axis definition
-  if rank == 0
-    if isempty(alias) || isempty(value) % reset Signal (find biggest field)
-      this = setalias(this, 'Signal',[]);
-      if nargout == 0 & length(inputname(1))
-        assignin('caller',inputname(1),this);
-      end
-      return
+  m = []; % will hold monitor value
+  % handle array/cell of axes
+  for index=1:2:numel(varargin) % loop on requested properties
+    name = varargin{index}; % axis rank as numeric or string
+    if index+1 > numel(varargin), break; end
+    value= varargin{index+1};
+    if ischar(value) && any(strcmp(value, {'biggest','largest','first','shortest','simplest'}))
+      value = findfield(s, '', [ value ' numeric' ]);
     end
-    alias = 'Signal';
-    if nargin == 4 % adapt value to Monitor
-      m  = get(this, 'Monitor'); m=real(m);
-      if not(all(m(:) == 1 | m(:) == 0))
-        value = genop(@times, value , m);
-      end
+    if ~ischar(name) && ~iscellstr(name) && ~isnumeric(name)
+      error([ mfilename ': SETAXIS works with axis rank given as char/cellstr/scalar. The ' num2str(index) '-th argument is of type ' class(name) ]);
     end
-  elseif rank <= length(this.Alias.Axis)
-    alias = this.Alias.Axis{rank};
-  end
-  if isempty(alias) && ~isempty(value)
-    % the alias 'Axis_<rank>' sould be used
-    alias = [ 'Axis_' num2str(rank) ];
-  end
-end
-
-if isempty(rank) || isempty(alias), return; end
-
-% check if the alias already exists in the object
-if strcmpi(alias, fields) % this is a protected field of the object
-  iData_private_error(mfilename,[ 'the Alias ' alias ' is a protected name in object ' ...
-    inputname(1) ' ' this.Tag ' "' this.Title '".' ]);
-end
-
-if isempty(find(strcmpi(alias, this.Alias.Names))) % the alias does not exist yet
-  if isempty(value)
-    % perhaps the value refers to an existing field in the object: create a
-    % new Alias
-    try
-      val = get(this, alias);
-      setalias(this, [ 'Axis_' num2str(rank) ], alias);
-      alias = [ 'Axis_' num2str(rank) ];
+    if ischar(name), name = cellstr(name);
+    elseif isnumeric(name), name = num2cell(name);
     end
-  end
-end
+    for n_index=1:numel(name)
+      % setaxis(s, 'rank'): set the axis value
+      % setaxis(a, 'Signal') -> setaxis(a, 0) = Signal/Monitor
+      % setaxis(a, 'Error')                   = Error/Monitor
+      get_mon = false; sig=[]; err=[];
 
-% try again
-if isempty(find(strcmpi(alias, this.Alias.Names)))
-  if isempty(value)
-    iData_private_warning(mfilename,[ 'the Alias ' alias ' used to define axis rank ' ...
-      num2str(rank) ' does not exist in object ' inputname(1) ' ' this.Tag ' "' this.Title '".' ]);
-    return;
-  elseif ~isempty(this.Title)
-    iData_private_warning(mfilename,[ 'the Alias ' alias ' used to define axis rank ' ...
-      num2str(rank) ' does not exist in object ' inputname(1) ' ' this.Tag ' "' this.Title '".\n\tDefining it.' ]);
-  end
-end
-
-% assign the alias
-if rank == 0
-  if ~strcmp(alias, 'Signal')
-    setalias(this, 'Signal', alias);
-  end
-else
-  this.Alias.Axis{rank} = alias;
-end
-
-% assign the value to the alias
-if ~isempty(value)
-  setalias(this, alias, value);
-  % check if the axis is reverted
-  myisvector = @(c)max(size(c)) == numel(c);
-  isevent = (isvector(this) > 1);
-  if ~isevent && myisvector(this) <= 1 && numel(value) > 1 && rank > 0 && isnumeric(value) && myisvector(value) && value(1) > value(end)
-    this = sort(this, rank);
-  end
-end
-
-this = iData_private_history(this, mfilename, this, rank, alias, value);
-
-% update output
-if nargout == 0 && ~isempty(inputname(1))
-  assignin('caller',inputname(1),this);
-end
-
-% ==============================================================================
-% private function iData_checkaxes
-function this = iData_checkaxes(this)
-  % makes a check of axes and Signal, notice invalid ones, move unused singleton to end.
-  axis_1D=[];
-  size_this=size(this);
-  isevent = (isvector(this) > 1);
-  for index=1:length(this.Alias.Axis) % scan axis definitions and values
-    link = this.Alias.Axis{index};
-    if length(size_this) < index, size_this(index)=1; end
-    try
-      val  = get(this, link);
-      if numel(val) == 1 % these are to be moved after the other axes
-        axis_1D= [ axis_1D index ];
+      if s.verbose > 2
+        disp([ mfilename ': DEBUG: setting axis ' num2str(name{n_index}) ' -> ' class(value) ' [' num2str(numel(value)) '] ' ]);
       end
-      % the axis value is valid, but does not have the right dimension
-      % test: val is a vector and matches the length of numel(Signal)
-      % OR numel(val) == numel(Signal)
-      if ( numel(val) ~= prod(size_this) && all(numel(val)~=size_this) )
-        iData_private_warning(mfilename, [ 'the Axis ' link ' ' num2str(index) ...
-          '-th rank length [' num2str(size(val)) '] does not match the Signal dimension [' ...
-          num2str(size_this) '] in object ' inputname(1) ' ' this.Tag '.' ]);
+  
+      % set the alias definition
+      if ischar(name{n_index})
+        if strcmp(name{n_index}, 'Signal') && ischar(value)
+          name{n_index} = '0';
+        end
+        if isscalar(name{n_index})
+          if strcmp(name{n_index},'0')  % Signal definition
+            s = builtin('subsasgn',s, struct('type','.','subs','Signal'), value);
+            s.Private.cache.size = [];
+          elseif isfinite(str2num(name{n_index}))
+            s.Axes{str2num(name{n_index})}=value;  % set definition in Axes (cell)
+          else
+            error([ mfilename ': invalid axis rank ''' name{n_index} '''. Should be ''0'' to ''9'' or ''Signal'' or ''Error''.' ]);
+          end
+        elseif strcmp(name{n_index}, 'Signal')
+          name{n_index} = 0;  % then will use rank as number=0, not char
+          get_mon = true;
+        elseif strcmp(name{n_index}, 'Error')
+          get_mon = true; % see below for actual set
+        end
       end
-      % check if the axis is reverted
-      myisvector = @(c)length(c) == numel(c);
-      if ~isevent && numel(val) > 1 && isnumeric(val) && myisvector(val) && val(1) > val(end)
-        this = sort(this, index);
+      % special case when we need the Monitor value
+      if get_mon && isempty(m)
+        m = subsref_single(s, 'Monitor'); % follow links -> value
+        if ~isnumeric(m), m=1; end
       end
-    catch ME
-      % the axis value is invalid.
-      iData_private_warning(mfilename,[ 'the Axis ' link ' ' num2str(index) ...
-        '-th rank is not valid in object ' inputname(1) ' '  this.Tag ' "' this.Title '".' ]);
-    end
+      % second test for 'Error/Monitor' (and now we have Monitor - shared with 'Signal' case)
+      if ischar(name{n_index}) && strcmp(name{n_index}, 'Error')
+        if isnumeric(value) && ~isempty(m) ...
+        && (isscalar(m) || isequal(size(m),size(value)))
+          value = value.*m;
+        end
+        s = subsasgn_single(s, 'Error', value); % follow links -> value
+      end
+      % setaxis(s, rank): set the axis value
+      if isnumeric(name{n_index}) && isscalar(name{n_index}) && name{n_index} >= 0
+        % set the alias value: interpret result using our subsasgn (follow links)
+        if name{n_index} == 0 % {0}=Signal/Monitor
+          if isnumeric(value) && ~isempty(m) ...
+          && (isscalar(m) || isequal(size(m),size(sig)))
+            value=value.*m;
+          end
+          s = subsasgn_single(s, 'Signal', value);
+          s.Private.cache.size = [];
+        else % Axis
+          % set the axis value
+          if iscell(s.Axes) && numel(s.Axes) >= name{n_index}
+            if ischar(s.Axes{name{n_index}}) && ~ischar(value)
+              s = subsasgn_single(s, s.Axes{name{n_index}}, value); % follow link for assignment
+            else
+              if numel(s.Axes{name{n_index}}) ~= numel(value) % value has changed significantly, request check
+                s.Private.cache.check_requested = true;
+              end
+              s.Axes{name{n_index}} = value; % set definition from char link/alias
+            end
+          else % axis does not exist yet
+            s.Axes{name{n_index}} = value; % direct assignment for new axis
+          end
+        end
+      end
+    end % for n_index
+
   end % for index
-  
-  % check axes wrt Signal dimension
-for index=1:ndims(this)
-  x = getaxis(this, index);
-  % cases:
-  
-  %   matrix which dimension is not size(signal)
-  myisvector = @(c)length(c) == numel(c);
-  if     myisvector(x) && numel(x) ~= size(this, index)
-    % axis is vector which length is not size(index)
-    % search for the dimension index it matches in size(signal)
-    [~, order] = ismember(length(x), size(this));  % WARN: duplicate sizes give same index
-    % swap axes index and order
-    if ~isempty(order) ...
-            && order>0 && order <= ndims(this) && index ~= order
-      this.Alias.Axis([ index order ]) = this.Alias.Axis([ order index ]);
-    end
-  elseif numel(x) == prod(size(this)) && any(size(x) ~= size(this))
-    % axis is a matrix with proper number of elements, but wrong orientation
-    if ndims(this) <= 2
-      x = x';
-    else
-      % permute axes indices following that of the Signal
-      [~, order] = ismember(size(x), size(this));  % WARN: duplicate sizes give same index
-      try
-        x = permute(x, order);  % may fail when dimensions are not distinguishable
-      end
-    end
-    this = setaxis(this,index,x);
-  end
-end
-  
-  % remove singleton axes and put them in end position
-  ax = this.Alias.Axis;
-  if ~isempty(axis_1D) && length(axis_1D) < length(ax) 
-    for index=length(axis_1D):-1:1
-      if axis_1D(index) > 0
-        tmp = ax{axis_1D(index)};
-        ax(axis_1D(index)) = [];
-        ax{end+1} = tmp;
-      end
-    end
-    this.Alias.Axis = ax;
-  end
-  
+  history(s, mfilename, varargin{:});

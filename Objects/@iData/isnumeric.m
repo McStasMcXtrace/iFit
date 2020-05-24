@@ -1,18 +1,14 @@
-function a = isnumeric(a)
-% b = isnumeric(s) : True for numeric iData object elements
+function v = isnumeric(a)
+% ISNUMERIC True for numeric arrays.
+%    ISNUMERIC(A) returns true if A is a numeric array and false otherwise.
 %
-%   @iData/isnumeric function to return true for numeric elements
-%   of 's', i.e. that are of type double, single, integer.
+%    For example, integer and float (single and double) objects are numeric,
+%    while logicals, strings, cell arrays, and structure arrays are not.
 %
-% input:  s: object or array (iData)
-% output: b: object or array (iData)
-% ex:     b=isnumeric(a);
-%
+% Example: s=iData(-10:10); isnumeric(s)
 % Version: $Date$ $Version$ $Author$
-% See also iData, iData/sign, iData/isreal, iData/isfinite, iData/isnan,
-%          iData/isinf, iData/isfloat, iData/isinterger,
-%          iData/isnumeric, iData/islogical, iData/isscalar, 
-%          iData/isvector, iData/issparse
+% See also iData/double, iData/isinteger, iData/isfloat
 
-a = iData_private_unary(a, 'isnumeric');
-a = uint8(a);
+v = unary(a, 'isnumeric');
+if iscell(v), v = cell2mat(v); end
+v = logical(v);

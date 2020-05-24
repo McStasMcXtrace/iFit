@@ -1,19 +1,13 @@
 function a = sign(a)
-% b = sign(s) : sign of iData object
+% SIGN   Signum function.
+%   For each Signal element of X, SIGN(X) returns 1 if the element
+%   is greater than zero, 0 if it equals zero and -1 if it is
+%   less than zero.  For the nonzero elements of complex X,
+%   SIGN(X) = X ./ ABS(X).
 %
-%   @iData/sign function to return the sign of data sets
-%   This function computes the sign of the object 's', i.e
-%   -1 for negative values, 0 for null, and +1 for positive values.
-%
-% input:  s: object or array (iData)
-% output: b: object or array (iData)
-% ex:     b=sign(a);
-%
+% Example: a=iData(peaks); b=sign(a); all(b(:)==1 | b(:)==-1)
 % Version: $Date$ $Version$ $Author$
-% See also iData, iData/sign, iData/isreal, iData/isfinite, iData/isnan,
-%          iData/isinf, iData/isfloat, iData/isinterger,
-%          iData/isnumeric, iData/islogical, iData/isscalar, 
-%          iData/isvector, iData/issparse
+% See also iData, iData/abs
 
-a = iData_private_unary(a, 'sign');
+a = unary(a, 'sign');
 

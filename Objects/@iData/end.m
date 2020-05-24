@@ -1,23 +1,24 @@
 function b = end(s,k,n)
-% b = end(s,index,n) : end value for iData objects
+% END Last index in an indexing expression.
+%   END(A,K,N) is called for indexing expressions involving the object A
+%   when END is part of the K-th index out of N indices.
 %
-%   @iData/end function defines end value for iData
-%   returns the length of rank 'index' among total dimensions 'n' in object 's'.
+% Example: s=iData(1:10); isscalar(s(end))
 %
 % Version: $Date$ $Version$ $Author$
-% See also iData
-
-% EF 27/07/00 creation
-% EF 23/09/07 iData implementation
+% See also: iData
 
 if numel(s) > 1
   if n == 1, b=numel(s); else b=size(s,k); end
   return
 end
-S = get(s,'Signal');
-if length(size(get(s,'Signal'))) < n
-  iData_private_error(mfilename, ['input iData object ' inputname(1) ' ' b.Tag ' has a size [' num2str(size(s)) '] but the dimension ' n ' is requested.' ]);
+
+if n > length(size(s))
+  error([ mfilename ': input object ' inputname(1) ' ' b.Tag ' ' b.name ...
+    ' has a size [' num2str(size(s)) '] but the dimension ' n ' is requested.' ]);
 end
+
+S = subsref(s,struct('type','.','subs','Signal'));
 
 if n == 1 && ndims(S) > 1
   % special case object(end) always return the real last element
@@ -26,4 +27,3 @@ else
   % last element along dimension
   b = size(S,k);
 end
-  

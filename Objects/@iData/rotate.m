@@ -1,20 +1,16 @@
 function s = rotate(a, theta)
-% s = rotate(a, theta) : computes the rotation of iData objects around the origin
+% ROTATE Rotate objects around origin.
+%   ROTATE(A) rotates around the Signal axis ('vertical') with 180 angular steps.
+%   The resulting object dimensionality is increased by 1.
 %
-%    @iData/rotate function to compute the rotation of iData object around the origin
-%     
-%      rotate(a) rotates around the Signal axis ('vertical') with 180 angular steps
-%      rotate(a, n) rotates using n angular steps in full revolution
-%      rotate(a, theta) rotates only on the specified theta values/range
+%   ROTATE(A, N) rotates using N angular steps in full revolution.
 %
-%      The resulting object dimensionality is increased by 1.
+%   ROTATE(A, [min max]) and ROTATE(A, [TH0 TH1 TH2 ...]) rotates along the 
+%   specified theta range or values. The angles are given in Radians.
 %
-% input:  a:     object or array (iData/array of)
-%         theta: single integer to specify how many steps in the revolution, or
-%                an angular range (vector in radians)
-% output: s: rotated object (iData)
-% ex:     c=rotate(a);
 %
+% Example: a=iData(sin(pi*(0:.05:1))); b=rotate(a); plot(b); ...
+%   close(gcf); ndims(b) == ndims(a)+1
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/camproj
 
@@ -39,7 +35,7 @@ function s = rotate(a, theta)
   
   % compute vector axes
   s    = copyobj(a);
-  s    = interp(s, 1); % make sure we use a regular grid (use ndgrid on current object)
+  s    = interp(s,'grid'); % make sure we use a regular grid (use ndgrid on current object)
   Axes = cell(1, ndims(a)+1);
   for index=1:length(Axes)
     Axes{index} = unique(getaxis(s, index));
@@ -81,5 +77,5 @@ function s = rotate(a, theta)
   clear m
 
   s.Command=a.Command;
-  s = iData_private_history(s, mfilename, a, theta);
+  s = history(s, mfilename, a, theta);
   

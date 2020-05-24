@@ -1,18 +1,12 @@
-function a = issparse(a)
-% b = issparse(s) : True for sparse matrix iData object
+function v = issparse(a)
+%  ISSPARSE True for sparse matrix.
+%    ISSPARSE(S) is 1 if the storage class of S Signal is sparse
+%    and 0 otherwise.
 %
-%   @iData/issparse function to return true if data set is a vector
-%   of 's', i.e. that size is 1xN or Nx1
-%
-% input:  s: object or array (iData)
-% output: b: object or array (iData)
-% ex:     b=issparse(a);
-%
+% Example: s=iData(sparse(eye(5))); issparse(s)
 % Version: $Date$ $Version$ $Author$
-% See also iData, iData/sign, iData/isreal, iData/isfinite, iData/isnan,
-%          iData/isinf, iData/isfloat, iData/isinterger,
-%          iData/isnumeric, iData/islogical, iData/isscalar, 
-%          iData/isvector, iData/issparse
+% See also iData, iData/full, iData/sparse
 
-a = iData_private_unary(a, 'issparse');
-a = uint8(a);
+v = unary(a, 'issparse');
+if iscell(v), v=cell2mat(v); end
+v = logical(v);

@@ -1,21 +1,13 @@
 function [b, j] = jacobian(a, varargin)
-% [b, j] = jacobian(a, new_axes, 'new_axes_labels'...) : computes the gradient (derivative) of iData objects
-%
-%   @iData/jacobian computes the Jacobian from the object current axes to new axes. 
-%   This is to be used for object coordinate/variable changes from the
-%   given object axes to new axes. The 'from' and 'to' axes should have the same dimensions.
-%
-%   The transformed object is returned, as well as the Jacobian which was used 
-%   for the transformation.
-%     b=jacobian(s, d) where 'd' is an iData object computes 's' on the 'd' axes.
-%     b=jacobian(s, X1,X2, ... Xn) where 'X1...Xn' are vectors or matrices as 
-%                                  obtained from ndgrid
-%     b=jacobian(s, {X1,X2, ... Xn}) is the same as above
-%     b=jacobian(s, ..., 'xlab','ylab',...) specifies the new axes labels
-%     b=jacobian(s, ..., {'xlab','ylab',...})
+% JACOBIAN Compute the Jacobian.
+%   [B,J]=JACOBIAN(S, D) transforms 'S' on the 'D' axes and computes the Jacobian 
+%   from the object current axes to new axes. This is to be used for object 
+%   coordinate/variable changes from the given object axes to new axes. The 
+%   'from' and 'to' axes should have the same dimensions.
+%   The transformed object is returned as B, as well as the Jacobian J which was  
+%   used for the transformation.
 %   The Jacobian is not a mere axis assignement, nor an interpolation.
-%
-%   The Jacobian tranform retains the full integral of the initial object, that
+%   The Jacobian transform retains the full integral of the initial object, that
 %   is:
 %      trapz(s,0) == trapz(jacobian(s, ...),0)
 %
@@ -23,21 +15,21 @@ function [b, j] = jacobian(a, varargin)
 %   the Signal, and retains its sum, but not its integral). 
 %   A direct axes rebinning can be performed by using 'interp' (which affects the
 %   Signal, its sum, but usually retains its integral).
-%    
-% input:  a: object or array (iData)
-%         d: single object from which 'to' axes are extracted (iData)
-%            or a cell containing axes d={X1,X2, ... Xn}      (cell)
-%         X1...Xn: vectors or matrices specifying axis for 
-%            dimensions 1 to ndims(s) (double vector/matrix)
-%         'xlab','yalb'...: axes labels (char)
-%         {'xlab','yalb'...}: axes labels (cellstr)
-% output: b: object or cell array (iData) with new axes
-%         j: jacobian used to correct the Signal and Error for the axes change (double).
-% ex:     a=iData(peaks); x=linspace(1,2,size(a,1));
-%         g=jacobian(a, x, [],'half X');
 %
+%   B=JACOBIAN(S, X1,X2, ... Xn) transforms S onto 'X1...Xn' axes given as 
+%   vectors or matrices as obtained from ndgrid, up tu NDIMS(S).
+%
+%   B=JACOBIAN(S, {X1,X2, ... Xn}) is the same as above.
+%
+%   B=JACOBIAN(S, ..., 'xlab','ylab',...) specifies the new axes labels.
+%
+%   B=JACOBIAN(S, ..., {'xlab','ylab',...}) is the same as above.
+%
+% Example: a=iData(peaks); x=linspace(1,2,size(a,1)); ...
+%          g=jacobian(a, x, [],'half X'); trapz(a,0)==trapz(g,0)
 % Version: $Date$ $Version$ $Author$
-% See also iData, iData/del2, diff, iData/gradient, iData/interp, iData/setaxis, gradient
+% See also iData, iData/del2, diff, iData/gradient, iData/interp, 
+%   iData/setaxis, gradient
 
 % TODO: this implementation computes the determinent assuming axes are quasi-perpendicular
 % then det = product(trace) as done in the function gradient_axis.
@@ -72,9 +64,10 @@ for index=1:length(varargin)
   c = varargin{index};
   if isa(varargin{index}, 'iData')  % get 'to' axis from other iData object
     if length(c) > 1
-      iData_private_warning(mfilename, ...
-          ['Can not apply Jacobian onto all axes of input argument ' num2str(index) ...
-           ' which is an iData array of ' num2str(numel(c)) ' elements. Using first element only.']);
+      warning([ mfilename, ...
+          ': Can not apply Jacobian onto all axes of input argument ' num2str(index) ...
+           ' which is an iData array of ' num2str(numel(c)) ...
+           ' elements. Using first element only.']);
       c = c(1);
     end
     for j1 = 1:ndims(c)
@@ -101,8 +94,8 @@ for index=1:length(varargin)
       if ~isempty(c{j1}) f_axes{axis_arg_index} = c{j1}; end
     end
   elseif ~isempty(c)
-    iData_private_warning(mfilename, ...
-        ['Input argument ' num2str(index) ' of class ' class(c) ' size [' ...
+    warning([ mfilename, ...
+        ': Input argument ' num2str(index) ' of class ' class(c) ' size [' ...
          num2str(size(c)) '] is not supported. Ignoring.']);
   end
 end
@@ -125,8 +118,8 @@ if ndims(a) > 1
     try
       % axes must have same size as the initial ones
       if ~all(size(i_axes{index}) == size(f_axes{index}))
-        iData_private_warning(mfilename,...
-            ['Jacobian can only be computed if axes have same size. Object axis{%i}=[' ...
+        warning([ mfilename,...
+            ': Jacobian can only be computed if axes have same size. Object axis{%i}=[' ...
              num2str(size(i_axes{index})) '], new axis=[' size(f_axes{index}) '].' ]);
         
       end 
@@ -157,7 +150,7 @@ end
 % assemble the resulting object
 [dummy, sl] = getaxis(b, '0');
 b = set(b, 'Signal', s, 'Error', abs(e));
-b = label(b, 0, [  mfilename '(' sl ')' ]);
+label(b, 0, [  mfilename '(' sl ')' ]);
 
 % redefine axes
 for index=1:length(f_axes)
@@ -168,11 +161,11 @@ for index=1:length(f_axes)
     setalias(b, ax, f_axes{index});
     setaxis(b, index, ax);
   end
-  b = label(b, ax, f_labels{index});
+  label(b, ax, f_labels{index});
 end
 
 b.Command=cmd;
-b = iData_private_history(b, mfilename, a);  
+b = history(b, mfilename, a);  
 
 end
 % ------------------------------------------------------------------------------

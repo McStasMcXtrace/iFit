@@ -1,61 +1,41 @@
-function b = isfield(a, field)
-% b = isfield(s, field) : check existence of field/alias in iData objects
-%
-%   @iData/isfield function which checks if a name is already defined as a Property
-%       or Alias or unique definition in the iData object.
-%     isfield(s) returns the full list of defined fields and aliases in the
-%     object.
-%   isfield scope (Properties and Aliases) is more restricted than findfield and 
-%     strfind methods.
-%
-% input:  s: object or array (iData)
-%         field: name to check for (string)
-% output: b: true when the name is already defined, false otherwise
-% ex:     b=isfield(a, 'history');
-%
-% Version: $Date$ $Version$ $Author$
-% See also iData, isfield, iData/findfield, iData/strfind
-
-persistent fields
-
-if isempty(fields), fields=fieldnames(iData); end
-
-if nargin == 1, field=[]; end
-
-if iscell(field) && numel(field) > 1
-  b = zeros(size(field));
-  for index=1:numel(field)
-    b(index) = feval(mfilename, a, field{index});
+function tf = isfield(self, f)
+  % ISFIELD True if field is in object.
+  %   ISFIELD(S,FIELD) returns true if the string FIELD is the name of a
+  %   field in the object S. FIELD must be a single char.
+  %
+  %   NOTE: TF is false when FIELD or FIELDNAMES are empty.
+  %
+  %   Example: s = iData('one',1,'two',2); isfield(s,'one')
+  %
+  % See also getfield, setfield, fieldnames, orderfields, rmfield,
+  %   isstruct, iData.
+    tf=false;
+    if nargin < 2, f=''; end
+    % handle case for multiple field names
+    if numel(self) == 1 && iscellstr(f)
+      tf = logical(zeros(size(f)));
+      for index=1:numel(f)
+        tf(index) = isfield(self, f{index});
+      end
+      return
+    end
+    
+    if isempty(f) || (~ischar(f) && ~iscellstr(f)), return; end
+    if numel(self) == 1
+      if any(f == '.') % compound field: we search with findfield
+        tf = findfield(self, f, 'isfield');
+      else
+        tf = any(strcmp(f, fieldnames(self)));
+        % tf = isfield(struct(self), f);
+        % tf = ~isempty(findprop(self, f));
+      end
+    else
+      tf = cell(size(self)); is_scalar = true;
+      for index=1:numel(self);
+        t = isfield(self(index), f);
+        if ~isscalar(t), is_scalar=false; end
+        tf{index} = t;
+      end
+      if is_scalar, tf = cell2mat(tf); end
+    end
   end
-  return
-end
-
-if numel(a) > 1
-  if isempty(field), b = cell(size(a));
-  else               b = zeros(size(a)); end
-  for index=1:numel(a)
-    if isempty(field), b{index} = feval(mfilename, a(index), field);
-    else               b(index) = feval(mfilename, a(index), field); end
-  end
-  return
-end
-
-if isempty(field)
-  b = [ fields ; getalias(a) ; {'history','filename','axes','alias','axis' }' ];
-  return
-end
-
-b= false;
-if any(strcmpi(field, fields))
-  b = true;
-elseif any(strcmpi(field, getalias(a)))
-  b = true;
-elseif any(strcmpi(field, getaxis(a)))
-  b = true;
-elseif any(strcmpi(field, {'history','filename','axes','alias','axis'}))
-  b = true;
-% too slow and recursive: inactivated
-% elseif numel(findfield(a, field,'exact')) == 1
-%  b = true;
-end
-

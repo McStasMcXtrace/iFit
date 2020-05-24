@@ -1,19 +1,15 @@
 function [m,id] = max(a,b, dim)
-% [m,id] = max(a,b, dim) : computes the maximum value of iData object(s)
+% MAX    Largest component.
+%   MAX(A) returns a single value as the maximum value of the object signal.
 %
-%   @iData/max function to compute the maximum value of data sets.
-%     max(iData) returns a single value as the maximum value of the iData signal
-%     max(a,b)   returns an object which signal is the highest of a and b.
-%     max(a,[], dim) returns max value along dimension 'dim'
+%   MAX(A,B) returns an object which signal is the highest of A and B.
 %
-% input:  a: object or array (iData)
-%         b: object or array (iData/double)
-%         dim: dimension on which to operate
+%   MAX(A,[], DIM) returns maximum value along dimension 'DIM'
 %
-% output: m:  maximum value (double/iData)
-%         id: returns the indices of the maximum value (integer)
-% ex:     b=max(a);
+%   [M,I] = MAX(A,...) returns the maximum value/object in M, and the indices
+%   of the maximum values in vector I.
 %
+% Example: a=iData(peaks); round(max(a))==8
 % Version: $Date$ $Version$ $Author$
 % See also iData, max, iData/min
 
@@ -76,6 +72,6 @@ else
   end
 end
 m.Command=cmd;
-m = iData_private_history(m, mfilename, a, b);
+m = history(m, mfilename, a, b);
 
 

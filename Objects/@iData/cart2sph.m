@@ -1,27 +1,17 @@
 function s = cart2sph(a, center)
-% s = cart2sph(a,dim) : cartesian to polar/spherical representation of iData objects
+% CART2SPH Transform object from Cartesian to spherical coordinates.
+%   CART2SPH(A) Transforms the object axes into spherical coordinates, which
+%   allow radial integration aferwards.
+%   The 'center' of the distribution (1st moment) is used as symmetry point 
+%   for the computation of the radius. All axes are considered to be
+%   distances.
 %
-%   @iData/cart2sph function to 
-%     cart2sph(a) Transforms the object axes into spherical coordinates, which
-%       allow radial integration aferwards.
-%       The 'center' of the distribution (1st moment) is used as symmetry point 
-%       for the computation of the radius. All axes are considered to be
-%       distances.
-%     cart2sph(a,center) specifies the 'center' of the integration 
-%       (vector of coordinates) or a single value used as center on all
-%       axes (for instance 0).
-%
-% input:  a:     object or array (iData/array of)
-%         center:scalar or a vector which length is the object dimensionality 
-% output: s: object with cartesian/spherical (iData)
-% ex:     c=cart2sph(a);
+%   CART2SPH(a,center) specifies the 'center' of the integration 
+%   (vector of coordinates) or a single value used as center on all
+%   axes (for instance 0).
 %
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/rotate, iData/sum, iData/trapz, iData/camproj
-
-if ~isa(a, 'iData')
-  iData_private_error(mfilename,[ 'syntax is ' mfilename '(iData, center)' ]);
-end
 
 if nargin < 2, center=[]; end
 
@@ -54,8 +44,8 @@ if isnumeric(center) && length(center) == 1
 end
 
 if length(center) < ndims(a)
-  iData_private_warning(mfilename, ...
-    [ 'The centroid vector is of length ' num2str(length(center)) ' but the object requires ' num2str(ndims(a)) ' values (dimensionality).' ]);
+  warning(...
+    [ mfilename ': The centroid vector is of length ' num2str(length(center)) ' but the object requires ' num2str(ndims(a)) ' values (dimensionality).' ]);
   return;
 end
 
@@ -64,16 +54,16 @@ cmd= a.Command;
 
 % we interpolate the object on a grid so that all axes have the same size
 if ndims(a) == 2
-  y = iData_private_cleannaninf(getaxis(a, 1)) - center(1);
-  x = iData_private_cleannaninf(getaxis(a, 2)) - center(2);
+  y = private_cleannaninf(getaxis(a, 1)) - center(1);
+  x = private_cleannaninf(getaxis(a, 2)) - center(2);
   [theta, rho] = cart2pol(x,y);
   phi = [];
   clear y
   x = getaxis(a, 0);
 elseif ndims(a) == 3
-  y = iData_private_cleannaninf(getaxis(a, 1)) - center(1);
-  x = iData_private_cleannaninf(getaxis(a, 2)) - center(2);
-  z = iData_private_cleannaninf(getaxis(a, 3)) - center(3);
+  y = private_cleannaninf(getaxis(a, 1)) - center(1);
+  x = private_cleannaninf(getaxis(a, 2)) - center(2);
+  z = private_cleannaninf(getaxis(a, 3)) - center(3);
   [theta, phi, rho] = cart2sph(x,y,z);
   clear y z
   x = getaxis(a, 0);
@@ -82,7 +72,7 @@ else
   % we extract Signal and all axes, except 'dim'
   for index=1:ndims(a)
     % then compute the sqrt(sum(axes.*axes))
-    x            = iData_private_cleannaninf(getaxis(a, index)) - center(index);
+    x            = private_cleannaninf(getaxis(a, index)) - center(index);
     rho          = rho + x.*x;
     clear x
   end
@@ -110,5 +100,5 @@ if ~isempty(theta)
   s =  label(  s, 3, 'Phi Elevation [deg]');
 end
 s = setalias(s, 'Center', center);
-s = iData_private_history(s, mfilename, a, center);
+s = history(s, mfilename, a, center);
 

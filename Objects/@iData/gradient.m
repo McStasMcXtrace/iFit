@@ -1,17 +1,11 @@
 function b = gradient(a, dim)
-% g = gradient(a, dim) : computes the gradient (derivative) of iData objects
+% GRADIENT Approximate gradient.
+%   G = GRADIENT(A, DIM) computes the gradient (derivative) of iData objects.
+%   The returned value is an iData array of the partials for dimension 
+%   ranks 1,2,3..., that is G=[GY GX GZ ...] (remember X is rank 2, Y is 1).
+%   When the dimension is specified, only that rank partial derivative is returned.
 %
-%   @iData/gradient function to compute the gradient (derivative) of data sets.
-%     the returned value is an iData array of the partials for dimension 
-%     ranks 1,2,3..., that is g=[gy gx gz ...] (remember X is rank 2, Y is 1).
-%     When the dimension is specified, only that rank partial derivative is returned.
-%    
-% input:  a: object or array (iData)
-%       dim: dimension/rank of the partial to compute (int)
-% output: g: object or cell array (iData)
-% ex:     a=iData(peaks);
-%         g=gradient(a); subplot([ a g(1) g(2) ]);
-%
+% Example: a=iData(peaks); g=gradient(a,1); round(max(g))==1
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/diff, iData/del2, diff, gradient, iData/jacobian
 
@@ -60,7 +54,7 @@ for i=1:ndims(s)
   if dim && index ~= dim,  continue; end
   g = copyobj(a);
   g.Command=cmd;
-  g = iData_private_history(g, mfilename, a, index);
+  history(g, mfilename, a, index);
   if iscell(ge), g = setalias(g, 'Error',  ge{index}); 
   else g = setalias(g, 'Error',0); end
   g = setalias(g, 'Signal', gs{index}, [  mfilename '(' sl ',' num2str(index) ')' ]);

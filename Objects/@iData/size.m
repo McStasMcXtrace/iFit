@@ -1,33 +1,45 @@
-function y=size(s, dim)
-% size(s) : get iData object size (number of elements)
+function y=size(s, varargin)
+% SIZE Get object size.
+%   D = SIZE(X) for a single object returns the size of its Signal. For
+%   an array of objects, the size of the array is returned.
 %
-%   @iData/size function to get iData object size
+%   M = SIZE(X,DIM) returns the length of the dimension specified
+%   by the scalar DIM.  For example, SIZE(X,1) returns the number
+%   of rows. If DIM > NDIMS(X), M will be 1.
 %
-% input:  s: object or array (iData)
-%         dim: optional dimension/rank to inquire
-% output: v: size of the iData Signal (double)
-% ex:     size(iData), size(iData,1)
+%   To get the size of all objects in an array S, use ARRAYFUN('size',S)
 %
+% Example: s=iData(rand(5)); all(size(s) == size(s.Signal))
 % Version: $Date$ $Version$ $Author$
-% See also iData, iData/disp, iData/get, length
-
-% EF 23/09/07 iData implementation
+% See also iData, get, length, ndims
 
 if numel(s) > 1  % this is an array of iData
-  if nargin > 1, y = builtin('size', s, dim);
-  else           y = builtin('size', s); end
+  y = builtin('size', s, varargin{:});
   return
 end
 
 if numel(s) == 0
-  y=0;
+  y=[0 0];
 else
-  y = size(subsref(s,struct('type','.','subs','Signal')));
-  if nargin > 1, 
-    if dim > length(y), y=0; 
-    else
-      y = y(dim); 
+  % check object when we evaluate/get some data out of it, and changes were marked.
+  if isfield(s.Private,'cache') && isfield(s.Private.cache,'check_requested') ...
+    && s.Private.cache.check_requested
+    axescheck(s);
+  end
+
+  % use cache when available for faster execution
+  if isfield(s.Private,'cache') && isfield(s.Private.cache,'size') && ~isempty(s.Private.cache.size)
+    y = s.Private.cache.size;
+  else
+    y = size(subsref(s,struct('type','.','subs','Signal')));
+    s.Private.cache.size = y;
+  end
+  try
+    y = y(varargin{:});
+  catch
+    if s.verbose
+      warning([ mfilename ': ERROR: Invalid dimension specification [ ' sprintf('%i ', varargin{:}) '] for object ' s.Tag ' ' s.Name ' of dimensionality ' num2str(ndims(s)) ])
     end
+    y = [];
   end
 end
-

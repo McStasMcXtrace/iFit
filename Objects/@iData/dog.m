@@ -1,15 +1,12 @@
 function s = dog(dim,a, varargin)
-% s= dog(dim,a) : split iData objects elements along dimension
+% DOG Split object into slices.
+%   S=DOG(DIM, A) split objects A into slices along dimension DIM. DIM must be 
+%   within dimensionality. Resulting split objects are returned within an array. 
+%   This method is the counterpart to CAT.
 %
-%   @iData/dog function to split iData objects elements along dimension dim
-%     dog(dim,a) split along axis of rank dim, which must be within dimensionality. 
-%     Resulting split objects are returned within an array. This method is the counterpart to cat.
+%   S=DOG(DIM, A,B,...) and  S=DOG(DIM, [A,B,...]) split all objects in array.
 %
-% input:  a: object or array (iData)
-%         dim: dimension to split (int)
-% output: s: split data set (iData array)
-% ex:     c=dog(1,a,b); c=dog(1,[ a b ]); 
-%
+% Example: a=iData(peaks); c=dog(1,a); numel(c) == size(a,1)
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/plus, iData/prod, iData/cumcat, iData/mean
 
@@ -30,7 +27,7 @@ if nargin == 1 & isa(dim, 'iData') & numel(dim) >= 1 % syntax: dog([a])
 end
 
 if ~isa(a, 'iData')
-  iData_private_error(mfilename,['syntax is dog(dim, iData, ...)']);
+  error([mfilename,': syntax is dog(dim, iData, ...)']);
 end
 
 % removes warnings during interp
@@ -48,11 +45,9 @@ if numel(a) > 1
 end
 
 if dim > ndims(a)
-  iData_private_warning(mfilename,[ 'Can not extract dim=' num2str(dim) ' slices from object ' this.Tag ' with ndims(a)=' num2str(a) ]);
+  warning([ mfilename, ': Can not extract dim=' num2str(dim) ' slices from object ' this.Tag ' with ndims(a)=' num2str(a) ]);
   return
 end
-
-iData_private_warning('enter', mfilename);
 
 % prepare the cell of indices to be sent to sub2ind
 sub=cell(1,ndims(a));
@@ -68,10 +63,7 @@ for index=1:size(a, dim)
   sr.subs=sub;
   this_s=subsref(a,sr);
   setaxis(this_s, dim, [ 'Axis_' num2str(dim) ], x(index));
-  this_s = iData_private_history(this_s, mfilename, dim, a);
+  this_s = history(this_s, mfilename, dim, a);
   s = [ s ; this_s ];
 end
-
-% reset warnings during interp
-iData_private_warning('exit', mfilename);
 

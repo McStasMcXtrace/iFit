@@ -1,18 +1,13 @@
 function c = minus(a,b)
-% c = minus(a,b) : computes the difference of iData objects
+% -   Minus.
+%   A - B subtracts object B from A.
+%   C = MINUS(A,B) is called for the syntax 'A - B' to compute the difference.
 %
-%   @iData/minus (-) function to compute the difference of data sets
-%
-% input:  a: object or array (iData or numeric)
-%         b: object or array (iData or numeric)
-% output: c: object or array (iData)
-% ex:     c=a-1;
-%
+% Example: s=iData(-10:10); c=s-1; c{0}(1) == -11
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/minus, iData/plus, iData/times, iData/rdivide
 
 if nargin ==1
-	b=[];
+  b=[];
 end
-c = iData_private_binary(a, b, 'minus');
-
+c = binary(a, b, 'minus');

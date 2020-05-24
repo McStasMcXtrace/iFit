@@ -1,52 +1,35 @@
 function v = isvector(s)
-% b = isvector(s) : True for vector iData object
-%
-%   @iData/isvector function to return true if data set is a vector
-%   i.e. that its size is 1xN or Nx1.
-%   Additionally, if the vector data set has X axes defined, it returns X, for 
+% ISVECTOR True if array is a vector.
+%   ISVECTOR(V) returns logical true (1) if V is a 1 x n or n x 1 vector,
+%   where n >= 0, and logical false (0) otherwise.
+%   Additionally, if the vector data set has D axes defined, it returns D, for
 %   instance with event data sets.
 %
-% input:  s: object or array (iData)
-% output: b: object or array (iData)
-% ex:     b=isvector(a);
-%
+% Example: s=iData(1:10); isvector(s) == 1
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/sign, iData/isreal, iData/isfinite, iData/isnan,
 %          iData/isinf, iData/isfloat, iData/isinterger,
-%          iData/isnumeric, iData/islogical, iData/isscalar, 
+%          iData/isnumeric, iData/islogical, iData/isscalar,
 %          iData/isvector, iData/issparse
 
 if numel(s) > 1
-  v = zeros(size(s)); 
-  for index=1:numel(s)
-    v(index) =isvector(s(index));
-  end
-  return
+  v = arrayfun(@isvector, s);
+  return;
 end
 
-n = size(s);
-v = 0;
-if all(n == 1), v=1;
-else
-  index=find(n > 1);
-  v = length(index);
-  if v == 1 & length(getaxis(s)) > 1
-    is_vector = 1;
-    for ia=1:length(getaxis(s))
-      x = getaxis(s,ia);
-      if length(x) ~= 1 && length(x) ~= length(double(s))
-        is_vector=0;
-        break;
-      end
-    end
-    if is_vector
-      v = 0; % count non singleton dimensions
-      for index=1:length(getaxis(s))
-        if numel(getaxis(s, index)) > 1 % this is for [x,y,z,... vector data (plot3 style)]: signal and axes are all vectors of same length or 1
-          v = v+1;
-        end
-      end
-    else v=0; end
-  elseif v ~= 1, v=0; end
+if numel(find(size(s) > 1)) == 1, v = true; else; v=false; end
+
+% special case for event data sets: signal is a vector, all axes have same dimension
+if v && numel(s.Axes) > 1
+
+  % check that all axes have same length, else keep v=1
+  l    = prod(size(s));
+  flag = true;
+  for dim=1:numel(s.Axes)
+    if length(getaxis(s,dim)) ~= l, flag=false; break; end
+  end % dim
+  if flag, v = 1+numel(s.Axes); end % [Signal, Axes]
+
 end
+
 

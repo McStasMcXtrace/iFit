@@ -1,34 +1,10 @@
-function a=circshift(a, dim, shift)
-% b=circshift(a, rank, shift): shifts the axis of specified rank by a value
+function a=circshift(a, varargin)
+% CIRCSHIFT Shifts an object axis of specified rank by a value.
+%   A=CIRCSHIFT(A, RANK, SHIFT) shifts object axes RANK by SHIFT.
+%   This is equivalent to A{RANK} = A{RANK}+SHIFT; and MOVEAXIS.
 %
-%   @iData/circshift function to shift iData object axes
-%     This is equivalent to a{rank} = a{rank}+shift;
-%
-% input:  a:     object or array (iData)
-%         rank:  axis rank (scalar)
-%         shift: value to shift the axis with (scalar)
-% output: b: object or array (iData)
-%
+% Example: a=iData(peaks); circshift(a, 1, 5); max(getaxis(a,1))==54
 % Version: $Date$ $Version$ $Author$
 % See also  iData/getaxis, iData/setaxis
 
-if nargin < 3
-  return
-end
-
-% handle input iData arrays
-if numel(a) > 1
-  for index=1:numel(a)
-    a(index) = feval(mfilename, a(index), dim, shift);
-  end
-  if nargout == 0 & length(inputname(1))
-    assignin('caller',inputname(1),a);
-  end
-  return
-end
-
-a = setaxis(a, dim, getaxis(a, dim)+shift);
-  
-if nargout == 0 & length(inputname(1))
-  assignin('caller',inputname(1),a);
-end
+a = moveaxis(a, varargin{:});

@@ -1,15 +1,12 @@
 function a = conj(a)
-% b = conj(s) : conjugate of iData object
+%  CONJ   Complex conjugate.
+%    CONJ(X) is the complex conjugate of Signal of object X.
+%    For a complex X, CONJ(X) = REAL(X) - i*IMAG(X).
 %
-%   @iData/conj function to return conjugate of data sets
-%
-% input:  s: object or array (iData)
-% output: b: object or array (iData)
-% ex:     b=conj(a);
-%
+% Example: s=iData([-i 0 i]); all(conj(s) == [i 0 -i])
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/transpose, iData/ctranspose, iData?imag, iData/real
 
-a = iData_private_unary(a, 'conj');
+a = unary(a, 'conj');
 
 

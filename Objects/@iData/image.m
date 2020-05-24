@@ -1,24 +1,21 @@
 function h = image(r, g, b, option)
-% h = image(r,g,b, option) : Plot up to 3 images overlayed on the RGB channels
+% IMAGE  Display image.
+%   H = IMAGE(R,G,B) plots up to 3 images overlayed as RGB channels.
+%   The 3 objects should be 2D objects. Each object is re-scaled within 0 and 1
+%   interval, so that each color channel is fully used. 
 %
-%   @iData/image function to plot up to 3 data sets on the RBG channels of an image
-%     the 3 objects should be 2D objects. Each object is re-scaled within 0 and 1
-%     interval, so that each color channel is fully used. However, the 'norm'
-%     keyword in options will scale the color channels within the global min and 
-%     max Signal values, allowing to compare the relative intensity of the objects.
-%
-% input:  r: 2D object on the Red channel (iData or empty)
-%         g: 2D object on the Green channel (iData or empty)
-%         b: 2D object on the Blue channel (iData or empty)
-%         option: global option for 2D and 3D plots: 
+%   H = IMAGE(R,G,B, 'OPTION') specifies plot options for 2D plots: 
 %                 flat, interp, faceted (for shading)
 %                 transparent, light, clabel
 %                 axis tight, axis auto, view2, view3, hide_axes
 %                 painters (bitmap drawing), zbuffer (vectorial drawing)
 %                 norm (will use the same color-scale)
-% output: h: graphics object handle
-% ex:     image(iData(peaks),[],[], 'hide axes');
 %
+%   The 'norm' keyword in OPTION will scale the color channels within the global 
+%   min and  max Signal values, allowing to compare the relative intensity of 
+%   the objects.
+%
+% Example: image(iData(peaks),[],[], 'hide axes');
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/plot
 
@@ -97,7 +94,7 @@ for index=1:numel(a)
     elseif index==2, l = 'Green';
     else             l = 'Blue';
     end
-    lab = [ lab l ': ' this.Title ' ' ];
+    lab = [ lab l ': ' this.Name ' ' ];
     s = getaxis(this,0);
     if strfind(option,'norm')
       s=s-minv; s=s/(maxv-minv);
@@ -118,10 +115,10 @@ end
 % create object to display with plot('image')
 this2D.Data.cdata = u;
 setalias(this2D, 'Signal', 'Data.cdata');
-set(this2D,'Title', strtrim(lab));
+this2D.Name = strtrim(lab);
 setaxis(this2D, 2, x);
 setaxis(this2D, 1, y);
-
+axescheck(this2D,'force');
 % assemble the new object
-h=plot(this2D, option);
+h=plot(this2D, [ option ' image' ]);
 

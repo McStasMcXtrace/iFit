@@ -68,6 +68,8 @@ function [selection,value] = listdlg(varargin)
 %
 % THIS VERSION IS MODIFIED TO USE DefaultUicontrolFontSize and be resizable
 
+% This file is used by: commandhistory
+
 %   Copyright 1984-2009 The MathWorks, Inc.
 %   $Revision: 1.20.4.10 $  $Date: 2009/10/24 19:19:47 $
 %

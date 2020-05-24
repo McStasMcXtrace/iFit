@@ -1,26 +1,18 @@
-function a = title(a, lab)
-% b = title(s,label) : Change iData Signal label
+function t = title(a, varargin)
+% TITLE Signal title.
+%   TITLE(s) returns the current Signal title. This is equivalent to
+%   LABEL(s, 0).
 %
-%   @iData/title function to change the Signal label
-%     title(s) returns the current Signal label. 
-%   To change the object title, use s.Title='new title'
+%   TITLE(s, 'text') sets  the Signal title. This is equivalent to
+%   LABEL(s, 0, 'text').
 %
-% input:  s: object or array (iData)
-%         label: new Signal label (char/cellstr)
-% output: b: object or array (iData)
-% ex:     b=title(a);
+%   The object name is obtained with s.Name
+%
+% Example: s=iData(1:10); title(s, 'argh'); strcmp(title(s), 'argh')
 %
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/plot
 
-if nargin ==1
-	a = label(a, 0);
-	return
-else
-	a = label(a, 0, lab);
-end
-
-if nargout == 0 & length(inputname(1))
-  assignin('caller',inputname(1),a);
-end
-
+t = label(a, 0, varargin{:});
+if isempty(t), t = getalias(a,'Signal'); end
+if isempty(t) || ~ischar(t), t = a.Name; end

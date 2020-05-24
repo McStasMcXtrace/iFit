@@ -1,14 +1,10 @@
 function a = real(a)
-% b = real(s) : real value of iData object
+%  REAL   Complex real part.
+%    REAL(X) is the real part of X.
+%    See I or J to enter complex numbers.
 %
-%   @iData/real function to return the real value of data sets.
-%
-% input:  s: object or array (iData)
-% output: b: object or array (iData)
-% ex:     b=real(a);
-%
+% Example: s=iData(rand(5)+i*rand(5)); any(real(s),0)
 % Version: $Date$ $Version$ $Author$
-% See also iData, iData/uminus, iData/abs, iData/real, iData/imag, iData/uplus
+% See also iData, iData/isreal, i, j, iData/imag
 
-a = iData_private_unary(a, 'real');
-
+a = unary(a, 'real');

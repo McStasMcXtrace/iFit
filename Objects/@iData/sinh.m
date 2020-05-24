@@ -1,14 +1,10 @@
 function a = sinh(a)
-% b = sinh(s) : computes the hyperbolic sine of iData object
+% SINH   Hyperbolic sine.
+%   SINH(X) is the hyperbolic sine of X.
 %
-%   @iData/sinh function to compute the hyperbolic sine of data sets.
-%
-% input:  s: object or array (iData)
-% output: b: object or array (iData)
-% ex:     b=sinh(a);
-%
+% Example: s=iData(0:10); all(sinh(s) == sinh(0:10))
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/cos, iData/acos, iData/sin, iData/asin, iData/tan, iData/atan
 
-a = iData_private_unary(a, 'sinh');
+a = unary(a, 'sinh');
 

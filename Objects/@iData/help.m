@@ -1,17 +1,16 @@
 function c = help(s)
-% c = help(s) : display iData information as a Dialogue window
+% HELP display object information as a Dialogue window or a structure
+%   HELP(S) displays the object information in a Dialogue window
 %
-%   @iData/help: display information about the data set as a Dialogue
+%   H = HELP(S) returns the object information as a structure
 %
-% input:  s: object or array (iData) 
-% output: c: iData identification (structure)
+% Example: s=iData(1:10); isstruct(help(s))
 %
 % Version: $Date$ $Version$ $Author$
 % See also  iData/cell, iData/double, iData/struct, 
 %           iData/char, iData/size, iData/get
 %
 
-% EF 23/09/07 iData implementation
 % this function is used to gather info for the contextual menu in plots.
 
 c={};
@@ -57,10 +56,12 @@ for index=1:numel(s)
     mp = cell2struct(num2cell(mp(:)),strtok(names(:)));
   end
 
-  % info about the iData plot --------------------------------------------------
-  T   = a.Title; if ~ischar(T), T=char(T); end
+  % info about the plot --------------------------------------------------
+  T   = a.Name; ttl = title(a);
+  if isempty(T), T=ttl; end
+  if ~ischar(T) || isempty(T), T=char(T,'short'); end
   if ~isvector(T), T=transpose(T); T=T(:)'; end
-  T   = regexprep(T,'\s+',' '); % remove duplicated spaces
+  T   = regexprep(T,'\s+',' '); % remove duplicate spaces
   cmd = char(a.Command{end});
   S   = a.Source;
   [pS, fS, eS] = fileparts(S);
@@ -73,26 +74,11 @@ for index=1:numel(s)
   if ~isempty(eS), S = [ S '.' eS ]; end
   if length(cmd) > 23, cmd = [ cmd(1:20) '...' ]; end
 
-  % DisplayName and Label
+  % Label
   d = '';
-  if ~isempty(a.Label) && ~isempty(a.DisplayName)
-    if strcmp(a.Label, a.DisplayName)
-        if ~isempty(title(a)), a.DisplayName=title(a);
-        else a.DisplayName=fS; end
-    end
-    g = cellstr(a.Label); g=deblank(g{1});
-    if length(g) > 13, g = [ g(1:10) ]; end                 % Label/DisplayName
-    d = [ d sprintf('%s', g) ];
-    g = cellstr(a.DisplayName); g=deblank(g{1});
-    if length(g) > 13, g = [ g(1:10) '...' ]; end           % 
-    d = [ d sprintf('/%s', g) ];
-  elseif ~isempty(a.Label)
+  if ~isempty(a.Label)
     g = cellstr(a.Label); g=deblank(g{1});
     if length(g) > 23, g = [ g(1:20) '...' ]; end           % Label
-    d = [ d sprintf('%s', g) ];
-  elseif ~isempty(a.DisplayName)
-    g = cellstr(a.DisplayName); g=deblank(g{1});
-    if length(g) > 23, g = [ g(1:20) '...' ]; end           % DisplayName
     d = [ d sprintf('%s', g) ];
   end
   T0 = T; % original title, full.
@@ -105,43 +91,34 @@ for index=1:numel(s)
   % ----------------------------------------------------------------------------
   % make up title string and Properties dialog content
   properties={ [ 'Data ' a.Tag ': ' num2str(ndims(a)) 'D object ' mat2str(size(a)) ], ...
-               [ 'Title: "' char(T) '" ' d ], ...
+               [ 'Name: "' char(T) '" ' d ], ...
                [ 'Source: ' a.Source ], ...
                [ 'Last command: ' cmd ]};
   tproperties = {};
   % axes and Signal stuff
   properties{end+1} = '[Rank]         [Value] [Description]';
+  % code from iData.disp -----------------------------------------------------
   myisvector = @(c)length(c) == numel(c);
-  for index1=0:min([ ndims(a) length(getaxis(a)) ])
-    [v, l] = getaxis(a, num2str(index1));
-    if length(l) > 20, l = [l(1:18) '...' ]; end 
-    x      = getaxis(a, index1);
-    m      = get(a, 'Monitor');
+  for index=0:length(a.Axes)
+    [v, l] = getaxis(a, num2str(index,2));
+    if ~ischar(v)
+      if numel(v) > 5, v=v(1:5); end
+      v=mat2str(v);
+      if length(v) > 12, v = [v(1:12) '...' ]; end
+    end
+    if length(l) > 20, l = [l(1:18) '...' ]; end
+    X      = getaxis(a, index); x=X(:);
+    if issparse(x), x=full(x); end
     if length(x) == 1
-      minmaxstd = sprintf('[%g]', full(x));
-    elseif myisvector(x)
-      minmaxstd = sprintf('[%g:%g] length [%i]', full(min(x)), full(max(x)),length(x));
+      minmaxstd = sprintf('[%g]', x);
+    elseif myisvector(X)
+      minmaxstd = sprintf('length [%i]', numel(x));
     else
-      x=x(:);
-      minmaxstd = sprintf('[%g:%g] size [%s]', full(min(x)), full(max(x)),num2str(size(x)));
+      minmaxstd = sprintf('size %s', mat2str(size(X)));
     end
-    if index1==0
-      if not(all(m==1 | m==0))
-        minmaxstd=[ minmaxstd sprintf(' (per monitor=%g)', mean(m(:))) ];
-      end
-      minmaxstd=[ minmaxstd sprintf(' sum=%g', full(sum(iData_private_cleannaninf(x)))) ];
-    end
-    if prod(size(a)) < 1e4
-      try
-        [S, f] = std(a, -index1);
-        minmaxstd=[ minmaxstd sprintf(' <%g +/- %g>', f,S) ];
-      end
-    end
-    if isnumeric(v), v=''; end
-    t = sprintf('%6i %15s  %s %s', index1, v, l, minmaxstd);
+    t = sprintf('%6i %15s  %s %s\n', index, v, l, minmaxstd);
     tproperties{end+1} = t;
     properties{end+1}  = t;
-    clear x m
   end
 
   % model parameters
@@ -166,13 +143,11 @@ for index=1:numel(s)
   ud.ylabel = ylabel(a);
   ud.zlabel = zlabel(a);
   ud.title  = T;
-  ud.name   = char(a);
+  ud.name   = char(a,'short');
   ud.commands = commandhistory(a);
   ud.handle = [];
   ud.tproperties = tproperties;
   ud.mproperties = mproperties;
-
-  % ud = iData_plot_contextmenu(a, [], xlabel(a), ylabel(a), zlabel(a),  T, S, d, cmd, mp, name);
   
   % now open the dialogue when not used in nargout=help(object)
   if nargout == 0

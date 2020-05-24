@@ -1,18 +1,14 @@
 function c = mpower(a,b)
-% c = mpower(a,b) : computes the matrix-power of iData objects
+% ^   Object power.
+%   A^B is A to the B power.
 %
-%   @iData/mpower function to compute the power of data sets
+%   C = MPOWER(A,B) is called for the syntax 'A ^ B'.
 %
-% input:  a: object or array (iData or numeric)
-%         b: object or array (iData or numeric)
-% output: c: object or array (iData)
-% ex:     c=a^2;
-%
+% Example: a=iData(peaks); b=a^2; max(b) == max(a)^2
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/times, iData/rdivide, iData/power
 
 if nargin == 1,
   b = a;
 end
-c = iData_private_binary(a, b, 'mpower');
-
+c = binary(a, b, 'power');

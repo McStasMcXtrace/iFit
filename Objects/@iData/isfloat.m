@@ -1,17 +1,16 @@
-function a = isfloat(a)
-% b = isfloat(s) : True for float iData object elements
+function v = isfloat(a)
+%  ISFLOAT True for floating point object, both single and double.
+%    ISFLOAT(A) returns true if A is a floating point object and false otherwise.
 %
-%   @iData/isfloat function to return true for float elements
-%   of 's', i.e. that are of type double or single (complex or real).
+%    Single and double are the only floating point data types in MATLAB.
 %
-% input:  s: object or array (iData)
-% output: b: array (int)
-% ex:     b=isfloat(a);
-%
+% Example: s=iData(-10:10); isfloat(s)
+% Version: $Date$ $Version$ $Author$
 % See also iData, iData/sign, iData/isreal, iData/isfinite, iData/isnan,
 %          iData/isinf, iData/isfloat, iData/isinterger,
-%          iData/isnumeric, iData/islogical, iData/isscalar, 
+%          iData/isnumeric, iData/islogical, iData/isscalar,
 %          iData/isvector, iData/issparse
 
-a = iData_private_unary(a, 'isfloat');
-
+v = unary(a, 'isfloat');
+if iscell(v), v=cell2mat(v); end
+v = logical(v);

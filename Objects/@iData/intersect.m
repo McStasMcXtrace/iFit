@@ -1,17 +1,14 @@
 function [ai,bi] = intersect(a, b)
-% [ai,bi] = intersect(a, b) : computes object intersection area and values
+% INTERSECT Object axes intersection.
+%   [AI,BI]=INTERSECT(A,B) for objects A and B, returns the subsets common to
+%   the two objects axes. Resulting objects are returned, e.g. for performing
+%   further operations (e.g. combine, plus, ...).
 %
-%   @iData/intersect function to intersect axes data sets
-%   This function computes the common intersection between data sets
-%   Resulting objects are returned, e.g. for performing further operations
-%     ai = intersect(a) where 'a' is an object array computes intersection of all elements
+%   AI = INTERSECT(A) where 'A' is an object array computes intersection of
+%   all elements
 %
-% input:  a: object or array (iData)
-%         b: object (iData)
-% output: ai: object or array (iData)
-%         bi: object or array (iData)
-% ex:     b=intersect(a, a);
-%
+% Example: a=iData(peaks); b=copyobj(a); moveaxis(a,1,-5); ...
+%   [ai,bi]=intersect(a,b); size(ai,1)==44
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/setaxis, iData/getaxis, iData/interp, iData/union
 
@@ -39,12 +36,11 @@ end
 if all_identical_axes, ai=a; bi=[]; return; end
 
 % compute common axes
-c_axis = iData_private_caxis(a,'intersection');
+c_axis = private_caxis(a,'intersection');
 
 % loop on all iData to interpolate
 ai = zeros(iData, numel(a),1); bi=[];
-
 for index=1:numel(a)
-  ai(index) = interp(a(index), c_axis(1:ndims(a(index))));
+  ai(index) = interpn(a(index), c_axis(1:ndims(a(index))));
 end
 

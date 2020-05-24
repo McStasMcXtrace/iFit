@@ -1,21 +1,15 @@
 function [b,sigma] = cumsum(a,dim)
-% s = cumsum(a,dim) : computes the cumulative sum of iData objects elements
+% CUMSUM Cumulative sum of elements.
+%   S = CUMSUM(A) computes the cumulative sum of objects elements along
+%   columns. S has the same size as A.
 %
-%   @iData/cumsum function to compute the cumulative sum of the elements of the data set
-%     cumsum(a,dim) accumulates along axis of rank dim.
+%   CUMSUM(A,DIM) operates along axis of rank DIM.
 %
-% input:  a: object or array (iData)
-%         dim: dimension to accumulate (int)
-% output: s: accumulated sum of elements (iData)
-% ex:     c=cumsum(a);
-%
+% Example: a=iData(peaks); s=cumsum(a); abs(sum(s,0)+1.79e3) < 0.5
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/plus, iData/sum, iData/prod, iData/cumprod
 
-if ~isa(a, 'iData')
-  iData_private_error(mfilename,[ 'syntax is ' mfilename '(iData, dim)' ]);
-end
 
 if nargin < 2, dim=1; end
 
-[b,sigma] = iData_private_sumtrapzproj(a,dim, 'cumsum');
+[b,sigma] = private_sumtrapzproj(a,dim, 'cumsum');

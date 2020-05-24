@@ -1,21 +1,17 @@
 function [m,id] = min(a,b, dim)
-% [m,id] = min(a,b, dim) : computes the maximum value of iData object(s)
+% MIN    Smallest component.
+%   MIN(A) returns a single value as the minimum value of the object signal.
 %
-%   @iData/min function to compute the maximum value of data sets.
-%     min(iData) returns a single value as the maximum value of the iData signal
-%     min(a,b)   returns an object which signal is the highest of a and b.
-%     min(a,[], dim) returns min value along dimension 'dim'
+%   MIN(A,B) returns an object which signal is the highest of A and B.
 %
-% input:  a: object or array (iData)
-%         b: object or array (iData/double)
-%         dim: dimension on which to operate
+%   MIN(A,[], DIM) returns minimum value along dimension 'DIM'
 %
-% output: m:  maximum value (double/iData)
-%         id: returns the indices of the maximum value (integer)
-% ex:     b=min(a);
+%   [M,I] = MIN(A,...) returns the minimum value/object in M, and the indices
+%   of the minimum values in vector I.
 %
+% Example: a=iData(peaks); round(min(a))==-7
 % Version: $Date$ $Version$ $Author$
-% See also iData, min, iData/max
+% See also iData, max, iData/min
 
 if nargin == 1
   b = [];
@@ -76,6 +72,6 @@ else
   end
 end
 m.Command=cmd;
-m = iData_private_history(m, mfilename, a, b);
+m = history(m, mfilename, a, b);
 
 

@@ -1,15 +1,12 @@
 function a = uplus(a)
-% b = uplus(s) : makes a copy of iData object
+%  +  Unary plus (copyobj).
+%    +A for objects is A. A new object is created, with same content,
+%    but different Tag/ID and Date (same as COPYOBJ).
 %
-%   @iData/uplus function to return a duplicate of data sets.
-%   b=+a creates a new iData object with same content as 'a', but different Tag/ID and Date.
+%    B = UPLUS(A) is called for the syntax '+A'.
 %
-% input:  s: object or array (iData)
-% output: b: object or array (iData)
-% ex:     b=uplus(a);
-%
+% Example: a=iData(peaks); ~isempty(+a)
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/uminus, iData/abs, iData/real, iData/imag, iData/uplus
 
-a = iData_private_unary(a, 'uplus');
-
+a = unary(a, 'uplus');

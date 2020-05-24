@@ -1,17 +1,13 @@
 function b = cat(varargin)
-% s = cat(dim,a,...) : catenate iData objects elements along dimension
+%  CAT Concatenate objects.
+%     CAT(DIM,A,B,C,...) catenates A,B,C, ... along axis of rank dim. The axis 
+%     is then extended. CAT(1,A,...) accumulates on first dimension (columns).
 %
-%   @iData/cat function to catenate iData objects elements along dimension dim
-%     cat(dim,a,b,c,...) catenates along axis of rank dim. The axis is then extended.
-%     cat(1,a,...) accumulates on first dimension (columns)
-%     cat(a,b...)  accumulates on first dimension (columns) (uses dim=1)
-%     cat(0,a,...) catenates objects along a new dimension (dim = ndims(a)+1)
+%     CAT(A,B...)  accumulates on first dimension (columns) (uses dim=1).
 %
-% input:  a: object or array (iData/array of)
-%         dim: dimension to accumulate (int)
-% output: s: catenated data set (iData)
-% ex:     c=cat(1,a,b); c=cat(1,[ a b ]); 
+%     CAT(0,A,...) catenates objects along a new dimension (dim = ndims(A)+1)
 %
+% Example: a=iData(peaks); b=cat(a,a); size(b,1) == 98
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/plus, iData/prod, iData/cumcat, iData/mean
 
@@ -30,7 +26,7 @@ for index=1:length(varargin)
 end
 
 if all(isempty(a))
-  iData_private_error(mfilename,['syntax is cat(dim, iData, ...)']);
+  error([ mfilename ': syntax is cat(dim, iData, ...)']);
 end
 
 myisvector = @(c)length(c) == numel(c);
@@ -43,13 +39,10 @@ end
 if numel(a) <= 1, b=a; return; end
 if dim <= 0, dim=1; end
 
-% removes warnings during interp
-iData_private_warning('enter', mfilename);
-
 % syntax is now: cat(dim,[a b c ... ])
 if ~any(isvector(a)>1)
   % first need to compute union axes, but not for dimension 'dim'
-  c_axis = iData_private_caxis(a,'union');
+  c_axis = private_caxis(a,'union');
   % use common axes on all axes except dim
   for index=1:numel(a)
     x = getaxis(a(index), dim);
@@ -62,7 +55,7 @@ if ~any(isvector(a)>1)
   end
 else
   if dim ~= 1
-    iData_private_warning(mfilename, [' Event data sets can only be catenated one after the other. Using dim=1.']);
+    warning([ mfilename ': Event data sets can only be catenated one after the other. Using dim=1.']);
   end
   dim = 1; % can only catenate one after the other event sets
 end
@@ -160,9 +153,7 @@ for d=1:ndims(a(1))
 end
 
 b.Command=cmd;
-b = iData_private_history(b, mfilename, dim, a(1), a(2));
+b = history(b, mfilename, dim, a(1), a(2));
 
-% reset warnings during interp
-iData_private_warning('exit', mfilename);
 
 

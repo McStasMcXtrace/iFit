@@ -145,7 +145,7 @@ function docNode = parseStruct(s,docNode,curNode,pName)
                 end
             else
                 warning([mfilename ': Warning. The attributes in ' pName curfield ' could not be processed.']);
-                warning(['The correct syntax is: ' pName curfield '.attribute_name = ''Some text''.']);
+                disp(['The correct syntax is: ' pName curfield '.attribute_name = ''Some text''.']);
             end
         elseif (strcmp(curfield,'Text'))
             %Text data

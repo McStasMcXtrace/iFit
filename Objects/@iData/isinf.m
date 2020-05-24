@@ -1,19 +1,11 @@
-function a = isinf(a)
-% b = isinf(s) : True for infinite iData object elements
+function v = isinf(a)
+%  ISINF  True for infinite elements.
+%    ISINF(X) returns an object with Signal as 1's where the
+%    Signal of X is +Inf or -Inf and 0's where it is not.
 %
-%   @iData/isinf function to return true for infinite elements
-%   of 's', i.e. that are +Inf or -Inf 
+%    To remove nan's and inf's values use: fill(s)
 %
-%   To remove nan's and inf's values use: fill(s)
-%
-% input:  s: object or array (iData)
-% output: b: object or array (iData)
-% ex:     b=isinf(a);
-%
+% Example: s=iData([pi NaN Inf -Inf]); all(isinf(s) == [0 0 1 1])
 % Version: $Date$ $Version$ $Author$
-% See also iData, iData/sign, iData/isreal, iData/isfinite, iData/isnan,
-%          iData/isinf, iData/isfloat, iData/isinterger,
-%          iData/isnumeric, iData/islogical, iData/isscalar, 
-%          iData/isvector, iData/issparse, iData/fill
-a = iData_private_unary(a, 'isinf');
-
+% See also iData, iData/isfinite, iData/isnan, iData/fill
+v = unary(a, 'isinf');

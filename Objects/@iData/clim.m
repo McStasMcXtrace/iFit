@@ -1,21 +1,17 @@
 function a = clim(a, lims, exclude)
-% b = clim(s,[ cmin cmax ]) : Reduce iData C axis limits
+% CLIM C limits (4th axis).
+%   CL = CLIM(A)             gets the C limits.
+%   Undefined axis returns [NaN NaN] as limits.
 %
-%   @iData/clim function to reduce the C axis (rank 4) limits
-%     clim(s) returns the current C axis limits. 
-%     Undefined axis returns [NaN NaN] as limits.
+%   CLIM(A,[CMIN CMAX])     sets the C limits. 
 %
-%   clim(s, [min max], 'exclude') removes the specified range instead of keeping it.
+%   CLIM(A,[CMIN CMAX], 'exclude') removes the specified range instead of keeping it.
 %
-% input:  s: object or array (iData)
-%         limits: new axis limits (vector)
-% output: b: object or array (iData)
-% ex:     b=clim(a);
-%
+% Example: a=iData(flow); all(isnan(clim(a)))
 % Version: $Date$ $Version$ $Author$
-% See also iData, iData/plot, iData/ylabel
+% See also iData, iData/plot, iData/clabel
 
-% handle input iData arrays
+% handle input arrays
 if nargin < 2, lims = ''; end
 if nargin < 3, exclude = ''; end
 if numel(a) > 1
@@ -28,9 +24,6 @@ if numel(a) > 1
   else
     a = s;
   end
-  if nargout == 0 & nargin == 2 & ~isempty(inputname(1))
-    assignin('caller',inputname(1),a);
-  end
   return
 end
 
@@ -42,17 +35,14 @@ if isempty(lims)
 end
 
 if ~isempty(exclude)
-  index=find(lims(1) > axisvalues | axisvalues > lims(2));
+  index=find(lims(1) >= axisvalues | axisvalues >= lims(2));
 else
-  index=find(lims(1) < axisvalues & axisvalues < lims(2));
+  index=find(lims(1) <= axisvalues & axisvalues <= lims(2));
 end
 s.type='()';
 s.subs={ ':', ':', ':', index };
 cmd=a.Command;
 a = subsref(a,s);
 a.Command=cmd;
-a=iData_private_history(a, mfilename, a, lims);
+a=history(a, mfilename, a, lims);
 
-if nargout == 0 & length(inputname(1))
-  assignin('caller',inputname(1),a);
-end

@@ -1,19 +1,12 @@
-function a = isnan(a)
-% b = isnan(s) : True for NaN iData object elements
+function b = isnan(a)
+%  ISNAN  True for Not-a-Number (NaN).
+%    ISNAN(X) returns an array that contains 1's where
+%    the elements of X are NaN's and 0's where they are not.
 %
-%   @iData/isnan function to return true for NaN elements
-%   of 's', i.e. that are NaN ('not a number')
+%    To remove nan's and inf's values use: fill(s)
 %
-%   To remove nan's and inf's values use: fill(s)
-%
-% input:  s: object or array (iData)
-% output: b: object or array (iData)
-% ex:     b=isnan(a);
-%
+% Example: s=iData([pi NaN Inf -Inf]); all(isnan(s) == [0 1 0 0])
 % Version: $Date$ $Version$ $Author$
-% See also iData, iData/sign, iData/isreal, iData/isfinite, iData/isnan,
-%          iData/isinf, iData/isfloat, iData/isinterger,
-%          iData/isnumeric, iData/islogical, iData/isscalar, 
-%          iData/isvector, iData/issparse, iData/fill
+% See also iData, iData/isfinite, iData/isinf, iData/fill
 
-a = iData_private_unary(a, 'isnan');
+b = unary(a, 'isnan');

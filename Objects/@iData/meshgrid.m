@@ -1,26 +1,26 @@
 function b = meshgrid(a, varargin)
-% s = meshgrid(a) : transforms an iData object so that its axes are grids
+% MESHGRID Object rebinned onto grid axes.
+%   B = MESHGRID(A) transforms object axes so that they are on a regular grid, 
+%   as obtained from ndgrid. When the initial axes are not perpendicular/regular,
+%   the object Signal is interpolated on the new grid.
+%   A meshgrid histogram can be converted back into an event list with the EVENT 
+%   method.
 %
-%   @iData/meshgrid function to transform iData object axes so that they are
-%     on a regular grid, as obtained from ndgrid. When the initial axes are not
-%     perpendicular/regular, the object Signal is interpolated on the new grid.
-%   meshgrid(a, 'vector' ...) forces all axes as vectors
-%   meshgrid(a, 'grid' ...)   forces all axes as grid with same size as Signal
-%   meshgrid(a, dims, ...)    specifies the size of the histogram
-%   meshgrid(a, 'fill' ...)   fills empty histogram bins (e.g. when converting from an event list)
-%   meshgrid(a, 'method' ...) uses specified method for interpolation as one of
-%                    linear (default), spline, cubic, or nearest
+%   B = MESHGRID(A, [M N ...]) specifies the size of the rebinned histogram. When
+%   given as a single scalar value M, the same dimension is used for all axes.
 %
-%   A meshgrid histogram can be converted back into an event list with the 'event' method.
+%   B = MESHGRID(..., 'vector') requests all axes to be set as vectors.
 %
-% input:  a: object or array (iData)
-%         method: 'linear','cubic','spline','nearest'
-%                 'vector' to get only vector axes
-%                 'fill'   to replace NaN's in the final data set
-% output: s: object (iData)
-% ex:     c=meshgrid(a); c=meshgrid(a, 'vector linear')
-%         c=meshgrid(a, 100, 'fill')
+%   B = MESHGRID(..., 'grid') requests all axes as grid with same size as Signal
 %
+%   B = MESHGRID(..., 'fill') fills empty histogram bins (e.g. when converting 
+%   from an event list) will FILL so that the final object has no NaN's and empty
+%   bins.
+%
+%   B = MESHGRID(..., METHOD ...) uses specified METHOD for interpolation as one of
+%   'linear' (default), 'spline', 'cubic', or 'nearest'.
+%
+% Example: a=iData(peaks); b=meshgrid(a, 101); size(b,1)==101
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/interp, iData/hist, iData/event, iData/fill
 
@@ -56,7 +56,7 @@ end
 myisvector = @(c)length(c) == numel(c);
 for index=1:ndims(a)
   v = getaxis(a, index);
-  
+
   % compute the initial axis length
   if myisvector(v), a_len = numel(v);
   else            a_len = size( v, index);
@@ -80,14 +80,14 @@ if isvector(a) > 2
 end
 
 % create a regular grid
-[f_axes, changed] = iData_meshgrid(a, n_dims, method);
+[f_axes, changed] = private_meshgrid(a, n_dims, method);
 fillme            = strfind(method, 'fill');
 method            = strtrim(strrep(method, 'vector', ''));
 
 b = copyobj(a);
 % interpolate if needed
 if changed
-  b = interp(b, f_axes, method);
+  b = interpn(b, f_axes, method);
 else
   % transfer grid axes to object
   for index=1:length(f_axes)

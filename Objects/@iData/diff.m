@@ -1,15 +1,10 @@
 function a = diff(a)
-% b = diff(s) : computes the difference long 1st axis of iData object
+% DIFF Difference and approximate derivative along 1st axis.
+%   B = DIFF(A) compute the difference along rows, that is the
+%   gradient for the 1st axis (rows).
 %
-%   @iData/diff function to compute the difference along rows, that is the 
-%     gradient for the 1st axis (rows).
-%
-% input:  s: object or array (iData)
-% output: b: object or array (iData)
-% ex:     b=diff(a);
-%
+% Example: a=iData(peaks); b=diff(a); sum(b,0) < 1
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/gradient, iData/sum, iData/trapz, iData/jacobian
 
 a = gradient(a, 1);
-

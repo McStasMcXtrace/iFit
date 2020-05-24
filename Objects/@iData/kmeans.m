@@ -1,27 +1,15 @@
 function [s,c] = kmeans(a, k, method)
-% [b,c] = kmeans(X, k) : k-means clustering of iData object
+% KMEANS k-means clustering.
+%   B = KMEANS(X,K) partitions the Signal in the object X into K clusters.
+%   The resulting object Signal contains numbers from 1 to 'K' which are indices
+%   of classes/partitions/groups/clusters. When no cluster can be found, the 
+%   result is empty. B = KMEANS(X) assumes k=2 partitions.
 %
-%   @iData/kmeans function to partition the object X into k classes.
+%   [B,C] = KMEANS(X,K) also returns the centroid of the clusters.
 %
-%   b = kmeans(X,k) partitions the Signal in the iData object X into k clusters.
-%     The resulting object Signal contains numbers from 1 to 'k' which are indices
-%     of segments/partitions.
-%     When no cluster can be found, the result is empty.
-%   b = kmeans(X)   assumes k=2 partitions
+%   B = KMEANS(X, K, 'otsu') uses the Otsu method, for 2D data sets
 %
-%   [b,c] = kmeans(X,k) also returns the centroid of the clusters/partitions/segments.
-%
-%   b = kmeans(X, k, 'otsu')
-%     uses the Otsu method, for 2D data sets
-%   b = kmeans(X, k, 'kmeans++')
-%     uses the K-means++ method, for 2D data sets
-%
-% input:  X: object or array (iData)
-%         k: number of partitions wanted (integer, default is 2)
-%         method: '' for default, 'otsu' for Otsu method (only for 2D images).
-% output: b: object or array with partition indices (iData)
-%         c: centroid locations of clusters
-% ex:     a=iData(peaks); b=kmeans(a);
+%   B = KMEANS(X, K, 'kmeans++') uses the K-means++ method, for 2D data sets
 %
 % See: https://en.wikipedia.org/wiki/K-means_clustering
 % See: https://en.wikipedia.org/wiki/K-means%2B%2B
@@ -36,8 +24,10 @@ function [s,c] = kmeans(a, k, method)
 %   [2] D. Arthur and S. Vassilvitskii, "k-means++: The Advantages of
 %       Careful Seeding", Technical Report 2006-13, Stanford InfoLab, 2006.
 %
+% Example: a=iData(peaks); b=kmeans(a);
 % Version: $Date$ $Version$ $Author$
-% See also iData, iData/uminus, iData/abs, iData/real, iData/imag, iData/uplus
+% See also iData, iData/uminus, iData/abs, iData/real, iData/imag, 
+%   iData/uplus
 
 if nargin < 2
   k = 2;
@@ -92,21 +82,18 @@ end
 
 % create the final object
 s=copyobj(a); 
-s=iData_private_history(s, mfilename, a, k, method);
+s=history(s, mfilename, a, k, method);
 
 s=set(s, 'Signal', X, 'Error', 0);
-s=label(s, 0, 'Clusters/partitions');
+label(s, 0, 'Clusters/partitions');
 
 % compute centroids
 if nargout > 1 && any(X(:) > 0)
-  % removes warnings during interp
-  iData_private_warning('enter', mfilename);
   for index=1:k
     % use std method with background subtraction
     [this_w, this_c] = std(a.*(X == index), -(1:ndims(a)));
     c = [ c ; this_c ];
   end
-  iData_private_warning('exit', mfilename);
 end
 
 end % function

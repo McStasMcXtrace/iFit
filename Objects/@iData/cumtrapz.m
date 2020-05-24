@@ -1,24 +1,16 @@
 function b = cumtrapz(a,dim)
-% s = cumtrapz(a,dim) : computes the cumulative product of iData objects elements
+% CUMTRAPZ Cumulative trapezoidal numerical integration.
+%   S = CUMTRAPZ(A) computes the cumulative integral (primitive) of the data set.
 %
-%   @iData/cumtrapz function to compute the cumulative integral (primitive) of the data set
-%     cumtrapz(a,dim) operates along axis of rank dim. The axis is then removed.
-%       default is to use dim=1. If dim=0, integration is done on all axes and 
-%       the total is returned as a scalar value. 
-%       cumtrapz is complementary to cumsum and camproj, but takes into account axes.
+%   CUMTRAPZ(A,DIM) operates along axis of rank DIM. The axis is then removed.
+%   Default is to use DIM=1. If DIM=0, integration is done on all axes and 
+%   the total is returned as a scalar value. 
+%   CUMTRAPZ is complementary to CUMSUM and CAMPROJ, and takes into account axes.
 %
-% input:  a: object or array (iData)
-%         dim: dimension to integrate (int)
-% output: s: accumulated integral of elements, i.e. primitive (iData)
-% ex:     c=cumtrapz(a);
-%
+% Example: a=iData(peaks); t=cumtrapz(a); abs(sum(t,0)+2.1330e+03) < 0.1
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/plus, iData/sum, iData/prod, iData/cumsum
 
-if ~isa(a, 'iData')
-  iData_private_error(mfilename,[ 'syntax is ' mfilename '(iData, dim)' ]);
-end
-
 if nargin < 2, dim=1; end
 
-b = iData_private_sumtrapzproj(a,dim, 'cumtrapz');
+b = private_sumtrapzproj(a,dim, 'cumtrapz');

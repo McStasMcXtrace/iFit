@@ -1,17 +1,13 @@
 function a = ylim(a, lims, exclude)
-% b = ylim(s,[ ymin ymax ]) : Reduce iData Y axis limits
+% YLIM Y limits (1st axis for ndims>=2).
+%   YL = YLIM(A)            gets the Y limits.
+%   Undefined axis returns [NaN NaN] as limits.
 %
-%   @iData/ylim function to reduce the Y axis (rank 1, rows) limits
-%     ylim(s) returns the current Y axis limits. 
-%     Undefined axis returns [NaN NaN] as limits.
+%   YLIM(A,[YMIN YMAX])     sets the Y limits. 
 %
-%   ylim(s, [min max], 'exclude') removes the specified range instead of keeping it.
+%   YLIM(A,[YMIN YMAX], 'exclude') removes the specified range instead of keeping it.
 %
-% input:  s: object or array (iData)
-%         limits: new axis limits (vector)
-% output: b: object or array (iData)
-% ex:     b=ylim(a);
-%
+% Example: a=iData(peaks); b=ylim(a,[5 35]); all(ylim(b)==[5 35])
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/plot, iData/ylabel
 
@@ -42,9 +38,9 @@ if isempty(lims)
 end
 
 if ~isempty(exclude)
-  index=find(lims(1) > axisvalues | axisvalues > lims(2));
+  index=find(lims(1) >= axisvalues | axisvalues >= lims(2));
 else
-  index=find(lims(1) < axisvalues & axisvalues < lims(2));
+  index=find(lims(1) <= axisvalues & axisvalues <= lims(2));
 end
 s.type='()';
 if ndims(a) > 1 && numel(axisvalues) == max(size(axisvalues))
@@ -56,7 +52,7 @@ end
 cmd=a.Command;
 a = subsref(a,s);
 a.Command=cmd;
-a=iData_private_history(a, mfilename, a, lims);
+a=history(a, mfilename, a, lims);
 
 if nargout == 0 & length(inputname(1))
   assignin('caller',inputname(1),a);

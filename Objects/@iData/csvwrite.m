@@ -1,7 +1,11 @@
 function f=csvwrite(a, filename)
-% f = csvwrite(s, filename, options) : save iData object into a Comma Separated Values (CSV) file
+% CSVWRITE Write a comma-separated value file.
+%   F = CSVWRITE(S, FILENAME) writes object S into FILENAME as comma-separated 
+%   values.
 %
-%   @iData/csvwrite function to save data sets as a CSV
+% Example: f=csvwrite(iData(peaks)); tf=~isempty(dir(f)); delete(f); tf
+% Version: $Date$ $Version$ $Author$
+% See also iData, iData/saveas
 
 
   if nargin < 2, filename = []; end

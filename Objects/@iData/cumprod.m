@@ -1,20 +1,14 @@
 function [b,sigma] = cumprod(a,dim)
-% s = cumprod(a,dim) : computes the cumulative product of iData objects elements
+% CUMPROD Cumulative product of elements.
+%   P = CUMPROD(A) computes the cumulative product of objects elements along
+%   columns. P has the same size as A.
 %
-%   @iData/cumprod function to compute the cumulative product of the elements of the data set
-%     cumprod(a,dim) operates along axis of rank dim.
+%   CUMPROD(A,DIM) operates along axis of rank DIM.
 %
-% input:  a: object or array (iData)
-%         dim: dimension to accumulate (int)
-% output: s: accumulated product of elements (iData)
-% ex:     c=cumprod(a);
-%
+% Example: a=iData(peaks); p=cumprod(a); abs(sum(p,0)-9.1739e+16) < 5e11
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/plus, iData/sum, iData/prod, iData/cumprod
-if ~isa(a, 'iData')
-  iData_private_error(mfilename,[ 'syntax is ' mfilename '(iData, dim)' ]);
-end
 
 if nargin < 2, dim=1; end
 
-[b,sigma] = iData_private_sumtrapzproj(a,dim, 'cumprod');
+[b,sigma] = private_sumtrapzproj(a,dim, 'cumprod');

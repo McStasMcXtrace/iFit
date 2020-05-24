@@ -1,39 +1,37 @@
 function c = xcorr(a,b, shape)
-% c = xcorr(a,b,shape) : computes the correlation of iData objects
+% XCORR N-dimensional correlation of objects.
+%   C = XCORR(A,B) correlates A and B objects. The correlation is
+%   defined as a convolution with the FFT of B conjugated.
 %
-%   @iData/xcorr function to compute the correlation of data sets (FFT based).
-%     A decorrelation mode is also possible with e.g. 
-%       shape='same center deconv' or shape='same center iter'. 
-%     When only one argument is given, the auto-correlation is computed.
+%   C = XCORR(A, width) correlates A with a Gaussian function which width
+%   can be given as a single scalar (same width along all dimensions),
+%   or a vector of same length as the object dimension.
 %
-% input:  a: object or array (iData or numeric)
-%         b: object or array (iData or numeric)
-%     shape: optional shape of the return value
-%          full         Returns the full two-dimensional correlation.
-%          same         Returns the central part of the correlation of the same size as a.
-%          valid        Returns only those parts of the correlation that are computed
-%                       without the zero-padded edges. Using this option, y has size
-%                       [ma-mb+1,na-nb+1] when all(size(a) >= size(b)).
-%          deconv       Performs an FFT deconvolution.
-%          deconv_iter  Performs an iterative deconvolution.
-%          pad          Pads the 'a' signal by replicating its starting/ending values
-%                       in order to minimize the correlation side effects
-%          center       Centers the 'b' filter so that correlation does not shift
-%                       the 'a' signal.
-%          normalize    Normalizes the 'b' filter so that the correlation does not
-%                       change the 'a' signal integral.
-%          background   Remove the background from the filter 'b' (subtracts the minimal value)
-%     Default shape is 'same center'
+%   C = XCORR(A, B, SHAPE) returns the correlation with size and behaviour
+%   specified by SHAPE:
+%     'full'       returns the full convolution.
+%     'same'       (default) returns the central part of the convolution
+%                    that is the same size as A.
+%     'valid'      returns only those parts of the convolution that are computed
+%                    without the zero-padded edges.
+%     'pad'        pads the A signal by replicating its starting/ending values
+%                    in order to minimize the convolution side effects.
+%     'center'     centers the B filter so that convolution does not shift
+%                    the A signal.
+%     'normalize'  normalizes the B filter so that the convolution does not
+%                    change the A signal integral.
+%     'background' removes the background from B (subtracts the minimal value)
+%     'inverse'    performs an FFT decorrelation.
+%     'iterative'  performs an iterative decorrelation.
+%   Default SHAPE is 'same center'. Multiple keywords are allowed, for
+%   instance 'same pad background center normalize'.
 %
-% output: c: object or array (iData)
-% ex:     c=xcorr(a,b); c=xcorr(a,b, 'same pad background center normalize');
-%
+% Example: a=iData(hist(randn(1,1000))); b=xcorr(a); std(a) < std(b)
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/times, iData/convn, iData/fft, convn, fconv, fconvn
 if nargin ==1
-	b = a;
+  b = a;
 end
 if nargin < 3, shape = 'same center'; end
 
 c = conv(a, b, [ shape ' correlation' ]);
-

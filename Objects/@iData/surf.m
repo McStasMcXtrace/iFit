@@ -1,20 +1,18 @@
 function h = surf(a, option)
-% h = surf(s,option) : Plot a 2D/3D object as surface
+% SURF   3-D colored surface.
+%   H = SURFL(S) plot a 2D/3D object as a surface.
+%     2D objects are shown as a surface.
+%     3D objects are shown as an isosurface with median value.
+%   The plot graphic object handle H is returned.
+%   You may also use the SLICE(S) method to open an interactive 3D viewer.
 %
-%   @iData/surf function to plot a 2D or 3D object
-%     2D objects are shown as a surface
-%     3D objects are shown as an isosurface with median value
-%     The slice(a) method opens the interactive sliceomatic 3D viewer.
-%
-% input:  s: object or array (iData)
-%         option: global option for 2D and 3D plots: 
+%   H = SURFL(...,'OPTION') specifies plot options for 2D and 3D plots: 
 %                 flat, interp, faceted (for shading)
 %                 transparent, light, clabel
 %                 axis tight, axis auto, view2, view3
 %                 painters (bitmap drawing), zbuffer (vectorial drawing)
-% output: h: graphics object handles (cell)
-% ex:     surf(iData(peaks)); surf(iData(flow));
 %
+% Example: h=surfc(iData(flow)); tf=ishandle(h); delete(gcf); tf
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/plot, iData/colormap, iData/caxis, iData/mesh
 %          iData/slice, iData/contour3, iData/contourf, iData/mesh

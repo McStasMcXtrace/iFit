@@ -1,14 +1,10 @@
 function c = sqr(a)
-% c = sqr(a) : computes the square of iData objects
+% SQR computes the square of object.
+%   SQR(X) has its Signal squared, and is equivalent to POWER(X,2).
 %
-%   @iData/sqr function to compute the square of data sets
-%
-% input:  a: object or array (iData)
-% output: c: object or array (iData)
-% ex:     c=sqr(a);
-%
+% Example: s=iData(0:10); all(sqr(s) == (0:10).^2)
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/times, iData/power
 
-c = iData_private_binary(a, 2, 'power');
+c = binary(a, 2, 'power');
 

@@ -1,46 +1,39 @@
-function [s, f] = std(a, dim)
-% [half_width, center] = std(s, dim) : standard deviation of iData
+function [w,c] = std(a, dim)
+% STD Standard deviation of object.
+%  [W, C] = STD(A) computes the standard deviation of object A, that is
+%  their gaussian half width W (second moment). Optionally, the distribution  
+%  center C (first moment) can be returned as well.
+%  The minimum value object value (background) is subtracted before estimating
+%  moments.
 %
-%   @iData/std function to compute the standard deviation of objects, that is
-%     their gaussian half width (second moment). Optionally, the distribution  
-%     center (first moment) can be returned as well.
-%   std(a, dim) computes standard deviation along axis of rank 'dim'.
-%     When omitted, dim is set to 1.
-%   std(a, -dim)
-%     Using a negative dimension will subtract minimum signal value to signal
-%       before computation of std, that is remove background. This may be
-%       needed to avoid an imaginary result.
-%   std(a, 0) computes std(Signal) and mean(Signal).
+%  [W,C] = STD(A, DIM) computes standard deviation along axis of rank 'dim'.
+%  When omitted, dim is set to 1. DIM can be given as an array to iteratively
+%  compute the width and center of projected distributions along all given axes.
 %
-% input:  a: object or array (iData/array of)
-%         dim: dimension to use. Negative dim subtract background (int/array)
-% output: half_width: standard deviation (scalar/array)
-%         center:     center of distribution (scalar/array)
-% ex:     a=iData(peaks); c=std(a);
+%  [W,C] = STD(A, -DIM) does not subtract the minimum object value (background) before 
+%  computing the width and center. This may result in imaginary values.
 %
+%  [W,C] = STD(A, 0) computes std(Signal) and mean(Signal).
+%
+% Example: a=iData(peaks); round(std(a))==14
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/median, iData/mean
-
+w = []; c = [];
 if nargin < 2, dim=1; end
 if numel(a) > 1
-  s = []; f = [];
   for index=1:numel(a)
-    [si, fi] = std(a(index), dim);
-    s = [ s si ];
-    f = [ f fi ];
+    [wi, ci] = std(a(index), dim);
+    w = [ w wi ];
+    c = [ c ci ];
   end
   return
 end
 
-inputname1 = inputname(1);
-if isempty(inputname1), inputname1 = 'iData'; end
-
 if length(dim) > 1
-  s = []; f = [];
   for index=1:length(dim)
-    [si, fi] = std(a, dim(index));
-    s = [ s si ];
-    f = [ f fi ];
+    [wi, ci] = std(a, dim(index));
+    w = [ w wi ];
+    c = [ c ci ];
   end
   return
 end
@@ -50,39 +43,64 @@ if abs(dim) > ndims(a)
 end
 
 if dim == 0
-  s = double(a);
-  f = mean(s(:));
-  s = std(s(:));
+  w = double(a);
+  c = mean(w(:));
+  w = std(w(:));
+  return
+end
+
+% use cache when available for faster execution
+if isfield(a.Private,'cache') && dim > 0 ...
+  if isfield(a.Private.cache,'std_w') && ~isempty(a.Private.cache.std_w)
+    w = a.Private.cache.std_w;
+    if numel(w) >= dim && w(dim), w = w(dim); else w = []; end
+  end
+  if  isfield(a.Private.cache,'std_c') && ~isempty(a.Private.cache.std_c)
+    c = a.Private.cache.std_c;
+    if numel(c) >= dim && c(dim), c = c(dim); else c = []; end
+  end
+end
+
+if ~isempty(w) && (nargout == 1 || ~isempty(c))
   return
 end
 
 % we first compute projection of iData on the selected dimension
-if ~isvector(a) || length(a.Alias.Axis) < ndims(a)
-  a = meshgrid(a); % make it a clean grid style data set
+if ~isvector(a) || length(a.Axes) < ndims(a)
+  b = meshgrid(a); % make it a clean grid style data set
+else b = a;
 end
 
-iData_private_warning('enter', mfilename);
-s = getaxis(a,'Signal'); 
-x = getaxis(a, abs(dim));
-iData_private_warning('exit', mfilename);
+s = getaxis(b, 'Signal'); 
+x = getaxis(b, abs(dim));
 
 s=s(:); x=x(:);
 if ~isfloat(s), s=double(s); end
 if ~isfloat(x), s=double(x); end
 
 % then we compute sum(axis{dim}.*Signal)/sum(Signal)
-s = iData_private_cleannaninf(s);
-if (dim < 0)
+s = private_cleannaninf(s);
+if (dim > 0)
   s = s - min(s);
 end
 
 sum_s = sum(s);
 % first moment (mean)
-f = sum(s.*x)/sum_s; % mean value
+c = sum(s.*x)/sum_s; % mean value
 
 % second moment: sqrt(sum(x^2*s)/sum(s)-fmon_x*fmon_x);
-s = sqrt(sum(x.*x.*s)/sum_s - f*f);
-if ~isreal(s) && dim > 0
-  warning([ mfilename ': WARNING: the computed standard deviation is imaginary. You should use std(' inputname1 ', ' num2str(-dim) ')' ])
+w = sqrt(sum(x.*x.*s)/sum_s - c*c);
+
+if dim > 0
+  % store in cache
+  a.Private.cache.std_w(dim) = w;
+  a.Private.cache.std_c(dim) = c;
+elseif ~isreal(w) && dim < 0
+  inputname1 = inputname(1);
+  if isempty(inputname1), inputname1 = class(a); end
+  if a.verbose
+    warning([ mfilename ': The computed standard deviation is imaginary. ' ...
+    'You should use std(' inputname1 ', ' num2str(-dim) ')' ])
+  end
 end
 

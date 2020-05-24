@@ -1,341 +1,636 @@
-classdef iData
-% d = iData(a, ...) : iData class object constructor
-%
-% The iData objects are the containers where to import your data sets. It is then
-% possible to Load, Plot, apply Math operators, Fit, and Save.
-%
-% Creates an iData object which contains data along with additional information.
-%   An iData object may store any Data, and define its Signal, Error, Monitor, 
-%     and Axes as aliases refering to e.g. parts of the Data.
-%   The input argument 'a', is converted into an iData object. It may be:
-%     a scalar/vector/matrix
-%       iData(1:100)
-%     a string giving a file name to load. Use alternatively iData/load.
-%       iData('filename_data')
-%     a structure
-%     a cell array which elements are imported separately
-%     a iData object (updated if no output argument is specified).
-%   The special syntax iData(x,y, .., c) creates an iData with
-%     signal c and axes x,y, ...
-%   The syntax iData(iFunc object, pars, axes) evaluates the iFunc model using the 
-%     iData object axes, and returns the model value as an iData object.
-%   The output argument is a single object or array of iData.
-%   Input arguments may be more than one, or given as cells.
-%
-% When used with file names, compressed files may be used, as well as URLs and internal
-%   anchor reference using the '#' character, such as in 'http://path/file.zip#Data'.
-%
-% Type <a href="matlab:doc(iData)">doc(iData)</a> to access the iFit/iData Documentation.
-% Refer to <a href="matlab:doc iData/load">iData/load</a> for more information about loading data sets.
-% iData is part of iFit http://ifit.mccode.org 
-%
-% examples:
-%   d=iData('filename'); a=iData('http://filename.zip#Data');
-%   d=iData(rand(10));
-%
-% Version: $Date$ $Version$ $Author$
-% See also: iData, iData/load, methods, iData/setaxis, iData/setalias, iData/doc
+classdef iData < dynamicprops
+% IDATA Create or convert to an iData object.
+%   S = IDATA('field1',VALUES1,'field2',VALUES2,...) creates
+%   an object with the specified fields and values (as properties).
+%   IDATA is similar to STRUCT, but is designed to hold scientific data.
+%   After creation, it can be manipulated as a normal array.
 % 
-
-% object definition and converter
-% EF 23/09/07 iData implementation
-% ============================================================================
-% internal functions
-%   iData_struct2iData
-%   iData_num2iData
-%   iData_cell2iData
-%   iData_check
-%   load_clean_metadata
+%   IDATA(a,b,c,...) imports input arguments into an iData object.
+%   IDATA(X,Y,... Signal) sets the Signal to the last given numeric array, and
+%   the axes as the previous vectors/arrays.
+% 
+%   IDATA('filename') imports the file name and store its content into a Data property.
+%   Multiple files can be given, each producing a distinct object arranged
+%   into an array. File names can also be given as URL (file: http: https: ftp:)
+%   and/or be compressed (zip, gz, tar, Z). The import uses a guessed importer
+%   and does not apply any post-process filter (raw data from file).
+%   Use 'LOAD(iData, file, loader)' to specify the importer and apply
+%   post-processing.
+%
+%   IDATA silent|verbose|debug sets the verbosity level. The verbosity level is
+%   common to all objects and methods. You may also change the verbosity (level
+%   of output messages) with the 'verbose' property, e.g.
+%     a=iData; a.verbose = 1;
+%   A null verbosity corresponds with no messages (silent). 
+%
+%   IDATA(OBJ) when OBJ is an IDATA checks for object consistency and return.
+%   IDATA(OBJ) converts the object OBJ into its equivalent
+%   iData.  The initial class information is lost.
+% 
+%   IDATA([]) creates an empty object.
+%
+%   Example: s = iData('type',{'big','little'},'color','red','x',{3 4}); isstruct(s)
+%   Example: s = iData(1:10); isstruct(s)
+%   Version: $Date$ $Version$ $Author$
+%   See also iData/load, isstruct, setfield, getfield, fieldnames, orderfields,
+%     isfield, rmfield, deal, substruct, struct2cell, cell2struct.
 
 properties
-  Tag          = 0;           % Unique ID
-  Title        = '';          % Data title
-  Source       = pwd;         % Origin of data (filename/path)
-  Creator      = [];          % Creator (program) name
 
-  
-  User         = '';          % User ID
-  Date         = clock;       % Creation Date
-  ModificationDate  = '';     % Modification Date
-  Command      = '';          % Matlab commands/history of the object
-  UserData     = '';          % User data storage area
-  Label        = '';          % User label (color, tag, ...)
-  DisplayName  = '';          % User name for handling data set as a variable and legends
-  
-  Data         = [];          % Data storage area
-  Alias        = {};          % Holds all defined aliases
-  class = mfilename;          % Class of the object, e.g iData or other derived class
-  
-end % properties
-  
-methods
-  function out = iData(varargin)
-    % instantiate an iData object from input arguments
-  
-    user         = getenv('USER');
-    if isempty(user), user = getenv('HOME'); end
-    if isempty(user), user = getenv('TEMP'); end % gives User name on Windows systems
-    
-    out.Alias.Names  ={ ...
-          'Signal','Error','Monitor'}; % (cell) Alias names
-                                  % special alias: signal
-                                  % special alias: errors on signal
-                                  % special alias: monitor (statistical weight)
-    out.Alias.Values ={'','',''};   % (cell) Alias values=string pointing to this Data/object or expr
-    out.Alias.Labels ={...          % (cell) Alias labels/descriptions
-          'Data Signal','Error on Signal','Monitor (weight)'};  
-    out.Alias.Axis   ={};           % (cell) ordered list of axes names (Aliases)  
-    
-    out=iData_private_newtag(out);    % assign a new Tag/ID
-    out.Command      = { [ 'iData %% create ' out.Tag ] };
-    out.Creator      = version(out);    % Creator (program) name
-    out.ModificationDate  = out.Date; % modification Date
-    
-    if nargin == 0, return; end
+    % MetaData properties (sorted in alpha order)
+    Creator         = mfilename;  % The Creator/Software of the object
+    Command         ={};          % The history of the object (cellstr)
+    Date            = clock;      % The Date of creation of the object
+    Data            =[];          % Where we store most of the Data
+    Label           ='';          % The label of the object
+    ModificationDate=[];          % The Date of last modification
+    Name            ='';          % The Name/Title of the object
+    Source          = pwd;        % The data source
+    User            = getenv('USER'); % Who created the object
+    UserData        =[];          % An area to store what you want
+    Tag             ='';          % A unique ID for the object
 
-    if isa(varargin{1}, 'iData') && numel(varargin{1}) > 1
-      % iData(iData array)
-      out = varargin{1};
-      for index=1:numel(out)
-        out(index) = iData(out(index));        % check all elements
-      end
-      if nargout == 0 && ~isempty(inputname(1))
-        assignin('caller',inputname(1),out)
-      end
-      return
-    elseif isa(varargin{1}, 'iData')
-      % iData(iData single)
-      out = varargin{1};                     % just makes a check
-    elseif ~isa(varargin{1}, 'iData') && isnumeric(varargin{1}) && length(varargin) > 1  % array -> iData
-      % iData(x,y,..., signal)
-      index = length(varargin);
-      out   = iData(varargin{index});  % last argument is the Signal
-      if ~isempty(inputname(index)) && any(~isfield(out, inputname(index)))
-        out = setalias(out, inputname(index), 'Signal');
-      end
+  end % properties
+
+  properties (Access=private, Hidden=true)     % internal use
+
+    Private
+    % Data handling: Signal, Axes, ...
+    Labels  = struct(); % struct: Labels.Signal, ... Labels.Axes{1:ndims}
+    Axes    = {};       % cell{1:ndims} e.g. aliases
+    verbose = 0;        % 0:silent, 1:normal, 2:debug
+    Attributes = [];    % field attributes. Map the object structure.
+    DisplayName='';     % The apparent name of the object, e.g. for plots. Alias to Label.
+  end
+
+  properties (Access=protected, Constant=true)  % shared by all instances
+    properties_Protected={'properties_Protected','properties_Base', ...
+      'Axes','Tag','Private','Labels' } % can not be changed manually
+    properties_Base={'Creator', 'Command', 'Date', 'Data', 'DisplayName', ...
+      'Label', 'ModificationDate', 'Source', 'Tag', 'Name', 'User', 'UserData', ...
+      'Attributes' };
+  end
+  
+  events
+    % These are inherited from dynamicprops
+    % PropertyAdded
+    % PropertyRemoved
+    % ObjectBeingDestroyed
+    ObjectUpdated % triggered when a check is done
+    ObjectPlotted % triggered when the object is plotted
+  end % events
+
+% ------------------------------------------------------------------------------
+
+  methods
+    function new = iData(varargin)
+    % IDATA Create or convert to an iData object.
+    %   S = IDATA('field1',VALUES1,'field2',VALUES2,...) creates
+    %   an object with the specified fields and values (as properties).
+    %   IDATA is similar to STRUCT, but is designed to hold scientific data.
+    %   After creation, it can be manipulated as a normal array.
+    % 
+    %   IDATA(a,b,c,...) imports input arguments into an iData object.
+    %   IDATA(X,Y,... Signal) sets the Signal to the last given numeric array, and
+    %   the axes as the previous vectors/arrays.
+    % 
+    %   IDATA('filename') imports the file name and store its content into a Data property.
+    %   Multiple files can be given, each producing a distinct object arranged
+    %   into an array. File names can also be given as URL (file: http: https: ftp:)
+    %   and/or be compressed (zip, gz, tar, Z). The import uses a guessed importer
+    %   and does not apply any post-process filter (raw data from file).
+    %   Use 'LOAD(iData, file, loader)' to specify the importer and apply
+    %   post-processing.
+    %
+    %   IDATA silent|verbose|debug sets the verbosity level. The verbosity level is
+    %   common to all objects and methods. You may also change the verbosity (level
+    %   of output messages) with the 'verbose' property, e.g.
+    %     a=iData; a.verbose = 1;
+    %   A null verbosity corresponds with no messages (silent). 
+    %
+    %   IDATA(OBJ) when OBJ is an IDATA checks for object consistency and return.
+    %   IDATA(OBJ) converts the object OBJ into its equivalent
+    %   iData.  The initial class information is lost.
+    % 
+    %   IDATA([]) creates an empty object.
+    %
+    % Example: s = iData('type',{'big','little'},'color','red','x',{3 4}); ...
+    %          isstruct(s)
+    % Version: $Date$ $Version$ $Author$
+    % See also iData.load, isstruct, setfield, getfield, fieldnames, orderfields,
+    %   isfield, rmfield, deal, substruct, struct2cell, cell2struct.
+
+      persistent meth
+
+      if isempty(meth), meth = methods(mfilename); end
       
-      % handle axes
-      for k1=1:(index-1)
-        % in plotting convention, X=2nd, Y=1st axis
-        % if     k1 <= 2 && ndims(out) >= 2, k2 = 3-k1; 
-        % else   k2 = k1; end
-        k2 = k1;
-        out = set(out,    [ 'Data.Axis_' num2str(k1) ], varargin{k2});
-        out = setaxis(out, k1, [ 'Axis_' num2str(k1) ], [ 'Data.Axis_' num2str(k1) ]);
-        if ~isempty(inputname(k2))
-          label(out, k1, inputname(k2));
-          if ~isfield(out, inputname(k2))
-            out = setalias(out, inputname(k2), [ 'Data.Axis_' num2str(k1) ]);
+      if nargin == 1 && isa(varargin{1}, 'iData')
+        new = axescheck(varargin{1}, 'force');
+        return
+      end
+
+      warning('off','MATLAB:structOnObject');
+      new.Private.cache = []; % init cache to empty
+      new.Private.cache.methods = meth;
+      % handle Tag number
+      new.Tag = [ 'iD' sprintf('%0.f', private_id()) ]; % unique ID
+      new.ModificationDate = new.Date;
+
+      % add our 'static' properties so that they are equally handled by
+      % subsref/subsasgn
+      new.addprop('Error');           % e.g. an alias or empty
+      new.addprop('Monitor');         % e.g. an alias or empty
+      new.addprop('Signal');          % e.g. an alias
+      new.Error = 'matlab: sqrt(this.Signal)';
+      if ~nargin, new.Private.cache.check_requested = false; return; end
+
+      % collect items to store: as structures, as data files, and others
+      structs = {}; % cell: will contain struct('name','value')
+      flag_num_arg = 0;
+
+      % append arguments as properties (not from files)
+      index=1;
+      while index<=nargin
+        this = varargin{index}; s = [];
+        if isobject(this)
+          if numel(this) == 1, this = struct(this); else this = []; end
+        end
+        if ischar(this) && ~isempty(this)
+          switch lower(this)
+          case {'verbose','normal','default'}
+            new.verbose = 1;
+            if exist('iLoad','file'), iLoad('verbose'); end
+            new.Private.cache.check_requested = false;
+            return;
+          case 'debug'
+            new.verbose = 2;
+            if exist('iLoad','file'), iLoad('debug'); end
+            new.Private.cache.check_requested = false;
+            return;
+          case 'silent'
+            new.verbose = 0;
+            if exist('iLoad','file'), iLoad('silent'); end
+            new.Private.cache.check_requested = false;
+            return;
           end
-        end
-      end
 
-      % check in case the x,y axes have been reversed for dim>=2, then swap 1:2 axes in Signal
-      if ndims(out)>=2 && isvector(getaxis(out, 1)) && isvector(getaxis(out, 2)) ...
-                  && length(getaxis(out, 1)) == size(get(out,'Signal'),2) ...
-                  && length(getaxis(out, 2)) == size(get(out,'Signal'),1) ...
-                  && length(getaxis(out, 1)) ~= length(getaxis(out, 2))
-        s=get(out,'Signal'); out = set(out, 'Signal', s'); clear s
-        if ~isempty(out.Title)
-          iData_private_warning(mfilename,[ 'The Signal has been transposed to match the axes orientation in object ' out.Tag ' "' out.Title '".' ]);
+          if index<numel(varargin) && isvarname(this)   % input: name/value pair, e.g. 'par',value, ...
+            s.name = this;
+            s.value= varargin{index+1};
+            structs{end+1} = s; this = [];
+            varargin{index} = []; varargin{index+1} = []; % clear memory
+            index=index+1;  % increment name/value pair
+          elseif ~isempty(dir(this)) || any(strcmp(strtok(this, ':'), {'http' 'https' 'ftp' 'file'}))
+            % pass: we handle this below when assembling the object(s)
+            this = [];
+          else
+            s.value = str2struct(this); % convert to struct ?
+            s.name  = inputname(index);
+            structs{end+1} = s; this = [];
+            varargin{index} = [];
+          end
+        elseif isstruct(this) && isfield(this, 'Source') && isfield(this, 'Loader') % iLoad struct
+          % pass: we handle this iLoad struct when assembling the object(s)
+            this = [];
         end
-      end
-      
-      if ~isempty(inputname(index))
-          out.Label=[ inputname(index) ' (' class(varargin{index}) ')' ];
-          out = label(out, 0, inputname(index));
-          out.Title=inputname(index);
-      end
 
-      return
-    elseif ischar(varargin{1}) % filename -> iData
-    % iData('filename', ...)
-      out = load(iData, varargin{:});        % load file(s) with additional arguments. Check included.
-      if isempty(out), out = iData; end
-      return
-    elseif isstruct(varargin{1})
-      % iData(struct)
-      out = iData_struct2iData(varargin{1}); % convert struct to iData
-    elseif ~all(isempty(varargin{1})) && isnumeric(varargin{1}) && (numel(varargin{1}) > 1 || ~all(ishandle(varargin{1})))
-      % iData(x)
-      out = iData_num2iData(varargin{1});    % convert single scalar/vector/matrix to iData. No need for check.
-      if ~isempty(inputname(1))
-          out.Label=[ inputname(1) ' (' class(varargin{1}) ')' ];
-          out = label(out, 0, inputname(1));
-          out.Title=inputname(1);
-      end
-      return
-    elseif ishandle(varargin{1}) % convert single Handle Graphics Object
-      % iData(figure handle)
-      out = iData_handle2iData(varargin{1});
-    elseif iscell(varargin{1})
-      % iData(cell)
-      out = iData_cell2iData(varargin{1});   % convert cell/cellstr to cell(iData)
-      return
-    elseif isa(varargin{1}, 'iFunc')
-      % iData(iFunc, p, axes...)
-      in = varargin{1};
-      axes_in = varargin(3:end);
-      out = [];
-      
-      for n_in = 1:numel(in)  % handle array of iFunc
-        if numel(in) == 1, this_in = in;
-        else               this_in = in(n_in); end
-        
-        [this_out, this_in] = iData_iFunc2iData(this_in, axes_in, varargin{2:end});
-        % assign axes names
-        if nargin > 2 % iData(iFunc,p,axes...)
-          for index=1:numel(axes_in)
-            if index+2 <= nargin && ~isempty(inputname(index+2))
-              this_out=label(this_out,index,inputname(index+2)); 
+        if ~isempty(this)
+          s.value = this;
+          s.name  = inputname(index);
+          if isnumeric(this) | islogical(this)
+            flag_num_arg = flag_num_arg+1;
+            s.axis=flag_num_arg;
+          end
+          structs{end+1} = s;
+        end
+
+        index=index+1;
+      end % varargin
+
+      % fill in direct name/value pairs stored into 'structs'
+      for index=1:numel(structs)
+        s = structs{index};
+        if isempty(s.name), s.name=sprintf('%s_%i', class(s.value), index); end
+        if ~isfield(new, s.name), new.addprop(s.name); end
+        new.(s.name)=s.value;
+        if (isnumeric(s.value) | islogical(s.value)) && ~isscalar(s.value)
+          history(new, 'set', new, s.name, s.value);
+          if isfield(s,'axis')
+            if s.axis == flag_num_arg && ~strcmp(s.name,'Signal') % last num -> Signal
+              s.Signal = s.name; % alias
+            else
+              s.Axes{s.axis} = s.name;
             end
           end
         end
-
-        if numel(in) == 1 || numel(in) == numel(this_in), in = this_in; 
-        elseif numel(this_in) == 1
-            in(n_in) = this_in; 
-        end
-        out = [ out this_out ];
-      end % for n_in
-      % update initial iFunc, if possible
-      if ~isempty(inputname(1)) && numel(in) == numel(varargin{1})
-         assignin('caller',inputname(1),in);
+        structs{index} = []; % clear memory
       end
-      return
-    elseif ~isa(varargin{1}, 'iData') && isempty(varargin{1})
-      % iData([])
-      out = iData;
-      return
-    else
-      iData_private_warning(mfilename, [ 'import of ' inputname(1) ' of class ' class(varargin{1}) ' length ' mat2str(size(varargin{1})) ' is not supported. Ignore.' ]);
-      out = [];
+      numel_new = 1;
+      new0 = copyobj(new);
+
+      % now build the final 'master' object
+      for index_varg=1:numel(varargin) % loop on initial input arguments for iLoad
+        arg = varargin{index_varg};
+        if isempty(arg) || (~ischar(arg) && ~iscellstr(arg) && ~isstruct(arg)), continue; end
+        if ischar(arg), arg = cellstr(arg); end
+        for index_arg=1:numel(arg)  % loop on input argument content when e.g. cellstr array
+          if iscell(arg)
+            this = arg{index_arg}; % must be a char or single cellstr
+          else
+            this = arg(index_arg); % e.g. struct/object
+          end
+          if isempty(this), continue; end
+          if ischar(this) && (~isempty(dir(this)) || any(strcmp(strtok(this, ':'), {'http' 'https' 'ftp' 'file'})))
+            try
+              this = load(iData, this, 'raw'); % import file/URL, no post-processing
+            catch ME
+              disp([ mfilename ': WARNING: failed importing ' char(this) ]);
+            end
+          end
+          % 'this' can be initial char/cellstr, a struct from iLoad, or a cell of structs from iLoad
+          if ~iscell(this), this = { this }; end
+          for index_data=1:numel(this)
+            if numel(this{index_data}) == 0, continue; end
+            if isa(this{index_data}, 'iData')
+              new1 = this{index_data};
+            elseif isempty(this{index_data}), continue;
+            else
+              if numel_new == 1
+                new1 = new;
+              else
+                new1 = copyobj(new0);
+              end
+
+              if isstruct(this{index_data})
+                new1 = struct2iData(this{index_data}, new1);
+              else
+                new1.Data = this{index_data}; 
+              end
+              history(new1, mfilename, this{index_data});
+              this{index_data} = []; % and clear memory
+              if isstruct(new1.Data) && isfield(new1.Data, 'Source') && isfield(new1.Data, 'Loader') % iLoad struct
+                % we transfer the iLoad struct to the iData.
+                new1 = struct2iData(new1.Data, new1); % updates iData (in 'private')
+              end
+            end % isa iData or other type to concatenate
+            
+            if numel_new == 1
+              new = new1;
+            else
+              new = [ new ; new1(:) ]; % build array
+            end % index_data
+            numel_new = numel_new+1;
+          end
+        end % index_arg (content of varg in case this is an array/cellstr for iLoad)
+
+      end % index_varg (initial input arg)
+
+      % final check
+      for index_new = 1:numel(new) % post process may create more objects
+        set(new(index_new), 'Private.cache.check_requested',true); % request a check at first 'get'
+      end
+
+    end % iData (instantiate)
+
+% ------------------------------------------------------------------------------
+
+    function tf = isstruct(self)
+    %  ISSTRUCT True for structures.
+    %      ISSTRUCT(S) returns logical true (1) if S is a structure
+    %      and logical false (0) otherwise.
+    %
+    % Example: s = iData; isstruct(s)
+    %
+    % See also iData, isfield, iscell, isnumeric, isobject.
+      tf = true; % isa(self, mfilename); always true
     end
 
-    % check the object
-    if ~isa(varargin{1}, 'iData')
-      if ~isempty(inputname(1)), in_name=[ inputname(1) ' ' ]; else in_name=''; end
-      for index=1:numel(out)
-        if numel(out) == 1 || ~isempty(out(index))
-          if isempty(out(index).Source), out(index).Source = in_name; end
-          if isempty(out(index).Title),  out(index).Title  = [ in_name ' (' class(varargin{1}) ')' ]; end
-          
-          if isempty(out(index).Command)
-            out(index) = iData_private_history(out(index), mfilename, varargin{1}); 
+    function self=rmfield(self, f)
+    %   RMFIELD Remove fields from a structure array.
+    %      S = RMFIELD(S,'field') removes the specified field from the
+    %      m x n structure array S. The size of input S is preserved.
+    %
+    %      S = RMFIELD(S,FIELDS) removes more than one field at a time
+    %      when FIELDS is a character array or cell array of strings.  The
+    %      changed structure is returned. The size of input S is preserved.
+    %
+    %      S = RMFIELD(S,'all') removes all fields except base ones. The resulting
+    %      object retains metadata, but removes any additional alias/property.
+    %
+    % Example: s=iData; s.test =1; ...
+    %          isfield(s,'test') && ~isfield(rmfield(s,'test'),'test')
+    %
+    %      See also setfield, getfield, isfield, fieldnames.
+      if nargin ~= 2, return; end
+      if ischar(f) && strcmp(f, 'all')
+        f = fieldnames(self);
+      end
+      if numel(self) == 1
+        if ~iscellstr(f), f = cellstr(f); end
+        for index=1:numel(f)
+          if isfield(self, f{index})
+            if ~any(strcmp(f{index}, self.properties_Base)) ...
+            && ~any(strcmp(f{index}, self.properties_Protected)) ...
+            && ~any(strcmp(f{index}, {'Signal','Error','Monitor'}))
+              delete(findprop(self, f{index}));
+            end
           end
         end
+      else
+        for index=1:numel(self); rmfield(self(index), f); end
       end
+    end % rmfield
+
+    function self=rmalias(self, varargin)
+    %   RMALIAS Remove fields from a structure array.
+    %      S = RMALIAS(S,'field') removes the specified field from the
+    %      m x n structure array S. The size of input S is preserved.
+    %
+    %      S = RMALIAS(S,FIELDS) removes more than one field at a time
+    %      when FIELDS is a character array or cell array of strings.  The
+    %      changed structure is returned. The size of input S is preserved.
+    %
+    %      S = RMALIAS(S,'all') removes all fields except base ones. The resulting
+    %      object retains metadata, but removes any additional alias/property.
+    %
+    % Example: s=iData; s.test =1; ...
+    %          isfield(s,'test') && ~isfield(rmalias(s,'test'),'test')
+    %
+    %      See also setalias, getalias, isfield, fieldnames.
+
+    % compatibility with original iData (2007-2019)
+      self = rmfield(self, varargin{:});
+    end % rmalias
+
+    function self=rmaxis(self, f)
+    %   RMAXIS Remove an axis from object(s).
+    %     RMAXIS(S, AX) removes the axis AX specified as a single rank index.
+    %
+    % Example: s=iData(1:10); s{1}=2:11; rmaxis(s,1); all(s{1} == 1:10)
+      if nargin ~= 2 || ~isnumeric(f), return; end
+      if numel(self) == 1
+        f = find( 1 <= f & f <= numel(self.Axes) );
+        for index=1:numel(f); self.Axes{f(index)} = []; end
+      else
+        for index=1:numel(self); rmaxis(self(index), f); end
+      end
+    end % rmaxis
+
+    function c = struct2cell(self)
+    %   STRUCT2CELL Convert structure array to cell array.
+    %      C = STRUCT2CELL(S) converts the M-by-N structure S (with P fields)
+    %      into a P-by-M-by-N cell array C.
+    %
+    %      If S is N-D, C will have size [P SIZE(S)].
+    %
+    %      Example: c = struct2cell(iData); ...
+    %               iscell(c)
+    %        clear s, s.category = 'tree'; s.height = 37.4; s.name = 'birch';
+    %        c = struct2cell(s); f = fieldnames(s);
+    %
+    %      See also cell2struct, fieldnames.
+
+      if numel(self) == 1
+        c = struct2cell(struct(self));
+      else
+        c = arrayfun('struct2cell', self);
+      end
+
+    end % struct2cell
+
+    function new = cell2struct(self, varargin)
+    %   CELL2STRUCT Convert cell array to iData array.
+    %      S = CELL2STRUCT(C,FIELDS,DIM) converts the cell array C into
+    %      the structure S by folding the dimension DIM of C into fields of
+    %      S.  SIZE(C,DIM) must match the number of field names in FIELDS.
+    %      FIELDS can be a character array or a cell array of strings.
+    %
+    %      Example: s = cell2struct(iData, {'tree',37.4,'birch'}, ...
+    %         {'category','height','name'},2); isa(s, 'iData')
+    %
+    %      See also struct2cell, fieldnames.
+      if nargin < 3, d=2; end
+      if nargin < 2, error([ mfilename ': cell2struct: requires at least 2 arguments' ]); end
+      if numel(self) > 1
+        error([ mfilename ': cell2struct(iData, ...) only works with a single iData.' ])
+      end
+      new = copyobj(self, cell2struct(varargin{:}));
+    end % cell2struct
+
+    function s = cellstr(self, varargin)
+      %  CELLSTR Convert an iData object into a cell array of strings.
+      %      S = CELLSTR(X) converts the structure X into a cell of strings.
+      %
+      %      S = CELLSTR(X,'short') converts the structure X into a cellstr
+      %      and a compact storage. The resulting representation does not
+      %      allow to rebuild the full object.
+      %
+      %  Example: iscellstr(cellstr(iData(1:10)))
+      %
+      % See also: char
+      s = copyobj(self); s.Private = [];
+      s = class2str(s, varargin{:});
+      s = textscan(s, '%s','Delimiter',';');
+      if numel(s) == 1, s=s{1}; end
+    end % cellstr
+
+    function v = cast(self, typ)
+      %   CAST  Cast object to a different data type or class.
+      %     B = CAST(A,NEWCLASS) casts A to class NEWCLASS. A must be convertible to
+      %     class NEWCLASS. NEWCLASS must be the name of one of the builtin data types.
+      %
+      % Example: s=iData(1:10); isa(cast(s, 'uint64'), 'uint64')
+      %
+      % See also: iData.double, iData.int32, iData.uint32
+      if nargin < 2, typ=''; end
+      if isempty(typ), typ='double'; end
+      if numel(self) == 1
+        v = cast(subsref(self,struct('type','.','subs','Signal')), typ);
+      else
+        v = cell(size(self));
+        for index=1:numel(self); v{index} = cast(self(index), typ); end
+      end
+    end % cast
+
+    function v = double(self)
+      %   DOUBLE Convert to double precision.
+      %      DOUBLE(X) returns the double precision value of the object.
+      %
+      % Example: s=iData(logical(-5:5)); isa(double(s), 'double')
+      %
+      % See also: iData.single, iData.cast
+      v = cast(self, 'double');
     end
 
-    if ~isa(out, 'iData') && isempty(out)
-      out = iData;
+    function v = single(self)
+      %   SINGLE Convert to SINGLE precision.
+      %      SINGLE(X) returns the single precision value of the object.
+      %
+      % Example: s=iData(logical(-5:5)); isa(single(s), 'single')
+      %
+      % See also: iData.double, iData.cast
+      v = cast(self, 'single');
     end
-    out = iData_check(out); % private function
 
-    if isa(varargin{1}, 'iData') && nargout == 0 && ~isempty(inputname(1))
-      assignin('caller',inputname(1),out);
+    function v = logical(self)
+      %   LOGICAL Convert to logical (0=false, any other=true).
+      %      LOGICAL(X) returns the logical value of the object.
+      %
+      % Example: s=iData(-5:5); isa(logical(s), 'logical')
+      %
+      % See also: iData.double, iData.cast
+      v = cast(self, 'logical');
     end
-      
-  end % function iData
 
-end % methods
+    function v = uint32(self)
+      %   UINT32 Convert to uint32, e.g. for indexing.
+      %      UINT32(X) returns the unsigned integer alue of the object.
+      %
+      % Example: s=iData(-5:5); isa(uint32(s), 'uint32')
+      %
+      % See also: iData.double, iData.cast
+      v = cast(self, 'uint32');
+    end
 
+    function v = int32(self)
+      %   INT32 Convert to int32.
+      %      INT32(X) returns the integer alue of the object.
+      %
+      % Example: s=iData(-5:5); isa(int32(s), 'int32')
+      %
+      % See also: iData.double, iData.cast
+      v = cast(self, 'int32');
+    end
+
+    function s = repmat(self, varargin)
+      % REPMAT Replicate and tile an array.
+      %    B = repmat(A,M,N) creates a large matrix B consisting of an M-by-N
+      %    tiling of copies of A. The size of B is [size(A,1)*M, size(A,2)*N].
+      %    The statement repmat(A,N) creates an N-by-N tiling.
+      %
+      %    B = REPMAT(A,[M N]) accomplishes the same result as repmat(A,M,N).
+      %
+      %    B = REPMAT(A,[M N P ...]) tiles the array A to produce a
+      %    multidimensional array B composed of copies of A. The size of B is
+      %    [size(A,1)*M, size(A,2)*N, size(A,3)*P, ...].
+      %
+      % Example: numel(repmat(iData, 11,10)) == 110
+      %
+      % See also: iData.reshape, iData.ones
+      if numel(self) > 1
+        error([ mfilename ': repmat(iData, M,N,...) only works with a single iData.' ])
+      end
+      % we create M*N copies and then reshape the array.
+      s = [];
+      for index=1:prod([ varargin{:}])
+        this = copyobj(self);
+        if index == 1, s = this; else s = [ s this]; end
+      end
+      s = reshape(s, varargin{:});
+    end % repmat
+
+    function o = ones(self, varargin)
+      % ONES   Ones array.
+      %    ONES(S,N) is an N-by-N matrix of 'S' structure.
+      %
+      %    ONES(S, M,N) or ONES(S, [M,N]) is an M-by-N matrix of 'S' structure.
+      %
+      %    ONES(S,M,N,P,...) or ONES(S,[M N P ...]) is an M-by-N-by-P-by-... array of
+      %    'S' structure.
+      %
+      % Example: numel(ones(iData, 11,10)) == 110
+      %
+      % See also: iData.reshape
+      if nargin == 1, o=self(1); return; end
+      o = repmat(self, varargin{:});
+    end % ones
+
+    function z = zeros(self, varargin)
+      % ZEROS  Zeros array.
+      %    ZEROS(S,N) is an N-by-N matrix of empty structures.
+      %
+      %    ZEROS(S,M,N) or ZEROS(S,[M,N]) is an M-by-N matrix of empty structures.
+      %
+      %    ZEROS(S,M,N,P,...) or ZEROS(S,[M N P ...]) is an M-by-N-by-P-by-... array of
+      %    empty structures.
+      %
+      %    ZEROS(S) removes all properties except base ones, and keep metadata.
+      %
+      % Example: numel(zeros(iData, 11,10)) == 110
+      %
+      % See also: iData.reshape
+      if nargin == 1,
+        z=iData;
+        z.Creator         = self.Creator;
+        z.Date            = self.Date;
+        z.DisplayName     = self.DisplayName;
+        z.Source          = self.Source;
+        z.Name            = self.Name;
+        z.User            = self.User;
+        z.UserData        = self.UserData;
+        return
+      end
+      z = ones(iData, varargin{:});
+    end % zeros
+
+    function s = struct(self)
+      % STRUCT Create or convert to structure array.
+      %   STRUCT(OBJ) converts the object OBJ into its equivalent
+      %   structure.  The class information is lost.
+      %
+      % Example: s=iData(1:10); isstruct(struct(s))
+      if numel(self) == 1
+        s = builtin('struct',self);
+      else
+        s = arrayfun('struct', self);
+      end
+    end % struct
+
+    function tf = ismethod(self, m)
+      % ISMETHOD  True if method of object.
+      %   ISMETHOD(OBJ,NAME) returns 1 if string NAME is a method of object
+      %   OBJ, and 0 otherwise.
+      %
+      % Example: s=iData(1:10); ismethod(s, 'ismethod')
+      try
+        tf = any(strcmp(m ,self.Private.cache.methods));
+      catch
+        tf = any(strcmp(m, methods(self)));
+      end
+    end % ismethod
+
+    % special SETTERS and GETTERS ----------------------------------------------
+    
+    function self = set.verbose(self, value)
+    % SET VERBOSE Set the verbosity level
+    %     0 silent
+    %     1 normal
+    %     2 verbose
+    %     3 debug
+
+      self.verbose = private_verbose(value); % shared verbose property
+    end
+    
+    function value = get.verbose(self)
+    % GET VERBOSE Get the verbosity level
+    %     0 silent
+    %     1 normal
+    %     2 verbose
+    %     3 debug
+
+      value = private_verbose;                % shared verbose property
+    end
+
+    function self = set.DisplayName(self, value)
+      self.Label = value; % alias to label property
+    end
+
+    function value = get.DisplayName(self)
+      value = self.Label; % alias to label property
+    end
+    
+
+  end % methods
+
+% ------------------------------------------------------------------------------
 end % classdef
-  
-% ============================================================================
-% iData_cell2iData: converts a cell into an iData array
-function b=iData_cell2iData(a)
-  b = [];
-  for k=1:numel(a)
-    if numel(b) > 1, b=b(:); end
-    c = iData(a{k});
-    if numel(c) > 1, c=c(:); end
-    b = [ b ; c ];
-  end
-  try
-    b = reshape(b,size(a));
-  end
-end
-% ============================================================================
-% iData_num2iData: converts a numeric into an iData
-function b=iData_num2iData(v)
-  b=iData;
-  b.Data.Signal = v;
-  setalias(b,'Signal','Data.Signal');
-  if length(size(v)) > 2, v=v(:); end
-  if numel(v) > 10, v=v(1:10); end
-  v = mat2str(double(v)); 
-  b.Command= cellstr([ 'iData(' v ')' ]);
-end
-% ============================================================================
-% iData_num2iData: converts an iFunc model into an iData
-function [out, this_in]=iData_iFunc2iData(this_in, axes_in, varargin)
-  % evaluate the model 'this_in'
-  % when some parameter are given as struct/cell and contain vectors, scans are done
-  out = [];
-  [signals, this_in, axs, names] = feval(this_in, varargin{:});
-  
-  if ~iscell(signals)
-    signals = { signals };
-    axs     = { axs };
-    names   = { names };
-  end
-  % convert each of the returned data into an iData
-  for i=1:numel(axs)
-    signal = signals{i};
-    ax     = axs{i};
-    name   = names{i};
-    if numel(this_in) > 1, this_model = this_in(i); else this_model=this_in; end
-    
-    if length(signal) == length(this_model.Parameters) % this was in fact a parameter guess...
-      [signal, this_model, ax, name] = feval(this_model, signal, axes_in{:});
-    end
-    if isempty(signal), 
-      iData_private_warning(mfilename, [ ': iFunc evaluation failed (empty value). Check axes and parameters.' ]);
-      continue; 
-    end
-    
-    % create iData object from signal and axes
-    % check axes against signal size
-    if numel(axes_in) == 1 && isvector(axes_in{1}) && all(isnan(axes_in{1})), axes_in = []; end
-    if isempty(axes_in) && ~isempty(ax), axes_in = ax; end
-    for index=1:numel(axes_in)
-      ax1 = axes_in{index};
-      if index<=numel(ax), ax2 = ax{index}; else ax2=[]; end
-      if ~isempty(ax2)
-        if iscell(ax1) && numel(ax1) == 1, ax1=ax1{1}; end
-        if iscell(ax2) && numel(ax2) == 1, ax2=ax2{1}; end
-        if isempty(ax1), ax1 = ax2;
-        elseif ~isempty(find(isnan(ax1))), ax1 = ax2;
-        elseif numel(ax2) == size(signal, index), ax1 = ax2;
-        end
-        axes_in{index} = ax1;
-      end
-    end
-    if ~isempty(axes_in)
-      this_out = iData(axes_in{:}, signal); % make it an iData
-    else
-      this_out = iData(signal);
-    end
-
-    this_out.Title = name;
-    this_out.Label = name;
-    this_out.DisplayName = name;
-    this_out.UserData=this_model.UserData;
-    setalias(this_out,'Error', 0);
-    if ~isempty(this_model.ParameterValues)
-        par_val = this_model.ParameterValues;
-        pars    = this_model.Parameters;
-      pars_out = cell2struct(num2cell(par_val(:)'), strtok(pars(:)'), 2);
-      setalias(this_out,'Parameters', pars_out, [ name ' model parameters' ]);
-    end
-    setalias(this_out,'Model', this_model, this_model.Name);
-    clear signal ax
-    out = [ out this_out ];
-  end % feval return arguments (can be a parameter scan)
-  if numel(out) > 1 && numel(out) == numel(signals)
-   out = reshape(out, size(signals));
-  end
-end
-% ============================================================================
-

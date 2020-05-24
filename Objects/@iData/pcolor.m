@@ -1,17 +1,16 @@
 function h =  pcolor(a, option)
-% h =  pcolor(s,option) : Plot a 2D/3D object as a flat matrix image
+% PCOLOR Pseudocolor (checkerboard) plot.
+%   PCOLOR(S) is a pseudocolor or "checkerboard" plot of 2D object S.
+%   The values of the elements of C specify the color in each
+%   cell of the plot. S is displayed as a flat matrix image.
 %
-%   @iData/ pcolor function to plot a 2D object as a flat matrix image
-%
-% input:  s: object or array (iData)
-%         option: global option for 2D and 3D plots: 
+%   H =  PCOLOR(S,OPTION) specifies plot options for 2D and 3D plots: 
 %                 flat, interp, faceted (for shading)
 %                 transparent, light, clabel
 %                 axis tight, axis auto, view2, view3
 %                 painters (bitmap drawing), zbuffer (vectorial drawing)
-% output: h: graphics object handles (cell)
-% ex:      pcolor(iData(peaks));  pcolor(iData(flow));
 %
+% Example: h=pcolor(iData(peaks)); tf=ishandle(h); delete(gcf); tf
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/plot
 

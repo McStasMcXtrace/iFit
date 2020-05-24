@@ -1,23 +1,23 @@
 function s = reducevolume(a, R)
-% h = reducevolume(s, factor) : reduce an iData object size
+% REDUCEVOLUME reduce an object size
+%   B = REDUCEVOLUME(A, [Rx Ry Rz ... ]) reduces the number
+%     of elements in the object by only keeping every Rx element in the x
+%     direction, every Ry element in the y direction, and every Rz element
+%     in the z direction and so on.
 %
-% B = REDUCEVOLUME(A, [Rx Ry Rz ... ]) reduces the number
-%    of elements in the object by only keeping every Rx element in the x
-%    direction, every Ry element in the y direction, and every Rz element
-%    in the z direction and so on. 
-% B = REDUCEVOLUME(A, R)
-%    If a scalar R is used to indicate the amount or
-%    reduction instead of a vector, the reduction is assumed to
-%    be R on all axes. 
+%   B = REDUCEVOLUME(A, R)
+%     If a scalar R is used to indicate the amount or
+%     reduction instead of a vector, the reduction is assumed to
+%     be R on all axes. 
 %
-% B = REDUCEVOLUME(A)
-%    When omitted, the volume/size reduction is performed on bigger axes until
-%    the final object contains less than 1e6 elements.
+%   B = REDUCEVOLUME(A)
+%     When omitted, the volume/size reduction is performed on bigger axes until
+%     the final object contains less than 1e6 elements.
 %
-% You may also use iData/squeeze to remove singleton dimensions,
-% iData/resize to compress/expand its size, and iData/pack to compress its
-% storage.
+% You may also use SQUEEZE to remove singleton dimensions, RESIZE to
+% compress/expand its size, and PACK to compress its storage.
 %
+% Example: a=iData(peaks(2000)); b=reducevolume(a); prod(size(b)) < 2e6
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/squeeze, iData/pack, iData/resize, iData/size
 
@@ -29,9 +29,9 @@ end
 
 % handle input iData arrays
 if numel(a) > 1
-  s = zeros(iData, numel(a), 1);
+  s = [];
   for index=1:numel(a)
-    s(index) = feval(mfilename, a(index), R);
+    s =  [ s feval(mfilename, a(index), R) ];
   end
   s = reshape(s, size(a));
   return
@@ -64,7 +64,6 @@ elseif isnumeric(R) && length(R) == 1
   R = R*ones(1, ndims(a));
 end
 
-s = copyobj(a);
 S = [];
 S.type='()';
 S.subs=cell(1,length(R));
@@ -72,17 +71,16 @@ S.subs=cell(1,length(R));
 % scan dimensions and rebin them
 myisvector = @(c)length(c) == numel(c);
 for index=1:length(R)
-  lx = getaxis(s, index);
-  if myisvector(lx), lx=length(lx);
-  else             lx=size(lx,index); end
+  x = getaxis(a, index);
+  if myisvector(x), lx=length(x);
+  else              lx=size(x,index); end
   if R(index) > 1
     S.subs{index} = ceil(1:R(index):lx);
   else
     S.subs{index} = ':';
   end
 end
+clear x
 
-% perform rebinning
-s = subsref(s, S);
-
-
+% get sub-object
+s = subsref(a, S);

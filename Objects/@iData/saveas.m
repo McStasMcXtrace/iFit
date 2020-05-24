@@ -1,35 +1,53 @@
 function [filename,format] = saveas(a, filename, format, options)
-% f = saveas(s, filename, format, options) : save iData object into various data formats
+% SAVEAS Save object in desired output format.
+%   F =SAVEAS(S) saves object into a MAT file name determined from the object Tag.
+%   The generated filename F is returned.
 %
-%   @iData/saveas function to save data sets
-%     This function saves the content of iData objects. The default format is 'm'.
-%   saveas(iData,'formats')
-%     prints a list of supported export formats.
-%   saveas(s,'file.ext')            determine file format from the extension
-%   saveas(s,'file','format')       set file format explicitly
-%   saveas(s,'file','format clean') set file format explicitly and remove NaN and Inf.
-%   saveas(s,'file','format data')  save only the 'Data' part of the object. 
-%   saveas(s, get(s,'Source'), 'format')  save with the same base filename(s)
+%   F = SAVEAS(S,'FILE.EXT') saves the object S into file FILE with format
+%   corresponding with extension EXT. Default format is MAT. When FILE is empty
+%   the object Tag is used as FILE base name, and the extension is used to set
+%   the file format, with syntax SAVEAS(S,'.EXT'). SAVEAS(S, 'gui') displays a
+%   file selector to choose the file name and extension.
+%   When the filename already exists, the file is overwritten.
+%   The filename FILE can be given as a directory path.
+%   The generated filename(s) F is/are returned.
 %
 %     To load back an object from a m-file, type its file name at the prompt.
-%     To load back an object from a mat-file, type 'load filename.mat' at the prompt.
+%     To load back an object from a mat-file, type 'load filename.mat' at the
+%     prompt.
 %
-%  Type <a href="matlab:doc(iData,'Save')">doc(iData,'Save')</a> to access the iFit/Save Documentation.
+%   F = SAVEAS(S,'FILE','FORMAT') saves the object S into file FILE with format
+%   FORMAT. FORMAT can be specified as an extension '.EXT' or 'EXT'. When FILE
+%   is empty, the object Tag is used. When FORMAT is given as 'gui', a dialogue
+%   is shown to select the file format. SAVEAS(S,'FILE','FORMAT clean') sets
+%   file format explicitly and remove NaN and Inf. SAVEAS(S,'FILE','FORMAT data')
+%   save only the 'Data' part of the object, without metadata.
 %
-% input:  s: object or array (iData)
-%         filename: name of file to save to. Extension, if missing, is appended (char)
-%                   If the filename already exists, the file is overwritten.
-%                   If given as filename='gui', a file selector pops-up
-%                   If the filename is empty, the object Tag is used.
-%         format: data format to use (char), or determined from file name extension
+%   F = SAVEAS(S, 'FILE','FORMAT', 'OPTIONS') specifies format options, which are
+%   usually plot options (a string):
+%     tight, hide_axes, interp, view2, view3, transparent, light, clabel, colorbar, 
+%     whole, hide_errorbars (1D). Default is 'view2 axis tight'.
+%   With XHTML export, the OPTIONS argument can be a string with the isosurface
+%   level and options 'axes' to display axes, 'auto' to rescale as a cube, such
+%   as SAVEAS(..., '1.5 axes auto').
+%   With HTML export, the OPTIONS can be 'data' to generate a compact
+%   document (faster). This is automatic for large data sets (> 10MB).
+%   With M export, OPTIONS can be 'no comment','eval' (compact), 'short' (cut 
+%   down large arrays - lossy).
+%
+%   SAVEAS(iData,'formats') prints a list of supported export formats.
+%
+%     Supported lossless formats are:
 %           'cdf'  save as CDF (not recommended)
 %           'hdf5' save as an HDF5 data set ('nxs','n5','h5' also work)
 %           'lamp' save as LAMP Processed Workspace, i.e. 'nxs lamp data' (HDF5)
-%           'm'    save as a flat Matlab .m file (a function which returns an iData object or structure)
+%           'm'    save as a flat Matlab .m file (a function which returns an
+%                    iData object or structure)
 %           'mantid' save as Mantid Processed Workspace, i.e. 'nxs mantid data' (HDF5)
-%           'mat'  save as a serialized '.mat' binary file (fast 'save', DEFAULT)
+%           'mat'  save as a '.mat' binary file (HDF5 based, DEFAULT)
 %           'nc'   save as NetCDF
-%         as well as other lossy formats
+%
+%     Supported lossy formats are:
 %           'art'  save as ASCII art
 %           'avi'  save as an AVI movie
 %           'csv'  save as a comma separated value file
@@ -38,11 +56,13 @@ function [filename,format] = saveas(a, filename, format, options)
 %           'edf'  EDF ESRF format for 1D and 2D data sets
 %           'fig'  save as a Matlab figure
 %           'fits' save as FITS binary image (only for 2D objects)
-%           'gif','bmp','png','tiff','jpeg' save as an image (no axes, only for 2D data sets)
+%           'gif','bmp','png','tiff','jpeg' save as an image (no axes, only for
+%              2D data sets)
 %           'hdf4' save as an HDF4 image
 %           'hdr'  save as HDR/IMG Analyze MRI volume (3D/4D)
-%           'html' save as Hypertext Markup Language document, appended to any existing document.
-%           'inx'  save as an ILL Inelastic Neutron Scattering data (only 2D neutron)
+%           'html' save as Hypertext Markup Language document, appended to any
+%                    existing document.
+%           'inx'  save as an ILL Inelastic Neutron Scattering data (only 2D)
 %           'json' save as JSON JavaScript Object Notation, ascii
 %           'kml'  save as KML GoogleEarth model
 %           'mrc'  save as MRC map file (3/4D)
@@ -50,6 +70,7 @@ function [filename,format] = saveas(a, filename, format, options)
 %           'npy'  save as Numpy binary array
 %           'ps','pdf','ill','eps' save as an image (with axes)
 %           'ppm','pgm','pbm'
+%           'ppt','pptx' save as a Microsoft PowerPoint presentation.
 %           'off'  save as Object File Format (geometry), ascii
 %           'ply'  save as PLY (geometry), ascii
 %           'spe'  save as ISIS SPE (Mslice/Horace)
@@ -64,19 +85,11 @@ function [filename,format] = saveas(a, filename, format, options)
 %           'xls'  save as an Excel sheet (requires Excel to be installed)
 %           'xml'  save as an XML file, ascii
 %           'yaml' save as YAML format, ascii
+%           'gui'  a format list pops-up
 %
-%           'gui' when filename extension is not specified, a format list pops-up
-%         options: specific format options, which are usually plot options
-%           tight, hide_axes, interp, view2, view3, transparent, light, clabel, colorbar, whole
-%           default is 'view2 axis tight'
-%           For XHTML export, the additional argument can be a string with the isosurface
-%           level and options 'axes' to display axes, 'auto' to rescale as a cube.
+%  Type <a href="matlab:doc(iData,'Save')">doc(iData,'Save')</a> to access the iFit/Save Documentation.
 %
-% output: f: filename(s) used to save data (char)
-% ex:     b=saveas(a, 'file', 'm');
-%         b=saveas(a, 'file', 'svg', 'axis tight');
-%         b=saveas(a, 'file', 'hdf data');
-%
+% Example: f=saveas(iData(peaks)); tf=~isempty(dir(f)); delete(f); tf
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/load, iData/getframe, save, iData/plot
 
@@ -92,7 +105,7 @@ function [filename,format] = saveas(a, filename, format, options)
 %   writeNPY
 %   mesh2kml
 %
-%   iData_private_saveas_hdfnc
+%   private_saveas_hdfnc
 
 % default options checks
 if nargin < 2, filename = ''; end
@@ -108,6 +121,7 @@ if isempty(options) && any(ndims(a) >= 2), options='view2 axis tight'; end
 
 % supported format list
 filterspec = { ...
+      '*.art', 'Ascii Art (*.art)';
       '*.avi', 'Audio Video Interleave (AVI) movie (*.avi)'; ...
       '*.cdf',  'CDF (*.cdf)'; ...
       '*.csv', 'Comma Separated Values (suitable for Excel, *.csv)'; ...
@@ -117,6 +131,7 @@ filterspec = { ...
       '*.eps', 'Encapsulated PostScript (color, *.eps)'; ...
       '*.fig', 'Matlab figure (*.fig)'; ...
       '*.fits;*.fit;*.fts','IAU FITS binary image (*.fits, only for 2D objects)';
+      '*.gif;*.bmp;*.ras;*.xwd', 'Bitmap image (gif,bmp,ras)';
       '*.hdf;*.hdf5;*.h5;*.nxs;*.n5','Hierarchical Data Format 5 (*.hdf5, *.h5, *.hdf)'; ...
       '*.hdf4;*.h4;*.nxs;*.n4', 'Hierarchical Data Format 4 image (*.hdf4)'; ...
       '*.hdr', 'Analyze volume (*.hdr+img)'; ...
@@ -126,7 +141,7 @@ filterspec = { ...
       '*.json', 'JSON JavaScript Object Notation (*.json)'; ...
       '*.kml', 'GoogleEarth model (*.kml)'; ...
       '*.m',   'Matlab script/function (*.m)'; ...
-      '*.mat', 'Matlab binary file (*.mat, serialized)'; ...
+      '*.mat', 'Matlab binary file (*.mat)'; ...
       '*.mrc', 'MRC map file (*.mrc)'; ...
       '*.nc;*.cdf',  'NetCDF (*.nc, *.cdf)'; ...
       '*.nii', 'NiFti volume (*.nii)'; ...
@@ -137,6 +152,7 @@ filterspec = { ...
       '*.ps',  'PostScript (color, *.ps)'; ...
       '*.png', 'Portable Network Graphics image (*.png)'; ...
       '*.ppm;*.pbm;*.pgm;*.pnm','Portable Anymap format (*.pnm)'; ...
+      '*.ppt;*.pptx', 'Microsoft PowerPoint presentation (*.ppt)'; ...
       '*.spe', 'ISIS SPE Mslice/Horace (*.spe)'; ...
       '*.sqw', 'McStas SQW Isotropic S(q,w) (*.sqw)'; ...
       '*.stl;*.stla;*.stlb', 'Stereolithography geometry (*.stl)'; ...
@@ -149,7 +165,7 @@ filterspec = { ...
       '*.xls', 'Excel format (requires Excel to be installed, *.xls)'; ...
       '*.xml','XML file (*.xml)'; ...
       '*.yaml;*.yml','YAML interchange format (*.yaml)' };
-if strcmp(filename, 'formats')
+if strcmpi(filename, 'formats')
   fprintf(1, '       EXT  DESCRIPTION [%s(iData)]\n', mfilename);
   fprintf(1, '-----------------------------------------------------------------\n'); 
   for index=1:size(filterspec,1)
@@ -199,19 +215,19 @@ end
 % search for option to clean the data set from NaN's and Inf's
 index=regexp(format, '\<clean\>');  % search the word
 if ~isempty(index)
-  a = iData_private_cleannaninf(a);
+  a = private_cleannaninf(a);
 end
 
 % convert data set as Mantid Processed Workspace when requested
 index=regexp(format, '\<mantid\>');  % search the word
 if ~isempty(index)
-  a = iData_private_2mantid(a);
+  a = private_saveas_2mantid(a);
 end
 
 % convert data set as LAMP Processed Workspace when requested
 index=regexp(format, '\<lamp\>');  % search the word
 if ~isempty(index)
-  a = iData_private_2lamp(a);
+  a = private_saveas_2lamp(a);
 end
 
 % search the word 'data' to only save object Data property (for HDF,CDF,NetCDF)
@@ -314,7 +330,7 @@ case 'netcdf'
   formatShort='nc';
 end
 
-% iData_private_cleannaninf called in some exporters removes NaN values, which 
+% private_cleannaninf called in some exporters removes NaN values, which 
 % are usually not well supported by text based formats.
 
 % select a 'fast' and reliable renderer. OpenGL export often lead to black PDF/PNG...
@@ -330,7 +346,7 @@ end
 try
   switch formatShort
   case 'avi'
-    filename = iData_private_saveas_avi(a, filename, options);
+    filename = private_saveas_avi(a, filename, options);
   case 'csv'  % Spreadsheet comma separated values file format
     csvwrite(filename, double(a));
   case 'dae'  % Collada DAE
@@ -342,7 +358,7 @@ try
         'color','red','alpha',0.7);
     end
   case 'dat'  % flat text file with commented blocks, in the style of McStas/PGPLOT
-    filename = iData_private_saveas_dat(a, filename);
+    filename = private_saveas_dat(a, filename);
   case 'edf'  % EDF ESRF format
     filename = medfwrite(a, filename); % in private
   case 'epsc' % color encapsulated postscript file format, with TIFF preview
@@ -358,12 +374,12 @@ try
     close(f);
   case {'fits','fit','fts'} % FITS image
     if ndims(a) == 2
-      b = real(double(iData_private_cleannaninf(a,1))); % Signal/Monitor
+      b = real(double(private_cleannaninf(a,1))); % Signal/Monitor
       fitswrite(b', filename);
     else
       warning([ mfilename ': Export into ' format ' is only possible for 2D objects, not for ' num2str(ndims(a)) 'D. Use resize to change dimensionality. Ignoring.' ]) 
     end
-  case {'gif','bmp','pbm','pcx','pgm','pnm','ppm','ras','xwd','hdf4','tiff','png','art'}  % bitmap images
+  case {'gif','bmp','pbm','pcx','pgm','pnm','ppm','ras','xwd','hdf4','tiff','png','art','ascii'}  % bitmap images
     b = [];
     if ndims(a) ~= 2 || isempty(root)
       f = getframe(a,[],options);
@@ -375,7 +391,7 @@ try
       end
     end
     if isempty(b) % 'data' option or getframe failed
-      b = real(double(iData_private_cleannaninf(a,1)));
+      b = real(double(private_cleannaninf(a,1)));
       b = round((b-min(b(:)))/(max(b(:))-min(b(:)))*256);
       b = flipud(b);
     end
@@ -394,9 +410,10 @@ try
         imwrite(b, filename, formatShort, 'Comment',char(a));
       case 'tiff'
         imwrite(b, jet(256), filename, formatShort, 'Description',char(a));
-      case 'art'
+      case {'ascii','art'}
         textart(b, filename); % in private
       otherwise
+        warning('off','MATLAB:imagesci:writehdf:colormapIgnoredForRgb');
         try
           imwrite(b, jet(256), filename, formatShort);
         catch
@@ -411,12 +428,12 @@ try
       close(f);
     end
   case {'hdf','hdf5','h5','nx','nxs','n5','nc','cdf'} % HDF5, CDF, NetCDF formats: converts fields to double and chars
-    filename = iData_private_saveas_hdfnc(a, filename, formatShort, root); % private function
+    filename = private_saveas_hdfnc(a, filename, formatShort, root); % private function
   case 'hdr'  % Analyze volume
-    filename = iData_private_saveas_analyze(a, filename);
+    filename = private_saveas_analyze(a, filename);
   case {'html','htm'}
     % create a folder with the HTML doc, figures
-    filename = iData_private_saveas_html(a, filename, [ format ' ' root ' ' options ]);
+    filename = private_saveas_html(a, filename, [ format ' ' root ' ' options ]);
   case {'inx','mcstas','sqw','spe'}  % ILL INX / McStas / SPE
       if ndims(a) == 2
         a = iData_Sqw2D(a);
@@ -429,7 +446,11 @@ try
       end
       
   case 'json'
-    mat2json(struct(a), filename );    % in private
+    b=struct(a);
+    b=rmfield(b,'Private');
+    b=rmfield(b,'properties_Protected');
+    b=rmfield(b,'properties_Base');
+    mat2json(b, filename );    % in private
   case 'kml'  % Google KML
     if ndims(a) == 2
       x = getaxis(a,1);
@@ -439,10 +460,8 @@ try
         'color','red','position',[-33.85622 151.21535 10],'alpha',0.7);
     end
   case 'm'  % single m-file Matlab output (text), with the full object description
-    filename = iData_private_saveas_m(a, filename, name, options);
+    filename = private_saveas_m(a, filename, name, options);
   case 'mat'  % single mat-file Matlab output (binary), with the full object description
-    % serialize for much faster save
-    a.Data = hlp_serialize(a.Data);
     varg = { filename };
     if ~isempty(inputname(1))
       eval([ inputname(1) '= a;' ]);
@@ -451,17 +470,16 @@ try
       eval([ a.Tag '= a;' ]);
       varg{2} = a.Tag;
     end
-    if isempty(dir(filename))
-      warning([ mfilename ': The file ' filename ' has been serialized. You MUST import it with load(iData, ''' filename ''')' ])
-    else varg{3} = '-append';
+    if ~isempty(dir(filename))
+      varg{3} = '-append';
     end
     save(varg{:});
   case 'mrc'  % MRC map file
-    WriteMRC(getaxis(iData_private_cleannaninf(a),0),1,filename);  % in private
+    WriteMRC(getaxis(private_cleannaninf(a),0),1,filename);  % in private
   case 'nii'  % NifTi volume
-    filename = iData_private_saveas_nii(a, filename);
+    filename = private_saveas_nii(a, filename);
   case 'npy'  % Numpy binary array NPY
-    writeNPY(getaxis(iData_private_cleannaninf(a),0),filename);
+    writeNPY(getaxis(private_cleannaninf(a),0),filename);
   case {'ppt','pptx'}
     f = figure('visible','off','Renderer', renderer);
     b = plot(a, [ renderer ' ' options ]);
@@ -481,7 +499,7 @@ try
     saveas(f, filename, formatShort);
     close(f);
   case {'stl','stla','stlb','off','ply'} % STL ascii, binary, PLY, OFF
-    filename = iData_private_saveas_stl(a, filename, formatShort);
+    filename = private_saveas_stl(a, filename, formatShort);
   case 'svg'  % scalable vector graphics format (private function)
     f=figure('visible','off','Renderer', renderer);
     plot(a,[ renderer ' ' options ]);
@@ -492,7 +510,7 @@ try
     end
     close(f);
   case 'vtk'  % VTK volume
-    filename = iData_private_saveas_vtk(a, filename);
+    filename = private_saveas_vtk(a, filename);
   case {'vrml','wrl'} % VRML format
     f=figure('visible','off','Renderer', renderer);
     h = plot(a,[ renderer ' ' options ]);
@@ -500,23 +518,31 @@ try
     vrml(g,filename);
     close(f);
   case {'x3d','xhtml'} % X3D/XHTML format
-    filename = iData_private_saveas_x3d(a, filename, formatShort, options);
+    filename = private_saveas_x3d(a, filename, formatShort, options);
   case 'xls'  % Excel file format
-    xlswrite(filename, double(a), a.Title);
+    xlswrite(filename, double(a), a.Name);
   case {'xml'}
-    struct2xml(struct(a), filename);   % in private
+    b=struct(a);
+    b=rmfield(b,'Private');
+    b=rmfield(b,'properties_Protected');
+    b=rmfield(b,'properties_Base');
+    struct2xml(b, filename);   % in private
   case {'yaml','yml'}
     if usejava('jvm')
-      YAML.write( filename, struct(a) ); % YAML object is in iFit/Objects
+      b=struct(a);
+      b=rmfield(b,'Private');
+      b=rmfield(b,'properties_Protected');
+      b=rmfield(b,'properties_Base');
+      YAML.write( filename, b ); % YAML object is in iFit/Objects
     end
   otherwise
-    iData_private_warning(mfilename,[ 'Export of object ' inputname(1) ' ' a.Tag ' into format ' format ' is not supported. Ignoring.' ]);
+    warning([ mfilename ': Export of object ' inputname(1) ' ' a.Tag ' into format ' format ' is not supported. Ignoring.' ]);
     filename = [];
   end
 catch ME
-  warning(ME.message)
-  iData_private_warning(mfilename,[ 'Export of object ' inputname(1) ' ' a.Tag ' into format ' format ' failed. Ignoring.' ]);
-  filename = [];
+  %warning(ME.message)
+  %warning([ mfilename ': Export of object ' inputname(1) ' ' a.Tag ' into format ' format ' failed. Ignoring.' ]);
+  %filename = [];
 end
 
 % end of iData/saveas

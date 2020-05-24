@@ -1,29 +1,10 @@
-function [content,fields]=cell(s)
-% [content,fields]=cell(s) : convert iData objects into cells
-%
-%   @iData/cell function to convert iData objects into cells
-%
-% input:  s: iData single object (iData)
-% output: content: content of the iData structure (cell)
-%         fields:  field names of the iData object (cell)
-%
+function c = cell(s)
+%  CELL Convert structure array to cell array.
+%    C = CELL(S) converts the structure S (with P fields)
+%    into a cell array C.
+% 
+% Example: s = iData(1:12); iscell(cell(s))
 % Version: $Date$ $Version$ $Author$
-% See also  iData/cell, iData/double, iData/struct, 
-%           iData/char, iData/size
+% see also iData, iData.double, iData.char
 
-% EF 27/07/00 creation
-% EF 23/09/07 iData implementation
-
-persistent field
-
-if isempty(field), field=fieldnames(iData); end
-fields=field;
-
-if length(s(:)) > 1
-  iData_private_warning(mfilename, ['I can not handle iData arrays. ' inputname(1) ' size is [' num2str(size(s)) ']. Using first array element.']);
-  s = s(1);
-end
-
-warning off MATLAB:structOnObject
-
-content = struct2cell(struct(s));
+c = struct2cell(s);

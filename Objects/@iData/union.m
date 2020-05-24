@@ -1,16 +1,14 @@
 function [ai,bi] = union(a, b)
-% [ai,bi] = union(a, b) : computes object union area and values
+% UNION  Object axes union.
+%   [AU,BU]=UNION(A,B) for objects A and B, extends both object axes onto the 
+%   union of axes bounds. Resulting objects are returned, e.g. for performing
+%   further operations (e.g. combine, plus, ...).
 %
-%   @iData/union function to pre-combine data sets
-%   This function computes the common axes union between data sets
-%   Resulting objects are returned, e.g. for performing further operations
-%     ai = union(a) where 'a' is an object array computes union of all elements
+%   AU = UNION(A) where 'A' is an object array computes intersection of
+%   all elements
 %
-% input:  a: object or array (iData)
-%         b: object (iData)
-% output: b: object or array (iData)
-% ex:     b=union(a, a);
-%
+% Example: a=iData(peaks); b=copyobj(a); moveaxis(a,1,-5); ...
+%   [au,bu]=union(a,b); size(au,1)==54
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/setaxis, iData/getaxis, iData/intersect
 
@@ -38,13 +36,13 @@ end
 if all_identical_axes, ai=a; bi=[]; return; end
 
 % compute common axes
-c_axis = iData_private_caxis(a,'union');
+c_axis = private_caxis(a,'union');
 
 % loop on all iData to interpolate
 ai = a; bi=[];
 for index=1:numel(a)
   if ~isempty(a(index))
-    ai(index) = interp(a(index), c_axis);
+    ai(index) = interpn(a(index), c_axis);
   end
 end
 

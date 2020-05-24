@@ -1,15 +1,11 @@
 function a = ceil(a)
-% b = ceil(s) : upper integer round of iData object
+%  CEIL   Round towards plus infinity.
+%    CEIL(X) rounds the Signal of object X to the nearest integers
+%    towards infinity.
 %
-%   @iData/ceil function to round the elements of 's' to the nearest integers
-%   towards plus infinity.
-%
-% input:  s: object or array (iData)
-% output: b: object or array (iData)
-% ex:     b=ceil(a);
-%
+% Example: s=iData([-1.2 0.6 1.5]); all(ceil(s) == [-1 1 2])
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/floor, iData/ceil, iData/round
 
-a = iData_private_unary(a, 'ceil');
+a = unary(a, 'ceil');
 

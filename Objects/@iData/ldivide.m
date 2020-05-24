@@ -1,19 +1,12 @@
 function c = ldivide(a,b)
-% c = ldivide(a,b) : fast notation for combine iData objects
+% .\  Combine (left object divide, ldivide)
+%   C = LDIVIDE(A,B) is called for the syntax 'A .\ B'. It is equivalent
+%   to COMBINE, so that A.\B = A\B = LDIVIDE(A,B) = COMBINE(A,B)
 %
-%   @iData/ldivide (.\) is fast notation for combine(a,b)
-%     the 'left division' notation is used to ease
-%     combination data sets, so that:
-%       a.\b = combine(a,b)
-%
-% input:  a: object or array (iData or numeric)
-%         b: object or array (iData or numeric)
-% output: c: object or array (iData)
-% ex:     c=a.\2; c=a.\b;
-%
+% Example: a=iData(peaks); a.Monitor=1; b=a.\a; max(b) == max(a)
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/minus, iData/plus, iData/times, iData/mldivide
 if nargin ==1
-	b=[];
+  b=[];
 end
 c = combine(a,b);

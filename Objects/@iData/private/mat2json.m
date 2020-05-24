@@ -96,6 +96,8 @@ switch class(M)
             end
         elseif ischar(M)
           J=['"',char(M),'"'];
+        elseif islogical(M)
+          J=['"',num2str(M),'"'];
         else
           try
             J=mat2json(struct(M));  % OK for objects

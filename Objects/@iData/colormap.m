@@ -1,16 +1,14 @@
 function h = colormap(varargin)
-% h=colormap(objects, colormaps, ..., options): Produce surfaces from iData 2D objects with different colormaps
+% COLORMAP Show multiple 2D objects with different colormaps.
+%   H=COLORMAP(Z1, Z2, ...) plots series of 2D objects, each with a different
+%   colormap. Surface handles are returned.
 %
-% h=colormap(z1,cm1, z2, cm2, ...)
-%   Produces surfaces with different colormaps.
-%   iData 2D object z1 is plotted as surface 1, which is coloured with map cm1 (Nx3)
+%   H=COLORMAP(Z1,CM1, Z2,CM2, ...) produces surfaces with different colormaps.
+%   2D object Z1 is plotted as a surface coloured with map CM1 (Nx3), ...
 %
-% h=colormap(z1, z2, ...)
-%   Same as above with a set of default colormaps
-%
-% h=colormap(..., options)
-%   Options specify the type of plot rendering (same as used in iData/plot)
+%   H=COLORMAP(..., OPTIONS) specifies the type of plot rendering (same as used 
 %   Any string argument will be interpreted as an 'option' for the 2D iData/plot
+%
 %                 surf, mesh, contour, contour3, surfc, surfl, contourf
 %                 plot3, scatter3 (colored points), stem3, pcolor, waterfall
 %                 flat, interp, faceted (for shading), view2, view3
@@ -19,10 +17,10 @@ function h = colormap(varargin)
 %                 painters (bitmap drawing), zbuffer (vectorial drawing)
 %                 whole (do not reduce large object size for plotting)
 %
-% In addition, the 'log' option can be used to employ a log-scale color set
+%   In addition, the 'log' option can be used to employ a log-scale color set
 %   which enhances contrast on low signal values in the plot.
 %
-% Available colormaps are:
+%   Available colormaps are:
 %    hsv        - Hue-saturation-value color map.
 %    hot        - Black-red-yellow-white color map.
 %    gray       - Linear gray-scale color map.
@@ -42,12 +40,8 @@ function h = colormap(varargin)
 %    winter     - Shades of blue and green color map.
 %    summer     - Shades of green and yellow color map.
 %
-% input: z1,z2,...:   iData objects (single or arrays)
-%        cm1, cm2...: colormaps (Mx3 matrices, such as jet)
-%        options:     string specifying the type of rendering for iData/plot.
-% output: h:          graphics object handles (cell/array)
-% example: a=iData(feval(gauss2d)); colormap(a,jet,a+1,hsv,'log transparent')
-%
+% Example: a=iData(peaks); h=colormap(a,jet,a+1,hsv,'log transparent'); ...
+%          tf = all(ishandle(h)); delete(gcf); tf
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/plot, iData/surf, iData/caxis
 
@@ -66,7 +60,7 @@ clear varargin
 
 if prod(size(z(1))) > 1e6 
   if isempty([ strfind(options,'whole') strfind(options,'full') ])
-    iData_private_warning(mfilename, [ 'Object ' z(1).Tag ' "' z(1).Title '" is large (numel=' num2str(prod(size(z(1)))) ...
+    warning([ mfilename ': Object ' z(1).Tag ' "' z(1).Name '" is large (numel=' num2str(prod(size(z(1)))) ...
       ').\n\tNow rebinning for display purposes with e.g. z=reducevolume(z);' ...
       '\n\tUse e.g colormap(z, ''whole'') to plot the whole data set and be able to zoom tiny regions.' ]);
     z=reducevolume(z);

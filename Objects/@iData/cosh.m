@@ -1,14 +1,10 @@
 function a = cosh(a)
-% b = cosh(s) : computes the hyperbolic cosine of iData object
+%  COSH   Hyperbolic cosine.
+%    COSH(X) is the hyperbolic cosine of the Signal of object X.
 %
-%   @iData/cosh function to compute the hyperbolic cosine of data sets.
-%
-% input:  s: object or array (iData)
-% output: b: object or array (iData)
-% ex:     b=cosh(a);
-%
+% Example: s=iData(0:10); all(cosh(s) == cosh(0:10))
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/cos, iData/acos, iData/sin, iData/asin, iData/tan, iData/atan
 
-a = iData_private_unary(a, 'cosh');
+a = unary(a, 'cosh');
 

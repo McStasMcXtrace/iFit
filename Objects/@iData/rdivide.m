@@ -1,17 +1,13 @@
 function c = rdivide(a,b)
-% c = rdivide(a,b) : computes the ratio of iData objects
+% ./  Right object divide.
+%    A./B denotes element-by-element division (object ratio). 
+%    The syntax A/B is the same as A./B
 %
-%   @iData/rdivide (./) function to compute the ratio of data sets
+%    C = RDIVIDE(A,B) is called for the syntax 'A ./ B
 %
-% input:  a: object or array (iData or numeric)
-%         b: object or array (iData or numeric)
-% output: c: object or array (iData)
-% ex:     c=a./2; c=a./b;
-%
+% Example: a=iData(peaks); b=a./a; all(b(:)==1)
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/minus, iData/plus, iData/times, iData/rdivide
-if nargin ==1
-	b=[];
-end
-c = iData_private_binary(a, b, 'rdivide');
+
+c = binary(a, b, 'rdivide');
 

@@ -1,21 +1,20 @@
 function h = contour3(a, option, varargin)
-% h = contour3(s,option) : Plot a 2D/3D object as 3D contour
+% CONTOUR3 3D contour plot.
+%   CONTOUR3(Z) is a contour plot of 2D/3D object Z treating the values in Z
+%   as heights above a plane.  A contour plot are the level curves
+%   of Z for some values V. the contours are drawn at their corresponding Z level.
 %
-%   @iData/contour3 function to plot a 2D or 3D object
-%     2D objects are shown as a 3D contour
-%   contour3(a, option, levels) specifies the number of coutour lines to plot.
-%
-% input:  s: object or array (iData)
-%         option: global option for 2D and 3D plots: 
+%   H = CONTOUR3(..., 'OPTION') specifies plot options for 2D and 3D plots: 
 %                 flat, interp, faceted (for shading)
 %                 transparent, light, clabel, colorbar, hide_axes
 %                 axis tight, axis auto, view2, view3
 %                 painters (bitmap drawing), zbuffer (vectorial drawing)
-% output: h: graphics object handles (cell)
-% ex:     contour3(iData(peaks)); contour3(iData(flow));
 %
+%   CONTOUR3(A, 'OPTION', LEVELS) specifies the number of coutour lines to plot.
+%
+% Example: h=contour3(iData(flow)); tf=ishandle(h); delete(gcf); tf
 % Version: $Date$ $Version$ $Author$
-% See also iData, iData/plot, iData/contour, iData/contourf
+% See also iData, iData/plot, iData/contour3, iData/contourf
 
 if nargin <=1
 	option='';

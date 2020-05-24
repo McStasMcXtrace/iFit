@@ -1,19 +1,18 @@
 function c = le(a,b)
-% c = le(a,b) : lower-than-or-equal comparison of iData objects
+%  <=   Less than or equal (le).
+%    A <= B does element by element comparisons between A and B
+%    and returns an object of the same size with elements set to logical 1
+%    where the relation is true and elements set to logical 0 where it is
+%    not.
+%    When comparing two iData objects, the monitor weighting is applied.
 %
-%   @iData/le (<=) comparison operator
-%     when comparing two iData objects, the monitor weighting is applied.
+%    C = LE(A,B) is called for the syntax 'A <= B'
 %
-% input:  a: object or array (iData or numeric)
-%         b: object or array (iData or numeric)
-% output: c: object or array which Signal is the comparison result (iData)
-% ex:     c= a<=1; d=find(a<=b);
-%
+% Example: s=iData(-10:10); any(s <= 0)
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/find, iData/gt, iData/lt, iData/ge, iData/le, iData/ne, iData/eq
 
 if nargin ==1
-	b=[];
+  b=[];
 end
-c = iData_private_binary(a, b, 'le');
-
+c = binary(a, b, 'le');

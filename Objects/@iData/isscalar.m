@@ -1,18 +1,12 @@
-function a = isscalar(a)
-% b = isscalar(s) : True for scalar iData objects
+function v = isscalar(a)
+%  ISSCALAR True if array is a scalar.
+%    ISSCALAR(S) returns logical true (1) if S is a 1 x 1 object Signal
+%    and logical false (0) otherwise.
 %
-%   @iData/isscalar function to return true if data set is a single scalar element
-%   of 's', i.e. that size is 1x1
-%
-% input:  s: object or array (iData)
-% output: b: object or array (iData)
-% ex:     b=isscalar(a);
-%
+% Example: s=iData(pi); isscalar(axescheck(s))
 % Version: $Date$ $Version$ $Author$
-% See also iData, iData/sign, iData/isreal, iData/isfinite, iData/isnan,
-%          iData/isinf, iData/isfloat, iData/isinterger,
-%          iData/isnumeric, iData/islogical, iData/isscalar, 
-%          iData/isvector, iData/issparse
+% See also iData, iData/isvector, iData/size, iData/ndims
 
-a = iData_private_unary(a, 'isscalar');
-
+v = unary(a, 'isscalar');
+if iscell(v), v=cell2mat(v); end
+v = logical(v);

@@ -1,101 +1,103 @@
-function this = set(this,varargin)
-% [s,...] = set(s, 'PropertyName', Propertyvalue, ...) : set iData properties
+function s = set(s, varargin)
+% SET    Set object properties.
+%  V = SET(S,'PropertyName','Value') 
+%    Set the value of the specified property/field in the structure.
+%    The object S can be an array. The Value can be anything (char, alias, numeric).
 %
-%   @iData/set function to set iData properties.
-%   set(s, 'PropertyName', Propertyvalue, ...}) 
-%     sets values into given property names for the iData object s.
-%   set(s, Struct.Field, ...)
-%     sets values from given structure fields into the iData object s.
-%   set(s, CellNames, CellValues, ...)
-%     sets values from given cells into the iData object s.
-%   set(s) indicates the signification of the iData base properties
-%   The input iData object is updated if no output argument is specified.
+%    The 'PropertyName' can be a full structure path, such as 'field1.field2' in
+%    in which case the value assigment is made recursive (travel through).
 %
-% ex      : set(iData,'Title','A nice Title')
+%    When the target property is itself a valid structure path (char), it is also 
+%    travelled through before assigment (see below).
 %
+%  V = SET(S,'PropertyName1','Value1','PropertyName2','Value2',...)
+%    Set multiple properties.
+%
+%  V = SET(S, ...,'alias')
+%    When the PropertyName points to a string value, it is assigned without 
+%    travelling through it (set as alias/link). 
+%    This syntax is equivalent to SETALIAS(S, 'PropertyName1','Value1',...)
+%    In this case, the assigment allows to link to internal or external links, 
+%    as well as evaluated expression, with the syntax cases for the 'Value':
+%     'field'                         a simple link to an other property 'field'
+%     'field1.field2...'              a nested link to an other property
+%     'file://some_file_path'         a local file URL
+%     'http://some_distant_resource'  an HTTP URL (proxy settings may need to be set)
+%     'https://some_distant_resource' an HTTPS URL (proxy settings may need to be set)
+%     'ftp://some_distant_resource'   an FTP URL (proxy settings may need to be set)
+%     'matlab: some_expression'       some code to evaluate. 'this' refers to the 
+%                                     object itself e.g. 'matlab: this.Signal*2'
+%
+%    File and URL can refer to compressed resources (zip, gz, tar, Z) which are 
+%    extracted on-the-fly. In case the URL/file resource contains 'sections' a search token
+%    can be specified with syntax such as 'file://filename#token'.
+%
+%  V = SET(S, 'Property','Value','Label')
+%  Sets the Value and Label for the given Property.
+% 
+%  SET(S) displays all object properties.
+%
+%  To remove an alias/property use RMFIELD or RMALIAS.
+%
+% Example: s=iData; set(s, 'a', 1); set(s, 'b.c','a','alias'); get(s, 'b.c') == 1 && strcmp(get(s, 'b.c','alias'),'a')
 % Version: $Date$ $Version$ $Author$
-% See also iData, iData/get, iData/setalias, iData/setaxis
+% See also iData, fieldnames, findfield, isfield, set, get, getalias, setalias, 
+%   getaxis, setaxis, rmalias, rmfield
 
-% EF 27/07/00 creation
-% EF 23/09/07 iData implementation
-% ============================================================================
-% calls: subsasgn
+% NOTE: the rationale here is to implement all the logic in subasgn and just call it.
 
-% calls: setalias
-
-if ~isa(this,'iData'), return; end
-
-if nargin == 1
-  disp('iData object properties:');
-  disp('Title:      (string)   title of the Data set');
-  disp('Tag:        (string)   unique ID for the Data set');
-  disp('Source:     (string)   origin of data (filename/path)');
-  disp('Command:    (cellstr)  history of commands applied to object');
-  disp('Date:       (string)   data set creation date');
-  disp('UserData:   (any type) user data storage area');
-  disp('Label:      (string)   user label');
-  disp('DisplayName (string)   string displayed in plot legends');
-  disp('Creator:    (string)   application that created this data set');
-  disp('User:       (string)   user of this Data set');
-  disp('Data:       (any type) Data storage area');
-  disp('Signal:     (double)   The signal to be used for data set math operations/plotting.');
-  disp('Error:      (double)   the error bars on the signal to be used for data set math operations/plotting.');
-  disp('Monitor:    (double)   the monitor(statistical weight) on the signal to be used for data set math operations');
-  disp('Axis:       list of axis defined for data set math operations/plotting. Use setaxis/getaxis');
-  disp('Alias:      list of aliases/links to data items.                        Use setalias/getalias');
-  disp('ModificationDate: (string)   last object modification date');
-  this = iData(this);
-  return
-end
-
-% handle array of objects
-if numel(this) > 1
-  for index=1:numel(this)
-    this(index) = set(this(index), varargin{:});
+  if ~isa(s, 'iData')
+    builtin('set', s, varargin{:});
+    return
   end
-  if nargout == 0 && ~isempty(inputname(1)) % update array inplace
-    assignin('caller', inputname(1), this);
-  end
-  return
-end
-
-% handle single object
-% extract the Property/Value pairs
-i1 = 1; % index in input parameters varargin
-prop_names = {}; prop_values = {};
-index = 1;
-while index < length(varargin)    % first parse fields and values
-  if ischar(varargin{index})      % normal 'PropertyName', Propertyvalue
-    prop_names{end+1}  = varargin{index};         % get single PropertyName
-    prop_values{end+1} = varargin{index+1};       % get single PropertyValue
-    index = index+2;
-  elseif isstruct(varargin{index})         % import structure
-    prop_names  = fieldnames(varargin{index});         % get PropertyNames
-    prop_values = struct2cell(varargin{index});
-    index = index+1;
-  elseif iscell(varargin{index}) && index < length(varargin) % import from 2 cells
-    prop_names  = varargin{index};        % get PropertyNames
-    prop_values = varargin{index+1};      % get PropertyValue
-    index = index+2;
-  else
-    iData_private_error(mfilename, [ 'PropertyName ' num2str(index) ' should be char strings in object ' inputname(1) ' ' this.Tag ' and not ' class(varargin{index}) ]);
-  end
-end
-
-% now update the Properties
-for index=1:length(prop_names) % loop on properties cell
-  % test if this is a unique property, or a composed one
-  if isvarname(prop_names{index})  % extract iData field/alias
-    s    = struct('type', '.', 'subs', prop_names{index});
-    this = subsasgn(this, s, prop_values{index});
-  else % this is a compound property, such as set(this,'Data.Signal', ...)
   
-    eval([ 'this.'  prop_names{index} ' = prop_values{index};' ]);
-  end
-end
+  if nargin==1, s = fieldnames(s); return; end
 
-% update the object
-if nargout == 0 && ~isempty(inputname(1))
-  assignin('caller',inputname(1),this);
-end
+  % handle array of struct
+  if numel(s) > 1
+    for index=1:numel(s)
+      s(index) = set(s(index), varargin{:});
+    end
+    return
+  end
+  lab = ''; follow = true; % default: we travel through links
+  % check last argument as 'alias' ? will not follow links, but set aliases directly.
+  if nargin >=4 && rem(numel(varargin),2) == 1 && ischar(varargin{end}) 
+    if any(strcmp(varargin{end}, {'link','alias'}))
+       follow = false;  % we set aliases and do not link for get/subsref
+    else lab = varargin(end);
+    end
+    varargin(end) = []; 
+  end
+  
+  % now 's' is a single object. We handle name/value pairs
+  for index=1:2:numel(varargin)
+    if index == numel(varargin)
+      warning([ mfilename ': SET works with name/value pairs. The ' num2str(index) '-th name argument misses its value. Skipping.' ]);
+      break;
+    end % missing value ?
+    name = varargin{index};
+    value= varargin{index+1};
+    if ~ischar(name) && ~iscellstr(name) && ~(isscalar(name) && isnumeric(name))
+      error([ mfilename ': SET works with name/value pairs. The ' num2str(index) '-th argument is of type ' class(name) ]);
+    end
+    if ischar(name), name = cellstr(name); end
+    for n_index=1:numel(name)
+      if isnumeric(name(n_index)) || ~isnan(str2double(name(n_index)))
+        S.type = '{}'; S.subs={ name(n_index) };
+        s = subsasgn(s, S, value);
+      elseif follow
+        s = subsasgn(s, struct('type','.', 'subs',name{n_index}), value);
+      else
+        s = subsasgn(s, struct('type','()','subs',name{n_index}), value);
+      end
+    end
+  end
+  
+  if ~isempty(lab)
+    label(s, name, lab);
+  end
+  
+  % reset cache (as we have changed the object: fields, values, ...)
+  s.Private.cache.findfield = [];
 

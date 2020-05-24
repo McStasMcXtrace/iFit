@@ -1,20 +1,16 @@
-function a = isfinite(a)
-% b = isfinite(s) : True for finite iData object elements
+function v = isfinite(a)
+%  ISFINITE True for finite elements in Signal.
+%    ISFINITE(X) returns an object with Signal as 1's where
+%    the Signal of X is finite (not nan's or inf's) and 0's where
+%    it is not.
 %
-%   @iData/isfinite function to return true for finite elements
-%   of 's', i.e. that are not NaN, Inf or -Inf.
+%    For any X, exactly one of ISFINITE(X), ISINF(X), or ISNAN(X)
+%    is 1 for each element of the object Signal.
 %
-%   To remove nan's and inf's values use: fill(s)
+%    To remove nan's and inf's values use: fill(s)
 %
-% input:  s: object or array (iData)
-% output: b: array (int)
-% ex:     b=isfinite(a);
-%
+% Example: s=iData([pi NaN Inf -Inf]); all(isfinite(s) == [1 0 0 0])
 % Version: $Date$ $Version$ $Author$
-% See also iData, iData/sign, iData/isreal, iData/isfinite, iData/isnan,
-%          iData/isinf, iData/isfloat, iData/isinterger,
-%          iData/isnumeric, iData/islogical, iData/isscalar, 
-%          iData/isvector, iData/issparse, iData/fill
+% See also iData, iData/isinf, iData/isnan, iData/fill
 
-a = iData_private_unary(a, 'isfinite');
-
+v = unary(a, 'isfinite');

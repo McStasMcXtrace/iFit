@@ -1,14 +1,10 @@
 function a = atanh(a)
-% b = atanh(s) : computes the inverse hyperbolic tangent of iData object
+%  ATANH  Inverse hyperbolic tangent.
+%    ATANH(X) is the inverse hyperbolic tangent of the Signal of object X.
 %
-%   @iData/atanh function to compute the inverse hyperbolic tangent of data sets.
-%
-% input:  s: object or array (iData)
-% output: b: object or array (iData)
-% ex:     b=atanh(a);
-%
+% Example: s=iData([-1 0 1]); all(atanh(s) == atanh([-1 0 1]))
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/cos, iData/acos, iData/sin, iData/asin, iData/tan, iData/atan
 
-a = iData_private_unary(a, 'atanh');
+a = unary(a, 'atanh');
 

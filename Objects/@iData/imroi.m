@@ -1,66 +1,52 @@
 function [b, mask, f] = imroi(a, options)
-% imroi: define a region of interest on a data set
-% 
-% b = imroi(a)
-%  This function allows to select regions-of-interest (ROI) over an existing 
-%    data set, which defines areas where data points are selected. The selected 
-%    data set is returned, with NaN's elsewhere.
+% IMROI Region of interest on a data set.
+%   B = IMROI(A) select interactively regions-of-interest (ROI) over an existing 
+%   data set, which defines areas where data points are selected. The selected 
+%   data set is returned, with NaN's elsewhere.
 %
-% The mouse is used to define points/lines in the data set. Click on the plot to 
+%   mouse left-click/SPACE    add a point/line
+%   right-click/BACKSPACE     remove last point
+%   DEL/"C"                   remove all points
+%   Return/"Q"/middle-click   terminate input and compute intersections
+%   A                         start a new separate polygon (add)
+%   R                         change orientation (2D/3D). 
+%                               Disable rotation to continue ROI.
+%   ESC                       abort
+%   H                         display a help dialogue
+%   left/right/up/down arrows rotate the view
+%     
+%   The mouse is used to define points/lines in the data set. Click on the plot to 
 %   define the limits of the selection. These vertices are used as a polygon
 %   shape which intersection with the data set defines the selection.
 %
-% You may undo (remove) previous points/lines from the active polygon by pressing
+%   You may undo (remove) previous points/lines from the active polygon by pressing
 %   the mouse right-button or the BackSpace key. To clear the current ROI and start
-%   over, press the 'c' or DEL key.
+%   over, press the 'C' or DEL key.
 %
-% It is possible to define as many separate ROI's by pressing the 'a' key to add
-%   to store the current polygon, and start a new one.
+%   It is possible to define as many separate ROI's by pressing the 'A' key to
+%   store the current polygon, and start a new one.
 %
-% When used with surfaces and volumes, you may rotate the view (using the Rotate 
-%   icon from the toolbar or Tools menu) by pressing the 'r' key over the figure.
-%   This stores the current polygon definition, and switch to the rotate mode.
+%   When used with surfaces and volumes, you may rotate the view (using the Rotate 
+%   icon from the toolbar or Tools menu) by pressing the 'R' key over the figure.
+%   This stores the current polygon definition, and switches to the rotate mode.
 %   Once the view is properly oriented, disable the Rotate tool (click again on 
 %   the rotate icon) to enter a new polygon definition.
 %   You may alternatively use the up/down/left/right arrows to rotate the view.
 %
-% Once all ROI's are defined, press the middle mouse button or the Return key to
+%   Once all ROI's are defined, press the middle mouse button or the Return key to
 %   end the ROI selection and compute the intersection with the data set.
 %
-% To abort (cancel) and exit the ROI tool, use the Escape key.
+%   To abort (cancel) and exit the ROI tool, use the Escape key.
 %
-% [b, mask] = imroi(a)
-%  Same as above, but returns the mask data set, which contains 0 and 1.
-%  and we have b=a(mask);
+%   [B, MASK] = IMROI(A) also returns the mask data set, which contains 0 and 1.
+%   and we have B=A(MASK);
 %
-% [b, mask, f] = imroi(a)
-%  Same as above, but returns the selection figure handle.
+%   [B, MASK, F] = IMROI(A) also returns the selection figure handle.
 %
-% [b, mask] = imroi(a, options)
-%  The options are used to customize the plot rendering, see iData/plot.
+%   [B, MASK] = IMROI(A, 'OPTIONS') specify options for plot rendering, see PLOT.
 %
-% Interaction:
-%     mouse left-click or SPACE  add a point/line
-%     right-click or BACKSPACE   remove last point
-%     DEL or "C"                 remove all points
-%     return or "Q" or middle-click: terminate input and compute intersections
-%     A                          start a new separate polygon (add)
-%     R                          change orientation (2D/3D). Disable rotation to continue ROI.
-%     ESC                        abort
-%     H                          display a help dialogue
-%     left/right/up/down arrows  rotate the view
-%
-% Example:
-%  a = iData(peaks); b=imroi(a);
-%
-%  input:
-%     a: a data set (iData)
-%
-%  output:
-%     b:    the data set with selected area (iData)
-%     mask: the mask used for the selection, with 0 and 1 as Signal (iData)
-%     f:    figure used to define the selection
-%
+% Example: true
+%   a = iData(peaks); b=imroi(a); % interactive
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/plot, iData/edit
   

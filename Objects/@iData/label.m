@@ -1,37 +1,35 @@
 function labl = label(this, varargin)
-% b = label(s, alias, label) : Change iData label for a given alias/axis
+% LABEL Label for a given alias/axis.
+%   L = LABEL(s, rank) Get axis label. Rank 0 is for the Signal,
+%   rank values 1:ndims(s) indicate an axis.
 %
-%   @iData/label function to set/get labels
-%     label(s, alias) returns the current label
-%     label(s)        returns the object Label
-%     label(s, rank, label)   sets the object label
-%   The input iData object is updated if no output argument is specified.
+%   LABEL(s, rank, 'text') Set axis label. Rank 0 is for the Signal,
+%   rank values 1:ndims(s) indicate an axis.
 %
-% input:  s: object or array (iData)
-%         alias: name of the alias or index of the axis (char/numeric)
-%         label: new label (char/cellstr)
-% output: b: object or array (iData)
-% ex:     b=label(a,'x','new xlabel'); b=label(a,'x'); b=label(a, 1,'new xlabel');
+%   L = LABEL(s, 'alias') Get named alias label.
+%
+%   LABEL(s, 'alias','text') Set named alias label.
+%
+%   LABEL(s) Returns the object Label (s.Label property).
+%
+% Example: s=iData(1:10); label(s,'Signal','text'); strcmp(label(s,0),'text')
 %
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/plot, iData/xlabel, iData/ylabel, iData/zlabel, iDala/clabel
 
 if numel(this) > 1
-  if nargin < 3
+  if nargin < 3 % get labels (return them)
     labl=cell(size(this));
     for index=1:numel(this)
       labl{index} = label(this(index), varargin{:});
     end
-  else
+  else          % set labels (update objects)
     for index=1:numel(this)
-      this(index) = label(this(index), varargin{:});
+      label(this(index), varargin{:});
     end
     labl=this;
-    if nargout == 0 & isa(this,'iData') & ~isempty(inputname(1))
-      assignin('caller',inputname(1),this);
-    end
   end
-  
+
   return
 end
 
@@ -42,74 +40,91 @@ if nargin == 1
   return
 end
 
-% search for the axis/alias: should get an index value in the aliases/axes
-if nargin >= 2
-  index = varargin{1};
+% get the alias we want to get/set (nargin == 2 or 3)
+aliases = varargin{1};
+
+% check input alias
+if     ischar(aliases), aliases=cellstr(aliases); end
+if ~iscellstr(aliases) && ~isnumeric(aliases)
+  error([ mfilename ': Require a char/cellstr/numeric Alias name, but you gave me a ' class(aliases) ]);
 end
-if iscell(index) && ischar(index{1})
-  index = index{1};
+if isnumeric(aliases), aliases=num2cell(aliases); end
+
+% check input value (nargin==3)
+if nargin >= 3
+  values = varargin{2};
+  if     ischar(values), values=cellstr(values); end
+  if ~iscellstr(values)
+    error([ mfilename ': Require a char/cellstr label, but you gave me a ' class(values) ]);
+  end
+else values = cell(size(aliases));
 end
-if ischar(index) && ~isnan(str2double(index))
-  % label(a, '1', ...) -> label(a, 1)
-  index = str2double(index);  % now numeric axis index
+
+% we scan aliases
+labl = {};
+% a change of label should not trigger a check of Signal/axes.
+if isfield(this.Private,'cache') && isfield(this.Private.cache,'check_requested')
+  check = this.Private.cache.check_requested;
+else
+  check = false;
 end
-if isscalar(index) && isnumeric(index)
-  if index == 0
-    index = 'Signal';
-  elseif 0 < index && index <= ndims(this)
-    % find the Alias which corresponds with this axis index
-    if index <= length(this.Alias.Axis)
-      axis_alias = this.Alias.Axis{index};
-      if ischar(axis_alias)
-        index = axis_alias;
+this.Private.cache.check_requested = false;
+for index=1:numel(aliases)
+  alias=aliases{index};
+
+  l = label_single(this, alias, values{index}, nargin);
+  if nargin == 2 % get, try other naming of Signal
+    if isempty(l)
+      for t = {'Signal','0','axis_0'}
+        [l, alias] = label_single(this, t{1}, values{index}, nargin);
+        if ~isempty(l), break; end
       end
-    else
-      % the Axis does not exist yet, but object dimensionality allows it
-      % we create the axis
-      x    = getaxis(this, index);
-      this = setaxis(this, index, x);
-      index= getaxis(this, num2str(index)); % the Alias for the Axis 'index'
     end
-  else
-    index=index+3;
   end
-end
-if ischar(index)  
-   % is this an Alias ?
-  index=index(:)';
-  isalias = strcmp(index, this.Alias.Names);
-  if any(isalias)
-    index = find(isalias, 1);
-  end
-end
+  labl{end+1} = l;
 
-% check that rank exists in Alias list
-if isempty(index) || ~isnumeric(index) || index > length(this.Alias.Names) || index < 1
-    % did not find the alias...
-    if nargin == 2
-        labl = '';
-    else
-        labl = this;
+end
+this.Private.cache.check_requested = check;
+if numel(labl) == 1, labl=labl{1}; end
+
+% ------------------------------------------------------------------------------
+function [labl, alias] = label_single(this, alias, value, n)
+  % a single set/get for alias
+  labl = ''; tmp=[];
+  if isnumeric(alias) || isfinite(str2double(alias)) % rank is given -> replace by corresponding alias
+    tmp = getaxis(this, num2str(alias)); % this is the definition of axis rank
+    if isempty(tmp)
+      tmp = getalias(this, num2str(alias));
     end
-    return; 
-end
-
-if nargin == 3
-  % label(a, rank, lab) -> set Label of the rank/alias
-  this.Alias.Labels{index} = validstr(varargin{2});
-  this = iData_private_history(this, mfilename, this, index, varargin{2});
-  if nargout == 0 && ~isempty(inputname(1))
-    assignin('caller',inputname(1),this);
+  elseif ischar(alias) && isfield(this, alias)
+    tmp = getaxis(this, alias);
   end
-  labl = this; % return value
-else % nargin == 2
-  % label(a, rank) -> get the label value
-  labl = this.Alias.Labels{index};
-end
+  if ischar(tmp) && isfield(this, tmp)
+    alias = tmp;
+  elseif isnumeric(alias)
+    alias = sprintf('axis_%i', alias);
+  end
+  clear tmp
+  % the alias must be a valid path in the object
+  if n == 2  % get
+    % issue: can not use isfield: can not check for a Private property such as Labels.
+    % We try a direct get via subsref_single
+    try
+      labl = subsref_single(this.Labels, alias);
+    catch ME
+      labl = ''; % else invalid get
+    end  
+  else       % set
+    labl = validstr(value);
+    subsasgn_single(this, [ 'Labels.' alias ], labl);
+    labl = this;
+  end
 
+% ------------------------------------------------------------------------------
 function str=validstr(str)
   % validate a string as a single line
   if iscellstr(str), str=sprintf('%s;', str{:}); end
+  if ~ischar(str), str=''; end % has been tested before (should not occur here)
   str=strrep(str(:)', sprintf('\n'), ';');
   index = find(str < 32 | str > 127);
   str(index) = ' ';

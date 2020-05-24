@@ -1,39 +1,28 @@
 function s = camproj(a,dim, center)
-% s = camproj(a,dim) : projection/radial integration of iData objects elements
+%  CAMPROJ Projection/radial integration of objects elements.
+%    CAMPROJ(a,dim) projects along axis of rank dim. All other axes are removed.
+%    CAMPROJ is the complementary to SUM.
 %
-%   @iData/camproj function to compute the projection/sum of the elements of the data set
-%     camproj(a,dim) projects along axis of rank dim. All other axes are removed.
-%       If dim=0, projection is done on all axes and the total is returned as a 
-%         scalar value. 
-%       camproj(a,1) projects on first dimension (rows).
-%       camproj is the complementary to sum.
+%    CAMPROJ(a,0) projection is done on all axes and the total is returned as a 
+%    scalar value. CAMPROJ(a,1) projects on first dimension (rows).
 %
-%     camproj(a,'radial') computes the radial integration (R=sqrt(sum(axes^2)).
-%       the 'center' of the distribution (1st moment) is used as symmetry point 
-%       for the computation of the radius.
-%     camproj(a,'radial', center) specifies the 'center' of the integration 
-%       (vector of coordinates) or a single value used as center on all axes 
-%       (for instance 0). All axes are assumed to be distances.
-%     The radial distribution can then be transformed into an histogram with
-%     e.g. hist(camproj(a), 100);
+%    CAMPROJ(a,'radial') computes the radial integration (R=sqrt(sum(axes^2)).
+%    the 'center' of the distribution (1st moment) is used as symmetry point 
+%    for the computation of the radius.
 %
-% input:  a:     object or array (iData/array of)
-%         dim:   dimension rank to project to (int or 'radial')
-%         center:scalar or a vector which length is the object dimensionality 
-% output: s: projection of elements (iData 1D/scalar)
-% ex:     c=camproj(a); hist(c, 100);
+%    CAMPROJ(a,'radial', center) specifies the 'center' of the integration 
+%    (vector of coordinates) or a single value used as center on all axes 
+%    (for instance 0). All axes are assumed to be distances.
+%    The radial distribution can then be transformed into an histogram with
+%    e.g. HIST(CAMPROJ(a), 100);
 %
 % Version: $Date$ $Version$ $Author$
-% See also iData, iData/rotate, iData/sum, iData/trapz, iData/cart2sph
-
-if ~isa(a, 'iData')
-  iData_private_error(mfilename,[ 'syntax is ' mfilename '(iData, dim)' ]);
-end
+% See also iData, iData/rotate, iData/sum, iData/trapz, iData/cart2sph, iData/hist
 
 if nargin < 2, dim=1; end
 
 if nargin <= 2 && isnumeric(dim)
-  s = iData_private_sumtrapzproj(a,dim, 'camproj');
+  s = private_sumtrapzproj(a,dim, 'camproj');
 else
   % radial integration (works for surfaces, spheres, ...)
   dim = 'radial';
@@ -65,8 +54,8 @@ else
   end
   
   if length(center) < ndims(a)
-    iData_private_warning(mfilename, ...
-      [ 'The centroid vector is of length ' num2str(length(center)) ' but the object requires ' num2str(ndims(a)) ' values (dimensionality).' ]);
+    warning( ...
+      [ mfilename ': The centroid vector is of length ' num2str(length(center)) ' but the object requires ' num2str(ndims(a)) ' values (dimensionality).' ]);
     return;
   end
   
@@ -75,8 +64,8 @@ else
 
   % we interpolate the object on a grid so that all axes have the same size
   if ndims(a) == 2
-    x = iData_private_cleannaninf(getaxis(a, 1)) - center(1);
-    y = iData_private_cleannaninf(getaxis(a, 2)) - center(2);
+    x = private_cleannaninf(getaxis(a, 1)) - center(1);
+    y = private_cleannaninf(getaxis(a, 2)) - center(2);
     rho = hypot(x,y); % faster and more accurate
     clear x y
   else
@@ -84,7 +73,7 @@ else
     % we extract Signal and all axes, except 'dim'
     for index=1:ndims(a)
       % then compute the sqrt(sum(axes.*axes))
-      x            = iData_private_cleannaninf(getaxis(a, index)) - center(index);
+      x            = private_cleannaninf(getaxis(a, index)) - center(index);
       rho          = rho + x.*x;
       clear x
     end
@@ -104,5 +93,5 @@ else
   s = setaxis( s, 1, rho);
   s = xlabel(  s, 'Radius');
   s = setalias(s, 'Center', center);
-  s = iData_private_history(s, mfilename, a, dim, center);
+  s = history(s, mfilename, a, dim, center);
 end

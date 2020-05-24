@@ -1,15 +1,12 @@
 function a = flipud(a)
-% b = flipud(s) : Flip object in up/down direction
+%  FLIPUD Flip object Signal in up/down direction.
+%    FLIPUD(X) returns X with columns preserved and rows flipped
+%    in the up/down direction.
+%    With 2D data sets, the axis rank 1 is inverted.
 %
-%   @iData/flipud function to flip object in up/down direction
-%     With 2D data sets, the Y axis (vertical) is inverted.
-%
-% input:  s: object or array (iData)
-% output: b: object or array (iData)
-% ex:     b=flipud(a);
-%
+% Example: s=iData(rand(3)); all(all(flipud(s)==flipud(s{0})))
 % Version: $Date$ $Version$ $Author$
-% See also iData, iData/fliplr, fliplr, iData/flipud, flipud
+% See also iData, iData/fliplr, iData/flipdim
 
-a = iData_private_unary(a, 'flipud');
+a = unary(a, 'flipdim',1);
 

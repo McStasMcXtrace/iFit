@@ -1,22 +1,17 @@
 function s = unique(a,dim,mode)
-% s = unique(a,dim) : set unique iData objects axes with no repetitions
+% UNIQUE Set unique axes values with no repetitions.
+%   S = UNIQUE(A) removes duplicates and sorts object first axis. The axis 
+%   values are also sorted in ascending order.
+%   Alternatively, you can use ISEQUAL to find unique data sets in a vector of
+%   objects, and remove duplicates.
 %
-%   @iData/unique function to remove duplicates along data set axes
-%     unique(a,dim) set unique along axis of rank dim. 
-%       If dim=0, operates on all axes.
-%   Alternatively, you can use 'isequal' to find unique data sets and remove 
-%     duplicates.
+%   S = UNIQUE(A,DIM) sets unique values along axis of rank DIM. 
+%   When DIM=0, operates on all axes.
 %
-% input:  a: object or array (iData)
-%         dim: dimension to unique (int)
-% output: s: data set with unique axes (iData)
-% ex:     c=unique(a);
-%
+% Example: a=iData(1:21); a{1}=[9 9 9 9 9 9 8 8 8 8 7 7 7 6 6 6 5 5 4 2 1]; ...
+%          b=unique(a); size(b,2) == 8
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/plus, iData/unique, iData/sort, iData/isequal
-if ~isa(a, 'iData')
-  iData_private_error(mfilename,['syntax is unique(iData, dim)']);
-end
 
 if nargin < 2, dim=1; end
 
@@ -44,6 +39,7 @@ else
 end
 was_uniqueed=0;
 
+% apply unique along axes
 for index=tounique
   x = getaxis(a, index);
   [x, uniquei] = unique(x);
@@ -54,18 +50,19 @@ for index=tounique
       if j ~= index, S.subs{j}=':';
       else           S.subs{j}=uniquei; end
     end
-    sd =subsref(sd, S);
+    % modify Signal, Error and Monitor
     if numel(se) == numel(sd), se =subsref(se, S); end
     if numel(sm) == numel(sd), sm =subsref(sm, S); end
+    sd =subsref(sd, S);
     setaxis(s, dim, x);
     was_uniqueed=1;
   end
 end
 if was_uniqueed
-  s = setalias(s, 'Signal', sd, [ 'unique(' sl ')' ]);
-  s = setalias(s, 'Error',  se);
-  s = setalias(s, 'Monitor',sm);
+  s = set(s, 'Signal', sd); label(s,'Signal',[ 'unique(' sl ')' ]);
+  s = set(s, 'Error',  se);
+  s = set(s, 'Monitor',sm);
   s.Command=cmd;
-  s = iData_private_history(s, mfilename, a, dim);
+  s = history(s, mfilename, a, dim);
 end
 

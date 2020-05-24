@@ -1,15 +1,12 @@
 function v = linspace(a,b,n)
-% v = linspace(a,b,n) : creates a linearly spaced vector of objects
+% LINSPACE Linearly spaced objects.
+%   LINSPACE(X1, X2) generates a row vector of 10 linearly
+%   equally spaced objects between X1 and X2.
+%   This corresponds to a 'morphing' from X1 to X2 in N steps.
 %
-%   @iData/linspace function to create a linearly spaced vector of iData objects
-%   This corresponds to a 'morphing' from a to b in n steps.
+%   LINSPACE(X1,X2,N) generates N objects between X1 and X2.
 %
-% input:  a: object or scalar (iData)
-%         b: object or scalar (iData)
-%         n: number of steps, i.e. length of vector. Default is n=10 (integer)
-% output: v: vector (iData array)
-% ex:     b=linspace(a,b);
-%
+% Example: b=iData(peaks); a=-b; c=linspace(a,b); numel(c) == 10
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/max, iData/min, iData/colon, iData/logspace
 

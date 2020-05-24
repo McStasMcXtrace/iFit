@@ -1,22 +1,18 @@
 function c=fill(a, n)
-% FILL fill-in over missing data
+% FILL fill-in over missing data.
 %   Y = FILL(X) replaces the missing data in X by extra/interpolating
 %   the non-missing elements. The non finite values (NaN or Inf) in X are
-%   considered as missing data. The method is using a using a N-D discrete
-%   cosine transform.
-%
+%   considered as missing data. The method is using a N-D discrete cosine
+%   transform.
 %   FILL uses an iterative process that converges toward the solution.
+%
 %   Y = FILL(X,N) uses N iterations. By default, N = 100. If you
 %   estimate that FILL did not totally converge, increase N:
 %   Y = FILL(X,1000);
 %
-%   For a faster fill-in, you may use iData/resize instead.
+%   For a faster fill-in, you may use RESIZE instead.
 %
-% input:  a: object or array (iData)
-%         n: number of iterations (integer)
-% output: c: filled object (iData)
-% ex:     a=iData([ ifitpath 'Data/Monitor_GV*']); b=hist(a); c=fill(b);
-%
+% Example: a=iData([ ifitpath 'Data/Monitor_GV*']); b=hist(a); c=fill(b);
 % Version: $Date$ $Version$ $Author$
 % See also iData, accumarray, hist, histc, iData/plot, sum, iData/interp, iData/event, iData/squeeze, iData/pack
 
@@ -55,11 +51,16 @@ if ~isempty(index0)
   if ~isscalar(m)
     m(index0) = 1;
   end
+else
+  c = a; 
+  return
 end
 
 % assemble final new object
-c = copyobj(a);
+c = zeros(a);
 
-c = setalias(c, 'Signal',  s);
-c = setalias(c, 'Error',   e);
-c = setalias(c, 'Monitor', m);
+c = set(c, 'Signal',  s);
+c = set(c, 'Error',   e);
+c = set(c, 'Monitor', m);
+
+history(c, mfilename, a, n);

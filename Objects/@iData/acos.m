@@ -1,14 +1,11 @@
-function a = acos(a)
-% b = acos(s) : computes the arc cosine of iData object
+function b = acos(a)
+%  ACOS   Inverse cosine, result in radians.
+%    ACOS(X) is the arccosine of the elements of X. Complex
+%    results are obtained if ABS(x) > 1.0 for some element.
 %
-%   @iData/acos function to compute the inverse cosine of data sets (in radians).
-%
-% input:  s: object or array (iData)
-% output: b: object or array (iData)
-% ex:     b=acos(a);
-%
+% Example: s=iData([-1 0 1]); all(acos(s)==[1 1/2 0]*pi)
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/cos, iData/acos, iData/sin, iData/asin, iData/tan, iData/atan
 
-a = iData_private_unary(a, 'acos');
+b = unary(a, 'acos');
 

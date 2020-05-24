@@ -1,28 +1,18 @@
 function y = isempty(s)
-% isempty(s) : true for empty iData object
+%  ISEMPTY True for empty object.
+%    ISEMPTY(X) returns 1 if X is empty and 0 otherwise. An
+%    empty object has no Signal defined.
 %
-%   @iData/isempty true for empty iData object
-%
-% input:  s: object or array (iData)
-% output: false(0) or true(1) whether Signal is empty in the objects
-% ex :    isempty(iData)
-%
+% Example: s=iData; isempty(s)
 % Version: $Date$ $Version$ $Author$
-% See also iData, iData/disp, iData/get, iData/size
 
-% EF 23/09/07 iData implementation
 
 if numel(s) > 1
-  y = zeros(size(s));
-elseif ~numel(s), y=1; return;
+  y=[];
+  for index = 1:numel(s)
+    y(end+1) = isempty(s(index));
+  end
+  y=reshape(y, size(s));
+else 
+  y=any(size(s)==0);
 end
-for index = 1:numel(s)
-  if any(size(s(index))) == 0, empty = 1;
-  else                         empty = 0; end
-  y(index) = empty;
-end
-
-y=uint8(y);
-
-
-

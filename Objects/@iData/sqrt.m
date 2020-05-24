@@ -1,14 +1,11 @@
 function a = sqrt(a)
-% b = sqrt(s) : square root value of iData object
+%  SQRT   Square root.
+%   SQRT(X) is the square root of the elements of X. Complex 
+%   results are produced if X is not positive.
 %
-%   @iData/sqrt function to return the square root value of data sets
-%
-% input:  s: object or array (iData)
-% output: b: object or array (iData)
-% ex:     b=sqrt(a);
-%
+% Example: s=iData(0:10); all(sqrt(s) == sqrt(0:10))
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/sqrt, iData/power
 
-a = iData_private_unary(a, 'sqrt');
+a = unary(a, 'sqrt');
 

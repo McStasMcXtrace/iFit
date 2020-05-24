@@ -1,17 +1,13 @@
 function a = xlim(a, lims, exclude)
-% b = xlim(s,[ xmin xmax ]) : Reduce iData X axis limits
+% XLIM X limits (2nd axis for ndims>=2).
+%   XL = XLIM(A)            gets the X limits.
+%   Undefined axis returns [NaN NaN] as limits.
 %
-%   @iData/xlim function to reduce the X axis (rank 2, columns) limits
-%     xlim(s) returns the current X axis limits. For 1D objects, the axis
-%     rank 1 limits are returned. Undefined axis returns [NaN NaN] as limits.
+%   XLIM(A,[XMIN XMAX])     sets the X limits. 
 %
-%   xlim(s, [min max], 'exclude') removes the specified range instead of keeping it.
+%   XLIM(A,[XMIN XMAX], 'exclude') removes the specified range instead of keeping it.
 %
-% input:  s: object or array (iData)
-%         limits: new axis limits (vector)
-% output: b: object or array (iData)
-% ex:     b=xlim(a);
-%
+% Example: a=iData(peaks); b=xlim(a,[5 35]); all(xlim(b)==[5 35])
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/plot, iData/xlabel
 
@@ -28,9 +24,6 @@ if numel(a) > 1
   else
     a = s;
   end
-  if nargout == 0 & nargin ==2 && length(inputname(1))
-    assignin('caller',inputname(1),a);
-  end
   return
 end
 
@@ -46,9 +39,9 @@ if isempty(lims)
 end
 
 if ~isempty(exclude)
-  index=find(lims(1) > axisvalues | axisvalues > lims(2));
+  index=find(lims(1) >= axisvalues | axisvalues >= lims(2));
 else
-  index=find(lims(1) < axisvalues & axisvalues < lims(2));
+  index=find(lims(1) <= axisvalues & axisvalues <= lims(2));
 end
 s.type='()';
 if ndims(a) > 1
@@ -59,8 +52,4 @@ end
 cmd=a.Command;
 a = subsref(a,s);
 a.Command=cmd;
-a=iData_private_history(a, mfilename, a, lims);
-
-if nargout == 0 & length(inputname(1))
-  assignin('caller',inputname(1),a);
-end
+a=history(a, mfilename, a, lims);

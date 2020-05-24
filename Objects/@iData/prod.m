@@ -1,25 +1,29 @@
 function [s,sigma] = prod(a,dim)
-% s = prod(a,dim) : computes the product of iData objects elements
+% PROD Product of elements.
+%    S = PROD(X) is the product of the Signal of the object X. If
+%    X is a N-D object, PROD(X) operates along the first
+%    dimension.
+%    If X is floating point, that is double or single, S is
+%    multiplied natively, that is in the same class as X,
+%    and S has the same class as X. If X is not floating point,
+%    S is multiplied in double and S has class double.
+% 
+%    PROD(X,DIM) works along the dimension DIM. 
 %
-%   @iData/prod function to compute the product of the elements of the data set
-%     prod(a,dim) operates along axis of rank dim. The axis is then removed.
-%       If dim=0, product is done on all axes and the total is returned as a scalar value. 
-%         In this case, a second output argument holds the error bar.
-%       prod(a,1) operates on first dimension (columns)
+%    [S,sigma] = PROD(X, 0) does the same as above, but returns the total 
+%    product per object. In this case, a second output argument holds the error
+%    bar.
 %
-% input:  a: object or array (iData/array of)
-%         dim: dimension to operate (int//array of)
-% output: s: product of elements (iData/scalar)
-% ex:     c=prod(a);
-%
+% Example: s=iData(-10:10); prod(s,0) == 0
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/plus, iData/prod, iData/cumprod, iData/mean
 
-if ~isa(a, 'iData')
-  iData_private_error(mfilename,[ 'syntax is ' mfilename '(iData, dim)' ]);
-end
-
 if nargin < 2, dim=1; end
 
-[s,sigma] = iData_private_sumtrapzproj(a,dim, 'prod');
+[s,sigma] = private_sumtrapzproj(a,dim, 'prod');
 
+if nargin > 1 && isequal(dim,0)
+  if iscell(s)
+    s = cell2mat(s);
+  end
+end

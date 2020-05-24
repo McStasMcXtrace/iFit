@@ -1,34 +1,22 @@
 function c=hist(a, varargin)
-% hist(a, axis1, axis2, ...) computes the accumulated histogram from event data sets
+% HIST Computes the accumulated histogram from event data sets.
+%   HIST(a, axis1, axis2, ...) specify the axes as bin edges. The axes 
+%   should be vectors or a single value that indicates the number of bins in the
+%   range [min, max] of the corresponding axis rank in the initial object. 
+%   The bin edges vectors have length(a{k])+1 elements. A default of 33 bins 
+%   is used when not specified. This is similar to a call to hist and accumarray.
 %
-%   @iData/hist function to compute the accumulated histogram from an event data
-%     set. This is similar to a call to hist and accumarray.
+%   The histogram can be converted back to an event list using the EVENT method.
+%   You may remove any NaN/empty bins by using e.g. FILL or RESIZE.
 %
-%   hist(a, axis1, axis2, ...) specify the axes as bin edges. The axes 
-%     should be vectors or a single value that indicates the number of bins in the
-%     range [min, max] of the corresponding axis rank in the initial object. 
-%     The bin edges vectors have length(a{k])+1 elements. A default of 33 bins 
-%     is used when not specified.
+%   HIST(a, [ bin1 bin2 ...]) same as above when specifying the number of bins.
 %
-%   hist(a, [ bin1 bin2 ...]) same as above when specifying the number of bins.
+%   HIST(a, ..., 'Fun', FUN) applies the function FUN to each subset of elements
+%   of VAL.  FUN is a function that accepts a column vector and returns a numeric,
+%   logical, or char scalar, or a scalar cell.  A has the same class as the values
+%   returned by FUN.  FUN is @SUM by default.  Specify FUN as [] for the default behavior.
 %
-%   hist(a, ..., 'Fun', FUN) 
-%     applies the function FUN to each subset of elements of VAL.  FUN is
-%     a function that accepts a column vector and returns
-%     a numeric, logical, or char scalar, or a scalar cell.  A has the same class
-%     as the values returned by FUN.  FUN is @SUM by default.  Specify FUN as []
-%     for the default behavior.
-%
-%   hist(a, ..., 'fill')
-%     performs an interpolation between the events to fill unset histogram bins.
-%
-% The histogram can be converted back to an event list using the 'event' method.
-%
-% input:  a: object or array (iData)
-%         axis1, axis2, ...: bins or number of bins  (vector or scalar)
-% output: c: histogrammed object (iData)
-% ex:     a=iData([ ifitpath 'Data/Monitor_GV*']); b=hist(a);
-%
+% Example: a=iData([ ifitpath 'Data/Monitor_GV*']); b=hist(a);
 % Version: $Date$ $Version$ $Author$
 % See also iData, accumarray, hist, histc, iData/plot, sum, iData/interp, iData/event
 
@@ -51,7 +39,6 @@ if ~isvector(a)
   c = hist(a, varargin{:});
   return
 end
-fillme = 0;
 
 % scan varargin and search for AccumData
 % add it if not specified
@@ -60,9 +47,6 @@ for index=1:length(varargin)
   if ischar(varargin{index})
     if strcmpi(varargin{index}, 'AccumData')
       use_accumdata=index+1;
-      break
-    elseif ~isempty(strfind(varargin{index}, 'fill'))
-      fillme=1;
       break
     end
   end
@@ -124,28 +108,22 @@ else
 end
 
 % assemble final new object
-c = copyobj(a);
-c.Data=[];
-c.Data.signal=count_s;
-rmaxis(c); rmalias(c);
+c = zeros(a);
+c = set(c, 'Signal',  count_s);
+c = set(c, 'Error',   count_e);
+c = set(c, 'Monitor', count_m);
 
-c = setalias(c, 'Signal','Data.signal');
-c = setalias(c, 'Error',   count_e);
-c = setalias(c, 'Monitor', count_m);
-
+% set the Axes
 for index=1:length(edges)
   [link, lab] = getaxis(a, num2str(index));
   if isempty(link), continue; end
   if ~ischar(link), link=['Axis_' num2str(index)]; end
-  c.Data.(link) = edges{index};
-  c=setalias(c, link, [ 'Data.' link ], lab);
+  c=set(c, link, edges{index});
+  label(c, link, lab);
   c=setaxis(c, index, link);
 end
 
-% fill values NaN values in bins without accumulated data
-if (fillme)
-  c = fill(c,10);
-end
+history(c, mfilename, a, varargin{:});
 % ------------------------------------------------------------------------------
 
 function [count edges mid loc] = histcn(X, varargin)

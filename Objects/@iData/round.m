@@ -1,14 +1,10 @@
-function a = round(a)
-% b = round(s) : upper integer round of iData object
+function v = round(a)
+% ROUND  Round towards nearest integer.
+%   ROUND(X) rounds the elements of X to the nearest integers.
 %
-%   @iData/round function to round the elements of 's' to the nearest integers.
-%
-% input:  s: object or array (iData)
-% output: b: object or array (iData)
-% ex:     b=round(a);
-%
+% Example: x=-5:5; a=iData(x+rand/3); all(round(a) == x)
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/floor, iData/ceil, iData/round
 
-a = iData_private_unary(a, 'round');
+v = unary(a, 'round');
 

@@ -1,40 +1,38 @@
 function s = cwt(a,dim,scales,wname,plotit)
-% b = cwt(s,dim,scales,wname,'wname',...) : Continuous wavelet transform
+% CWT  Continuous wavelet transform.
+%   B = CWT(S) computes the continuous wavelet transform (CWT) of object S along
+%   the first dimension. The continuous wavelet transform performs a multi-scale
+%   component analysis. It expands the data set into spatial frequency.
+%   The resulting object has dimension of the input plus S 'period' axis,
+%   and contains the wavelet decomposition coeficients (e.g. complex).
+%   The low period contribution indicates sharp features, whereas the high
+%   period ones indicate slow variation/constant contributions.
+%   For easier interpretation you can compute the power spectrum abs(B).^2  
+%  
+%   B = CWT(S, DIM) computes the CWT along dimension DIM.
 %
-%   @iData/cwt function to return the Continuous wavelet transform of data sets
-%     The continuous wavelet transform performs a multi-scale component analysis
-%     It expands the data set into frequency space.
+%   B = CWT(S, DIM, SCALES) computes the CWT specifying the number of 'scales'
+%   to use. Default is [] for automatic.
 %
-%     b = cwt(s,scales,'wname') computes the continuous wavelet coefficients 
-%       of the signal vector x at real, positive scales, using wavelet 'wname'
-%     b = cwt(..., 'plot') plots the continuous wavelet transform power spectra
-%          plot(log(abs(b).^2))
-%       You can optionally use slice-o-matic for an interactive inspection with:         
-%          slice(log(abs(b).^2)) for initial 2D data sets (3D result)
+%   B = CWT(S,DIM,SCALES,WNAME) specifies the Wavelet Family Short Name among
+%   'Morlet','Paul','Dog' (default='Morlet').
 %
-%     The resulting object has dimension of the input plus a 'period' axis,
-%     and contains the wavelet decomposition coeficients (e.g. complex).
-%     The low period contribution indicates sharp features, whereas the high
-%     period ones indicate slow variation/constant contributions.
-%     For easier interpretation you can compute the power spectrum abs(b).^2   
+%   B = CWT(..., 'plot') plots the continuous wavelet transform power spectra
+%        plot(log(abs(B).^2)). 
+%   You can optionally use slice-o-matic for an interactive inspection with:         
+%        slice(log(abs(b).^2)) 
+%   for an initial 2D data sets (3D result).
 %
-% input:  s:      object or array (iData)
-%         dim:    axis rank upon which to perform the wavelet analysis (default=1)
-%         scales: Number of scales or scale range (default=[] for automatic)
-%         wname:  Wavelet Family Short Name among 'Morlet','Paul','Dog' (default='Morlet')
-%         'plot': request plotting of the continuous wavelet transform coefficients
+% Reference: 
+%   Grinsted, A., Moore, J.C., Jevrejeva, S. (2004) Application of the 
+%     cross wavelet transform and wavelet coherence to geophysical time 
+%     series, Nonlin. Processes Geophys., 11, 561–566, doi:10.5194/npg-11-561-2004
+%   Wavelet software was provided by C. Torrence and G. Compo,
+%     and is available at URL: http://paos.colorado.edu/research/wavelets/
+%   http://noc.ac.uk/using-science/crosswavelet-wavelet-coherence
+%   http://en.wikipedia.org/wiki/Continuous_wavelet_transform
 %
-% output: b: wavelet transform object or array (iData)
-% ex:     b=cwt(a); b=cwt(a,1,1:32,'plot')
-%
-% Reference: Grinsted, A., Moore, J.C., Jevrejeva, S. (2004) Application of the 
-%              cross wavelet transform and wavelet coherence to geophysical time 
-%              series, Nonlin. Processes Geophys., 11, 561–566, doi:10.5194/npg-11-561-2004
-%            Wavelet software was provided by C. Torrence and G. Compo,
-%              and is available at URL: http://paos.colorado.edu/research/wavelets/
-% http://noc.ac.uk/using-science/crosswavelet-wavelet-coherence
-% http://en.wikipedia.org/wiki/Continuous_wavelet_transform
-%
+% Example: a=iData(peaks); b=cwt(a); ndims(b) == ndims(a)+1
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/fft, iData/xcorr, iData/conv
 
@@ -55,7 +53,7 @@ if ischar(scales)
   scales=[];
 end
 
-if strcmp(wname, 'plot')
+if strcmpi(wname, 'plot')
   plotit = 1;
   wname = '';
 end
@@ -93,8 +91,8 @@ ax     = ax(:);
 % default options to pass to 'wavelet'
 dt      = mean(abs(diff(ax)));
 if (dt==0)
-  iData_private_error(mfilename, ...
-    [ 'Axis rank ' num2str(dim) ' is constant. Can not analyze.' ])
+  error([ mfilename ...
+     ': Axis rank ' num2str(dim) ' is constant. Can not analyze.' ])
 end
 n       = length(signal);
 S0      = 2*dt;       % Minimum scale
@@ -103,8 +101,8 @@ MaxScale= (n*.17)*S0; % default automaxscale
 J1      = round(log2(MaxScale/S0)/Dj);  % Total number of scales
 AR1     = ar1nv(signal);  % the ar1 coefficient of the series 
 if any(isnan(AR1))
-  iData_private_error(mfilename, ...
-    'Automatic AR1 estimation failed. Specify it manually (use arcov or arburg).')
+  error([ mfilename ...
+    ': Automatic AR1 estimation failed. Specify it manually (use arcov or arburg).' ])
 end
 
 % override defaults from parameters
@@ -136,18 +134,19 @@ wave  = permute(wave,  sz);
 
 % create the final object
 s=copyobj(a); 
-s=iData_private_history(s, mfilename, a, dim,scales,wname,plotit);
+s=history(s, mfilename, a, dim,scales,wname,plotit);
 
 s=set(s, 'Signal', wave, 'Error', 0);
 s=setalias(s, [ 'Period_' num2str(dim) ], log10(period),[ 'Axis ' label(s,dim) ' rank ' label(s,dim) ' Wavelet Period (log)' ]);
 s=setaxis(s,  length(sz), [ 'Period_' num2str(dim) ]);
 
-s.Title = sprintf('Wavelet power spectrum along axis %s rank %d\n%s', ...
-  label(s,dim), dim , s.Title);
-clear a;
+s.Name = sprintf('Wavelet power spectrum along axis %s rank %d\n%s', ...
+  label(s,dim), dim , s.Name);
 
 % if plotit, do that, add title, labels, ...
 if plotit
   plot(log(abs(s).^2/sigma2)); 
+  hold on
+  plot(a);
 end
 

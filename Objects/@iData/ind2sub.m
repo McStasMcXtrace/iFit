@@ -1,31 +1,24 @@
-function data = ind2sub(data, index)
-% ind2sub(s,index) : get indexed element in an iData array
+function data = ind2sub(s, varargin)
+% IND2SUB Get indexed array element in a single object.
+%   IND2SUB(S,I,J, ...) returns S.Signal(I,J,...)
+%   It is equivalent to accessing directly the indexed element in arrays,
+%   except when the array is of lenght 1.
+%   When S is a single object, S(1) would return S itself,
+%   whereas ind2sub(S,1) returns the first element of its 'Signal'.
 %
-%   @iData/ind2sub is equivalent to accessing directly the indexed element in arrays,
-%         except when the array is of lenght 1.
-%         When length(s) is 1, s(1) would return s itself,
-%         whereas ind2sub(s,1) returns the first element of its 'Signal',
-%
-% input:  s:     object or array (iData)
-%         index: index in array
-% output: s(index)
-% ex :    ind2sub(s, 1)
-%
+% Example: a=iData(peaks); isnumeric(ind2sub(a,1))
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/disp, iData/get, iData/size
+ 
+  if nargin < 2, return; end
 
-% EF 23/09/07 iData implementation
-% ind2sub 
-  if nargin < 2, index=[]; end
-  if ~length(index), data=[]; return; end
-
-  index = index(index > 0);
-  if length(data) > 1, 
-    data=data(index);
+  subs = substruct('()', varargin);
+  if length(s) > 1, 
+    data=subsref(s, subs);
   else
-    if length(data) == 0, data=[]; 
+    if isempty(s), data=[]; 
     else 
-    	S = get(data,'Signal');
-    	data = S(index);
+    	s = get(s,'Signal');
+    	data = subsref(s, subs);
     end
   end    

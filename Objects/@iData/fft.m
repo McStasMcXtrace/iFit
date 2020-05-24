@@ -1,19 +1,17 @@
 function b = fft(a, op, dim)
-% c = fft(a) : computes the Discrete Fourier transform of iData objects
+% FFT Discrete Fourier transform.
+%   C = FFT(A) computes the Discrete Fourier transform of data sets
+%   using the FFT algorithm. The power spectrum density (PSD) is ABS(FFT)^2.
+%   The FFT is applied along the first dimension.
 %
-%   @iData/fft function to compute the Discrete Fourier transform of data sets
-%     using the FFT algorithm. The power spectrum density (PSD) is abs(fft)^2.
-%     fft(a, 'ifft') is equivalent fo ifft(a)
-%     fft(a, op, dim) and fft(a, dim) apply FFT or iFFT along dimension dim. 
+%   FFT(A, 'IFFT') computes the inverse FFT transform (equivalent fo IFFT)
 %
-% input:  a:   object or array (iData)
-%         op:  can be 'fft' (default) or 'ifft' (inverse)
-%         dim: dimension to apply FFT upon. dim=0 for all dimensions.
-% output: c: object or array (iData)
-% ex:     t=linspace(0,1,1000); 
-%         a=iData(t,0.7*sin(2*pi*50*t)+sin(2*pi*120*t)+2*randn(size(t)));
-%         c=fft(a); plot(abs(c));
+%   FFT(A, OP, DIM) and FFT(A, DIM) apply FFT or iFFT along dimension DIM. 
+%   The operator OP can be 'fft' or 'ifft'.
 %
+% Example: t=linspace(0,1,1000); ...
+%          a=iData(t,0.7*sin(2*pi*50*t)+sin(2*pi*120*t)+2*randn(size(t))); ...
+%          c=fft(a); plot(abs(c)); delete(gcf); 
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/ifft, iData/conv, FFT, IFFT
 
@@ -139,7 +137,7 @@ for index=1:ndims(a)
   b=setaxis (b, index, [ 'axis' num2str(index) ]);
 end  
 b.Command=cmd;
-b = iData_private_history(b, op, a);  
+b = history(b, op, a);  
 
 % ------------------------------------------------------------------------------
 function S = ftt_doop(s, Ly, dim, op, NFFT)

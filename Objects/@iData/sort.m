@@ -1,66 +1,59 @@
-function a = sort(a,dim,mode)
-% s = sort(a,dim) : Sort iData objects axes in ascending or descending order
+function b = sort(a,dim,mode)
+% SORT  Sort axes in ascending or descending order.
+%   B = SORT(A) sorts first rank axes in ascending values. Object B is usually 
+%   the same as A, but with ascending axes values.
 %
-%   @iData/sort function to sort the data set on its axes
-%     sort(a,dim) sorts along axis of rank dim. 
-%       If dim=0, sorting is done on all axes.
-%     sort(a,dim,mode) where mode='ascend' or 'descend' select sorting order
+%   B = SORT(A,DIM) sorts axis of rank DIM. 
+%   When DIM=0, sorting is done sequentially on all axes.
 %
-% input:  a: object or array (iData)
-%         dim: dimension to sort (int)
-%         mode: sorting order 'ascend' or 'descend'
-% output: s: sorted data (iData)
-% ex:     c=sort(iData(peaks));
+%   B = SORT(A,DIM,MODE) where MODE='ascend' or 'descend' selects sorting order.
 %
+% Example: a=iData(1:10); a{1}=-a{1}; b=sort(a); all(b{1}+a{1} == -11)
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/plus, iData/sort, iData/unique
-if ~isa(a, 'iData')
-  iData_private_error(mfilename,['syntax is sort(iData, dim, mode)']);
-end
 
 if nargin < 2, dim=1; end
 if nargin < 3, mode='ascend'; end
 
 % handle input iData arrays
 if numel(a) > 1
-  s = zeros(iData, numel(a), 1);
+  b = zeros(iData, numel(a), 1);
   for index=1:numel(a)
-    s(index) = sort(a(index), dim, mode);
-    a(index)=iData;
+    b(index) = sort(a(index), dim, mode);
   end
-  s = reshape(s, size(a));
+  b = reshape(b, size(a));
   return
 end
 cmd=a.Command;
-a = copyobj(a);
+b = copyobj(a);
 
-sd = subsref(a,struct('type','.','subs','Signal'));
-[dummy, sl] = getaxis(a, '0');  % signal definition/label
-se = subsref(a,struct('type','.','subs','Error'));
-sm = subsref(a,struct('type','.','subs','Monitor'));
+sd = subsref(b,struct('type','.','subs','Signal'));
+[dummy, sl] = getaxis(b, '0');  % signal definition/label
+se = subsref(b,struct('type','.','subs','Error'));
+sm = subsref(b,struct('type','.','subs','Monitor'));
 if numel(se) > 1 && all(se(:) == se(1)), se=se(1); end
 if numel(sm) > 1 && all(sm(:) == sm(1)), sm=sm(1); end
 
 if dim > 0
   tosort=dim;
 else
-  tosort=1:ndims(a)
+  tosort=1:ndims(b);
 end
 was_sorted=0;
 myisvector = @(c)length(c) == numel(c);
 
 for index=tosort
   x = getaxis(a, index);
-  [x, sorti] = sort(x, index, mode);
-  if ~isequal(sorti, 1:size(a, index)) && ~all(sorti == sorti(1))
+  [x, sorti] = sort(x(:), index, mode);
+  if ~isequal(sorti, 1:size(b, index)) && ~all(sorti == sorti(1))
     S.type = '()';
     S.subs = {};
     nx = ndims(x);
     if myisvector(x), nx=1; end
-    if ndims(a) == nx
+    if ndims(b) == nx
       S.subs={ sorti };
     else
-      for j=1:ndims(a), 
+      for j=1:ndims(b), 
         if j ~= index, S.subs{j}=':';
         else           S.subs{j}=sorti; end
       end
@@ -78,15 +71,16 @@ for index=tosort
     catch
       sm=[];
     end
-    setaxis(a, index, x);
+    setaxis(b, index, x);
     was_sorted=1;
   end
 end
 if was_sorted
-  a = setalias(a, 'Signal', sd, [ 'sort(' sl ')' ]); clear sd
-  a = setalias(a, 'Error',  se);
-  a = setalias(a, 'Monitor',sm);
-  a.Command=cmd;
-  a = iData_private_history(a, mfilename, a, dim, mode);
+  b = setalias(b, 'Signal', sd); clear sd
+  label(b, 'Signal', [ 'sort(' sl ')' ]); 
+  b = setalias(b, 'Error',  se);
+  b = setalias(b, 'Monitor',sm);
+  b.Command=cmd;
+  b = history(b, mfilename, b, dim, mode);
 end
 

@@ -1,18 +1,16 @@
 function b = smooth(a, varargin)
-% Z = smooth(Y) : smooth iData objects
-%
-%   @iData/smooth function to smooth iData objects
-%     The smooth method uses a Robust spline smoothing or Savitzky-Golay algorithm
-%     The spline smoothing relies on a frequency spline smoothing (discrete cosine
-%     transform), whereas the Savitzky-Golay uses a generalized moving average 
-%     with filter coefficients determined by an unweighted linear least-squares 
-%     regression and a polynomial model of specified degree (default is 2).
-%     The spline method is shape preserving, whereas the Savitzky-Golay may lead
-%     to important distribution modifications.
-%
+% SMOOTH Smooth objects.
 %   Z = SMOOTH(Y) automatically smoothes the uniformly-sampled array Y. Y
 %   can be any N-D noisy array (time series, images, 3D data,...). Non
 %   finite data (NaN or Inf) are treated as missing values.
+%
+%   The smooth method uses a Robust spline smoothing or Savitzky-Golay algorithm
+%   The spline smoothing relies on a frequency spline smoothing (discrete cosine
+%   transform), whereas the Savitzky-Golay uses a generalized moving average 
+%   with filter coefficients determined by an unweighted linear least-squares 
+%   regression and a polynomial model of specified degree (default is 2).
+%   The spline method is shape preserving, whereas the Savitzky-Golay may lead
+%   to important distribution modifications.
 %
 %   Z = SMOOTH(Y,S) smoothes the data Y using the smoothing parameter S.
 %   S must be a real positive scalar. The larger S is, the smoother the
@@ -24,21 +22,20 @@ function b = smooth(a, varargin)
 %   real positive values, that must have the same size as Y. Note that a
 %   nil weight corresponds to a missing value.
 %
-%   Z = SMOOTH(Y,'sgolay') uses the Savitzky-Golay method (2nd order)
-%   Z = SMOOTH(Y,'sgolay',degree) uses the Savitzky-Golay method with polynomial 
-%   degree specified by degree.
-%   Z = SMOOTH(Y,span,'sgolay',degree) uses the number of data points specified 
-%   by span in the Savitzky-Golay calculation. span must be odd and degree must 
-%   be less than span.
-%   Z = SMOOTH(Y,span,'sgolay',degree,dimensions) specifies the dimensions along
-%   which the Savitzky-Golay filter should be applied (integer or vector up to ndims).
-%
-%   Z = SMOOTH(Y, 'gauss', [ widths ]) uses a nD gaussian convolution
-%
-%   Robust smoothing
-%   ----------------
 %   Z = SMOOTHN(...,'robust') carries out a robust smoothing that minimizes
 %   the influence of outlying data.
+%
+%   Z = SMOOTH(Y,'sgolay') uses the Savitzky-Golay method (2nd order)
+%   Z = SMOOTH(Y,'sgolay',DEGREE) uses the Savitzky-Golay method with polynomial 
+%   degree specified by DEGREE.
+%   Z = SMOOTH(Y,SPAN,'sgolay',DEGREE) uses the number of data points specified 
+%   by span in the Savitzky-Golay calculation. SPAN must be odd and DEGREE must 
+%   be less than span.
+%   Z = SMOOTH(Y,SPAN,'sgolay',DEGREE,DIM) specifies the dimensions DIM along
+%   which the Savitzky-Golay filter should be applied (integer or vector up to 
+%   NDIMS(Y).
+%
+%   Z = SMOOTH(Y, 'gauss', [ widths ]) uses a nD gaussian convolution
 %
 %   Reference
 %   --------- 
@@ -49,10 +46,7 @@ function b = smooth(a, varargin)
 %
 %   Numerical recipes in C. p 650
 %
-% input:  a: object or array (iData/array of)
-% output: s: smoothed data set (iData)
-% ex:     c=smooth(a);
-%
+% Example: a=iData(1:100); b=a+randn(size(a))/4; c=smooth(b); sum(abs(a-c))<30
 % Version: $Date$ $Author$
 % See also iData, iData/interp
 
@@ -116,7 +110,7 @@ else
 end
 
 
-b = iData_private_history(b, mfilename, a, varargin{:});
+b = history(b, mfilename, a, varargin{:});
 
 % ------------------------------------------------------------------------------
 function [ny,c] = smoothsg1d(yd,N,M)

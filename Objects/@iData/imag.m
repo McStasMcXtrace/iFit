@@ -1,14 +1,10 @@
 function a = imag(a)
-% b = imag(s) : imaginary part of iData object
+%  IMAG   Complex imaginary part.
+%    IMAG(X) is the imaginary part of X.
+%    See I or J to enter complex numbers.
 %
-%   @iData/imag function to return the imaginary part of data sets.
-%
-% input:  s: object or array (iData)
-% output: b: object or array (iData)
-% ex:     b=imag(a);
-%
+% Example: s=iData(rand(5)+i*rand(5)); any(imag(s),0)
 % Version: $Date$ $Version$ $Author$
-% See also iData, iData/uminus, iData/abs, iData/real, iData/imag, iData/uplus
+% See also iData, iData/isreal, i, j, iData/real
 
-a = iData_private_unary(a, 'imag');
-
+a = unary(a, 'imag');

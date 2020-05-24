@@ -1,15 +1,12 @@
 function v = logspace(a,b,n)
-% v = logspace(a,b,n) : creates a logarithmically spaced vector of objects
+% LOGSPACE Logarithmically spaced objects.
+%   LOGSPACE(X1, X2) generates a row vector of 10 logarithmically
+%   equally spaced objects between X1 and X2.
+%   This corresponds to a 'morphing' from X1 to X2 in N steps.
 %
-%   @iData/logspace function to create a logarithmically spaced vector of iData objects
-%   This corresponds to a 'morphing' from a to b in n steps.
+%   LOGSPACE(X1,X2,N) generates N objects between X1 and X2.
 %
-% input:  a: object  (iData)
-%         b: object  (iData)
-%         n: number of steps, i.e. length of vector. Default is n=10 (integer)
-% output: v: vector (iData array)
-% ex:     b=logspace(a,b);
-%
+% Example: b=iData(peaks); a=b+10; c=logspace(a,b); numel(c) == 10
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/max, iData/min, iData/colon, iData/linspace
 

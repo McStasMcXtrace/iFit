@@ -1,18 +1,20 @@
 function frame = getframe(a, dim, options)
-% frame = getframe(s, dim, options) : create an iData object thumbnail/frame matrix
+% GETFRAME Get movie frame.
+%   FRAME = GETFRAME(S) returns a movie frame/thumbnails of object S. 
+%   Such thumbnails may be used to create icons on GUIs.
+%   Note: a figure will flicker on screen. FRAME is a structure 
+%   having the fields "cdata" and "colormap" which contain the
+%   the image data in a uint8 matrix and the colormap in a double
+%   matrix. F.cdata will be Height-by-Width-by-3 and F.colormap  
+%   will be empty on systems that use TrueColor graphics.  
 %
-%   @iData/getframe function to create iData frames/thumbnails.
-%   Such thumbnails may be used to create icons on GUIs
-%   Note: a figure will flicker on screen.
+%   FRAME = GETFRAME(S, DIM) specifies the pixel dimensions of the image frame.
+%   When specified, the frame has no labels, ticks, ...
 %
-% input:  s:   object or array (iData)
-%         dim: dimension of the thumbnail. When specified, the frame has no labels, ticks, ...
-%              to serve as a thumbnail
-%         options: specific plot options, default is 'axis tight'
+%   FRAME = GETFRAME(S, DIM, 'OPTION') specific plot options.
+%   Default is 'axis tight'.
 %
-% output: frame: frame/thumbnail
-% ex:     f=getframe(a); image(f.cdata);
-%
+% Example: f=getframe(iData(peaks)); image(f.cdata); close(gcf); isstruct(f)
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/plot, getframe, image, imwrite
 

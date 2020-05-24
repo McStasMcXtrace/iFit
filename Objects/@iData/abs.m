@@ -1,15 +1,10 @@
-function a = abs(a)
-% b = abs(s) : absolute value of iData object
+function b = abs(a)
+%  ABS Absolute value of object
+%    ABS(X) return a new object with its Signal set as the absolute value of the
+%    input object.
 %
-%   @iData/abs function to return the absolute value of data sets
-%   This function computes the absolute value/modulus of the object 's'.
-%
-% input:  s: object or array (iData)
-% output: b: object or array (iData)
-% ex:     b=abs(a);
-%
+% Example: s=iData(-10:10); any(s< 0) && all(abs(s))>=0
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/uminus, iData/abs, iData/real, iData/imag, iData/uplus
 
-a = iData_private_unary(a, 'abs');
-
+b = unary(a, 'abs');

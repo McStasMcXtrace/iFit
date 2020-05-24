@@ -1,25 +1,17 @@
 function url = doc(a, token)
-% doc(iData): iData web page documentation
+% DOC web page documentation
 %
-%   @iData/doc: web page documentation
+%   DOC(iData) opens the iData documentation.
 %
-%     Open the iData documentation.
-%     doc(iData, page) opens a specific documentation page
+%   DOC(iData, page) opens a specific documentation page.
 %
-%   You may as well search for a token with:
-%     doc(iData, token)
+%   DOC(iData, token) searches for a token.
 %
-%     doc(iData,'Load')
-%     doc(iData,'Save')
-%     doc(iData,'Math')
-%     doc(iData,'Fit')
-%     doc(iData,'Plot')
-%     doc(iData,'Methods')
-%     doc(iData,'Sqw2D')
+% Example: doc(iData,'Load'); 1
 %
 % Version: $Date$ $Version$ $Author$
+% See also: iData.help iData.edit iData.inputdlg
 
-% EF 23/10/10 iData implementation
 if nargin ==1, token=''; end
 if isempty(token), token='index.html'; end
 [p,f,e] = fileparts(token);

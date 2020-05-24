@@ -1,14 +1,11 @@
 function a = exp(a)
-% b = exp(s) : exponential value of iData object
+%  EXP    Exponential.
+%    EXP(X) is the exponential of the Signal of object X, e to the X.
+%    For complex Z=X+i*Y, EXP(Z) = EXP(X)*(COS(Y)+i*SIN(Y)).
 %
-%   @iData/exp function to return the exponential value of data sets
-%
-% input:  s: object or array (iData)
-% output: b: object or array (iData)
-% ex:     b=exp(a);
-%
+% Example: s=iData(0:10); all(exp(s) == exp(0:10))
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/exp, iData/log, iData/log10, iData/sqrt
 
-a = iData_private_unary(a, 'exp');
+a = unary(a, 'exp');
 

@@ -1,22 +1,17 @@
 function a = squeeze(a)
-% c = squeeze(a) : remove singleton dimensions from iData objects/arrays
+% SQUEEZE Remove singleton dimensions from objects.
+%   B = SQUEEZE(A) returns an array B with the same elements as
+%   A but with all the singleton dimensions removed.  A singleton
+%   is a dimension such that size(A,dim)==1.  2-D arrays are
+%   unaffected by squeeze so that row vectors remain rows.
 %
-%   @iData/squeeze returns an object B with the same elements as
-%    A but with all the singleton dimensions removed.  A singleton
-%    is a dimension such that size(A,dim)==1.  2-D arrays are
-%    unaffected by squeeze so that row vectors remain rows.
+%   In addition, to further 'clean' an object, use FILL or RESIZE. 
+%   You may as well use RESIZE or REDUCEVOLUME to reduce the size of the object.
 %
-%   In addition, to further 'clean' an object, use iData/fill or
-%   iData/resize, and iData/pack. You may as well use iData/resize or
-%   iData/reducevolume to reduce the size of the object.
-%
-% input:  a: object or array (iData)
-% output: c: object or array (iData)
-% ex:     c=squeeze(iData(rand(5,1,3)));
-%
+% Example: c=squeeze(iData(rand(5,1,3)));
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/pack, iData/fill, iData/resize, iData/size,
-% iData/reducevolume
+%   iData/reducevolume
 
 d = size(a);
 d = d(find(d > 1));
@@ -55,12 +50,12 @@ if numel(a) == 1
   
   % move the un-used/scalar axes to the end (code from subsref)
   
-  % get the scalar axes and thos not
+  % get the scalar axes and those not
   axis_scalar    = [];
   axis_notscalar = [];
   % check if the sub indices supress an axis: move it further
-  for index=1:length(a.Alias.Axis)
-    if index <= length(a.Alias.Axis)
+  for index=1:length(a.Axes)
+    if index <= length(a.Axes)
       % axes to be moved: scalar, or all unique
       x = getaxis(a, index);
       if isscalar(x) || isempty(find(x ~= x(1), 1))
@@ -74,7 +69,7 @@ if numel(a) == 1
     end
   end
   % reorder axes
-  a.Alias.Axis = a.Alias.Axis([ axis_notscalar axis_scalar ]);
+  a.Axes = a.Axes([ axis_notscalar axis_scalar ]);
   
 else
   % this is an iData array

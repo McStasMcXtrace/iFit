@@ -1,15 +1,11 @@
 function a = floor(a)
-% b = floor(s) : lower integer round of iData object
+%  FLOOR  Round towards minus infinity.
+%    FLOOR(X) rounds the Signal of X to the nearest integers
+%    towards minus infinity.
 %
-%   @iData/floor function to round the elements of 's' to the nearest integers
-%   towards minus infinity.
-%
-% input:  s: object or array (iData)
-% output: b: object or array (iData)
-% ex:     b=floor(a);
-%
+% Example: s=iData([-1.2 0.6 1.5]); all(floor(s) == [-2 0 1])
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/floor, iData/ceil, iData/round
 
-a = iData_private_unary(a, 'floor');
+a = unary(a, 'floor');
 

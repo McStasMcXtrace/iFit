@@ -1,64 +1,21 @@
-function b = mean(a, dim)
-% b = mean(s, dim) : mean value of iData object
+function b = mean(a, varargin)
+%  MEAN   Average or mean value of Signal.
+%    S = MEAN(X) is the mean of the Signal of the object X. If
+%    X is a N-D object, mean(X) operates along the first
+%    non-singleton dimension.
 %
-%   @iData/mean function to compute the mean value of objects
-%     mean(a,dim) averages along axis of rank dim. The axis is then removed.
-%       If dim=0, mean is done on all axes and the total is returned as a scalar value. 
-%       mean(a,1) accumulates on first dimension (columns)
-%     mean(a,-dim) averages on all axes except the dimension specified, i.e.
-%       the result is the mean projection of a along dimension dim.
-%       All other axes are removed.
+%    S = MEAN(X,DIM) takes the mean along the dimension DIM. 
 %
-% input:  a: object or array (iData/array of)
-%         dim: dimension to average (int)
-% output: s: mean of elements (iData/scalar)
-% ex:     c=mean(a);
+%    S = MEAN(X, 0) does the same as above, but returns the total mean per object.
 %
+% Example: s=iData(-10:10); mean(s,0) == 0
 % Version: $Date$ $Version$ $Author$
-% See also iData, iData/std, iData/combine, iData/median
+% See also iData, iData/uminus, iData/abs, iData/real, iData/imag, iData/uplus
 
-if nargin < 2, dim=1; end
-if numel(a) > 1 && dim
-  a = combine(a);
-  return
-elseif numel(a) > 1
-  b = zeros(size(a));
-  for index=1:numel(a)
-    b(index) = mean(a(index), 0);
+b = unary(a, mfilename, varargin{:});
+
+if nargin > 1 && isequal(varargin{1},0)
+  if iscell(b)
+    b = cell2mat(b);
   end
-  return
 end
-
-s=iData_private_cleannaninf(getaxis(a,'Signal'));
-[link, label]          = getalias(a, 'Signal');
-cmd=a.Command;
-b=copyobj(a);
-rmaxis(b); % delete all axes
-if dim==1 & ndims(a)==1
-  b = mean(s);
-  return
-elseif dim > 0
-  s = mean(s, dim);
-  % copy all axes except the one on which operation runs
-  ax_index=1;
-  for index=1:ndims(a)
-    if index ~= dim
-      setaxis(b, ax_index, getaxis(a, num2str(index)));
-      ax_index = ax_index+1;
-    end
-  end
-  setalias(b,'Signal', s, [mfilename ' of ' label ]);     % Store Signal
-elseif dim == 0
-  for index=1:ndims(a)
-    s = mean(s, index);
-  end
-  b = s;
-  return  % scalar
-else  % dim < 0
-  % accumulates on all axes except the rank specified
-  b = camproj(a, -dim);
-end
-b.Command=cmd;
-b = iData_private_history(b, mfilename, b, dim);
-s = b;
-

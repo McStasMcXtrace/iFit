@@ -1,192 +1,154 @@
-function [val, lab] = getaxis(s,ax)
-% [val, lab] = getaxis(s, AxisIndex) : get iData axis value and label
-% [val, lab] = getaxis(s, 'AxisName|AxisIndex'): get iData axis definition and label
+function [v,lab] = getaxis(s,varargin)
+% GETAXIS Get axis definition or value in object.
+%   GETAXIS(a, rank) Get axis value (and follow aliases). This is equivalent to
+%   the syntax a{rank}. The axis rank 0 corresponds with the Signal/Monitor value.
+%   The axis of rank 1 corresponds with rows, 2 with columns, 3 with pages, etc.
 %
-%   @iData/getaxis function to get iData axis value, definition and alias.
-%   An axis is an alias associated with an index/rank.
-%   when the axis input parameter is given as an index (integer), 
-%     the value of the axis is returned.
-%   when the axis input parameter is given as a string/name (e.g. '1' or 'x') 
-%     the corresponding axis definition is returned.
+%   GETAXIS(a, 'Signal') Get the Signal/Monitor value, equivalent to a{0} and
+%   getaxis(a, 0).
 %
-%   The Signal/Monitor corresponds to axis rank 0, and can also be accessed with
-%     getaxis(a, 'Signal') and a{0}.
-%   The Error/Monitor can also be accessed with getaxis(a, 'Error').
+%   GETAXIS(a, 'Error')  Get the Error/Monitor value.
 %
-%   Axis 1 is often labelled as 'y' (rows, vertical), 2 as 'x' (columns, horizontal).
-%   The special syntax s{0} gets the signal/monitor only (same as double(s)), 
-%     and s{n} gets the axis of rank n.
+%   GETAXIS(a, 'rank') Get axis definition (alias). The axis of rank 0
+%   corresponds with the Signal definition.
 %
-% input:  s: object or array (iData)
-%         AxisIndex: axis index to inquire in object, 
-%           or [] to obtain all axis values 
-%           or '' to obtain all axis definitions (integer).
-%         AxisName: axis name to inquire in object, or '' (char). The name may
-%                   also be specified as 'n' where n is the axis index, e.g. '1'
-% output: val: axis value, or corresponding axis name  (double/char)
-%         lab: axis label (char)
-% ex:     getaxis(iData,1), getaxis(iData,'1'), getaxis(s, 'y')
+%   An alias is a string/char which allows to link to internal or external links
+%   as well as evaluated expression, with the following syntax cases:
+%     'field'                           a simple link to an other property 'field'
+%     'field1.field2...'                a nested link to an other property
+%     'file://some_file_path'           a local file URL
+%     'http://some_distant_resource'    an HTTP URL (proxy settings may need to be set)
+%     'https://some_distant_resource'   an HTTPS URL (proxy settings may need to be set)
+%     'ftp://some_distant_resource'     an FTP URL (proxy settings may need to be set)
+%     'matlab: some_expression'         some code to evaluate. 'this' refers to the object itself
 %
+%   File and URL can refer to compressed resources (zip, gz, tar, Z) which are
+%   extracted on-the-fly. In case the URL/file resource contains 'sections', a
+%   search token can be specified with syntax such as 'file://filename#token'.
+%
+% Example: s=iData('x',1:10,'y',1:20, 'data',rand(10,20)); setaxis(s,1,'x'); isnumeric(getaxis(s,1))
 % Version: $Date$ $Version$ $Author$
-% See also iData, iData/set, iData/get, iData/getalias
+% See also iData, fieldnames, findfield, isfield, set, get, getalias, setalias,
+%   getaxis, setaxis
 
-% EF 23/09/07 iData implementation
-% ============================================================================
+  if nargin == 1, v = s.Axes; if nargout > 1, lab = label(s, 1:ndims(s)); end; return; end
 
-if nargin == 1
-  ax = '';
-end
-
-% handle iData array
-if numel(s) > 1
-  val = cell(size(s)); lab=val;
-  for index=1:numel(s)
-    [v,l] = getaxis(s(index), ax);
-    val{index} =v;
-    lab{index} =l;
-  end
-  return
-end
-
-% now we have a single object
-val = []; lab=''; link='';
-
-% syntax: getaxis(object) -> returns all axes definitions
-if isempty(ax)
-  if ischar(ax) % syntax: getaxis(object, '') -> definitions
-    val = s.Alias.Axis;
-  else          % syntax: getaxis(object, []) -> values
-    val = cell(1, length(s.Alias.Axis)); lab=val;
-    for index=1:length(s.Alias.Axis)
-      [val{index}, lab{index}] = getaxis(s, index); % consecutive calls for each axis
+  % handle array of struct
+  v = {}; lab={};
+  if numel(s) > 1
+    for index=1:numel(s)
+      [v{end+1},lab{end+1}] = getaxis(s(index), varargin{:});
     end
-  end
-  return
-end
-
-% syntax: getaxis(object, number) -> return the axis value
-if isnumeric(ax) % given as a number, return a number
-  if length(ax) > 1
-    val = cell(1, length(ax)); lab=val;
-    for index=1:length(ax)
-      [val{index}, lab{index}] = getaxis(s, ax(index));
-    end
+    v   = reshape(v,   size(s));
+    lab = reshape(lab, size(s));
     return
   end
-  ax = ax(1);
-  if ax > ndims(s) && ax > length(s.Alias.Axis)
-    return
-    % iData_private_error(mfilename, [ 'The ' num2str(ax) '-th rank axis request is higher than the iData Signal dimension ' num2str(ndims(s)) ]);
+
+  % check object when we evaluate/get some data out of it, and changes were marked.
+  if isfield(s.Private,'cache') && isfield(s.Private.cache,'check_requested') ...
+    && s.Private.cache.check_requested
+    axescheck(s);
   end
-  if ax == 0  % syntax: getaxis(object, 0) -> object.Signal
-    val= subsref(s,struct('type','.','subs','Signal'));
-    if ~isfloat(val), val=double(val); end
-    m  = subsref(s,struct('type','.','subs','Monitor')); 
-    if ~isfloat(m), m=double(m); end
-    m=real(m);
-    link='Signal';
-    if not(all(m(:) == 1 | m(:) == 0))
-      val = genop(@rdivide,val,m);
+  m = []; % will hold monitor value
+  % handle array/cell of axes
+  for index=1:numel(varargin) % loop on requested properties
+    name = varargin{index}; % axis rank as numeric or string
+    if ~ischar(name) && ~iscellstr(name) && ~isnumeric(name)
+      error([ mfilename ': GETAXIS works with axis rank given as char/cellstr/scalar. The ' num2str(index) '-th argument is of type ' class(name) ]);
     end
-  else
-    % get the Axis alias
-    if ax <= length(s.Alias.Axis)
-      if ischar(s.Alias.Axis)
-        link = s.Alias.Axis(ax,:);
-      elseif iscell(s.Alias.Axis)
-        link = s.Alias.Axis{ax};
+    if ischar(name), name = cellstr(name);
+    elseif isnumeric(name), name = num2cell(name);
+    end
+    for n_index=1:numel(name)
+      % getaxis(s, 'rank'): get the axis value
+      % getaxis(a, 'Signal') -> getaxis(a, 0) = Signal/Monitor
+      % getaxis(a, 'Error')                   = Error/Monitor
+      get_mon = false; sig=[]; err=[];
+      % get the alias definition
+      if s.verbose > 2
+        if isnumeric(name{n_index})
+          disp([ mfilename ': DEBUG: get axis ' num2str(name{n_index}) ])
+        else
+          disp([ mfilename ': DEBUG: get axis ' class(name{n_index}) ' ' char(name{n_index}) ])
+        end
       end
-      % get the axis value. This means the axis link is correctly defined.
-      if ~isempty(link)
-        try
-          val = get(s, link); 
-        catch
-          val = [];
+      if ischar(name{n_index})
+        if isscalar(name{n_index})
+          if strcmp(name{n_index},'0')  % Signal definition
+            v{end+1} = builtin('subsref',s, struct('type','.','subs','Signal'));
+
+          elseif isfinite(str2num(name{n_index})) && str2num(name{n_index}) <= numel(s.Axes)
+            v{end+1} = s.Axes{str2num(name{n_index})};  % get definition in Axes (cell)
+          else
+            v{end+1} = []; % axis rank beyond dimension of object Signal
+          end
+          if nargout > 1, lab{end+1} = label(s, str2num(name{n_index})); end
+        elseif strcmp(name{n_index}, 'Signal')
+          name{n_index} = 0;  % then will use rank as number=0, not char
+          get_mon = true;
+        elseif strcmp(name{n_index}, 'Error')
+          get_mon = true; % see below for actual get
+        end
+      end
+      % special case when we need the Monitor value
+      if get_mon && isempty(m)
+        m = subsref_single(s, 'Monitor'); % follow links -> value
+        if isempty(m) || ~isnumeric(m) || all(~isfinite(m(:))) || all(~m(:)), m=1; end
+      end
+      % second test for 'Error/Monitor' (and now we have Monitor - shared with 'Signal' case)
+      if ischar(name{n_index}) && strcmp(name{n_index}, 'Error')
+        err = subsref_single(s, 'Error'); % follow links -> value
+        if isscalar(m) || isequal(size(m),size(err)), v{end+1} = err./m;
+        else                                          v{end+1} = err;
+        end
+        continue
+      end
+      % getaxis(s, rank): get the axis value
+      if isnumeric(name{n_index}) && isscalar(name{n_index}) && name{n_index} >= 0
+        if name{n_index} == 0 % Signal/Monitor
+          sig = subsref_single(s, 'Signal');
+          if isscalar(m) || isequal(size(m),size(sig)), v{end+1} = sig./m;
+          else                                          v{end+1} = sig;
+          end
+        else % Axis
+          % get the axis value
+          if iscell(s.Axes) && numel(s.Axes) >= name{n_index}
+            def = s.Axes{name{n_index}};
+            if ischar(def)
+              v{end+1} = subsref_single(s, def);
+            else
+              v{end+1} = def;
+            end
+          else % axis rank beyond dimension of object Signal
+            v{end+1} = [];
+          end
+          if nargout > 1, lab{end+1} = label(s, name{n_index}); end
+          if (isempty(v{end}) || (isscalar(v{end}) && isnan(v{end}))) && name{n_index} <= ndims(s)
+            if numel(find(size(s)>1)) == 1
+              v{end} = 1:prod(size(s));
+            else
+              v{end} = 1:size(s, name{n_index});
+            end
+          end
+          % check axis orientation
+          n = size(v{end});
+          if isscalar(find(n > 1))
+            if length(find(size(s) > 1)) ~= 1
+              z = ones(1, length(n));
+              z(name{n_index}) = max(n);
+              if prod(size(v{end})) == prod(z), v{end}   = reshape(v{end}, z); end
+            else
+              if prod(size(v{end})) == prod(size(s)), v{end} = reshape(v{end}, size(s)); end
+            end
+          end
+          if isnumeric(v{end}) && ~isfloat(v{end})
+            v{end} = double(v{end});
+          end
         end
       end
     end
-  end;
-else % given as a char/cell, return a char/cell
-  if iscell(ax) && ischar(ax{1})
-    val = cell(1, length(ax)); lab=val;
-    for index=1:length(ax)
-      [val{index}, lab{index}] = getaxis(s, ax{index});
-    end
-    return
   end
-  if     strcmp(ax,'Signal'), 
-    [val, lab] = getaxis(s,0);
-    return;
-  elseif strcmp(ax,'Error')
-    val= subsref(s,struct('type','.','subs','Error'));
-    if ~isfloat(val), val=double(val); end
-    m  = subsref(s,struct('type','.','subs','Monitor')); 
-    if ~isfloat(m), m=double(m); end
-    m=real(m);
-    link='Error';
-    if not(all(m(:) == 1 | m(:) == 0))
-      val = genop(@rdivide,val,m);
-    end
-  else
-    axis_str = str2double(ax);
-    if isempty(axis_str) || isnan(axis_str) % not a number char
-      ax = find(strcmp(ax, s.Alias.Axis));
-      if ~isempty(ax), link = s.Alias.Axis{ax}; end
-    else
-      ax = axis_str;
-      if axis_str == 0
-        link = 'Signal';
-      elseif 0 < ax && ax <= length(s.Alias.Axis)
-        if ischar(s.Alias.Axis)
-          link = s.Alias.Axis(ax,:);
-        elseif iscell(s.Alias.Axis)
-          link = s.Alias.Axis{ax};
-        end
-      else
-        val=''; lab=''; return
-      end
-    end
-    val = link;
+  if numel(v) == 1, v = v{1}; end
+  if nargout > 1
+    if numel(lab) == 1, lab=lab{1}; end
   end
-end
-
-[dummy, lab]  = getalias(s, link);
-if isempty(lab), 
-  lab=[ link ' axis' ]; 
-    if     ax == 1, lab = [ lab ' (y)' ];
-    elseif ax == 2, lab = [ lab ' (x)' ]; 
-    elseif ax == 3, lab = [ lab ' (z)' ]; 
-    elseif ax == 4, lab = [ lab ' (t)' ];end
-elseif ischar(lab)
-    lab(~isstrprop(lab,'print'))=' ';
-end
-
-if isempty(val) & ax
-  if length(find(size(s) > 1)) == 1
-    val=1:max(size(s));
-  else
-    val=1:size(s, ax);
-  end
-  iData_private_warning(mfilename, ...
-  [ 'The ' num2str(ax) '-th rank axis has not been defined yet (use setaxis).\n\t' ...
-    'Using default value=1:' num2str(length(val)) ' in object ' inputname(1) ' ' s.Tag ' "' s.Title '".'  ]);
-  lab = [ 'Axis ' num2str(ax) ];
-end
-
-% orient the axis in the right dimension if this is a vector
-if ~ischar(val)
-  n = size(val);
-  if ax > 0 & length(find(n > 1)) == 1
-    if length(find(size(s) > 1)) ~= 1
-      v = ones(1, length(n));
-      v(ax) = max(n);
-      if prod(size(val)) == prod(v), val   = reshape(val, v); end
-    else
-      if prod(size(val)) == prod(size(s)), val = reshape(val, size(s)); end
-    end
-  end
-  if isnumeric(val) && ~isfloat(val)
-    val = double(val);
-  end
-end
-

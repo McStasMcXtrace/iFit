@@ -1,21 +1,26 @@
 function c = combine(a,varargin)
-% c = combine(a,b) : combines iData objects
+% COMBINE Combines (merge) objects Signal and Axes.
+%   C = COMBINE(A,B) combines all objects in [A B] into a single object.
+%   The merge is carried out on Signal and Axes.
+%   The combine operator (aka merge) of two objects is defined as:
 %
-%   @iData/combine (\) function to combine data sets
-%     A fast notation for combine(a,b) is a\b
-%     To combine a set of iData objects use combine([ a b c ...])
+%     (S1+S2) over monitor (M1+M2)
 %
-%     The combine operator (aka merge) is defined as:
-%       (S1+S2) over monitor (M1+M2)
-%     where S1,M1 and S2,M2 and the Signal and Monitor of the two objects.
+%   where S1,M1 and S2,M2 and the Signal and Monitor of the two objects.
 %
-% input:  a: object or numerical array (iData or numeric)
-%         b: object or numerical array (iData or numeric)
-% output: c: object (iData)
-% ex:     c=combine(a,b); or combine([ a b ])
+%   Alternatively, the addition (PLUS) is defined as the normalised sum:
 %
+%     (M1+M2)*(S1/M1+S2/M2) over monitor(M1+M2)
+%
+%   C = COMBINE([ A B C ...]) combines iteratively all objects.
+%   C = COMBINE(A, B, C, ...) combines iteratively all objects.
+%
+%   A\B and A.\B are equivalent to COMBINE(A,B).
+%
+% Example: a=iData(peaks); a.Monitor=1; b=combine(a,a); max(b) == max(a)
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/minus, iData/plus, iData/times, iData/rdivide
+
 if length(varargin) >= 1  % syntax: combine(a,b,...)
   s=a(:);
   for index=1:length(varargin)
@@ -33,7 +38,5 @@ if all(isvector(a) > 1)
 else
   c = a(1);
   if length(a) <= 1, return; end
-  c = iData_private_binary(a, [], 'combine');
+  c = binary(a, [], 'combine');
 end
-
-

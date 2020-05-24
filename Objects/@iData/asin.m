@@ -1,14 +1,11 @@
-function a = asin(a)
-% b = asin(s) : computes the arc sine of iData object
+function b = asin(a)
+%  ASIN   Inverse sine, result in radians.
+%    ASIN(X) is the arcsine of the Signal of X. Complex
+%    results are obtained if ABS(x) > 1.0 for some element.
 %
-%   @iData/acos function to compute the inverse sine of data sets (in radians).
-%
-% input:  s: object or array (iData)
-% output: b: object or array (iData)
-% ex:     b=asin(a);
-%
+% Example: s=iData([-1 0 1]); all(asin(s)==[-1/2 0 1/2]*pi)
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/cos, iData/acos, iData/sin, iData/asin, iData/tan, iData/atan
 
-a = iData_private_unary(a, 'asin');
+b=unary(a, 'asin');
 

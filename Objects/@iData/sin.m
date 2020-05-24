@@ -1,14 +1,10 @@
 function a = sin(a)
-% b = sin(s) : computes the sine of iData object
+% SIN    Sine of argument in radians.
+%   SIN(X) is the sine of the elements of X.
 %
-%   @iData/acos function to compute the sine of data sets (using radians).
-%
-% input:  s: object or array (iData)
-% output: b: object or array (iData)
-% ex:     b=sin(a);
-%
+% Example: s=iData([0 pi/4 pi/6 pi/2]); all(abs(sin(s) - [0 0.7071 1/2 1]) < 0.01)
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/cos, iData/acos, iData/sin, iData/asin, iData/tan, iData/atan
 
-a = iData_private_unary(a, 'sin');
+a = unary(a, 'sin');
 

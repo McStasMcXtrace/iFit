@@ -1,67 +1,21 @@
-function b = median(a, dim)
-% b = median(s, dim) : median value of iData object
+function b = median(a, varargin)
+%  MEDIAN Median value of Signal.
+%    S = MEDIAN(X) is the median value of the Signal of the object X. If
+%    X is a N-D object, median(X) operates along the first
+%    non-singleton dimension.
 %
-%   @iData/median function to compute the median value of objects
-%     median(a,dim) computes median along axis of rank dim. The axis is then removed.
-%       If dim=0, median is done on all axes and the total is returned as a scalar value. 
-%       median(a,1) operates on first dimension (columns)
-%     median(a,-dim) computes median on all axes except the dimension specified, i.e.
-%       the result is the median projection of a along dimension dim.
-%       All other axes are removed.
+%    S = MEDIAN(X,DIM) takes the median along the dimension DIM. 
 %
-% input:  a: object or array (iData/array of)
-%         dim: dimension to operate on (int)
-% output: s: median of elements (iData/scalar)
-% ex:     c=median(a);
+%    S = MEDIAN(X, 0) does the same as above, but returns the total median per object.
 %
+% Example: s=iData(-10:10); median(s,0) == 0
 % Version: $Date$ $Version$ $Author$
-% See also iData, iData/std, iData/combine, iData/mean
+% See also iData, iData/uminus, iData/abs, iData/real, iData/imag, iData/uplus
 
-if nargin < 2, dim=1; end
-if numel(a) > 1 && dim
-  a = combine(a);
-  return
-elseif numel(a) > 1
-  b = zeros(size(a));
-  for index=1:numel(a)
-    b(index) = median(a(index), 0);
+b = unary(a, mfilename, varargin{:});
+
+if nargin > 1 && isequal(varargin{1},0)
+  if iscell(b)
+    b = cell2mat(b);
   end
-  return
 end
-
-s=iData_private_cleannaninf(getaxis(a,'Signal'));
-[link, label]          = getalias(a, 'Signal');
-cmd=a.Command;
-b=copyobj(a);
-rmaxis(b); % delete all axes
-if dim==1 & ndims(a)==1
-  b = median(s, dim);
-  return
-elseif dim > 0
-  s = median(s, dim);
-  ax_index=1;
-  for index=1:ndims(a)
-    if index ~= dim
-      setaxis(b, ax_index, getaxis(a, num2str(index)));
-      ax_index = ax_index+1;
-    end
-  end
-  setalias(b,'Signal', s, [mfilename ' of ' label ]);     % Store Signal
-elseif dim == 0
-  for index=1:ndims(a)
-    s = median(s, index);
-  end
-  b = s;
-  return  % scalar
-else  % dim < 0
-  % accumulates on all axes except the rank specified
-  for index=1:ndims(a)
-    if index~=-dim, s = median(s,index); end
-  end
-  setaxis(b, 1, getaxis(a, num2str(-dim)));
-  setalias(b,'Signal', s, [ 'median projection of ' label ]);     % Store Signal
-end
-b.Command=cmd;
-b = iData_private_history(b, mfilename, b, dim);
-s = b;
-

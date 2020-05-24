@@ -1,26 +1,25 @@
 function c = plus(a,b)
-% c = plus(a,b) : computes the sum of iData objects
+% +   Plus.
+%   A + B adds matrices A and B.  
+%   The addition is defined as the normalised sum:
+%      (M1+M2)*(S1/M1+S2/M2) over monitor(M1+M2)
+%   where S1,M1 and S2,M2 and the Signal and Monitor of the two objects.
 %
-%   @iData/plus (+) function to compute the sum of data sets 
+%   To get the 'conventional' sum which is the sum S1+S2, set one of the
+%   monitors to 0, e.g.:
+%     a.Monitor=0;
 %
-%     the sum is defined as the normalised sum:
-%       (M1+M2)*(S1/M1+S2/M2) over monitor(M1+M2)
-%     where S1,M1 and S2,M2 and the Signal and Monitor of the two objects.
+%   Alternatively, the COMBINE operator (aka merge) of two objects is defined as:
+%     (S1+S2) over monitor (M1+M2)
 %
-%     To get the 'conventional' sum which is the sum S1+S2, set one of the
-%     monitors to 0, e.g.:
-%       a.Monitor=0;
+%   C = PLUS(A,B) is called for the syntax 'A + B'
 %
-% input:  a: object or array (iData or numeric)
-%         b: object or array (iData or numeric)
-% output: c: object or array (iData)
-% ex:     c=a+1;
-%
+% Example: a=iData(peaks); b=a+2; max(b) == max(a)+2
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/minus, iData/plus, iData/times, iData/rdivide, iData/combine
 
 if nargin ==1
 	b=[];
 end
-c = iData_private_binary(a, b, 'plus');
+c = binary(a, b, 'plus');
 

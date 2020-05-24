@@ -1,14 +1,11 @@
 function a = uminus(a)
-% b = uminus(s) : opposite value of iData object
+% -  Unary minus.
+%   -A negates object A.
 %
-%   @iData/uminus function to return the opposite value of data sets, i.e. b=-s.
+%   B = UMINUS(A) is called for the syntax '-A'.
 %
-% input:  s: object or array (iData)
-% output: b: object or array (iData)
-% ex:     b=uminus(a);
-%
+% Example: a=iData(-5:-1); all(-a == 5:-1:1)
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/uminus, iData/abs, iData/real, iData/imag, iData/uplus
 
-a = iData_private_unary(a, 'uminus');
-
+a = unary(a, 'uminus');

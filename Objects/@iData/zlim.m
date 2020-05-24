@@ -1,19 +1,15 @@
 function a = zlim(a, lims, exclude)
-% b = zlim(s,[ zmin zmax ]) : Reduce iData Z axis limits
+% ZLIM Z limits (3rd axis).
+%   ZL = ZLIM(A)            gets the Z limits.
+%   Undefined axis returns [NaN NaN] as limits.
 %
-%   @iData/zlim function to reduce the Z axis (rank 3) limits
-%     zlim(s) returns the current Z axis limits. 
-%     Undefined axis returns [NaN NaN] as limits.
+%   ZLIM(A,[ZMIN ZMAX])     sets the Z limits. 
 %
-%   zlim(s, [min max], 'exclude') removes the specified range instead of keeping it.
+%   ZLIM(A,[ZMIN ZMAX], 'exclude') removes the specified range instead of keeping it.
 %
-% input:  s: object or array (iData)
-%         limits: new axis limits (vector)
-% output: b: object or array (iData)
-% ex:     b=zlim(a);
-%
+% Example: a=iData(flow); b=zlim(a,[2 24]); all(zlim(b)==[2 24])
 % Version: $Date$ $Version$ $Author$
-% See also iData, iData/plot, iData/ylabel
+% See also iData, iData/plot, iData/zlabel
 
 % handle input iData arrays
 if nargin < 2, lims = ''; end
@@ -28,9 +24,6 @@ if numel(a) > 1
   else
     a = s;
   end
-  if nargout == 0 & nargin == 2 & length(inputname(1))
-    assignin('caller',inputname(1),a);
-  end
   return
 end
 
@@ -42,17 +35,14 @@ if isempty(lims)
 end
 
 if ~isempty(exclude)
-  index=find(lims(1) > axisvalues | axisvalues > lims(2));
+  index=find(lims(1) >= axisvalues | axisvalues >= lims(2));
 else
-  index=find(lims(1) < axisvalues & axisvalues < lims(2));
+  index=find(lims(1) <= axisvalues & axisvalues <= lims(2));
 end
 s.type='()';
 s.subs={ ':', ':', index };
 cmd=a.Command;
 a = subsref(a,s);
 a.Command=cmd;
-a=iData_private_history(a, mfilename, a, lims);
+a=history(a, mfilename, a, lims);
 
-if nargout == 0 & length(inputname(1))
-  assignin('caller',inputname(1),a);
-end

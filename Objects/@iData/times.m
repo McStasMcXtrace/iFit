@@ -1,20 +1,15 @@
 function c = times(a,b)
-% c = times(a,b) : computes the product of iData objects
+% .*  Object multiply (times).
+%   X.*Y denotes element-by-element multiplication.
+%   The syntax X*Y is the same as X.*Y
 %
-%   @iData/times (*) function to compute the product of data sets=a.*b
-%     the square of a single iData object should rather be computed 
-%     using the power law.
+%   C = TIMES(A,B) is called for the syntax 'A .* B'.
 %
-% input:  a: object or array (iData or numeric)
-%         b: object or array (iData or numeric)
-% output: c: object or array (iData)
-% ex:     c=a.*2;
-%
+% Example: a=iData(-10:10); c=a.*2; max(c{0}) == 20
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/minus, iData/plus, iData/times, iData/rdivide, iData/power
 if nargin ==1
-	b=[];
+  b=[];
 end
 
-c = iData_private_binary(a, b, 'times');
-
+c = binary(a, b, 'times');

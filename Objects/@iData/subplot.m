@@ -1,21 +1,16 @@
 function h=subplot(a, varargin)
-% h = subplot(s) : plot iData array as subplots
+% SUBPLOT  Display objects as a grid in tiled positions.
+%   SUBPLOT(A) and SUBPLOT(a, []) uses the best subplot fit. The object A can be
+%   given as an array, such as in SUBPLOT([A B C...]), or as separate arguments
+%   SUBPLOT(A,B,C...).
 %
-%   @iData/subplot plot each iData element in a subplot
-%     subplot(a, [])    uses the best subplot fit
-%     subplot(a, [m n]) uses an m x n subplot grid
-%     subplot(a, [m n], options) sends options to the plot
+%   SUBPLOT(A, [m n]) uses an m x n subplot grid.
 %
-% input:  s: object or array (iData)
-%         [m n]: optional subplot grid dimensions
-%         additional arguments are passed to the plot method (e.g. color, plot type, ...)
-% output: h: plot handles (double)
-% ex:     subplot([ a a ])
+%   SUBPLOT(A, [m n], options) sends options to the plot.
 %
+% Example: a=iData(peaks); h=subplot([a a]); tf=ishandle(h); delete(gcf); all(tf)
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/plot
-
-% EF 23/11/07 iData implementation
 
 a = squeeze(a); % remove singleton dimensions
 m=[]; n=[]; dim=[];
@@ -24,7 +19,7 @@ method = '';
 varg = {};
 for index=1:length(varargin)
   if ischar(varargin{index}),        method = varargin{index};
-  elseif isa(varargin{index},'iData') 
+  elseif isa(varargin{index},class(a)) 
     if numel(a) == 1
       a = [a ; varargin{index} ];
     else
@@ -42,8 +37,8 @@ if numel(a) == 1
   return
 end
 
-if length(dim) == 1 & dim(1) > 0
-  m = dim; 
+if length(dim) == 1 && dim(1) > 0
+  m = dim;
 elseif length(dim) == 2, m=dim(1); n=dim(2); 
 else m=[]; end
   
@@ -61,7 +56,6 @@ elseif isempty(n)
 end
 
 h=[];
-iData_private_warning('enter', mfilename);
 for index=1:numel(a)
   if ~isempty(a(index))
     if numel(a) > 12, 
@@ -76,4 +70,3 @@ for index=1:numel(a)
   else h = [ h ; nan ];
   end
 end
-iData_private_warning('exit', mfilename);

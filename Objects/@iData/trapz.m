@@ -1,28 +1,21 @@
 function [s,sigma] = trapz(a,dim, varargin)
-% s = trapz(a,dim) : computes the integral of iData objects elements along given dimension
+% TRAPZ  Trapezoidal numerical integration.
+%   S = TRAPZ(A,DIM) integrates along axis of rank DIM. The axis is then removed.
+%   Default is to use DIM=1. 
+%   TRAPZ is complementary to SUM and CAMPROJ, but takes into account axes values.
 %
-%   @iData/trapz function to compute the integral of the data set along a given dimension
-%     trapz(a,dim) integrates along axis of rank dim. The axis is then removed.
-%       default is to use dim=1. 
-%       If dim=0, integration is done on all axes and the total is returned as a
-%         scalar value. In this case, a second output argument holds the error bar.
-%       If dim='radial', the integration is done radially (R=sqrt(sum(axes^2)).
-%       trapz is complementary to sum and camproj, but takes into account axes.
-%     trapz(a,'radial', center) specifies the 'center' of the integration 
-%       (vector of coordinates) or a single value used as center on all axes 
-%       (for instance 0). All axes are assumed to be distances.
+%   [S,err] = TRAPZ(A,0) integrates along all axes and the total is returned as a 
+%   scalar value. In this case, a second output argument holds the error bar.
 %
-% input:  a: object or array (iData/array of)
-%         dim: dimension to integrate (int/array of, or 'radial')
-% output: s: integral of elements (iData/scalar)
-% ex:     c=trapz(a);
+%   S = TRAPZ(A,'radial') integrates radially (R=sqrt(sum(axes^2)).
 %
+%   TRAPZ(A,'radial', center) specifies the 'center' of the integration 
+%   (vector of coordinates) or a single value used as center on all axes 
+%   (for instance 0). All axes are assumed to be distances.
+%
+% Example: a=iData(peaks); b=trapz(a); ndims(b) == 1
 % Version: $Date$ $Version$ $Author$
-% See also iData, iData/cumsum, iData/camproj, iData/sum
-
-if ~isa(a, 'iData')
-  iData_private_error(mfilename,[ 'syntax is ' mfilename '(iData, dim)' ]);
-end
+% See also iData, iData/cumsum, iData/camproj, iData/sum, iData/cart2sph
 
 if nargin < 2, dim=1; end
 
@@ -30,6 +23,6 @@ if strcmp(dim, 'radial')
   sigma = [];
   s = cart2sph(a, varargin{:});
 else
-  [s,sigma] = iData_private_sumtrapzproj(a,dim, 'trapz');
+  [s,sigma] = private_sumtrapzproj(a,dim, 'trapz');
 end
 
