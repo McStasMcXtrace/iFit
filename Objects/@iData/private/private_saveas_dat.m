@@ -30,8 +30,8 @@ function filename = private_saveas_dat(a, filename)
   end
   [fid, message]=fopen(filename,'w+');
   if fid == -1
-    iData_private_warning(mfilename,[ 'Error opening file ' filename ' to save object ' a.Tag 'in format ' format ]);
-    warning(message)
+    warning([ mfilename ': Error opening file ' filename ' to save object ' a.Tag 'in format ' format ]);
+    disp(message)
     return
   end
   fprintf(fid, '%s', str);

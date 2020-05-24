@@ -58,7 +58,7 @@ if iscell(S(1).subs) && any(strcmp(S(1).subs{1}, a.properties_Protected))
 elseif ischar(S(1).subs(1)) && any(strcmp(S(1).subs, a.properties_Protected))
   error([ mfilename ': can not set Protected property ' S(1).subs ' in object ' a.Tag ]);
 end
-
+a.ModificationDate = clock;
 % we use a recursive approach until we reach the last level for assignment
 % then propagate back the update to the upper levels
 a = subsasgn_recursive(a, S, val);
@@ -68,4 +68,3 @@ if isa(a, 'iData')
   history(a, mfilename, S, val);
 end
 
-a.ModificationDate = clock;

@@ -192,6 +192,8 @@ properties
         elseif isstruct(this) && isfield(this, 'Source') && isfield(this, 'Loader') % iLoad struct
           % pass: we handle this iLoad struct when assembling the object(s)
             this = [];
+        elseif isscalar(this) && ishandle(this)
+          this = [];
         end
 
         if ~isempty(this)
@@ -202,6 +204,7 @@ properties
             s.axis=flag_num_arg;
           end
           structs{end+1} = s;
+          varargin{index} = [];
         end
 
         index=index+1;
@@ -231,7 +234,8 @@ properties
       % now build the final 'master' object
       for index_varg=1:numel(varargin) % loop on initial input arguments for iLoad
         arg = varargin{index_varg};
-        if isempty(arg) || (~ischar(arg) && ~iscellstr(arg) && ~isstruct(arg)), continue; end
+        if isempty(arg) || ...
+          (~ischar(arg) && ~iscellstr(arg) && ~isstruct(arg) && ~ishandle(arg)), continue; end
         if ischar(arg), arg = cellstr(arg); end
         for index_arg=1:numel(arg)  % loop on input argument content when e.g. cellstr array
           if iscell(arg)
@@ -252,7 +256,9 @@ properties
           for index_data=1:numel(this)
             if numel(this{index_data}) == 0, continue; end
             if isa(this{index_data}, 'iData')
-              new1 = this{index_data};
+              new1 = axescheck(this{index_data});
+            elseif ishandle(this{index_data})
+              new1 = private_handle2iData(this{index_data});
             elseif isempty(this{index_data}), continue;
             else
               if numel_new == 1

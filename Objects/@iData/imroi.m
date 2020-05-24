@@ -97,7 +97,7 @@ function [b, mask, f] = imroi(a, options)
     s_b = s_a*0;
     s_b(select) = 1;
     mask = setalias(mask, 'Signal', s_b, [  'imroi(' sl ') mask' ]);
-    mask.Title = [  'imroi(' sl ') mask' ];
+    mask.Name = [  'imroi(' sl ') mask' ];
   end
     
 end % imroi

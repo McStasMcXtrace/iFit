@@ -72,7 +72,7 @@ if all(isempty(index))
      'if ~isempty(tmp_h), if strcmp(get(tmp_h(1),''visible''),''off''), tmp_v=''on''; else tmp_v=''off''; end;' ...
      'set(tmp_h,''visible'',tmp_v); end; clear tmp_h tmp_v' ]);
   end
-  uimenu(uicm, 'Separator','on', 'Label', [ 'Title: "' T '" ' d ]);
+  uimenu(uicm, 'Separator','on', 'Label', [ 'Name: "' T '" ' d ]);
   if exist(a.Source,'file') && ~isdir(a.Source)
     uimenu(uicm, 'Label', [ 'Source: <' S '>' ], 'Callback',[ 'edit(''' a.Source ''')' ]);
   else

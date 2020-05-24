@@ -51,7 +51,7 @@ error([ mfilename ': this is not yet functional. Sorry.' ]);
 % initiate the findfield 'cache' by searching the mass
 mass = findfield(Sab, 'mass');
 if isempty(mass), 
-  disp([ mfilename ': WARNING: Object ' Sab.Tag ' "' Sab.Title '" does not contain any mass information.' ])
+  disp([ mfilename ': WARNING: Object ' Sab.Tag ' "' Sab.Name '" does not contain any mass information.' ])
   filename=[];
   return;
 end
@@ -64,7 +64,7 @@ Sab.MT=4;
 Sab.ZA=101; % H in H2O
 Sab.AWR=M;
 Sab.LASYM=~s.classical;
-Sab.Material=strtok(s.Title);
+Sab.Material=strtok(s.Name);
 Sab.charge=Sab.ZA;
 Sab.EDATE=[ 'EVAL-' upper(datestr(now,12)) ];
 % ENDF compatibility flags: MF1 MT451

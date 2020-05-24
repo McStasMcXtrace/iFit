@@ -44,7 +44,7 @@ function b = private_saveas_2mantid(a)
 if numel(a) > 1
     b = [];
     for index=1:numel(a)
-      b = [ b iData_private_2mantid(a(index)) ];
+      b = [ b private_saveas_2mantid(a(index)) ];
     end
     return
 end

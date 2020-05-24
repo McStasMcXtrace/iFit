@@ -180,7 +180,7 @@ end
 
 % filename='gui' pops-up a file selector
 if strcmp(filename, 'gui')
-  if numel(a) > 1, t=[ num2str(numel(a)) ' objects' ]; else t=get(a,'Title'); end
+  if numel(a) > 1, t=[ num2str(numel(a)) ' objects' ]; else t=get(a,'Name'); end
   [filename, pathname, filterindex] = uiputfile( ...
        filterspec, ...
         ['Save ' t ' as...'], a.Tag);
