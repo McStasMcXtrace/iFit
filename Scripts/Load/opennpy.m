@@ -10,8 +10,8 @@ function out = opennpy(filename)
 % 
 
 
-if ~isa(filename,'estruct')
-  out = estruct(filename,'NPY');
+if ~isa(filename,'iData')
+  out = iData(filename,'NPY');
 else
   out = filename;
 end

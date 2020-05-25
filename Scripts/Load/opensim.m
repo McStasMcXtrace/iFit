@@ -3,8 +3,8 @@ function out = opensim(filename)
 %        and set the 'ans' variable to an iData object with its content
 % 
 
-if ~isa(filename,'estruct')
-  out = estruct(iLoad(filename,mfilename)); % no post-processing
+if ~isa(filename,'iData')
+  out = iData(iLoad(filename,mfilename)); % no post-processing
 else
   out = filename;
 end
@@ -37,14 +37,14 @@ if numel(out) == 1
         filename(findstr(' ',filename):length(filename))='';
         if isempty(filename), continue; end
         filename = fullfile(dirname,filename);
-        a = [ a load(estruct, filename) ];
+        a = [ a load(iData, filename) ];
       end
     else
       % This is a .sim from a scan
       filename = 'mccode.dat';
       filename = fullfile(dirname,filename);
       if exist(filename)
-        a = load(estruct, filename);
+        a = load(iData, filename);
       end
     end
     out = a;

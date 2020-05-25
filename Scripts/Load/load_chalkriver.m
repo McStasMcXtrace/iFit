@@ -8,8 +8,8 @@ function a=load_chalkriver(a0)
 % See also: iData/load, iLoad, save, iData/saveas
 % 
 
-if ~isa(a0,'estruct')
-  a0 = estruct(iLoad(a0,'ChalkRiver'));  % no post-processing
+if ~isa(a0,'iData')
+  a0 = iData(iLoad(a0,'ChalkRiver'));  % no post-processing
 end
 
 % handle input iData arrays

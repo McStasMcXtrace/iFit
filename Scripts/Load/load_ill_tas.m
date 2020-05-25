@@ -8,8 +8,8 @@ function a=load_ill_tas(a)
 % See also: iData/load, iLoad, save, iData/saveas
 % 
 
-if ~isa(a,'estruct')
-  a = estruct(iLoad(a,'ILL TAS'));  % no post-processing
+if ~isa(a,'iData')
+  a = iData(iLoad(a,'ILL TAS'));  % no post-processing
 end
 
 % handle input iData arrays

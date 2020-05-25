@@ -7,8 +7,8 @@ function a = load_xyen(a)
 % See also: iData/load, iLoad, save, iData/saveas
 % 
 
-if ~isa(a,'estruct')
-  a = estruct(iLoad(a)); % no post-processing
+if ~isa(a,'iData')
+  a = iData(iLoad(a)); % no post-processing
 end
 
 % handle input iData arrays

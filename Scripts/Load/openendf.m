@@ -3,8 +3,8 @@ function out = openendf(filename)
 %        and set the 'ans' variable to an iData object with its content
 % 
 
-if ~isa(filename,'estruct')
-  out = estruct(iLoad(filename,'ENDF'));  % no post-processing
+if ~isa(filename,'iData')
+  out = iData(iLoad(filename,'ENDF'));  % no post-processing
 else
   out = filename;
 end
