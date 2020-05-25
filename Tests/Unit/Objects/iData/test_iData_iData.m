@@ -9,8 +9,8 @@ function result=test_iData_iData
   
   s=struct(a);
   d=iData(s);
-  e=iData(s.Data);
-  f=iData({ p, s });
+  e=iData(s.p);
+  f=iData({ p },s);
   g=iData([ a b ]);
   
   t = [ a b c d e f g ];
@@ -18,7 +18,7 @@ function result=test_iData_iData
   % do they all match ?
   result = [ 'OK     ' mfilename ];
   for index = 1:length(t)
-    if any(double(t(index)) ~= p)
+    if any(size(t(index)) ~= size(p)) || any(any(double(t(index)) ~= p))
       result = [ 'FAILED ' mfilename ];
     end
   end

@@ -18,8 +18,8 @@ function result=test_iData_pca
 ];
 
   a=iData(A);
-  b = pca(a);
-  if all(abs(sum(b.Coefficients) - [ -0.6142    1.6051 ])  < 1e-4 )
+  b = pca(a, 'VariableWeights','variance');
+  if all(abs(sum(b.coeff) - [ -0.6142    1.6051 ])  < 1e-4 )
     result = 1;
   else 
     result = 0; end
