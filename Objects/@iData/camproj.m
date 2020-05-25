@@ -16,6 +16,7 @@ function s = camproj(a,dim, center)
 %    The radial distribution can then be transformed into an histogram with
 %    e.g. HIST(CAMPROJ(a), 100);
 %
+% Example: a=iData(peaks); b=camproj(a); ndims(b) == 1
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/rotate, iData/sum, iData/trapz, iData/cart2sph, iData/hist
 

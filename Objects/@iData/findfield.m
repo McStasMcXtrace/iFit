@@ -14,6 +14,7 @@ function [match, types, dims, sz] = findfield(s, field, option)
 %         'biggest' option returns the biggest match (has max nb of elements).
 %         'force'   option explicitly request a full scan of the object.
 %         'isfield' option just checks if the field exists (faster).
+%         'fieldnames' option returns the root level field names and exit.
 %
 %     For instance, to identify the largest numeric element in object, use:
 %       f=findfield(s,'','numeric biggest')
@@ -63,11 +64,12 @@ if isfield(s.Private, 'cache') && isfield(s.Private.cache, mfilename) ...
   types = cache.types;
   dims  = cache.dims;
   sz    = cache.sizes;
+  fn    = cache.fieldnames;
 else
   struct_s=rmfield(struct(s),s.properties_Protected);  % private/protected stuff must remain so.
 
   % find all fields in object structure
-  [match, types, dims, sz] = struct_getfields(struct_s, '');
+  [match, types, dims, sz, fn] = struct_getfields(struct_s, '');
 
   % sort by name. This can mess up the result.
   %[match, index] = unique(match); % sort by name
@@ -80,7 +82,13 @@ else
   cache.types = types;
   cache.dims  = dims;
   cache.sizes = sz;
+  cache.fieldnames = fn;
   s.Private.cache.(mfilename) = cache;
+end
+
+if strcmp(option, 'fieldnames')
+  match = fn;
+  return
 end
 
 % filter fields: numeric and char types
@@ -193,7 +201,7 @@ function [match, types, dims, sz, m] = struct_search_token(field, option, match,
 
 % ----------------------------------------------------------------------
 % private function struct_getfields, returns field, class, numel
-function [f, t, n, z] = struct_getfields(structure, parent)
+function [f, t, n, z, f0] = struct_getfields(structure, parent)
 % struct_getfields recursively scan a structure (build cache of fields)
 
   f={}; t={}; n=[]; z={};
@@ -214,6 +222,7 @@ function [f, t, n, z] = struct_getfields(structure, parent)
 
 
   f = fieldnames(structure);
+  
   f0= f;  % so that we keep initial single level fields
 
   if ~isempty(parent) && ~isempty(f), % assemble compound field path

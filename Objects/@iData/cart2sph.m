@@ -10,6 +10,7 @@ function s = cart2sph(a, center)
 %   (vector of coordinates) or a single value used as center on all
 %   axes (for instance 0).
 %
+% Example: a=iData(peaks); b=cart2sph(a); ndims(a) == ndims(b)
 % Version: $Date$ $Version$ $Author$
 % See also iData, iData/rotate, iData/sum, iData/trapz, iData/camproj
 
@@ -35,7 +36,7 @@ if ischar(center) || isempty(center)
   center=zeros(1,ndims(a));
 
   for index=1:ndims(a)
-    [dummy, center(index)] = std(a, -index);
+    [dummy, center(index)] = std(a, index);
   end
 end
 

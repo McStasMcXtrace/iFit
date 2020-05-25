@@ -80,11 +80,6 @@ function s = set_single(s, field, value, follow, s0)
             % must exit recursive levels
             return
           end
-        elseif isa(s0, 'iData') && isnumeric(v) && numel(v) ~= numel(value)
-          s0.Private.cache.check_requested = true;
-          s0.Private.cache.size = [];
-          s0.Private.cache.std_w= [];
-          s0.Private.cache.std_c= [];
         end
       end
       % if ~follow: change value. Calls "s.(tok)=value" i.e. subsasgn

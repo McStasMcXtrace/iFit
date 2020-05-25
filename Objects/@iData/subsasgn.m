@@ -59,9 +59,29 @@ elseif ischar(S(1).subs(1)) && any(strcmp(S(1).subs, a.properties_Protected))
   error([ mfilename ': can not set Protected property ' S(1).subs ' in object ' a.Tag ]);
 end
 a.ModificationDate = clock;
+
+% store current Signal/Axes dimensions
+d=cell(1,ndims(a)+1); nd=ndims(a);
+for index=0:ndims(a);
+  d{index+1} = size(getaxis(a, index));
+end
+
 % we use a recursive approach until we reach the last level for assignment
 % then propagate back the update to the upper levels
 a = subsasgn_recursive(a, S, val);
+
+% check if Signal/axes where changed
+if ndims(a) ~= nd
+  axescheck(a, 'set');
+else
+  for index=0:ndims(a);
+    sz = size(getaxis(a, index));
+    if numel(d) <= index || numel(sz) ~= numel(d{index+1}) || any(sz ~= d{index+1})
+      axescheck(a, 'set');
+      break
+    end
+  end
+end
 
 % reset cache (as we have changed the object: fields, values, ...)
 if isa(a, 'iData')

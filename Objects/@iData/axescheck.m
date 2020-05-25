@@ -11,6 +11,8 @@ function s = axescheck(s, option)
 %   until a further assignment is done. This can be used to assign many properties
 %   without testing the object. Only a final assignment will trigger a check.
 %
+%   AXESCHECK(s, 'set') plans for a future check.
+%
 %   AXESCHECK(s, 'force') force to re-assign the signal and axes.
 %
 % Example: s = iData(1:10); isa(axescheck(s),'iData')
@@ -27,9 +29,17 @@ end
 
 notify(s, 'ObjectUpdated');
 s.Private.cache.check_requested = false; % ok, we are working on this
+if nargin < 2, option = []; end
 
-if nargin == 2
-  if strcmp(option, 'nocheck')
+if nargin == 2 && ischar(option)
+  switch lower(option)
+  case {'nocheck','ok'}
+    return
+  case {'set','set_check'}
+    s.Private.cache.check_requested = true;
+    s.Private.cache.size = [];
+    s.Private.cache.std_w= [];
+    s.Private.cache.std_c= [];
     return
   end
 end
@@ -51,7 +61,13 @@ if nargin == 2 && strcmp(option, 'force')
 end
 
 % get all numeric fields (e.g. from findfield cache), sorted by decreasing size
-[fields, ~, dims, sz] = findfield(s,'','numeric');
+% ISSUE: findfield may return its cache size, whereas actual content was changed.
+if isempty(s.Private.cache.size) || all(s.Private.cache.size==0) || strcmp(option, 'force')
+  [fields, ~, dims, sz] = findfield(s,'','force numeric');
+else
+  [fields, ~, dims, sz] = findfield(s,'','numeric');
+end
+  
 if s.verbose > 1
   for index=1:numel(fields)
     if dims(index) > 1

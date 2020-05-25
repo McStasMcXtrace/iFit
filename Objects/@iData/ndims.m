@@ -1,8 +1,8 @@
 function v=ndims(s)
 % NDIMS Get the dimensionality of iData object (Signal).
 %   D = NDIMS(s) get the dimensionality of object, i.e. that of its Signal.
-%   For an input array of objects, ndims returns the number of dimensions
-%   of the array.
+%   For an input array of objects, NDIMS returns the number of dimensions
+%   of the array. NDIMS is 1 for vectors, and 0 for empty objects.
 %
 %   To get the dimensionality of all objects in an array, use ARRAYFUN('ndims',S)
 %
