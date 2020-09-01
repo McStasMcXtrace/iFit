@@ -1,6 +1,6 @@
-function r = runtest(s, m, option)
-% RUNTEST run a set of tests on object methods
-%   RUNTEST(s) checks all object methods. 
+function r = runtests(s, m, option)
+% RUNTESTS run a set of tests on object methods
+%   RUNTESTS(s) checks all object methods. 
 %   A test can be written as:
 %     An 'Example:' line for which following expressions is executed.
 %       The test can span on more lines with the '...' continuation symbol. 
@@ -8,15 +8,17 @@ function r = runtest(s, m, option)
 %   In deployed versions, only the 'test' functions can be used.
 %   Each test result must return e.g. a non-zero value, or 'OK'.
 %
-%   RUNTEST(s, 'method') and RUNTEST(s, {'method1',..}) checks only the given 
+%   RUNTESTS(s, 'method') and RUNTESTS(s, {'method1',..}) checks only the given 
 %   methods. When not given or empty, all methods are checked.
 %
-%   RUNTEST(..., 'testsuite') generates a test suite (list of 
+%   RUNTESTS(..., 'testsuite') generates a test suite (list of 
 %   'test_<class>_<method>' functions).
 %
-%   R = RUNTEST(...) perform the test and returns a structure array with test results.
+%   RUNTESTS(..., 'debug') shows more information for each test.
 %
-%   RUNTEST(s, R) where R is a RUNTEST structure array, displays the test results.
+%   R = RUNTESTS(...) perform the test and returns a structure array with test results.
+%
+%   RUNTESTS(s, R) where R is a RUNTESTS structure array, displays the test results.
 
 if nargin <2
   m = [];
@@ -26,9 +28,8 @@ if isstruct(m)
   return
 end
 if nargin < 3 
-  if ischar(m) && strcmp(m, 'testsuite')
-    m = '';
-    option='testsuite';
+  if ischar(m) && any(strcmpi(m, {'testsuite','debug'}))
+    option=m; m = '';
   else option = ''; end
 end
 
@@ -48,7 +49,7 @@ end
 m=cellstr(m);
 
 % perform all tests
-r = runtest_dotest(s, m);
+r = runtest_dotest(s, m, option);
 
 % display results
 fprintf(1, '%s: %s %i tests from %s\n', mfilename, class(s), numel(r), pwd);
@@ -60,7 +61,7 @@ if ~isdeployed && ischar(option) && strcmp(option, 'testsuite')
 end
 
 % ------------------------------------------------------------------------------
-function r = runtest_dotest(s, m)
+function r = runtest_dotest(s, m, option)
 % RUNTEST_DOTEST performs a test for given method 'm'
   r = [];
   fprintf(1,'Running %s (%s) for %i methods (from %s)\n',...
@@ -92,6 +93,9 @@ function r = runtest_dotest(s, m)
         res.Incomplete     = true;
         res.Failed         = true;
         r = [ r res ];
+        if ischar(option) && strcmpi(option, 'debug')
+          disp([ m{mindex} ' ' res.Details.Status ])
+        end
         continue
       end
     end
@@ -109,12 +113,15 @@ function r = runtest_dotest(s, m)
         failed = ME;
       end
       if ~isempty(failed) % invalid method (can not get help)
-        res = runtest_init(m{index});
+        res = runtest_init(m{mindex});
         res.Details.Status = 'ERROR';
         res.Details.Output = failed;
         res.Incomplete     = true;
         res.Failed         = true;
         r = [ r res ];
+        if ischar(option) && strcmpi(option, 'debug')
+          disp([ m{mindex} ' ' res.Details.Status ])
+        end
         continue
       end
 
@@ -144,6 +151,9 @@ function r = runtest_dotest(s, m)
         end
         res = runtest_dotest_single(s, m{mindex}, code);
         r = [ r res ];
+        if ischar(option) && strcmpi(option, 'debug')
+          disp([ m{mindex} ' ' res.Details.Status ' ' code ])
+        end
       end
     end % if not deployed
     
@@ -152,6 +162,9 @@ function r = runtest_dotest(s, m)
       code = [ 'test_' class(s) '_' m{mindex} ];
       res = runtest_dotest_single(s, m{mindex}, code);
       r = [ r res ];
+      if ischar(option) && strcmpi(option, 'debug')
+        disp([ m{mindex} ' ' res.Details.Status ' ' code ])
+      end
     end
     
     % check if there is no test for a given method
@@ -160,6 +173,9 @@ function r = runtest_dotest(s, m)
       res.Details.Status = 'notest';
       res.Passed         = true;
       r = [ r res ];
+      if ischar(option) && strcmpi(option, 'debug')
+        disp([ m{mindex} ' ' res.Details.Status ])
+      end
     end
 
   end % mindex
