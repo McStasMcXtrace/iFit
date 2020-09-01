@@ -46,7 +46,7 @@ try
 catch
     index1 = [];
 end
-index = [ findobj(h,'  Tag', [ mfilename '_' a.Tag ]) ...
+index = [ findobj(h,'Tag', [ mfilename '_' a.Tag ]) ...
           findobj(gcf,'Tag', [ mfilename '_' a.Tag ]) ];
 try
     index1 = findobj(get(h,'Children'),'Tag', [ mfilename '_' a.Tag ]);
