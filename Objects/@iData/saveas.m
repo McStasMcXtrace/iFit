@@ -542,7 +542,7 @@ try
 catch ME
   %warning(ME.message)
   %warning([ mfilename ': Export of object ' inputname(1) ' ' a.Tag ' into format ' format ' failed. Ignoring.' ]);
-  %filename = [];
+  filename = ME.message;
 end
 
 % end of iData/saveas
