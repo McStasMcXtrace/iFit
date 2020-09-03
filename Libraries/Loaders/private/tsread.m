@@ -1,4 +1,4 @@
-function output = tsread(filename)
+function allData = tsread(filename)
 % TSREAD reads in parameters from suitable Bruker NMR files
 % output = tsread(filename) reads in the contents of the JCAMP-format
 % Bruker TopSpin parameter files e.g. acqu, proc etc., and then handles the
@@ -172,6 +172,8 @@ output(:, 3) = [];
 
 % and convert that into a structure
 output = cell2struct(output(:, 2), genvarname(output(:, 1)));
+
+allData.Notes = output;
 
 % ------------------------------------------------------------------------------
 function output = jcampread2(filename,warnFlag)
@@ -885,3 +887,7 @@ end
 function ret=contains(A,B)
 
   ret = ~isempty(strfind(A,B));
+  
+function s=message(varargin)
+  s = sprintf('%s ', varargin{:});
+        
