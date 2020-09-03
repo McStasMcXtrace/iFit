@@ -9,7 +9,7 @@ function filename = read_url(filename, option)
 %   in given temporary directory. It is recommended to use a RAMdisk for higher
 %   efficiency, such as '/dev/shm' or '/run/shm'.
 %
-% Input:  filename: URL starting with file://, ftp:// http:// and https://
+% Input:  filename: URL starting with file:// ftp:// http:// and https://
 % output: local file path
 % Example: y=read_url('http://www.jcamp-dx.org/lisms/cc/bruker1.dx'); delete(y); ischar(y)
 %
@@ -17,7 +17,7 @@ function filename = read_url(filename, option)
 % See also: read_compressed, iLoad
 
 if nargin == 0 || any(strcmp(filename, {'identify','query','defaults'}))
-    s.name     ='URL';
+    s.name     ='URL (file:// ftp:// http:// and https://)';
     s.method   =mfilename;
     s.extension={'url'};
     return
