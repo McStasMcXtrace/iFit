@@ -1,4 +1,4 @@
-function s = read_compressed(filename, option)
+function s = read_compressed(filename, option, getpath)
 % READ_COMPRESSED Read a compressed file (archive). 
 %   Read a ZIP, TAR, GZIP, LZ4, ZSTD, BZIP2, XZ, LZO, ... file.
 %   You should install the extractors individually.
@@ -32,6 +32,10 @@ function s = read_compressed(filename, option)
 %   data=READ_COMPRESSED(file, tmpdir) extract compressed data from given file, 
 %   in given temporary directory. It is recommended to use a RAMdisk for higher
 %   efficiency. Temporary files are removed afterwards.
+%
+%   files=READ_COMPRESSED(..., 'path') only returns the extracted file list. 
+%   Data files are NOT imported, and kept decompressed on disk. This about 
+%   removing them afterwards, especially when stored in a RAMdisk.
 
 % Not yet done, but possible:
 %   READ_COMPRESSED(file, output) compress the data or file into given
@@ -54,8 +58,14 @@ if nargin == 0 || any(strcmp(filename, {'identify','query','defaults'}))
   return
 end
 
-if nargin < 2, option = ''; end
+if nargin < 2, option  = ''; end
+if nargin < 3, getpath = ''; end
 if isempty(dir(filename)), return; end
+
+if any(strcmp(option,{'path','files','names','list'}))
+  getpath = 'path';
+  option  = '';
+end
 
 % test /run/shm for extraction of temporary files.
 if isempty(option)
@@ -98,7 +108,12 @@ if isdir(option)
       
     % read content of extracted archive with iLoad
     if ~isempty(filenames)
-      s = iLoad(filenames);
+      if any(strcmp(getpath,{'path','files','names','list'}))
+        if numel(filenames) == 1, filenames = filenames{1}; end
+        s = filenames;
+      else
+        s = iLoad(filenames);
+      end
     end
   catch ME
     disp([ mfilename ': could not extract ' filename ' into ' option ]);
@@ -106,7 +121,7 @@ if isdir(option)
   end
   
   % remove temporary dir/file
-  if isdir(tmpdir)
+  if isdir(tmpdir) && ~any(strcmp(getpath,{'path','files','names','list'}))
     try
       rmdir(tmpdir, 's');
     end
@@ -176,7 +191,7 @@ function present = check_compressors(options)
              'bz2', 'pbzip2 --version', 'pbzip2 -d',     'pbzip2 -1';
              'bz2', 'bzip2 --version',  'bzip2 -d',      'bzip2 -1';
              'br',  'brotli --version', 'brotli -d',     'brotli -1';
-             'xz',  'pixz -version',   'pixz -d',       'pixz -1';
+             'xz',  'pixz -version',    'pixz -d',       'pixz -1';
              'xz',  'pxz --version',    'pxz -d',        'pxz -1';
              'xz',  'xz --version',     'xz -d',         'xz -1';
              'rar', 'rar -version',     'rar x',         'rar a';
