@@ -5,9 +5,9 @@ Welcome to the iFit/iData package
 <p align="center">
 
                           http://ifit.mccode.org
-                          <br>
+
                           E. Farhi, EXP/GRADES [emmanuel.farhi@synchrotron-soleil.fr]
-                          <br>
+
                           Version @IFIT_VERSION@ - @IFIT_DATE@
 
 <br>
