@@ -16,7 +16,7 @@ Welcome to the iFit/iData package
 <img src="Docs/images/logo_soleil.png" style="width: 50%; height: 50%">
 </p>
 
-:warning: this project has been moved to https://gitlab.com/soleil-data-treatment/soleil-software-projects/remote-desktop
+:warning: this project has been moved to https://gitlab.com/soleil-data-treatment/soleil-software-projects/ifit
 ====
 
 Purpose
